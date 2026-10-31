@@ -59,6 +59,15 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "agents/openai.yaml",
         "fbe806654af0b04c0befc6f2e16fb006f0b65f87318d84e7d844a426615ec1dd",
     ),
+    // Main f19823d (PR #2 and #4); superseded by PR #7.
+    (
+        "references/lifecycle.md",
+        "c85f605af49b3615281a0509171340e894fff6e0cebce1bc76a7d39612887ba6",
+    ),
+    (
+        "references/stages.md",
+        "3a6d304596b52c88fe33b45ce28ae70701c2c075511e81da18f0d006adc2575a",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.
