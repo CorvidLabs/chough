@@ -7,7 +7,7 @@ artifact: plan
 
 ## Approach
 
-Use the published native SpecSync lifecycle readers for current health, inventory, and authenticated archive history. Add a small deterministic adapter only for closure policy, protocol validation, Git snapshot inventory, and error reporting. Preserve the current product gates, keep this branch independent of runtime PR #2, and implement the explicitly authorized CI work under the actual optional policy without changing that policy or fabricating native approval.
+Use the published native SpecSync lifecycle readers for current health, inventory, and authenticated archive history. Add a small deterministic adapter only for closure policy, protocol validation, Git snapshot inventory, and error reporting. Preserve the current product gates and the merged runtime workflow's audit task, and implement the explicitly authorized CI work under the actual optional policy without changing that policy or fabricating native approval.
 
 ## Out of scope
 
@@ -25,7 +25,7 @@ Product/runtime changes; Claude's checkout or branch; approvals/reviews/archives
 
 ## Risks
 
-SpecSync audit skips archived history, so audit alone cannot satisfy Archive. Native status can return exit zero with unhealthy summary values, so parse and require its integrity result. Bootstrap has SDD disabled, so closure cannot depend only on `report.enabled`. A shallow checkout breaks native history; require full base/history. An omitted scope can disappear from the final diff, so committed snapshot inventory is mandatory. Concurrent PR #2 changes workflow/audit tasks and will need deliberate integration after this isolated CI change.
+SpecSync audit skips archived history, so audit alone cannot satisfy Archive. Native status can return exit zero with unhealthy summary values, so parse and require its integrity result. Bootstrap has SDD disabled, so closure cannot depend only on `report.enabled`. A shallow checkout breaks native history; require full base/history. An omitted scope can disappear from the final diff, so committed snapshot inventory is mandatory. PR #2's workflow and audit tasks are merged and were integrated by the rebase. Stacked pull requests whose base is not main received no CI; the pull_request trigger now has no branch filter, matching the acceptance criterion that every pull request runs.
 
 ## Constraints consulted
 

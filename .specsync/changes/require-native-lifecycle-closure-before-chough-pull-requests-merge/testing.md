@@ -42,7 +42,7 @@ Run the new `fledge run ci-archive-fixtures`, the current Fledge verify lane, an
 
 ## Runtime integration follow-up
 
-After PR #2 interfaces are available for review, add real stage/profile/traceability, full installed skill bundle, cold-resume, and complete-current-evidence fixtures against that source. Preserve existing current CLI tests for initialization, bounded context, traceability, stale evidence, and unavailable/invalid native JSON. Do not manufacture green checks for planned behavior or infer semantic human acceptance from fixture text.
+PR #2's interfaces are on main. Stage-gate, bounded-process and stop-timing regressions are being added by the bug-fix changes for BUG-0006 to BUG-0011. Still open as follow-up: real stage/profile/traceability, full installed skill bundle, cold-resume, and complete-current-evidence fixtures against that source. Preserve existing current CLI tests for initialization, bounded context, traceability, stale evidence, and unavailable/invalid native JSON. Do not manufacture green checks for planned behavior or infer semantic human acceptance from fixture text.
 
 ## Observed local results — 2026-10-31
 
@@ -56,3 +56,13 @@ After PR #2 interfaces are available for review, add real stage/profile/traceabi
 Local tool selection used an invocation-only PATH shim for Fledge1.7.2/HI0.8.0/SpecSync6.1.1. The initial ordinary local PATH resolved an older SpecSync6.1.0; the explicit version guard refused it before running fixtures. Global tooling was not changed.
 
 - Focused positive fixture passed after the full suite: valid archive remains authenticated after a later committed change to its originally affected README plus unrelated content; advanced-main/older-branch history also passes. The gate delegates historical integrity to native status and performs no behavioral re-verification of archived work.
+
+## Observed after the rebase — 2026-10-31
+
+Historical results above were taken at base `57aa169`. At rebased tip `7929160` (base
+main `2d782c4`): hosted Product on Ubuntu, macOS and Windows, `CI gate fixtures`
+(12 tests OK) and CodeQL passed; `Fledge / HI / SpecSync` and `SpecSync Archive` failed
+at `specsync change audit` because this draft does not yet cover its meaningful paths
+under main's enabled policy (expected until approval). Locally: 39 tests, fmt, Clippy,
+HI, strict SpecSync, cases, exercise and build passed; the 12 fixtures passed; archive
+inspection of a fresh clone of main `f19823d` passed with 2 authenticated archives.

@@ -68,18 +68,18 @@ requiring these exact contexts:
 A CI job and an enforced merge rule are separate. On 2026-10-31 the compact main
 branch response reported `protected: true` with empty required-check context and
 check arrays. The repository rulesets response was `[]`. The detailed protection
-endpoint returned HTTP 403, `Resource not accessible by integration`, because the
-connected GitHub App cannot read administration-protected settings. These reads
-do not establish the complete effective protection configuration or prove Archive
-is enforced. This PR changes no branch rules. A separately authorized repository
+endpoint first returned HTTP 403 to the connected GitHub App. A later read with the
+owner's credentials showed required status checks enabled with no contexts or checks
+listed, admins included, linear history required and force pushes disallowed; the
+effective rules endpoint (including organization rulesets) returned `[]`. No check is
+required to merge today, so Archive is not yet enforced. This PR changes no branch rules. A separately authorized repository
 administrator must verify the effective configuration and activate required
 checks after introduction.
 
 ## Runtime integration follow-up
 
-The separate stage-workflow PR is not part of this branch. Once its actual
-interfaces land, extend current-source CI with adversarial stage-gate tests,
-nonempty case/profile/traceability checks, complete installed skill bundle checks,
-cold-resume fixtures, current evidence checks, stop-during-interval regressions,
-and bounded-process/descendant-output tests. Preserve its native audit task when
-reconciling workflow changes. Those planned checks are not reported as green here.
+The stage-workflow PR (#2) is merged and its native audit task is preserved here.
+Stage-gate, stop-during-interval and bounded-process/descendant-output regressions
+are added by the bug-fix changes for BUG-0006 to BUG-0011. Still open: nonempty
+case/profile/traceability checks, complete installed skill bundle checks, cold-resume
+fixtures and current evidence checks. Those planned checks are not reported as green here.

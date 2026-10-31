@@ -5,7 +5,7 @@ artifact: research
 
 # Research
 
-Inspected 2026-10-31 against Chough main `57aa169588522ef44438236b9f03f409dc1254c2` and published SpecSync v6.1.1 commit `e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa`. Installed executable reports `specsync 6.1.1`; the published release is neither draft nor prerelease and includes Linux/macOS archives and SHA-256 assets. The action verifies downloaded checksums. No upstream source was changed.
+First inspected 2026-10-31 against Chough main `57aa169588522ef44438236b9f03f409dc1254c2`, then re-inspected after the rebase against main `f19823d`, and published SpecSync v6.1.1 commit `e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa`. Installed executable reports `specsync 6.1.1`; the published release is neither draft nor prerelease and includes Linux/macOS archives and SHA-256 assets. The action verifies downloaded checksums. No upstream source was changed.
 
 ## Verified native semantics
 
@@ -26,5 +26,7 @@ Three `Product / <os>` jobs run `cargo test --locked` and release builds. `Fledg
 ## Protection findings and limits
 
 Read-only `GET /repos/CorvidLabs/chough/branches/main` reported `protected: true` but `required_status_checks.contexts: []` and `checks: []`. `GET /repos/CorvidLabs/chough/rulesets` returned `[]`. Detailed `GET /repos/CorvidLabs/chough/branches/main/protection` returned HTTP 403, `Resource not accessible by integration`; the connected GitHub App lacks the administration access needed for that endpoint. Do not infer all enforcement settings from the compact branch response, and do not claim these proposed jobs currently block merges. No rules were changed.
+
+Re-read later on 2026-10-31 with the owner's credentials: detailed protection was readable and reported required status checks enabled with `strict: false`, `contexts: []` and `checks: []`; `enforce_admins` true; required linear history true; force pushes disallowed; 0 required approving reviews. `GET /repos/CorvidLabs/chough/rules/branches/main` (effective rules, including organization rulesets) returned `[]`. No check is therefore required to merge today.
 
 Once introduced on main, recommend requiring `Product / ubuntu-latest`, `Product / macos-latest`, `Product / windows-latest`, `Fledge / HI / SpecSync`, `CI gate fixtures`, and `SpecSync Archive`. A separately authorized administrator must verify and apply effective rules with the active PR impact understood.
