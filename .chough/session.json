@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -67,7 +67,8 @@
     "PR #2 merged to main as 4008346 and PR #4 merged to main as 2d782c4 by the human (0xLeif); both observed as MERGED on GitHub 2026-10-31; main CI run 41235906499 succeeded at 2d782c4. A merge is not a release.",
     "Gate fix 8075748: destination prerequisites for every stage move, approval validity, archive integrity and SpecSync-consistent policy; 44 tests pass; TC-cli-0040 to TC-cli-0044 passed; BUG-0006 to BUG-0008 verified by reruns",
     "PR #7 change archived at ef9de16 after review; Chough reached done through gate native:archived",
-    "Retention, packaging and docs implemented in three reviewed streams and merged into PR #9; BUG-0012 reproduced at d761ff2 and verified at 30b74f8; BUG-0013 found, fixed at 3b0b2f7 and verified; TC-cli-0050 to TC-cli-0066 passed"
+    "Retention, packaging and docs implemented in three reviewed streams and merged into PR #9; BUG-0012 reproduced at d761ff2 and verified at 30b74f8; BUG-0013 found, fixed at 3b0b2f7 and verified; TC-cli-0050 to TC-cli-0066 passed",
+    "PR #9 change archived after 0xLeif's review; Chough reached done through native:archived"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -86,7 +87,9 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Merge of PR #9 (the human's action); nothing is released"
+  ],
   "run_consents": [],
-  "next_action": "Run the retention exercise, fresh-context resumption and install check; re-verify natively; push; then the human reviews PR #9's implementation"
+  "next_action": "After the human merges PR #9: capture LIFE-10 and draft the timing change; librarian vault idea follows"
 }
