@@ -59,7 +59,8 @@
     "Increment 8: feature-and-bug exercise (passes in Fledge), visual design exercise with rendered review, intent worked example, and a genuine Codex cold start that honored scope, preferences and gates.",
     "Native closeout: scoped review recorded at de9fe45, change archived on the same PR at f860c8a.",
     "Bug-fix implementation 6118511: full native JSON parse within 4 MiB and checkpoint clears before additions; 39 tests pass; TC-cli-0038 and TC-cli-0039 passed; real archived-state rerun passed; BUG-0004 and BUG-0005 verified.",
-    "Bug-fix change archived on PR #4 at 1c05ab8; BUG-0004 and BUG-0005 verified."
+    "Bug-fix change archived on PR #4 at 1c05ab8; BUG-0004 and BUG-0005 verified.",
+    "PR #2 merged to main as 4008346 and PR #4 merged to main as 2d782c4 by the human (0xLeif); both observed as MERGED on GitHub 2026-10-31; main CI run 41235906499 succeeded at 2d782c4. A merge is not a release."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -78,10 +79,7 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Merge of PR #2 through the normal repository process (the human's action)",
-    "Retarget PR #4 to main after PR #2 merges, observe its hosted CI, then merge PR #4 (merge is the human's action)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "After the human merges PR #2: retarget PR #4 to main, observe hosted CI at its tip, report results; then start new work with a fresh objective. Open backlog: BUG-0001 to BUG-0003."
+  "next_action": "Objective complete; release only on request. Remaining: rebase draft PR #3 (native archive CI gate) onto main and observe its CI; then start new work with a fresh objective. Open backlog: BUG-0001 to BUG-0003."
 }
