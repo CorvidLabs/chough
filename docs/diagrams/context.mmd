@@ -1,0 +1,9 @@
+flowchart LR
+    session["Session objective, decisions, questions, next action"] --> packet["Bounded deterministic packet"]
+    instructions["Applicable AGENTS.md instructions"] --> packet
+    hi["Scoped native hi export"] --> packet
+    modules["Selected contracts and companions"] --> packet
+    lessons["Module .3md lesson source when present"] --> packet
+    packet --> agent["Current agent resumes"]
+    missing["Missing, unreadable, oversized sources"] --> limits["Explicit limitations"]
+    limits --> packet

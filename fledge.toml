@@ -1,0 +1,29 @@
+# fledge.toml — project task definitions
+# Docs: https://github.com/CorvidLabs/fledge#task-runner
+
+[tasks]
+build = "cargo build"
+test = "cargo test"
+lint = "cargo clippy --all-targets -- -D warnings"
+fmt = "cargo fmt --check"
+check = "cargo check --all-targets"
+intent = "hi check --json"
+spec = "specsync check --strict --require-coverage 100 --force"
+[lanes.ci]
+description = "Run full CI pipeline"
+steps = ["fmt", "lint", "test", "intent", "spec", "build"]
+
+[lanes.check]
+description = "Quick quality check"
+steps = [
+  { parallel = ["fmt", "lint"] },
+  "test"
+]
+
+[lanes.pre-push]
+description = "Fast local gate before pushing"
+steps = ["fmt", "check", "intent", "spec"]
+
+[lanes.verify]
+description = "First-slice product and structural verification"
+steps = ["fmt", "lint", "test", "intent", "spec", "build"]

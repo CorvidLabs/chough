@@ -1,0 +1,12 @@
+flowchart TB
+    intent["Human intent + stable HI criteria"] --> frd["Derived functional requirements"]
+    frd --> scope["Native SpecSync draft and real scope decision"]
+    scope --> build["Implement and run product checks through Fledge"]
+    build --> verify["Native scoped check and product evidence"]
+    verify --> review["Push product tip, CI, real implementation review"]
+    review --> archive["Native finalize or ship on the same PR"]
+    archive --> merge["Commit and push archive, CI, GitHub merge"]
+    merge --> delivery["Verify the actual delivery target"]
+    delivery --> lessons["Scoped native lessons + focused next session"]
+    build --> bug["Reproduce, classify, deduplicate, report bug"]
+    bug --> scope

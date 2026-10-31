@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "objective": "Review the first working Chough slice and choose the next native change scope",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "decisions": [
+    "Current-agent-first v1 is a human decision; Rune coordination is deferred.",
+    "Bootstrap uses native structural gates and real product checks without claiming human scope/review/archive approval."
+  ],
+  "open_questions": [],
+  "next_action": "Review docs/NEXT_CHANGE.md and choose the next scoped outcome before recording native human scope approval."
+}

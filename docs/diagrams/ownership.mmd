@@ -1,0 +1,12 @@
+flowchart TB
+    human["Human intent and decisions"] --> agent["Current agent + Chough skill"]
+    agent --> hi["HI: durable criterion IDs"]
+    agent --> spec["SpecSync: requirements, contracts, changes, lessons"]
+    agent --> fledge["Fledge: project tasks and lanes"]
+    agent --> helper["Chough helper: focused session and observations"]
+    hi --> context["Focused context packet"]
+    spec --> context
+    helper --> context
+    context --> agent
+    fledge --> results["Actual test and delivery results"]
+    results --> helper

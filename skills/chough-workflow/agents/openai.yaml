@@ -1,0 +1,4 @@
+interface:
+  display_name: "Chough Workflow"
+  short_description: "Intent-to-delivery work with focused context"
+  default_prompt: "Use $chough-workflow to carry this request through intent, native change gates, verification, and a useful handoff."
