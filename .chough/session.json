@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -44,7 +44,8 @@
     "2026-10-31: the human (0xLeif) approved the definition, including the TOML test profile, APS deferral, explicit case execution, capture-only monitoring default and require_change policy; recorded with specsync change approve (actor label, not authenticated identity).",
     "Crate-internal modules expose entry points with pub(super): the binary has no library target, and the contract describes commands, not Rust symbols.",
     "Claude Code discovery verified for .claude/skills and not .agents/skills; Codex followed the AGENTS.md router. Other hosts are mapped but not exercised.",
-    "2026-10-31: the human (0xLeif) accepted the implementation on PR #2; recorded with specsync change review (reviewer label) and finalized with specsync change ship (archive f860c8a)."
+    "2026-10-31: the human (0xLeif) accepted the implementation on PR #2; recorded with specsync change review (reviewer label) and finalized with specsync change ship (archive f860c8a).",
+    "2026-10-31: the human (0xLeif) approved the scope of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first on PR #4; recorded with specsync change approve (actor label)."
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -70,8 +71,7 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Merge of PR #2 through the normal repository process (the human's action)",
-    "Scope approval of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first"
+    "Merge of PR #2 through the normal repository process (the human's action)"
   ],
   "run_consents": [],
   "next_action": "Wait for the human scope decision on parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first; do not approve it or implement before then. Then follow its tasks.md."

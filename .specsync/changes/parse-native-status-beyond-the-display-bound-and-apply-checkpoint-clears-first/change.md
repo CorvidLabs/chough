@@ -1,6 +1,6 @@
 ---
 id: parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first
-state: draft
+state: approved
 type: bug_fix
 base_commit: 1a108d9844e5bc02e5439cb6b3688803d6435a53
 ---

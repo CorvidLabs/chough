@@ -7,10 +7,10 @@
   "title": "Parse native status beyond the display bound and apply checkpoint clears first",
   "description": "Parse native status beyond the display bound and apply checkpoint clears first",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "1a108d9844e5bc02e5439cb6b3688803d6435a53",
   "created_at": 1793474997,
-  "updated_at": 1793475100,
+  "updated_at": 1793475284,
   "affected_specs": [
     "cli"
   ],
