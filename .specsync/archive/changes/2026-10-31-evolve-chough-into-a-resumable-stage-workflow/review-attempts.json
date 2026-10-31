@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "evolve-chough-into-a-resumable-stage-workflow",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "de9fe45c9ccebfe688829c16a775a099d135892e",
+      "contract_digest": "d68ef7248c0f3e30102fe0717ff983055626da048a6cff011a1c474f6c3f4e0c",
+      "execution_digest": "84f61fd63d6454fe024cc8f664a346f92bc1d7474dccf845a4dd606a3369afe4",
+      "workspace_digest": "bc65fbf3ee3fa91900778725bca029e7b796dfc48d04e4bc37428ad9b5c25477",
+      "timestamp": 1793474448
+    }
+  ]
+}
