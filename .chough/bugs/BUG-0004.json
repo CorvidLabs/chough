@@ -22,17 +22,28 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0004-repro-1"
+    "bug-0004-repro-1",
+    "bug-0004-fixed-1",
+    "tc-cli-0038-1793475511"
   ],
   "impact": "Fails safe (refuses rather than passes), but no real change can leave accept through Chough; status and next also show the archived change's output as invalid. Needs a new native change: parse native JSON within a larger bound separately from the 16 KiB display bound, and add a large-output test.",
   "classification": "product-defect",
   "scope": "out-of-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Native closeout of evolve-chough-into-a-resumable-stage-workflow",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793475514,
+      "text": "status: open -> verified. Fixed in 6118511 (parse native JSON in full up to 4 MiB); regression test and real archived-state rerun pass.",
+      "observations": [
+        "bug-0004-fixed-1",
+        "tc-cli-0038-1793475511"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793474615,
-  "updated_at_unix_seconds": 1793474615
+  "updated_at_unix_seconds": 1793475514
 }

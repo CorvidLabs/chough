@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,7 +30,9 @@
     "cases": [
       "TC-cli-0101",
       "TC-cli-0102",
-      "TC-cli-0103"
+      "TC-cli-0103",
+      "TC-cli-0038",
+      "TC-cli-0039"
     ],
     "design": [],
     "files": []
@@ -54,13 +56,17 @@
     "Increments 1-6: records, checkpoint v2, stages, cases, evidence v2, bugs, preferences, validation, librarian, skill hosts and bundle (commits f6f1096, 115f7be); 37 integration tests pass locally on macOS arm64.",
     "Increment 7: full-lifecycle policy, CI audit, Chough's own migrated checkpoint and 40 case definitions, docs and four inspected diagrams.",
     "Increment 8: feature-and-bug exercise (passes in Fledge), visual design exercise with rendered review, intent worked example, and a genuine Codex cold start that honored scope, preferences and gates.",
-    "Native closeout: scoped review recorded at de9fe45, change archived on the same PR at f860c8a."
+    "Native closeout: scoped review recorded at de9fe45, change archived on the same PR at f860c8a.",
+    "Bug-fix implementation 6118511: full native JSON parse within 4 MiB and checkpoint clears before additions; 39 tests pass; TC-cli-0038 and TC-cli-0039 passed; real archived-state rerun passed; BUG-0004 and BUG-0005 verified."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
     "tc-cli-0102-1793473383",
     "tc-cli-0103-1793473384",
-    "bug-0004-repro-1"
+    "bug-0004-repro-1",
+    "tc-cli-0038-1793475511",
+    "tc-cli-0039-1793475513",
+    "bug-0004-fixed-1"
   ],
   "bugs": [
     "BUG-0001",
@@ -71,8 +77,9 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Merge of PR #2 through the normal repository process (the human's action)"
+    "Merge of PR #2 through the normal repository process (the human's action)",
+    "Implementation review of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first on PR #4 (then native review and same-PR ship)"
   ],
   "run_consents": [],
-  "next_action": "Wait for the human scope decision on parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first; do not approve it or implement before then. Then follow its tasks.md."
+  "next_action": "Wait for the human implementation review of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first on PR #4; PR #4 is stacked on #2 and needs retargeting to main after #2 merges."
 }

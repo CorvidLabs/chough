@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "bug-0004-fixed-1",
+  "criteria": [
+    "FLOW-10",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Fixed binary from 6118511 on a disposable worktree of 1a108d9: chough stage advance left accept for done with gate native:archived for the real archived change (100133-byte status); status reported observed with native_summary.state archived.",
+  "artifacts": [
+    ".chough/artifacts/bug-0004-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0004-fixed-reproduction.log": "de2e1e3801cb0e7b8e992b6e158ec6160bb986fbafc6bb5e0716813dfe150d7d"
+  },
+  "observed_at_unix_seconds": 1793475514,
+  "snapshot": {
+    "revision": "61185115f5e0700eb9f7cc6787de951e6beea9a6",
+    "dirty": false,
+    "fingerprint": "bbdfc275b79dcfb456bfd97c07cdb934142cae9f2c22cd1455debf40662e6df5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0038",
+      "digest": "cfb3b404ffbddc4b14a889f568d6ac41d3577d18ee79dcf87134c1740bfc926c"
+    }
+  ],
+  "method": "manual"
+}
