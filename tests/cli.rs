@@ -657,7 +657,7 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
 
     // A stderr flood is drained beside stdout and shown within the display bound.
     stand_in(
-        "yes e | head -c 5000000 >&2\nprintf '{\"summary\":{\"state\":\"approved\",\"next_action\":\"implement\"}}\\n'",
+        "yes e | head -c 5000000 >&2\nprintf '{\"summary\":{\"state\":\"approved\",\"next_action\":\"implement\",\"approval_valid\":true}}\\n'",
     );
     let (report, _) = next(None);
     assert_eq!(report["native_specsync"]["state"], "observed");
