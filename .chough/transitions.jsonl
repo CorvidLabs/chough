@@ -6,3 +6,4 @@
 {"schema_version":1,"at_unix_seconds":1793475285,"kind":"advance","from":"plan","to":"build","reason":"Scope approved natively","gate":"native:approved","revision":"0adf38d0b358906a0a5698f3456f05631995332e","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793475529,"kind":"advance","from":"build","to":"test","reason":"Implementation complete","gate":null,"revision":"61185115f5e0700eb9f7cc6787de951e6beea9a6","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793475529,"kind":"advance","from":"test","to":"accept","reason":"Focused cases passed; no blocking bugs","gate":null,"revision":"61185115f5e0700eb9f7cc6787de951e6beea9a6","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793475987,"kind":"advance","from":"accept","to":"done","reason":"Native change archived; human review recorded","gate":"native:archived","revision":"1c05ab81b5d63719a29801b3798a3f2183b169d2","refresh":[]}
