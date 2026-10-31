@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Fix BUG-0004 (native status parsed after a 16 KiB display cut) and BUG-0005 (clear flags drop new checkpoint entries) through a new native bug-fix change",
+  "objective": "Fix BUG-0006 to BUG-0011 through two native bug-fix changes: fail-closed stage gates (PR #7) and bounded external commands (PR #8)",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first",
+  "native_change": "refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -48,7 +48,8 @@
     "Claude Code discovery verified for .claude/skills and not .agents/skills; Codex followed the AGENTS.md router. Other hosts are mapped but not exercised.",
     "2026-10-31: the human (0xLeif) accepted the implementation on PR #2; recorded with specsync change review (reviewer label) and finalized with specsync change ship (archive f860c8a).",
     "2026-10-31: the human (0xLeif) approved the scope of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first on PR #4; recorded with specsync change approve (actor label).",
-    "2026-10-31: the human (0xLeif) accepted the bug-fix implementation on PR #4; recorded with specsync change review and finalized with specsync change ship (archive 1c05ab8)."
+    "2026-10-31: the human (0xLeif) accepted the bug-fix implementation on PR #4; recorded with specsync change review and finalized with specsync change ship (archive 1c05ab8).",
+    "2026-10-31: findings A-F reproduced on main f19823d and recorded as BUG-0006 to BUG-0011; split into a gate change and an execution change because they touch different code and can merge independently"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -79,7 +80,11 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold (PR #7)",
+    "Scope approval of bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting (PR #8)",
+    "Scope approval of require-native-lifecycle-closure-before-chough-pull-requests-merge (PR #3)"
+  ],
   "run_consents": [],
-  "next_action": "Objective complete; release only on request. Remaining: rebase draft PR #3 (native archive CI gate) onto main and observe its CI; then start new work with a fresh objective. Open backlog: BUG-0001 to BUG-0003."
+  "next_action": "After the human approves the scopes: implement PR #7 and PR #8 under their native changes, verify, and request implementation review. The checkpoint holds one native change; PR #8's change is named in awaiting_human."
 }
