@@ -7,10 +7,10 @@
   "title": "Refuse stage moves whose native approval validity, archive integrity or SDD policy does not hold",
   "description": "Refuse stage moves whose native approval validity, archive integrity or SDD policy does not hold",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "ef6695fe9a753112dc77b156d11d9441ea81e529",
   "created_at": 1793479638,
-  "updated_at": 1793479664,
+  "updated_at": 1793480900,
   "affected_specs": [
     "cli"
   ],
