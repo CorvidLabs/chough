@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first",
+  "implementation_commit": "9992363a02c24a00852e0c8764a98a83f9a3b0dc",
+  "implementation_tree": "7e9f01fde3e8eff9138de3d83fd90f9e7000ec4d",
+  "contract_digest": "cee66b5df4c61230935f4b31bd45ee2ac0be1c8a809be8a2270ae310baf1bb3c",
+  "workspace_digest": "8dfdf42c939e92ba3be5a953bf477c6ccd9a11233fb622436588dcb6f5e290e7",
+  "closing_digest": "6c4c518e2b978cea8789895a9b3d848c617cf9552753c74b039cb204ae853274",
+  "review_digest": "8935102d0e2de7156636287742e681390deeb51e5166346182b75cce29e41cd7",
+  "finalization_digest": "d02a9000b7066a43f88175999ba9a33a767f0147cf4d90608cfecbdb79a3075d",
+  "timestamp": 1793475857
+}
