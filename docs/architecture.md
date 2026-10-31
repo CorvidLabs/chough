@@ -40,14 +40,42 @@ flowchart TB
 | `.chough/preferences.json` | Standing project preferences, each with its source |
 | `.chough/cases/*.cases.toml` | Test definitions (`chough-testing/1`) |
 | `.chough/evidence/*.json`, `.chough/artifacts/` | Observations and captured output |
+| `.chough/pruned.jsonl` | Append-only ledger of observation sets removed by retention |
 | `.chough/bugs/*.json` | Local bug backlog |
 | `.chough/validation/` | Limits and progress of optional repeated runs |
 | `library/` (optional) | Snapshots, briefs and a generated index; never a second current source |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
 
-`.chough/` is plain project data. Commit the checkpoint, cases and bugs when the team
-shares them; decide for observations and artifacts by collaboration and
-confidentiality needs. The helper uploads nothing.
+`.chough/` is plain project data, and the helper uploads nothing. By kind:
+
+| Kind | Paths | Normally |
+|---|---|---|
+| Current working records: what an agent resumes from | `.chough/session.json`, `preferences.json`, `cases/`, `bugs/`, `validation/`; `.specsync/changes/<id>/` | Committed when the team shares the work |
+| Historical evidence: append-only history and scoped observations, current only while their inputs match | `.chough/transitions.jsonl`, `evidence/`, `artifacts/`, `pruned.jsonl` | Committed or kept local by collaboration and confidentiality needs; routine runs are prunable (below) |
+| Chough's own self-test records: its backlog and run history for building Chough | this repository's root `.chough/` | Committed here; never packaged or installed by `chough init` |
+| Examples: rehearsal samples and their case definitions | `examples/<sample>/` | Committed; exercises run in disposable copies whose output is not kept |
+| Frozen native archives: SpecSync's record of a closed change, authenticated from Git history | `.specsync/archive/changes/<date>-<id>/` | Committed once; never edited or pruned |
+| Canonical skill: the bundle the binary embeds; edit it here | `skills/chough-workflow/` | Committed and packaged |
+| Installed host copies written by `init` and `skill update` (byte-identical to the canonical bundle in this repository) | `<host>/skills/chough-workflow/`, here `.agents/` and `.claude/` | Committed in the project that uses them |
+| Ignored build output and local caches | `/target`, `.specsync/hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
+| CI output | GitHub Actions run logs | Kept by the hosted run; no CI artifact is uploaded |
+
+**Retention.** An observation set is one evidence record plus the artifacts no other
+record references. `chough evidence prune` previews by default and changes nothing:
+it lists eligible sets with case, environment, age, outcome and bytes, protected sets
+with their reason, and warns above 50 MiB. A set is protected when the checkpoint,
+any bug, an active native change or the most recent archived one lists it; when it
+is not a routine automated run; when it is among the newest 3 automated runs or the
+newest failure for its case and environment; when it is a validation run's failure
+or first or last pass; or when it is younger than 14 days. If native manifests
+cannot be read, everything they could protect stays protected. `--apply` needs a run
+consent `retention` or the standing preference `retention auto` (default `off`);
+with `auto`, `cases run` and `validate run` apply the same rules after recording.
+Each removed set appends a line to `.chough/pruned.jsonl`. Only working-tree files are
+removed; Git history, native archives and ignore rules are untouched. A referenced
+observation is labelled `current`, `historical` (present but stale), `pruned` (absent
+and in the ledger) or `unavailable` (absent and not in it); pruned and unavailable
+ones never count as current or passed.
 
 ## Checkpoint authority
 
