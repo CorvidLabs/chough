@@ -855,6 +855,7 @@ adapter = "cargo-test"
 test_target = "stages"
 test = "real_specsync_approval_reported_invalid_refuses_build"
 
+[[case]]
 id = "TC-cli-0045"
 title = "A case deadline stops descendants that hold the pipes"
 status = "active"
