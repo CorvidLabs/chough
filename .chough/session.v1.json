@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "objective": "Obtain the human scope decision on native change evolve-chough-into-a-resumable-stage-workflow, then implement it in reviewable increments",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "decisions": [
+    "Current-agent-first v1 is a human decision; Rune coordination is deferred.",
+    "Bootstrap uses native structural gates and real product checks without claiming human scope/review/archive approval.",
+    "2026-10-31: the human redirected work from docs/NEXT_CHANGE.md (never approved; superseded) to the resumable stage workflow brief.",
+    "2026-10-31: SpecSync workflow-v2 adopted on feat/resumable-stage-workflow (c582a10); lifecycle writers and CI use SpecSync 6.1.1; Fledge pins unchanged.",
+    "2026-10-31: agent recommendations inside the draft definition, pending human approval: TOML chough-testing/1 test profile instead of 3md; APS 1.1.0 qualified and deferred; session.json stays the only checkpoint."
+  ],
+  "open_questions": [
+    "Human scope decision on .specsync/changes/evolve-chough-into-a-resumable-stage-workflow (definition, deltas/cli.md, proposed FLOW-1 to FLOW-13)."
+  ],
+  "next_action": "Wait for the human scope decision. Do not run specsync change approve or capture FLOW criteria until a human approves; then follow plan.md increment 1. Use hi 0.8.0, fledge 1.7.2 and specsync 6.1.1 to match CI."
+}

@@ -30,7 +30,11 @@ jobs:
     name: Fledge / HI / SpecSync
     runs-on: ubuntu-latest
     steps:
+      # `specsync change audit` compares verification commits with HEAD's ancestry;
+      # a shallow clone would report every change as orphaned.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
