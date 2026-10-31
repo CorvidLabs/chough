@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "490190506956d7fa801d999a99ad6f21be2410fb",
+      "contract_digest": "d358e8b1b252d3b69c2e99571e6d98a48052503cd4f194606bf2502ee4af2221",
+      "execution_digest": "15cffa7d4e7bca3e2feb07f67fcf2fdaf4be832fa5a3eb8954bbf2ca0415df83",
+      "workspace_digest": "deca31918f6d6d8d8aa82a788036bea0b17ed75b16830a34c4202cc12b664c49",
+      "timestamp": 1793485937
+    }
+  ]
+}
