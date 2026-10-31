@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "id": "bug-0012-repro-1",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-018"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "At d761ff2 the eight REQ-cli-018 retention tests failed (0 passed, 8 failed): evidence prune, the retention consent and the retention preference did not exist",
+  "artifacts": [
+    ".chough/artifacts/bug-0012-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0012-reproduction.log": "53ada778843ad555be512c7df5bbc7e0b61a25736d310fe51d349a3306990be7"
+  },
+  "observed_at_unix_seconds": 1793487996,
+  "snapshot": {
+    "revision": "d4ca8fdf153bc022a7a7698b6027f14ef75cb810",
+    "dirty": false,
+    "fingerprint": "150b03060ef4f31742023a494709dcc2cc108713172efdef3deb0f0972419e05"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Run in a detached worktree at d761ff2 (tests only); recorded from the release-candidate branch"
+  ]
+}

@@ -1,8 +1,8 @@
 //! The single canonical checkpoint: `.chough/session.json`.
 
 use crate::records::{
-    RECORD_LIMIT, ensure_text, local_path, print_json, read_record, valid_name, write_new_bytes,
-    write_replace,
+    CHANGE_ID_LIMIT, RECORD_LIMIT, ensure_text, local_path, print_json, read_record,
+    valid_change_id, valid_name, write_new_bytes, write_replace,
 };
 use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
@@ -263,7 +263,10 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
         "only a side stage can have callers"
     );
     if let Some(change) = &session.native_change {
-        ensure!(valid_name(change), "invalid native change ID: {change}");
+        ensure!(
+            valid_change_id(change),
+            "invalid native change ID: {change}"
+        );
     }
     ensure_ids("criterion", &session.references.criteria)?;
     ensure_ids("requirement", &session.references.requirements)?;
@@ -444,7 +447,10 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         changed = true;
     }
     if let Some(change) = args.native_change {
-        ensure!(valid_name(&change), "invalid native change ID");
+        ensure!(
+            valid_change_id(&change),
+            "invalid native change ID: up to {CHANGE_ID_LIMIT} bytes of letters, digits, - and _"
+        );
         session.native_change = Some(change);
         changed = true;
     }

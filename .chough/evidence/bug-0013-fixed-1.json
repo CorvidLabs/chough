@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "bug-0013-fixed-1",
+  "criteria": [
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-007",
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "chough checkpoint --native-change records the 117-byte release-candidate ID after the fix",
+  "artifacts": [
+    ".chough/artifacts/bug-0013-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0013-fixed-reproduction.log": "4805148d1bf8208b578c752ac13089f6ec65d26a336a3e629f83544bb6e8fab9"
+  },
+  "observed_at_unix_seconds": 1793488220,
+  "snapshot": {
+    "revision": "3b0b2f710131f6a444660953d44e378cb9a87713",
+    "dirty": false,
+    "fingerprint": "49f0e5a30553b06fd2caa29b573e47b3bc1429ee0e1de222826965860c91e3f2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Rerun at 3b0b2f7; the regression test is TC-cli-0066"
+  ]
+}

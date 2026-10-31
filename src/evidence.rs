@@ -1,12 +1,13 @@
 //! Observations bound to Git content, environment and, for cases, definition digests.
 
-use crate::cases;
-use crate::checkpoint::read_session;
+use crate::cases::{self, ARTIFACTS_DIR};
+use crate::checkpoint::{Session, read_session};
 use crate::context::hi_export;
 use crate::records::{
-    bounded, file_digest, is_digest, local_path, now, print_json, read_record, record_names,
-    valid_name, write_new,
+    append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
+    print_json, read_record, record_names, valid_name, write_new,
 };
+use crate::{bugs, prefs, validate};
 use anyhow::{Context, Result, bail, ensure};
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
@@ -15,7 +16,7 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, File};
 use std::io::Read;
-use std::path::Path;
+use std::path::{Component, Path};
 use std::process::{Command, Output};
 
 pub(super) const EVIDENCE_DIR: &str = ".chough/evidence";
@@ -358,6 +359,12 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         !args.environment.trim().is_empty() && !args.summary.trim().is_empty(),
         "environment and summary must not be blank"
     );
+    for artifact in &args.artifacts {
+        ensure!(
+            canonical_path(artifact).as_deref() == Some(artifact.as_str()),
+            "artifact path must be spelled canonically (relative, `/`-separated, no empty, `.` or `..` parts, no trailing `/`): {artifact}"
+        );
+    }
     validate_criteria(root, &args.criteria)?;
     validate_requirements(root, &args.contracts, &args.requirements)?;
     let mut case_refs = vec![];
@@ -515,7 +522,746 @@ pub(super) fn observations(
     let mut values = vec![];
     for evidence in load_all(root)? {
         let state = freshness(root, &evidence, current, environment)?;
-        values.push(json!({"record": evidence, "freshness": state}));
+        values.push(
+            json!({"record": evidence, "freshness": state, "label": label_for(state, environment)}),
+        );
     }
     Ok(values)
+}
+
+// ---------------------------------------------------------------------------
+// Observation labels and reference-aware retention (REQ-cli-018).
+
+/// Append-only record of every pruned observation set.
+pub(super) const LEDGER: &str = ".chough/pruned.jsonl";
+const POLICY: &str = "chough-retention/1";
+const KEEP_NEWEST: usize = 3;
+const MIN_AGE_DAYS: u64 = 14;
+const DAY_SECONDS: u64 = 86_400;
+const WARN_BYTES: u64 = 50 * 1_048_576;
+const LEDGER_LIMIT: u64 = 16 * 1_048_576;
+const ELIGIBLE_REASON: &str = "routine automated run older than 14 days outside every protected set (checkpoint, bugs, native manifests, newest 3 and newest failure per case and environment, validation failures and first and last passes)";
+
+/// Current only when present and its bound inputs still match; when no environment was
+/// requested, the record's own environment is accepted.
+fn label_for(freshness: &str, environment: Option<&str>) -> &'static str {
+    match freshness {
+        "current-observation" => "current",
+        "environment-unchecked" if environment.is_none() => "current",
+        _ => "historical",
+    }
+}
+
+/// Whether the observation record exists; a pruned or missing one does not.
+pub(super) fn is_present(root: &Path, id: &str) -> Result<bool> {
+    if !valid_name(id) {
+        return Ok(false);
+    }
+    Ok(local_path(root, &format!("{EVIDENCE_DIR}/{id}.json"))?.exists())
+}
+
+/// Observation IDs listed in the retention ledger.
+fn read_ledger(root: &Path) -> Result<BTreeSet<String>> {
+    let path = local_path(root, LEDGER)?;
+    if !path.exists() {
+        return Ok(BTreeSet::new());
+    }
+    ensure!(path.is_file(), "{LEDGER} must be a file");
+    ensure!(
+        fs::metadata(&path)?.len() <= LEDGER_LIMIT,
+        "{LEDGER} exceeds {LEDGER_LIMIT} bytes"
+    );
+    let mut ids = BTreeSet::new();
+    for line in fs::read_to_string(&path)?.lines() {
+        if line.trim().is_empty() {
+            continue;
+        }
+        let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
+        ids.insert(
+            entry["id"]
+                .as_str()
+                .context("retention ledger line without an id")?
+                .to_string(),
+        );
+    }
+    Ok(ids)
+}
+
+/// Labels observation references current, historical, pruned or unavailable.
+pub(super) struct Labels {
+    snapshot: Result<Snapshot>,
+    pruned: BTreeSet<String>,
+}
+
+impl Labels {
+    pub(super) fn new(root: &Path) -> Self {
+        Self {
+            snapshot: snapshot(root),
+            // An unreadable ledger leaves absent observations unavailable, never current.
+            pruned: read_ledger(root).unwrap_or_default(),
+        }
+    }
+
+    /// `environment` None accepts the record's own environment.
+    pub(super) fn label(
+        &self,
+        root: &Path,
+        id: &str,
+        environment: Option<&str>,
+    ) -> Result<&'static str> {
+        label_reference(root, id, &self.snapshot, environment, &self.pruned)
+    }
+}
+
+fn label_reference(
+    root: &Path,
+    id: &str,
+    current: &Result<Snapshot>,
+    environment: Option<&str>,
+    pruned: &BTreeSet<String>,
+) -> Result<&'static str> {
+    if !is_present(root, id)? {
+        return Ok(if pruned.contains(id) {
+            "pruned"
+        } else {
+            "unavailable"
+        });
+    }
+    let evidence = load(root, id)?;
+    Ok(label_for(
+        freshness(root, &evidence, current, environment)?,
+        environment,
+    ))
+}
+
+/// Files named directly, keyed by [`file_key`], with what names them: bug fixtures of
+/// any status and the checkpoint's design and file references.
+fn file_references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
+    let mut map: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut add = |path: &str, source: String| {
+        let sources = map.entry(file_key(path)).or_default();
+        if !sources.contains(&source) {
+            sources.push(source);
+        }
+    };
+    if let Session::V2(checkpoint) = read_session(root)? {
+        for path in checkpoint
+            .references
+            .design
+            .iter()
+            .chain(&checkpoint.references.files)
+        {
+            add(path, "checkpoint".into());
+        }
+    }
+    for (bug, path) in bugs::fixture_references(root)? {
+        add(&path, bug);
+    }
+    Ok(map)
+}
+
+/// Every referenced observation ID with what references it: the checkpoint, bugs of
+/// any status and stored validation runs.
+fn references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
+    let mut map: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut add = |id: &str, source: String| {
+        let sources = map.entry(id.to_string()).or_default();
+        if !sources.contains(&source) {
+            sources.push(source);
+        }
+    };
+    if let Session::V2(checkpoint) = read_session(root)? {
+        for id in &checkpoint.observations {
+            add(id, "checkpoint".into());
+        }
+    }
+    for (bug, ids) in bugs::observation_references(root)? {
+        for id in &ids {
+            add(id, bug.clone());
+        }
+    }
+    for (run, ids) in validate::run_references(root)? {
+        for id in &ids {
+            add(id, format!("validation {run}"));
+        }
+    }
+    Ok(map)
+}
+
+/// Referenced observations with their labels, for status and next.
+pub(super) fn reference_labels(
+    root: &Path,
+    current: &Result<Snapshot>,
+    environment: Option<&str>,
+) -> Result<Vec<Value>> {
+    let pruned = read_ledger(root).unwrap_or_default();
+    let mut values = vec![];
+    for (id, sources) in references(root)? {
+        let label = label_reference(root, &id, current, environment, &pruned)?;
+        values.push(json!({"id": id, "label": label, "referenced_by": sources}));
+    }
+    Ok(values)
+}
+
+/// Native manifests that protect observation sets, or why they could not be read.
+struct Native {
+    state: &'static str,
+    detail: String,
+    /// (reason, listed paths)
+    manifests: Vec<(String, BTreeSet<String>)>,
+}
+
+impl Native {
+    fn unavailable(detail: String) -> Self {
+        Self {
+            state: "unavailable",
+            detail,
+            manifests: vec![],
+        }
+    }
+}
+
+/// Change directories, rejecting links and names that are not plain change IDs.
+fn change_dirs(root: &Path, directory: &str) -> Result<Vec<String>, String> {
+    let path = local_path(root, directory).map_err(|error| error.to_string())?;
+    if !path.exists() {
+        return Ok(vec![]);
+    }
+    let entries = fs::read_dir(&path).map_err(|error| format!("{directory}: {error}"))?;
+    let mut names = vec![];
+    for entry in entries {
+        let entry = entry.map_err(|error| format!("{directory}: {error}"))?;
+        let kind = entry
+            .file_type()
+            .map_err(|error| format!("{directory}: {error}"))?;
+        let name = entry
+            .file_name()
+            .to_str()
+            .map(str::to_string)
+            .ok_or_else(|| format!("{directory}: non-UTF-8 entry"))?;
+        if kind.is_symlink() {
+            return Err(format!("{directory}/{name} is a symlink"));
+        }
+        if kind.is_dir() {
+            names.push(name);
+        }
+    }
+    names.sort();
+    Ok(names)
+}
+
+fn change_id_ok(id: &str) -> bool {
+    !id.is_empty()
+        && id.len() <= 255
+        && !id.starts_with('-')
+        && id
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+}
+
+/// The paths a change's acceptance manifest lists, read with `specsync change status`.
+fn manifest(root: &Path, id: &str) -> Result<BTreeSet<String>, String> {
+    if !change_id_ok(id) {
+        return Err(format!("unexpected native change ID {id:?}"));
+    }
+    let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
+    let value = response.value.ok_or_else(|| {
+        format!(
+            "{} was {}: {}",
+            response.section.source, response.section.state, response.section.content
+        )
+    })?;
+    let entries = value
+        .get("acceptance_entries")
+        .and_then(Value::as_array)
+        .ok_or_else(|| format!("specsync change status {id} reported no acceptance_entries"))?;
+    let mut paths = BTreeSet::new();
+    for entry in entries {
+        paths.insert(
+            entry
+                .get("path")
+                .and_then(Value::as_str)
+                .ok_or_else(|| format!("an acceptance entry of {id} has no path"))?
+                .to_string(),
+        );
+    }
+    Ok(paths)
+}
+
+/// The most recent archived change: the highest finalization timestamp.
+fn latest_archive(root: &Path) -> Result<Option<String>, String> {
+    let mut latest: Option<(u64, String, String)> = None;
+    for directory in change_dirs(root, ".specsync/archive/changes")? {
+        let name = format!(".specsync/archive/changes/{directory}/finalization.json");
+        let text = local_path(root, &name)
+            .and_then(|path| read_record(&path))
+            .map_err(|error| format!("{name}: {error}"))?;
+        let value: Value =
+            serde_json::from_str(&text).map_err(|error| format!("{name}: {error}"))?;
+        let id = value["change_id"]
+            .as_str()
+            .filter(|id| directory.ends_with(id))
+            .ok_or_else(|| format!("{name} has no change_id matching its directory"))?;
+        let timestamp = value["timestamp"]
+            .as_u64()
+            .ok_or_else(|| format!("{name} has no timestamp"))?;
+        let candidate = (timestamp, directory.clone(), id.to_string());
+        if latest.as_ref().is_none_or(|current| candidate > *current) {
+            latest = Some(candidate);
+        }
+    }
+    Ok(latest.map(|(_, _, id)| id))
+}
+
+fn native_manifests(root: &Path) -> Result<Native> {
+    if !local_path(root, ".specsync/config.toml")?.is_file()
+        && !local_path(root, ".specsync/config.json")?.is_file()
+    {
+        return Ok(Native {
+            state: "not-configured",
+            detail: "No native SpecSync configuration; no native manifest protects a set.".into(),
+            manifests: vec![],
+        });
+    }
+    let read = || -> Result<Vec<(String, BTreeSet<String>)>, String> {
+        let mut manifests = vec![];
+        for id in change_dirs(root, ".specsync/changes")? {
+            let paths = manifest(root, &id)?;
+            manifests.push((format!("native active {id}"), paths));
+        }
+        if let Some(id) = latest_archive(root)? {
+            let paths = manifest(root, &id)?;
+            manifests.push((format!("native archive {id}"), paths));
+        }
+        Ok(manifests)
+    };
+    Ok(match read() {
+        Ok(manifests) => Native {
+            state: "observed",
+            detail: "Active change manifests and the most recent archived manifest were read with `specsync change status <id> --json`.".into(),
+            manifests,
+        },
+        Err(detail) => Native::unavailable(format!(
+            "{detail}. Every set a native manifest could list stays protected."
+        )),
+    })
+}
+
+/// Why a record is not a routine automated run, if it is not.
+fn non_routine(evidence: &Evidence) -> Option<String> {
+    if !matches!(
+        evidence.kind,
+        Kind::ProductTest | Kind::Structural | Kind::DryRun
+    ) {
+        return serde_json::to_value(&evidence.kind)
+            .ok()
+            .and_then(|value| value.as_str().map(str::to_string));
+    }
+    match evidence.method.as_deref() {
+        Some("automated") => None,
+        Some(method) => Some(method.to_string()),
+        None => Some("unspecified-method".into()),
+    }
+}
+
+fn case_ids(evidence: &Evidence) -> Vec<&str> {
+    evidence.cases.iter().map(|case| case.id.as_str()).collect()
+}
+
+/// A relative path rebuilt from its components and joined with `/`, so `a//b`, `a/b/`
+/// and (on Windows) `a\b` share one spelling. None for empty or traversing paths.
+fn canonical_path(path: &str) -> Option<String> {
+    let mut parts = vec![];
+    for component in Path::new(path).components() {
+        match component {
+            Component::Normal(part) => parts.push(part.to_str()?),
+            _ => return None,
+        }
+    }
+    (!parts.is_empty()).then(|| parts.join("/"))
+}
+
+/// The key two spellings of one file share: the canonical spelling with case folded,
+/// since macOS and Windows filesystems usually ignore case. On a case-sensitive
+/// filesystem folding can only join distinct files, which protects more, never less.
+fn file_key(path: &str) -> String {
+    canonical_path(path)
+        .unwrap_or_else(|| path.to_string())
+        .to_lowercase()
+}
+
+fn file_size(path: &Path) -> u64 {
+    fs::symlink_metadata(path)
+        .ok()
+        .filter(|metadata| metadata.is_file())
+        .map_or(0, |metadata| metadata.len())
+}
+
+fn directory_bytes(path: &Path) -> u64 {
+    let Ok(entries) = fs::read_dir(path) else {
+        return 0;
+    };
+    entries
+        .flatten()
+        .map(|entry| match entry.file_type() {
+            Ok(kind) if kind.is_dir() => directory_bytes(&entry.path()),
+            Ok(kind) if kind.is_file() => file_size(&entry.path()),
+            _ => 0,
+        })
+        .sum()
+}
+
+/// One observation set: a record plus the artifacts only it references.
+struct ObservationSet {
+    evidence: Evidence,
+    removable: Vec<String>,
+    bytes: u64,
+    age_days: u64,
+    reasons: Vec<String>,
+}
+
+struct Classification {
+    sets: Vec<ObservationSet>,
+    native: Native,
+    total_bytes: u64,
+}
+
+fn classify(root: &Path, at: u64) -> Result<Classification> {
+    let records = load_all(root)?;
+    let references = references(root)?;
+    let named_files = file_references(root)?;
+    let native = native_manifests(root)?;
+    let manifest_keys: Vec<(&String, BTreeSet<String>)> = native
+        .manifests
+        .iter()
+        .map(|(reason, paths)| (reason, paths.iter().map(|path| file_key(path)).collect()))
+        .collect();
+
+    // Records using each file, counted by one key per file however it is spelled.
+    let mut artifact_users: BTreeMap<String, usize> = BTreeMap::new();
+    for evidence in &records {
+        let unique: BTreeSet<String> = evidence
+            .artifacts
+            .iter()
+            .map(|artifact| file_key(artifact))
+            .collect();
+        for key in unique {
+            *artifact_users.entry(key).or_default() += 1;
+        }
+    }
+
+    // Newest three routine runs and the newest routine failure per case and environment.
+    // A record bound to several cases belongs to the group of each; one with none to "".
+    let mut groups: BTreeMap<(&str, &str), Vec<&Evidence>> = BTreeMap::new();
+    for evidence in records
+        .iter()
+        .filter(|evidence| non_routine(evidence).is_none())
+    {
+        let mut cases = case_ids(evidence);
+        if cases.is_empty() {
+            cases.push("");
+        }
+        cases.sort_unstable();
+        cases.dedup();
+        for case in cases {
+            groups
+                .entry((case, evidence.environment.as_str()))
+                .or_default()
+                .push(evidence);
+        }
+    }
+    let mut newest = BTreeSet::new();
+    let mut last_failure = BTreeSet::new();
+    for group in groups.values_mut() {
+        group.sort_by(|left, right| {
+            (right.observed_at_unix_seconds, &right.id)
+                .cmp(&(left.observed_at_unix_seconds, &left.id))
+        });
+        newest.extend(
+            group
+                .iter()
+                .take(KEEP_NEWEST)
+                .map(|evidence| evidence.id.clone()),
+        );
+        if let Some(failure) = group
+            .iter()
+            .find(|evidence| evidence.outcome == Outcome::Failed)
+        {
+            last_failure.insert(failure.id.clone());
+        }
+    }
+
+    // Failures and the first and last passes of each validation run.
+    let outcomes: BTreeMap<String, Outcome> = records
+        .iter()
+        .map(|evidence| (evidence.id.clone(), evidence.outcome.clone()))
+        .collect();
+    let mut validation: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for (run, ids) in validate::run_references(root)? {
+        let passes: Vec<&String> = ids
+            .iter()
+            .filter(|id| outcomes.get(id.as_str()) == Some(&Outcome::Passed))
+            .collect();
+        let mut protected: BTreeSet<&String> = ids
+            .iter()
+            .filter(|id| outcomes.get(id.as_str()) == Some(&Outcome::Failed))
+            .collect();
+        protected.extend(passes.first());
+        protected.extend(passes.last());
+        for id in protected {
+            validation
+                .entry(id.clone())
+                .or_default()
+                .push(format!("validation {run}"));
+        }
+    }
+
+    let mut sets = vec![];
+    for evidence in records {
+        let record_path = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
+        let mut reasons = vec![];
+        if let Some(sources) = references.get(&evidence.id) {
+            reasons.extend(
+                sources
+                    .iter()
+                    .filter(|source| !source.starts_with("validation "))
+                    .cloned(),
+            );
+        }
+        if native.state == "unavailable" {
+            reasons.push("native unavailable".into());
+        }
+        let mut keys = vec![file_key(&record_path)];
+        keys.extend(evidence.artifacts.iter().map(|artifact| file_key(artifact)));
+        for (reason, paths) in &manifest_keys {
+            if keys.iter().any(|key| paths.contains(key)) {
+                reasons.push((*reason).clone());
+            }
+        }
+        for key in &keys {
+            for source in named_files.get(key).into_iter().flatten() {
+                if !reasons.contains(source) {
+                    reasons.push(source.clone());
+                }
+            }
+        }
+        if let Some(reason) = non_routine(&evidence) {
+            reasons.push(reason);
+        }
+        if newest.contains(&evidence.id) {
+            reasons.push("newest".into());
+        }
+        if last_failure.contains(&evidence.id) {
+            reasons.push("last failure".into());
+        }
+        if let Some(runs) = validation.get(&evidence.id) {
+            reasons.extend(runs.iter().cloned());
+        }
+        let age_seconds = at.saturating_sub(evidence.observed_at_unix_seconds);
+        if age_seconds < MIN_AGE_DAYS * DAY_SECONDS {
+            reasons.push("recent".into());
+        }
+        let mut removable = vec![];
+        let mut removable_keys = BTreeSet::new();
+        let mut bytes = file_size(&local_path(root, &record_path)?);
+        for artifact in &evidence.artifacts {
+            let key = file_key(artifact);
+            // The case-preserving spelling must lie under the artifacts directory, so a
+            // differently cased directory on a case-sensitive filesystem is never touched.
+            let inside = canonical_path(artifact)
+                .is_some_and(|path| path.starts_with(&format!("{ARTIFACTS_DIR}/")));
+            if !inside
+                || artifact_users.get(&key) != Some(&1)
+                || named_files.contains_key(&key)
+                || !removable_keys.insert(key)
+            {
+                continue;
+            }
+            let path = local_path(root, artifact)?;
+            if path.is_file() {
+                bytes += file_size(&path);
+                removable.push(artifact.clone());
+            }
+        }
+        sets.push(ObservationSet {
+            age_days: age_seconds / DAY_SECONDS,
+            evidence,
+            removable,
+            bytes,
+            reasons,
+        });
+    }
+    let total_bytes = directory_bytes(&local_path(root, EVIDENCE_DIR)?)
+        + directory_bytes(&local_path(root, ARTIFACTS_DIR)?);
+    Ok(Classification {
+        sets,
+        native,
+        total_bytes,
+    })
+}
+
+fn policy(authority: Option<&str>) -> Value {
+    json!({
+        "name": POLICY,
+        "keep_newest": KEEP_NEWEST,
+        "keep_newest_failure": true,
+        "min_age_days": MIN_AGE_DAYS,
+        "warn_bytes": WARN_BYTES,
+        "authority": authority,
+    })
+}
+
+/// Classify, and with an authority remove eligible sets, appending each to the ledger.
+fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
+    let at = now()?;
+    let classification = classify(root, at)?;
+    let mut eligible = vec![];
+    let mut protected = vec![];
+    let mut reclaimable = 0;
+    for set in &classification.sets {
+        let evidence = &set.evidence;
+        if set.reasons.is_empty() {
+            reclaimable += set.bytes;
+            let mut files = vec![format!("{EVIDENCE_DIR}/{}.json", evidence.id)];
+            files.extend(set.removable.iter().cloned());
+            eligible.push(json!({
+                "id": evidence.id,
+                "cases": case_ids(evidence),
+                "environment": evidence.environment,
+                "age_days": set.age_days,
+                "outcome": evidence.outcome,
+                "bytes": set.bytes,
+                "files": files,
+                "reason": ELIGIBLE_REASON,
+            }));
+        } else {
+            protected.push(json!({
+                "id": evidence.id,
+                "cases": case_ids(evidence),
+                "environment": evidence.environment,
+                "age_days": set.age_days,
+                "outcome": evidence.outcome,
+                "reasons": set.reasons,
+            }));
+        }
+    }
+    let warning = (classification.total_bytes > WARN_BYTES).then(|| {
+        format!(
+            "Evidence and artifacts hold {} bytes, above the {WARN_BYTES}-byte (50 MiB) warning; review this preview and ask the human before pruning.",
+            classification.total_bytes
+        )
+    });
+    let mut pruned = vec![];
+    if let Some(authority) = authority {
+        let head = head_revision(root);
+        for set in classification
+            .sets
+            .iter()
+            .filter(|set| set.reasons.is_empty())
+        {
+            let evidence = &set.evidence;
+            let record_path = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
+            let mut removed = vec![record_path.clone()];
+            removed.extend(set.removable.iter().cloned());
+            let entry = json!({
+                "schema_version": 1,
+                "id": evidence.id,
+                "cases": case_ids(evidence),
+                "environment": evidence.environment,
+                "outcome": evidence.outcome,
+                "kind": evidence.kind,
+                "revision": evidence.snapshot.revision,
+                "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
+                "artifacts": evidence.artifact_fingerprints,
+                "record_digest": file_digest(root, &record_path)?,
+                "removed": removed,
+                "reason": ELIGIBLE_REASON,
+                "policy": policy(Some(authority)),
+                "head": head,
+                "pruned_at_unix_seconds": at,
+            });
+            // The ledger line comes first, so a removal is never unexplained.
+            append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
+            for artifact in &set.removable {
+                remove_if_present(root, artifact)?;
+            }
+            remove_if_present(root, &record_path)?;
+            pruned.push(evidence.id.clone());
+        }
+    }
+    Ok(json!({
+        "schema_version": 1,
+        "applied": authority.is_some(),
+        "authority": authority,
+        "policy": policy(authority),
+        "native": {"state": classification.native.state, "detail": classification.native.detail},
+        "eligible": eligible,
+        "protected": protected,
+        "totals": {
+            "sets": classification.sets.len(),
+            "eligible": eligible.len(),
+            "protected": protected.len(),
+            "evidence_bytes": classification.total_bytes,
+            "reclaimable_bytes": reclaimable,
+        },
+        "warning": warning,
+        "pruned": pruned,
+        "ledger": LEDGER,
+        "note": "Files are removed from the working tree only; committed bytes stay recoverable from Git history. Native archives, ignore rules and history are never changed.",
+    }))
+}
+
+fn remove_if_present(root: &Path, relative: &str) -> Result<()> {
+    match fs::remove_file(local_path(root, relative)?) {
+        Err(error) if error.kind() != std::io::ErrorKind::NotFound => {
+            Err(error).with_context(|| format!("removing {relative}"))
+        }
+        _ => Ok(()),
+    }
+}
+
+/// `chough evidence prune [--apply]`: preview by default.
+pub(super) fn prune(root: &Path, apply: bool) -> Result<()> {
+    let session = read_session(root)?;
+    let authority = if apply {
+        let authorized = match &session {
+            Session::V2(checkpoint) => prefs::authorized(root, checkpoint, "retention")?,
+            Session::V1(_) => {
+                let (value, origin) = prefs::effective(root, "retention")?;
+                (value == "auto").then_some(origin)
+            }
+        };
+        if authorized.is_none() {
+            let (value, origin) = prefs::effective(root, "retention")?;
+            bail!(
+                "pruning evidence is not authorized (retention = {value}, {origin}). Preview with `chough evidence prune`, then ask the human; record their answer with `chough consent grant retention --source <their words>` for this objective, or `chough pref set retention auto --source <...>` only if they asked for retention to apply automatically"
+            );
+        }
+        authorized
+    } else {
+        None
+    };
+    print_json(&retention(root, authority.as_deref())?)
+}
+
+/// After `cases run` and `validate run`: prune with the standing preference
+/// `retention auto`, else nothing. Failures are reported, never hidden.
+pub(super) fn auto_prune(root: &Path) -> Value {
+    let result = (|| -> Result<Value> {
+        let (value, origin) = prefs::effective(root, "retention")?;
+        if value != "auto" {
+            return Ok(Value::Null);
+        }
+        let report = retention(root, Some(&origin))?;
+        Ok(json!({
+            "authority": report["authority"],
+            "pruned": report["pruned"],
+            "totals": report["totals"],
+            "native": report["native"],
+            "warning": report["warning"],
+            "ledger": LEDGER,
+        }))
+    })();
+    result
+        .unwrap_or_else(|error| json!({"error": format!("automatic retention failed: {error:#}")}))
 }

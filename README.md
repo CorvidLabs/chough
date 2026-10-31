@@ -13,17 +13,31 @@ Chough records what stage work is in, what was decided, what was actually checke
 
 ![Chough and the tools that own its records](docs/diagrams/ownership.svg)
 
-This is a **private** CorvidLabs repository. Install from source; nothing is
-published, released or hosted.
+Chough is a public CorvidLabs repository. **No release exists yet**: nothing is
+published to crates.io, tagged, hosted or deployed. A first release candidate is in
+progress ([PR #9](https://github.com/CorvidLabs/chough/pull/9)).
 
-## Start here
+## Install
+
+Chough needs a Rust toolchain. Install the helper from the repository:
 
 ```sh
-git clone git@github.com:CorvidLabs/chough.git
-cd chough
-cargo install --path . --locked
+cargo install --git https://github.com/CorvidLabs/chough --locked
 chough --help
 ```
+
+or from a clone:
+
+```sh
+git clone https://github.com/CorvidLabs/chough.git
+cd chough
+cargo install --path . --locked
+```
+
+The skill bundle is embedded in the binary; `chough init` copies it into your
+project.
+
+## Start here
 
 In a Git project with HI criteria and SpecSync module contracts:
 
@@ -69,6 +83,7 @@ state, never by a saved label.
 | `stage …` | Advance, skip, iterate, back, reset, pause, resume, enter and return |
 | `cases check/select/run/record` | Validate `chough-testing/1` definitions, select focused cases, record honest outcomes |
 | `evidence add` | Record an observation bound to revision, inputs, environment and artifacts |
+| `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
 | `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
 | `library init/snapshot/index` | Optional project-local librarian |
@@ -76,6 +91,29 @@ state, never by a saved label.
 Chough does not authenticate people, record approvals or reviews, publish anything,
 or deploy. A structural pass, an exit code or an actor label is never treated as
 behavioral proof or human acceptance.
+
+## Tested platforms
+
+| Where | What runs |
+|---|---|
+| Hosted CI: Ubuntu, macOS, Windows | `cargo test` and a release build |
+| Hosted CI: Ubuntu | Fledge `verify` lane (format, lint, tests), HI and SpecSync checks, the native archive gate and its fixtures |
+| Local: macOS arm64 | Development, the exercises and lifecycle records |
+
+Other platforms and hosts may work but have not been exercised.
+
+## Known limitations
+
+- On Windows, a bounded command's descendants whose parent has already exited cannot
+  be stopped; the run returns on time with an incomplete capture, never `passed`.
+- Calls to Git (fingerprints and revisions) are not yet bounded in time or output.
+- SpecSync's change status does not yet flag an approved delta edited after approval;
+  a fix is proposed in
+  [CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/issues/823).
+- Hosts other than Claude Code and Codex have not had real discovery or cold-start
+  exercises.
+
+See [integrations and limits](docs/integrations.md) for the rest.
 
 ## Try it
 

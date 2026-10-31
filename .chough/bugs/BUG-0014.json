@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0014",
+  "title": "Bug verification accepts a pass recorded before the failure",
+  "symptom": "verification() reports reproduced-and-later-passed when any present linked observation passed",
+  "trigger": "A bug linked to a passing observation older than its failing reproduction",
+  "expected": "Only a pass observed after the reproduction counts as later-passed",
+  "actual": "Order is not checked",
+  "criteria": [
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "b07f84901b3c90e250d284591dcc298bca785586",
+  "steps": [
+    "Link an older passed observation and a newer failed one to a bug",
+    "chough bug show"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "A bug can read as verified on stale evidence",
+  "classification": "product-defect",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Release-candidate retention demonstration verifier, 2026-10-31",
+  "notes": [],
+  "created_at_unix_seconds": 1793489621,
+  "updated_at_unix_seconds": 1793489621
+}

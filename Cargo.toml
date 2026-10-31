@@ -5,6 +5,19 @@ edition = "2024"
 description = "Focused context and honest evidence for an agent-driven development lifecycle"
 license = "MIT"
 repository = "https://github.com/CorvidLabs/chough"
+readme = "README.md"
+keywords = ["agents", "workflow", "lifecycle", "evidence", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+# Only the helper source, the canonical skill bundle it embeds, the Cargo files,
+# README and LICENSE: never Chough's own records, examples, tests, docs or host copies.
+include = [
+    "/src",
+    "/skills/chough-workflow",
+    "/Cargo.toml",
+    "/Cargo.lock",
+    "/README.md",
+    "/LICENSE",
+]
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }

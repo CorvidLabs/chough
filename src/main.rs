@@ -122,6 +122,13 @@ enum Commands {
 #[derive(Subcommand)]
 enum EvidenceCommand {
     Add(Box<evidence::EvidenceArgs>),
+    /// Preview which observation sets retention could remove and what protects the rest;
+    /// `--apply` removes eligible sets under a run consent or `retention auto`.
+    Prune {
+        /// Remove eligible sets and append each to .chough/pruned.jsonl.
+        #[arg(long)]
+        apply: bool,
+    },
 }
 
 fn main() -> Result<()> {
@@ -167,9 +174,10 @@ fn main() -> Result<()> {
                 std::process::exit(code);
             }
         }
-        Commands::Evidence {
-            command: EvidenceCommand::Add(args),
-        } => evidence::add(&root, *args)?,
+        Commands::Evidence { command } => match command {
+            EvidenceCommand::Add(args) => evidence::add(&root, *args)?,
+            EvidenceCommand::Prune { apply } => evidence::prune(&root, apply)?,
+        },
         Commands::Bug { command } => bugs::run(&root, command)?,
         Commands::Pref { command } => prefs::pref(&root, command)?,
         Commands::Consent { command } => prefs::consent(&root, command)?,
@@ -257,6 +265,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
     let session = read_session(root)?;
     let current = evidence::snapshot(root);
     let observations = evidence::observations(root, &current, environment)?;
+    let observation_references = evidence::reference_labels(root, &current, environment)?;
     let checkpoint = match &session {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
         Session::V1(_) => None,
@@ -323,6 +332,8 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "snapshot": match &current { Ok(value) => serde_json::to_value(value)?, Err(error) => json!({"unknown": error.to_string()}) },
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,
+        "observation_references": observation_references,
+        "observation_label_note": "current: present with matching inputs; historical: present but stale; pruned: removed by retention (see .chough/pruned.jsonl); unavailable: missing and not in the ledger. Pruned and unavailable observations never count as current, passed or verifying evidence.",
         "environment": environment,
         "open_bugs": open_bugs,
         "blocking_bugs": blocking,

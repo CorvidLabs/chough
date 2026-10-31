@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Fix BUG-0006 to BUG-0011 through two native bug-fix changes: fail-closed stage gates (PR #7) and bounded external commands (PR #8)",
+  "objective": "Prepare a reviewable first release candidate (PR #9): reference-aware evidence retention, current guidance and an installable package; no release",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold",
+  "native_change": "prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -51,7 +51,8 @@
     "2026-10-31: the human (0xLeif) accepted the bug-fix implementation on PR #4; recorded with specsync change review and finalized with specsync change ship (archive 1c05ab8).",
     "2026-10-31: findings A-F reproduced on main f19823d and recorded as BUG-0006 to BUG-0011; split into a gate change and an execution change because they touch different code and can merge independently",
     "2026-10-31: 0xLeif approved the scopes of PRs #3, #7 and #8 (\"I approve\"); recorded with specsync change approve --actor 0xLeif (digests 8ee404db, d2f17060, d358e8b1)",
-    "2026-10-31: 0xLeif reviewed and accepted the implementations of PRs #3, #7 and #8; reviews recorded with specsync change review --reviewer 0xLeif (#3 and #7 now; #8 after its rebase)"
+    "2026-10-31: 0xLeif reviewed and accepted the implementations of PRs #3, #7 and #8; reviews recorded with specsync change review --reviewer 0xLeif (#3 and #7 now; #8 after its rebase)",
+    "2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -65,7 +66,9 @@
     "Bug-fix change archived on PR #4 at 1c05ab8; BUG-0004 and BUG-0005 verified.",
     "PR #2 merged to main as 4008346 and PR #4 merged to main as 2d782c4 by the human (0xLeif); both observed as MERGED on GitHub 2026-10-31; main CI run 41235906499 succeeded at 2d782c4. A merge is not a release.",
     "Gate fix 8075748: destination prerequisites for every stage move, approval validity, archive integrity and SpecSync-consistent policy; 44 tests pass; TC-cli-0040 to TC-cli-0044 passed; BUG-0006 to BUG-0008 verified by reruns",
-    "PR #7 change archived at ef9de16 after review; Chough reached done through gate native:archived"
+    "PR #7 change archived at ef9de16 after review; Chough reached done through gate native:archived",
+    "Retention, packaging and docs implemented in three reviewed streams and merged into PR #9; BUG-0012 reproduced at d761ff2 and verified at 30b74f8; BUG-0013 found, fixed at 3b0b2f7 and verified; TC-cli-0050 to TC-cli-0066 passed",
+    "PR #9 change archived after 0xLeif's review; Chough reached done through native:archived"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -85,8 +88,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Merge of PR #3, then PR #7 (the human's action); then PR #8 is rebased, re-verified and archived after 0xLeif's recorded acceptance"
+    "Merge of PR #9 (the human's action); nothing is released"
   ],
   "run_consents": [],
-  "next_action": "After the human merges #3 and #7: rebase PR #8 onto main, re-verify, record 0xLeif's acceptance, ship; then rebase PR #9 and implement the approved release candidate."
+  "next_action": "After the human merges PR #9: capture LIFE-10 and draft the timing change; librarian vault idea follows"
 }

@@ -54,6 +54,19 @@ pub(super) fn valid_name(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
 }
 
+/// Longest native change ID accepted, matching SpecSync's own read ceiling (one path
+/// component); SpecSync mints IDs of up to 120 bytes from a change description.
+pub(super) const CHANGE_ID_LIMIT: usize = 255;
+
+/// A native change ID: the characters of `valid_name`, up to SpecSync's ceiling.
+pub(super) fn valid_change_id(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= CHANGE_ID_LIMIT
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
+}
+
 /// Reject blank text and text that would make a record unreadable.
 pub(super) fn ensure_text(label: &str, value: &str) -> Result<()> {
     ensure!(!value.trim().is_empty(), "{label} must not be blank");

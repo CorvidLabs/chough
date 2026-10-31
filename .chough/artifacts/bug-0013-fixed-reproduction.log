@@ -1,0 +1,4 @@
+# BUG-0013 rerun after the fix: chough built from 3b0b2f7; macOS arm64; 2026-10-31T23:10:08Z
+$ chough checkpoint --native-change <117-byte id>
+{"native_change":"prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package"}
+exit=0

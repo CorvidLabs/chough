@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "bug-0013-repro-1",
+  "criteria": [
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-007",
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "chough checkpoint --native-change refused a 117-byte ID that SpecSync minted and reads, so the checkpoint cannot name the change and gates refuse as no-native-change",
+  "artifacts": [
+    ".chough/artifacts/bug-0013-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0013-reproduction.log": "9035061a0ae828bee66eb84382955fbcc201ceaae1d20696f32b87f918b5dceb"
+  },
+  "observed_at_unix_seconds": 1793488113,
+  "snapshot": {
+    "revision": "3596a10482def000d78e160cde0f7fa3cbaccbf0",
+    "dirty": false,
+    "fingerprint": "0eea425a9a77ce364b417a12b1c54e2e4df0a86a613f6e291249f307d7878be9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Observed on this repository's own release-candidate change"
+  ]
+}
