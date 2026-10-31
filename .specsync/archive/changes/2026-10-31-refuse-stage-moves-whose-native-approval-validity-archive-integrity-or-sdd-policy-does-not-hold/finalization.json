@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold",
+  "implementation_commit": "fccb78c9d4ee83c93feba1ab831fced2890bbd7c",
+  "implementation_tree": "47386c26bdb57f4208cc961e282874c32853b5ad",
+  "contract_digest": "d2f17060287c11e484e0c98d2d1b610de465c0d73eec573d3e5ca7a5d48e8c80",
+  "workspace_digest": "613782fb2e1add76c8e76bf7b399ad47323d9f12f9858fd5bfb9d43b2bda7893",
+  "closing_digest": "311f4f94c197129c428d109124c99b0ef25d28d9826441c585d2f2225992f497",
+  "review_digest": "9b31134aedd6cdb1bd46b83e812e74f7ec35902b060e07d5219d690320e1ce18",
+  "finalization_digest": "e55c878f7aa705ef29bc2b78ce80c995d79fba256471c77bd294aeafc7be5783",
+  "timestamp": 1793484351
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "fccb78c9d4ee83c93feba1ab831fced2890bbd7c",
+      "contract_digest": "d2f17060287c11e484e0c98d2d1b610de465c0d73eec573d3e5ca7a5d48e8c80",
+      "execution_digest": "5f35a20f5a4934f53804416d1c501b996ef8e4e6c0174c81d9a2640045a1e5b6",
+      "workspace_digest": "613782fb2e1add76c8e76bf7b399ad47323d9f12f9858fd5bfb9d43b2bda7893",
+      "timestamp": 1793484296
+    }
+  ]
+}
