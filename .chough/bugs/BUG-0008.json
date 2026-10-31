@@ -22,17 +22,26 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0008-repro-1"
+    "bug-0008-repro-1",
+    "bug-0008-fixed-1"
   ],
   "impact": "A damaged policy file silently removes every native gate",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Review finding C, reproduced 2026-10-31 against main f19823d",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793481843,
+      "text": "status: open -> verified. Fixed in 8075748 (fail-closed stage gates); regression TC-cli-0043 passed (observation tc-cli-0043-1793481649).",
+      "observations": [
+        "bug-0008-fixed-1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793479500,
-  "updated_at_unix_seconds": 1793479500
+  "updated_at_unix_seconds": 1793481843
 }

@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "id": "bug-0008-fixed-1",
+  "criteria": [
+    "FLOW-5"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Truncated and ill-typed policies refuse as refused:sdd-policy-invalid; a missing enabled gates; a valid enabled false stays ungated",
+  "artifacts": [
+    ".chough/artifacts/bug-0008-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0008-fixed-reproduction.log": "e298a6cfaee6a89012d246be4b9ecf516e0a7470ed16bf712bd003bff322b076"
+  },
+  "observed_at_unix_seconds": 1793481842,
+  "snapshot": {
+    "revision": "80757487bddf9172bd757f78fcfa798e1d7e40b3",
+    "dirty": false,
+    "fingerprint": "4df71aa15c351c690f016c4f1cd384e03b361ecc4a7d050868187695f725733f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Rerun of the recorded disposable reproduction with the binary from 8075748; the regression test is TC-cli-0043"
+  ]
+}

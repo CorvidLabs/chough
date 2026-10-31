@@ -22,17 +22,26 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0007-repro-1"
+    "bug-0007-repro-1",
+    "bug-0007-fixed-1"
   ],
   "impact": "A checkpoint can claim done without acceptance or archival",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Review finding B, reproduced 2026-10-31 against main f19823d",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793481842,
+      "text": "status: open -> verified. Fixed in 8075748 (fail-closed stage gates); regression TC-cli-0041 passed (observation tc-cli-0041-1793481645).",
+      "observations": [
+        "bug-0007-fixed-1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793479500,
-  "updated_at_unix_seconds": 1793479500
+  "updated_at_unix_seconds": 1793481842
 }

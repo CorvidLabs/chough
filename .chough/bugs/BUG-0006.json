@@ -23,17 +23,26 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0006-repro-1"
+    "bug-0006-repro-1",
+    "bug-0006-fixed-1"
   ],
   "impact": "Implementation can start on a scope nobody approved in its current form",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Review finding A, reproduced 2026-10-31 against main f19823d",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793481841,
+      "text": "status: open -> verified. Fixed in 8075748 (fail-closed stage gates); regression TC-cli-0040 passed (observation tc-cli-0040-1793481644).",
+      "observations": [
+        "bug-0006-fixed-1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793479500,
-  "updated_at_unix_seconds": 1793479500
+  "updated_at_unix_seconds": 1793481841
 }

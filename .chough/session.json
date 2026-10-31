@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -49,7 +49,8 @@
     "2026-10-31: the human (0xLeif) accepted the implementation on PR #2; recorded with specsync change review (reviewer label) and finalized with specsync change ship (archive f860c8a).",
     "2026-10-31: the human (0xLeif) approved the scope of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first on PR #4; recorded with specsync change approve (actor label).",
     "2026-10-31: the human (0xLeif) accepted the bug-fix implementation on PR #4; recorded with specsync change review and finalized with specsync change ship (archive 1c05ab8).",
-    "2026-10-31: findings A-F reproduced on main f19823d and recorded as BUG-0006 to BUG-0011; split into a gate change and an execution change because they touch different code and can merge independently"
+    "2026-10-31: findings A-F reproduced on main f19823d and recorded as BUG-0006 to BUG-0011; split into a gate change and an execution change because they touch different code and can merge independently",
+    "2026-10-31: 0xLeif approved the scopes of PRs #3, #7 and #8 (\"I approve\"); recorded with specsync change approve --actor 0xLeif (digests 8ee404db, d2f17060, d358e8b1)"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -61,7 +62,8 @@
     "Native closeout: scoped review recorded at de9fe45, change archived on the same PR at f860c8a.",
     "Bug-fix implementation 6118511: full native JSON parse within 4 MiB and checkpoint clears before additions; 39 tests pass; TC-cli-0038 and TC-cli-0039 passed; real archived-state rerun passed; BUG-0004 and BUG-0005 verified.",
     "Bug-fix change archived on PR #4 at 1c05ab8; BUG-0004 and BUG-0005 verified.",
-    "PR #2 merged to main as 4008346 and PR #4 merged to main as 2d782c4 by the human (0xLeif); both observed as MERGED on GitHub 2026-10-31; main CI run 41235906499 succeeded at 2d782c4. A merge is not a release."
+    "PR #2 merged to main as 4008346 and PR #4 merged to main as 2d782c4 by the human (0xLeif); both observed as MERGED on GitHub 2026-10-31; main CI run 41235906499 succeeded at 2d782c4. A merge is not a release.",
+    "Gate fix 8075748: destination prerequisites for every stage move, approval validity, archive integrity and SpecSync-consistent policy; 44 tests pass; TC-cli-0040 to TC-cli-0044 passed; BUG-0006 to BUG-0008 verified by reruns"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -80,11 +82,7 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Scope approval of refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold (PR #7)",
-    "Scope approval of bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting (PR #8)",
-    "Scope approval of require-native-lifecycle-closure-before-chough-pull-requests-merge (PR #3)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "After the human approves the scopes: implement PR #7 and PR #8 under their native changes, verify, and request implementation review. The checkpoint holds one native change; PR #8's change is named in awaiting_human."
+  "next_action": "Run native verification for the gate change, push, observe CI, then ask the human for the implementation review of PR #7. PR #8 is implemented separately under its own approved change."
 }
