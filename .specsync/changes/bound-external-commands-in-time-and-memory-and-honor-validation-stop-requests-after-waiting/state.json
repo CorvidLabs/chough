@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting",
+  "slug": "bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting",
+  "title": "Bound external commands in time and memory and honor validation stop requests after waiting",
+  "description": "Bound external commands in time and memory and honor validation stop requests after waiting",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "31d5105343a46728551648375bf9a33e213a3ce3",
+  "created_at": 1793479779,
+  "updated_at": 1793479791,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/cases.rs",
+    "src/records.rs",
+    "src/validate.rs",
+    "src/main.rs",
+    "Cargo.toml",
+    "Cargo.lock",
+    "tests/",
+    ".chough/",
+    "docs/cli.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Every external command Chough runs (case bindings, native status and other native reads) is read through one bounded runner: each stream retains at most its cap while reading and keeps draining beyond it, both streams are read concurrently, and the run ends by its deadline. On a deadline, or when output is still held open after the command exits, the command and its descendants are stopped (Unix: its process group; Windows: its process tree), and any reader still blocked is abandoned rather than awaited (BUG-0010, BUG-0011, REQ-cli-011, REQ-cli-006).",
+    "A case run with a 1 s deadline whose descendant holds the pipes returns within a few seconds as failed with a timeout limitation; a command that exits while a descendant holds the pipes returns by its deadline with a limitation naming the stopped descendants; output beyond 1 MiB per stream is counted, not retained, and the artifact notes the discarded byte count (BUG-0010).",
+    "Native reads keep the 16 KiB display bound and its truncation note, parse complete stdout up to 4 MiB, retain at most 16 KiB of stderr, and report a response over the bound, a failure, an undecodable or unavailable command, or a deadline (default 120 s, CHOUGH_NATIVE_TIMEOUT_SECONDS 1 to 3600) explicitly; gated moves refuse each of them as native-unknown, and status and next show the state and next action (BUG-0011, REQ-cli-003).",
+    "A repeated validation run checks for a stop request and a paused checkpoint immediately before every attempt, including after its interval, and waits in slices so a stop during a long interval ends the run promptly with no further attempt (BUG-0009, REQ-cli-011).",
+    "Existing behavior these rules do not name is unchanged; the full suite, the feature-and-bug exercise and native structural checks pass on Ubuntu, macOS and Windows CI; regression tests cover descendants, deadlines and output bounds per platform and the stop-during-interval case, and BUG-0009 to BUG-0011 are verified by passing observations."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "specs/cli/context.md lessons: list human gates as plain text, not checkboxes; run the scoped check before executing cases for new requirements; a run without a test result is not-run; pub(super), not pub(crate); disposable repositories need a local Git identity. Invariants 5 and 7: captured output is bounded and bound commands run without a shell. BUG-0004's archived fix (parse beyond the 16 KiB display bound, 4 MiB parse bound) is kept, not redone.",
+    "public_contract": "yes"
+  }
+}
