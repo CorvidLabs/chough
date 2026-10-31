@@ -234,7 +234,7 @@ fn preview_lists_sets_with_reasons_and_bytes_and_changes_nothing() {
         assert_eq!(reasons(&preview, id), vec!["newest"]);
     }
     let eligible = &preview["eligible"].as_array().unwrap()[0];
-    assert_eq!(eligible["case"], "TC-a");
+    assert_eq!(eligible["cases"], json!(["TC-a"]));
     assert_eq!(eligible["environment"], "local");
     assert_eq!(eligible["outcome"], "passed");
     assert!(eligible["age_days"].as_u64().unwrap() >= 29);
@@ -426,7 +426,7 @@ fn apply_needs_consent_or_the_standing_preference_and_appends_the_ledger() {
     assert_eq!(lines.len(), 1);
     let entry: Value = serde_json::from_str(lines[0]).unwrap();
     assert_eq!(entry["id"], "old");
-    assert_eq!(entry["case"], "TC-a");
+    assert_eq!(entry["cases"], json!(["TC-a"]));
     assert_eq!(entry["environment"], "local");
     assert_eq!(entry["outcome"], "passed");
     assert_eq!(entry["revision"], "0".repeat(40));
@@ -804,4 +804,162 @@ fn automatic_pruning_follows_case_runs_only_when_retention_is_auto() {
     ]);
     assert_eq!(validated["run"]["completed"], 1);
     assert!(validated["retention"].is_object(), "{validated:#}");
+}
+
+/// Rewrites a fixture record so it binds every listed case.
+fn bind_cases(fixture: &Fixture, id: &str, cases: &[&str]) {
+    let name = format!(".chough/evidence/{id}.json");
+    let mut record: Value = serde_json::from_str(&fixture.read(&name)).unwrap();
+    record["cases"] = cases
+        .iter()
+        .map(|case| json!({"id": case, "digest": ZERO}))
+        .collect();
+    fixture.write(&name, &serde_json::to_string_pretty(&record).unwrap());
+}
+
+#[test]
+fn a_multi_case_record_counts_in_the_group_of_every_case() {
+    let fixture = project();
+    for (id, age) in [("x0", 15), ("x1", 16), ("x2", 17)] {
+        write_obs(&fixture, &Obs::run(id, "TC-x", "passed", age));
+    }
+    // The newest TC-y run, and TC-y's newest failure, but listed second.
+    write_obs(&fixture, &Obs::run("m1", "TC-x", "failed", 30));
+    bind_cases(&fixture, "m1", &["TC-x", "TC-y"]);
+    write_obs(&fixture, &Obs::run("xf", "TC-x", "failed", 20));
+    for (id, age) in [("y0", 40), ("y1", 41), ("y2", 42)] {
+        write_obs(&fixture, &Obs::run(id, "TC-y", "passed", age));
+    }
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert_eq!(ids(&preview["eligible"]), set(["y2"]), "{preview:#}");
+    assert_eq!(reasons(&preview, "m1"), vec!["newest", "last failure"]);
+    let entry = preview["protected"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| entry["id"] == "m1")
+        .unwrap();
+    assert_eq!(entry["cases"], json!(["TC-x", "TC-y"]));
+}
+
+#[test]
+fn one_artifact_spelled_two_ways_is_shared_and_kept() {
+    let fixture = project();
+    write_obs(
+        &fixture,
+        &Obs::run("a1", "TC-a", "passed", 1).with_log(".chough/artifacts/shared.log", "shared\n"),
+    );
+    for (id, age) in [("b0", 20), ("b1", 21), ("b2", 22)] {
+        write_obs(&fixture, &Obs::run(id, "TC-b", "passed", age));
+    }
+    let mut old = Obs::run("old", "TC-b", "passed", 40)
+        .with_log(".chough/artifacts//shared.log", "shared\n")
+        .with_log(".chough/artifacts/./old.log", "old\n");
+    old.artifacts
+        .push((".CHOUGH/ARTIFACTS/SHARED.LOG", "shared\n"));
+    // On a case-sensitive filesystem the upper-case spelling is its own file.
+    let insensitive = {
+        fixture.write(".chough/artifacts/probe.txt", "x");
+        let found = fixture.exists(".chough/ARTIFACTS/PROBE.TXT");
+        fs::remove_file(fixture.root().join(".chough/artifacts/probe.txt")).unwrap();
+        found
+    };
+    if !insensitive {
+        old.artifacts.pop();
+    }
+    write_obs(&fixture, &old);
+
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert_eq!(ids(&preview["eligible"]), set(["old"]), "{preview:#}");
+    assert_eq!(
+        preview["eligible"][0]["files"],
+        json!([".chough/evidence/old.json", ".chough/artifacts/./old.log"])
+    );
+    fixture.ok(&["consent", "grant", "retention", "--source", "Human: prune"]);
+    let applied = fixture.ok(&["evidence", "prune", "--apply"]);
+    assert_eq!(applied["pruned"], json!(["old"]));
+    assert_eq!(fixture.read(".chough/artifacts/shared.log"), "shared\n");
+    assert!(!fixture.exists(".chough/artifacts/old.log"));
+
+    for spelling in [
+        ".chough/artifacts//shared.log",
+        ".chough/artifacts/shared.log/",
+    ] {
+        let refused = fixture.fails(&[
+            "evidence",
+            "add",
+            "spelled",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            "Spelled oddly",
+            "--artifact",
+            spelling,
+        ]);
+        assert!(refused.contains("spelled canonically"), "{refused}");
+    }
+}
+
+#[test]
+fn bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name() {
+    let fixture = project();
+    for (id, age) in [("c0", 20), ("c1", 21), ("c2", 22)] {
+        write_obs(&fixture, &Obs::run(id, "TC-c", "passed", age));
+    }
+    for id in ["c3", "c4", "c5"] {
+        let log = format!(".chough/artifacts/{id}.log");
+        write_obs(
+            &fixture,
+            &Obs::run(id, "TC-c", "passed", 43).with_log(&log, "log\n"),
+        );
+    }
+    write_bug(&fixture, "BUG-0001", "verified", &[], None);
+    let name = ".chough/bugs/BUG-0001.json";
+    let mut bug: Value = serde_json::from_str(&fixture.read(name)).unwrap();
+    bug["fixture"] = json!(".chough/artifacts/c3.log");
+    fixture.write(name, &serde_json::to_string_pretty(&bug).unwrap());
+    fixture.ok(&["checkpoint", "--file", ".chough/artifacts/c4.log"]);
+
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert_eq!(ids(&preview["eligible"]), set(["c5"]), "{preview:#}");
+    assert_eq!(reasons(&preview, "c3"), vec!["BUG-0001 verified"]);
+    assert_eq!(reasons(&preview, "c4"), vec!["checkpoint"]);
+    fixture.ok(&["consent", "grant", "retention", "--source", "Human: prune"]);
+    let applied = fixture.ok(&["evidence", "prune", "--apply"]);
+    assert_eq!(applied["pruned"], json!(["c5"]));
+    assert!(fixture.exists(".chough/artifacts/c3.log"));
+    assert!(fixture.exists(".chough/artifacts/c4.log"));
+    assert!(!fixture.exists(".chough/artifacts/c5.log"));
+}
+
+#[test]
+fn bug_show_labels_note_observations_once() {
+    let fixture = project();
+    write_obs(&fixture, &Obs::run("seen", "TC-a", "failed", 1));
+    write_bug(&fixture, "BUG-0001", "open", &["seen"], None);
+    let name = ".chough/bugs/BUG-0001.json";
+    let mut bug: Value = serde_json::from_str(&fixture.read(name)).unwrap();
+    bug["notes"] = json!([
+        {"at_unix_seconds": 2, "text": "again", "observations": ["seen", "gone"]}
+    ]);
+    fixture.write(name, &serde_json::to_string_pretty(&bug).unwrap());
+    let shown = fixture.ok(&["bug", "show", "BUG-0001"]);
+    assert_eq!(
+        shown["observation_labels"],
+        json!([
+            {"id": "seen", "role": "observation", "label": "historical"},
+            {"id": "gone", "role": "note", "label": "unavailable"},
+        ]),
+        "{shown:#}"
+    );
 }

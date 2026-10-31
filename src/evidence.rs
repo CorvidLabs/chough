@@ -16,7 +16,7 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, File};
 use std::io::Read;
-use std::path::Path;
+use std::path::{Component, Path};
 use std::process::{Command, Output};
 
 pub(super) const EVIDENCE_DIR: &str = ".chough/evidence";
@@ -359,6 +359,12 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         !args.environment.trim().is_empty() && !args.summary.trim().is_empty(),
         "environment and summary must not be blank"
     );
+    for artifact in &args.artifacts {
+        ensure!(
+            canonical_path(artifact).as_deref() == Some(artifact.as_str()),
+            "artifact path must be spelled canonically (relative, `/`-separated, no empty, `.` or `..` parts, no trailing `/`): {artifact}"
+        );
+    }
     validate_criteria(root, &args.criteria)?;
     validate_requirements(root, &args.contracts, &args.requirements)?;
     let mut case_refs = vec![];
@@ -628,6 +634,32 @@ fn label_reference(
     ))
 }
 
+/// Files named directly, keyed by [`file_key`], with what names them: bug fixtures of
+/// any status and the checkpoint's design and file references.
+fn file_references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
+    let mut map: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut add = |path: &str, source: String| {
+        let sources = map.entry(file_key(path)).or_default();
+        if !sources.contains(&source) {
+            sources.push(source);
+        }
+    };
+    if let Session::V2(checkpoint) = read_session(root)? {
+        for path in checkpoint
+            .references
+            .design
+            .iter()
+            .chain(&checkpoint.references.files)
+        {
+            add(path, "checkpoint".into());
+        }
+    }
+    for (bug, path) in bugs::fixture_references(root)? {
+        add(&path, bug);
+    }
+    Ok(map)
+}
+
 /// Every referenced observation ID with what references it: the checkpoint, bugs of
 /// any status and stored validation runs.
 fn references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
@@ -832,8 +864,30 @@ fn non_routine(evidence: &Evidence) -> Option<String> {
     }
 }
 
-fn case_of(evidence: &Evidence) -> &str {
-    evidence.cases.first().map_or("", |case| case.id.as_str())
+fn case_ids(evidence: &Evidence) -> Vec<&str> {
+    evidence.cases.iter().map(|case| case.id.as_str()).collect()
+}
+
+/// A relative path rebuilt from its components and joined with `/`, so `a//b`, `a/b/`
+/// and (on Windows) `a\b` share one spelling. None for empty or traversing paths.
+fn canonical_path(path: &str) -> Option<String> {
+    let mut parts = vec![];
+    for component in Path::new(path).components() {
+        match component {
+            Component::Normal(part) => parts.push(part.to_str()?),
+            _ => return None,
+        }
+    }
+    (!parts.is_empty()).then(|| parts.join("/"))
+}
+
+/// The key two spellings of one file share: the canonical spelling with case folded,
+/// since macOS and Windows filesystems usually ignore case. On a case-sensitive
+/// filesystem folding can only join distinct files, which protects more, never less.
+fn file_key(path: &str) -> String {
+    canonical_path(path)
+        .unwrap_or_else(|| path.to_string())
+        .to_lowercase()
 }
 
 fn file_size(path: &Path) -> u64 {
@@ -875,26 +929,46 @@ struct Classification {
 fn classify(root: &Path, at: u64) -> Result<Classification> {
     let records = load_all(root)?;
     let references = references(root)?;
+    let named_files = file_references(root)?;
     let native = native_manifests(root)?;
+    let manifest_keys: Vec<(&String, BTreeSet<String>)> = native
+        .manifests
+        .iter()
+        .map(|(reason, paths)| (reason, paths.iter().map(|path| file_key(path)).collect()))
+        .collect();
 
+    // Records using each file, counted by one key per file however it is spelled.
     let mut artifact_users: BTreeMap<String, usize> = BTreeMap::new();
     for evidence in &records {
-        let unique: BTreeSet<&String> = evidence.artifacts.iter().collect();
-        for artifact in unique {
-            *artifact_users.entry(artifact.clone()).or_default() += 1;
+        let unique: BTreeSet<String> = evidence
+            .artifacts
+            .iter()
+            .map(|artifact| file_key(artifact))
+            .collect();
+        for key in unique {
+            *artifact_users.entry(key).or_default() += 1;
         }
     }
 
     // Newest three routine runs and the newest routine failure per case and environment.
+    // A record bound to several cases belongs to the group of each; one with none to "".
     let mut groups: BTreeMap<(&str, &str), Vec<&Evidence>> = BTreeMap::new();
     for evidence in records
         .iter()
         .filter(|evidence| non_routine(evidence).is_none())
     {
-        groups
-            .entry((case_of(evidence), evidence.environment.as_str()))
-            .or_default()
-            .push(evidence);
+        let mut cases = case_ids(evidence);
+        if cases.is_empty() {
+            cases.push("");
+        }
+        cases.sort_unstable();
+        cases.dedup();
+        for case in cases {
+            groups
+                .entry((case, evidence.environment.as_str()))
+                .or_default()
+                .push(evidence);
+        }
     }
     let mut newest = BTreeSet::new();
     let mut last_failure = BTreeSet::new();
@@ -957,14 +1031,18 @@ fn classify(root: &Path, at: u64) -> Result<Classification> {
         if native.state == "unavailable" {
             reasons.push("native unavailable".into());
         }
-        for (reason, paths) in &native.manifests {
-            if paths.contains(&record_path)
-                || evidence
-                    .artifacts
-                    .iter()
-                    .any(|artifact| paths.contains(artifact))
-            {
-                reasons.push(reason.clone());
+        let mut keys = vec![file_key(&record_path)];
+        keys.extend(evidence.artifacts.iter().map(|artifact| file_key(artifact)));
+        for (reason, paths) in &manifest_keys {
+            if keys.iter().any(|key| paths.contains(key)) {
+                reasons.push((*reason).clone());
+            }
+        }
+        for key in &keys {
+            for source in named_files.get(key).into_iter().flatten() {
+                if !reasons.contains(source) {
+                    reasons.push(source.clone());
+                }
             }
         }
         if let Some(reason) = non_routine(&evidence) {
@@ -984,11 +1062,18 @@ fn classify(root: &Path, at: u64) -> Result<Classification> {
             reasons.push("recent".into());
         }
         let mut removable = vec![];
+        let mut removable_keys = BTreeSet::new();
         let mut bytes = file_size(&local_path(root, &record_path)?);
         for artifact in &evidence.artifacts {
-            if removable.contains(artifact)
-                || !artifact.starts_with(&format!("{ARTIFACTS_DIR}/"))
-                || artifact_users.get(artifact) != Some(&1)
+            let key = file_key(artifact);
+            // The case-preserving spelling must lie under the artifacts directory, so a
+            // differently cased directory on a case-sensitive filesystem is never touched.
+            let inside = canonical_path(artifact)
+                .is_some_and(|path| path.starts_with(&format!("{ARTIFACTS_DIR}/")));
+            if !inside
+                || artifact_users.get(&key) != Some(&1)
+                || named_files.contains_key(&key)
+                || !removable_keys.insert(key)
             {
                 continue;
             }
@@ -1041,7 +1126,7 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
             files.extend(set.removable.iter().cloned());
             eligible.push(json!({
                 "id": evidence.id,
-                "case": case_of(evidence),
+                "cases": case_ids(evidence),
                 "environment": evidence.environment,
                 "age_days": set.age_days,
                 "outcome": evidence.outcome,
@@ -1052,7 +1137,7 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
         } else {
             protected.push(json!({
                 "id": evidence.id,
-                "case": case_of(evidence),
+                "cases": case_ids(evidence),
                 "environment": evidence.environment,
                 "age_days": set.age_days,
                 "outcome": evidence.outcome,
@@ -1081,7 +1166,7 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
             let entry = json!({
                 "schema_version": 1,
                 "id": evidence.id,
-                "case": case_of(evidence),
+                "cases": case_ids(evidence),
                 "environment": evidence.environment,
                 "outcome": evidence.outcome,
                 "kind": evidence.kind,

@@ -16,10 +16,10 @@ Output is JSON unless stated otherwise.
 | `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`. |
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying with `approval_valid` true (refused as `refused:native-approval-invalid` otherwise, or `refused:native-correction-invalid`); test and accept need that or an archived change; done needs archived with authenticated `terminal_evidence` (`refused:native-archive-<validity>` otherwise). Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
 | `cases check\|list\|select\|run\|record` | Validate definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` exit 3 when the recorded outcome is not passed. |
-| `evidence add ID` | Criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts, `--case`, `--method`, `--track`, `--limitation`. Never replaces an ID. |
+| `evidence add ID`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` refuses likely duplicates unless `--distinct`; regression needs `--regression-baseline`; `verified` needs a passed observation; `report` prints Markdown and posts nothing. |
-| `pref show\|set\|unset` | Standing preferences with `--source`: repeat-validation, monitoring, release, monitor-initiation, librarian, library-dir, required-lane. |
-| `consent show\|grant\|revoke` | Run consent for the current objective: repeat-validation, monitoring, release. |
+| `pref show\|set\|unset` | Standing preferences with `--source`: repeat-validation, monitoring, release, monitor-initiation, librarian, library-dir, required-lane, retention. |
+| `consent show\|grant\|revoke` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
 | `library init\|snapshot\|index` | Optional librarian; requires `pref set librarian on`. |
 | `skill status\|update [--host H]` | Compare installed copies with the bundle; update only missing and known-outdated files. |
@@ -110,22 +110,28 @@ helper output; an observation is an unauthenticated claim by whoever recorded it
 `chough evidence prune` previews by default and changes no file. An observation set is
 one evidence record plus the artifacts under `.chough/artifacts/` that no other record
 references; artifacts elsewhere in the project are never removed. Each set is eligible
-or protected, and the preview lists eligible sets (case, environment, age, outcome,
+or protected, and the preview lists eligible sets (cases, environment, age, outcome,
 bytes, files), protected sets with every reason that applies, totals, the bytes that
 would be reclaimed and a warning when evidence and artifacts exceed 50 MiB.
 
 | Protected because | Reason shown |
 |---|---|
-| Listed in the checkpoint | `checkpoint` |
-| Linked by a bug of any status (observation, note or regression baseline) | `BUG-NNNN <status>` |
+| Listed in the checkpoint, as an observation or as a `--design` or `--file` path naming the record or one of its artifacts | `checkpoint` |
+| Linked by a bug of any status (observation, note or regression baseline), or named by its fixture path | `BUG-NNNN <status>` |
 | Listed by an active native change's acceptance manifest | `native active <id>` |
 | Listed by the most recent archived change's manifest (highest finalization timestamp) | `native archive <id>` |
 | The native read failed, or its output had no acceptance entries | `native unavailable` |
 | Not a routine automated run: a non-test kind, or a method other than `automated` | the kind, the method, or `unspecified-method` |
-| Among the newest 3 routine runs for its case and environment | `newest` |
-| The newest routine failure for its case and environment | `last failure` |
+| Among the newest 3 routine runs for any case it lists, in its environment | `newest` |
+| The newest routine failure for any case it lists, in its environment | `last failure` |
 | A failure, or the first or last pass, of a stored validation run | `validation <run>` |
 | Younger than 14 days | `recent` |
+
+A record bound to several cases counts in the group of each; one with no case forms its
+own group per environment. Paths are compared by one key per file: the spelling rebuilt
+from its components joined with `/`, with case folded, so `a//b`, `a/b/` and differently
+cased spellings of one file count as one artifact. An artifact is removed only when one
+record uses it and no bug fixture or checkpoint path names it.
 
 Manifests are read with `specsync change status <id> --json` for each directory in
 `.specsync/changes/` and for the latest archive. Without a SpecSync configuration no
@@ -138,7 +144,7 @@ retention --source ...`) or the standing preference `retention` (`off`, the defa
 run`, `validate run` and `validate resume` apply the same rules after recording and
 report the result in a `retention` field; a failure there is reported, and the recorded
 outcome stands. Before each set is removed, one JSON line is appended to
-`.chough/pruned.jsonl`: ID, case, environment, outcome, kind, revision, observed time,
+`.chough/pruned.jsonl`: ID, cases, environment, outcome, kind, revision, observed time,
 artifact digests, record digest, removed files, reason, policy and authority, HEAD at
 pruning and the pruning time. Files leave the working tree only; committed bytes stay
 in Git history, and native archives and ignore rules are untouched. The ledger is read

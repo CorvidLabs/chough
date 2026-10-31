@@ -719,16 +719,42 @@ pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<Str
         .collect())
 }
 
-/// Current, historical, pruned or unavailable for each observation a bug links.
+/// Each bug's fixture path, whatever its status, labeled `BUG-NNNN <status>`.
+pub(super) fn fixture_references(root: &Path) -> Result<Vec<(String, String)>> {
+    Ok(load_all(root)?
+        .into_iter()
+        .filter_map(|bug| {
+            let fixture = bug.fixture?;
+            Some((format!("{} {}", bug.id, bug.status), fixture))
+        })
+        .collect())
+}
+
+/// Current, historical, pruned or unavailable for each observation a bug links: its
+/// observations, regression baseline and note observations, each labeled once.
 fn observation_labels(root: &Path, bug: &Bug) -> Result<Vec<Value>> {
     let labels = evidence::Labels::new(root);
+    let linked = bug
+        .observations
+        .iter()
+        .map(|id| (id, "observation"))
+        .chain(
+            bug.regression_baseline
+                .iter()
+                .map(|id| (id, "regression-baseline")),
+        )
+        .chain(
+            bug.notes
+                .iter()
+                .flat_map(|note| &note.observations)
+                .map(|id| (id, "note")),
+        );
+    let mut seen = BTreeSet::new();
     let mut values = vec![];
-    for id in &bug.observations {
-        values
-            .push(json!({"id": id, "role": "observation", "label": labels.label(root, id, None)?}));
-    }
-    if let Some(id) = &bug.regression_baseline {
-        values.push(json!({"id": id, "role": "regression-baseline", "label": labels.label(root, id, None)?}));
+    for (id, role) in linked {
+        if seen.insert(id) {
+            values.push(json!({"id": id, "role": role, "label": labels.label(root, id, None)?}));
+        }
     }
     Ok(values)
 }
