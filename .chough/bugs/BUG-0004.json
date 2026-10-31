@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0004",
+  "title": "Leaving accept is refused after a real native archive because status JSON is truncated",
+  "symptom": "chough stage advance from accept reports refused:native-unknown although specsync reports summary.state archived",
+  "trigger": "An archived change whose status JSON exceeds 16384 bytes (100133 bytes with 262 acceptance entries here)",
+  "expected": "The accept gate reads summary.state archived and allows done (REQ-cli-008)",
+  "actual": "native() bounds stdout to 16384 bytes for display, so the gate parses truncated JSON and refuses",
+  "criteria": [
+    "FLOW-10",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f860c8a1025700a85aae87f94ce3e883b5a09798",
+  "steps": [
+    "Finalize a native change with many delivery files",
+    "chough stage advance from accept"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0004-repro-1"
+  ],
+  "impact": "Fails safe (refuses rather than passes), but no real change can leave accept through Chough; status and next also show the archived change's output as invalid. Needs a new native change: parse native JSON within a larger bound separately from the 16 KiB display bound, and add a large-output test.",
+  "classification": "product-defect",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Native closeout of evolve-chough-into-a-resumable-stage-workflow",
+  "notes": [],
+  "created_at_unix_seconds": 1793474615,
+  "updated_at_unix_seconds": 1793474615
+}

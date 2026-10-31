@@ -1,0 +1,4 @@
+$ chough init; chough checkpoint --awaiting-human "Old gate"
+["Old gate"]
+$ chough checkpoint --clear-awaiting-human --awaiting-human "New gate"
+[]
