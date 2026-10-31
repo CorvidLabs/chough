@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "1a108d9844e5bc02e5439cb6b3688803d6435a53",
   "created_at": 1793474997,
-  "updated_at": 1793475041,
+  "updated_at": 1793475100,
   "affected_specs": [
     "cli"
   ],
@@ -44,6 +44,6 @@
   "answers": {
     "architecture_risk": "no",
     "constraints": "specs/cli/context.md lessons: rely on change check rather than status for approval drift; run the scoped check before executing cases for new requirements; treat no-result runs as not-run; give disposable repositories a local Git identity. Invariant 5 (bounded inputs) stays: the parse bound is larger but finite.",
-    "public_contract": "yes"
+    "public_contract": "no"
   }
 }

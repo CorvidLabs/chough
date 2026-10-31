@@ -24,3 +24,10 @@ failed observations and recorded in the local backlog.
 The human asked for this fix after accepting PR #2. PR #2 is not merged yet, so
 this branch starts at its archive tip `1a108d9` and its pull request is stacked on
 `feat/resumable-stage-workflow`.
+
+## Interview note
+
+`public_contract` is answered `no`: the canonical contract and requirements do not
+change, and SpecSync refuses `no_spec_change` with a public-contract change. The
+observable CLI behavior does change, from a defect back to what REQ-cli-007 and
+REQ-cli-008 already specify.
