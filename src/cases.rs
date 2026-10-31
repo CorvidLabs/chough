@@ -661,12 +661,18 @@ pub(super) fn run_case(
             timeout.as_secs()
         ));
         Outcome::Failed
-    } else if execution.exit_code != Some(0) {
-        Outcome::Failed
     } else if binding.adapter == "cargo-test" {
         let (passed, failed) = cargo_counts(&text);
         tests_run = Some(passed + failed);
-        if passed + failed == 0 {
+        if passed + failed == 0 && execution.exit_code != Some(0) {
+            limitations.push(format!(
+                "cargo exited {} before reporting any test result: a build or environment failure, not an assertion about the behavior",
+                execution
+                    .exit_code
+                    .map_or("without a code".to_string(), |code| code.to_string())
+            ));
+            Outcome::NotRun
+        } else if passed + failed == 0 {
             limitations.push("no test matched the binding; nothing was asserted".into());
             Outcome::NotRun
         } else if passed + failed != 1 {
@@ -675,12 +681,12 @@ pub(super) fn run_case(
                 passed + failed
             ));
             Outcome::NotRun
-        } else if failed > 0 || !missing.is_empty() {
+        } else if failed > 0 || execution.exit_code != Some(0) || !missing.is_empty() {
             Outcome::Failed
         } else {
             Outcome::Passed
         }
-    } else if !missing.is_empty() {
+    } else if execution.exit_code != Some(0) || !missing.is_empty() {
         Outcome::Failed
     } else {
         Outcome::Passed

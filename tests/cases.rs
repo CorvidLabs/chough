@@ -267,7 +267,7 @@ fn execution_fixture() -> Fixture {
     // A stand-in for cargo that prints real cargo summary lines for each bound test.
     fixture.write(
         "bin/cargo",
-        "#!/bin/sh\nfor last; do :; done\ncase \"$last\" in\n  passes) printf 'running 1 test\\ntest passes ... ok\\n\\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out\\n' ;;\n  fails) printf 'running 1 test\\ntest fails ... FAILED\\n\\ntest result: FAILED. 0 passed; 1 failed; 0 ignored\\n'; exit 101 ;;\n  *) printf 'running 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out\\n' ;;\nesac\n",
+        "#!/bin/sh\nfor last; do :; done\ncase \"$last\" in\n  passes) printf 'running 1 test\\ntest passes ... ok\\n\\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out\\n' ;;\n  fails) printf 'running 1 test\\ntest fails ... FAILED\\n\\ntest result: FAILED. 0 passed; 1 failed; 0 ignored\\n'; exit 101 ;;\n  broken) echo 'error: could not compile `sample`' >&2; exit 101 ;;\n  *) printf 'running 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out\\n' ;;\nesac\n",
     );
     fixture.executable("bin/cargo");
     let cargo =
@@ -275,10 +275,11 @@ fn execution_fixture() -> Fixture {
     fixture.write(
         ".chough/cases/cli.cases.toml",
         &format!(
-            "{HEADER}{}{}{}{}{}",
+            "{HEADER}{}{}{}{}{}{}",
             bound("TC-cli-0001", &cargo("passes"), ""),
             bound("TC-cli-0002", &cargo("fails"), ""),
             bound("TC-cli-0003", &cargo("misspelled_name"), ""),
+            bound("TC-cli-0006", &cargo("broken"), ""),
             bound(
                 "TC-cli-0004",
                 "adapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo checked 3 rows\"]\nexpect_output = [\"checked 4 rows\"]",
@@ -328,6 +329,12 @@ fn execution_records_failures_and_vacuous_runs_honestly() {
     let (_, missing) = run_case(&fixture, "TC-cli-0004");
     assert_eq!(missing["outcome"], "failed");
     let (_, slow) = run_case(&fixture, "TC-cli-0005");
+    // A build or environment failure is not evidence about the behavior.
+    let (code, broken) = run_case(&fixture, "TC-cli-0006");
+    assert_eq!(
+        (code, broken["outcome"].as_str()),
+        (Some(3), Some("not-run"))
+    );
     assert_eq!(slow["outcome"], "failed");
 
     let status = fixture.ok(&["status", "--environment", "test-local", "--json"]);
@@ -358,6 +365,11 @@ fn execution_records_failures_and_vacuous_runs_honestly() {
         record("TC-cli-0005")["record"]["limitations"]
             .to_string()
             .contains("timed out")
+    );
+    assert!(
+        record("TC-cli-0006")["record"]["limitations"]
+            .to_string()
+            .contains("build or environment failure")
     );
     let artifact = record("TC-cli-0002")["record"]["artifacts"][0]
         .as_str()
