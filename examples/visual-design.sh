@@ -25,6 +25,11 @@ mkdir -p "$work"
 cp -R "$here/checkout-ui/." "$work/"
 cd "$work"
 git -c init.defaultBranch=main init -q
+# Native tools also commit (for example `specsync change check --commit`), so the
+# disposable repository carries its own identity instead of relying on global config.
+git config user.name "Chough exercise"
+git config user.email exercise@example.invalid
+git config commit.gpgsign false
 
 $chough init --objective "Design the checkout summary for free shipping" \
     --intent-scope CHECKOUT --module checkout-ui --host claude >/dev/null

@@ -56,6 +56,11 @@ cp -R "$here/shipping/." "$work/"
 cd "$work"
 rm -f .specsync/changes/.keep .specsync/archive/changes/.keep
 git -c init.defaultBranch=main init -q
+# Native tools also commit (for example `specsync change check --commit`), so the
+# disposable repository carries its own identity instead of relying on global config.
+git config user.name "Chough exercise"
+git config user.email exercise@example.invalid
+git config commit.gpgsign false
 
 step "Intent: sample criteria CHECKOUT-1 and CHECKOUT-2 (sample input, already in hi/)"
 hi check --json | jq -e '.problems == []' >/dev/null

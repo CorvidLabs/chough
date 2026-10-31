@@ -76,6 +76,12 @@ agent can start before relying on a cold-start exercise.
 as undocumented exports; `pub(super)` items are not. Source: rehearsal. Scope: this
 crate. Future use: D-015; revisit if Chough gains a library target.
 
+2026-10-31, exercise identity: `specsync change check --commit` commits inside the
+sample repository, and the CI runner has no global Git identity, so the exercise failed
+in hosted CI (run 41232974678) while passing locally. Source: that run's log. Scope:
+scripts that let native tools commit. Future use: give disposable repositories a
+local identity; test with `GIT_CONFIG_GLOBAL=/dev/null`.
+
 Add further lessons only from observed work, with source, applicable scope, concrete
 future use and revision or retirement guidance. A future native cli.3md would become
 the lesson source in place of this section.
