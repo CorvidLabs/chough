@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -82,7 +82,9 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of PR #7 (refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold) by the human, then native review and ship"
+  ],
   "run_consents": [],
   "next_action": "Run native verification for the gate change, push, observe CI, then ask the human for the implementation review of PR #7. PR #8 is implemented separately under its own approved change."
 }
