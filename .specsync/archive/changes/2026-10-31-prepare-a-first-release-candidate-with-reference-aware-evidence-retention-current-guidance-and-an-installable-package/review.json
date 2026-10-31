@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "0f8e869c0cfea8b24a83ac1a53e4c7cee01cff8c",
+  "contract_digest": "10d34e8520ab10baf1449bb72de725dcc26faaedc880e47f6a6899d4b3930634",
+  "execution_digest": "09cd2d6d1ffd244e5b5e1631eacd8c8c51daf8bd0e092e64453cf24ccc8d052e",
+  "workspace_digest": "d582aae30d9a055a109645d06a9af71179f656fa99d208cabe30b0437c65b107",
+  "timestamp": 1793490010
+}

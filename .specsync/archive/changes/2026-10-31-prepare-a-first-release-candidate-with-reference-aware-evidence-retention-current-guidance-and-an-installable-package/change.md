@@ -1,6 +1,6 @@
 ---
 id: prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package
-state: verifying
+state: archived
 type: feature
 base_commit: f19823d4287debe65cf8c5a78fa4a2f72d83b9b7
 ---

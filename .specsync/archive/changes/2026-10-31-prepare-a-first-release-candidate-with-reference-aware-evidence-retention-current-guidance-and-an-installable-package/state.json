@@ -7,11 +7,11 @@
   "title": "Prepare a first release candidate with reference-aware evidence retention, current guidance and an installable package",
   "description": "Prepare a first release candidate with reference-aware evidence retention, current guidance and an installable package",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
   "created_at": 1793483736,
-  "updated_at": 1793489640,
+  "updated_at": 1793490056,
   "affected_specs": [
     "cli"
   ],
