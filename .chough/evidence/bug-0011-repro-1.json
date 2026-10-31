@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "bug-0011-repro-1",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-003",
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "chough next collected 400 MB of native stdout and stderr (peak 774 MiB) before reporting oversized, and waited on a native command that never exits",
+  "artifacts": [
+    ".chough/artifacts/bug-0011-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0011-reproduction.log": "ed741d417559e25e79a0c81a4eb9e13d0b5508a85cc69ed2c2b95c453b798c98"
+  },
+  "observed_at_unix_seconds": 1793479480,
+  "snapshot": {
+    "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+    "dirty": false,
+    "fingerprint": "2d6be8586afa1caadaa9fc752eb63a84f5cdafa5f54673e2caaee424b21d1300"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Reproduced against chough built from main f19823d in a disposable copy of examples/shipping, not against this repository's own checkpoint"
+  ]
+}

@@ -493,3 +493,195 @@ fn schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct() {
     fixture.write(".chough/evidence/legacy.json", &legacy.to_string());
     assert!(fixture.fails(&["status", "--json"]).contains("schema 1"));
 }
+
+/// A project whose cases bind the given commands, with native stand-ins on PATH.
+#[cfg(unix)]
+fn bounded_fixture(cases: &str) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(".chough/cases/cli.cases.toml", &format!("{HEADER}{cases}"));
+    fixture.init();
+    fixture.commit("fixture");
+    fixture
+}
+
+/// Windows has no shell stand-ins on PATH, so `hi` is compiled from a tiny program.
+#[cfg(windows)]
+fn bounded_fixture(cases: &str) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.write(
+        "bin/hi.rs",
+        "fn main() { print!(\"{}\", r#\"{\"hi\":1,\"export\":1,\"files\":[{\"criteria\":[{\"id\":\"LIFE-1\"}],\"retired\":[]}]}\"#); }\n",
+    );
+    let rustc = std::env::var_os("RUSTC").unwrap_or_else(|| "rustc".into());
+    let status = std::process::Command::new(rustc)
+        .current_dir(fixture.root().join("bin"))
+        .args(["--edition", "2021", "-o", "hi.exe", "hi.rs"])
+        .status()
+        .unwrap();
+    assert!(status.success(), "could not build the hi stand-in");
+    fixture.write(".chough/cases/cli.cases.toml", &format!("{HEADER}{cases}"));
+    fixture.init();
+    fixture.commit("fixture");
+    fixture
+}
+
+/// Run a case with chough's output in files, so a descendant that inherited a handle
+/// cannot hold the test open; returns the wall time until chough exits, its report and
+/// the recorded observation.
+fn timed_run(fixture: &Fixture, id: &str) -> (std::time::Duration, Value, Value) {
+    use std::fs::{self, File};
+    use std::process::{Command, Stdio};
+    let outputs = tempfile::tempdir().unwrap();
+    let stdout = outputs.path().join("stdout.json");
+    let stderr = outputs.path().join("stderr.txt");
+    let mut paths = vec![fixture.root().join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let started = std::time::Instant::now();
+    Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args(["cases", "run", id, "--environment", "test-local"])
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .stdin(Stdio::null())
+        .stdout(File::create(&stdout).unwrap())
+        .stderr(File::create(&stderr).unwrap())
+        .status()
+        .unwrap();
+    let elapsed = started.elapsed();
+    let report: Value = serde_json::from_slice(&fs::read(&stdout).unwrap())
+        .unwrap_or_else(|_| panic!("{}", fs::read_to_string(&stderr).unwrap()));
+    let observation = report["observation"].as_str().unwrap();
+    let record =
+        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{observation}.json")))
+            .unwrap();
+    (elapsed, report, record)
+}
+
+fn limitations(record: &Value) -> Vec<String> {
+    record["limitations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|limitation| limitation.as_str().unwrap().to_string())
+        .collect()
+}
+
+/// Whether a process whose command line contains `pattern` is still running.
+#[cfg(unix)]
+fn still_running(pattern: &str) -> bool {
+    for _ in 0..30 {
+        let found = std::process::Command::new("pgrep")
+            .args(["-f", pattern])
+            .output()
+            .unwrap();
+        if !found.status.success() {
+            return false;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    true
+}
+
+fn command_case(id: &str, argv: &str, expect: &str, timeout: u64) -> String {
+    bound(
+        id,
+        &format!(
+            "adapter = \"command\"\nargv = {argv}\nexpect_output = [\"{expect}\"]\ntimeout_seconds = {timeout}"
+        ),
+        "",
+    )
+}
+
+#[test]
+fn a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline() {
+    #[cfg(unix)]
+    let argv = r#"["sh", "-c", "sleep 41 & sleep 41"]"#;
+    #[cfg(windows)]
+    let argv = r#"["cmd", "/c", "start /b ping -n 41 127.0.0.1 & ping -n 41 127.0.0.1"]"#;
+    let fixture = bounded_fixture(&command_case("TC-cli-0001", argv, "never printed", 1));
+    let (elapsed, report, record) = timed_run(&fixture, "TC-cli-0001");
+    // The unbounded runner returned only when the descendant exited, after 20 s or more.
+    assert!(elapsed.as_secs() < 11, "returned after {elapsed:?}");
+    assert_eq!(report["outcome"], "failed");
+    assert!(
+        limitations(&record)
+            .contains(&"timed out after 1 s; the command and its descendants were stopped".into()),
+        "{record}"
+    );
+    assert_eq!(record["exit_code"], Value::Null);
+    #[cfg(unix)]
+    assert!(
+        !still_running("sleep 41"),
+        "a descendant survived the deadline"
+    );
+}
+
+#[test]
+fn a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline() {
+    #[cfg(unix)]
+    let argv = r#"["sh", "-c", "sleep 42 & echo started"]"#;
+    #[cfg(windows)]
+    let argv = r#"["cmd", "/c", "start /b ping -n 42 127.0.0.1 & echo started"]"#;
+    let fixture = bounded_fixture(&command_case("TC-cli-0001", argv, "started", 5));
+    let (elapsed, report, record) = timed_run(&fixture, "TC-cli-0001");
+    assert!(elapsed.as_secs() < 15, "returned after {elapsed:?}");
+    let limitations = limitations(&record);
+    assert!(
+        limitations
+            .iter()
+            .any(|limitation| limitation.starts_with("descendants still held output after exit")),
+        "{record}"
+    );
+    assert_eq!(record["exit_code"], 0);
+    // Output that could not be read to its end never yields a pass.
+    if limitations
+        .iter()
+        .any(|limitation| limitation.starts_with("output capture incomplete"))
+    {
+        assert_ne!(report["outcome"], "passed", "{record}");
+    }
+    #[cfg(unix)]
+    {
+        assert!(
+            limitations
+                .contains(&"descendants still held output after exit and were stopped".into()),
+            "{record}"
+        );
+        assert_eq!(report["outcome"], "passed", "{record}");
+        assert!(!still_running("sleep 42"), "a descendant survived");
+    }
+}
+
+#[test]
+fn output_beyond_the_per_stream_bound_is_counted_not_retained() {
+    #[cfg(unix)]
+    let argv =
+        r#"["sh", "-c", "yes xxxxxxx | head -c 3000000; yes eeeeeee | head -c 2500000 >&2"]"#;
+    #[cfg(windows)]
+    let argv = r#"["cmd", "/c", "type out.txt & type err.txt 1>&2"]"#;
+    let fixture = bounded_fixture(&command_case("TC-cli-0001", argv, "xxxx", 120));
+    #[cfg(windows)]
+    {
+        fixture.write("out.txt", &"x".repeat(3_000_000));
+        fixture.write("err.txt", &"e".repeat(2_500_000));
+    }
+    let (_, report, record) = timed_run(&fixture, "TC-cli-0001");
+    assert_eq!(report["outcome"], "passed", "{record}");
+    let artifact = fixture.read(record["artifacts"][0].as_str().unwrap());
+    // The existing 1 MiB artifact bound plus the truncation notes.
+    assert!(artifact.len() <= 1_048_576 + 300, "{}", artifact.len());
+    assert!(artifact.contains("[truncated: captured output is limited to 1048576 bytes]"));
+    assert!(
+        artifact.contains("[truncated: stdout wrote 3000000 bytes; 1951439 discarded]"),
+        "{}",
+        &artifact[artifact.len() - 300..]
+    );
+    assert!(
+        artifact.contains("[truncated: stderr wrote 2500000 bytes; 2500000 discarded]"),
+        "{}",
+        &artifact[artifact.len() - 300..]
+    );
+}

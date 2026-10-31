@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "id": "bug-0011-fixed-1",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-003",
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Fixed binary from bbd9f04 with the recorded stand-in specsync scripts: 400 MB of stdout and stderr peaked at 10 MiB RSS and reported oversized with the exact 200000000-byte count; the never-exiting stand-in was reported timed-out after 2.65 s with CHOUGH_NATIVE_TIMEOUT_SECONDS=2 and after 120.30 s by default, with no surviving descendant; stage advance from plan refused it as native-unknown in 2.07 s.",
+  "artifacts": [
+    ".chough/artifacts/bug-0011-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0011-fixed-reproduction.log": "c4a423a0f576e3c07a446bb874a2c0356ac0f66672119c95b588148e31c65f08"
+  },
+  "observed_at_unix_seconds": 1793483101,
+  "snapshot": {
+    "revision": "bbd9f041fb58f14ed1447420c183984c1a602446",
+    "dirty": false,
+    "fingerprint": "ee2f91fbcc64c326b255a5de022c9dc9eab6d667e7d33f609bf932b3c4c23b46"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0049",
+      "digest": "79e2fe2c899710ae14a8801397cc57f21339fdbccfc74cb829b0268cd1eac967"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "macOS arm64 only; stand-in scripts, not the real SpecSync"
+  ]
+}

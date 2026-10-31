@@ -1,0 +1,5 @@
+# Finding D reproduction: chough built from chough main f19823d; specsync 6.1.1; macOS arm64; 2026-10-31
+# Disposable copy of examples/shipping (script: gates-and-execution.sh). Consent in it is SYNTHETIC.
+# case TC-shipping-0901: argv [echo, ok]; validate run --times 3 --interval 4; validate stop issued 1.5 s after start
+== D: stop requested during the validation interval
+  completed=2 state=stopped elapsed=5s (stop arrived ~1.5s in, during the first 4s interval)

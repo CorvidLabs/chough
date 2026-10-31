@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "id": "bug-0009-fixed-1",
+  "criteria": [
+    "FLOW-9"
+  ],
+  "requirements": [
+    "REQ-cli-011"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Fixed binary from bbd9f04 on the recorded reproduction (disposable copy of examples/shipping): a stop requested 1.5 s into a 4 s validation interval ended the run as stopped after 1 of 3 attempts in 2 s; no attempt started after the stop.",
+  "artifacts": [
+    ".chough/artifacts/bug-0009-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0009-fixed-reproduction.log": "78646e12853179a3a7a1cd9e76200e059ab9d4f357f803cec55c6e4ba6925b8f"
+  },
+  "observed_at_unix_seconds": 1793483100,
+  "snapshot": {
+    "revision": "bbd9f041fb58f14ed1447420c183984c1a602446",
+    "dirty": false,
+    "fingerprint": "ee2f91fbcc64c326b255a5de022c9dc9eab6d667e7d33f609bf932b3c4c23b46"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0048",
+      "digest": "bd6a056713ccc06f0663e0a43059237ada37e17a36225b69ad6a2b8444903c9c"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "macOS arm64 only; the Windows and Linux behavior rests on the hosted CI run of TC-cli-0048"
+  ]
+}

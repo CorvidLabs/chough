@@ -174,6 +174,134 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
     );
 }
 
+/// Start chough in the background, as a second agent session would.
+#[cfg(unix)]
+fn spawn(fixture: &Fixture, args: &[&str]) -> std::process::Child {
+    let mut paths = vec![fixture.root().join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    std::process::Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args(args)
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .unwrap()
+}
+
+/// Wait until a running repeated run has recorded its first attempt; returns its ID.
+#[cfg(unix)]
+fn first_attempt_recorded(fixture: &Fixture) -> String {
+    for _ in 0..200 {
+        if let Ok(entries) = fs::read_dir(fixture.root().join(".chough/validation")) {
+            for entry in entries {
+                let run: Value = serde_json::from_str(
+                    &fs::read_to_string(entry.unwrap().path()).unwrap_or_default(),
+                )
+                .unwrap_or(Value::Null);
+                if run["state"] == "running" && run["completed"] == 1 {
+                    return run["id"].as_str().unwrap().to_string();
+                }
+            }
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    panic!("the first attempt was never recorded");
+}
+
+/// Wait for a background run and return its report and how long it took after `since`.
+#[cfg(unix)]
+fn finish(child: std::process::Child, since: std::time::Instant) -> (Value, u64) {
+    let output = child.wait_with_output().unwrap();
+    let elapsed = since.elapsed().as_secs();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    (serde_json::from_slice(&output.stdout).unwrap(), elapsed)
+}
+
+#[cfg(unix)]
+#[test]
+fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Health probe\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"Probe reports healthy\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo healthy: yes\"]\nexpect_output = [\"healthy: yes\"]\n",
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "repeat-validation",
+        "--source",
+        "Human: repeat the probe",
+    ]);
+    let repeat = |times: &'static str, interval: &'static str| {
+        [
+            "validate",
+            "run",
+            "TC-cli-0001",
+            "--times",
+            times,
+            "--interval",
+            interval,
+            "--environment",
+            "test-local",
+        ]
+    };
+
+    // A paused checkpoint is checked before the first attempt; resuming the run after
+    // the stage resumes continues with its stored limits.
+    fixture.ok(&["stage", "pause", "--reason", "Human stepped away"]);
+    let paused = fixture.ok(&repeat("2", "0"));
+    assert_eq!(paused["run"]["state"], "paused");
+    assert_eq!(paused["run"]["completed"], 0);
+    let id = paused["run"]["id"].as_str().unwrap().to_string();
+    assert_eq!(
+        fixture.ok(&["validate", "resume", &id])["run"]["state"],
+        "paused"
+    );
+    fixture.ok(&["stage", "resume"]);
+    let resumed = fixture.ok(&["validate", "resume", &id]);
+    assert_eq!(resumed["run"]["state"], "complete");
+    assert_eq!(resumed["run"]["completed"], 2);
+
+    // A stop requested during a 30 s interval ends the run without another attempt.
+    let started = std::time::Instant::now();
+    let child = spawn(&fixture, &repeat("3", "30"));
+    first_attempt_recorded(&fixture);
+    fixture.ok(&["validate", "stop"]);
+    let stop_requested = std::time::Instant::now();
+    let (stopped, after_stop) = finish(child, stop_requested);
+    assert_eq!(stopped["run"]["state"], "stopped");
+    assert_eq!(stopped["run"]["completed"], 1, "{stopped}");
+    assert!(
+        after_stop < 5,
+        "the stop took {after_stop} s to take effect"
+    );
+    assert!(started.elapsed().as_secs() < 25);
+    fs::remove_file(fixture.root().join(".chough/validation.stop")).unwrap();
+
+    // A pause during the interval is honored the same way.
+    let child = spawn(&fixture, &repeat("3", "30"));
+    first_attempt_recorded(&fixture);
+    fixture.ok(&["stage", "pause", "--reason", "Human asked to pause"]);
+    let (paused, after_pause) = finish(child, std::time::Instant::now());
+    assert_eq!(paused["run"]["state"], "paused");
+    assert_eq!(paused["run"]["completed"], 1, "{paused}");
+    assert!(
+        after_pause < 5,
+        "the pause took {after_pause} s to take effect"
+    );
+}
+
 #[test]
 fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     let fixture = Fixture::new();
