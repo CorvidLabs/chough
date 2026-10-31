@@ -26,7 +26,9 @@ archive package and requires native status to report `archived` with
 from the trusted merge base and every PR commit snapshot forward to the head, so
 deleting a scope or archive cannot create a passing empty inventory. Temporary
 Git snapshots preserve object history and never execute historical product code.
-Source/lifecycle hashes and Git status must remain unchanged by inspection.
+Source/lifecycle hashes and Git status must remain unchanged by inspection. Later
+legitimate source or unrelated commits do not stale an authenticated historical
+archive; old behavioral evidence is not re-run against current HEAD.
 
 `authenticated-history` is a native structural provenance result. It does not
 authenticate a human identity. Actor names, model text, files named review, and

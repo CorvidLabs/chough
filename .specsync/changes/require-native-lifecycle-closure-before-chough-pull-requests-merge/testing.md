@@ -13,6 +13,8 @@ This is the concrete regression plan for the explicitly authorized CI work. Resu
 | --- | --- | --- |
 | Clean native repository, no active or historical changes | pass | Native audit succeeds, roster is empty, complete inventory is empty |
 | Valid archived native fixture and complete Git history | pass | Native status returns archived plus authenticated-history |
+| Legitimate later revision changes an originally affected input plus unrelated content | pass | Native authenticates historical archive inputs without re-running old behavior against current HEAD |
+| Main advances with later-only archives after the PR branch forks | pass | Inventory uses the trusted merge base; inherited omissions remain distinct from later-only base additions |
 | Draft scope only, implementation never begun | fail | Native roster contains it and output names the unfinished scope |
 | Approved / implementing / verifying / accepted active fixture | fail | Every nonempty active roster blocks closure, including accepted-before-finalize |
 | One archived sibling plus one draft sibling | fail | Every scope is accounted for; one archive cannot hide another change |
@@ -52,3 +54,5 @@ After PR #2 interfaces are available for review, add real stage/profile/traceabi
 - Hosted Ubuntu/macOS/Windows and new Actions jobs remain pending until this exact implementation tip is pushed. Local results do not claim hosted checks or human acceptance.
 
 Local tool selection used an invocation-only PATH shim for Fledge1.7.2/HI0.8.0/SpecSync6.1.1. The initial ordinary local PATH resolved an older SpecSync6.1.0; the explicit version guard refused it before running fixtures. Global tooling was not changed.
+
+- Focused positive fixture passed after the full suite: valid archive remains authenticated after a later committed change to its originally affected README plus unrelated content; advanced-main/older-branch history also passes. The gate delegates historical integrity to native status and performs no behavioral re-verification of archived work.

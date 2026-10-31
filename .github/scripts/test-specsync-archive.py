@@ -148,6 +148,13 @@ class ArchiveFixtures(unittest.TestCase):
         root = self.fixture(self.clean)
         command(root, "git", "fetch", "--quiet", "--no-write-fetch-head", str(self.archived), "HEAD")
         self.check(root, True, base=command(self.archived, "git", "rev-parse", "HEAD"))
+        # An archive authenticates its historical inputs. Later legitimate
+        # commits must not re-run old behavioral evidence against today's tree.
+        root = self.fixture(self.archived)
+        (root / "README.md").write_text("Later legitimate fixture revision after native archive.\n")
+        (root / "unrelated.txt").write_text("Unrelated later fixture content.\n")
+        commit(root, "legitimate later fixture content")
+        self.check(root, True, contains="1 archive(s) authenticated")
 
     def test_every_active_stage_and_scope_only_draft_fails(self):
         for state in ["draft", "approved", "implementing", "verifying", "accepted", "archived"]:
