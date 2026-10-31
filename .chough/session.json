@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Implement native change evolve-chough-into-a-resumable-stage-workflow in reviewable increments and return it for the human implementation review",
+  "objective": "Fix BUG-0004 (native status parsed after a 16 KiB display cut) and BUG-0005 (clear flags drop new checkpoint entries) through a new native bug-fix change",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "evolve-chough-into-a-resumable-stage-workflow",
+  "native_change": "parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -19,7 +19,8 @@
       "FLOW-7",
       "FLOW-13",
       "LIFE-2",
-      "LIFE-7"
+      "LIFE-7",
+      "FLOW-10"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -62,14 +63,14 @@
     "BUG-0001",
     "BUG-0002",
     "BUG-0003",
-    "BUG-0004"
+    "BUG-0004",
+    "BUG-0005"
   ],
-  "blockers": [
-    "BUG-0004: Chough cannot record accept -> done for this archived change until the native-status parse bound is fixed in a new native change; native state (archived) is authoritative."
-  ],
+  "blockers": [],
   "awaiting_human": [
-    "Merge of PR #2 through the normal repository process (the human's action)"
+    "Merge of PR #2 through the normal repository process (the human's action)",
+    "Scope approval of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first"
   ],
   "run_consents": [],
-  "next_action": "After the human merges PR #2: propose a new native bug-fix change for BUG-0004 (parse native JSON within a larger bound than the 16 KiB display bound; add a large-output test) for human scope approval, then advance this checkpoint to done."
+  "next_action": "Wait for the human scope decision on parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first; do not approve it or implement before then. Then follow its tasks.md."
 }
