@@ -21,3 +21,5 @@ slice, with the remaining work in the roadmap.
 - **LIFE-5**  I can reproduce, classify, deduplicate, and report bugs and connect them to criteria and verification evidence.
 - **LIFE-6**  I can reuse HI, SpecSync, Fledge, and other appropriate CorvidLabs tools instead of maintaining duplicate lifecycle records.
 - **LIFE-7**  I can see missing or stale evidence and distinguish structural checks, product tests, human acceptance, and delivery verification.
+- **LIFE-8**  Routine reruns do not keep raw test logs forever, while the proof behind active work, open and fixed bugs, and accepted or released baselines stays, and anything removed is shown as removed rather than as passed.
+- **LIFE-9**  I can install Chough into another project and get the helper and skills without Chough's own backlog or run history.

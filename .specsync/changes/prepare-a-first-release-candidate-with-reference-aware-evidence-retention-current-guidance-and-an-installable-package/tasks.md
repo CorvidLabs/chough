@@ -13,6 +13,6 @@ artifact: tasks
 - [ ] Correct README, ROADMAP and the docs/architecture.md records table.
 - [ ] Run the disposable retention exercise, a fresh-context resumption and the package and install check.
 
-Human gates and post-verification steps (not tasks): capture of LIFE-8 and LIFE-9 in
-the human's wording; scope approval; push and CI; the human implementation review;
+Human gates and post-verification steps (not tasks): LIFE-8 and LIFE-9 were captured in
+the human's wording on 2026-10-31; scope approval; push and CI; the human implementation review;
 native review and ship; any release decision.
