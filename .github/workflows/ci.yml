@@ -35,7 +35,8 @@ jobs:
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
-      - uses: CorvidLabs/fledge@v1
+      # Fledge's documented @v1 ref is absent; this reviewed commit contains action.yml.
+      - uses: CorvidLabs/fledge@b648ea2a622221d4f2ffbc7ba7aa829e6cf13a51
         with:
           version: v1.7.2
       - uses: CorvidLabs/spec-sync@v6.1.0

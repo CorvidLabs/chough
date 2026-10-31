@@ -23,6 +23,8 @@ On macOS arm64, `fledge lanes run verify` passed formatting, all-target Clippy,
 14 Rust integration tests, HI structure (7 active criteria, no problems), native
 SpecSync strict structure (active contract, no warnings, 100% eligible file/LOC
 coverage), and the build. The native structural pass did not execute product tests.
+Source installation also succeeded with `cargo install --path . --locked --offline`
+into an isolated temporary prefix; the installed executable reports chough 0.1.0.
 Unix-specific adapter/symlink/mode tests are gated accordingly; four portable
 record/init tests are defined for Windows. Hosted CI results are separate.
 
