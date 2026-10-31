@@ -17,7 +17,7 @@ artifact: docs
 | docs/cli.md | All command groups, schemas 1 and 2, freshness and outcome labels |
 | docs/walkthrough.md | Install, one feature and bug loop, cold resume |
 | docs/integrations.md | Qualified, deferred and unavailable adapters with reasons |
-| docs/NEXT_CHANGE.md | Superseded banner; content retained as history |
+| docs/NEXT_CHANGE.md | Marked unapproved and deferred, not rejected; content retained as history |
 | docs/verification.md | New render and visual inspection record |
 | docs/diagrams/ | Updated ownership and context diagrams; lifecycle split into a stage loop and a native closeout chart |
 | specs/cli/context.md, tasks.md, testing.md | Decisions, lessons with sources, task status, observed verification |

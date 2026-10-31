@@ -20,7 +20,29 @@ context for later work, not authenticated approval records.
 | D-013 | Monitor findings are captured locally by default; propose-change only prints a command. | Approved default; whether monitors may start investigations stays unsettled. |
 | D-014 | One canonical stage list in the helper, documented in `references/stages.md`. | Implementation choice; a test keeps them in step. |
 | D-015 | Crate-internal modules use `pub(super)`. | Implementation choice: the binary has no library target, and the contract describes commands rather than Rust symbols. |
-| D-016 | `docs/NEXT_CHANGE.md` is superseded, not implemented. | Human redirected the next work; observation reuse after metadata commits stays unapproved. |
+| D-016 | Observation reuse after metadata-only commits (`docs/NEXT_CHANGE.md`) stays unapproved and deferred, not rejected. | Human framing in PR #1; the lifecycle work came first. It is not implemented and needs its own decision. |
+
+## Agreed direction after the bootstrap interview
+
+These are human product decisions recorded in PR #1 to capture in the next native
+scope definition. They were captured as FLOW-1 to FLOW-13 and REQ-cli-007 to
+REQ-cli-017 and approved in `evolve-chough-into-a-resumable-stage-workflow`; D-008 to
+D-016 record the choices made there. The list is kept as written:
+
+- Natural stage iteration with meaningful whole-stage intent/design decisions and
+  one coherent initial technical scope approval; real human implementation review
+  at acceptance before routine native closeout.
+- Conditional one-source local HTML/CSS design with companion notes and actual
+  rendered review; focused functional, copy/localization and design testing by
+  relevance; local-first bug evidence/backlog.
+- Optional validation/monitoring by explicit project preference, optional release,
+  and an optional project-local librarian callable from any stage.
+- Mandatory checkpointing/cold resume even with the librarian off. APS storage and
+  a 3md testing profile are candidates, not adopted mandatory dependencies.
+
+The metadata-only observation-reuse proposal is unapproved and deferred in favor of
+lifecycle work, not rejected. See the [lifecycle](lifecycle.md) and [roadmap](ROADMAP.md)
+for the agreed direction and unresolved implementation/policy choices.
 
 Changing product intent requires updating HI through its supported flow, preserving
 permanent IDs. Changing an implementation choice requires a recorded reason and

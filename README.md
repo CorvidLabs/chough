@@ -1,9 +1,11 @@
 # Chough
 
-**Carry human intent through development, and let any agent pick up where the last one stopped.**
+**A portable development workflow kit for coding agents: skills, human intent, specs, testing, and local context for resumable work.**
 
-Chough (pronounced **chuff**) is a portable agent skill with a small Rust helper. You
-keep working with the agent you already use. Chough gives it a shared stage workflow
+Chough (pronounced **chuff**) is a portable agent skill with a small Rust helper. It is
+current-agent-first and agent-neutral: the same skill and records are meant for
+capable GPT/Codex, Claude, Grok, Kimi and local-model hosts. You keep working with
+the agent you already use. Chough gives it a shared stage workflow
 and a checkpoint in plain project files. HI keeps the human's wording and criterion
 IDs, SpecSync owns contracts and the native change lifecycle, and Fledge runs tasks.
 Chough records what stage work is in, what was decided, what was actually checked
@@ -99,6 +101,7 @@ files.
 
 - [Architecture](docs/architecture.md), [lifecycle](docs/lifecycle.md), [CLI reference](docs/cli.md)
 - [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
+- [Deferred, unapproved evidence-reuse proposal](docs/NEXT_CHANGE.md)
 - [Diagram rendering and visual verification](docs/verification.md)
 
 MIT licensed. This repository's visibility and its software license are separate facts.

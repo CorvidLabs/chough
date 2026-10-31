@@ -268,7 +268,7 @@ Unix-only behavior as the existing tests do.
 
 Schema 1 sessions and observations remain readable. Chough's own `.chough/session.json`
 is migrated explicitly in this change, its stale pointer to `docs/NEXT_CHANGE.md` is
-replaced by this change ID, and `NEXT_CHANGE.md` gains a superseded banner without
+replaced by this change ID, and `NEXT_CHANGE.md` is marked unapproved and deferred (not rejected) without
 deleting its content. Installed 0.1.0 skill copies are updated only where unmodified.
 APS is not a dependency; the checkpoint has one writer per project by convention
 and no lock beyond atomic replace, which is documented with the concurrent-agent rule

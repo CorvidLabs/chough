@@ -105,11 +105,11 @@ closed-world validation. 3md remains a possible later read-only rendering.
 - Mermaid 11 and Playwright with Chromium headless shell 1248 exist in local
   CorvidLabs checkouts for the existing `docs/diagrams/render.mjs`.
 
-## Planning sources superseded
+## Planning sources deferred
 
 `docs/NEXT_CHANGE.md` proposed reusing observations after metadata-only commits. The
 human did not approve it and redirected to this lifecycle. It is retained as history
-and marked superseded; its reuse behavior is out of scope.
+and marked unapproved and deferred, not rejected; its reuse behavior is out of scope.
 
 The untracked brief `docs/CLAUDE_HANDOFF.md` was present at session start and was no
 longer in the working tree at 11:45:36, before any write by this change. Its text was

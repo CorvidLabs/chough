@@ -91,7 +91,8 @@ Git fingerprint covers the revision and every tracked or untracked non-ignored f
 except `.chough/` and `target/`; artifacts are hashed separately; case observations
 also bind the case's definition digest. Any of those changing makes the observation
 stale. This is deliberately conservative: a later commit, even one that only touches
-lifecycle metadata, makes earlier observations stale until they are rerun.
+lifecycle metadata, makes earlier observations stale until they are rerun. Reuse across
+metadata-only commits remains an [unapproved, deferred proposal](NEXT_CHANGE.md).
 
 The observation kind says what was observed, not how trustworthy it is. Recording
 `human-observation` does not authenticate a person, `deployment-observation` does

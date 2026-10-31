@@ -57,6 +57,10 @@ commands receive direct arguments, never shell-evaluated text.
 | `environment-unchecked` | No environment was supplied |
 | `unknown-revision` | No Git snapshot could be established |
 
+Environment comparison uses the label you supply; it does not detect changes in the
+real environment. A native status response that decodes as JSON is usable output, not
+evidence that a lifecycle gate passed.
+
 Kinds: `product-test`, `structural`, `human-observation`, `delivery-observation`,
 `publication-observation`, `installation-observation`, `deployment-observation`,
 `live-health-observation`, `dry-run`. Human approval and delivery stay unknown in

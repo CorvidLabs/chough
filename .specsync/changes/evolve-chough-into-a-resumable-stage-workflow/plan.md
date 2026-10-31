@@ -24,7 +24,7 @@ Effort is given as relative size with the main uncertainty, not as hours.
 | 4 | Local bug backlog with search, regression rule and report candidate | Medium | Usefulness of token-overlap search; kept deliberately simple |
 | 5 | Preferences, run consent, repeated validation with stop/resume, release routing | Medium | Stop/resume semantics remain foreground-only; no daemon |
 | 6 | Optional librarian snapshot, index and brief template | Small | None significant |
-| 7 | Policy and CI, Chough's own session migration, cases for Chough itself, docs, diagrams, superseding NEXT_CHANGE | Medium | Diagram readability across several linked charts |
+| 7 | Policy and CI, Chough's own session migration, cases for Chough itself, docs, diagrams, marking NEXT_CHANGE deferred | Medium | Diagram readability across several linked charts |
 | 8 | Exercises: isolated feature/bug loop with a failing assertion and retest, visual and nonvisual samples with rendered review, preference fixtures, real cold start by a separate agent CLI, hosted CI | Medium | Behaviour of a fresh external agent session |
 
 If parallel agents are used: increment 3 owns `src/cases.rs`, `tests/cases.rs` and

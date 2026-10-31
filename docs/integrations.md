@@ -38,8 +38,13 @@ whether an installed copy is current, edited or outdated.
 | Augur | Not integrated | `check` exits zero regardless of verdict; use `gate` to enforce; risk is not behavior |
 | Attest | Not integrated | A signature proves key possession, not human authorization; never infer `humanApproved` |
 | Atlas | Not integrated | SpecSync compatibility unverified |
+| Let | Not integrated | Discovers local agent assets; it does not control agent execution |
+| Figma plugin | Optional | Syncs token and component data; Figma authoring is not required for the design stage |
 | GitHub plugin | Guidance only | Issue lists are bounded and can hide fetch errors; nothing is posted without a request |
 | Bench, deploy, e2e plugins | Not integrated | Baselines are not scoped; deploy scripts simulate (record as `dry-run`); e2e tests Fledge itself |
+
+APS guidance consulted for the qualification: [use cases](https://github.com/0xLeif/aps-cli/blob/main/docs/use-cases.md)
+and [agent checkpoints](https://github.com/0xLeif/aps-cli/blob/main/examples/agent-memory/README.md).
 
 No general production-health service is assumed. Monitoring uses project-native
 sources wrapped as cases with explicit assertions, and only with authorization.

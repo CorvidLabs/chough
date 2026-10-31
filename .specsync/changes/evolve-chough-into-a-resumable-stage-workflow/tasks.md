@@ -56,7 +56,7 @@ Human gates for this change:
 
 - [x] Set `require_change_for_meaningful_files` and add `skills/` to meaningful paths.
 - [x] Add `specsync change audit` with `fetch-depth: 0` to CI.
-- [x] Migrate Chough's own session; point it at this change; mark `docs/NEXT_CHANGE.md` superseded.
+- [x] Migrate Chough's own session; point it at this change; mark `docs/NEXT_CHANGE.md` deferred (unapproved, not rejected).
 - [x] Write `.chough/cases/cli.cases.toml` for Chough's own requirements.
 - [x] Update README, FRD, decisions, roadmap, architecture, lifecycle, CLI reference, walkthrough, integrations and module companions.
 - [x] Update and add Mermaid diagrams; render; inspect images; update docs/verification.md.
