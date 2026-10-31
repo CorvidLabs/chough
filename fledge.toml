@@ -12,6 +12,7 @@ spec = "specsync check --strict --require-coverage 100 --force"
 audit = "specsync change audit"
 cases = "cargo run --quiet --locked -- cases check"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
+ci-archive-fixtures = "python3 .github/scripts/test-specsync-archive.py"
 [lanes.ci]
 description = "Run full CI pipeline"
 steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "exercise", "build"]
