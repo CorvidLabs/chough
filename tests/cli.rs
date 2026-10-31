@@ -68,6 +68,7 @@ impl Fixture {
         ]);
     }
 
+    #[cfg(unix)]
     fn git(&self, args: &[&str]) {
         let output = Command::new("git")
             .current_dir(self.root())
@@ -216,7 +217,9 @@ fn oversized_records_fail_explicitly() {
 #[test]
 fn init_rejects_unreadable_session_sizes_before_writing() {
     let fixture = Fixture::new();
-    let objective = "x".repeat(65_537);
+    // JSON escapes each control character to six bytes. Keep the actual argument
+    // below Windows' process limit while still exceeding the serialized record cap.
+    let objective = "\u{0001}".repeat(12_000);
     assert!(
         !fixture
             .run(&["init", "--objective", &objective])
