@@ -10,12 +10,13 @@
   "state": "approved",
   "base_commit": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
   "created_at": 1793483736,
-  "updated_at": 1793484781,
+  "updated_at": 1793487826,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
     "src/evidence.rs",
+    "src/bugs.rs",
     "src/prefs.rs",
     "src/main.rs",
     "src/cases.rs",
