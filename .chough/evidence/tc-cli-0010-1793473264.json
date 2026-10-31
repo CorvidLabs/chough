@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0010-1793473264",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact symlink_write_escape_is_rejected_before_any_file_is_created for TC-cli-0010: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0010-1793473264.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0010-1793473264.log": "261558b49945e325492a55ccc09686ffc4d1ae80d29deed837b4b7f8eb7768c5"
+  },
+  "observed_at_unix_seconds": 1793473264,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0010",
+      "digest": "6acb629fe38e8602bcb5b6119f09fbac7ba47f83022380c708479b21d44967de"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "symlink_write_escape_is_rejected_before_any_file_is_created"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test execution_records_failures_and_vacuous_runs_honestly ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 3.65s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/cases.rs (target/debug/deps/cases-83abae7a0b3b015e)

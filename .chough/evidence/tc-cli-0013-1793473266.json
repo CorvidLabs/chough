@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0013-1793473266",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact init_rejects_unreadable_session_sizes_before_writing for TC-cli-0013: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0013-1793473266.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0013-1793473266.log": "ea2cc4b1f77946e4ed8746dd2aa60b1bd229889be53d0b23a337295f7698e569"
+  },
+  "observed_at_unix_seconds": 1793473267,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0013",
+      "digest": "b80d70a70bf028af5339a62e91fed0e4a840777435c8656631d0e193b308b083"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "init_rejects_unreadable_session_sizes_before_writing"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

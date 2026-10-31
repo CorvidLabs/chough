@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0024-1793473284",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cases -- --exact check_validates_links_against_native_records for TC-cli-0024: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0024-1793473284.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0024-1793473284.log": "96119c35f7aade87da0cabeca061a083941ebb1c4ef95a1296c4e3806e560338"
+  },
+  "observed_at_unix_seconds": 1793473285,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0024",
+      "digest": "c1966a20adf20339d19dc63fb495a25d70a1974112df1a8ee655e60039289c6b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cases",
+    "--",
+    "--exact",
+    "check_validates_links_against_native_records"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

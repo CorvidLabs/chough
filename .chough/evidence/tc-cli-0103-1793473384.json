@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0103-1793473384",
+  "criteria": [
+    "LIFE-7",
+    "FLOW-9",
+    "FLOW-11"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-013",
+    "REQ-cli-014"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass. Keyword search plus reading every match in context found the terms kept distinct.",
+  "artifacts": [
+    ".chough/artifacts/wording-review.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/wording-review.md": "34f615c43836fab9305fd3215cd581fb9bc52bdbfc540dd1b06abd263e355c82"
+  },
+  "observed_at_unix_seconds": 1793473384,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0103",
+      "digest": "9292cc0bc18341c46f13fcb9ab98e9da096697f64890c968dc8182d9c5bee9df"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "copy-localization",
+  "limitations": [
+    "Keyword search, not every sentence; English only"
+  ]
+}

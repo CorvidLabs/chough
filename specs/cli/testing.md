@@ -35,6 +35,31 @@ tests and the build.
 No physical deployment, live monitoring, authenticated human acceptance, APS,
 Magpie or other unbuilt integration is covered by this test contract.
 
+## Observed evolution verification — 2026-10-31
+
+Environment: macOS arm64, rustc 1.95.0, hi 0.8.0, fledge 1.7.2, specsync 6.1.1 (the
+versions CI uses). Product tip for the observations below: 5074711, after the scoped
+native check.
+
+- Fledge tasks: fmt, lint (Clippy, all targets, warnings denied), test (37 integration
+  tests across tests/cli.rs, stages.rs, cases.rs, bugs.rs and optional.rs), intent (20
+  active criteria, no problems), spec (strict, 100% file and LOC coverage), audit (1
+  active change, passed after BUG-0001's out-of-scope edit was reverted), cases (40
+  definitions valid), exercise (EXERCISE PASSED) and build all passed.
+- `specsync change check --commit` verified the change and materialized REQ-cli-007
+  to REQ-cli-017; native state `verifying`; human review pending.
+- `chough cases run` recorded TC-cli-0001 to TC-cli-0037 and TC-cli-0101 as passed in
+  `local-macos-arm64`, each with its captured log; `chough cases record` recorded the
+  agent-assisted TC-cli-0102 (cold start) and TC-cli-0103 (wording) as passed with
+  their limits. Records: `.chough/evidence/`, logs and notes: `.chough/artifacts/`.
+  Committing these records moves HEAD, so later status reports them as
+  stale-revision-or-inputs by design; hosted CI reruns the product tests at the tip.
+- Exercises: docs/exercises/feature-bug-loop.md, visual-design.md, intent.md and
+  cold-start.md, with diagrams verified in docs/verification.md.
+
+Not covered: Windows execution of the Unix-gated tests (shell stubs), hosts other
+than Claude Code and Codex, real releases, live monitoring, and any human acceptance.
+
 ## Observed bootstrap verification — 2026-10-31
 
 On macOS arm64, `fledge lanes run verify` passed formatting, all-target Clippy,

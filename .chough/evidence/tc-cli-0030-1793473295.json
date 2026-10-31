@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0030-1793473295",
+  "criteria": [
+    "FLOW-8"
+  ],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact a_reproduced_bug_is_deduplicated_and_keeps_added_evidence for TC-cli-0030: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0030-1793473295.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0030-1793473295.log": "b566c874c0d5ac2b8cacb03457b53ae8f0fd761f721bcea16b47bcb5415add3d"
+  },
+  "observed_at_unix_seconds": 1793473296,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0030",
+      "digest": "f03ece95a477f0e367e440886a5327c8488df3ff8075d7552464c80e1a845b1a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "a_reproduced_bug_is_deduplicated_and_keeps_added_evidence"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

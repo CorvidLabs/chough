@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test migration_is_explicit_and_preserves_schema_1_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.64s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/stages.rs (target/debug/deps/stages-458eff5826836cc1)
