@@ -728,3 +728,39 @@ expected = [
   "Repeated runs are never called soak tests or live health",
   "Dry runs and simulated adapters are never called deployments",
 ]
+
+[[case]]
+id = "TC-cli-0038"
+title = "Large native status still gates by its summary state"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-10", "LIFE-7"]
+requirements = ["REQ-cli-008"]
+paths = ["src/records.rs", "src/stage.rs", "src/main.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::large_native_status_still_gates_by_its_summary_state passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "large_native_status_still_gates_by_its_summary_state"
+
+[[case]]
+id = "TC-cli-0039"
+title = "Checkpoint clear flags apply before new entries"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13"]
+requirements = ["REQ-cli-007"]
+paths = ["src/checkpoint.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::clear_flags_apply_before_new_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "clear_flags_apply_before_new_entries"

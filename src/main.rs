@@ -13,7 +13,7 @@ mod validate;
 use anyhow::{Context, Result, ensure};
 use checkpoint::{SESSION, Session, new_checkpoint, read_session};
 use clap::{Parser, Subcommand};
-use records::{local_path, native, print_json, valid_name, write_new};
+use records::{local_path, native_json, print_json, valid_name, write_new};
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 
@@ -223,32 +223,34 @@ fn init(
     )
 }
 
-fn native_status(root: &Path, change: Option<&str>) -> Result<records::Section> {
-    let mut section = if local_path(root, ".specsync/config.toml")?.is_file()
-        || local_path(root, ".specsync/config.json")?.is_file()
+/// Native SpecSync status: a bounded section for display and, when available, the
+/// summary parsed from the complete response.
+fn native_status(root: &Path, change: Option<&str>) -> Result<(records::Section, Value)> {
+    if !local_path(root, ".specsync/config.toml")?.is_file()
+        && !local_path(root, ".specsync/config.json")?.is_file()
     {
-        match change {
-            Some(change) => native(root, "specsync", &["change", "status", change, "--json"]),
-            None => native(root, "specsync", &["change", "status", "--json"]),
-        }
-    } else {
-        records::Section {
-            source: "specsync change status --json".into(),
-            state: "not-configured".into(),
-            content: "No native SpecSync configuration found; lifecycle state is unknown.".into(),
-        }
-    };
-    if section.state == "observed"
-        && !serde_json::from_str::<Value>(&section.content)
-            .is_ok_and(|value| value.is_array() || value.is_object())
-    {
-        section.state = "invalid-output".into();
-        section.content = format!(
-            "Lifecycle state is unknown: successful SpecSync output is not a complete JSON object or array.\nBounded raw output:\n{}",
-            section.content
-        );
+        return Ok((
+            records::Section {
+                source: "specsync change status --json".into(),
+                state: "not-configured".into(),
+                content: "No native SpecSync configuration found; lifecycle state is unknown."
+                    .into(),
+            },
+            Value::Null,
+        ));
     }
-    Ok(section)
+    let response = match change {
+        Some(change) => native_json(root, "specsync", &["change", "status", change, "--json"]),
+        None => native_json(root, "specsync", &["change", "status", "--json"]),
+    };
+    let summary = response
+        .value
+        .as_ref()
+        .and_then(|value| value.get("summary"))
+        .map_or(Value::Null, |summary| {
+            json!({"state": summary.get("state"), "next_action": summary.get("next_action")})
+        });
+    Ok((response.section, summary))
 }
 
 fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
@@ -259,7 +261,8 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
         Session::V1(_) => None,
     };
-    let native_status = native_status(root, checkpoint.and_then(|c| c.native_change.as_deref()))?;
+    let (native_status, native_summary) =
+        native_status(root, checkpoint.and_then(|c| c.native_change.as_deref()))?;
     let open_bugs = bugs::open_backlog(root)?;
     let blocking = bugs::open_blocking(root)?;
     let (stage_report, next_valid_action) = match checkpoint {
@@ -316,6 +319,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "checkpoint": stage_report,
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
+        "native_summary": native_summary,
         "snapshot": match &current { Ok(value) => serde_json::to_value(value)?, Err(error) => json!({"unknown": error.to_string()}) },
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,

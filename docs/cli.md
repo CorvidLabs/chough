@@ -28,6 +28,10 @@ Output is JSON unless stated otherwise.
 
 Managed JSON is bounded to 64 KiB, case files to 256 KiB, captured output to 1 MiB,
 context to 16 KiB per section and 128 KiB in total, and sessions to 16 modules.
+Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
+up to 16 KiB; `status` and `next` carry the parsed state and next action in
+`native_summary`. Larger output is reported as `oversized` and refuses gated
+transitions.
 Unknown fields and unsupported schema versions are rejected. Paths are
 project-relative; traversal and symlinks are rejected. Native tools and bound
 commands receive direct arguments, never shell-evaluated text.

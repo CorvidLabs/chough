@@ -275,6 +275,97 @@ pub(super) fn native(root: &Path, program: &str, arguments: &[&str]) -> Section 
     }
 }
 
+/// Largest native JSON response parsed in full (SpecSync's own artifact limit).
+pub(super) const PARSE_LIMIT: usize = 4 * 1_048_576;
+
+/// A native command's bounded display section and, when it succeeded with a JSON
+/// object or array within the parse bound, the complete decoded value.
+pub(super) struct NativeJson {
+    pub(super) section: Section,
+    pub(super) value: Option<Value>,
+}
+
+/// Run a native command whose JSON output decides state. The value is parsed from the
+/// complete stdout (up to 4 MiB); the section shown to people stays within 16 KiB.
+pub(super) fn native_json(root: &Path, program: &str, arguments: &[&str]) -> NativeJson {
+    let source = format!("{} {}", program, arguments.join(" "));
+    let output = match Command::new(program)
+        .args(arguments)
+        .current_dir(root)
+        .output()
+    {
+        Ok(output) => output,
+        Err(error) => {
+            return NativeJson {
+                section: Section {
+                    source,
+                    state: "unavailable".into(),
+                    content: format!("Unknown: {error}"),
+                },
+                value: None,
+            };
+        }
+    };
+    if !output.status.success() {
+        return NativeJson {
+            section: Section {
+                source,
+                state: "failed".into(),
+                content: format!(
+                    "exit={:?}\n{}\n{}",
+                    output.status.code(),
+                    bounded(&output.stdout),
+                    bounded(&output.stderr)
+                ),
+            },
+            value: None,
+        };
+    }
+    let length = output.stdout.len();
+    if length > PARSE_LIMIT {
+        return NativeJson {
+            section: Section {
+                source,
+                state: "oversized".into(),
+                content: format!(
+                    "Lifecycle state is unknown: output of {length} bytes exceeds the {PARSE_LIMIT}-byte parse bound.\nBounded raw output:\n{}",
+                    bounded(&output.stdout)
+                ),
+            },
+            value: None,
+        };
+    }
+    match serde_json::from_slice::<Value>(&output.stdout) {
+        Ok(value) if value.is_object() || value.is_array() => {
+            let mut content = bounded(&output.stdout);
+            if length > LIMIT {
+                content.push_str(&format!(
+                    "\n[display only: the complete {length} bytes were parsed]"
+                ));
+            }
+            NativeJson {
+                section: Section {
+                    source,
+                    state: "observed".into(),
+                    content,
+                },
+                value: Some(value),
+            }
+        }
+        _ => NativeJson {
+            section: Section {
+                source,
+                state: "invalid-output".into(),
+                content: format!(
+                    "Lifecycle state is unknown: successful output is not a complete JSON object or array.\nBounded raw output:\n{}",
+                    bounded(&output.stdout)
+                ),
+            },
+            value: None,
+        },
+    }
+}
+
 /// The current Git HEAD when one exists; recorded with transitions as context only.
 pub(super) fn head_revision(root: &Path) -> Option<String> {
     let output = Command::new("git")
