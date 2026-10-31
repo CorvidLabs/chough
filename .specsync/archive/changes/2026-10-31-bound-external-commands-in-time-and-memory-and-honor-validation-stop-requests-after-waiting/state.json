@@ -7,11 +7,11 @@
   "title": "Bound external commands in time and memory and honor validation stop requests after waiting",
   "description": "Bound external commands in time and memory and honor validation stop requests after waiting",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "31d5105343a46728551648375bf9a33e213a3ce3",
   "created_at": 1793479779,
-  "updated_at": 1793485496,
+  "updated_at": 1793485965,
   "affected_specs": [
     "cli"
   ],
