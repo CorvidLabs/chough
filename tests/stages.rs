@@ -729,3 +729,35 @@ specsync change status $id --json
         "native:approved"
     );
 }
+
+#[test]
+fn native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes() {
+    // BUG-0013: SpecSync mints IDs up to 120 bytes and reads up to 255.
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = "prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package";
+    assert_eq!(id.len(), 117);
+    fixture.ok(&["checkpoint", "--native-change", id]);
+    assert_eq!(fixture.session()["native_change"], id);
+    assert_eq!(
+        fixture.ok(&["checkpoint"])["checkpoint"]["native_change"],
+        id
+    );
+    let ceiling = "a".repeat(255);
+    fixture.ok(&["checkpoint", "--native-change", &ceiling]);
+    let too_long = "a".repeat(256);
+    assert!(
+        fixture
+            .fails(&["checkpoint", "--native-change", &too_long])
+            .contains("invalid native change ID")
+    );
+    for malformed in ["has space", "dot.dot", "../escape", ""] {
+        assert!(
+            fixture
+                .fails(&["checkpoint", "--native-change", malformed])
+                .contains("invalid native change ID"),
+            "{malformed:?}"
+        );
+    }
+    assert_eq!(fixture.session()["native_change"], ceiling);
+}

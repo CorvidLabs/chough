@@ -1,0 +1,9 @@
+# BUG-0013 reproduction: chough built from 0xleif/feat/first-release-candidate 3596a10; specsync 6.1.1; macOS arm64; 2026-10-31T23:08:29Z
+# SpecSync minted this ID from the change description (MAX_SLUG_BYTES 120, reads up to MAX_CHANGE_ID_BYTES 255).
+$ specsync change status prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package --json | jq -r .summary.state
+verifying
+$ printf %s <id> | wc -c
+117
+$ chough checkpoint --native-change <id>
+Error: invalid native change ID
+exit=1

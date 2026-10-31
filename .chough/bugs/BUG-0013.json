@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0013",
+  "title": "Checkpoint refuses native change IDs longer than 100 bytes that SpecSync mints",
+  "symptom": "chough checkpoint --native-change <117-byte id> fails with invalid native change ID",
+  "trigger": "A SpecSync change whose description slug exceeds 100 bytes (SpecSync mints up to 120)",
+  "expected": "Native change IDs are accepted up to SpecSync's own ceiling with SpecSync's character rules",
+  "actual": "valid_name caps every record name at 100 bytes",
+  "criteria": [
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-007",
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "3596a10482def000d78e160cde0f7fa3cbaccbf0",
+  "steps": [
+    "specsync change new with a long description",
+    "chough checkpoint --native-change <id>"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0013-repro-1"
+  ],
+  "impact": "Long-described native changes cannot be checkpointed; every gated stage move refuses as no-native-change",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Found while checkpointing the release candidate, 2026-10-31",
+  "notes": [],
+  "created_at_unix_seconds": 1793488113,
+  "updated_at_unix_seconds": 1793488113
+}

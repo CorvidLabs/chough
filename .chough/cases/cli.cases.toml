@@ -1237,3 +1237,21 @@ expected = ["tests/package.rs::bundle_files_from_the_latest_main_build_are_never
 adapter = "cargo-test"
 test_target = "package"
 test = "bundle_files_from_the_latest_main_build_are_never_reported_as_edited"
+
+[[case]]
+id = "TC-cli-0066"
+title = "Native change IDs up to the SpecSync ceiling are kept across processes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13"]
+requirements = ["REQ-cli-007", "REQ-cli-008"]
+paths = ["src/checkpoint.rs", "src/records.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes"
