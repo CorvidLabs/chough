@@ -27,3 +27,6 @@ One destination check replaces the two purpose-specific gates in `src/stage.rs`.
   `enabled` defaulting to true; anything else is `Invalid(reason)` and refuses. Unknown
   fields are accepted, as SpecSync accepts them.
 - No new dependency, no native write, no change to how native status is read.
+- The test stub in `tests/common/mod.rs` reports `approval_valid` (and, for archived,
+  `terminal_evidence.validity`) the way SpecSync 6.1.1 does, so stubbed tests exercise
+  the same fields as real ones; a stub mode omits them to test the fail-closed path.
