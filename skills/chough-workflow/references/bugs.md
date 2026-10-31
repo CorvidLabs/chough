@@ -1,102 +1,68 @@
-# Reproduce, classify, deduplicate and report a bug
+# Reproduce, classify, deduplicate and record a bug
 
-Use this procedure for a suspected defect, including a failing acceptance check.
-The report can remain a local draft; a request to investigate does not by itself
-authorize posting an issue, comment, or message to another person.
+Use this procedure for a suspected defect, including a failing case. Bugs live
+locally first in `.chough/bugs/`. A request to investigate does not authorize
+posting an issue, comment or message; publication needs an explicit request or an
+authorization the human already established.
 
 ## Establish the failure
 
-Find the applicable HI criterion and module contract/requirement. If intended
-behavior is unclear, preserve the observation and ask the smallest product question
-that distinguishes a bug from a new request. Do not silently rewrite intent to
-match the implementation.
+Find the applicable HI criterion, requirement and case. If the intended behavior is
+unclear, keep the observation and ask the smallest question that separates a defect
+from a new request. Do not rewrite intent to match the implementation.
 
-Record the exact revision, dirty worktree state, tool/runtime versions and relevant
-environment. Reduce the reproduction to the smallest safe fixture, data and steps
-that still show the failure. Save actual expected/observed behavior and output;
-label an unexecuted reproduction as unverified. Avoid real credentials, private
-customer data or destructive production actions when a local fixture suffices.
+Reduce the reproduction to the smallest safe fixture and steps. Run it and record the
+result as an observation: `chough cases run <case> --environment <env>` for a bound
+case, or `chough evidence add … --outcome failed` with the saved output. A bug without
+a linked failed observation is reported as `unverified`. Avoid real credentials,
+private data or destructive production actions when a local fixture suffices.
 
-Classify based on evidence, keeping confidence visible:
+## Classify from evidence
 
 | Class | Evidence needed |
-| --- | --- |
-| Product defect | Observed behavior contradicts an applicable criterion/contract. |
-| Regression | It fails now and a demonstrated earlier revision passes the same case. |
-| Environment/tooling | Failure is isolated to an identified environment/tool input. |
-| Requirement gap | Behavior is observed, but the intended outcome is unresolved. |
-| Evidence gap | Existing claims cannot be reproduced or their evidence is missing/stale. |
+|---|---|
+| product-defect | Observed behavior contradicts an applicable criterion or contract |
+| regression | Fails now, and a passed observation at an earlier ancestor revision exists (`--regression-baseline <observation>`) |
+| environment | The failure is isolated to an identified environment or tool input |
+| requirement-gap | Behavior is observed, but the intended outcome is unresolved |
+| evidence-gap | Existing claims cannot be reproduced or their evidence is missing or stale |
 
-State impact separately from severity/priority. A plausible cause is a hypothesis
-until a test or investigation supports it. Do not call something a regression
-solely because the reporter remembers that it used to work.
+A plausible cause is a hypothesis until a test supports it. A remembered "it used to
+work" is not a regression baseline. State impact separately from priority.
 
-## Search before filing
+## Search, then record
 
-Search local bug records, native tasks and relevant requirements using `rg`. Use
-Fledge's GitHub issue list/view commands when that connected repository is in
-scope, for example:
-
-```bash
-fledge github issues --state all --limit 100 --json
-fledge github issues view 42 --comments --json
+```sh
+chough bug search "<symptom and trigger>" --requirement <REQ> --case <case>
+chough bug add --title "…" --symptom "…" --trigger "…" --expected "…" --actual "…" \
+  --environment <env> --requirement <REQ> --case <case> --observation <failed-obs> \
+  --step "…" --scope blocking|in-scope|out-of-scope --classification product-defect
 ```
 
-The list is bounded; if it cannot establish adequate coverage, report that limit
-and use an available supported search interface. Compare symptom, trigger, affected
-criterion and likely cause, not title alone. A match can be related without being
-the same defect. Link a verified duplicate rather than creating a second issue;
-preserve any new reproduction/evidence for an authorized update. Do not close or
-comment on an issue merely because it looks related.
+`bug add` refuses when a similar bug exists. Compare symptom, trigger and affected
+behavior, not titles. For the same defect, append to the existing record with
+`chough bug update <BUG> --observation <id> --note "<what this adds>"`; for a related
+but distinct one, add with `--distinct "<why>"` and link it with `--related`.
 
-## Draft a useful report
+Search wider sources only when they are in scope, for example `fledge github issues
+--state all --limit 100 --json`. That list is bounded and can hide fetch errors; say
+what you searched and its limits.
 
-Keep the report alongside the repository's existing bug records or attach it to
-the relevant native change. Use this shape, replacing the example field guidance
-with actual findings and stating unknowns explicitly:
+## Scope decides the next step
 
-```markdown
-# Observed symptom and trigger
+- `blocking`: the acceptance-relevant behavior is wrong. `chough stage advance` from
+  test refuses while it is open; go back to build, fix, and rerun the focused cases.
+- `in-scope`: fix within the approved scope when practical.
+- `out-of-scope`: keep it visible in the backlog for later work. It does not expand
+  the current change.
 
-Classification and confidence: what the evidence establishes
-Impact: affected user action and practical consequence
-Traceability: HI IDs; REQ IDs; contract paths; related issue/change URLs
+After a fix, link the passing observation and set `--status verified`, which needs a
+linked passed observation. Bugs found after closure normally become new native
+changes; use native recovery only when the original recorded evidence needs repair.
 
-## Reproduction
-Revision/worktree: exact commit and relevant local changes
-Environment: OS/runtime/tool versions and relevant configuration
-Fixture: path or sanitized input
-Steps: smallest executed sequence
-Expected: behavior supported by intent/contract, or unresolved question
-Observed: actual behavior and error/output
-Frequency: observed runs and outcome, or unknown
+## Report candidates
 
-## Evidence and deduplication
-Artifacts: logs/screenshots/test result paths and any Chough evidence IDs
-Search scope: local sources, issue query/list limit, date
-Existing matches: duplicate/related/unrelated with reasons, or none found
-Limits: missing observations and unverified hypotheses
-
-## Proposed next action
-Smallest test, product decision, or native change needed
-```
-
-When issue creation is authorized, use the available GitHub connector or Fledge
-issue command after reviewing the exact report text; preserve real newlines and
-quote it safely. Return the resulting URL. Without that authorization, deliver the
-draft and its location. Do not post messages to people as an implicit part of a
-bug investigation.
-
-## Repair and close the loop
-
-Use the native SpecSync bug-fix change lifecycle in
-[lifecycle.md](lifecycle.md), with the failing behavior as an acceptance case. Show
-the reproduction fail before the fix where practical, then pass afterward; run
-relevant adjacent product checks. Link the new evidence to the same durable HI
-and requirement IDs. An untested fix remains an unverified hypothesis.
-
-Verify the delivered target if delivery is in scope. Resolve an issue only when
-the authorized workflow and actual evidence support it; passing a local test does
-not establish a production fix. Record a focused lesson in native context/`.3md`
-only when the source, scope and future use are clear, and update the session with
-the actual next action.
+`chough bug report <BUG>` prints a Markdown candidate built from the record, marked as
+not published. Review it, and post it only when the human asks. Then return the
+resulting URL and add it to the record with a note. Record a lesson in the native
+module source only when its source, scope and future use are clear.
