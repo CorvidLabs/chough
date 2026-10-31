@@ -1,4 +1,52 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793480904,
+      "digest": "d358e8b1b252d3b69c2e99571e6d98a48052503cd4f194606bf2502ee4af2221",
+      "note": "Approved by 0xLeif in the Claude Code session on 2026-10-31 (\"I approve\"), after the scope packages on PRs #3, #7 and #8 were presented; recorded by the agent on that instruction.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting",
+        "title": "Bound external commands in time and memory and honor validation stop requests after waiting",
+        "description": "Bound external commands in time and memory and honor validation stop requests after waiting",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/",
+          "Cargo.lock",
+          "Cargo.toml",
+          "docs/cli.md",
+          "src/cases.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/validate.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A case run with a 1 s deadline whose descendant holds the pipes returns within a few seconds as failed with a timeout limitation; a command that exits while a descendant holds the pipes returns by its deadline with a limitation naming the stopped descendants; output beyond 1 MiB per stream is counted, not retained, and the artifact notes the discarded byte count (BUG-0010).",
+          "A repeated validation run checks for a stop request and a paused checkpoint immediately before every attempt, including after its interval, and waits in slices so a stop during a long interval ends the run promptly with no further attempt (BUG-0009, REQ-cli-011).",
+          "Every external command Chough runs (case bindings, native status and other native reads) is read through one bounded runner: each stream retains at most its cap while reading and keeps draining beyond it, both streams are read concurrently, and the run ends by its deadline. On a deadline, or when output is still held open after the command exits, the command and its descendants are stopped (Unix: its process group; Windows: its process tree), and any reader still blocked is abandoned rather than awaited (BUG-0010, BUG-0011, REQ-cli-011, REQ-cli-006).",
+          "Existing behavior these rules do not name is unchanged; the full suite, the feature-and-bug exercise and native structural checks pass on Ubuntu, macOS and Windows CI; regression tests cover descendants, deadlines and output bounds per platform and the stop-during-interval case, and BUG-0009 to BUG-0011 are verified by passing observations.",
+          "Native reads keep the 16 KiB display bound and its truncation note, parse complete stdout up to 4 MiB, retain at most 16 KiB of stderr, and report a response over the bound, a failure, an undecodable or unavailable command, or a deadline (default 120 s, CHOUGH_NATIVE_TIMEOUT_SECONDS 1 to 3600) explicitly; gated moves refuse each of them as native-unknown, and status and next show the state and next action (BUG-0011, REQ-cli-003)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "specs/cli/context.md lessons: list human gates as plain text, not checkboxes; run the scoped check before executing cases for new requirements; a run without a test result is not-run; pub(super), not pub(crate); disposable repositories need a local Git identity. Invariants 5 and 7: captured output is bounded and bound commands run without a shell. BUG-0004's archived fix (parse beyond the 16 KiB display bound, 4 MiB parse bound) is kept, not redone.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2b342f71812fdb3299509492a08604d1c8410179ceb9243848fff8f4b77240c2"
+      }
+    }
+  ],
   "reopenings": []
 }
