@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0017-1793473270",
+  "criteria": [
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-007"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact checkpoint_round_trips_across_processes_and_rejects_unknown_fields for TC-cli-0017: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0017-1793473270.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0017-1793473270.log": "279f66415a943a1adc6403b558a2d454904f51631b5ef154154b13cedc0085af"
+  },
+  "observed_at_unix_seconds": 1793473271,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0017",
+      "digest": "52e0e9fa15511eac414de63f623a1c883743c70f659f71b404c884e955e9eaff"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "checkpoint_round_trips_across_processes_and_rejects_unknown_fields"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

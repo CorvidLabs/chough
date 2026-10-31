@@ -30,7 +30,11 @@ jobs:
     name: Fledge / HI / SpecSync
     runs-on: ubuntu-latest
     steps:
+      # `specsync change audit` compares verification commits with HEAD's ancestry;
+      # a shallow clone would report every change as orphaned.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
@@ -39,9 +43,11 @@ jobs:
       - uses: CorvidLabs/fledge@b648ea2a622221d4f2ffbc7ba7aa829e6cf13a51
         with:
           version: v1.7.2
-      - uses: CorvidLabs/spec-sync@v6.1.0
+      # Lifecycle writers and CI use SpecSync 6.1.1. The v6.1.1 Action tag keeps a
+      # 6.1.0 omitted-input default, so the binary version is passed explicitly.
+      - uses: CorvidLabs/spec-sync@v6.1.1
         with:
-          version: '6.1.0'
+          version: '6.1.1'
           strict: 'true'
           require-coverage: '100'
       - run: cargo install human-intent --version 0.8.0 --locked

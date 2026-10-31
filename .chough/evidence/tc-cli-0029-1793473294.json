@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0029-1793473294",
+  "criteria": [
+    "FLOW-8"
+  ],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact unverified_out_of_scope_bugs_stay_visible_without_changing_scope for TC-cli-0029: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0029-1793473294.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0029-1793473294.log": "442efd399225b82358c13385de7857299841b6d32880e6573ccccf06811c8763"
+  },
+  "observed_at_unix_seconds": 1793473294,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0029",
+      "digest": "17e873396849332f80bcbbfcb5d239d33caa6b7daad477db999b29dad46f92db"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "unverified_out_of_scope_bugs_stay_visible_without_changing_scope"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

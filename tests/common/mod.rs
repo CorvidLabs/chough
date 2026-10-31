@@ -1,0 +1,151 @@
+#![allow(dead_code)]
+//! Isolated project fixtures shared by the workflow integration tests.
+
+use serde_json::Value;
+use std::fs;
+use std::path::Path;
+use std::process::{Command, Output};
+use tempfile::TempDir;
+
+pub(super) struct Fixture(TempDir);
+
+impl Fixture {
+    pub(super) fn new() -> Self {
+        let fixture = Self(tempfile::tempdir().unwrap());
+        fixture.write("AGENTS.md", "Project instructions\n");
+        fixture.write("INTENT.md", "A user wants a reliable product.\n");
+        fixture.write("specs/cli/cli.spec.md", "# CLI contract\n");
+        fixture.write(
+            "specs/cli/requirements.md",
+            "### REQ-cli-001\nPreserve files.\n\n### REQ-cli-002\nResume.\n\n### REQ-cli-003\nDelegate.\n",
+        );
+        fixture.write("src/input.txt", "first version\n");
+        fixture
+    }
+
+    pub(super) fn root(&self) -> &Path {
+        self.0.path()
+    }
+
+    pub(super) fn write(&self, name: &str, content: &str) {
+        let path = self.root().join(name);
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(path, content).unwrap();
+    }
+
+    pub(super) fn read(&self, name: &str) -> String {
+        fs::read_to_string(self.root().join(name)).unwrap()
+    }
+
+    pub(super) fn exists(&self, name: &str) -> bool {
+        self.root().join(name).exists()
+    }
+
+    pub(super) fn run(&self, args: &[&str]) -> Output {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
+        command.arg("--root").arg(self.root()).args(args);
+        let mut paths = vec![self.root().join("bin")];
+        paths.extend(std::env::split_paths(
+            &std::env::var_os("PATH").unwrap_or_default(),
+        ));
+        command.env("PATH", std::env::join_paths(paths).unwrap());
+        command.output().unwrap()
+    }
+
+    /// Run a command that must succeed and print JSON.
+    pub(super) fn ok(&self, args: &[&str]) -> Value {
+        let output = self.run(args);
+        assert!(
+            output.status.success(),
+            "{args:?} failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        serde_json::from_slice(&output.stdout).unwrap()
+    }
+
+    /// Run a command that must fail; returns its error text.
+    pub(super) fn fails(&self, args: &[&str]) -> String {
+        let output = self.run(args);
+        assert!(
+            !output.status.success(),
+            "{args:?} unexpectedly succeeded: {}",
+            String::from_utf8_lossy(&output.stdout)
+        );
+        String::from_utf8_lossy(&output.stderr).into_owned()
+    }
+
+    pub(super) fn init(&self) {
+        self.ok(&[
+            "init",
+            "--objective",
+            "Ship a focused change",
+            "--intent-scope",
+            "LIFE",
+            "--module",
+            "cli",
+        ]);
+    }
+
+    pub(super) fn session(&self) -> Value {
+        serde_json::from_str(&self.read(".chough/session.json")).unwrap()
+    }
+
+    pub(super) fn git(&self, args: &[&str]) {
+        let output = Command::new("git")
+            .current_dir(self.root())
+            .args([
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.invalid",
+                "-c",
+                "commit.gpgsign=false",
+                "-c",
+                "init.defaultBranch=main",
+            ])
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    pub(super) fn commit(&self, message: &str) {
+        if !self.exists(".git") {
+            self.git(&["init"]);
+        }
+        self.git(&["add", "."]);
+        self.git(&["commit", "--allow-empty", "-m", message]);
+    }
+
+    /// Stub `hi` and `specsync`; the native change state is read from `.stub-state`.
+    #[cfg(unix)]
+    pub(super) fn stubs(&self) {
+        self.write(
+            "bin/hi",
+            "#!/bin/sh\nprintf '%s\\n' '{\"hi\":1,\"export\":1,\"files\":[{\"criteria\":[{\"id\":\"LIFE-1\"},{\"id\":\"LIFE-3\"},{\"id\":\"FLOW-6\"},{\"id\":\"FLOW-7\"},{\"id\":\"FLOW-8\"}],\"retired\":[{\"id\":\"LIFE-2\"}]}]}'\n",
+        );
+        self.write(
+            "bin/specsync",
+            "#!/bin/sh\nif [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action for %s\"}}\\n' \"$state\" \"$state\"\n",
+        );
+        self.executable("bin/hi");
+        self.executable("bin/specsync");
+    }
+
+    #[cfg(unix)]
+    pub(super) fn executable(&self, name: &str) {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(self.root().join(name), fs::Permissions::from_mode(0o755)).unwrap();
+    }
+
+    /// Configure an enabled native lifecycle whose status the stub reports.
+    pub(super) fn native(&self, state: &str) {
+        self.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
+        self.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+        self.write(".stub-state", &format!("{state}\n"));
+    }
+}

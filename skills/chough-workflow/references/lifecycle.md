@@ -1,101 +1,62 @@
 # Native lifecycle and evidence
 
-Use this reference for a scoped feature, contract change, or bug fix. Installed
-`specsync change status <id> --json`, `ship-status`, and command help are authoritative
-for the current state and recovery path. This example follows the verified 6.x
-workflow; do not hardcode it over a different version's actual output.
+Installed `specsync change status <id> --json`, `specsync change ship-status <id>` and
+command help are authoritative for the current state and recovery path. This
+reference follows SpecSync 6.1; do not hardcode it over another version's output.
+Match the SpecSync version used by lifecycle writers and CI.
 
-## Define before implementing
+## Shape of a change
 
-Read relevant HI criteria and native module companions. Use the proposed FRD and
-requirements to make the scope concrete: desired behavior, affected modules/paths,
-acceptance checks, non-goals and unresolved product decisions. Requirements retain
-their identity; current achievement belongs in evidence.
-
-Create the native change, for example:
-
-```bash
-specsync change new "Describe one scoped outcome" --spec auth --path src/auth.rs --json
+```text
+new → interview → artifacts and delta → one human scope approval → implement →
+check --commit → push, CI → human implementation review → review → ship/finalize →
+push archive, CI → merge
 ```
 
-The returned ID and deterministic interview belong to SpecSync. Answer its actual
-question IDs with `specsync change answer <id> <question-id> "<answer>" --json` and
-complete its selected artifacts/deltas. Link HI IDs and `REQ-*` IDs in the native
-requirements and change artifacts. Do not create a second Chough change state.
+| Native state | Chough stage | Gate |
+|---|---|---|
+| draft | plan | build refused |
+| approved, implementing, verifying | build, test, accept | build allowed; leaving accept refused |
+| archived | accept → done | done allowed |
 
-Present a concrete scope to the human when native policy requires human scope
-approval and it has not already been given for that scope. Record
-`specsync change approve <id> --actor <human>` only after a real, relevant human
-decision. A generic instruction to keep working does not establish approval of a
-new, materially different definition. Actor text is a portable claim, not identity
-authentication. Do not substitute an agent review or a fabricated human label.
+Chough reads `summary.state` for these gates and refuses when status is missing or
+cannot be decoded. It never runs `approve`, `review` or `finalize` for you.
 
-Bootstrap or draft work may be permitted by actual repository/native policy.
-Label it honestly; do not claim that optional or unperformed lifecycle gates passed.
+## Approval
 
-## Implement and verify
+Record `specsync change approve <id> --actor "<human>"` only after a real human
+decision about this concrete definition. A general instruction to keep working is
+not approval of a new definition. Actor text is a portable claim, not identity.
 
-Follow the approved contract and keep paths, public API tables and companions
-current. Run the project's meaningful product checks through Fledge tasks/lanes.
-Use an isolated fixture for preservation, failure and session-resumption behavior
-where those properties matter. A check that merely matches the implementation's
-wording is not a product test.
+## Verification
 
-Record each observation with:
+`specsync change check <id> --commit` materializes the approved delta and records
+targeted structural verification. Stage new source files first. It does not run the
+project's tests; product checks are separate observations. It refuses an edited
+delta and incomplete tasks. Fix real failures; if evidence is stale, follow the exact
+recovery action status names.
 
-- HI criterion IDs, requirement IDs and contract paths;
-- actual revision/worktree and environment;
-- command or procedure, observed result and supporting artifacts;
-- limits, missing checks and any human decision provenance that actually exists.
+## Review, archive, merge
 
-`chough evidence add` can bind a local observation to its Git/worktree fingerprint;
-it does not execute the procedure, authenticate a witness, verify a remote artifact,
-or replace native SpecSync verification/review records.
+Push only after the applicable local gates and observe required CI at the actual tip.
+After the human reviews the change package, diff, delta and evidence:
 
-When native status permits, use scoped verification:
-
-```bash
-specsync change check <id> --commit
-```
-
-This materializes approved deltas and records structural verification. Stage new
-source files first when required by the native tool. Do not infer product-test
-success from this command. Fix genuine failures before continuing; if evidence is
-stale, follow the state-specific recovery action returned by native status.
-
-## Review, archive, merge and verify delivery
-
-Push only after the applicable local gates. Observe required hosted CI at the
-actual product tip. Obtain the implementation review required by the repository
-and record a native scoped human review only when that decision was actually made:
-
-```bash
-specsync change review <id> --reviewer <human>
+```sh
+specsync change review <id> --reviewer "<human>"
 specsync change ship <id>
 ```
 
-The reviewer may be the scope approver where policy permits it. Review binds the
-current workspace: do not commit between review and ship/finalize. Follow status
-if prerequisites are incomplete. `finalize` is the explicit native archive command;
-`ship` preflights and finalizes when eligible.
+The reviewer may be the scope approver. Do not commit between review and ship or
+finalize. Archive on the same pull request, push the archive commit, wait for its
+checks, and merge only when every change on that pull request is archived. Review and
+finalize several changes one at a time.
 
-Archive on the same PR before merging. Commit/push the archive tip, observe its
-required CI, and merge only after all active changes on that PR are archived.
-Review and finalize sequentially when several changes share a PR; another archive
-can stale accepted evidence. Do not assume that an already merged active change
-can recover through a generic re-check; use the exact native recovery output.
+Merge, package publication, release, deployment and live health are separate
+observations; see [release.md](release.md).
 
-Merge, package publication, release and deployment are separate observations.
-Verify the actual requested delivery target and revision, then run the relevant
-product/acceptance check there. Link its environment and result. If no deployment
-was requested or performed, say that explicitly. Human acceptance remains a real
-decision over the presented behavior, not a successful command exit.
+## Evidence records
 
-## Compound without duplicating records
-
-Native tasks capture remaining work; testing companions link observed checks;
-context or existing `.3md` planes hold decisions and useful lessons. A lesson
-should name its source, applicable scope, and the future action it changes. Mark
-contradicted lessons revised/retired with the reason. The Chough session points
-the next agent at these sources and the native next action instead of retaining an
-ever-growing transcript.
+`chough cases run` and `chough evidence add` bind an observation to the Git revision,
+working-tree fingerprint, environment, artifacts and, for cases, the definition
+digest. They do not authenticate a witness or verify a remote artifact. A changed
+input, artifact, case definition or environment makes the observation stale.

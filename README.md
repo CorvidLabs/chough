@@ -2,18 +2,19 @@
 
 **A portable development workflow kit for coding agents: skills, human intent, specs, testing, and local context for resumable work.**
 
-Chough (pronounced **chuff**) is a portable agent skill with a small Rust helper.
-The current agent does the work. HI holds durable human criteria, SpecSync owns
-contracts and its native change lifecycle, and Fledge runs project tasks. Chough
-assembles focused context and records observations tied to a revision and environment.
+Chough (pronounced **chuff**) is a portable agent skill with a small Rust helper. It is
+current-agent-first and agent-neutral: the same skill and records are meant for
+capable GPT/Codex, Claude, Grok, Kimi and local-model hosts. You keep working with
+the agent you already use. Chough gives it a shared stage workflow
+and a checkpoint in plain project files. HI keeps the human's wording and criterion
+IDs, SpecSync owns contracts and the native change lifecycle, and Fledge runs tasks.
+Chough records what stage work is in, what was decided, what was actually checked
+(with the revision and environment), which bugs are open, and the next valid action.
 
 ![Chough and the tools that own its records](docs/diagrams/ownership.svg)
 
-This is the first working foundation in a **private** CorvidLabs repository.
-The CLI and starter skill below exist today. The broader [agreed lifecycle](docs/lifecycle.md)
-is design for the next evolution, not a claim that stage orchestration, monitoring,
-or a librarian has been implemented. Install from source; this bootstrap published
-no package, release, or hosted service.
+This is a **private** CorvidLabs repository. Install from source; nothing is
+published, released or hosted.
 
 ## Start here
 
@@ -24,56 +25,65 @@ cargo install --path . --locked
 chough --help
 ```
 
-Use an installed `hi`, `specsync`, and `fledge` for their native capabilities.
-Check their versions before adopting the workflow; match SpecSync lifecycle writers
-and CI. The helper reports missing tools instead of treating their work as complete.
-
-Inside a Git project with existing HI criteria and module contracts:
+In a Git project with HI criteria and SpecSync module contracts:
 
 ```sh
-chough init --objective "Make the checkout failure reproducible" \
-  --intent-scope CHECKOUT --module checkout
-chough context
-chough status --environment local
+chough init --objective "Free shipping from fifty dollars" \
+  --intent-scope CHECKOUT --module shipping --host claude
 chough next --environment local
 ```
 
-`init` creates a focused session and a discoverable
-`.agents/skills/chough-workflow/SKILL.md`, preserving existing files. Invoke
-`$chough-workflow` on a host that supports that skill convention, or give the current
-agent the [canonical skill](skills/chough-workflow/SKILL.md). See the
-[walkthrough](docs/walkthrough.md) for a feature, failed test, bug report, and resumed session.
+`init` never overwrites existing files. It writes the checkpoint
+`.chough/session.json` and copies the skill bundle into each requested host's
+project skill directory (`openai` → `.agents/skills`, `claude` → `.claude/skills`,
+also `codex`, `cursor`, `gemini`, `grok`). Then ask your agent in plain language,
+for example "Use the Chough workflow to add free shipping at fifty dollars", or give
+it [the skill](skills/chough-workflow/SKILL.md) directly.
 
-## What works now
+## The loop
 
-| Surface | First-slice behavior |
+![Stages, backtracking and side stages](docs/diagrams/stages.svg)
+
+| Stage | What happens | Who decides |
+|---|---|---|
+| intent | Capture wants in HI, derive an FRD, synthesize role reviews | The human approves the intent as a whole |
+| design | Only for visual changes: one local HTML/CSS prototype and its companion | The human approves the render and notes together |
+| plan | SpecSync change with design, plan and tasks | One native scope approval |
+| build | Implement the approved tasks through Fledge | Agent, within scope |
+| test | Focused cases for the affected criteria; three tracks | Evidence, not opinion |
+| accept | Present evidence; native review, then same-PR archive | The human reviews the implementation |
+| release | Optional, only on request or a standing setting | The human |
+
+Any stage can iterate, go back, reset, pause, resume or be skipped with a reason.
+Side stages for bugs, optional repeated validation and the optional librarian return
+to their caller. Entering build and leaving accept are gated by native SpecSync
+state, never by a saved label.
+
+## What the helper does
+
+| Command | Purpose |
 |---|---|
-| `init` | Preserves existing project files; installs the skill and a plain JSON session. |
-| `context` | Selects instructions, scoped HI export, chosen module contracts and companions, decisions, questions, and the next action. |
-| `status`, `next` | Reports local evidence freshness and the native SpecSync response; missing information stays explicit. |
-| `evidence add` | Records an observation with criterion and requirement IDs, contracts, artifacts, environment, and Git fingerprint. |
-| Starter workflow skill | Provides guidance for intent, FRD synthesis, native changes, product checks, bug investigation, delivery observations, and lessons; the agent performs the work. |
+| `init`, `skill status/update` | Install the skill per host without overwriting edits |
+| `next`, `status`, `context` | Resume: stage, gates, freshness, open bugs, focused sources |
+| `checkpoint`, `migrate` | Keep the single checkpoint; migrate schema 1 explicitly |
+| `stage …` | Advance, skip, iterate, back, reset, pause, resume, enter and return |
+| `cases check/select/run/record` | Validate `chough-testing/1` definitions, select focused cases, record honest outcomes |
+| `evidence add` | Record an observation bound to revision, inputs, environment and artifacts |
+| `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
+| `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
+| `library init/snapshot/index` | Optional project-local librarian |
 
-Evidence is recorded after work is observed. Chough does not execute a product test
-when you add an observation, authenticate a human, or infer that a deployment
-succeeded. Structural checks and product tests remain different forms of evidence.
+Chough does not authenticate people, record approvals or reviews, publish anything,
+or deploy. A structural pass, an exit code or an actor label is never treated as
+behavioral proof or human acceptance.
 
-## Agreed direction: planned workflow
+## Try it
 
-Chough stays current-agent-first and agent-neutral: the same skills and records
-should work with capable GPT/Codex, Claude, Grok, Kimi, and local-model hosts.
-Supported host commands are entry points into that workflow; universal skill/slash
-command discovery across those hosts has not been established.
-
-The planned loop moves from HI and an FRD through conditional local HTML/CSS design,
-one coherent SpecSync technical scope, implementation, focused tests, local bug
-repair, human acceptance/review, and native closeout. Release is optional.
-Mandatory checkpoints support cold resume even when the optional project-local
-librarian is off. Repetition/monitoring follows explicit project preferences and
-persists findings locally. [Lifecycle design](docs/lifecycle.md) explains the
-human gates, iteration and optional stages; [roadmap](docs/ROADMAP.md) distinguishes
-that work from the current foundation. APS storage and 3md test profiles remain
-candidates to qualify, and Rune coordination is optional/later.
+- [Feature and bug exercise](docs/exercises/feature-bug-loop.md):
+  `fledge run exercise` runs a real loop in a disposable sample.
+- [Visual design exercise](docs/exercises/visual-design.md) with rendered review.
+- [Cold start by an independent agent](docs/exercises/cold-start.md).
+- [Walkthrough](docs/walkthrough.md): install, one feature and bug, and resuming.
 
 ## Develop Chough
 
@@ -81,18 +91,17 @@ candidates to qualify, and Rune coordination is optional/later.
 fledge run fmt
 fledge run test
 fledge run lint
-fledge lanes run pre-push
+fledge lanes run verify
 ```
 
-Read [AGENTS.md](AGENTS.md), [human intent](INTENT.md), the
-[derived requirements](docs/FRD.md), and the [CLI contract](specs/cli/cli.spec.md)
-before changing behavior. The bootstrap uses real HI, Fledge, and SpecSync structural
-checks. It does not claim a human-approved, reviewed, and archived native change.
-Subsequent scoped changes should follow the [native lifecycle](docs/lifecycle.md).
+Read [AGENTS.md](AGENTS.md), [intent](INTENT.md), the [FRD](docs/FRD.md) and the
+[CLI contract](specs/cli/cli.spec.md) before changing behavior. Product changes go
+through the native SpecSync lifecycle; the policy requires a change for meaningful
+files.
 
-- [Architecture and context boundaries](docs/architecture.md)
-- [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), and [deferred, unapproved evidence-reuse proposal](docs/NEXT_CHANGE.md)
-- [Integration map and precise limits](docs/integrations.md)
+- [Architecture](docs/architecture.md), [lifecycle](docs/lifecycle.md), [CLI reference](docs/cli.md)
+- [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
+- [Deferred, unapproved evidence-reuse proposal](docs/NEXT_CHANGE.md)
 - [Diagram rendering and visual verification](docs/verification.md)
 
 MIT licensed. This repository's visibility and its software license are separate facts.

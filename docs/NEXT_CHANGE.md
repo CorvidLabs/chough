@@ -5,7 +5,8 @@ next implementation discussion to the [agreed lifecycle evolution](lifecycle.md)
 This proposal remains design history; it was neither approved nor rejected. No
 scope approval, implementation review or native archive has been recorded for it.
 Its commands below are conditional examples, not the current implementation task.
-The initial baseline remains the authorized bootstrap.
+The initial baseline remains the authorized bootstrap. The lifecycle work it was
+deferred for is native change `evolve-chough-into-a-resumable-stage-workflow`.
 
 ## Problem and product decision
 

@@ -1,0 +1,7 @@
+$ specsync change status evolve-chough-into-a-resumable-stage-workflow --json | wc -c
+  100133
+$ specsync change status evolve-chough-into-a-resumable-stage-workflow --json | jq -r .summary.state
+archived
+$ chough stage advance
+Error: advance refused (refused:native-unknown): Leaving accept cannot be checked, so it is refused. specsync change status evolve-chough-into-a-resumable-stage-workflow --json: output is not JSON. Run `specsync change status evolve-chough-into-a-resumable-stage-workflow`.
+exit=1

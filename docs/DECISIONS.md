@@ -9,14 +9,25 @@ context for later work, not authenticated approval records.
 | D-002 | Make v1 current-agent-first. | Explicit human choice; skills guide the active agent. Rune coordination is deferred. |
 | D-003 | Keep most behavior in skills and Markdown; use a small Rust helper. | Accepted human direction; no model client, hosted service, or custom runtime. |
 | D-004 | Preserve native ownership. | Accepted architecture: HI owns intent, SpecSync owns changes/contracts/lessons, Fledge owns task execution. |
-| D-005 | Bootstrap with native structural checks; do not invent approval. | Implementation choice within authorized first development. Native SDD is initialized with its default disabled policy; no approved/archived lifecycle is claimed. |
+| D-005 | Bootstrap with native structural checks; do not invent approval (superseded by D-008 for new work). | Implementation choice within authorized first development. Native SDD is initialized with its default disabled policy; no approved/archived lifecycle is claimed. |
 | D-006 | Store a focused session and revision/environment-bound observations. | First-slice implementation choice; durable criteria remain unchanged as achievement changes. |
 | D-007 | Expose adapters through bounded inputs and native tool output. | Implementation choice; adding an adapter requires compatibility tests and a clear ownership boundary. |
+| D-008 | Adopt the full SpecSync workflow-v2 lifecycle; meaningful files need a native change. | Human direction (2026-10-31 brief) and approval of `evolve-chough-into-a-resumable-stage-workflow`. Supersedes D-005 for new work. |
+| D-009 | Lifecycle writers and CI use SpecSync 6.1.1. | Implementation choice before the change: PATH already resolved 6.1.1; the v6.1.1 Action tag has assets and needs an explicit version. Fledge pins unchanged. |
+| D-010 | Qualify APS 1.1.0 and defer it; `.chough/session.json` stays the only checkpoint. | Approved with the change. Observed lost concurrent updates without error, unknown fields accepted, an implicit global root and no Windows binary. Reconsider when those change. |
+| D-011 | Test definitions use TOML profile `chough-testing/1`, not 3md. | Approved with the change. 3md attributes are single-line strings, its tools ignore unknown fields, and SpecSync reads module `.3md` as lessons. |
+| D-012 | `cases run` and `validate` execute bound commands only on explicit invocation, without a shell. | Approved with the change; replaces the bootstrap invariant that the helper never runs tests. Vacuous or environment failures are not-run. |
+| D-013 | Monitor findings are captured locally by default; propose-change only prints a command. | Approved default; whether monitors may start investigations stays unsettled. |
+| D-014 | One canonical stage list in the helper, documented in `references/stages.md`. | Implementation choice; a test keeps them in step. |
+| D-015 | Crate-internal modules use `pub(super)`. | Implementation choice: the binary has no library target, and the contract describes commands rather than Rust symbols. |
+| D-016 | Observation reuse after metadata-only commits (`docs/NEXT_CHANGE.md`) stays unapproved and deferred, not rejected. | Human framing in PR #1; the lifecycle work came first. It is not implemented and needs its own decision. |
 
 ## Agreed direction after the bootstrap interview
 
-These are human product decisions to capture in the next native scope definition,
-not claims that the stage behavior exists or that a future digest is approved:
+These are human product decisions recorded in PR #1 to capture in the next native
+scope definition. They were captured as FLOW-1 to FLOW-13 and REQ-cli-007 to
+REQ-cli-017 and approved in `evolve-chough-into-a-resumable-stage-workflow`; D-008 to
+D-016 record the choices made there. The list is kept as written:
 
 - Natural stage iteration with meaningful whole-stage intent/design decisions and
   one coherent initial technical scope approval; real human implementation review

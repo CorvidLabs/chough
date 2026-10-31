@@ -9,9 +9,12 @@ fmt = "cargo fmt --check"
 check = "cargo check --all-targets"
 intent = "hi check --json"
 spec = "specsync check --strict --require-coverage 100 --force"
+audit = "specsync change audit"
+cases = "cargo run --quiet --locked -- cases check"
+exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
 [lanes.ci]
 description = "Run full CI pipeline"
-steps = ["fmt", "lint", "test", "intent", "spec", "build"]
+steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "exercise", "build"]
 
 [lanes.check]
 description = "Quick quality check"
@@ -22,8 +25,8 @@ steps = [
 
 [lanes.pre-push]
 description = "Fast local gate before pushing"
-steps = ["fmt", "check", "intent", "spec"]
+steps = ["fmt", "check", "intent", "spec", "audit"]
 
 [lanes.verify]
-description = "First-slice product and structural verification"
-steps = ["fmt", "lint", "test", "intent", "spec", "build"]
+description = "Product, structural, native lifecycle and case-definition verification"
+steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "exercise", "build"]

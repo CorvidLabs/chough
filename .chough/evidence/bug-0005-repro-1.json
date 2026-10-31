@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "id": "bug-0005-repro-1",
+  "criteria": [
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-007"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "checkpoint --clear-awaiting-human with --awaiting-human in the same call left awaiting_human empty; the clear runs after the additions.",
+  "artifacts": [
+    ".chough/artifacts/bug-0005-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0005-reproduction.log": "7c10ddcb9eb694b5ba55a49b2d8b0b398b66680e9474b52d3f3ac2c884502993"
+  },
+  "observed_at_unix_seconds": 1793474648,
+  "snapshot": {
+    "revision": "f860c8a1025700a85aae87f94ce3e883b5a09798",
+    "dirty": false,
+    "fingerprint": "c28163170487aaabc4619b4ae12dac30a82aa04e0931c86b66776823ad82eed1"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual"
+}

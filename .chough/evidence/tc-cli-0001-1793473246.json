@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0001-1793473246",
+  "criteria": [
+    "LIFE-4",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-001"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact init_preserves_user_files_and_installs_a_complete_skill for TC-cli-0001: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0001-1793473246.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0001-1793473246.log": "0b1a2fc7482a23df13fe70cb7199c11a9631b5ba2805f4cf849b230723991f66"
+  },
+  "observed_at_unix_seconds": 1793473248,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0001",
+      "digest": "3a8103b80cdb935658cc3d6b67dd53d1b03e1ce7c6b4608bb1828c5816dabcad"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "init_preserves_user_files_and_installs_a_complete_skill"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

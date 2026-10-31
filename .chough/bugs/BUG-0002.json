@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0002",
+  "title": "SpecSync change status keeps approval_valid true after an approved delta is edited",
+  "symptom": "After approval, editing deltas/<module>.md left change status reporting approval_valid true, while change check refused the edited delta",
+  "trigger": "Edit an approved change's semantic delta, then run specsync change status <id> --json",
+  "expected": "Status reports the approval as stale, matching change check",
+  "actual": "approval_valid stays true; only change check reports the changed delta",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "specsync-6.1.1-macos-arm64",
+  "revision": "12c8d4009995e13a42a354e4bc59f641ad9d0dfb",
+  "steps": [
+    "Approve a change in a disposable clone",
+    "Append a REQUIREMENT block to its delta",
+    "Compare change status --json with change check"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "An agent trusting status could believe an edited contract is still approved; Chough relies on change check and records the lesson",
+  "classification": "environment",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "SpecSync rehearsal in a disposable clone, 2026-10-31",
+  "notes": [],
+  "created_at_unix_seconds": 1793473164,
+  "updated_at_unix_seconds": 1793473164
+}

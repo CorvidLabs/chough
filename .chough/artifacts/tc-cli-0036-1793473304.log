@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test snapshotting_a_symlink_is_refused ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.44s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/optional.rs (target/debug/deps/optional-6eaa59dcef7a0c32)

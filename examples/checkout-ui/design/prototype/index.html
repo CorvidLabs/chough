@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout summary — prototype</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="prototype-controls" aria-label="Prototype state (review only, not part of the product)">
+    <span class="prototype-label">Prototype state</span>
+    <button type="button" data-state="loading">Loading</button>
+    <button type="button" data-state="empty">Empty cart</button>
+    <button type="button" data-state="error">Error</button>
+    <button type="button" data-state="below">Below threshold</button>
+    <button type="button" data-state="free">Free shipping</button>
+    <button type="button" data-state="submitting">Submitting</button>
+  </nav>
+
+  <header class="site-header">
+    <span class="brand">Corvid Supply</span>
+    <span class="step">Checkout</span>
+  </header>
+
+  <main class="checkout">
+    <section class="cart" aria-labelledby="cart-title">
+      <h1 id="cart-title">Your cart</h1>
+
+      <div data-panel="loading" class="skeleton-list" role="status" aria-live="polite">
+        <span class="visually-hidden">Loading your cart…</span>
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton short"></div>
+      </div>
+
+      <div data-panel="empty" class="empty">
+        <p>Your cart is empty.</p>
+        <a class="button secondary" href="#">Browse the shop</a>
+      </div>
+
+      <div data-panel="error" class="notice error" role="alert">
+        <p><strong>We couldn't load your cart.</strong> Check your connection and try again.</p>
+        <button type="button" class="button secondary">Try again</button>
+      </div>
+
+      <ul data-panel="items" class="items">
+        <li>
+          <span class="item-name">Field notebook, dot grid</span>
+          <span class="item-qty">× 2</span>
+          <span class="item-price" data-amount="below">$24.00</span>
+          <span class="item-price" data-amount="free">$24.00</span>
+        </li>
+        <li>
+          <span class="item-name">Brass pen clip</span>
+          <span class="item-qty">× 1</span>
+          <span class="item-price" data-amount="below">$18.50</span>
+          <span class="item-price" data-amount="free">$26.00</span>
+        </li>
+      </ul>
+    </section>
+
+    <aside class="summary" aria-labelledby="summary-title" data-panel="summary">
+      <h2 id="summary-title">Order summary</h2>
+      <dl>
+        <div><dt>Subtotal</dt><dd data-amount="below">$42.50</dd><dd data-amount="free">$50.00</dd></div>
+        <div>
+          <dt>Shipping</dt>
+          <dd data-amount="below">$4.99</dd>
+          <dd data-amount="free" class="free">Free shipping</dd>
+        </div>
+        <div class="total"><dt>Total</dt><dd data-amount="below">$47.49</dd><dd data-amount="free">$50.00</dd></div>
+      </dl>
+      <p class="hint" data-amount="below">Add <strong>$7.50</strong> more for free shipping.</p>
+      <p class="hint success" data-amount="free">Your order ships free.</p>
+      <button type="button" class="button primary" data-pay>Pay now</button>
+    </aside>
+
+    <!-- Iteration 2: keep the summary column during loading to avoid a layout jump. -->
+    <aside class="summary skeleton-list" data-panel="loading" aria-hidden="true">
+      <div class="skeleton short"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </aside>
+  </main>
+
+  <script>
+    // Review-only state switcher; the product renders one real state at a time.
+    const controls = document.querySelectorAll("[data-state]");
+    function show(state) {
+      const cartReady = ["below", "free", "submitting"].includes(state);
+      const amount = state === "below" ? "below" : "free";
+      document.body.dataset.state = state;
+      document.querySelectorAll("[data-panel]").forEach(panel => {
+        const name = panel.dataset.panel;
+        panel.hidden = !(name === state || ((name === "items" || name === "summary") && cartReady));
+      });
+      document.querySelectorAll("[data-amount]").forEach(node => { node.hidden = node.dataset.amount !== amount; });
+      const pay = document.querySelector("[data-pay]");
+      pay.disabled = state === "submitting";
+      pay.textContent = state === "submitting" ? "Processing payment…" : "Pay now";
+      controls.forEach(control => control.setAttribute("aria-pressed", String(control.dataset.state === state)));
+    }
+    controls.forEach(control => control.addEventListener("click", () => show(control.dataset.state)));
+    show(new URLSearchParams(location.search).get("state") || "below");
+  </script>
+</body>
+</html>

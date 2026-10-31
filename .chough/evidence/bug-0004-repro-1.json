@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "bug-0004-repro-1",
+  "criteria": [
+    "FLOW-10",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "After native archive, chough stage advance refused leaving accept as native-unknown: the 100133-byte status JSON was cut at the 16384-byte display bound before parsing.",
+  "artifacts": [
+    ".chough/artifacts/bug-0004-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0004-reproduction.log": "3a461d70a465cc1a6d92ad24a124e81b0ae88f091c63dadead262038bda7a2ea"
+  },
+  "observed_at_unix_seconds": 1793474607,
+  "snapshot": {
+    "revision": "f860c8a1025700a85aae87f94ce3e883b5a09798",
+    "dirty": false,
+    "fingerprint": "c28163170487aaabc4619b4ae12dac30a82aa04e0931c86b66776823ad82eed1"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Reproduced on this repository's real archived change; unit tests only stub small status output"
+  ]
+}

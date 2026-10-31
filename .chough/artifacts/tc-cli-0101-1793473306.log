@@ -1,0 +1,45 @@
+--- stdout ---
+▶️ Running task: exercise
+
+== Intent: sample criteria CHECKOUT-1 and CHECKOUT-2 (sample input, already in hi/)
+
+== Design: nothing visual changes, so the stage is skipped with a reason
+design -> plan (skip)
+
+== Plan: a native SpecSync change, and the scope gate before build
+refused as expected: entering build before scope approval (refused:native-draft)
+plan -> build, gate native:approved
+
+== Build: implement the feature with its boundary tests
+
+== Test: focused selection for the affected requirement and path
+selected: TC-shipping-0001, TC-shipping-0002, TC-shipping-0003
+omitted: TC-shipping-0004 (copy-localization track not requested as relevant to this change)
+TC-shipping-0001: failed, observation tc-shipping-0001-1793473338
+TC-shipping-0002: passed, observation tc-shipping-0002-1793473340
+TC-shipping-0003: passed, observation tc-shipping-0003-1793473340
+
+== Bug: reproduce, search, record locally, and refuse a duplicate
+existing matches: 0
+recorded BUG-0001: reproduced
+refused as expected: a duplicate report (similar bugs exist)
+refused as expected: accepting with an open blocking bug (refused:blocking-bugs)
+refused as expected: repeated validation without consent (not authorized)
+
+== Back to build: fix the boundary and retest the focused cases
+build: implementation against the current definition
+test: rerun affected cases; earlier observations may be stale
+checkpoint references: 1 case(s) and 1 observation(s) to re-check with `chough status`
+TC-shipping-0001: passed, observation tc-shipping-0001-1793473363
+TC-shipping-0002: passed, observation tc-shipping-0002-1793473365
+TC-shipping-0003: passed, observation tc-shipping-0003-1793473365
+BUG-0001: verified, reproduced-and-later-passed
+
+== Accept: only a human review and native archive can close this
+refused as expected: leaving accept before review and archive (refused:native-verifying)
+Gate not open (refused:native-verifying): Leaving accept needs native state archived; it is verifying. Native next action: run `specsync change check free-shipping-at-the-threshold`. Run `specsync change status free-shipping-at-the-threshold`.
+
+EXERCISE PASSED in /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T//chough-exercise.x6wxaW
+✅ exercise (67.4s)
+
+--- stderr ---

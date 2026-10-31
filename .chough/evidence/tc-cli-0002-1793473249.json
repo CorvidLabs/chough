@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0002-1793473249",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-002"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact context_resumes_deterministically_and_prefers_native_lesson_source for TC-cli-0002: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0002-1793473249.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0002-1793473249.log": "8e9bb66024fd3eed6a817dc17290d929bba98b80af4fb160177161eb7c1b224a"
+  },
+  "observed_at_unix_seconds": 1793473250,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0002",
+      "digest": "3853cee0aca7eda3b552cfafa85ae21a0ae5ec9b160165f43e5b64d8241c2457"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "context_resumes_deterministically_and_prefers_native_lesson_source"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

@@ -1,0 +1,81 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793470200,
+      "digest": "d68ef7248c0f3e30102fe0717ff983055626da048a6cff011a1c474f6c3f4e0c",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "evolve-chough-into-a-resumable-stage-workflow",
+        "title": "Evolve Chough into a resumable stage workflow",
+        "description": "Evolve Chough into a resumable stage workflow",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/",
+          ".chough/",
+          ".claude/skills/",
+          ".github/workflows/ci.yml",
+          ".gitignore",
+          ".specsync/sdd.json",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "Cargo.lock",
+          "Cargo.toml",
+          "INTENT.md",
+          "README.md",
+          "docs/",
+          "examples/",
+          "fledge.toml",
+          "hi/",
+          "library/",
+          "skills/",
+          "src/",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A fresh host finds the short router; natural language, a supported skill and the CLI reach the same .chough checkpoint and native records, with no mandatory provider API or runtime, and role reviews also work as sequential passes without subagents (FLOW-1, REQ-cli-016).",
+          "A nonvisual sample records a design skip with its reason; a visual sample has one canonical local HTML/CSS prototype with companion mappings, relevant states and viewports, and recorded rendered-review observations, while its simulated human design approval stays labelled pending or simulated (FLOW-4).",
+          "A sample defect is reproduced by a failing observation, classified, deduplicated against the local backlog and persisted with evidence; a blocking bug returns work to build and focused retest; an out-of-scope bug stays visible without expanding scope; regression needs an earlier passing observation at an ancestor revision; nothing is posted externally (FLOW-8, REQ-cli-012).",
+          "APS 1.1.0 is documented as qualified-and-deferred with observed reasons; .chough/session.json remains the single canonical checkpoint and core resume works without APS.",
+          "An isolated intent exercise preserves original wording and stable HI IDs, derives a scoped FRD, attaches role findings to concrete HI/FRD references and ends with one synthesized intent-stage decision rather than per-criterion approvals (FLOW-3).",
+          "Completing acceptance does not enter release; entering release requires a run consent or standing release preference, release observations distinguish publication, installation, deployment, live health and dry runs, and no real release or live job is performed (FLOW-11, REQ-cli-014).",
+          "Existing init preservation, path, schema, bounds, revision, environment and artifact freshness regressions still pass; schema 1 sessions migrate only through an explicit command that preserves the original bytes; the unapproved metadata-commit evidence reuse is not implemented (LIFE-2, LIFE-7, REQ-cli-001 to REQ-cli-006).",
+          "Focused selection returns cases linked to the affected criteria, requirements or paths, always includes their functional cases, adds copy-localization and design-QA cases only when those tracks are relevant, and lists omitted cases with a reason (FLOW-6, REQ-cli-010).",
+          "Installation, a realistic feature and bug loop and cold resume are documented; updated Mermaid diagrams are rendered and visually inspected; hosted CI is observed at the final branch tip with native review and archive gates reported as they actually stand (LIFE-1, LIFE-4).",
+          "Native human implementation review stays at acceptance before archival; Chough never records it, and scope approval, agent review, command success or an actor label cannot close acceptance; the delivered PR shows review and archive pending (FLOW-10, REQ-cli-008).",
+          "Repeated validation runs only under a run consent or a standing preference, never promotes one into the other, honours stop and resumes with the same limits, persists every failure locally across restarts, and labels results as repeated runs rather than soak, live health or repair authority (FLOW-9, REQ-cli-013).",
+          "Stage iterate, back, reset, pause, resume, skip-with-reason, side-stage enter and return work and are covered by tests; history is append-only, back/reset name the dependent work to refresh, and a saved stage cannot enter build or close acceptance when native state does not allow it (FLOW-2, REQ-cli-007, REQ-cli-008).",
+          "Test definitions in chough-testing/1 TOML are validated separately from observations; case IDs and definition digests survive reordering; an adapter run passes only on exit 0 plus its declared assertion (exactly one cargo test run, or expected output), zero matched tests is not-run, and a real failing case stays failed when others pass (FLOW-7, REQ-cli-009, REQ-cli-011, REQ-cli-017).",
+          "The optional librarian snapshots originals with source path, revision and SHA-256, regenerates an index that keeps open bugs and canonical owners visible, never moves or rewrites sources, and returns to its calling stage (FLOW-12, REQ-cli-015).",
+          "This change itself runs through the adopted native SpecSync lifecycle with one human scope approval before implementation; Chough introduces no approval ledger and native status decides eligibility (FLOW-5, REQ-cli-008).",
+          "With the librarian off, a real fresh agent session given only repository files discovers the checkpoint, checks native state and evidence freshness, and states the same scoped next action, preferences and pending human gates; the transcript and assessment are recorded, or the criterion stays explicitly pending (FLOW-13, REQ-cli-007)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "specs/cli/context.md lessons: keep the reviewed Fledge Action wrapper commit pin (b648ea2) separate from the v1.7.2 binary pin and verify Action assets before changing it; bootstrap decisions that HI owns intent, SpecSync owns lifecycle and Fledge owns task execution, and that no approval, review, archive, release or deployment is implied by a structural pass.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "ce089d6cae877fabcd80204cd971d97e7481afa240bc0abfb4fb904355a8b5c0"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793474495,
+      "digest": "3ce3da18d8b0eb4d142984bb42db1d723c966fadf6e76dbfc1e593d15e44259a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0012-1793473266",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact oversized_records_fail_explicitly for TC-cli-0012: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0012-1793473266.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0012-1793473266.log": "51be7ba8a8a597241e03c86043dba6d8e4efe2aef0673c6492349d98995fe8c6"
+  },
+  "observed_at_unix_seconds": 1793473266,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0012",
+      "digest": "dd6a225689bfb44ac34edfcaa8972331f9496a7bd188b2417f8175475bcbf471"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "oversized_records_fail_explicitly"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

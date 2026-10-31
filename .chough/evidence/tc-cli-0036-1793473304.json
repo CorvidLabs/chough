@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0036-1793473304",
+  "criteria": [
+    "FLOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test optional -- --exact snapshotting_a_symlink_is_refused for TC-cli-0036: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0036-1793473304.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0036-1793473304.log": "e0a75d5188aaf3f7667aafb7ab1200ebad97801c2ee6373b588b11bfb90c24e3"
+  },
+  "observed_at_unix_seconds": 1793473304,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0036",
+      "digest": "57f25325003542d0e6560599e8c1bd121ff72be7d63c23793db8053ea68c67a8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "snapshotting_a_symlink_is_refused"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

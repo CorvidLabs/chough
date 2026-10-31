@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0102-1793473383",
+  "criteria": [
+    "FLOW-13",
+    "FLOW-1",
+    "FLOW-9",
+    "FLOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-007",
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "codex-0.153.4-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass. Independent Codex session resumed the shipping sample from files alone; see docs/exercises/cold-start.md.",
+  "artifacts": [
+    ".chough/artifacts/cold-start-transcript.md",
+    ".chough/artifacts/cold-start-review.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/cold-start-review.md": "6a9229820cae30780388230f243ab4b3432d2afdd783eb51755219c172609537",
+    ".chough/artifacts/cold-start-transcript.md": "7e1765d2099e33ffcd95a85e631e5fefb386e29479dff450fd1e37bc94fa0cff"
+  },
+  "observed_at_unix_seconds": 1793473383,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0102",
+      "digest": "31013730387868ca96100d9765db556e8810ca67ea6d565bd22ea9865495028f"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "One run of one agent on one sample; the first attempt failed on an unsupported configured model",
+    "Observed on the sample repository; this record binds Chough's revision, whose Rust sources are unchanged since the binary used"
+  ]
+}

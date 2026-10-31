@@ -1,0 +1,5 @@
+[registry]
+name = "shipping"
+
+[specs]
+shipping = "specs/shipping/shipping.spec.md"

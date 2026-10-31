@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0003",
+  "title": "A failing SpecSync change check may still record passed verification",
+  "symptom": "One change check run exited 1 with an undocumented-export error, yet verification.json recorded passed true and status moved to verifying",
+  "trigger": "First change check after adding a pub(crate) item in a new module",
+  "expected": "A failing check records failed verification or none",
+  "actual": "verification.json passed: true while the command failed",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "specsync-6.1.1-macos-arm64",
+  "revision": "12c8d4009995e13a42a354e4bc59f641ad9d0dfb",
+  "steps": [
+    "Add a pub(crate) fn in src/stage.rs listed in the spec files",
+    "Run specsync change check <id> --json",
+    "Read verification.json"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Possible false verification evidence upstream; seen once and not reproduced",
+  "classification": "evidence-gap",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "SpecSync rehearsal in a disposable clone, 2026-10-31",
+  "notes": [],
+  "created_at_unix_seconds": 1793473164,
+  "updated_at_unix_seconds": 1793473164
+}

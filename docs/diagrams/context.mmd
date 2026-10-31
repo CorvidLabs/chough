@@ -1,9 +1,11 @@
 flowchart LR
-    session["Session objective, decisions, questions, next action"] --> packet["Bounded deterministic packet"]
-    instructions["Applicable AGENTS.md instructions"] --> packet
-    hi["Scoped native hi export"] --> packet
-    modules["Selected contracts and companions"] --> packet
-    lessons["Module .3md lesson source when present"] --> packet
-    packet --> agent["Current agent resumes"]
-    missing["Missing, unreadable, oversized sources"] --> limits["Explicit limitations"]
+    checkpoint["Checkpoint: stage, scope, decisions, consents, gates"] --> packet["Bounded deterministic packet"]
+    transitions["Recent transitions"] --> packet
+    prefs["Standing preferences"] --> packet
+    bugs["Open bug backlog"] --> packet
+    native["Native change status"] --> packet
+    hi["Scoped HI export"] --> packet
+    modules["Module contract, companions, lessons"] --> packet
+    missing["Missing, stale, oversized sources"] --> limits["Explicit limits"]
     limits --> packet
+    packet --> next["Next valid action for a fresh agent"]

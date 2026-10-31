@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test successful_native_process_with_invalid_json_does_not_establish_lifecycle_state ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 1.48s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/cli.rs (target/debug/deps/cli-f2307f8a32b0da32)

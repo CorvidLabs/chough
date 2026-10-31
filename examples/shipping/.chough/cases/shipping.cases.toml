@@ -1,0 +1,74 @@
+# Sample case definitions for the Chough exercise. Observations live in .chough/evidence/.
+profile = "chough-testing/1"
+module = "shipping"
+
+[[case]]
+id = "TC-shipping-0001"
+title = "Free shipping at exactly the threshold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["CHECKOUT-1"]
+requirements = ["REQ-shipping-002"]
+paths = ["src/lib.rs"]
+environments = ["exercise-local", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Sample crate with the threshold feature"]
+steps = ["Run the bound cargo test"]
+expected = ["An order of exactly 5000 cents has a fee of 0"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "threshold"
+test = "free_shipping_at_threshold"
+
+[[case]]
+id = "TC-shipping-0002"
+title = "Standard fee just below the threshold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["CHECKOUT-2"]
+requirements = ["REQ-shipping-001"]
+paths = ["src/lib.rs"]
+environments = ["exercise-local", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["An order of 4999 cents pays the standard fee"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "threshold"
+test = "standard_fee_below_threshold"
+
+[[case]]
+id = "TC-shipping-0003"
+title = "Free shipping above the threshold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["CHECKOUT-1"]
+requirements = ["REQ-shipping-002"]
+paths = ["src/lib.rs"]
+environments = ["exercise-local", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["An order of 5001 cents has a fee of 0"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "threshold"
+test = "free_shipping_above_threshold"
+
+[[case]]
+id = "TC-shipping-0004"
+title = "Checkout wording names free shipping"
+status = "active"
+track = "copy-localization"
+method = "manual"
+criteria = ["CHECKOUT-1"]
+requirements = ["REQ-shipping-002"]
+paths = ["src/lib.rs"]
+environments = ["exercise-local"]
+artifacts = ["reviewer-note"]
+setup = ["A checkout page that shows the fee"]
+steps = ["Read the fee line for a 50.00 order"]
+expected = ["The fee line reads Free shipping, not 0.00"]

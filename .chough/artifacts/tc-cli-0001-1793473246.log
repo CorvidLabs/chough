@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test init_preserves_user_files_and_installs_a_complete_skill ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 1.16s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.39s
+     Running tests/cli.rs (target/debug/deps/cli-f2307f8a32b0da32)

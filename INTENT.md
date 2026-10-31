@@ -14,5 +14,6 @@ Current-agent-first is the selected first version; Rune coordination is deferred
 ## Features
 
 <!-- hi:index -->
+- [flow](hi/flow.md): FLOW (13 criteria)
 - [life](hi/life.md): LIFE (7 criteria)
 <!-- /hi:index -->

@@ -1,7 +1,9 @@
 # Functional requirements: foundation and agreed evolution
 
-These are agent-derived functional requirements for the authorized first slice,
-traced to the human's durable [LIFE criteria](../hi/life.md). The criteria describe
+These are agent-derived functional requirements traced to the human's durable
+[LIFE](../hi/life.md) and [FLOW](../hi/flow.md) criteria. REQ-cli-001 to REQ-cli-006
+come from the authorized first slice; REQ-cli-007 to REQ-cli-017 come from the
+approved native change `evolve-chough-into-a-resumable-stage-workflow`. The criteria describe
 the intended product. This document refines implementation scope; evidence records
 describe what has actually been observed. Neither is a list of completed work.
 
@@ -9,10 +11,10 @@ The human selected **current-agent-first v1**. The product consists primarily of
 portable workflow skill, templates, and Markdown conventions, supported by a small
 Rust CLI. Named Rune session coordination is deferred.
 
-## Current CLI scope
+## Foundation scope (REQ-cli-001 to REQ-cli-006)
 
-The following existing IDs retain their bootstrap meaning and native contract links.
-They do not imply that the broader stage workflow below has been implemented.
+The following IDs keep their bootstrap meaning and native contract links. The stage
+workflow is specified separately below by REQ-cli-007 to REQ-cli-017.
 
 ## REQ-cli-001: Preserve projects during initialization
 
@@ -90,7 +92,37 @@ records, bounded context, and direct argument handling.
 
 Trace: LIFE-3, LIFE-4. Contract: [CLI](../specs/cli/cli.spec.md).
 
-## Skill-led behavior in this slice
+## Resumable stage workflow (REQ-cli-007 to REQ-cli-017)
+
+The canonical text of each requirement is in
+[specs/cli/requirements.md](../specs/cli/requirements.md); this section gives the
+cross-module view and its traceability without restating it.
+
+| Requirement | Observable behavior | Criteria | Verification |
+|---|---|---|---|
+| REQ-cli-007 | One schema 2 checkpoint; explicit migration keeps schema 1 bytes | FLOW-13, LIFE-3 | tests/stages.rs; cold-start exercise |
+| REQ-cli-008 | Stage routing with append-only history; build and closing gated by native state | FLOW-2, FLOW-5, FLOW-10, LIFE-1 | tests/stages.rs; feature-and-bug exercise |
+| REQ-cli-009 | `chough-testing/1` definitions with stable IDs and position-free digests | FLOW-7, LIFE-2 | tests/cases.rs |
+| REQ-cli-010 | Focused selection with tracks and stated omissions | FLOW-6 | tests/cases.rs; both exercises |
+| REQ-cli-011 | Explicit case execution; vacuous and environment failures are not-run | FLOW-7, FLOW-9, LIFE-7 | tests/cases.rs, tests/optional.rs |
+| REQ-cli-012 | Local backlog with duplicate search and regression baselines | FLOW-8, LIFE-5 | tests/bugs.rs; feature-and-bug exercise |
+| REQ-cli-013 | Standing preferences separate from run consent | FLOW-9, FLOW-11 | tests/optional.rs, tests/stages.rs |
+| REQ-cli-014 | Release only when authorized; distinct delivery and dry-run kinds | FLOW-11, LIFE-7 | tests/stages.rs, tests/cases.rs |
+| REQ-cli-015 | Optional librarian with source-linked snapshots and index | FLOW-12 | tests/optional.rs |
+| REQ-cli-016 | Per-host skill install; updates never replace edits | FLOW-1, LIFE-4 | tests/optional.rs; host discovery checks |
+| REQ-cli-017 | Observation schema 2; schema 1 still read | LIFE-2, LIFE-7, FLOW-7 | tests/cases.rs |
+
+Skill-led behavior with no helper requirement, verified by exercises rather than
+helper tests: intent interviewing and role synthesis (FLOW-3,
+[intent exercise](exercises/intent.md)), the design stage (FLOW-4,
+[visual exercise](exercises/visual-design.md)), and the one scope approval (FLOW-5,
+this change's own native record).
+
+Excluded: APS as a checkpoint backend (qualified and deferred, see D-010), Magpie,
+Rune, Trust, Augur and Attest integration, real releases or live monitoring,
+publishing issues, and reuse of observations after metadata-only commits.
+
+## Skill-led behavior in the first slice
 
 The skill supplies the reusable development procedure: capture actual wants before
 choosing a solution; propose appropriately sized FRD requirements; use native SpecSync
@@ -101,12 +133,15 @@ This procedure is not an automated proof that every LIFE criterion is fulfilled.
 Bug issue creation, human approval, GitHub merge, release, deployment, and external
 tool adapters retain their own authorization and verification requirements.
 
-## Agreed evolution: design requirements, not implemented scope
+## Agreed evolution: design provenance
 
-The human direction below refines LIFE-1 through LIFE-7. It is product design for
-the next evolution, not a newly approved native change definition, new permanent
-HI/REQ identities, or passing acceptance evidence. Preserve existing IDs and size
-new native requirements in the actual scoped preparation loop.
+This table was written (PR #1) before the evolution was scoped, as product design
+rather than approved scope. It has since been captured as FLOW-1 to FLOW-13 and
+REQ-cli-007 to REQ-cli-017 in the approved native change
+`evolve-chough-into-a-resumable-stage-workflow`; the section above is authoritative
+for requirements, and this table is kept as the design record they came from. Two
+candidates it names were resolved there: APS was qualified and deferred (D-010) and
+a TOML profile was chosen over 3md (D-011).
 
 | Area | Agreed behavior and acceptance target |
 |---|---|
@@ -127,7 +162,7 @@ APS qualification is optional and must avoid a second writable session authority
 See [lifecycle design](lifecycle.md), [architecture](architecture.md), and
 [integration boundaries](integrations.md) for detail and remaining choices.
 
-## Outside the current implementation
+## Outside the current scope
 
 No hosted service, model-provider client, custom agent runtime, automatic agent
 coordination, universal slash-command parser, replacement native change state,

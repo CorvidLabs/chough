@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test observations_bind_revision_inputs_and_environment_without_granting_acceptance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 2.82s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/cli.rs (target/debug/deps/cli-f2307f8a32b0da32)

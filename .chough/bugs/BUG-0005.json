@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0005",
+  "title": "Clearing and adding awaiting-human gates in one checkpoint call drops the new gate",
+  "symptom": "chough checkpoint --clear-awaiting-human --awaiting-human X leaves awaiting_human empty",
+  "trigger": "Combining a clear flag with new entries for the same list",
+  "expected": "Clear first, then add X",
+  "actual": "X is added and then cleared",
+  "criteria": [
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-007"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f860c8a1025700a85aae87f94ce3e883b5a09798",
+  "steps": [
+    "chough checkpoint --awaiting-human Old",
+    "chough checkpoint --clear-awaiting-human --awaiting-human New"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0005-repro-1"
+  ],
+  "impact": "A real gate can silently disappear from the checkpoint; same ordering applies to --clear-blockers. Workaround: clear and add in separate calls. Fix in a new native change.",
+  "classification": "product-defect",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Native closeout of evolve-chough-into-a-resumable-stage-workflow",
+  "notes": [],
+  "created_at_unix_seconds": 1793474648,
+  "updated_at_unix_seconds": 1793474648
+}

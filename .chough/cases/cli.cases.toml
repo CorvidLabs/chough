@@ -1,0 +1,730 @@
+# Chough's own test-case definitions (chough-testing/1). Observations live in .chough/evidence/.
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-0001"
+title = "Init preserves user files and installs the skill"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4", "LIFE-6"]
+requirements = ["REQ-cli-001"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::init_preserves_user_files_and_installs_a_complete_skill passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "init_preserves_user_files_and_installs_a_complete_skill"
+
+[[case]]
+id = "TC-cli-0002"
+title = "Context is deterministic and prefers native lessons"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::context_resumes_deterministically_and_prefers_native_lesson_source passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "context_resumes_deterministically_and_prefers_native_lesson_source"
+
+[[case]]
+id = "TC-cli-0003"
+title = "Missing native tools stay unknown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-003"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::missing_native_tools_remain_unknown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "missing_native_tools_remain_unknown"
+
+[[case]]
+id = "TC-cli-0004"
+title = "Non-JSON native output is not lifecycle state"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-003"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::successful_native_process_with_invalid_json_does_not_establish_lifecycle_state passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "successful_native_process_with_invalid_json_does_not_establish_lifecycle_state"
+
+[[case]]
+id = "TC-cli-0005"
+title = "Observations bind inputs and environment without acceptance"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::observations_bind_revision_inputs_and_environment_without_granting_acceptance passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "observations_bind_revision_inputs_and_environment_without_granting_acceptance"
+
+[[case]]
+id = "TC-cli-0006"
+title = "Untracked inputs stale observations"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2"]
+requirements = ["REQ-cli-004"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::untracked_inputs_also_stale_observations passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "untracked_inputs_also_stale_observations"
+
+[[case]]
+id = "TC-cli-0007"
+title = "Executable-bit changes stale observations"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2"]
+requirements = ["REQ-cli-004"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::executable_mode_changes_stale_observations passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "executable_mode_changes_stale_observations"
+
+[[case]]
+id = "TC-cli-0008"
+title = "Artifacts are bound independently"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2"]
+requirements = ["REQ-cli-004"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::artifacts_inside_managed_records_are_independently_bound passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "artifacts_inside_managed_records_are_independently_bound"
+
+[[case]]
+id = "TC-cli-0009"
+title = "Invalid traceability and escaped artifacts are rejected"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1", "LIFE-5"]
+requirements = ["REQ-cli-005"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::invalid_traceability_and_escaped_artifacts_are_rejected passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "invalid_traceability_and_escaped_artifacts_are_rejected"
+
+[[case]]
+id = "TC-cli-0010"
+title = "Symlink write escape is rejected"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4"]
+requirements = ["REQ-cli-006"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::symlink_write_escape_is_rejected_before_any_file_is_created passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "symlink_write_escape_is_rejected_before_any_file_is_created"
+
+[[case]]
+id = "TC-cli-0011"
+title = "Aggregate context budget is explicit"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-006"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::aggregate_context_budget_is_explicit passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "aggregate_context_budget_is_explicit"
+
+[[case]]
+id = "TC-cli-0012"
+title = "Oversized records fail explicitly"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-006"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::oversized_records_fail_explicitly passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "oversized_records_fail_explicitly"
+
+[[case]]
+id = "TC-cli-0013"
+title = "Oversized init input is refused before writing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4"]
+requirements = ["REQ-cli-006"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::init_rejects_unreadable_session_sizes_before_writing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "init_rejects_unreadable_session_sizes_before_writing"
+
+[[case]]
+id = "TC-cli-0014"
+title = "Invalid modules and future schemas are rejected"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-006"]
+paths = ["src/", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::invalid_modules_and_future_schemas_are_rejected passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "invalid_modules_and_future_schemas_are_rejected"
+
+[[case]]
+id = "TC-cli-0015"
+title = "Init writes a schema 2 checkpoint at intent"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13"]
+requirements = ["REQ-cli-007"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::init_writes_a_schema_2_checkpoint_at_intent passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "init_writes_a_schema_2_checkpoint_at_intent"
+
+[[case]]
+id = "TC-cli-0016"
+title = "Migration is explicit and keeps schema 1 bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-007"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::migration_is_explicit_and_preserves_schema_1_bytes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "migration_is_explicit_and_preserves_schema_1_bytes"
+
+[[case]]
+id = "TC-cli-0017"
+title = "Checkpoint round-trips across processes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13"]
+requirements = ["REQ-cli-007"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::checkpoint_round_trips_across_processes_and_rejects_unknown_fields passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "checkpoint_round_trips_across_processes_and_rejects_unknown_fields"
+
+[[case]]
+id = "TC-cli-0018"
+title = "Every transition kind keeps history"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::transitions_cover_every_kind_and_keep_history passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "transitions_cover_every_kind_and_keep_history"
+
+[[case]]
+id = "TC-cli-0019"
+title = "Helper stages match the stage contract"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-1"]
+requirements = ["REQ-cli-008"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::every_stage_is_documented_in_the_shared_stage_contract passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "every_stage_is_documented_in_the_shared_stage_contract"
+
+[[case]]
+id = "TC-cli-0020"
+title = "Native state gates build and closing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "FLOW-10"]
+requirements = ["REQ-cli-008"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::native_state_gates_build_and_closing_without_inventing_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "native_state_gates_build_and_closing_without_inventing_it"
+
+[[case]]
+id = "TC-cli-0021"
+title = "Validate and release need authorization"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-9", "FLOW-11"]
+requirements = ["REQ-cli-013", "REQ-cli-014"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::optional_side_stages_and_release_need_authorization passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "optional_side_stages_and_release_need_authorization"
+
+[[case]]
+id = "TC-cli-0022"
+title = "Bad definitions are refused with their location"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-009"]
+paths = ["src/", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::definitions_with_bad_shapes_are_refused_with_their_location passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "definitions_with_bad_shapes_are_refused_with_their_location"
+
+[[case]]
+id = "TC-cli-0023"
+title = "Case identity survives reordering"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-009"]
+paths = ["src/", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::case_identity_survives_reordering_and_title_edits passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "case_identity_survives_reordering_and_title_edits"
+
+[[case]]
+id = "TC-cli-0024"
+title = "Case links are validated against native records"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-009"]
+paths = ["src/", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::check_validates_links_against_native_records passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "check_validates_links_against_native_records"
+
+[[case]]
+id = "TC-cli-0025"
+title = "Selection is focused on affected scope and tracks"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-6"]
+requirements = ["REQ-cli-010"]
+paths = ["src/", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::selection_is_focused_on_the_affected_scope_and_tracks passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "selection_is_focused_on_the_affected_scope_and_tracks"
+
+[[case]]
+id = "TC-cli-0026"
+title = "Failures and vacuous runs are recorded honestly"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011", "REQ-cli-017"]
+paths = ["src/", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::execution_records_failures_and_vacuous_runs_honestly passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "execution_records_failures_and_vacuous_runs_honestly"
+
+[[case]]
+id = "TC-cli-0027"
+title = "Manual records need every verdict"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::manual_records_need_a_verdict_for_every_expected_outcome passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "manual_records_need_a_verdict_for_every_expected_outcome"
+
+[[case]]
+id = "TC-cli-0028"
+title = "Delivery kinds and dry runs stay distinct"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-11", "LIFE-7"]
+requirements = ["REQ-cli-017", "REQ-cli-014"]
+paths = ["src/", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct"
+
+[[case]]
+id = "TC-cli-0029"
+title = "Out-of-scope bugs stay visible without changing scope"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-012"]
+paths = ["src/", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::unverified_out_of_scope_bugs_stay_visible_without_changing_scope passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "unverified_out_of_scope_bugs_stay_visible_without_changing_scope"
+
+[[case]]
+id = "TC-cli-0030"
+title = "Reproduced bugs are deduplicated and keep evidence"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-012"]
+paths = ["src/", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_reproduced_bug_is_deduplicated_and_keeps_added_evidence passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_reproduced_bug_is_deduplicated_and_keeps_added_evidence"
+
+[[case]]
+id = "TC-cli-0031"
+title = "Regression needs an earlier passing ancestor"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::regression_needs_a_passed_observation_at_an_earlier_ancestor_revision passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "regression_needs_a_passed_observation_at_an_earlier_ancestor_revision"
+
+[[case]]
+id = "TC-cli-0032"
+title = "A blocking bug sends work back to build"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "FLOW-2"]
+requirements = ["REQ-cli-012", "REQ-cli-008"]
+paths = ["src/", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::an_open_blocking_bug_sends_work_back_to_build passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "an_open_blocking_bug_sends_work_back_to_build"
+
+[[case]]
+id = "TC-cli-0033"
+title = "Standing preferences stay separate from consent"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-9"]
+requirements = ["REQ-cli-013"]
+paths = ["src/", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::standing_preferences_need_a_source_and_stay_separate_from_consent passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "standing_preferences_need_a_source_and_stay_separate_from_consent"
+
+[[case]]
+id = "TC-cli-0034"
+title = "Repeated validation needs authority and honors stop"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-9"]
+requirements = ["REQ-cli-011", "REQ-cli-013"]
+paths = ["src/", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::repeated_validation_needs_authority_honors_stop_and_persists_findings passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "repeated_validation_needs_authority_honors_stop_and_persists_findings"
+
+[[case]]
+id = "TC-cli-0035"
+title = "Librarian snapshots originals and indexes open bugs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-12"]
+requirements = ["REQ-cli-015"]
+paths = ["src/", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::librarian_snapshots_originals_and_indexes_the_open_backlog passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "librarian_snapshots_originals_and_indexes_the_open_backlog"
+
+[[case]]
+id = "TC-cli-0036"
+title = "Snapshotting a symlink is refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-12"]
+requirements = ["REQ-cli-015"]
+paths = ["src/", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::snapshotting_a_symlink_is_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "snapshotting_a_symlink_is_refused"
+
+[[case]]
+id = "TC-cli-0037"
+title = "Skills install per host and keep edits"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1"]
+requirements = ["REQ-cli-016"]
+paths = ["src/", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::skills_install_per_host_and_update_only_unmodified_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "skills_install_per_host_and_update_only_unmodified_files"
+
+[[case]]
+id = "TC-cli-0101"
+title = "The feature-and-bug exercise passes end to end"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-6", "FLOW-7", "FLOW-8"]
+requirements = ["REQ-cli-008", "REQ-cli-010", "REQ-cli-011", "REQ-cli-012"]
+paths = ["src/", "examples/", "skills/"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["hi, specsync, cargo, git and jq on PATH"]
+steps = ["fledge run exercise"]
+expected = ["Every scripted assertion holds and the script prints EXERCISE PASSED"]
+
+[case.bind]
+adapter = "fledge-task"
+task = "exercise"
+expect_output = ["EXERCISE PASSED"]
+timeout_seconds = 900
+
+[[case]]
+id = "TC-cli-0102"
+title = "A fresh agent resumes from project files alone"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["FLOW-13", "FLOW-1", "FLOW-9", "FLOW-10"]
+requirements = ["REQ-cli-007", "REQ-cli-008"]
+paths = ["src/", "skills/"]
+environments = ["codex-0.153.4-macos-arm64"]
+artifacts = ["transcript", "reviewer-note"]
+setup = ["examples/feature-bug-loop.sh <dir> prepare-cold-start; exercise scaffolding removed"]
+steps = ["Start an independent agent session with only the repository and the prompt: Resume the work in this repository."]
+expected = [
+  "It finds the router and the checkpoint without coaching",
+  "It checks native state and evidence freshness",
+  "It resumes the same scoped task and identifies the valid next action",
+  "It honors the standing preference and records no human decision",
+]
+
+[[case]]
+id = "TC-cli-0103"
+title = "Workflow wording keeps evidence, consent and delivery terms distinct"
+status = "active"
+track = "copy-localization"
+method = "agent-assisted"
+criteria = ["LIFE-7", "FLOW-9", "FLOW-11"]
+requirements = ["REQ-cli-011", "REQ-cli-013", "REQ-cli-014"]
+paths = ["skills/", "src/", "docs/"]
+environments = ["repository-text"]
+artifacts = ["reviewer-note"]
+setup = ["The skill bundle, CLI messages and docs at the reviewed revision"]
+steps = ["Search for proof, approval, soak, health, deploy and consent wording and read each use in context"]
+expected = [
+  "No text presents an observation, exit code or structural pass as proof of acceptance",
+  "Run consent and standing preference are never used interchangeably",
+  "Repeated runs are never called soak tests or live health",
+  "Dry runs and simulated adapters are never called deployments",
+]

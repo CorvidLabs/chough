@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0004-1793473251",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-003"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact successful_native_process_with_invalid_json_does_not_establish_lifecycle_state for TC-cli-0004: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0004-1793473251.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0004-1793473251.log": "4f86c86426d5fe396ccbdc7023abf78ed3991faa8d08c8d1775d3619a2bdf73a"
+  },
+  "observed_at_unix_seconds": 1793473252,
+  "snapshot": {
+    "revision": "5074711f3e0d6c4b4905fff6213a42355674e55e",
+    "dirty": false,
+    "fingerprint": "4879fc0ac37f891c757bccfbbf3420f800e56ef1c7be6afa0bf51e62bc21310d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0004",
+      "digest": "f7afcd94f3a88574f44f5acf783e6570ddadc121f5c02125d37c4e8ba75e0870"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "successful_native_process_with_invalid_json_does_not_establish_lifecycle_state"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

@@ -1,0 +1,59 @@
+# Design-QA cases for the checkout prototype. Observations live in .chough/evidence/.
+profile = "chough-testing/1"
+module = "checkout-ui"
+
+[[case]]
+id = "TC-checkout-ui-0001"
+title = "Rendered prototype passes its deterministic checks"
+status = "active"
+track = "design-qa"
+method = "automated"
+criteria = ["CHECKOUT-1", "CHECKOUT-2"]
+requirements = ["REQ-checkout-ui-001", "REQ-checkout-ui-002"]
+paths = ["design/prototype/"]
+environments = ["chromium-headless"]
+artifacts = ["screenshot", "report-json", "test-log"]
+setup = ["PLAYWRIGHT_MODULE (and optionally AXE_SCRIPT) point at locally installed modules"]
+steps = ["Render six states at 1280x800 and 390x844 and assert wording, overflow, disabled state and axe-core WCAG A/AA"]
+expected = ["Every assertion passes for every state and viewport"]
+
+[case.bind]
+adapter = "command"
+argv = ["bun", "review.mjs", ".chough/artifacts/visual-review"]
+expect_output = ["REVIEW ASSERTIONS PASSED"]
+timeout_seconds = 300
+
+[[case]]
+id = "TC-checkout-ui-0002"
+title = "Rendered states read clearly and match the companion"
+status = "active"
+track = "design-qa"
+method = "agent-assisted"
+criteria = ["CHECKOUT-1", "CHECKOUT-2"]
+requirements = ["REQ-checkout-ui-001", "REQ-checkout-ui-002"]
+paths = ["design/prototype/"]
+environments = ["chromium-headless"]
+artifacts = ["screenshot", "reviewer-note"]
+setup = ["Screenshots from TC-checkout-ui-0001 for the same revision"]
+steps = ["Inspect each screenshot against design/prototype/COMPANION.md"]
+expected = [
+  "Fee line and hint match the companion wording in the below-threshold and free states at both widths",
+  "Loading, empty, error and submitting each show one clear message and no stray panel",
+  "On mobile the summary stacks below the cart and the total sits next to Pay",
+  "The accent marks only success, and the error uses the danger token",
+]
+
+[[case]]
+id = "TC-checkout-ui-0003"
+title = "A person reads the free-shipping wording in context"
+status = "active"
+track = "copy-localization"
+method = "manual"
+criteria = ["CHECKOUT-1"]
+requirements = ["REQ-checkout-ui-001"]
+paths = ["design/prototype/"]
+environments = ["human-review"]
+artifacts = ["reviewer-note"]
+setup = ["The free-shipping screenshot at both widths"]
+steps = ["Read the summary as a shopper would"]
+expected = ["The wording is understood as free shipping without explanation"]
