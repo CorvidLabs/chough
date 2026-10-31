@@ -1,6 +1,6 @@
 ---
 id: require-native-lifecycle-closure-before-chough-pull-requests-merge
-state: implementing
+state: archived
 type: operations
 base_commit: 57aa169588522ef44438236b9f03f409dc1254c2
 ---
