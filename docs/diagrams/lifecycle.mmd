@@ -1,12 +1,15 @@
 flowchart TB
-    intent["Human intent + stable HI criteria"] --> frd["Derived functional requirements"]
-    frd --> scope["Native SpecSync draft and real scope decision"]
-    scope --> build["Implement and run product checks through Fledge"]
-    build --> verify["Native scoped check and product evidence"]
-    verify --> review["Push product tip, CI, real implementation review"]
-    review --> archive["Native finalize or ship on the same PR"]
-    archive --> merge["Commit and push archive, CI, GitHub merge"]
-    merge --> delivery["Verify the actual delivery target"]
-    delivery --> lessons["Scoped native lessons + focused next session"]
-    build --> bug["Reproduce, classify, deduplicate, report bug"]
-    bug --> scope
+    intent["HI intent and derived FRD<br/>Human approves intent stage"] --> visual{"Visual or interaction change?"}
+    visual -->|yes| design["One canonical HTML/CSS prototype + notes<br/>Rendered review and human approval"]
+    visual -->|no: record skip| plan["Native SpecSync technical design + plan<br/>One initial human scope approval"]
+    design --> plan
+    plan --> build["Implement scoped work through Fledge"]
+    build --> tests["Focused AC/FRD tests + native verification<br/>Functional always; copy/design when relevant"]
+    tests -->|blocking bug| bug["Local reproduction, dedup and evidence"]
+    bug --> build
+    tests --> accept["Acceptance: actual scoped human review<br/>Current evidence and limitations"]
+    accept --> archive["Eligible same-PR native finalize/archive<br/>Archive commit + CI, then GitHub merge"]
+    archive --> release{"Release requested or configured?"}
+    release -->|yes| deliver["Actual project release/delivery<br/>Separate publication, deploy and health evidence"]
+    release -->|no| done["Close scoped work and save next action"]
+    deliver --> done

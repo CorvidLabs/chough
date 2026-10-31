@@ -13,6 +13,26 @@ context for later work, not authenticated approval records.
 | D-006 | Store a focused session and revision/environment-bound observations. | First-slice implementation choice; durable criteria remain unchanged as achievement changes. |
 | D-007 | Expose adapters through bounded inputs and native tool output. | Implementation choice; adding an adapter requires compatibility tests and a clear ownership boundary. |
 
+## Agreed direction after the bootstrap interview
+
+These are human product decisions to capture in the next native scope definition,
+not claims that the stage behavior exists or that a future digest is approved:
+
+- Natural stage iteration with meaningful whole-stage intent/design decisions and
+  one coherent initial technical scope approval; real human implementation review
+  at acceptance before routine native closeout.
+- Conditional one-source local HTML/CSS design with companion notes and actual
+  rendered review; focused functional, copy/localization and design testing by
+  relevance; local-first bug evidence/backlog.
+- Optional validation/monitoring by explicit project preference, optional release,
+  and an optional project-local librarian callable from any stage.
+- Mandatory checkpointing/cold resume even with the librarian off. APS storage and
+  a 3md testing profile are candidates, not adopted mandatory dependencies.
+
+The metadata-only observation-reuse proposal is unapproved and deferred in favor of
+lifecycle work, not rejected. See the [lifecycle](lifecycle.md) and [roadmap](ROADMAP.md)
+for the agreed direction and unresolved implementation/policy choices.
+
 Changing product intent requires updating HI through its supported flow, preserving
 permanent IDs. Changing an implementation choice requires a recorded reason and
 updated requirements or contracts where behavior changes.

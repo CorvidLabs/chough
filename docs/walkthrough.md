@@ -3,7 +3,10 @@
 This walkthrough uses Chough's own durable LIFE criteria and CLI contract. Use a
 clean checkout or an isolated copy if you want the exercise to leave your working
 session untouched. The broader bug-triage steps are skill-led; the helper records
-context and observations rather than performing those decisions for you.
+context and observations rather than performing those decisions for you. This is
+the current simple session flow, not evidence that the [planned stage checkpoints
+and cross-agent cold resume](lifecycle.md#iteration-optional-side-stages-and-checkpoints)
+are implemented or proven.
 
 ## Initialize without replacing project work
 
@@ -19,7 +22,11 @@ chough status --environment local-development
 The session is `.chough/session.json`. The skill and its required references are
 installed beneath `.agents/skills/chough-workflow/`. Repeating `init` reports
 preserved paths; new command options do not replace the existing session. Edit the
-session deliberately when changing the objective.
+session deliberately when changing the objective. Chough's own checkout already
+contains a session; these flags will preserve its existing values. That bootstrap
+session may still point at the deferred evidence-reuse proposal, so inspect the
+current objective and native state instead of treating a saved suggestion as an
+approved new task.
 
 On hosts with compatible skill discovery, ask:
 
