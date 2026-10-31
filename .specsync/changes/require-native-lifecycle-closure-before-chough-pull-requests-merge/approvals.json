@@ -1,4 +1,38 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793480907,
+      "digest": "8ee404db1558da9ce848dfccf29b644048258cfa222686f1c15d91d45c90db40",
+      "note": "Approved by 0xLeif in the Claude Code session on 2026-10-31 (\"I approve\"), after the scope packages on PRs #3, #7 and #8 were presented; recorded by the agent on that instruction.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "require-native-lifecycle-closure-before-chough-pull-requests-merge",
+        "title": "Require native lifecycle closure before Chough pull requests merge",
+        "description": "Require native lifecycle closure before Chough pull requests merge",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          ".github/",
+          ".specsync/config.toml",
+          "docs/ci.md",
+          "fledge.toml"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "CI enforcement changes repository delivery gates; the current CLI contract and product behavior remain unchanged.",
+        "acceptance_criteria": [
+          "A required-check candidate named SpecSync Archive runs for every pull request, including drafts, without path or stage filters; it rejects every active native change and every unreadable or incomplete lifecycle package. Native SpecSync semantics authenticate archive closure and history; malformed, missing, ambiguous, stale, unknown, or unavailable inputs fail closed. CI performs no lifecycle mutation or human approval and explains that draft work can be expected red. Existing three-platform product tests/builds, HI, strict 100 percent SpecSync, formatting and Clippy remain present with consistent pinned tool versions. Isolated fixtures prove allowed no-active and authentic archived cases and rejected draft, in-progress, stale, incomplete, missing, malformed, omitted-record and unavailable-tool cases. The PR documents exact check contexts and read-only protection findings without changing branch rules or claiming human acceptance."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
   "reopenings": []
 }

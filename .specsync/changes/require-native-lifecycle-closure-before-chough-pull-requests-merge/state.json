@@ -7,10 +7,10 @@
   "title": "Require native lifecycle closure before Chough pull requests merge",
   "description": "Require native lifecycle closure before Chough pull requests merge",
   "kind": "operations",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "57aa169588522ef44438236b9f03f409dc1254c2",
   "created_at": 1793472434,
-  "updated_at": 1793472551,
+  "updated_at": 1793480907,
   "affected_specs": [],
   "affected_paths": [
     ".github/",
