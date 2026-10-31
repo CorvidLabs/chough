@@ -764,3 +764,188 @@ expected = ["tests/stages.rs::clear_flags_apply_before_new_entries passes"]
 adapter = "cargo-test"
 test_target = "stages"
 test = "clear_flags_apply_before_new_entries"
+
+[[case]]
+id = "TC-cli-0040"
+title = "An approval native status reports invalid refuses every route into build and later stages"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::invalid_native_approval_refuses_every_route_into_build_and_later_stages passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "invalid_native_approval_refuses_every_route_into_build_and_later_stages"
+
+[[case]]
+id = "TC-cli-0041"
+title = "Reset, back and release meet their destination prerequisites"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-10"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::reset_back_and_release_meet_their_destination_prerequisites passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "reset_back_and_release_meet_their_destination_prerequisites"
+
+[[case]]
+id = "TC-cli-0042"
+title = "Return from a side stage meets the caller's prerequisite"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::return_from_a_side_stage_meets_the_caller_prerequisite passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "return_from_a_side_stage_meets_the_caller_prerequisite"
+
+[[case]]
+id = "TC-cli-0043"
+title = "The SDD policy is read with SpecSync semantics"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "LIFE-7"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::sdd_policy_is_read_with_specsync_semantics passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "sdd_policy_is_read_with_specsync_semantics"
+
+[[case]]
+id = "TC-cli-0044"
+title = "Real SpecSync reporting an invalid approval refuses build"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::real_specsync_approval_reported_invalid_refuses_build passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "real_specsync_approval_reported_invalid_refuses_build"
+
+[[case]]
+id = "TC-cli-0045"
+title = "A case deadline stops descendants that hold the pipes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline passes"]
+notes = "BUG-0010 regression: a 1 s deadline returns within seconds as failed with a timeout limitation, and the descendant is gone."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline"
+
+[[case]]
+id = "TC-cli-0046"
+title = "Output held open after exit is stopped by the deadline"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline passes"]
+notes = "BUG-0010 regression: the run returns by its deadline with a limitation naming the descendants; an incomplete capture never passes."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline"
+
+[[case]]
+id = "TC-cli-0047"
+title = "Case output beyond the per-stream bound is counted, not retained"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011", "REQ-cli-006"]
+paths = ["src/records.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::output_beyond_the_per_stream_bound_is_counted_not_retained passes"]
+notes = "BUG-0010 regression: the artifact stays within 1 MiB and notes each stream's total and discarded bytes."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "output_beyond_the_per_stream_bound_is_counted_not_retained"
+
+[[case]]
+id = "TC-cli-0048"
+title = "Repeated runs halt promptly for a stop or pause during the interval"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-9"]
+requirements = ["REQ-cli-011"]
+paths = ["src/validate.rs", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval passes"]
+notes = "BUG-0009 regression: no attempt starts after a stop or pause, including one made during a 30 s interval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval"
+
+[[case]]
+id = "TC-cli-0049"
+title = "Native reads end by their deadline and retain bounded output"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-003", "REQ-cli-006"]
+paths = ["src/records.rs", "src/main.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::native_reads_end_by_their_deadline_and_retain_bounded_output passes"]
+notes = "BUG-0011 regression: a hanging stand-in is timed-out and refused by the gate; oversized stdout and a stderr flood stay bounded."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "native_reads_end_by_their_deadline_and_retain_bounded_output"

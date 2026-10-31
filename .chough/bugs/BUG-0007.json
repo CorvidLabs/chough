@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0007",
+  "title": "Reset reaches accept or done without their native prerequisites",
+  "symptom": "stage reset --to done and --to accept succeeded while the native change was draft",
+  "trigger": "chough stage reset --to <accept|done> with an unapproved or unarchived change",
+  "expected": "Reset may move back freely but refuses a destination whose native prerequisites do not hold",
+  "actual": "Allowed; only reset --to build is gated",
+  "criteria": [
+    "FLOW-2",
+    "FLOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+  "steps": [
+    "Draft native change recorded in the checkpoint",
+    "chough stage reset --to done --reason x"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0007-repro-1",
+    "bug-0007-fixed-1"
+  ],
+  "impact": "A checkpoint can claim done without acceptance or archival",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Review finding B, reproduced 2026-10-31 against main f19823d",
+  "notes": [
+    {
+      "at_unix_seconds": 1793481842,
+      "text": "status: open -> verified. Fixed in 8075748 (fail-closed stage gates); regression TC-cli-0041 passed (observation tc-cli-0041-1793481645).",
+      "observations": [
+        "bug-0007-fixed-1"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793479500,
+  "updated_at_unix_seconds": 1793481842
+}

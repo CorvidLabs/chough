@@ -1,0 +1,7 @@
+# Finding A rerun after the fix: chough built from 0xleif/fix/fail-closed-stage-gates 8075748; specsync 6.1.1; macOS arm64; 2026-10-31T21:23:59Z
+# Same disposable reproduction as bug-0006-reproduction.log; approvals and consent in it are SYNTHETIC.
+$ jq '.affected_paths += ["docs/"]' state.json  # scope changed after approval
+{"state":"approved","approval_valid":false}  # specsync change status summary
+$ chough stage advance   # plan -> build
+Error: advance refused (refused:native-approval-invalid): Reaching build needs a valid definition approval; native status reports approval_valid false. Native next action: run `specsync change approve free-shipping-at-the-threshold --actor <name>`.
+exit=1; stage stays plan

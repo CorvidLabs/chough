@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "require-native-lifecycle-closure-before-chough-pull-requests-merge",
+  "implementation_commit": "0e395a02c8b297af8d8ed897e4c56ad0f2371914",
+  "implementation_tree": "baded6d1466ef232638c429661c98d74864797da",
+  "contract_digest": "8ee404db1558da9ce848dfccf29b644048258cfa222686f1c15d91d45c90db40",
+  "workspace_digest": "7cf3a5f687a8904d30793fa39185e1a4d4f54b03e8663589e79b1aa9fdba1d6a",
+  "closing_digest": "f72895c6bcd92a47731fec6fc8ae31f3e307cee6808e9922014f7b50080d9bc0",
+  "review_digest": "5bf2832fbc0692662e8df0cc3d0851fe878ebfc9214a33a4ea43442f772a3e2f",
+  "finalization_digest": "e8ccc1641fcaf2e9dcdc94e2ab275202b8a08bf41753dc2d49d7c0eb9271ab7e",
+  "timestamp": 1793484150
+}

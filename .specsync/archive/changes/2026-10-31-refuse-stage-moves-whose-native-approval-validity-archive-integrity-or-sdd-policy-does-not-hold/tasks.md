@@ -1,0 +1,17 @@
+---
+change: refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold
+artifact: tasks
+---
+
+# Tasks
+
+- [x] Replace the build and accept gates with one destination prerequisite check in src/stage.rs.
+- [x] Read approval_valid, correction_valid and terminal_evidence.validity from native status.
+- [x] Parse .specsync/sdd.json with SpecSync's defaults and types; refuse an invalid policy.
+- [x] Apply the check to advance, skip, back, reset and release -> done.
+- [x] Add regression tests in tests/stages.rs with real SpecSync and synthetic approvals.
+- [x] Add case definitions for BUG-0006 to BUG-0008 and record passing observations.
+- [x] Update docs/cli.md and the skill's stages and lifecycle references in all three bundle copies.
+
+Human gates and post-verification steps (not tasks): scope approval of this change;
+push and CI; the human implementation review; native review and ship.

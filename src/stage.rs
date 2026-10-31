@@ -134,18 +134,70 @@ pub(super) struct Gate {
 pub(super) enum NativeState {
     NotConfigured,
     Disabled,
+    PolicyInvalid(String),
     NoChange,
     State(String, Value),
     Unknown(String),
 }
 
-fn sdd_enabled(root: &Path) -> Result<Option<bool>> {
-    let path = local_path(root, ".specsync/sdd.json")?;
-    if !path.is_file() {
-        return Ok(None);
+const POLICY: &str = ".specsync/sdd.json";
+
+/// SpecSync 6.1's `SddPolicy` shape, deserialized only to apply SpecSync's own rules:
+/// missing fields take these defaults (SDD enabled), unknown fields are accepted, and a
+/// wrong type or a duplicate key makes the policy invalid.
+#[derive(Deserialize)]
+#[serde(default)]
+#[allow(dead_code)]
+struct PolicyFile {
+    version: u32,
+    enabled: bool,
+    require_change_for_meaningful_files: bool,
+    meaningful_paths: Vec<String>,
+    ignored_paths: Vec<String>,
+    verification_commands: Vec<String>,
+    custom_artifacts: std::collections::BTreeMap<String, String>,
+    principles_file: Option<String>,
+}
+
+impl Default for PolicyFile {
+    fn default() -> Self {
+        Self {
+            version: 2,
+            enabled: true,
+            require_change_for_meaningful_files: true,
+            meaningful_paths: vec![],
+            ignored_paths: vec![],
+            verification_commands: vec![],
+            custom_artifacts: Default::default(),
+            principles_file: None,
+        }
     }
-    let value: Value = serde_json::from_str(&read_record(&path)?).unwrap_or(Value::Null);
-    Ok(value.get("enabled").and_then(Value::as_bool))
+}
+
+enum Policy {
+    /// No policy file: SDD is not adopted.
+    Absent,
+    Enabled(bool),
+    Invalid(String),
+}
+
+fn sdd_policy(root: &Path) -> Result<Policy> {
+    let path = local_path(root, POLICY)?;
+    if !path.exists() {
+        return Ok(Policy::Absent);
+    }
+    let text = match read_record(&path) {
+        Ok(text) => text,
+        Err(error) => {
+            return Ok(Policy::Invalid(format!(
+                "{POLICY} cannot be read: {error:#}"
+            )));
+        }
+    };
+    Ok(match serde_json::from_str::<PolicyFile>(&text) {
+        Ok(policy) => Policy::Enabled(policy.enabled),
+        Err(error) => Policy::Invalid(format!("{POLICY} is not a valid SpecSync policy: {error}")),
+    })
 }
 
 pub(super) fn native_state(root: &Path, change: Option<&str>) -> Result<NativeState> {
@@ -154,8 +206,10 @@ pub(super) fn native_state(root: &Path, change: Option<&str>) -> Result<NativeSt
     {
         return Ok(NativeState::NotConfigured);
     }
-    if sdd_enabled(root)? != Some(true) {
-        return Ok(NativeState::Disabled);
+    match sdd_policy(root)? {
+        Policy::Absent | Policy::Enabled(false) => return Ok(NativeState::Disabled),
+        Policy::Invalid(reason) => return Ok(NativeState::PolicyInvalid(reason)),
+        Policy::Enabled(true) => {}
     }
     let Some(change) = change else {
         return Ok(NativeState::NoChange);
@@ -184,9 +238,51 @@ fn status_command(change: Option<&str>) -> String {
     }
 }
 
-fn gate(root: &Path, session: &Checkpoint, accepted: &[&str], purpose: &str) -> Result<Gate> {
+/// What a destination stage needs from the native lifecycle.
+#[derive(Clone, Copy, PartialEq)]
+enum Prerequisite {
+    /// A valid definition approval: build.
+    Approved,
+    /// A valid approval, or an archived change: test and accept.
+    ApprovedOrArchived,
+    /// An archived change with authenticated terminal evidence: done.
+    Archived,
+}
+
+fn prerequisite(destination: &str) -> Option<Prerequisite> {
+    match destination {
+        "build" => Some(Prerequisite::Approved),
+        "test" | "accept" => Some(Prerequisite::ApprovedOrArchived),
+        "done" => Some(Prerequisite::Archived),
+        _ => None,
+    }
+}
+
+/// Terminal evidence SpecSync reports for an archive that authenticates.
+const ARCHIVE_VALIDITY: [&str; 3] = ["authenticated-history", "exact", "successor-covered"];
+
+fn refused(label: String, detail: String) -> Gate {
+    Gate {
+        allowed: false,
+        label,
+        detail,
+    }
+}
+
+/// The gate for reaching `destination`, or None when that stage has no prerequisite.
+/// Every command that changes the main stage uses it, so each route meets the same rule.
+pub(super) fn destination_gate(
+    root: &Path,
+    session: &Checkpoint,
+    destination: &str,
+) -> Result<Option<Gate>> {
+    let Some(need) = prerequisite(destination) else {
+        return Ok(None);
+    };
     let change = session.native_change.as_deref();
-    Ok(match native_state(root, change)? {
+    let purpose = format!("Reaching {destination}");
+    let status = status_command(change);
+    Ok(Some(match native_state(root, change)? {
         NativeState::NotConfigured => Gate {
             allowed: true,
             label: "ungated:not-configured".into(),
@@ -195,50 +291,122 @@ fn gate(root: &Path, session: &Checkpoint, accepted: &[&str], purpose: &str) -> 
         NativeState::Disabled => Gate {
             allowed: true,
             label: "ungated:sdd-disabled".into(),
-            detail: "Native SDD is disabled; this transition is not gated by a native lifecycle.".into(),
+            detail: "Native SDD is disabled or not adopted; this transition is not gated by a native lifecycle.".into(),
         },
-        NativeState::NoChange => Gate {
-            allowed: false,
-            label: "refused:no-native-change".into(),
-            detail: format!(
+        NativeState::PolicyInvalid(reason) => refused(
+            "refused:sdd-policy-invalid".into(),
+            format!(
+                "{purpose} cannot be checked, so it is refused: {reason}. SpecSync rejects this policy too (see `specsync change audit`); fix the file, or set \"enabled\": false in a valid policy to disable native gates deliberately."
+            ),
+        ),
+        NativeState::NoChange => refused(
+            "refused:no-native-change".into(),
+            format!(
                 "{purpose} needs the native change: record it with `chough checkpoint --native-change <id>`."
             ),
-        },
-        NativeState::State(state, _) if accepted.contains(&state.as_str()) => Gate {
-            allowed: true,
-            label: format!("native:{state}"),
-            detail: format!("Native state is {state}."),
-        },
-        NativeState::State(state, value) => Gate {
-            allowed: false,
-            label: format!("refused:native-{state}"),
-            detail: format!(
-                "{purpose} needs native state {}; it is {state}. Native next action: {}. Run `{}`.",
-                accepted.join(" or "),
-                value
-                    .pointer("/summary/next_action")
-                    .and_then(Value::as_str)
-                    .unwrap_or("unknown"),
-                status_command(change)
+        ),
+        NativeState::Unknown(reason) => refused(
+            "refused:native-unknown".into(),
+            format!("{purpose} cannot be checked, so it is refused. {reason}. Run `{status}`."),
+        ),
+        NativeState::State(state, value) => native_gate(&purpose, need, &state, &value, &status),
+    }))
+}
+
+fn native_gate(
+    purpose: &str,
+    need: Prerequisite,
+    state: &str,
+    value: &Value,
+    status: &str,
+) -> Gate {
+    let next = value
+        .pointer("/summary/next_action")
+        .and_then(Value::as_str)
+        .unwrap_or("unknown");
+    let archived = state == "archived";
+    if need == Prerequisite::Archived || (need == Prerequisite::ApprovedOrArchived && archived) {
+        if !archived {
+            return refused(
+                format!("refused:native-{state}"),
+                format!(
+                    "{purpose} needs native state archived; it is {state}. Native next action: {next}. Run `{status}`."
+                ),
+            );
+        }
+        let validity = value
+            .pointer("/summary/terminal_evidence/validity")
+            .and_then(Value::as_str);
+        return match validity {
+            Some(validity) if ARCHIVE_VALIDITY.contains(&validity) => Gate {
+                allowed: true,
+                label: "native:archived".into(),
+                detail: format!("Native state is archived; its terminal evidence is {validity}."),
+            },
+            other => refused(
+                format!("refused:native-archive-{}", other.unwrap_or("unreported")),
+                format!(
+                    "{purpose} needs an archive whose terminal evidence authenticates; summary.terminal_evidence.validity is {}. Native next action: {next}. Run `{status}`.",
+                    other.unwrap_or("not reported")
+                ),
             ),
-        },
-        NativeState::Unknown(reason) => Gate {
-            allowed: false,
-            label: "refused:native-unknown".into(),
-            detail: format!(
-                "{purpose} cannot be checked, so it is refused. {reason}. Run `{}`.",
-                status_command(change)
+        };
+    }
+    if !BUILD_STATES.contains(&state) {
+        let wanted = if need == Prerequisite::ApprovedOrArchived {
+            "approved, implementing, verifying or archived"
+        } else {
+            "approved, implementing or verifying"
+        };
+        return refused(
+            format!("refused:native-{state}"),
+            format!(
+                "{purpose} needs native state {wanted}; it is {state}. Native next action: {next}. Run `{status}`."
             ),
-        },
-    })
+        );
+    }
+    let approval = value
+        .pointer("/summary/approval_valid")
+        .and_then(Value::as_bool);
+    if approval != Some(true) {
+        return refused(
+            "refused:native-approval-invalid".into(),
+            format!(
+                "{purpose} needs a valid definition approval; native status reports approval_valid {}. Native next action: {next}. Run `{status}`.",
+                approval.map_or("missing".to_string(), |valid| valid.to_string())
+            ),
+        );
+    }
+    if value
+        .pointer("/summary/correction_valid")
+        .and_then(Value::as_bool)
+        == Some(false)
+    {
+        return refused(
+            "refused:native-correction-invalid".into(),
+            format!(
+                "{purpose} needs valid native corrections; native status reports correction_valid false. Native next action: {next}. Run `{status}`."
+            ),
+        );
+    }
+    Gate {
+        allowed: true,
+        label: format!("native:{state}"),
+        detail: format!("Native state is {state} with a valid definition approval."),
+    }
+}
+
+fn required_gate(root: &Path, session: &Checkpoint, destination: &str) -> Result<Gate> {
+    destination_gate(root, session, destination)?
+        .ok_or_else(|| anyhow::anyhow!("{destination} has no native prerequisite"))
 }
 
 pub(super) fn build_gate(root: &Path, session: &Checkpoint) -> Result<Gate> {
-    gate(root, session, &BUILD_STATES, "Entering build")
+    required_gate(root, session, "build")
 }
 
 pub(super) fn accept_gate(root: &Path, session: &Checkpoint) -> Result<Gate> {
-    gate(root, session, &["archived"], "Leaving accept")
+    required_gate(root, session, "done")
 }
 
 fn refresh_note(stage: &str) -> &'static str {
@@ -306,12 +474,18 @@ pub(super) fn valid_transitions(session: &Checkpoint) -> Vec<String> {
                 .map_or("unknown", |caller| caller.stage.as_str())
         ));
     } else if current == "release" {
-        commands.push("chough stage advance  (release -> done)".into());
+        commands.push(
+            "chough stage advance  (release -> done)  [native gate: archived with authenticated terminal evidence]"
+                .into(),
+        );
     } else if let Some(index) = position(current) {
         if let Some(next) = ORDER.get(index + 1) {
             let gate = match (current, *next) {
-                (_, "build") => "  [native gate: definition approved]",
-                ("accept", _) => "  [native gate: change archived]",
+                (_, "build") => "  [native gate: valid definition approval]",
+                (_, "test" | "accept") => {
+                    "  [native gate: valid approval or authenticated archive]"
+                }
+                ("accept", _) => "  [native gate: archived with authenticated terminal evidence]",
                 _ => "",
             };
             commands.push(format!("chough stage advance  ({current} -> {next}){gate}"));
@@ -404,18 +578,7 @@ fn move_forward(
             blocking.join(", ")
         );
     }
-    for (applies, gate) in [
-        (to == "build", "build"),
-        (from == "accept" && to == "done", "accept"),
-    ] {
-        if !applies {
-            continue;
-        }
-        let gate = if gate == "build" {
-            build_gate(root, session)?
-        } else {
-            accept_gate(root, session)?
-        };
+    if let Some(gate) = destination_gate(root, session, &to)? {
         ensure!(
             gate.allowed,
             "{} refused ({}): {}",
@@ -465,14 +628,15 @@ fn move_back(
             "back goes to an earlier stage than {from}"
         );
     }
-    if target == "build" {
-        let gate = build_gate(root, session)?;
+    let mut gate_label = None;
+    if let Some(gate) = destination_gate(root, session, target)? {
         ensure!(
             gate.allowed,
             "{kind} refused ({}): {}",
             gate.label,
             gate.detail
         );
+        gate_label = Some(gate.label);
     }
     let mut refresh: Vec<String> = ORDER[target_index..=origin_index.max(target_index)]
         .iter()
@@ -501,7 +665,7 @@ fn move_back(
         &from,
         target,
         Some(reason),
-        None,
+        gate_label.as_deref(),
         refresh.clone(),
     )?;
     session.stage.current = target.into();
@@ -630,12 +794,23 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 ensure_text("note", note)?;
             }
             ensure_active(&session)?;
-            let caller = session.stage.callers.pop().ok_or_else(|| {
+            let caller = session.stage.callers.last().cloned().ok_or_else(|| {
                 anyhow::anyhow!(
                     "{} is not a side stage with a caller",
                     session.stage.current
                 )
             })?;
+            let mut gate_label = None;
+            if let Some(gate) = destination_gate(root, &session, &caller.stage)? {
+                ensure!(
+                    gate.allowed,
+                    "return refused ({}): {}; `chough stage reset --to <stage>` moves elsewhere",
+                    gate.label,
+                    gate.detail
+                );
+                gate_label = Some(gate.label);
+            }
+            session.stage.callers.pop();
             let from = session.stage.current.clone();
             log_transition(
                 root,
@@ -643,7 +818,7 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 &from,
                 &caller.stage,
                 note.as_deref(),
-                None,
+                gate_label.as_deref(),
                 vec![],
             )?;
             session.stage.current = caller.stage.clone();

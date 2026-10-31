@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0047-1793482738",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cases -- --exact output_beyond_the_per_stream_bound_is_counted_not_retained for TC-cli-0047: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0047-1793482738.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0047-1793482738.log": "8800e37f75848d891930d8b6fc6c2f2713a0eddd32db5de7d4f2f41ca4c2c350"
+  },
+  "observed_at_unix_seconds": 1793482740,
+  "snapshot": {
+    "revision": "bbd9f041fb58f14ed1447420c183984c1a602446",
+    "dirty": false,
+    "fingerprint": "ee2f91fbcc64c326b255a5de022c9dc9eab6d667e7d33f609bf932b3c4c23b46"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0047",
+      "digest": "03b6a7c063f31235add5fc8416c448b4d06164270c3f70d131770cfdbf846497"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cases",
+    "--",
+    "--exact",
+    "output_beyond_the_per_stream_bound_is_counted_not_retained"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

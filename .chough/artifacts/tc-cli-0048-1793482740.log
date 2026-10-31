@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 4.15s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/optional.rs (target/debug/deps/optional-cea4ba6fe3cc77e6)

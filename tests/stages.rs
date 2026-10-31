@@ -372,7 +372,7 @@ fn large_native_status_still_gates_by_its_summary_state() {
     // exceeds the 16 KiB display bound; over 4 MiB it is refused as oversized.
     fixture.write(
         "bin/specsync",
-        "#!/bin/sh\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nsize=20000\n[ -f .stub-huge ] && size=4200000\npad=$(head -c $size /dev/zero | tr '\\0' x)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action\"},\"acceptance_entries\":\"%s\"}\\n' \"$state\" \"$pad\"\n",
+        "#!/bin/sh\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nsize=20000\n[ -f .stub-huge ] && size=4200000\npad=$(head -c $size /dev/zero | tr '\\0' x)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action\",\"approval_valid\":true,\"terminal_evidence\":{\"validity\":\"authenticated-history\"}},\"acceptance_entries\":\"%s\"}\\n' \"$state\" \"$pad\"\n",
     );
     fixture.executable("bin/specsync");
     fixture.native("approved");
@@ -429,4 +429,303 @@ fn clear_flags_apply_before_new_entries() {
     assert_eq!(updated["checkpoint"]["awaiting_human"], json!(["New gate"]));
     assert_eq!(updated["checkpoint"]["blockers"], json!(["New blocker"]));
     assert_eq!(fixture.session()["awaiting_human"], json!(["New gate"]));
+}
+
+#[cfg(unix)]
+#[test]
+fn invalid_native_approval_refuses_every_route_into_build_and_later_stages() {
+    // BUG-0006: an eligible state name is not enough; approval_valid must be true.
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("approved");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", "edited-scope"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.write(".stub-approval", "false\n");
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("refused:native-approval-invalid"),
+        "{refused}"
+    );
+    assert!(refused.contains("approval_valid false"), "{refused}");
+    assert!(
+        refused.contains("stub next action for approved"),
+        "{refused}"
+    );
+    let routes: [&[&str]; 4] = [
+        &["stage", "skip", "--reason", "Skip ahead"],
+        &["stage", "reset", "--to", "build", "--reason", "Restart"],
+        &["stage", "reset", "--to", "test", "--reason", "Retest"],
+        &["stage", "reset", "--to", "accept", "--reason", "Accept"],
+    ];
+    for route in routes {
+        let refused = fixture.fails(route);
+        assert!(
+            refused.contains("refused:native-approval-invalid"),
+            "{route:?}: {refused}"
+        );
+    }
+    assert_eq!(stage(&fixture), "plan");
+    fixture.write(".stub-approval", "none\n");
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("approval_valid missing")
+    );
+    fixture.write(".stub-approval", "true\n");
+    fixture.write(".stub-correction", "false\n");
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("refused:native-correction-invalid")
+    );
+    fixture.write(".stub-correction", "true\n");
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "native:approved"
+    );
+    // An approval that becomes invalid during build stops the move to test.
+    fixture.write(".stub-state", "implementing\n");
+    fixture.write(".stub-approval", "false\n");
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("refused:native-approval-invalid")
+    );
+    assert_eq!(stage(&fixture), "build");
+}
+
+#[cfg(unix)]
+#[test]
+fn reset_back_and_release_meet_their_destination_prerequisites() {
+    // BUG-0007: reset, back and release reach a stage only when its prerequisite holds.
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", "draft-change"]);
+    for target in ["done", "accept", "test", "build"] {
+        let refused = fixture.fails(&["stage", "reset", "--to", target, "--reason", "Jump"]);
+        assert!(
+            refused.contains("refused:native-draft"),
+            "{target}: {refused}"
+        );
+    }
+    assert_eq!(stage(&fixture), "intent");
+    for target in ["plan", "design", "intent"] {
+        fixture.ok(&["stage", "reset", "--to", target, "--reason", "Rework"]);
+    }
+    fixture.write(".stub-state", "archived\n");
+    for target in ["test", "accept", "done"] {
+        let moved = fixture.ok(&["stage", "reset", "--to", target, "--reason", "Closeout"]);
+        assert_eq!(moved["applied"]["to"], target);
+    }
+    assert!(
+        fixture
+            .fails(&["stage", "reset", "--to", "build", "--reason", "More work"])
+            .contains("refused:native-archived")
+    );
+    fixture.write(".stub-validity", "corrupt-history\n");
+    assert!(
+        fixture
+            .fails(&["stage", "back", "--to", "accept", "--reason", "Recheck"])
+            .contains("refused:native-archive-corrupt-history")
+    );
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Again"]);
+    fixture.write(".stub-validity", "none\n");
+    assert!(
+        fixture
+            .fails(&["stage", "reset", "--to", "done", "--reason", "Close"])
+            .contains("refused:native-archive-unreported")
+    );
+    fixture.write(".stub-validity", "authenticated-history\n");
+    fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Close"]);
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "SYNTHETIC test consent; authorizes nothing real",
+    ]);
+    fixture.ok(&["stage", "enter", "release", "--reason", "Release routing"]);
+    fixture.write(".stub-validity", "corrupt-history\n");
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("refused:native-archive-corrupt-history")
+    );
+    fixture.write(".stub-validity", "authenticated-history\n");
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "native:archived"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn return_from_a_side_stage_meets_the_caller_prerequisite() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("approved");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", "side-trip"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "enter", "bugs", "--reason", "A failing case"]);
+    fixture.write(".stub-approval", "false\n");
+    assert!(
+        fixture
+            .fails(&["stage", "return"])
+            .contains("refused:native-approval-invalid")
+    );
+    assert_eq!(stage(&fixture), "bugs");
+    fixture.write(".stub-approval", "true\n");
+    assert_eq!(fixture.ok(&["stage", "return"])["applied"]["to"], "test");
+}
+
+#[cfg(unix)]
+#[test]
+fn sdd_policy_is_read_with_specsync_semantics() {
+    // BUG-0008: an invalid policy refuses; only a valid disabled or absent one is ungated.
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", "policy-change"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    for (policy, why) in [
+        ("{ \"enabled\": true, ", "truncated"),
+        ("{\"enabled\": \"yes\"}", "enabled as a string"),
+        ("{\"enabled\": null}", "enabled as null"),
+        ("{\"meaningful_paths\": \"src/\"}", "paths as a string"),
+        ("{\"enabled\": true, \"enabled\": false}", "duplicate key"),
+        ("true", "not an object"),
+    ] {
+        fixture.write(".specsync/sdd.json", policy);
+        let refused = fixture.fails(&["stage", "advance"]);
+        assert!(
+            refused.contains("refused:sdd-policy-invalid"),
+            "{why}: {refused}"
+        );
+        assert!(refused.contains(".specsync/sdd.json"), "{why}: {refused}");
+    }
+    // As in SpecSync, a missing `enabled` means enabled, and unknown fields are accepted.
+    fixture.write(
+        ".specsync/sdd.json",
+        "{\"version\": 2, \"future_field\": 1}\n",
+    );
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("refused:native-draft")
+    );
+    fixture.write(".specsync/sdd.json", "{\"enabled\": false}\n");
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "ungated:sdd-disabled"
+    );
+    fixture.ok(&["stage", "back", "--to", "plan", "--reason", "Again"]);
+    fs::remove_file(fixture.root().join(".specsync/sdd.json")).unwrap();
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "ungated:sdd-disabled"
+    );
+}
+
+/// Run a shell script in the fixture with a local Git identity, as native tools commit.
+#[cfg(unix)]
+fn sh(fixture: &Fixture, script: &str) -> String {
+    let output = std::process::Command::new("sh")
+        .arg("-c")
+        .arg(script)
+        .current_dir(fixture.root())
+        .env("CHOUGH", env!("CARGO_BIN_EXE_chough"))
+        .env(
+            "SAMPLE",
+            concat!(env!("CARGO_MANIFEST_DIR"), "/examples/shipping"),
+        )
+        .env("GIT_CONFIG_GLOBAL", "/dev/null")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "script failed: {}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    String::from_utf8_lossy(&output.stdout).into_owned()
+}
+
+#[cfg(unix)]
+#[test]
+fn real_specsync_approval_reported_invalid_refuses_build() {
+    // BUG-0006 against real SpecSync. The approver is SYNTHETIC and approves nothing real.
+    let available = std::process::Command::new("specsync")
+        .arg("--version")
+        .output()
+        .is_ok_and(|output| output.status.success());
+    if !available {
+        eprintln!("skipped: real SpecSync is not on PATH (the Fledge CI job runs this test)");
+        return;
+    }
+    let fixture = Fixture::new();
+    sh(
+        &fixture,
+        r##"set -eu
+rm -rf ./* .chough .specsync
+cp -R "$SAMPLE/." .
+rm -f .specsync/changes/.keep .specsync/archive/changes/.keep
+git -c init.defaultBranch=main init -q
+git config user.name "Chough test"; git config user.email test@example.invalid; git config commit.gpgsign false
+"$CHOUGH" init --objective "Synthetic approval validity regression" --intent-scope CHECKOUT --module shipping >/dev/null
+specsync change adopt --json >/dev/null
+git add -A; git commit -qm seed
+id=free-shipping-at-the-threshold
+specsync change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/ --json >/dev/null
+specsync change answer $id acceptance_criteria '["An order of exactly 5000 cents ships free"]' --json >/dev/null
+specsync change answer $id public_contract yes --json >/dev/null
+specsync change answer $id architecture_risk no --json >/dev/null
+specsync change answer $id constraints none --json >/dev/null 2>&1 || true
+for f in .specsync/changes/$id/*.md; do
+  name=$(basename "$f" .md)
+  [ "$name" = change ] && continue
+  printf -- '---\nchange: %s\nartifact: %s\n---\n\n# %s\n\n' "$id" "$name" "$name" >"$f"
+  case "$name" in
+    tasks) printf -- '- [x] Add the threshold rule.\n' >>"$f" ;;
+    plan) printf '## Approach\n\nAdd the rule.\n\n## Out of scope\n\nNone.\n\n## Steps\n\n1. Add it.\n\n## Risks\n\nOff by one.\n\n## Constraints consulted\n\nNone.\n' >>"$f" ;;
+    *) printf 'Orders of 5000 cents or more ship free.\n' >>"$f" ;;
+  esac
+done
+mkdir -p .specsync/changes/$id/deltas
+printf '## ADDED\n\n### REQUIREMENT REQ-shipping-002\n\nThe module SHALL charge no fee at or above the threshold. Trace: CHECKOUT-1.\n\nAcceptance Criteria\n- tests/threshold.rs asserts a zero fee at the threshold.\n' >.specsync/changes/$id/deltas/shipping.md
+git add -A; git commit -qm draft
+specsync change approve $id --actor "SYNTHETIC-test-approver-not-a-human" >/dev/null
+"$CHOUGH" checkpoint --native-change $id >/dev/null
+"$CHOUGH" stage advance >/dev/null
+"$CHOUGH" stage skip --reason "No visuals" >/dev/null
+cp .specsync/changes/$id/state.json state.approved
+sed 's#"tests/"#"tests/", "docs/"#' state.approved >.specsync/changes/$id/state.json
+specsync change status $id --json
+"##,
+    )
+    .contains("\"approval_valid\": false")
+    .then_some(())
+    .expect("real SpecSync should report the changed scope as an invalid approval");
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("refused:native-approval-invalid"),
+        "{refused}"
+    );
+    sh(
+        &fixture,
+        "cp state.approved .specsync/changes/free-shipping-at-the-threshold/state.json",
+    );
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "native:approved"
+    );
 }

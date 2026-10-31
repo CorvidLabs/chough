@@ -1,6 +1,6 @@
 //! Optional repeated validation in the foreground. It runs only with a run consent or a
-//! standing preference, honors a stop request between attempts, and never claims soak
-//! testing, live health or authority to repair anything.
+//! standing preference, checks for a stop request and a paused checkpoint before every
+//! attempt, and never claims soak testing, live health or authority to repair anything.
 
 use crate::bugs::{self, Finding};
 use crate::cases;
@@ -21,6 +21,8 @@ use std::time::{Duration, Instant};
 
 const RUNS_DIR: &str = ".chough/validation";
 pub(super) const STOP_REQUEST: &str = ".chough/validation.stop";
+/// The longest wait between checks for a stop request or pause during an interval.
+const WAIT_SLICE: Duration = Duration::from_millis(200);
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -56,7 +58,7 @@ pub(super) enum ValidateCommand {
     },
     /// Ask a running or future repeated run to stop before its next attempt.
     Stop,
-    /// Continue a stopped run with its stored limits.
+    /// Continue a stopped or paused run with its stored limits.
     Resume { id: String },
     /// Show stored runs.
     Status,
@@ -102,18 +104,43 @@ fn load(root: &Path, id: &str) -> Result<Run> {
     Ok(run)
 }
 
+/// The state a repeated run takes when it must not start another attempt now: a stop
+/// request stops it, and a paused checkpoint pauses it.
+fn halt(root: &Path) -> Result<Option<&'static str>> {
+    if local_path(root, STOP_REQUEST)?.exists() {
+        return Ok(Some("stopped"));
+    }
+    if read_checkpoint(root)?.stage.status == "paused" {
+        return Ok(Some("paused"));
+    }
+    Ok(None)
+}
+
+/// Wait out an interval in short slices, returning early once the run must halt.
+fn wait_interval(root: &Path, seconds: u64) -> Result<()> {
+    let until = Instant::now() + Duration::from_secs(seconds);
+    loop {
+        let left = until.saturating_duration_since(Instant::now());
+        if left.is_zero() || halt(root)?.is_some() {
+            return Ok(());
+        }
+        thread::sleep(left.min(WAIT_SLICE));
+    }
+}
+
 fn continue_run(root: &Path, mut run: Run) -> Result<()> {
     let started = Instant::now();
     let previous = run.elapsed_seconds;
     run.state = "running".into();
     save(root, &run, false)?;
     while run.completed < run.times {
-        if local_path(root, STOP_REQUEST)?.exists() {
-            run.state = "stopped".into();
-            break;
-        }
         if run.completed > 0 && run.interval_seconds > 0 {
-            thread::sleep(Duration::from_secs(run.interval_seconds));
+            wait_interval(root, run.interval_seconds)?;
+        }
+        // Checked immediately before every attempt, including after the interval.
+        if let Some(state) = halt(root)? {
+            run.state = state.into();
+            break;
         }
         let result = cases::run_case(root, &run.case, &run.environment, None)?;
         run.completed += 1;

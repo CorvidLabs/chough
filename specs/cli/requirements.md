@@ -21,13 +21,14 @@ Trace: LIFE-3, LIFE-6.
 Acceptance: the same inputs yield the same ordered context; missing sources and
 truncation remain explicit. Native module .3md is the lesson source where present.
 
-### REQ-cli-003 — Delegate lifecycle state
+### REQ-cli-003
 
-The helper SHALL report actual native SpecSync status and guidance, with unavailable
-or undecodable state explicitly unknown. Trace: LIFE-1, LIFE-6, LIFE-7.
+The helper SHALL report actual native SpecSync status and guidance, with unavailable, failed, undecodable, oversized or timed-out responses explicitly unknown. Native reads SHALL retain at most the parse bound of standard output and a display bound of standard error while reading, and SHALL end by a bounded deadline. Trace: LIFE-1, LIFE-6, LIFE-7.
 
-Acceptance: missing SpecSync never becomes an approved or delivered state. An
-agent-written session next action never grants approval or overrides a native gate.
+Acceptance Criteria
+- Missing SpecSync never becomes an approved or delivered state, and an agent-written session next action never grants approval or overrides a native gate.
+- A native command that never exits is reported as timed-out by its deadline, and gated moves refuse it.
+- Output beyond the bounds is counted and reported, not retained.
 
 ### REQ-cli-004 — Bind observations to content and environment
 
@@ -67,12 +68,13 @@ Acceptance Criteria
 
 ### REQ-cli-008
 
-Stage routing bounded by native gates. The helper SHALL route the stages intent, design, plan, build, test, accept and done, the optional release stage, and the side stages bugs, validate and librarian. It SHALL record each advance, iterate, back, reset, pause, resume, skip and side-stage enter or return as an append-only transition with its reason. Back and reset SHALL list the later stages whose outputs need refresh and SHALL point to native SpecSync status for any reapproval or recovery. Entering build SHALL require the recorded native change to be past definition approval, and leaving accept SHALL require that change to be archived; unavailable, unknown or undecodable native state SHALL refuse those transitions. The helper SHALL NOT record or infer human approval or review. Trace: FLOW-2, FLOW-5, FLOW-10, LIFE-1.
+Stage routing bounded by native gates. The helper SHALL route the stages intent, design, plan, build, test, accept and done, the optional release stage, and the side stages bugs, validate and librarian. It SHALL record each advance, iterate, back, reset, pause, resume, skip and side-stage enter or return as an append-only transition with its reason. Back and reset SHALL list the later stages whose outputs need refresh and SHALL point to native SpecSync status for any reapproval or recovery. Every move SHALL meet the prerequisite of its destination, whichever command makes it: build SHALL require the recorded native change to be approved, implementing or verifying with a valid definition approval; test and accept SHALL require the build prerequisite or the done prerequisite; done SHALL require the change to be archived with authenticated terminal evidence. Unavailable, unknown or undecodable native state, an approval reported invalid, unauthenticated archive evidence and an invalid SDD policy SHALL refuse those moves; a valid disabled policy or no policy SHALL leave them ungated. The helper SHALL NOT record or infer human approval or review. Trace: FLOW-2, FLOW-5, FLOW-10, LIFE-1.
 
 Acceptance Criteria
 - Every transition kind is exercised in an isolated fixture; history survives back and reset; skip without a reason is refused.
-- With stubbed native status, advancing from plan to build is refused for draft and unavailable states and allowed for an approved state.
-- Leaving accept is refused while the native change is verifying and allowed only once it is archived.
+- Entering build is refused for draft, unavailable and approval-invalid states and allowed for a valid approved state.
+- Leaving accept, reset to done and release to done are refused unless the change is archived with authenticated terminal evidence.
+- A malformed or ill-typed SDD policy refuses gated moves; a valid disabled policy leaves them ungated.
 - Entering a side stage records its caller, and return restores that caller.
 
 ### REQ-cli-009
@@ -93,13 +95,14 @@ Acceptance Criteria
 
 ### REQ-cli-011
 
-Honest case execution. When explicitly invoked, the helper SHALL execute an automated case's binding directly without a shell, capture its output as an artifact, and record an observation linked to the case and its definition digest. The observation SHALL be passed only when the process exits zero and the binding's assertion holds: exactly one test ran for the `cargo-test` adapter, or every declared expected-output fragment appeared for the `command` and `fledge-task` adapters. A run in which no test matched SHALL be recorded as not-run. A repeated run SHALL record each attempt and a summary with attempt and failure counts and elapsed time, and SHALL stop before the next attempt when a stop request exists. Trace: FLOW-7, FLOW-9, LIFE-7.
+Honest case execution. When explicitly invoked, the helper SHALL execute an automated case's binding directly without a shell, capture its output as an artifact, and record an observation linked to the case and its definition digest. Execution SHALL end by the binding's deadline: on the deadline, or when output stays open after the command exits, the helper SHALL stop the command and its descendants and SHALL NOT wait on output it cannot complete. Captured output SHALL be bounded per stream while reading. The observation SHALL be passed only when the process exits zero, its capture is complete and the binding's assertion holds: exactly one test ran for the `cargo-test` adapter, or every declared expected-output fragment appeared for the `command` and `fledge-task` adapters. A run in which no test matched SHALL be recorded as not-run. A repeated run SHALL record each attempt and a summary with attempt and failure counts and elapsed time, and SHALL start no further attempt once a stop request or a paused checkpoint exists, including after waiting its interval. Trace: FLOW-7, FLOW-9, LIFE-7.
 
 Acceptance Criteria
 - A deliberately failing assertion records failed even when another case passes in the same session.
 - A cargo filter that matches no test records not-run, never passed.
 - Changing a case definition reports its earlier observations as stale-case-definition.
-- A stop request halts a repeated run before the next attempt, and resuming continues with the stored limits.
+- A case whose descendant holds its output returns by its deadline, and its descendants are stopped.
+- A stop request made during the interval halts a repeated run before the next attempt, and resuming continues with the stored limits.
 
 ### REQ-cli-012
 

@@ -14,13 +14,13 @@ Output is JSON unless stated otherwise.
 | `status`, `next` `[--environment NAME]` | Checkpoint, gate for the current stage, valid transitions, `next_valid_action`, native status, snapshot, observations with freshness, open and blocking bugs. |
 | `migrate [--stage S]` | Converts a schema 1 session after saving its bytes to `.chough/session.v1.json`; refuses if that backup exists. |
 | `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`. |
-| `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. Entering build needs native state approved, implementing or verifying; leaving accept needs archived; leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
+| `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying with `approval_valid` true (refused as `refused:native-approval-invalid` otherwise, or `refused:native-correction-invalid`); test and accept need that or an archived change; done needs archived with authenticated `terminal_evidence` (`refused:native-archive-<validity>` otherwise). Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
 | `cases check\|list\|select\|run\|record` | Validate definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` exit 3 when the recorded outcome is not passed. |
 | `evidence add ID` | Criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts, `--case`, `--method`, `--track`, `--limitation`. Never replaces an ID. |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` refuses likely duplicates unless `--distinct`; regression needs `--regression-baseline`; `verified` needs a passed observation; `report` prints Markdown and posts nothing. |
 | `pref show\|set\|unset` | Standing preferences with `--source`: repeat-validation, monitoring, release, monitor-initiation, librarian, library-dir, required-lane. |
 | `consent show\|grant\|revoke` | Run consent for the current objective: repeat-validation, monitoring, release. |
-| `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits, stop requests and local capture of failures. |
+| `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
 | `library init\|snapshot\|index` | Optional librarian; requires `pref set librarian on`. |
 | `skill status\|update [--host H]` | Compare installed copies with the bundle; update only missing and known-outdated files. |
 
@@ -43,12 +43,47 @@ commands receive direct arguments, never shell-evaluated text.
 | Case file | `profile = "chough-testing/1"` |
 | Bug, preferences, transition, validation run | 1 |
 
+## Execution bounds
+
+Case bindings and native reads (`specsync change status`, `hi export`) run through
+one bounded runner. Both streams are read concurrently; each keeps at most its cap
+while reading and keeps draining beyond it, counting every byte.
+
+| Run | Stdout kept | Stderr kept | Deadline |
+|---|---|---|---|
+| Case binding | 1 MiB | 1 MiB | `timeout_seconds` (default 600 s) |
+| Native read | 4 MiB + 1 byte (the parse bound) | 16 KiB | 120 s; `CHOUGH_NATIVE_TIMEOUT_SECONDS` sets 1 to 3600 |
+
+At the deadline, or when output stays open more than 2 s after the command exits
+(cut short at the deadline, but at least 200 ms after the exit), Chough stops the
+command and its descendants: on Unix the process group the command leads, on Windows
+its process tree with `taskkill /T /F`. It then waits at most 1 s for the output to
+close and abandons any reader still blocked, so the run returns on time and its
+capture is reported incomplete. On Windows, `taskkill` cannot find descendants whose
+parent has already exited; such a run returns on time with an incomplete capture,
+and those descendants may keep running.
+
+A case artifact keeps both streams within 1 MiB in total and ends with a note for
+each stream that did not fit: `[truncated: stdout wrote N bytes; M discarded]`. Case
+limitations name a timeout (`timed out after N s; the command and its descendants
+were stopped`), descendants that held output after exit (`... and were stopped` or
+`... and could not be stopped`) and `output capture incomplete`. A run whose capture
+is incomplete is never `passed`.
+
+Native section states are `observed`; `failed` for a non-zero exit or output that
+stayed open and could not be read completely; `unavailable` when the command cannot
+start or `CHOUGH_NATIVE_TIMEOUT_SECONDS` is not a whole number from 1 to 3600 (the
+command is then not run); `timed-out`; and, for JSON status, `oversized` and
+`invalid-output`. Each state other than `observed` leaves lifecycle state unknown,
+and gated transitions refuse it as `refused:native-unknown`. Without a SpecSync
+configuration, status reports `not-configured` and transitions are not natively gated.
+
 ## Observation outcomes and freshness
 
 | Outcome | Meaning |
 |---|---|
-| `passed` | The process exited 0 and the binding's assertion held, or every verdict passed |
-| `failed` | A reported test or declared assertion failed, a verdict failed, or the run timed out |
+| `passed` | The process exited 0, its output was captured completely and the binding's assertion held, or every verdict passed |
+| `failed` | A reported test or declared assertion failed, a verdict failed, the run timed out, or its output capture was incomplete |
 | `not-run` | Nothing was asserted: no test matched, the binding was ambiguous, or cargo failed before reporting results |
 
 | Freshness | Meaning |

@@ -1,0 +1,7 @@
+# Finding C rerun after the fix: chough built from 0xleif/fix/fail-closed-stage-gates 8075748; specsync 6.1.1; macOS arm64; 2026-10-31T21:23:59Z
+# Same disposable reproduction as bug-0008-reproduction.log; approvals and consent in it are SYNTHETIC.
+== C: malformed SDD policy
+  truncated JSON: exit=1 gate= refused (refused:sdd-policy-invalid
+  enabled="yes": exit=1 gate= refused (refused:sdd-policy-invalid
+  enabled missing: exit=1 gate= refused (refused:native-draft
+  valid enabled=false (should stay ungated): exit=0 gate=ungated:sdd-disabled

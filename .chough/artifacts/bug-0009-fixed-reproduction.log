@@ -1,0 +1,7 @@
+# Finding D rerun against the fix: chough debug build of bbd9f041fb58f14ed1447420c183984c1a602446 (branch 0xleif/fix/bounded-external-commands); specsync 6.1.1; macOS 26.5.2 arm64 (Darwin 25.5.0); 2026-10-31T21:39:38Z
+# Same script and disposable copy of examples/shipping as bug-0009-reproduction.log (gates-and-execution.sh). Consent in it is SYNTHETIC.
+# case TC-shipping-0901: argv [echo, ok]; validate run --times 3 --interval 4; validate stop issued 1.5 s after start
+== D: stop requested during the validation interval
+  completed=1 state=stopped elapsed=2s (stop arrived ~1.5s in, during the first 4s interval)
+# stored run record: {"state":"stopped","completed":1,"times":3,"interval_seconds":4,"elapsed_seconds":1}
+# Before the fix (main f19823d): completed=2 state=stopped elapsed=5s. No attempt now starts after the stop.

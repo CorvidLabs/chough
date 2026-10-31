@@ -1,0 +1,14 @@
+# Finding F (remaining part) rerun against the fix: chough debug build of bbd9f041fb58f14ed1447420c183984c1a602446 (branch 0xleif/fix/bounded-external-commands); macOS 26.5.2 arm64 (Darwin 25.5.0); 2026-10-31T21:42Z
+# The same stand-in 'specsync' scripts on PATH as bug-0011-reproduction.log, in a disposable copy of examples/shipping; the real SpecSync is not involved.
+## stand-in writes 200 MB to stderr, then 200 MB to stdout
+chough next exit=0 native_specsync.state=oversized content_bytes=16555 real=44.29s peak_rss_mib=10 (parse bound 4 MiB; display bound 16 KiB)
+  content: Lifecycle state is unknown: output of 200000000 bytes exceeds the 4194304-byte parse bound.
+## stand-in never exits (sh running `sleep 600`)
+CHOUGH_NATIVE_TIMEOUT_SECONDS=2: chough next exit=0 native_specsync.state=timed-out real=2.65s surviving_sleep_600=0
+  content: Unknown: no response within 2 s (CHOUGH_NATIVE_TIMEOUT_SECONDS); the command and its descendants were stopped.
+default deadline: chough next exit=0 native_specsync.state=timed-out real=120.30s surviving_sleep_600=0 native_summary=null
+  content: Unknown: no response within 120 s (CHOUGH_NATIVE_TIMEOUT_SECONDS); the command and its descendants were stopped.
+## gated move with the hanging stand-in (sdd enabled in the disposable copy, stage plan, native change repro-hang)
+CHOUGH_NATIVE_TIMEOUT_SECONDS=2: chough stage advance exit=1 real=2.07s stage stays plan surviving_sleep_600=0
+  Error: advance refused (refused:native-unknown): Entering build cannot be checked, so it is refused. specsync change status repro-hang --json (timed-out): Unknown: no response within 2 s ...
+# Before the fix (main f19823d): 400 MB peaked at 774 MiB before oversized; the hanging stand-in kept chough next waiting past 30 s.

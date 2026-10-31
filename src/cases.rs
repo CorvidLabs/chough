@@ -1,7 +1,10 @@
 //! Test-case definitions (`chough-testing/1`), focused selection and explicit execution.
 
 use crate::evidence::{self, CaseRef, Evidence, Kind, Outcome, PROVENANCE};
-use crate::records::{digest_bytes, local_path, now, print_json, valid_name, write_new_bytes};
+use crate::records::{
+    Captured, Limits, digest_bytes, local_path, now, print_json, run_bounded, valid_name,
+    write_new_bytes,
+};
 use crate::{checkpoint, prefs};
 use anyhow::{Context, Result, bail, ensure};
 use clap::Subcommand;
@@ -11,9 +14,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, File};
 use std::io::Read;
 use std::path::{Component, Path};
-use std::process::{Command, Stdio};
-use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 pub(super) const CASES_DIR: &str = ".chough/cases";
 pub(super) const ARTIFACTS_DIR: &str = ".chough/artifacts";
@@ -489,57 +490,54 @@ fn select(
     }))
 }
 
-/// Output of a bounded, shell-free command execution.
-struct Execution {
-    exit_code: Option<i32>,
-    timed_out: bool,
-    output: Vec<u8>,
-}
-
-fn pipe_reader(stream: Option<impl Read + Send + 'static>) -> thread::JoinHandle<Vec<u8>> {
-    thread::spawn(move || {
-        let mut bytes = vec![];
-        if let Some(mut stream) = stream {
-            let _ = stream.read_to_end(&mut bytes);
-        }
-        bytes
-    })
-}
-
-fn execute(root: &Path, argv: &[String], timeout: Duration) -> Result<Execution> {
-    let mut child = Command::new(&argv[0])
-        .args(&argv[1..])
-        .current_dir(root)
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .with_context(|| format!("cannot start {}", argv[0]))?;
-    let stdout = pipe_reader(child.stdout.take());
-    let stderr = pipe_reader(child.stderr.take());
-    let started = Instant::now();
-    let mut timed_out = false;
-    let status = loop {
-        if let Some(status) = child.try_wait()? {
-            break Some(status);
-        }
-        if started.elapsed() >= timeout {
-            timed_out = true;
-            let _ = child.kill();
-            let _ = child.wait();
-            break None;
-        }
-        thread::sleep(Duration::from_millis(25));
+/// Run a binding without a shell through the bounded runner, each stream capped at
+/// the artifact bound while reading.
+fn execute(root: &Path, argv: &[String], timeout: Duration) -> Result<Captured> {
+    let limits = Limits {
+        stdout_cap: OUTPUT_LIMIT,
+        stderr_cap: OUTPUT_LIMIT,
+        deadline: timeout,
     };
-    let mut output = b"--- stdout ---\n".to_vec();
-    output.extend(stdout.join().unwrap_or_default());
-    output.extend(b"\n--- stderr ---\n");
-    output.extend(stderr.join().unwrap_or_default());
-    Ok(Execution {
-        exit_code: status.and_then(|status| status.code()),
-        timed_out,
-        output,
-    })
+    run_bounded(root, argv, &limits).with_context(|| format!("cannot start {}", argv[0]))
+}
+
+/// The artifact: both streams within the 1 MiB total, then a note for each stream
+/// whose bytes are not all present. Also returns the text the assertions read, which
+/// excludes those notes.
+fn artifact(execution: &Captured) -> (Vec<u8>, String) {
+    const STDOUT_HEADER: &[u8] = b"--- stdout ---\n";
+    const STDERR_HEADER: &[u8] = b"\n--- stderr ---\n";
+    let mut output = STDOUT_HEADER.to_vec();
+    output.extend(&execution.stdout);
+    output.extend(STDERR_HEADER);
+    let stderr_start = output.len();
+    output.extend(&execution.stderr);
+    let mut present = [execution.stdout.len(), execution.stderr.len()];
+    if output.len() > OUTPUT_LIMIT {
+        present[0] = present[0].min(OUTPUT_LIMIT.saturating_sub(STDOUT_HEADER.len()));
+        present[1] = present[1].min(OUTPUT_LIMIT.saturating_sub(stderr_start));
+        output.truncate(OUTPUT_LIMIT);
+        output.extend(b"\n[truncated: captured output is limited to 1048576 bytes]\n");
+    }
+    let text = String::from_utf8_lossy(&output).into_owned();
+    for (name, total, present) in [
+        ("stdout", execution.stdout_total, present[0] as u64),
+        ("stderr", execution.stderr_total, present[1] as u64),
+    ] {
+        if total > present {
+            if !output.ends_with(b"\n") {
+                output.push(b'\n');
+            }
+            output.extend(
+                format!(
+                    "[truncated: {name} wrote {total} bytes; {} discarded]\n",
+                    total - present
+                )
+                .as_bytes(),
+            );
+        }
+    }
+    (output, text)
 }
 
 /// Sum "N passed" and "N failed" across cargo's "test result:" lines.
@@ -637,12 +635,7 @@ pub(super) fn run_case(
     let timeout = Duration::from_secs(binding.timeout_seconds.unwrap_or(600));
     let observation = observation_id(root, id, requested_id)?;
     let execution = execute(root, &argv, timeout)?;
-    let mut output = execution.output;
-    if output.len() > OUTPUT_LIMIT {
-        output.truncate(OUTPUT_LIMIT);
-        output.extend(b"\n[truncated: captured output is limited to 1048576 bytes]\n");
-    }
-    let text = String::from_utf8_lossy(&output).into_owned();
+    let (output, text) = artifact(&execution);
     let artifact = format!("{ARTIFACTS_DIR}/{observation}.log");
     ensure!(
         write_new_bytes(root, &artifact, &output)?,
@@ -655,11 +648,18 @@ pub(super) fn run_case(
         .filter(|fragment| !text.contains(fragment.as_str()))
         .collect();
     let mut tests_run = None;
-    let outcome = if execution.timed_out {
-        limitations.push(format!(
-            "timed out after {} s and was stopped",
-            timeout.as_secs()
-        ));
+    let mut outcome = if execution.timed_out {
+        limitations.push(if execution.descendants_stopped {
+            format!(
+                "timed out after {} s; the command and its descendants were stopped",
+                timeout.as_secs()
+            )
+        } else {
+            format!(
+                "timed out after {} s; the command was stopped, but stopping its descendants failed",
+                timeout.as_secs()
+            )
+        });
         Outcome::Failed
     } else if binding.adapter == "cargo-test" {
         let (passed, failed) = cargo_counts(&text);
@@ -691,6 +691,22 @@ pub(super) fn run_case(
     } else {
         Outcome::Passed
     };
+    if execution.held_open {
+        limitations.push(if execution.descendants_stopped {
+            "descendants still held output after exit and were stopped".into()
+        } else {
+            "descendants still held output after exit and could not be stopped".into()
+        });
+    }
+    if execution.capture_incomplete {
+        limitations.push(
+            "output capture incomplete: output was still open when reading stopped, so this run cannot pass"
+                .into(),
+        );
+        if outcome == Outcome::Passed {
+            outcome = Outcome::Failed;
+        }
+    }
     if !missing.is_empty() {
         limitations.push(format!(
             "expected output missing: {}",
