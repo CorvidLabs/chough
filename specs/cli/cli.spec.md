@@ -4,7 +4,23 @@ version: 1
 status: active
 files:
   - src/main.rs
+  - src/bugs.rs
+  - src/cases.rs
+  - src/checkpoint.rs
+  - src/context.rs
+  - src/evidence.rs
+  - src/library.rs
+  - src/prefs.rs
+  - src/records.rs
+  - src/skill.rs
+  - src/stage.rs
+  - src/validate.rs
   - tests/cli.rs
+  - tests/bugs.rs
+  - tests/cases.rs
+  - tests/optional.rs
+  - tests/stages.rs
+  - tests/common/mod.rs
 
 db_tables: []
 depends_on: []
