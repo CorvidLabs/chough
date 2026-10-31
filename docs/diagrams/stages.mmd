@@ -1,0 +1,14 @@
+flowchart TB
+    intent["intent: HI criteria, FRD, one intent decision"] --> design["design: only for visual changes"]
+    intent -. "skip design with a reason" .-> plan
+    design --> plan["plan: native change, one scope approval"]
+    plan -->|"gate: native definition approved"| build["build: approved tasks"]
+    build --> test["test: focused cases, three tracks"]
+    test -->|"gate: no open blocking bug"| accept["accept: evidence for human review"]
+    accept -->|"gate: native change archived"| done["done"]
+    done -. "only on request or standing setting" .-> release["release: optional, real commands"]
+    release --> done
+    test -. "back: blocking bug" .-> build
+    plan -. "back" .-> intent
+    any(["any stage"]) -. "enter, then return to caller" .-> side["side stages: bugs, validate, librarian"]
+    any -. "every transition" .-> checkpoint[("checkpoint and transition log")]

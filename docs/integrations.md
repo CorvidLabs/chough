@@ -1,40 +1,45 @@
 # Integration map
 
-Chough's first slice integrates native HI export and SpecSync status and uses Fledge
-for its own project tasks. The workflow skill can guide the remaining native tools.
-The optional adapters below are design seams, not implemented capabilities.
+Chough integrates native HI export, SpecSync change status and Git directly, and runs
+bound test commands only when a case is explicitly executed. Everything else below is
+guided by the skill or kept as a qualified, deferred or unavailable adapter.
+
+## Hosts
+
+| Host | Project skill directory | Observed support |
+|---|---|---|
+| Claude Code 2.1.316 | `.claude/skills/chough-workflow/` | Discovered in two fresh headless sessions; `.agents/skills` alone was not discovered (answer: NONE) |
+| Codex CLI 0.153.4 | `.agents/skills/chough-workflow/` (openai mapping) | A fresh session followed the `AGENTS.md` router to the installed skill and completed a cold start; native discovery of that directory was not tested separately |
+| Cursor, Gemini, Grok | `.cursor/skills`, `.gemini/skills`, `.grok/skills` | Mapping from the CorvidLabs skills installer; not exercised |
+| Any host | Give the agent `skills/chough-workflow/SKILL.md` | The skill reads as plain Markdown |
+
+A directory name is a convention, not proof of support. `chough skill status` shows
+whether an installed copy is current, edited or outdated.
+
+## Native tools
 
 | Tool | Native ownership | Chough boundary |
 |---|---|---|
-| [HI](https://github.com/CorvidLabs/hi/blob/main/README.md) | Human sentences, permanent IDs, scoped JSON export, structural checks. | Use exported intent; derive FRD downstream. HI does not bind evidence or track achievement. |
-| [SpecSync](https://github.com/CorvidLabs/spec-sync/blob/main/README.md) | Requirements, module contracts, companions, changes, approvals, verification, review, archives, lessons. | Surface native status and relevant sources. Structural validation is separate from product testing. |
-| [Fledge](https://github.com/CorvidLabs/fledge/blob/main/README.md) | Task lanes, work/PR/release flows, plugins, execution adapters. | Prefer the supported task surface; do not recreate its task runner. |
-| [Rune](https://github.com/CorvidLabs/rune/blob/main/README.md) | Ruby PTY runner, live watch, structured output, named project sessions, send-and-settle, attach. | Future optional terminal/session adapter. A settled process is not proof a task succeeded. |
-| [Trust](https://github.com/CorvidLabs/trust/blob/main/README.md) | Composes Fledge, SpecSync, Augur, and Attest through native local/CI policy. | Future gate adapter; reuse the composition rather than duplicate gate orchestration. |
-| [Augur](https://github.com/CorvidLabs/augur/blob/main/docs/cli.md) | Heuristic risk analysis and policy enforcement. | Future risk input; retain verdict and command semantics. It does not prove product behavior. |
-| [Attest](https://github.com/CorvidLabs/attest/blob/main/README.md) | Assertions at exact commits, signing and verification. | Future provenance input; assertions do not execute tests or establish human authorization. |
-| [Atlas](https://github.com/CorvidLabs/fledge-plugin-atlas/blob/main/README.md) | Read-only context and gap exploration. | Future context source; current SpecSync compatibility remains to be validated. |
+| [HI](https://github.com/CorvidLabs/hi) 0.8.0 | Human sentences, permanent IDs, scoped export, structure | Reads `hi export`; FRD is derived downstream; HI does not track achievement |
+| [SpecSync](https://github.com/CorvidLabs/spec-sync) 6.1.1 | Requirements, contracts, changes, approval, verification, review, archive, lessons | Reads `change status --json` `summary.state` for gates; never runs approve, review or finalize |
+| [Fledge](https://github.com/CorvidLabs/fledge) 1.7.2 | Tasks, lanes, work and release mechanics | Case binding `fledge-task`; Chough's own lanes |
+| [CorvidLabs skills](https://github.com/CorvidLabs/skills) | Product-authoritative skills and the host directory mapping | Linked, not copied |
+| [Design system](https://github.com/CorvidLabs/design-system) | Tokens and assets | The visual sample pins `tokens.css` at c698ed4; Figma is optional |
 
-## Limits adapters must preserve
+## Qualified, deferred or unavailable adapters
 
-- **Trust:** local `verify` does not produce a JSON report; `status` and `doctor`
-  do. Its Action distinguishes passed, degraded, and failed layers and overall
-  results. Standard mode can succeed with degraded provenance. Baseline scope
-  checks the protected base, not the proposed commit's provenance.
-- **Augur:** `check` can emit JSON but exits zero regardless of verdict. Use the
-  native `gate` command for enforcement. An adapter must not interpret exit zero
-  from `check` as an approved risk verdict.
-- **Attest:** a signed record proves possession of the signing key. It does not
-  prove that the signer was a human or that the human authorized the action. Never
-  fill `humanApproved` from an agent's inference. Signer pinning and policy choices
-  need a deliberate project decision.
-- **Rune:** `run` buffers one invocation, `watch` supports live human passthrough
-  and NDJSON events, and `session` retains a named agent CLI across invocations.
-  Per-send settled output and rendered screen help observe a process; task success
-  still needs explicit verification. Human attach and bounded logs matter before
-  adding session coordination.
-- **Atlas:** legacy Fledge spec documentation makes compatibility a question to
-  answer with a real fixture, not an assumption.
+| Adapter | Status | Limits to preserve |
+|---|---|---|
+| APS 1.1.0 | Qualified, deferred (D-010) | Lost 49 of 50 concurrent read-modify-write updates with exit 0; unknown fields and any schema version accepted; deleted value reads as a fresh value; implicit `~/.aps` root; no Windows binary; values only as argv |
+| 3md / agent.3md | Evaluated, not used for definitions (D-011) | Single-line string attributes; loaders ignore unknown fields; SpecSync reads `specs/<module>/<module>.3md` as lessons |
+| Magpie | Not installed; deferred | Generic mode runs every `tool=` skill with `/bin/sh -c`, judges exit codes, and records skipped skills as passes. Bind only through `command` with `expect_output` |
+| Rune | Optional, later | A settled send is not task success; current-agent-first is the model |
+| Trust | Proposed gate adapter | Local verify has no JSON report; degraded or baseline results are not proposed-commit provenance |
+| Augur | Not integrated | `check` exits zero regardless of verdict; use `gate` to enforce; risk is not behavior |
+| Attest | Not integrated | A signature proves key possession, not human authorization; never infer `humanApproved` |
+| Atlas | Not integrated | SpecSync compatibility unverified |
+| GitHub plugin | Guidance only | Issue lists are bounded and can hide fetch errors; nothing is posted without a request |
+| Bench, deploy, e2e plugins | Not integrated | Baselines are not scoped; deploy scripts simulate (record as `dry-run`); e2e tests Fledge itself |
 
-None of these replaces bug reproduction, product acceptance testing, a genuine
-human decision, or an observation from the promised delivery environment.
+No general production-health service is assumed. Monitoring uses project-native
+sources wrapped as cases with explicit assertions, and only with authorization.

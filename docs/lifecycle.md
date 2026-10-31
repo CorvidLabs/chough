@@ -1,90 +1,91 @@
-# The native development loop
+# The development loop
 
-Chough's skill guides this loop. HI, SpecSync, Fledge, the repository host, and the
-actual product environment retain their native responsibilities. Consult current
-tool help and `specsync change status` rather than assuming a cached sequence is valid.
+Chough's skill guides this loop; HI, SpecSync, Fledge, the repository host and the
+real environment keep their responsibilities. Current tool help and `specsync change
+status` take precedence over any cached sequence.
 
-![Lifecycle and evidence boundaries](diagrams/lifecycle.svg)
+## Stages
+
+![Stages, gates, backtracking and side stages](diagrams/stages.svg)
 
 ```mermaid
 flowchart TB
-    intent["Human intent + stable HI criteria"] --> frd["Derived functional requirements"]
-    frd --> scope["Native SpecSync draft and real scope decision"]
-    scope --> build["Implement and run product checks through Fledge"]
-    build --> verify["Native scoped check and product evidence"]
-    verify --> review["Push product tip, CI, real implementation review"]
-    review --> archive["Native finalize or ship on the same PR"]
-    archive --> merge["Commit and push archive, CI, GitHub merge"]
-    merge --> delivery["Verify the actual delivery target"]
-    delivery --> lessons["Scoped native lessons + focused next session"]
-    build --> bug["Reproduce, classify, deduplicate, report bug"]
-    bug --> scope
+    intent["intent: HI criteria, FRD, one intent decision"] --> design["design: only for visual changes"]
+    intent -. "skip design with a reason" .-> plan
+    design --> plan["plan: native change, one scope approval"]
+    plan -->|"gate: native definition approved"| build["build: approved tasks"]
+    build --> test["test: focused cases, three tracks"]
+    test -->|"gate: no open blocking bug"| accept["accept: evidence for human review"]
+    accept -->|"gate: native change archived"| done["done"]
+    done -. "only on request or standing setting" .-> release["release: optional, real commands"]
+    release --> done
+    test -. "back: blocking bug" .-> build
+    plan -. "back" .-> intent
+    any(["any stage"]) -. "enter, then return to caller" .-> side["side stages: bugs, validate, librarian"]
+    any -. "every transition" .-> checkpoint[("checkpoint and transition log")]
 ```
 
-## Begin with the want
+Every stage shares one contract (purpose, inputs, outputs and owners, roles,
+completion evidence, approval policy, questions, checkpoint content and transitions),
+documented in [references/stages.md](../skills/chough-workflow/references/stages.md).
+Any stage can iterate, go back, reset, pause, resume or be skipped with a reason.
+History is append-only; going back lists what to refresh and, after native
+approval, points to native reapproval for changes to intent, contract, acceptance
+criteria or scope.
 
-Capture what the human wants using `hi`, preserving IDs. Clarify contradictions and
-meaningful product choices. Proposed additions remain proposals. Export the affected
-scope with `hi export`; synthesize requirements and acceptance criteria from it.
-FRD synthesis is Chough's workflow responsibility, not a feature of `hi`.
+Human decisions sit at natural points, not at every step: the intent as a whole,
+the rendered design with its companion, one native scope approval, and the
+implementation review at acceptance. Agents synthesize review findings before
+asking, and keep doing independent work while a gate is pending.
 
-Read affected contracts and companions before selecting an implementation. Keep
-requirements appropriately sized: enough to specify observable behavior and failure
-cases without turning each implementation detail into a permanent product promise.
+## Testing in three tracks
 
-## Use SpecSync's own change package
+Functional checks always run for the affected criteria and impacted behavior.
+Copy and localization checks run when visible text or locale behavior changes;
+design QA runs when visuals or interactions change. `chough cases select` returns
+the focused set and names every omission. Definitions and observations are separate
+records, and a failing case stays failed even when others pass. See
+[the testing reference](../skills/chough-workflow/references/testing.md).
 
-For a later scoped change, start from the installed command help:
+## Acceptance and native closeout
 
-```sh
-specsync change new "Preserve checkout retry intent" \
-  --spec checkout --path src/checkout.rs --json
-specsync change status preserve-checkout-retry-intent --json
+![Acceptance before native closeout](diagrams/lifecycle.svg)
+
+```mermaid
+flowchart TB
+    tests["Focused cases pass; blocking bugs closed"] --> check["Native scoped check, committed"]
+    check --> push["Push branch; hosted CI at the real tip"]
+    push --> present["Present evidence, open bugs and limits"]
+    present --> human{"Human implementation review"}
+    human -->|"changes requested"| build["Back to build"]
+    build --> tests
+    human -->|"approved"| review["specsync change review"]
+    review -->|"no commit in between"| ship["specsync change ship or finalize (same PR)"]
+    ship --> archive["Push archive commit; CI"]
+    archive --> merge["Merge through the normal process"]
+    merge -. "only if authorized" .-> release["Optional release with real commands"]
 ```
 
-Complete the native interview and selected artifacts. Obtain a real scope decision
-before recording native approval. An actor string is a label, not evidence of
-identity or human authorization.
+`specsync change check <id> --commit` materializes the approved delta and records
+targeted structural verification; it does not run product tests and refuses while
+tasks are unchecked. The human implementation review happens after verification and
+before archive; the native `review` record follows a real decision only. Then `ship`
+or `finalize` archives on the same pull request without an intervening commit.
+`chough stage advance` leaves accept only when native state is `archived`.
 
-After implementing and running relevant product checks:
+## Release, monitoring and learning
 
-```sh
-specsync change check preserve-checkout-retry-intent --commit
-specsync change status preserve-checkout-retry-intent --json
-```
+Finishing never enters release. Release, publication, installation, deployment and
+live health are separate observations, entered only on request or under a standing
+project setting. Optional repeated validation and monitoring follow run consent or
+standing preferences and keep findings locally. Lessons can be recorded at any stage
+in the native module source (`<module>.3md` lesson plane or `context.md`) with their
+source, scope and future use.
 
-The scoped check materializes approved deltas and validates structure. It does not
-execute arbitrary product tests. Preserve the actual command outputs and test
-artifacts separately, linked to HI and requirement IDs.
+## Adoption in this repository
 
-Push the product tip, satisfy the repository's CI and trust policy, and complete
-real implementation review. Record the native review only when that decision exists.
-Then use the eligible `change ship` or `change finalize` action reported by native
-status. Do not commit between recording review and finalizing; the native review
-binds a workspace digest. Finalize changes sequentially, not as a batch of reviews.
-
-Commit and push the archive tip on the same PR, wait for its required CI, and merge
-only after every change on that PR is archived. GitHub performs the merge. When
-evidence becomes stale or a phase fails, use the exact native status/recovery output;
-do not guess that another `check` is always the correct next step.
-
-These boundaries follow the [SpecSync workflow](https://github.com/CorvidLabs/spec-sync/blob/main/AGENTS.md).
-
-## Delivery and compounding
-
-Verify the actual target promised to the human. A local test, green CI run, merged
-PR, package release, deployment, and a successful interaction with the delivered
-product are separate events. Record only the event observed and its environment.
-
-Preserve a lesson when it will change a future decision. Give it a source, scope,
-concrete future use, and revision or retirement rationale. Use the module's native
-`.3md` lesson source where it exists, otherwise the native context convention.
-Do not accumulate a second global history of every action.
-
-## Bootstrap boundary
-
-The initial Chough build was explicitly authorized. It uses HI, Fledge, and native
-SpecSync structural checks with upstream's default disabled SDD policy. It does not
-contain invented human approval/review records or claim an archived full lifecycle.
-The first real scoped feature is the opportunity to exercise that lifecycle with
-the human's actual decisions and final delivery evidence.
+The bootstrap used native structural checks with SDD disabled and claimed no
+approval. Chough then adopted the workflow-v2 lifecycle (commit c582a10), and the
+first fully native change is `evolve-chough-into-a-resumable-stage-workflow`, approved
+by the human before implementation. Its implementation review and archive are human
+and native steps that the agent does not perform.

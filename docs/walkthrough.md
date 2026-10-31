@@ -1,137 +1,111 @@
-# A focused session, a failed check, and a resumed task
+# Walkthrough: install, one feature and bug, and resuming
 
-This walkthrough uses Chough's own durable LIFE criteria and CLI contract. Use a
-clean checkout or an isolated copy if you want the exercise to leave your working
-session untouched. The broader bug-triage steps are skill-led; the helper records
-context and observations rather than performing those decisions for you.
+This follows the [shipping sample](../examples/shipping/). To run the whole sequence
+with assertions in a disposable directory, use `fledge run exercise` or
+`sh examples/feature-bug-loop.sh`; the commands below are the same steps by hand.
+Human gates appear as decisions a person makes; the sample script labels its
+stand-ins as SIMULATED.
 
-## Initialize without replacing project work
-
-After installing from source, run inside the Chough repository:
-
-```sh
-chough init --objective "Verify safe project initialization" \
-  --intent-scope LIFE --module cli
-chough context
-chough status --environment local-development
-```
-
-The session is `.chough/session.json`. The skill and its required references are
-installed beneath `.agents/skills/chough-workflow/`. Repeating `init` reports
-preserved paths; new command options do not replace the existing session. Edit the
-session deliberately when changing the objective.
-
-On hosts with compatible skill discovery, ask:
-
-> Use $chough-workflow to verify REQ-cli-001. Start from LIFE-4 and LIFE-6, inspect
-> the CLI contract, and preserve the existing project files.
-
-Otherwise give the agent the installed or canonical `SKILL.md` explicitly.
-Chough does not install a universal slash command. A supported host can map its
-own command to the same skill and native helper calls.
-
-## Observe a real check before recording it
-
-Run the relevant check through the project's task surface. Save the actual output:
+## Install
 
 ```sh
-mkdir -p .chough/artifacts
-fledge run test > .chough/artifacts/tests.log 2>&1
+cargo install --path . --locked     # from a Chough checkout
+hi --version; specsync --version; fledge --version
 ```
 
-Inspect the exit status and the saved log. Only after observing success, record:
+Use the same SpecSync version for every lifecycle writer and CI (this repository uses
+6.1.1). In the project:
 
 ```sh
-chough evidence add cli-tests-001 \
-  --criterion LIFE-4 --criterion LIFE-7 \
-  --requirement REQ-cli-001 \
-  --contract specs/cli/cli.spec.md \
-  --kind product-test --outcome passed \
-  --environment local-development \
-  --summary "Observed the CLI test suite pass; see the attached output." \
-  --artifact .chough/artifacts/tests.log
-chough status --environment local-development --json
+chough init --objective "Free shipping from fifty dollars" \
+  --intent-scope CHECKOUT --module shipping --host claude
+chough skill status
 ```
 
-Use a new evidence ID for each observation. Existing IDs are preserved. A test
-failure should be recorded with `--outcome failed`, a faithful summary, and its
-actual output. Do not run the success command after a failed or interrupted test.
+Claude Code discovers `.claude/skills/chough-workflow/`; for other hosts add their
+`--host` or point the agent at the skill file.
 
-The helper validates active criterion IDs against native HI export and exact
-requirement IDs in the supplied contracts' `requirements.md` companions. Artifacts
-must exist. It hashes artifacts and captures the Git revision, dirty state, and
-worktree fingerprint; it does not rerun the test.
+## Intent and design
 
-## Investigate a failure as a bug
-
-If initialization unexpectedly changes a user-edited file, preserve a small
-reproduction in a temporary Git repository: initialize, edit the generated file,
-initialize again, and compare bytes. Record the real command sequence and output.
-Tie the observation to LIFE-4, LIFE-6, and REQ-cli-001.
-
-Use the [bug procedure](../skills/chough-workflow/references/bugs.md) to classify
-the observation, search existing local reports and relevant issues, and draft a
-report. Distinguish a product defect from an environment failure or unclear intent.
-A regression needs the same reproduction failing now and passing at an identified
-earlier revision. A plausible explanation remains a hypothesis until verified.
-
-Keep the report local unless filing an issue or posting an update is authorized.
-Use a native SpecSync bug-fix change for the repair, obtain the real scope decision,
-then show the reproduction pass after the fix and complete adjacent checks. Follow
-native status through review and same-PR archival. A repaired local fixture does
-not establish that a released or deployed product is fixed.
-
-This example describes how to investigate that failure; it does not claim that
-the initial Chough implementation has that defect. The automated fixture tests
-exercise preservation and error cases against the actual helper.
-
-## Resume with the next action intact
-
-Edit `.chough/session.json` to reflect the state you actually reached. Keep its
-schema and existing fields; for example, update these values:
-
-```json
-{
-  "schema_version": 1,
-  "objective": "Finish the initialization preservation investigation",
-  "intent_scope": "LIFE",
-  "modules": ["cli"],
-  "decisions": ["Use the smallest isolated Git fixture that demonstrates the symptom."],
-  "open_questions": [],
-  "next_action": "Read the reproduction output, then follow native SpecSync status for the scoped repair."
-}
-```
-
-In the next agent session:
+Ask the agent in plain language, for example: "Use the Chough workflow: orders of
+fifty dollars or more should ship free." It captures agreed criteria with `hi`,
+derives the FRD, runs the role passes and asks you one question about the intent as
+a whole. After you approve:
 
 ```sh
-chough context --json
-chough next --environment local-development --json
+chough stage advance                                  # intent -> design
+chough stage skip --reason "Fee calculation only; nothing visual"   # design -> plan
 ```
 
-The packet carries the current objective, relevant native sources, decisions,
-questions, and next action. Read any explicit missing or truncated source markers
-before deciding the context is sufficient. Native SpecSync output remains the
-authority on lifecycle actions.
+A visual change instead goes through the
+[design stage](exercises/visual-design.md) and waits for your approval of the
+rendered prototype and its companion.
 
-## Interpret freshness precisely
+## One scope approval
 
-| Status | Meaning |
-|---|---|
-| `current-observation` | Recorded inputs and explicit environment match now; outcome and provenance still matter. |
-| `stale-revision-or-inputs` | The revision or relevant Git worktree inputs changed. |
-| `stale-artifact` | A bound artifact changed or disappeared. |
-| `stale-environment` | The requested environment differs from the recorded one. |
-| `environment-unchecked` | No environment was supplied for comparison. |
-| `unknown-revision` | A current Git snapshot could not be established. |
+The agent drafts a native change and presents it:
 
-The first applicable stale reason is reported. A current failed observation remains
-a failure. Changing code or making a new commit requires fresh observations even
-if older tests passed. Chough's own `.chough/` records and `target/` are excluded
-from the worktree fingerprint, while explicitly bound artifacts are hashed
-separately. Avoid treating generated or ignored files as verified inputs unless
-they are explicitly represented in evidence.
+```sh
+specsync change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/ --json
+chough checkpoint --native-change free-shipping-at-the-threshold \
+  --awaiting-human "Scope approval of free-shipping-at-the-threshold"
+chough stage advance        # refused: refused:native-draft
+```
 
-Human approval and delivery remain unknown in helper status. A human-observation
-record is not authenticated acceptance, and a delivery-observation record is not a
-deployment check executed by Chough.
+Only after you approve does it run `specsync change approve <id> --actor "<you>"` and
+`chough checkpoint --clear-awaiting-human`. Then `chough stage advance` enters build.
+
+## Build, focused tests and a bug
+
+```sh
+specsync change check free-shipping-at-the-threshold --commit
+chough stage advance                                   # build -> test
+chough cases select --requirement REQ-shipping-002 --path src/lib.rs
+chough cases run TC-shipping-0001 --environment local  # exit 3: failed (left: 499, right: 0)
+chough bug search "order of exactly fifty dollars is charged shipping"
+chough bug add --title "Shipping charged at exactly the free threshold" \
+  --symptom "…" --trigger "…" --expected "Fee 0" --actual "Fee 499" \
+  --environment local --case TC-shipping-0001 --observation <failed-observation> \
+  --scope blocking --classification product-defect
+chough stage advance                                   # refused: refused:blocking-bugs
+chough stage back --to build --reason "BUG-0001 blocks acceptance"
+```
+
+After the fix, rerun the focused cases, link the passing observation and mark the bug
+verified (`chough bug update BUG-0001 --status verified --observation <passing>`).
+`chough bug report BUG-0001` prints a report candidate; nothing is posted unless you
+ask.
+
+## Acceptance
+
+```sh
+chough stage advance        # test -> accept
+chough stage advance        # refused: refused:native-verifying
+chough next --environment local
+```
+
+The agent pushes the branch, observes CI and presents the evidence. Your
+implementation review is the decision; only after it does the agent run `specsync
+change review` and `ship` on the same pull request. Release is a separate, optional
+request.
+
+## Resume cold
+
+A new agent, possibly a different host, with none of this conversation:
+
+```sh
+chough next --environment local
+```
+
+It reports the stage, the gate for the current stage, freshness of the referenced
+observations, open and blocking bugs, standing preferences, pending human decisions
+and the next valid action. The [cold-start exercise](exercises/cold-start.md) records
+an independent Codex session doing exactly this on the sample.
+
+## Read freshness precisely
+
+A changed revision, any changed fingerprinted file, a changed artifact, a changed
+case definition or a different environment makes an observation stale; rerun the
+case instead of reusing the result. Committing after a run, even only metadata, makes
+earlier observations stale by design. See the [CLI reference](cli.md) for every
+outcome and freshness label.

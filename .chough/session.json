@@ -26,7 +26,11 @@
       "REQ-cli-008",
       "REQ-cli-011"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-0101",
+      "TC-cli-0102",
+      "TC-cli-0103"
+    ],
     "design": [],
     "files": []
   },
@@ -37,16 +41,19 @@
     "2026-10-31: SpecSync workflow-v2 adopted on feat/resumable-stage-workflow (c582a10); lifecycle writers and CI use SpecSync 6.1.1; Fledge pins unchanged.",
     "2026-10-31: agent recommendations inside the draft definition, pending human approval: TOML chough-testing/1 test profile instead of 3md; APS 1.1.0 qualified and deferred; session.json stays the only checkpoint.",
     "2026-10-31: the human (0xLeif) approved the definition, including the TOML test profile, APS deferral, explicit case execution, capture-only monitoring default and require_change policy; recorded with specsync change approve (actor label, not authenticated identity).",
-    "Crate-internal modules expose entry points with pub(super): the binary has no library target, and the contract describes commands, not Rust symbols."
+    "Crate-internal modules expose entry points with pub(super): the binary has no library target, and the contract describes commands, not Rust symbols.",
+    "Claude Code discovery verified for .claude/skills and not .agents/skills; Codex followed the AGENTS.md router. Other hosts are mapped but not exercised."
   ],
   "open_questions": [],
   "completed": [
-    "Increments 1-6: records, checkpoint v2, stages, cases, evidence v2, bugs, preferences, validation, librarian, skill hosts and bundle (commits f6f1096, 115f7be); 37 integration tests pass locally on macOS arm64."
+    "Increments 1-6: records, checkpoint v2, stages, cases, evidence v2, bugs, preferences, validation, librarian, skill hosts and bundle (commits f6f1096, 115f7be); 37 integration tests pass locally on macOS arm64.",
+    "Increment 7: full-lifecycle policy, CI audit, Chough's own migrated checkpoint and 40 case definitions, docs and four inspected diagrams.",
+    "Increment 8: feature-and-bug exercise (passes in Fledge), visual design exercise with rendered review, intent worked example, and a genuine Codex cold start that honored scope, preferences and gates."
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Increment 7: policy and CI, Chough's own cases, docs and diagrams; then increment 8 exercises including a genuine cold start."
+  "next_action": "Run specsync change check --commit, record Chough's own case observations at the product tip, push, update the draft PR, observe CI, then hand back for the human implementation review."
 }

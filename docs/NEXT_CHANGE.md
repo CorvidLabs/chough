@@ -1,5 +1,10 @@
 # Proposed next native change: reusable observations after metadata commits
 
+> **Superseded on 2026-10-31.** The human did not approve this proposal and redirected
+> the next work to the resumable stage workflow (native change
+> `evolve-chough-into-a-resumable-stage-workflow`). It is kept as history. Observation
+> reuse after metadata commits is not implemented and needs its own human decision.
+
 **Status: proposed scope for human review. No scope approval, implementation review,
 or native archive has been recorded.** The initial baseline is the authorized
 bootstrap; this proposal is a separate increment, not retroactive approval of it.

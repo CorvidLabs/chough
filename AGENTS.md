@@ -1,29 +1,25 @@
 # Chough
 
-Chough (pronounced chuff) is a small Rust helper plus portable agent skills. Read
-[INTENT.md](INTENT.md), the relevant `hi/` criteria, and affected module contracts
-and companions under `specs/` before changing behavior. Product requirements live
-in `docs/FRD.md`; proposed additions are not human commitments.
+Chough (pronounced chuff) is a small Rust helper plus portable agent skills.
 
-Use Fledge first: `fledge run fmt`, `fledge run test`, `fledge run lint`, and
-`fledge lanes run pre-push`. HI owns human intent and permanent criterion IDs;
-SpecSync owns contracts, companions, changes, review, and archives. Chough owns
-only its focused session and revision/environment-bound observations. A passing
-structural check never proves product behavior, authentic human approval, or
-deployment. Never create human approval/review records from an agent label.
+To resume work here, run `chough next --environment <env>` (or `cargo run -- next`)
+and read [the workflow skill](skills/chough-workflow/SKILL.md). The checkpoint is
+`.chough/session.json`; native SpecSync status decides lifecycle gates.
 
-Read `skills/chough-workflow/SKILL.md` for the product workflow. Native tool help
-and `specsync change status` take precedence over cached command sequences.
-Bootstrap is an explicitly authorized first implementation using native structural
-checks; the native change lifecycle is optional by upstream policy. Do not claim
-that a bootstrap push is a fully approved/archived lifecycle. Later scoped changes
-should use the full native lifecycle with genuine human decisions.
+Before changing behavior, read [INTENT.md](INTENT.md), the relevant `hi/` criteria,
+[docs/FRD.md](docs/FRD.md) and the affected contract and companions under `specs/`.
+Use Fledge first: `fledge run fmt`, `fledge run test`, `fledge run lint`, `fledge
+lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.7.2, specsync 6.1.1.
 
-Keep changes small. Preserve existing files during initialization. Do not add a
-model client, custom runtime, hosted service, or duplicate lifecycle state machine.
-Rune and other tools are optional adapters until implemented and tested.
+HI owns human wording and criterion IDs. SpecSync owns contracts, companions,
+changes, approval, verification, review and archives; meaningful files need an active
+native change. Chough owns only its checkpoint, transitions, preferences, case
+definitions, observations and local bugs. Never create approval, review, release or
+deployment records from an agent label, and never treat a structural pass as product
+proof.
 
-Multiple agents may be working here. Own only assigned files, preserve others'
-edits, and coordinate interface changes. Source belongs in `src/`, meaningful
-integration tests in `tests/`, and agent/doc assets beside their owners. Do not
-commit generated binaries or claim unobserved CI/release/deployment success.
+Keep changes small. Preserve existing files and others' edits; own only assigned
+files. Do not add a model client, custom runtime, hosted service or duplicate
+lifecycle state. Rune, APS, Magpie and other adapters stay optional until
+implemented and tested. Do not commit generated binaries or claim unobserved CI,
+release or deployment results.

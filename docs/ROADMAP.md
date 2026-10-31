@@ -1,19 +1,19 @@
 # Roadmap
 
-Durable intent is in [HI](../hi/life.md). This roadmap records proposed work and
-sequencing, not human acceptance or proof of delivery.
+Durable intent is in [HI](../hi/). This roadmap records delivered work and proposed
+sequencing; it is not human acceptance or proof of delivery.
 
-| Stage | Outcome | Evidence needed |
+| Stage | Outcome | State |
 |---|---|---|
-| First foundation | Current agent uses a discoverable skill; CLI preserves files, assembles context, reports native status, and records observations. | Isolated Git fixtures, Rust checks, native structural checks, feature/bug/resumption walkthrough, rendered diagrams. |
-| First real project loop | Apply the skill to a real scoped feature and a reproduced bug. | Genuine scope decision, product test results, native change verification, human review, same-PR archive, final delivery observation. |
-| Context refinement | Select less irrelevant context while retaining material decisions and lessons. | Cases demonstrating successful resumption and explicit missing/stale inputs; no silent source truncation. |
-| Host portability | Validate supported host discovery and command mappings. | Real host-specific exercises; a command name alone is insufficient. |
-| Native gate adapter | Reuse Trust where its policy is appropriate. | Version-compatible integration and tests for degraded, failed, unavailable, baseline, and proposed-commit outcomes. |
-| Rune proof of concept | Optional execution/session bridge for an explicitly chosen use case. | Bounded session lifecycle, per-send output, human takeover, process-settled versus task-success distinction. |
-| Context/gap adapter | Explore read-only Atlas input. | Current SpecSync compatibility and focused useful output established first. |
+| First foundation | Skill, focused context, native status, bound observations | Delivered at d38aa19 (bootstrap, no native lifecycle) |
+| Resumable stage workflow | Stages and gates, checkpoint schema 2, focused cases, local bugs, optional validation, release routing and librarian, per-host skills | Implemented in `evolve-chough-into-a-resumable-stage-workflow`; awaiting human implementation review |
+| First real project loop | Use the workflow on a real CorvidLabs feature and bug | Next; the shipping and checkout samples are rehearsals |
+| More hosts | Exercise Cursor, Gemini, Grok and Kimi discovery and cold starts | Proposed; only Claude Code and Codex were exercised |
+| Observation reuse | Recognize unchanged inputs at a descendant commit | Unapproved proposal ([NEXT_CHANGE.md](NEXT_CHANGE.md)); needs its own human decision |
+| Native gate adapter | Reuse Trust where its policy fits | Proposed; needs degraded, failed, unavailable and baseline cases |
+| Checkpoint adapter | APS, if it gains Windows builds, file input, compare-and-set and closed schemas | Deferred (D-010) |
+| Test runner adapter | Magpie for real-command targets with explicit assertions | Deferred until installed and qualified per mode |
+| Rune proof of concept | Optional cross-agent session bridge | Deferred; current-agent-first remains the model |
+| Monitoring sources | Project-native health and log adapters as cases | Proposed per project; no general health service assumed |
 
-The next useful product exercise is a real feature/bug pair on a chosen small
-project. It will test whether the skill asks the right questions, keeps enough
-context, and makes the next action obvious. More commands should follow observed
-friction from that exercise.
+More commands should follow friction observed in real use.

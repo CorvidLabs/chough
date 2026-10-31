@@ -1,12 +1,12 @@
 flowchart TB
-    intent["Human intent + stable HI criteria"] --> frd["Derived functional requirements"]
-    frd --> scope["Native SpecSync draft and real scope decision"]
-    scope --> build["Implement and run product checks through Fledge"]
-    build --> verify["Native scoped check and product evidence"]
-    verify --> review["Push product tip, CI, real implementation review"]
-    review --> archive["Native finalize or ship on the same PR"]
-    archive --> merge["Commit and push archive, CI, GitHub merge"]
-    merge --> delivery["Verify the actual delivery target"]
-    delivery --> lessons["Scoped native lessons + focused next session"]
-    build --> bug["Reproduce, classify, deduplicate, report bug"]
-    bug --> scope
+    tests["Focused cases pass; blocking bugs closed"] --> check["Native scoped check, committed"]
+    check --> push["Push branch; hosted CI at the real tip"]
+    push --> present["Present evidence, open bugs and limits"]
+    present --> human{"Human implementation review"}
+    human -->|"changes requested"| build["Back to build"]
+    build --> tests
+    human -->|"approved"| review["specsync change review"]
+    review -->|"no commit in between"| ship["specsync change ship or finalize (same PR)"]
+    ship --> archive["Push archive commit; CI"]
+    archive --> merge["Merge through the normal process"]
+    merge -. "only if authorized" .-> release["Optional release with real commands"]
