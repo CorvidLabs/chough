@@ -1,5 +1,7 @@
 # Architecture
 
+## Current foundation
+
 The current agent interprets the request and uses the workflow skill. The helper
 handles small deterministic operations: preserve a session, select context, validate
 observations, and expose native status. Each existing tool keeps its own records.
@@ -17,7 +19,7 @@ flowchart TB
     spec --> context
     helper --> context
     context --> agent
-    fledge --> results["Actual test and delivery results"]
+    fledge --> results["Actual project command results"]
     results --> helper
 ```
 
@@ -70,7 +72,10 @@ paths remain constrained to their validated destinations.
 A criterion such as LIFE-2 remains durable. An observation says that a particular
 check was reported as passed or failed for specific inputs and an environment.
 The Git fingerprint includes the revision and relevant worktree inputs; Chough's
-own records are excluded to avoid invalidating observations when adding another.
+own working records are excluded so writing another observation does not change
+the worktree fingerprint. HEAD is also included: committing even metadata changes the
+revision and makes earlier observations stale. Reuse across metadata-only commits
+remains an [unapproved, deferred proposal](NEXT_CHANGE.md).
 Code edits, a new revision, changed artifacts, or a different environment can make
 an observation inapplicable. See the actual status output for the reason.
 
@@ -78,6 +83,28 @@ The observation kind states what was observed: structural validation, a product 
 a human observation, or a delivery observation. It is not a trust level. Recording
 `human-observation` does not authenticate a person, and recording a delivery note
 does not contact the deployed product. An agent must preserve that distinction.
+
+## Agreed coordination design: not implemented yet
+
+The [planned lifecycle](lifecycle.md) adds stage context, approved scope references,
+explicit preferences and local work/test/bug findings to mandatory checkpoints.
+The optional librarian supplies project history/indexes/briefs and can return to
+any calling stage. Core checkpointing must work with the librarian off. Both
+coordinate pointers and observations; they must not duplicate SpecSync's lifecycle
+ledger or replace canonical HI, prototypes or contracts.
+
+Today `.chough/session.json` has only `schema_version`, `objective`, `intent_scope`,
+`modules`, `decisions`, `open_questions`, and `next_action`. It rejects unknown fields.
+Do not add planned stage/preference fields to the current schema and expect them
+to work. Full scope-preserving cross-agent cold resume and checkpoint migrations
+remain implementation/acceptance work.
+
+APS is a storage-adapter candidate for typed project-local FileState, not an
+adopted dependency or a Rust rewrite. Qualification must establish migration and
+one checkpoint authority, with one writer per key or isolated agent roots/keys.
+Keep the current session compatible until an actual migration is implemented.
+3md test definitions and monitoring/librarian records likewise need an explicit
+profile/ownership design rather than a claim that stock tools interpret them.
 
 ## Extension boundary
 

@@ -1,6 +1,6 @@
 # Chough
 
-**Carry human intent through the development loop without losing the reasons, evidence, or next step.**
+**A portable development workflow kit for coding agents: skills, human intent, specs, testing, and local context for resumable work.**
 
 Chough (pronounced **chuff**) is a portable agent skill with a small Rust helper.
 The current agent does the work. HI holds durable human criteria, SpecSync owns
@@ -10,7 +10,10 @@ assembles focused context and records observations tied to a revision and enviro
 ![Chough and the tools that own its records](docs/diagrams/ownership.svg)
 
 This is the first working foundation in a **private** CorvidLabs repository.
-Install from source; no package, release, or hosted service is published by this bootstrap.
+The CLI and starter skill below exist today. The broader [agreed lifecycle](docs/lifecycle.md)
+is design for the next evolution, not a claim that stage orchestration, monitoring,
+or a librarian has been implemented. Install from source; this bootstrap published
+no package, release, or hosted service.
 
 ## Start here
 
@@ -49,11 +52,28 @@ agent the [canonical skill](skills/chough-workflow/SKILL.md). See the
 | `context` | Selects instructions, scoped HI export, chosen module contracts and companions, decisions, questions, and the next action. |
 | `status`, `next` | Reports local evidence freshness and the native SpecSync response; missing information stays explicit. |
 | `evidence add` | Records an observation with criterion and requirement IDs, contracts, artifacts, environment, and Git fingerprint. |
-| Workflow skill | Guides intent refinement, FRD synthesis, native changes, testing, bug triage, delivery checks, and useful lessons. |
+| Starter workflow skill | Provides guidance for intent, FRD synthesis, native changes, product checks, bug investigation, delivery observations, and lessons; the agent performs the work. |
 
 Evidence is recorded after work is observed. Chough does not execute a product test
 when you add an observation, authenticate a human, or infer that a deployment
 succeeded. Structural checks and product tests remain different forms of evidence.
+
+## Agreed direction: planned workflow
+
+Chough stays current-agent-first and agent-neutral: the same skills and records
+should work with capable GPT/Codex, Claude, Grok, Kimi, and local-model hosts.
+Supported host commands are entry points into that workflow; universal skill/slash
+command discovery across those hosts has not been established.
+
+The planned loop moves from HI and an FRD through conditional local HTML/CSS design,
+one coherent SpecSync technical scope, implementation, focused tests, local bug
+repair, human acceptance/review, and native closeout. Release is optional.
+Mandatory checkpoints support cold resume even when the optional project-local
+librarian is off. Repetition/monitoring follows explicit project preferences and
+persists findings locally. [Lifecycle design](docs/lifecycle.md) explains the
+human gates, iteration and optional stages; [roadmap](docs/ROADMAP.md) distinguishes
+that work from the current foundation. APS storage and 3md test profiles remain
+candidates to qualify, and Rune coordination is optional/later.
 
 ## Develop Chough
 
@@ -71,7 +91,7 @@ checks. It does not claim a human-approved, reviewed, and archived native change
 Subsequent scoped changes should follow the [native lifecycle](docs/lifecycle.md).
 
 - [Architecture and context boundaries](docs/architecture.md)
-- [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), and [concrete next-change scope](docs/NEXT_CHANGE.md)
+- [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), and [deferred, unapproved evidence-reuse proposal](docs/NEXT_CHANGE.md)
 - [Integration map and precise limits](docs/integrations.md)
 - [Diagram rendering and visual verification](docs/verification.md)
 

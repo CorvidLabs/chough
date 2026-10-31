@@ -1,90 +1,140 @@
-# The native development loop
+# Lifecycle: current foundation and agreed design
 
-Chough's skill guides this loop. HI, SpecSync, Fledge, the repository host, and the
-actual product environment retain their native responsibilities. Consult current
-tool help and `specsync change status` rather than assuming a cached sequence is valid.
+The current implementation provides a starter skill plus `init`, `context`,
+`status`, `next`, and `evidence add`. The agent follows guidance and invokes native
+tools. It does not implement the stage coordination, test profile, preference
+store, monitoring or librarian described below. See the [CLI reference](cli.md)
+for implemented behavior and the [roadmap](ROADMAP.md) for planned work.
 
-![Lifecycle and evidence boundaries](diagrams/lifecycle.svg)
+## Agreed workflow design
+
+This is product direction, not an approved native change definition or evidence
+that every stage has been implemented. Current-agent-first works through a capable
+host; relevant review roles may be subagents or sequential role passes. No model
+provider API or new agent runtime is required.
+
+![Agreed lifecycle design, including conditional design and optional release](diagrams/lifecycle.svg)
 
 ```mermaid
 flowchart TB
-    intent["Human intent + stable HI criteria"] --> frd["Derived functional requirements"]
-    frd --> scope["Native SpecSync draft and real scope decision"]
-    scope --> build["Implement and run product checks through Fledge"]
-    build --> verify["Native scoped check and product evidence"]
-    verify --> review["Push product tip, CI, real implementation review"]
-    review --> archive["Native finalize or ship on the same PR"]
-    archive --> merge["Commit and push archive, CI, GitHub merge"]
-    merge --> delivery["Verify the actual delivery target"]
-    delivery --> lessons["Scoped native lessons + focused next session"]
-    build --> bug["Reproduce, classify, deduplicate, report bug"]
-    bug --> scope
+    intent["HI intent and derived FRD<br/>Human approves intent stage"] --> visual{"Visual or interaction change?"}
+    visual -->|yes| design["One canonical HTML/CSS prototype + notes<br/>Rendered review and human approval"]
+    visual -->|no: record skip| plan["Native SpecSync technical design + plan<br/>One initial human scope approval"]
+    design --> plan
+    plan --> build["Implement scoped work through Fledge"]
+    build --> tests["Focused AC/FRD tests + native verification<br/>Functional always; copy/design when relevant"]
+    tests -->|blocking bug| bug["Local reproduction, dedup and evidence"]
+    bug --> build
+    tests --> accept["Acceptance: actual scoped human review<br/>Current evidence and limitations"]
+    accept --> archive["Eligible same-PR native finalize/archive<br/>Archive commit + CI, then GitHub merge"]
+    archive --> release{"Release requested or configured?"}
+    release -->|yes| deliver["Actual project release/delivery<br/>Separate publication, deploy and health evidence"]
+    release -->|no| done["Close scoped work and save next action"]
+    deliver --> done
 ```
 
-## Begin with the want
+| Stage | Intended output and human decision |
+|---|---|
+| Human intent → FRD | Preserve human wording and stable HI/AC IDs; derive appropriately sized requirements, scope/exclusions, consequential assumptions and questions. Product/user advocate, QA/QE, design, accessibility, engineering and architecture roles review concrete criteria/FRD sections. Synthesize findings; human approves the intent stage as a whole. |
+| Conditional visual design | For visual/interaction changes, evolve one canonical local HTML/CSS prototype with lightweight interactions as needed, relevant states/viewports, historical versions and a companion Markdown file mapping decisions/questions to HI/AC/FRD. Review source, interactions and actual rendered visuals; human approves prototype and notes. Nonvisual work skips with a reason. Figma is not required. |
+| Technical preparation | SpecSync drives adaptive artifacts, constraints, architecture, affected contracts, dependencies, planning, estimates, tasks and verification. Human gives one coherent initial scope approval covering technical design and planning before implementation. |
+| Implementation | Execute scoped tasks through Fledge/native frameworks, coordinate file ownership, and keep contracts/tests/docs synchronized. Routine work continues inside approved scope; consequential scope changes return to the applicable decision loop. |
+| Focused testing and local bugs | Verify affected HI/AC/FRD plus relevant regressions; persist failures/reproductions locally, deduplicate and maintain a live backlog. Acceptance-blocking bugs loop through implementation/retest; out-of-scope findings queue without expanding approved work. |
+| Acceptance / native closeout | Present current evidence and limitations for the real scoped human implementation review required by SpecSync. Once eligible, native finalization/archive is routine closeout on the same PR, followed by archive commit/CI and GitHub merge. Archival adds no separate product approval ceremony. |
+| Optional release | Enter only by user request or explicit project setting. Observe actual publication, installation, deployment and health separately. Archival/merge is not release authorization. |
 
-Capture what the human wants using `hi`, preserving IDs. Clarify contradictions and
-meaningful product choices. Proposed additions remain proposals. Export the affected
-scope with `hi export`; synthesize requirements and acceptance criteria from it.
-FRD synthesis is Chough's workflow responsibility, not a feature of `hi`.
+Conventional reversible choices proceed without a question for every item.
+Consequential decisions go to the human in a small synthesized batch. Rough 95%
+alignment is a judgment aid, not a mandatory numerical per-item gate. A native
+actor string, agent review, signature or green command cannot manufacture a human
+decision. Changing approved intent/contract/acceptance criteria/affected scope
+follows native reapproval; routine tests/evidence do not add scope ceremonies.
 
-Read affected contracts and companions before selecting an implementation. Keep
-requirements appropriately sized: enough to specify observable behavior and failure
-cases without turning each implementation detail into a permanent product promise.
+## Iteration, optional side stages, and checkpoints
 
-## Use SpecSync's own change package
+Every stage may iterate, go back, reset, pause/resume or skip when inapplicable.
+Preserve history, record the reason, and refresh affected evidence through its
+native owner. A stage label cannot override native lifecycle eligibility. Design
+that changes intent returns to intent; visual polish stays in the design loop.
 
-For a later scoped change, start from the installed command help:
+These side-stage and checkpoint behaviors are **planned**, not helper features:
 
-```sh
-specsync change new "Preserve checkout retry intent" \
-  --spec checkout --path src/checkout.rs --json
-specsync change status preserve-checkout-retry-intent --json
+- **Optional ongoing validation/monitoring:** ordinary required checks run within
+  approved work. Optional extended/background checks follow an established project
+  preference or a short meaningful question. Run-specific consent does not become
+  an “always for this project” setting. Honor override/pause/stop and persist every
+  finding locally with evidence. Retry/watch is not soak testing or live health.
+  Whether a monitor may initiate a new investigation/proposal remains configurable
+  and open; default to local capture, not autonomous remediation.
+- **Optional project-local librarian:** callable from any stage, including build,
+  testing, monitoring and release, and returns to its caller. Keep source-linked
+  originals/history/snapshots, a current index and focused briefs. Preserve living
+  HI, prototype, contracts/native archives and visible open bugs as their own
+  canonical sources. It is not a shared cross-project vault by default.
+- **Mandatory checkpointing:** independent of the librarian. Save objective/stage,
+  scope/approval references, files/IDs, decisions/questions/preferences, work/test
+  observations, local bugs, blockers and the next action at meaningful checkpoints
+  and before handoff/context clearing. A small router loads details progressively.
+  A fresh agent without the original conversation must check repository/native
+  state and evidence freshness and retain the same scope/preferences/gates. A real
+  cross-agent cold-start exercise is an acceptance target, not a bootstrap claim.
+
+## Focused test design and evidence
+
+Functional/basic checks are always required in proportion to the affected change.
+Language/copy/localization checks apply when relevant. Design QA applies to visual
+or interaction work and compares implementation to the canonical prototype across
+relevant states, viewports and accessibility behavior. Do not retest every unrelated
+product criterion by default or use AI judgment as the only available oracle.
+
+Test definitions and execution observations stay separate. Planned definitions
+need stable case identity independent of plane order, HI/AC/FRD links, setup,
+inputs/steps, explicit expected outcomes, method, target environment and artifacts.
+Multiple cases may cover one AC; one passing command is not blanket acceptance.
+3md is a preferred candidate for a small versioned profile, not an implemented or
+locked format. Fledge/Magpie invoke actual project assertions; Magpie's generic
+mode judges command exits and does not interpret arbitrary AC prose.
+
+Manual, copy and rendered design judgments retain their method and honest
+pending/observed status. A text-only host performs source checks and hands rendered
+judgment to a capable agent or human. Bug reporting stays local first; external
+publication requires an explicit request or established authorization. New bugs or
+enhancements after closure normally become new native changes; repair stale native
+evidence through its actual status/recovery path.
+
+## Native SpecSync ordering
+
+The starter skill already describes the native workflow. Use installed help and
+`specsync change status` / `ship-status` as authority, not a second Chough ledger.
+A typical full cycle is:
+
+```text
+native draft/interview + selected artifacts/deltas
+→ genuine initial scope approval
+→ implementation + relevant product checks
+→ native scoped check --commit
+→ push product tip + required CI + genuine scoped human review at acceptance
+→ eligible ship/finalize on the same PR
+→ commit/push archive + required CI
+→ GitHub merge
 ```
 
-Complete the native interview and selected artifacts. Obtain a real scope decision
-before recording native approval. An actor string is a label, not evidence of
-identity or human authorization.
+A scoped structural check materializes approved deltas and validates structure;
+it does not execute arbitrary product tests. Do not commit between native review
+and finalize when that would stale the workspace-bound review. Finalize sequentially
+when changes share evidence; never merge with active changes that require archival.
+Use exact state-specific recovery rather than assuming another check is sufficient.
 
-After implementing and running relevant product checks:
+These are [SpecSync's native responsibilities](https://github.com/CorvidLabs/spec-sync/blob/main/site/src/content/docs/workflow.md).
+Actual delivery and lessons retain separate observations: a local pass, hosted CI,
+review, merge, package publication, deployment and live product behavior are distinct.
+Lessons can arise throughout work and need source, scope, concrete future use and
+revision/retirement rationale in native context or the existing module `.3md`.
 
-```sh
-specsync change check preserve-checkout-retry-intent --commit
-specsync change status preserve-checkout-retry-intent --json
-```
+## This repository's present boundary
 
-The scoped check materializes approved deltas and validates structure. It does not
-execute arbitrary product tests. Preserve the actual command outputs and test
-artifacts separately, linked to HI and requirement IDs.
-
-Push the product tip, satisfy the repository's CI and trust policy, and complete
-real implementation review. Record the native review only when that decision exists.
-Then use the eligible `change ship` or `change finalize` action reported by native
-status. Do not commit between recording review and finalizing; the native review
-binds a workspace digest. Finalize changes sequentially, not as a batch of reviews.
-
-Commit and push the archive tip on the same PR, wait for its required CI, and merge
-only after every change on that PR is archived. GitHub performs the merge. When
-evidence becomes stale or a phase fails, use the exact native status/recovery output;
-do not guess that another `check` is always the correct next step.
-
-These boundaries follow the [SpecSync workflow](https://github.com/CorvidLabs/spec-sync/blob/main/AGENTS.md).
-
-## Delivery and compounding
-
-Verify the actual target promised to the human. A local test, green CI run, merged
-PR, package release, deployment, and a successful interaction with the delivered
-product are separate events. Record only the event observed and its environment.
-
-Preserve a lesson when it will change a future decision. Give it a source, scope,
-concrete future use, and revision or retirement rationale. Use the module's native
-`.3md` lesson source where it exists, otherwise the native context convention.
-Do not accumulate a second global history of every action.
-
-## Bootstrap boundary
-
-The initial Chough build was explicitly authorized. It uses HI, Fledge, and native
-SpecSync structural checks with upstream's default disabled SDD policy. It does not
-contain invented human approval/review records or claim an archived full lifecycle.
-The first real scoped feature is the opportunity to exercise that lifecycle with
-the human's actual decisions and final delivery evidence.
+The bootstrap used HI, Fledge and strict native structural checks with SDD's
+optional policy disabled. No full human-approved/reviewed/archived lifecycle is
+claimed. The agreed implementation evolution must deliberately adopt and exercise
+that native cycle with genuine decisions. This documentation correction does not
+change policy, create native approvals or implement the planned stages.

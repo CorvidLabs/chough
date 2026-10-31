@@ -1,8 +1,11 @@
-# Proposed next native change: reusable observations after metadata commits
+# Deferred proposal: reusable observations after metadata commits
 
-**Status: proposed scope for human review. No scope approval, implementation review,
-or native archive has been recorded.** The initial baseline is the authorized
-bootstrap; this proposal is a separate increment, not retroactive approval of it.
+**Status: unapproved and deferred in favor of lifecycle work.** The human redirected the
+next implementation discussion to the [agreed lifecycle evolution](lifecycle.md).
+This proposal remains design history; it was neither approved nor rejected. No
+scope approval, implementation review or native archive has been recorded for it.
+Its commands below are conditional examples, not the current implementation task.
+The initial baseline remains the authorized bootstrap.
 
 ## Problem and product decision
 
@@ -11,8 +14,8 @@ observation stale, even when that commit only saves `.chough/` records. This is 
 conservative, documented limitation: it prevents evidence silently following an
 unverified revision, but makes shared evidence awkward to reuse.
 
-Decide whether the next slice should recognize **matching observed inputs at a
-descendant commit**, while retaining the original observed revision and explicitly
+If this proposal is revisited, decide whether a later slice should recognize
+**matching observed inputs at a descendant commit**, while retaining the original observed revision and explicitly
 avoiding a claim that a test ran at the new revision. Keeping exact-revision-only
 freshness is also a valid product choice. No implementation of reuse exists yet.
 

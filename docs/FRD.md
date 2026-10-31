@@ -1,4 +1,4 @@
-# Functional requirements
+# Functional requirements: foundation and agreed evolution
 
 These are agent-derived functional requirements for the authorized first slice,
 traced to the human's durable [LIFE criteria](../hi/life.md). The criteria describe
@@ -8,6 +8,11 @@ describe what has actually been observed. Neither is a list of completed work.
 The human selected **current-agent-first v1**. The product consists primarily of a
 portable workflow skill, templates, and Markdown conventions, supported by a small
 Rust CLI. Named Rune session coordination is deferred.
+
+## Current CLI scope
+
+The following existing IDs retain their bootstrap meaning and native contract links.
+They do not imply that the broader stage workflow below has been implemented.
 
 ## REQ-cli-001: Preserve projects during initialization
 
@@ -55,7 +60,9 @@ An observation is an assertion by its recorder, not authenticated human acceptan
 
 Acceptance: a recorded observation is current for unchanged inputs in the same
 environment; changing code or the requested environment makes that limitation visible.
-Adding Chough's own records does not itself invalidate earlier observations.
+Writing Chough's own records without a new commit does not itself invalidate earlier
+observations. Every new HEAD, including a metadata-only commit, remains stale under
+the current implementation.
 
 Trace: LIFE-2, LIFE-7. Contract: [CLI](../specs/cli/cli.spec.md).
 
@@ -94,7 +101,33 @@ This procedure is not an automated proof that every LIFE criterion is fulfilled.
 Bug issue creation, human approval, GitHub merge, release, deployment, and external
 tool adapters retain their own authorization and verification requirements.
 
-## Outside this slice
+## Agreed evolution: design requirements, not implemented scope
+
+The human direction below refines LIFE-1 through LIFE-7. It is product design for
+the next evolution, not a newly approved native change definition, new permanent
+HI/REQ identities, or passing acceptance evidence. Preserve existing IDs and size
+new native requirements in the actual scoped preparation loop.
+
+| Area | Agreed behavior and acceptance target |
+|---|---|
+| Intent and review | HI wording/IDs → appropriately sized FRD/AC links; relevant product/QA/design/accessibility/engineering/architecture role review, synthesized consequential questions, and explicit intent-stage approval. Conventional choices proceed; alignment percentages are judgment, not per-item scoring gates. |
+| Conditional design | One canonical evolving local HTML/CSS prototype, interactions/states/viewports as relevant, companion Markdown with HI/AC/FRD mappings, actual rendered/source review and human approval of prototype plus notes. Nonvisual work skips with a reason. |
+| Technical planning/build | SpecSync adaptive design/constraints/architecture/estimates/tasks/orchestration, one coherent initial human scope approval, then scoped implementation through Fledge. Required human implementation review occurs at acceptance before routine native archival. |
+| Focused verification | Affected AC/FRD and relevant regressions; functional/basic always, copy/localization and design QA when applicable. Stable test-case IDs, explicit expected outcomes/methods/environments/artifacts; definitions separate from execution results. 3md profile is a candidate to qualify. |
+| Local bug loop | Persistent reproduction/expected/actual/environment/revision/evidence/status; local dedup and live backlog. Blocking bugs repair/retest; out-of-scope findings queue without scope expansion or automatic external posting. |
+| Optional validation | Routine checks continue naturally. Optional extended/background checks respect explicit run-only versus standing project preferences and pause/stop. Findings persist locally; auto-investigation policy remains open, default local capture. Retry/watch is not soak/live health. |
+| Native closeout / optional release | Genuine acceptance/review before eligible same-PR native archive, archive CI and merge. Release requires request or explicit setting; publication/deployment/health remain separate observations. |
+| Optional librarian | Project-local, callable from any stage and returns to its caller; source-linked history/snapshots, current index, focused briefs and visible unresolved bugs. Canonical living sources stay with native owners. |
+| Core checkpoint/cold resume | Save objective/stage/scope refs/files/IDs/decisions/questions/preferences/work/tests/bugs/blockers/next action independently of the librarian. Fresh agent with no original conversation verifies real repo/native state and resumes the same scope/gates; demonstrate with a real cold-start exercise. |
+
+Every stage may iterate/backtrack/reset/pause/resume or skip when inapplicable;
+preserve history and refresh affected evidence through its owner. Current-agent-first
+remains agent-neutral, with sequential role passes where subagents are unavailable.
+APS qualification is optional and must avoid a second writable session authority.
+See [lifecycle design](lifecycle.md), [architecture](architecture.md), and
+[integration boundaries](integrations.md) for detail and remaining choices.
+
+## Outside the current implementation
 
 No hosted service, model-provider client, custom agent runtime, automatic agent
 coordination, universal slash-command parser, replacement native change state,

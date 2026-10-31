@@ -35,7 +35,23 @@ arguments, not by evaluating the session text as a shell command.
 `specsync change status --json` when native configuration exists. Unavailable,
 failed, not-configured, and invalid-output results remain distinct. Successful
 process output must decode as a complete JSON object or array before it is usable;
-a successful command response
-does not itself mean the product or lifecycle is complete.
+a successful response does not itself mean the product or lifecycle is complete.
 
-See the [walkthrough](walkthrough.md) for observation recording and resumption.
+## Current limitations versus planned workflow
+
+`next` is currently the same report as `status`, not an autonomous stage router.
+The version-1 session holds objective, intent scope, modules, decisions, open
+questions and next action; it has no stage, preference, monitor or librarian schema.
+`init` preserves existing files, including old session values; new flags do not
+rewrite them. Unsupported/extra JSON fields are rejected.
+
+The input fingerprint includes HEAD, tracked and untracked nonignored worktree
+inputs and relevant permissions; `.chough/` and `target/` working files are excluded.
+A new commit still stales old observations. Metadata-commit reuse is deferred and
+unapproved. Environment comparison uses the supplied label, not automatic detection
+of all real environment changes. Native output validity means usable JSON, not
+that a lifecycle gate passed.
+
+Full checkpoint/cold-resume coordination, 3md testing profiles, APS persistence,
+monitoring/preferences and a librarian remain [planned design](lifecycle.md).
+See the [walkthrough](walkthrough.md) for the implemented observation/session flow.
