@@ -764,3 +764,93 @@ expected = ["tests/stages.rs::clear_flags_apply_before_new_entries passes"]
 adapter = "cargo-test"
 test_target = "stages"
 test = "clear_flags_apply_before_new_entries"
+
+[[case]]
+id = "TC-cli-0040"
+title = "An approval native status reports invalid refuses every route into build and later stages"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::invalid_native_approval_refuses_every_route_into_build_and_later_stages passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "invalid_native_approval_refuses_every_route_into_build_and_later_stages"
+
+[[case]]
+id = "TC-cli-0041"
+title = "Reset, back and release meet their destination prerequisites"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-10"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::reset_back_and_release_meet_their_destination_prerequisites passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "reset_back_and_release_meet_their_destination_prerequisites"
+
+[[case]]
+id = "TC-cli-0042"
+title = "Return from a side stage meets the caller's prerequisite"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::return_from_a_side_stage_meets_the_caller_prerequisite passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "return_from_a_side_stage_meets_the_caller_prerequisite"
+
+[[case]]
+id = "TC-cli-0043"
+title = "The SDD policy is read with SpecSync semantics"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "LIFE-7"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::sdd_policy_is_read_with_specsync_semantics passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "sdd_policy_is_read_with_specsync_semantics"
+
+[[case]]
+id = "TC-cli-0044"
+title = "Real SpecSync reporting an invalid approval refuses build"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::real_specsync_approval_reported_invalid_refuses_build passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "real_specsync_approval_reported_invalid_refuses_build"

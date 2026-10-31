@@ -13,11 +13,11 @@ questions; what to checkpoint; and transitions.
 
 | Intent | Command | Notes |
 |---|---|---|
-| Next stage | `chough stage advance` | Native gates apply when entering build and leaving accept |
+| Next stage | `chough stage advance` | Every move meets its destination's native prerequisite (build, test, accept, done) |
 | Not applicable | `chough stage skip --reason "<why>"` | The reason is required and kept |
 | Another pass | `chough stage iterate --note "<what changed>"` | |
 | Go back | `chough stage back --to <stage> --reason "<why>"` | Lists what to refresh; history is kept |
-| Start over | `chough stage reset [--to <stage>] --reason "<why>"` | History is kept |
+| Start over | `chough stage reset [--to <stage>] --reason "<why>"` | History is kept; intent, design and plan are always reachable |
 | Pause, resume | `chough stage pause --reason "<why>"`, `chough stage resume` | Resume re-checks native state and freshness |
 | Side stage | `chough stage enter <side> --reason "<why>"`, then `chough stage return` | Sides: bugs, validate, librarian; the caller is restored |
 

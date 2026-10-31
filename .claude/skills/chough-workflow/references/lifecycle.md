@@ -15,12 +15,15 @@ push archive, CI → merge
 
 | Native state | Chough stage | Gate |
 |---|---|---|
-| draft | plan | build refused |
-| approved, implementing, verifying | build, test, accept | build allowed; leaving accept refused |
-| archived | accept → done | done allowed |
+| draft | intent, design, plan | build, test, accept and done refused |
+| approved, implementing, verifying, with `approval_valid` true | build, test, accept | build, test and accept allowed; done refused |
+| archived, with authenticated `terminal_evidence` | test, accept, done | done allowed; build refused (new work needs a new change) |
 
-Chough reads `summary.state` for these gates and refuses when status is missing or
-cannot be decoded. It never runs `approve`, `review` or `finalize` for you.
+Chough reads `summary.state`, `summary.approval_valid`, `summary.correction_valid` and,
+for archived changes, `summary.terminal_evidence.validity`. The same prerequisite
+applies whichever command moves the stage (advance, skip, back, reset, return or
+release → done). It refuses when status is missing, cannot be decoded or reports an
+invalid approval, and when `.specsync/sdd.json` is not a valid SpecSync policy. It never runs `approve`, `review` or `finalize` for you.
 
 ## Approval
 
