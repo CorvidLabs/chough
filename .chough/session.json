@@ -46,7 +46,9 @@
     "Claude Code discovery verified for .claude/skills and not .agents/skills; Codex followed the AGENTS.md router. Other hosts are mapped but not exercised.",
     "2026-10-31: the human (0xLeif) accepted the implementation on PR #2; recorded with specsync change review (reviewer label) and finalized with specsync change ship (archive f860c8a)."
   ],
-  "open_questions": [],
+  "open_questions": [
+    "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
+  ],
   "completed": [
     "Increments 1-6: records, checkpoint v2, stages, cases, evidence v2, bugs, preferences, validation, librarian, skill hosts and bundle (commits f6f1096, 115f7be); 37 integration tests pass locally on macOS arm64.",
     "Increment 7: full-lifecycle policy, CI audit, Chough's own migrated checkpoint and 40 case definitions, docs and four inspected diagrams.",
