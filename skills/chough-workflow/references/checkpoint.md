@@ -19,7 +19,8 @@ storage adapter.
 
 Standing preferences are in `.chough/preferences.json`, transitions in
 `.chough/transitions.jsonl`, observations in `.chough/evidence/`, bugs in
-`.chough/bugs/` and case definitions in `.chough/cases/`.
+`.chough/bugs/`, case definitions in `.chough/cases/` and retention removals in
+`.chough/pruned.jsonl`.
 
 ## When to save
 
@@ -42,7 +43,10 @@ A fresh agent with none of the earlier conversation:
 1. Reads `AGENTS.md`, then this skill.
 2. Runs `chough next --environment <env>` (or reads the files above directly).
 3. Checks native status for `native_change`, freshness of the referenced observations,
-   open blocking bugs and `awaiting_human`.
+   open blocking bugs and `awaiting_human`. A referenced observation is `current`,
+   `historical` (present but stale), `pruned` (removed by retention, in the ledger) or
+   `unavailable` (missing, not in the ledger); only a current one counts, so rerun the
+   others rather than treat them as passed.
 4. Continues with `next_valid_action` under the same scope, preferences and gates. It
    never records a pending human decision itself.
 

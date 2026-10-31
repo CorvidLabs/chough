@@ -53,3 +53,17 @@ can decide. Keep rendered, copy and human judgments as observations with method 
 limits. Magpie can run real commands, but its generic mode judges exit codes and
 records skipped steps as passes; bind a Magpie run only through `command` with an
 `expect_output` assertion, and only where it is installed.
+
+## Retention
+
+Routine reruns are prunable; proof that something still references is not.
+`chough evidence prune` previews eligible and protected observation sets with reasons
+and bytes, and changes nothing. It protects what the checkpoint, a bug or a native
+change lists, non-routine records, the newest 3 automated runs and the newest failure
+per case and environment, validation failures and boundary passes, and anything
+younger than 14 days. Apply only with `--apply` under
+`chough consent grant retention --source "<their words>"`, or when a human set
+`chough pref set retention auto --source …` (default `off`), which also prunes after
+`cases run` and `validate run`. Removals are logged in `.chough/pruned.jsonl`. Never
+delete evidence by hand, and never report a `pruned` or `unavailable` observation as
+passed.
