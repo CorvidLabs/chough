@@ -1,0 +1,7 @@
+# Finding B reproduction: chough built from chough main f19823d; specsync 6.1.1; macOS arm64; 2026-10-31
+# Disposable copy of examples/shipping (script: gates-and-execution.sh). Consent in it is SYNTHETIC.
+native state: draft
+== B: reset from intent to done while the native change is draft
+  stage before: intent
+  exit=0 -> done
+  reset --to accept exit=0 -> accept

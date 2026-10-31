@@ -30,7 +30,13 @@
   "duplicate_of": null,
   "related": [],
   "source": "SpecSync rehearsal in a disposable clone, 2026-10-31",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793479516,
+      "text": "2026-10-31 independent reproduction (specsync 6.1.1, enforcement = strict): change check recorded passed true for specsync check --spec shipping (non-strict) with undocumented exports; check --commit then exited 1 on the effective-contract export errors without recording an attempt, and status kept next_action review. Cause in spec-sync f240d37: change_requires_strict_validation uses only built-in SpecSync paths and modules or --strict, never the project's enforcement setting, and the commit path validates more strictly than the recorded verification.",
+      "observations": []
+    }
+  ],
   "created_at_unix_seconds": 1793473164,
-  "updated_at_unix_seconds": 1793473164
+  "updated_at_unix_seconds": 1793479516
 }

@@ -1,0 +1,8 @@
+# Finding A reproduction: chough chough 0.1.0 built from chough main f19823d; specsync 6.1.1; macOS arm64; 2026-10-31T20:41:43Z
+# Disposable copy of examples/shipping; the approver is SYNTHETIC and approves nothing real.
+$ jq '.affected_paths += ["docs/"]' state.json  # scope changed after approval
+$ specsync change status free-shipping-at-the-threshold --json | jq .summary
+{"state":"approved","approval_valid":false,"next_action":"run `specsync change approve free-shipping-at-the-threshold --actor <name>`"}
+$ chough stage advance   # plan -> build
+{"from":"plan","gate":"native:approved","kind":"advance","to":"build"}
+exit=0

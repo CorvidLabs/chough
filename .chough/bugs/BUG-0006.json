@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0006",
+  "title": "Build gate admits a definition native status reports as invalid",
+  "symptom": "plan -> build succeeded with gate native:approved while native status reported approval_valid false",
+  "trigger": "Approved change whose definition no longer matches its approval",
+  "expected": "Entering build is refused and names the native next action (re-approve)",
+  "actual": "Allowed: the gate compares summary.state only",
+  "criteria": [
+    "FLOW-5"
+  ],
+  "requirements": [
+    "REQ-cli-008",
+    "REQ-cli-003"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+  "steps": [
+    "Approve a change, then change its scope",
+    "specsync change status <id> --json reports approval_valid false",
+    "chough stage advance from plan"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0006-repro-1"
+  ],
+  "impact": "Implementation can start on a scope nobody approved in its current form",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Review finding A, reproduced 2026-10-31 against main f19823d",
+  "notes": [],
+  "created_at_unix_seconds": 1793479500,
+  "updated_at_unix_seconds": 1793479500
+}

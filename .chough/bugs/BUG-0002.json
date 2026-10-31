@@ -28,9 +28,17 @@
   "status": "open",
   "regression_baseline": null,
   "duplicate_of": null,
-  "related": [],
+  "related": [
+    "BUG-0006"
+  ],
   "source": "SpecSync rehearsal in a disposable clone, 2026-10-31",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793479516,
+      "text": "2026-10-31 independent reproduction (specsync 6.1.1, disposable examples/shipping): after a synthetic approval, editing the delta (uncommitted or committed) or plan.md left status approved with approval_valid true while change check refused the delta. Cause in spec-sync f240d37: status computes approval_valid from ensure_definition_approval_valid (scope digest), and approved_delta_digests are compared only by ensure_approved_delta_bodies_unchanged during check. Status does recompute the scope digest on each call: changing affected_paths made approval_valid false. Distinct from BUG-0006, where Chough ignored an explicit false.",
+      "observations": []
+    }
+  ],
   "created_at_unix_seconds": 1793473164,
-  "updated_at_unix_seconds": 1793473164
+  "updated_at_unix_seconds": 1793479516
 }

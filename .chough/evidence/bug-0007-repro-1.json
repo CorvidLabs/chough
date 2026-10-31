@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "bug-0007-repro-1",
+  "criteria": [
+    "FLOW-2",
+    "FLOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "With the native change draft, chough stage reset --to done and --to accept both succeeded",
+  "artifacts": [
+    ".chough/artifacts/bug-0007-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0007-reproduction.log": "bf8169ac1a074c532bef7f93f30ead3ee581d3e09a13cd319976fb086e89f1a7"
+  },
+  "observed_at_unix_seconds": 1793479479,
+  "snapshot": {
+    "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+    "dirty": false,
+    "fingerprint": "2d6be8586afa1caadaa9fc752eb63a84f5cdafa5f54673e2caaee424b21d1300"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Reproduced against chough built from main f19823d in a disposable copy of examples/shipping, not against this repository's own checkpoint"
+  ]
+}
