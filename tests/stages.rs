@@ -46,7 +46,9 @@ fn every_stage_is_documented_in_the_shared_stage_contract() {
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("skills/chough-workflow/references/stages.md"),
     )
-    .unwrap();
+    .unwrap()
+    // Windows checkouts may convert line endings; headings are compared as lines.
+    .replace("\r\n", "\n");
     let stages = fixture.ok(&["stage", "show"])["stages"].clone();
     assert_eq!(stages.as_array().unwrap().len(), 11);
     for stage in stages.as_array().unwrap() {

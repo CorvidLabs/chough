@@ -334,7 +334,9 @@ fn skills_install_per_host_and_update_only_unmodified_files() {
     let old = fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/skill-0.1.0/SKILL.md"),
     )
-    .unwrap();
+    .unwrap()
+    // The 0.1.0 digest is of LF bytes; a Windows checkout may have converted them.
+    .replace("\r\n", "\n");
     fixture.write(".claude/skills/chough-workflow/SKILL.md", &old);
     fixture.write(
         ".claude/skills/chough-workflow/references/bugs.md",
