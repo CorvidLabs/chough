@@ -1,0 +1,1192 @@
+{
+  "timestamp": 1793475566,
+  "commit": "9992363a02c24a00852e0c8764a98a83f9a3b0dc",
+  "contract_digest": "cee66b5df4c61230935f4b31bd45ee2ac0be1c8a809be8a2270ae310baf1bb3c",
+  "execution_digest": "3fcdec60a8c0f9bd2a44bcadf874cfbae29ec50977f15991e4586f6f9ae9831a",
+  "workspace_digest": "8dfdf42c939e92ba3be5a953bf477c6ccd9a11233fb622436588dcb6f5e290e7",
+  "acceptance_input_digest": "35e50d437d9da7f19ad3dd0edd481857f2b609165d1140fc8a1d8c945cb9b42e",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".chough/artifacts/bug-0004-fixed-reproduction.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "de2e1e3801cb0e7b8e992b6e158ec6160bb986fbafc6bb5e0716813dfe150d7d",
+        "entry_digest": "dc0b5f31da7bdfcca3f0efdbd75fb87e976493954b91ef8cd266839720ad1162",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/bug-0004-reproduction.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3a461d70a465cc1a6d92ad24a124e81b0ae88f091c63dadead262038bda7a2ea",
+        "entry_digest": "194153787317125d0a0980d67ec0057cb3d8c6aa43614636c20d77711f0a0b1a",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/bug-0005-reproduction.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7c10ddcb9eb694b5ba55a49b2d8b0b398b66680e9474b52d3f3ac2c884502993",
+        "entry_digest": "3bc1a8d14d2d264e698394b67d6be1a4bef6684e4cc0f1c8e92f23672a6cc9ad",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/cold-start-review.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6a9229820cae30780388230f243ab4b3432d2afdd783eb51755219c172609537",
+        "entry_digest": "6b785d430e1a151ad04edba717e7758d57e87cb2cfae609bbb88b0c393bb9640",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/cold-start-transcript.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7e1765d2099e33ffcd95a85e631e5fefb386e29479dff450fd1e37bc94fa0cff",
+        "entry_digest": "fc7b1c3fdabe4f57ddae005b4d1448e0aa91b7a51206dfff65eb925f8c4dbea3",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0001-1793473246.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0b1a2fc7482a23df13fe70cb7199c11a9631b5ba2805f4cf849b230723991f66",
+        "entry_digest": "4c4bd36dcfc83503bbbc3f35ddd43fd597fbbc6a0c1d7c1a298b3ee63f6239be",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0002-1793473249.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8e9bb66024fd3eed6a817dc17290d929bba98b80af4fb160177161eb7c1b224a",
+        "entry_digest": "47dc02791d97e47f0286490443c1203ed4e3a722647dd13c23e7d2811c26ac52",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0003-1793473250.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f668730073596b4cac6ff6c4bef914cd3ef60fc9b0ee3bc33057494a59830d71",
+        "entry_digest": "7bf50d93aadb5cc1e2a2ed23bfdc98ed585a44fd1b7e2d1ab8e9e13730fc2eca",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0004-1793473251.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4f86c86426d5fe396ccbdc7023abf78ed3991faa8d08c8d1775d3619a2bdf73a",
+        "entry_digest": "33957d7f60b8358e99a03466ed669fb63b8136ff497d903d6c01c2008afe9afb",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0005-1793473253.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "185ac30ffe860e2994737c64ea9f4cb64bfbb9d03f1987f184006844d74cec22",
+        "entry_digest": "c168d7e20880c547cc0312077e2794b1b5c8ed8c5d7252b32dbc64ff274ec0a5",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0006-1793473256.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0ff26cf41c79ddd145cef490311afa8ff5989032e2f07f98aae50e55dfe93636",
+        "entry_digest": "fb9d90731422eabf8f8684a921fdc7cf1803930a65175c6319d252d8d7bc1d39",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0007-1793473258.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b18db5193ef37d8c4cc5eb8c7f15dd22657afedb06d15de9aff3c4c6ac31651a",
+        "entry_digest": "04b99c193e5bc6730c9419d0c6fe3881c2b23c8291c3c0f0b01cdf009de68428",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0008-1793473260.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "732b42f2b9207a63b768833a04a19f11682358dc744a6df8f0352380bc70f9e0",
+        "entry_digest": "170fae98aed83ba6e20d0336ffd4b9c004552db1402ab544aceb5559082579f4",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0009-1793473262.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8395f1ad6e6145d5516bfd85b969677d20986cd58f29e1b25deaddf02d09f344",
+        "entry_digest": "c637ed23aa60c38c0c4b215d8bca4dea68dd24ed3887968a03dcffe916fda7ff",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0010-1793473264.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "261558b49945e325492a55ccc09686ffc4d1ae80d29deed837b4b7f8eb7768c5",
+        "entry_digest": "14f51c51d1ba998e105b7ea303b828cda94f7cfcb4a0151580939a599fa4fa24",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0011-1793473264.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "31a9458434acdd1b4ea6a0f02fbc322cc2474ef38c96ea1e07d8120e259f1c1f",
+        "entry_digest": "c4b22aa782b78ad810a24cf23015f4d8025e99230c3f0932de201fd355d8c2e2",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0012-1793473266.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "51be7ba8a8a597241e03c86043dba6d8e4efe2aef0673c6492349d98995fe8c6",
+        "entry_digest": "f0ca77ca850aef527c45bfa787725e06a036d9a6c49caab7666614d1ca5648d8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0013-1793473266.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ea2cc4b1f77946e4ed8746dd2aa60b1bd229889be53d0b23a337295f7698e569",
+        "entry_digest": "e1ffbff76fecafcb0521e767a4d140ec87b53c58c71bd17d34b73588626dab8b",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0014-1793473267.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d91a825824b14770d1c6447cdee72a6849c6254ee3bc0b33d1381531bdb84fc3",
+        "entry_digest": "01ecfe6d1c106dcfd220cdd756f630d721bc27ef185fe18256387600db3615d7",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0015-1793473269.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ade39800ca1dba4d4f73aa8f4d11c90eff36bb9d16126287f20599df6d5adbae",
+        "entry_digest": "4e1d0eaa8d89b2fcc46825a77844a253b84c16e7d5f2477a9d6d5b8484a36d26",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0016-1793473269.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "cf8aed3cc254bc60afa75ea50359ccd1f1089888a801dbfbfaa30d36fee30971",
+        "entry_digest": "b7477a101427324ec1ff7926ea46a1af2c9734a7297c08ed79a52375bc36015d",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0017-1793473270.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "279f66415a943a1adc6403b558a2d454904f51631b5ef154154b13cedc0085af",
+        "entry_digest": "c10c5254c3427a27b367720c237c8d55d704ca8f9b62c89b119c886390a2c201",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0018-1793473272.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8717ffb3e928ddfeac9ffd6a06a60d1003621bf5ae568af727a3b720c1dcda7b",
+        "entry_digest": "1c42f468eb36d7524715fb2434b8d8786b84db4c477b250392bf5285177b49d2",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0019-1793473274.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c2d93536e8fabbb9dc463547a317b406e7dbc5d10507d49accce4b16cb2bda9c",
+        "entry_digest": "ba65fe4eaf6b791ae6fe0531ff1da4489fc1bfc7bf8c3d40c274fa078c44d960",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0020-1793473275.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1f3534dec74af6402f2a70979a7af26ab4d0e17cdfe26e4fd2c81322a7b87040",
+        "entry_digest": "c85a93d9de9da9b69b99ddc323e19c398327811df62ebba97420a5a27842b9c8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0021-1793473280.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "703dbc7196fa04e9caa414ff38415306b6cf7833ac71461ed0521652d7b3ed41",
+        "entry_digest": "09c1b27dfbaa55565da8f9cd76026c2d2c057e97ebf1287fabeb0076f5ed587b",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0022-1793473281.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d1047c254dcff6b022d5797a36d243b0dfec75960b66ff8ab1ff8b0862015c52",
+        "entry_digest": "c2aee5c1ea1e61f2a803c35ec8956490ced468550b2959490353730798b4dfb0",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0023-1793473283.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ae51653fd965c10bef18ef25841918372fe7bdf1d9646a72f18c4b61e18fea74",
+        "entry_digest": "70e7d356d1fc4ff05fceccb55984be0719f129a1c3de19d7eb227202fcffaa32",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0024-1793473284.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "96119c35f7aade87da0cabeca061a083941ebb1c4ef95a1296c4e3806e560338",
+        "entry_digest": "8cc44d65bb0049f98737857ee24348d12dc6571633e928bc9e3db5317d66101f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0025-1793473285.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2162c235fb16a8fa35e07773aa037f88464edc02040fbc9eca072075a0391e1c",
+        "entry_digest": "cf34418d96acac64be929cdc5f6d5c192d03aa606869aa0c5bf283bdf9aa557a",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0026-1793473287.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3b17bc729a1b67ab5675df2bb94cec4937ec68e40ac9ed1c757ec06130d775a8",
+        "entry_digest": "beaf84b88492c90f487167914669a28fd44c321d2ddb80e10557f76f01108430",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0027-1793473291.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "296e223ccd779a6253e58bc49178649ae2cfa9e47c5b0998b0cb552e1abcfb0d",
+        "entry_digest": "3164a5b25fa6809d049b2b956ed22c008ed49e3302c7843ee5cffd6fb3ec9e5e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0028-1793473292.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b7f640b1182f766be4af79565ace041cdce7ffb3f89eb71cb12d4cdbd3a6b3cb",
+        "entry_digest": "394863573bb7f6e4a2d708cbd0add736b3886156586c7d98efaf2fba02377d40",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0029-1793473294.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "442efd399225b82358c13385de7857299841b6d32880e6573ccccf06811c8763",
+        "entry_digest": "83aa6f21d8ee64f9f60c563a8f28732c521e9a3f3bfcfba28e2832dbb3ea9f34",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0030-1793473295.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b566c874c0d5ac2b8cacb03457b53ae8f0fd761f721bcea16b47bcb5415add3d",
+        "entry_digest": "b62a88dc379f60a1955de95a4c68e41daaa02a612e024c800391ddcaedd11f95",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0031-1793473296.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "44a965fa13c986f81113608ddbc93fe1076d4944478947ac42791ac96bd35585",
+        "entry_digest": "2056e698d261374e185bc45112e4a66ea2046739cbdb27b3584c347af1fc8870",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0032-1793473298.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f869b08d6e540a0b0d8d9f43f72adc5f0316a9727ac429a87d9b7ac115cb0ae1",
+        "entry_digest": "dcf1660328571410db9dd4aeb7af5591b6c08dbfa6d72adb8d43397cbef1b1b8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0033-1793473299.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4c9395a26426591473917be5bfd355ac779087e6ba4e24a2ea5393b82175fc8b",
+        "entry_digest": "bbd1fec93162d6a34475fd1572b02823aee204004d44125e673d1eda56a28bd4",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0034-1793473300.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "11f247b29f0f6d88c7d035a2d55d1d1483aa010c471f6fa520b30bd87215389d",
+        "entry_digest": "0e2a53f854e0715a75fc26e652e17c6934f30523401e6aa5a68e48386867a05f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0035-1793473303.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "eb388c1dcdd14c8cb46a2dd559355d903bdac1f0abced84c38ca061d6c28aba9",
+        "entry_digest": "f641a0960954c6aa5f9e2f66a9da115ddb169e43717597057ad636c44ce76709",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0036-1793473304.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e0a75d5188aaf3f7667aafb7ab1200ebad97801c2ee6373b588b11bfb90c24e3",
+        "entry_digest": "51cf4f6fdf0022a91a2c9252b2ee0763e8024022d006af61eb7821ac27a20e12",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0037-1793473305.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "303fa1a404b919e1aaa12e184d69e871370f96a9775401917aa939535293647a",
+        "entry_digest": "198c6f6208dd0bd67949d54375c3aafc7765bf4bdba685db6bec17f6a9517c61",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0038-1793475511.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6638fbde2eb0157ac9ab2757dea5281538965edccff92be22e2ac2f6f2dc7274",
+        "entry_digest": "f93484b2a02f3096b38d9572d217fa02c94ee8a0bccb7f9c8769d0e6fc39c190",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0039-1793475513.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ce90f5b6f6f39f0fae090089cc3e5fef145ab00347f5f8cbc8c086b4006f27c8",
+        "entry_digest": "e245ceb60017baba5371313afbb8aa316e315e9358988dbbb9ccc9e9e16daf80",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/tc-cli-0101-1793473306.log",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4e8cb2d95bc7c9af800f369f8220cae7ad58fc8fecbf575000dd3103a60d49ac",
+        "entry_digest": "97ce8e6c13200972098c3db201c8988b574233e005e4c85001590c6942ab3efa",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/wording-review.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "34f615c43836fab9305fd3215cd581fb9bc52bdbfc540dd1b06abd263e355c82",
+        "entry_digest": "ebda604a64a577444facd91db685fd07c46e53d9008fde0ebd609721585ec7d0",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/bugs/BUG-0001.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c2236d3bed0d7f5e676b5c46ef81fc9c0ecdc591b729488437de033613d79dbe",
+        "entry_digest": "284a11c4fbfd7216570da8a3c077a4b5ca92987a0a4458f7f9a5fcd169e83ced",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/bugs/BUG-0002.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "db61e166d98be2f306b11a9719fca5585bdd4a03dc6b42dbbab363ca4389bea4",
+        "entry_digest": "f6d13d3d139fa6f06d3813b860c5c9992b4e221735936e26db839e9fad821fde",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/bugs/BUG-0003.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "16d20ed1f9811007426fc774e14515b39ef04fd519b5a536285811c385a4f653",
+        "entry_digest": "15a273068016c3fbecd8dbd06c2f9d415e52c5767c5d95afca7704ba75c5cd9c",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/bugs/BUG-0004.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "70260afe6d01dbb81835e9ea231f64259d9a4b0a921ad48d9e618092e988243a",
+        "entry_digest": "b967fbbc756053e21b2ee4eb2f3a41f56e9e73bdedbf2c2377fbdf6b79a33e6f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/bugs/BUG-0005.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6b35a492ab1858179d2133dc903c27cbd404e9626a09b236a2fc2fbdfa5f66be",
+        "entry_digest": "deacc50f77e91f17acf41a08f8c7f13c850b128c7f232b89d6940c7304091903",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/cases/cli.cases.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "af5a72effe83da30656e257788e090d30ae309ee6ba64a87bbb9c64b93c430ad",
+        "entry_digest": "7bbbbcf6b633de767fb0a75a955d82e5c6423d12a5cf5b7535ad25ebb0cbf275",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/bug-0004-fixed-1.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "de19967afefdfeb784df9bf6c329e60d4a04531fc230e7c77f1eb5e77adafefe",
+        "entry_digest": "f1b2fd26105d9d7e7fd869bc5285f08eb3f9bf75d2c8e2abcde4eb0198c7b4e8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/bug-0004-repro-1.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2d451070a324f02f6a2c55a8cc5889663209f8c6c6065e301bc0f5f4d28be617",
+        "entry_digest": "bb5f0fef8398c2dd845ce1a6120f0993d8b2dd08b11cdb0ab10abd807bd9d8e4",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/bug-0005-repro-1.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "870429cfbf88d8aee2f274f6e7fabfc711496b5af34f41f2ded7de0297833837",
+        "entry_digest": "23dafd9f0a394d47f30e72033e50eb5f4f97740e5956dc90ff31b67dbbea6ce8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0001-1793473246.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "dfab9781105e45908f7ef2af0939f4f2e3766a298366bd40f2419040a9aff7af",
+        "entry_digest": "eb3d375a7a6d13da0ce3e87f1ec80313e911a2e876cb50666f271b149e6e3ac6",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0002-1793473249.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "90a9e3dbb41d1b6e0a9826b033f9321a5dbea3322694fa37b997014357445fe3",
+        "entry_digest": "0a4d0e4b8af70764262819bdec8e13447b041ad881686b6fdbabe7e5be510ed8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0003-1793473250.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4bd8d07cc7d46523af1f428ba2c672945ca919f59bc5acf3132177f6e4908698",
+        "entry_digest": "465f9db287bf7d3da76fb502a481a51be52a4b6fe98df3c78bd2168dd493738f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0004-1793473251.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "cc7760c707485a89fa21bc416e04f09237dc7c3da632be0becee1a4bde880027",
+        "entry_digest": "d0bfdef07b9afc40b311a67a760c2ee93fa1e8d6a18f2590476f7ec4bd588dc7",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0005-1793473253.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3b6b55db76a1282bfe8b26d87221df0edf8f7cbae7d5413eb467817e85b6df5f",
+        "entry_digest": "5aaaf72d1e7988789b6935495596031f2b88a3621ac6b1a2fd766441dbb4d617",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0006-1793473256.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9563b404c9cad63d06dd5433169b39af91097bfd91ef431c8f814310ff5241f1",
+        "entry_digest": "c646abbeb754c1a6617e7be611ab78548ee807d42137a33cf7e91b7bc7eb1c95",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0007-1793473258.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6468a18a277bea306ab0fb0a01d37c6fadcb20d15a5e9781861e3f02c59913ff",
+        "entry_digest": "2957a2b80fd8e0aac8bb5f883ab1a1956526d5cf7c61aa20374e6c3c91f45848",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0008-1793473260.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e9cc691bdc60333a09efab56446cfb63a22cdfe00a76c2ee5202b634cc25ab28",
+        "entry_digest": "43f15361df522be0eadc66924853035272d176a8ba24bba903224eeabdefb6f5",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0009-1793473262.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "26e4f58552ab68267c16aa3e85b8a667bda74e234506610f15b00142ed27bf98",
+        "entry_digest": "6979964ea4b5776d04d3d9fb47400337ac8f6ec5259d92c0c90af4ca16d226a3",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0010-1793473264.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6f32e1f0ee5bf62c793f67810ceb86afb6951102ed7190606a927a1407340e5e",
+        "entry_digest": "96941eb9959bdb1fcecf49840d9ef26bd0d0b46db97d2c65fdaac499eed8d44b",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0011-1793473264.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0ee0e7ec62375411787982682e5796334fc9824543e04a12e575552264ac4437",
+        "entry_digest": "11e5fcd2541be7a664b74cc3ae017e2b229c56851900fa1d84996caf5641d497",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0012-1793473266.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0cc310df977c7cba33a2d91b35a771999a86e333431049064e1a8f1337cea985",
+        "entry_digest": "bbeafec422aba36d7ee3677dd0b6ec62251a1ef2129da801d96d10dce46bcbc1",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0013-1793473266.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "53f1debca7f74abb21c5e2c3c16f717834bf6dc7e1803a4436f21e65d0f647dd",
+        "entry_digest": "c6ea7cb5db96fa7965214cfcca8c3fe80661c057985bd0a2963f30f43eb76587",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0014-1793473267.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2dda9142a73809bac50390ff30e8e93603d40219f6bef683491d54004d9ff98b",
+        "entry_digest": "7edccab5fe0b938cb40222e0ef5019af30f0b83cb6b664a2ceec74f27a87d3a6",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0015-1793473269.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "09613d88b41424372621baa3ea2c7fc6ac0035194a3827c15ce14920a4227a69",
+        "entry_digest": "c9422a836969b7a77eb7256221710a48fc70d545287d095d69138369cb27d2a8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0016-1793473269.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "cc0ff80e99ee29896d5c31cc6678380fc5bf1f56cae817a932502be217094b51",
+        "entry_digest": "5941d65362c9cf98523a83a98920261ff64c4567b1a00be0b706a947f8286ed2",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0017-1793473270.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5db09c612622822cbed929c9dadc4bb463e8f771666c281e36bffdd55c47644e",
+        "entry_digest": "9b74c1d67fa9e557da6378775b38f57bb03a509acc00bb5fa2a38e336889e3d7",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0018-1793473272.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5e7481e384411bdb2916e5dd696fb6171d8df6ecd434f4c21abc11831c316d36",
+        "entry_digest": "5ddbee3ffe6dc0b092f72541751335c7aa0abf28e9e4749d5c0f820571361556",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0019-1793473274.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "461eef40029ea8389ba049ec8d169acea019e83a08bf0e8a10ac4d059fdc95b3",
+        "entry_digest": "258798f59d8f6286b9f1537f185fb31d09a9a1e03e42583c25e3f5775359f6d4",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0020-1793473275.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f9d97b961254fd91723c96eb0d53c31f15ee70f263c0d4cbaa5de53f8080267a",
+        "entry_digest": "17f526b32e11e791c217c990cc890acc5b989a33f3f2fecc38e72f4e25c0edc5",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0021-1793473280.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "fb4e8e5cb0d95463a42985aca50cc1347928ad12b40ed0dce5cb289179d2a5ec",
+        "entry_digest": "c73efd52ddf1f265b4faeabab7d86e622074051b4e92debd3068e9610595302c",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0022-1793473281.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2484ff7c76060dac8f223b062046fcf2c5ce3e4d8908bc11295ba5b993152583",
+        "entry_digest": "a1a543ae9cb1472203057e0ffc5b4e16403302803af6a945cea743de547030b9",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0023-1793473283.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1b7e9a265b16aa166d2ebd614ddbcb86bdc5b8bb174cb4c52473304b268a522f",
+        "entry_digest": "7b20342e300c4a14fc756be4e7db966494aa9f25d4974ba3f186c8f2b855049e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0024-1793473284.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7036e1c80f5db2c78ab98494e59f85b380527d6664b3ac34b609fff7f48eeccc",
+        "entry_digest": "a30eaf121f703657a0fc13ff7a375b0530f1f55ab361eba8cbb57c8b8a9da48e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0025-1793473285.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "26a75c344536b336eabb0807523c676db3a9f9dbf0df80c41b5e47bd415b396b",
+        "entry_digest": "fa35d9952231d80e10d0c0bfdb6fac7debfed3004485b94bdca76379ea8ee006",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0026-1793473287.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7ea7a2bfaf4a85157d2d87fba8c6dc619ce324d2d60fa5cac8f698957b6cc2c5",
+        "entry_digest": "daf3b38a2940a7a4ea8ff14c74401df6441da5e3b6e12acbbde9f280d0074752",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0027-1793473291.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "33485b67ecc824b9ae385a5b0182f1c781a611c09a4279269e123e6c7e4d04b8",
+        "entry_digest": "7b0e9b803e05821dd1db8cc86541e886f6bbd3ceb0d140dcbbef89b093ce8e29",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0028-1793473292.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3847bf9e7eb309de25abea4a5b3472e6c4b48bba66c4e6535ec5e71fd3ccdd28",
+        "entry_digest": "f403b089199b5a3136bae67898c6780f3029d8f78eaa84ecc0d7b17e56d7d740",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0029-1793473294.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "58721d2c525f8cafcff9467927128c499fa80765b4f879f4014557d924ff04c2",
+        "entry_digest": "555b3eda3462c9a42fec000ae022efc85fa28cb496cc83abd59a75d7ff7b69ff",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0030-1793473295.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4e4ab5c8c1d16a0fe8ecb4e678adafee5e523ab7a4e60889ffeeb0afc3c25963",
+        "entry_digest": "f7f954203873248b753f9409b774c165809cd676437cba118d3cb30f09c06fe8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0031-1793473296.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0be6961e362ec1bc2f60b0a55effbca93cf45828980d64956b8cbc47364ecfde",
+        "entry_digest": "9faf958345e5337e24497ff48100e2861650d046d8d03d2f1439121a4030673d",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0032-1793473298.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "74ac92b34b9ae83e4795c02b48e302635228eea95953dd9fc1bc45cd921ad371",
+        "entry_digest": "96c43bed0e9554be0eb56b183ba5103fa0c992c29d8c4929e2bb023b14249db3",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0033-1793473299.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "676910fbc87ec4c777b76324ed5e0363a60cee37e6ac73ff167dd858c7020830",
+        "entry_digest": "41e33aca57dbd7d59ff2f91865146977479792a13bc731c8252028c326903c3d",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0034-1793473300.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "65bc48023a0342cbd63629232a8766a3d5d31af3f0b3ed7ced06ac4507bc3fe1",
+        "entry_digest": "e4c198f8a005ea32d520b9a59a77b8e497157776c93a22ce48dcf644ef1fbee9",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0035-1793473303.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "fac2d159fa16b97909222bbb1c3c693235ccbca4ca93dfcc09857356d3d2868c",
+        "entry_digest": "b51ad7ef4666ea30a57e5f00eeb0d6b015f70ef514cba5c43dd4d8039f6e1630",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0036-1793473304.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "00c23c0ddd77969dca9fe3c3caea8e631b5e03434fe9ced83212f23c7d287380",
+        "entry_digest": "1f4ee4ba6b8ee5cdc5a5df5164fb057db8ae372718c9c898bb2e804d177e0e12",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0037-1793473305.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "27951a260cd2f9caf5efc09a2e6ed4b7c5a6c81b8fb83fab0246e02ab24dc33f",
+        "entry_digest": "53659287f82a1eaa19fc6bcb2a2cdb84862af85e607df099006203268268283d",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0038-1793475511.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0efa02c8efbf0ee837c7ef8edfe008bdb523bccce3422fc2ae9b72c30632e1c4",
+        "entry_digest": "32c295a0fdf60cab4160b044bd700b4a1745664cdf1e2ad49975c909f0d2c894",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0039-1793475513.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e3d485f1862eff3029331fb5370561b4830c2450e4af97db479eef0418d5199f",
+        "entry_digest": "28bbb07cbe4b6773671c1de07e556bbc7641e5e953abc9a90d0173753107e321",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0101-1793473306.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c850ecbbff47be42d81c5f7af7e64d66a93662ef53700877da4e1eb3e194b954",
+        "entry_digest": "98e28efab81684c9982f8e54fedd6d68e6da403287e8ad0f68bc62cbfaf77378",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0102-1793473383.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d07aa8918427f09a8f8387786b2bb98a15d080143a194e52b044f38ef3499ad1",
+        "entry_digest": "6c775860ec8fff6ac34a23291aca482d85982d191f28f76c1f503446f348663b",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/evidence/tc-cli-0103-1793473384.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "a0e89e505931504cac991e9a9e0f904e306ba2ecb1126137c17afcd02ff161be",
+        "entry_digest": "d3af3f39a0f66b16b88c2fc7bc3e07c804f80c0f6035cb34d6e30fdd5a7a8c48",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/session.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "03bf1558e0ae493ac3a9be0850b7596dc34dd8567d18a7b098462c834c93b207",
+        "entry_digest": "138660b5318a17f20131647f338ffb93e269cf478b507afecb4eaecb205dc1e4",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/session.v1.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0f9c14355e318584ad9110d44057ba949016837f4756f4e32c8b5f79f635bf6a",
+        "entry_digest": "4ff1f2aa2ece5f9ea63ccfdc32599551a8dc6488aeef9c8579a26f317508cf2a",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/transitions.jsonl",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "823ecf3eca863f4bd1ea1299c67294fe72222d6e9ca9e3885dcdd58970e33229",
+        "entry_digest": "d14aee9332885566a481f8272c96d8c5325d742b90547ce225fbc9d788b88e04",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/cli.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "a4d2b7e3c80587691527600a2bdf2b30b4086be95f74e78108a68476f8264303",
+        "entry_digest": "2e35e994b731ecb5c76fdb84a887047326dacf5a8a26acf1fc0ab84050404c58",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "38aadfca7d8027b568f4d86cef0d89a0d31f7a627e6033a97646f328510f91f7",
+        "entry_digest": "bd30c7d213e184162a45f4edc8baeb1b38c0914ed4e754491d91fa24cf7f46cf",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "63e595ec646ab0449864e4b93a07bbf93d4de5d8429763122521551bdbc74fd8",
+        "entry_digest": "cf08b720df2d77683dbbd0e185b3bef42e5b93b8b1d2f8b368de6ea9b5373ea9",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ec5abae08ac15e9cd1bbda40dc50af74772cbc341924da3fbf31eb3784d89d08",
+        "entry_digest": "f7b49dfa65840b86f5f8b4380594afaa066a667ebc6fb5ce08b032fc5bdc3c74",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4e71203b36f67adf8c3f8070c10ab0d51f4bc7ae41194becfdc6ab5d36d888b4",
+        "entry_digest": "6a6f8a06243d32d4745dd72060b0e84aeec600a0c58650892a0e4a9e67d8e93a",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d69b8f20edf4950fc45b8a25965565e7ed6e7dc70c9d597841ae188ceca548af",
+        "entry_digest": "8913ec3f8addce158e5ecf8df61fa0570c2847d6faf66f2bf3d9066a6c15ac15",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/checkpoint.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f4ba05cbc9a689fafefc69d7d2c69db06a9e166f8cf4ec0c3573c22c565a6122",
+        "entry_digest": "e90198061b322d3f1c55e479bff5cd7db8a95cc0c1ac0865845db737830d34d1",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/main.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "55308c13a38152dd0f54f275634722a74118da0c39aafdb66bb532ff1e634f02",
+        "entry_digest": "4ba6601236f13d49a1c0497600c0ca8f5f323390a1415495708a8381405811fb",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/records.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ff5c37842eebfbd972061ed6e140f7d4c484c45be838ac5de8fa75cfe5f238e7",
+        "entry_digest": "f6bae00f4d663a637594386cc9d3804dbc967f3efc1f4e1f57d2a1f9c6935a3e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/stage.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4f15fc463f367b159c4fc8f0dcf0c99b97c9ad9cea3e6c972765f8bd2cd47d4a",
+        "entry_digest": "5b3f69ebe869e30828dedd5f569d70c06e950c071b0bffb7cffaa6d711df5343",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/bugs.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "46ef25b8e09c3a62c170db6b643862a7f2d2eb76bd18451354afcf8e904c731b",
+        "entry_digest": "6adf05f3cc568784a9d115d2c5c0d6df8a5ea48f59751d37ba58f2b5357272e3",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/cases.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "62f2e9501994c39c94da98baa5a8614b7e031a9efda66afdde2f731393fd5b73",
+        "entry_digest": "08566acf9f1e916c2276a947497301e5b7a46e89246eb599816a2375050a64aa",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/cli.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "554aa2c80fae9786c31651dda6a29ce4883a14a61c79c4ca6497fbc1a73298f7",
+        "entry_digest": "d714395ebae0c229b1fff344e3eed50d027c593d4bd56ee9f6758e8989d06f07",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/common/mod.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1c2d0dbe69e8aa533d04d2e02c3b715a1cc5b6cc93e278f649201e6c5451f325",
+        "entry_digest": "2521887ed8cc09721cf2b611ec2202b6742cbcc5c3691fa8741e58d6054d26b3",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-0.1.0/SKILL.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6eb4980c784757c2898ce871551282fe251a5c0715dd625e95806cff2be7f06a",
+        "entry_digest": "0eb189006184e1fde1b0f955323cb5b649b1292651746484f191925b08a72bdc",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/optional.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1d6f24379337fe1d839fd4e6c0d31c88ca53e54f0241c25f14ebe33396a5e785",
+        "entry_digest": "43a5fe278bcc8e3a9949289ab832fe382c2469b3df4566b1001c27e22d84e4ff",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/stages.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b6fbb5a1df6445a506b9b2ae88ab270d513187305f98773a4df64fdd4834da87",
+        "entry_digest": "edcadada579b1f2ae94875ffffa558be1682877b30bd9b7dc5ea32043c7754a7",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

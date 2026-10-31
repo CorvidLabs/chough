@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "9992363a02c24a00852e0c8764a98a83f9a3b0dc",
+      "contract_digest": "cee66b5df4c61230935f4b31bd45ee2ac0be1c8a809be8a2270ae310baf1bb3c",
+      "execution_digest": "3fcdec60a8c0f9bd2a44bcadf874cfbae29ec50977f15991e4586f6f9ae9831a",
+      "workspace_digest": "8dfdf42c939e92ba3be5a953bf477c6ccd9a11233fb622436588dcb6f5e290e7",
+      "timestamp": 1793475817
+    }
+  ]
+}

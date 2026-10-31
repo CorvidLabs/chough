@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793475284,
+      "digest": "cee66b5df4c61230935f4b31bd45ee2ac0be1c8a809be8a2270ae310baf1bb3c",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first",
+        "title": "Parse native status beyond the display bound and apply checkpoint clears first",
+        "description": "Parse native status beyond the display bound and apply checkpoint clears first",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/stage.rs",
+          "tests/"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Behavior-only fix: REQ-cli-007 and REQ-cli-008 already require these outcomes; the contract text and requirements are unchanged.",
+        "acceptance_criteria": [
+          "Native status responses are parsed from the complete output up to a 4 MiB bound; a larger, failed, unavailable or undecodable response still refuses gated transitions as native-unknown.",
+          "Regression tests cover both defects; the existing suite, the feature-and-bug exercise and native structural checks still pass; the recorded BUG-0004 reproduction, rerun against the real archived evolve-chough-into-a-resumable-stage-workflow change in a disposable copy of the archive tip, now records accept -> done with gate native:archived, and BUG-0004 and BUG-0005 are verified with passing observations.",
+          "With native status reporting summary.state archived in a JSON response larger than 16384 bytes, chough stage advance leaves accept for done with gate native:archived (BUG-0004, REQ-cli-008).",
+          "chough checkpoint applies --clear-awaiting-human and --clear-blockers before additions in the same call, so the newly given entries remain (BUG-0005, REQ-cli-007).",
+          "chough status and next report a large valid native response as observed rather than invalid-output, show the parsed summary state and next action, and keep the displayed content bounded with a visible truncation note."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/context.md lessons: rely on change check rather than status for approval drift; run the scoped check before executing cases for new requirements; treat no-result runs as not-run; give disposable repositories a local Git identity. Invariant 5 (bounded inputs) stays: the parse bound is larger but finite.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793475857,
+      "digest": "6c4c518e2b978cea8789895a9b3d848c617cf9552753c74b039cb204ae853274",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

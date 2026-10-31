@@ -3,8 +3,8 @@
 
 use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{
-    append_line, ensure_text, head_revision, local_path, native, now, print_json, read_log_tail,
-    read_record,
+    append_line, ensure_text, head_revision, local_path, native_json, now, print_json,
+    read_log_tail, read_record,
 };
 use crate::{bugs, prefs};
 use anyhow::{Result, bail, ensure};
@@ -160,24 +160,19 @@ pub(super) fn native_state(root: &Path, change: Option<&str>) -> Result<NativeSt
     let Some(change) = change else {
         return Ok(NativeState::NoChange);
     };
-    let section = native(root, "specsync", &["change", "status", change, "--json"]);
-    if section.state != "observed" {
+    let response = native_json(root, "specsync", &["change", "status", change, "--json"]);
+    let Some(value) = response.value else {
+        let section = response.section;
         return Ok(NativeState::Unknown(format!(
             "{} ({}): {}",
             section.source, section.state, section.content
-        )));
-    }
-    let Ok(value) = serde_json::from_str::<Value>(&section.content) else {
-        return Ok(NativeState::Unknown(format!(
-            "{}: output is not JSON",
-            section.source
         )));
     };
     match value.pointer("/summary/state").and_then(Value::as_str) {
         Some(state) => Ok(NativeState::State(state.to_string(), value.clone())),
         None => Ok(NativeState::Unknown(format!(
             "{}: no summary.state in the response",
-            section.source
+            response.section.source
         ))),
     }
 }

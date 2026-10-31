@@ -362,3 +362,71 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
     );
     assert_eq!(stage(&fixture), "done");
 }
+
+#[cfg(unix)]
+#[test]
+fn large_native_status_still_gates_by_its_summary_state() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    // An archived SpecSync change lists every delivery file, so real status output
+    // exceeds the 16 KiB display bound; over 4 MiB it is refused as oversized.
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nsize=20000\n[ -f .stub-huge ] && size=4200000\npad=$(head -c $size /dev/zero | tr '\\0' x)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action\"},\"acceptance_entries\":\"%s\"}\\n' \"$state\" \"$pad\"\n",
+    );
+    fixture.executable("bin/specsync");
+    fixture.native("approved");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", "large-change"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.write(".stub-huge", "");
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("refused:native-unknown"), "{refused}");
+    assert!(refused.contains("oversized"), "{refused}");
+    fs::remove_file(fixture.root().join(".stub-huge")).unwrap();
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "native:approved"
+    );
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+    fixture.write(".stub-state", "archived\n");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["native_specsync"]["state"], "observed");
+    assert_eq!(status["native_summary"]["state"], "archived");
+    let shown = status["native_specsync"]["content"].as_str().unwrap();
+    assert!(shown.contains("display only"), "{shown}");
+    assert!(shown.len() < 17_000);
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "native:archived"
+    );
+    assert_eq!(stage(&fixture), "done");
+}
+
+#[test]
+fn clear_flags_apply_before_new_entries() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Old gate",
+        "--blocker",
+        "Old blocker",
+    ]);
+    let updated = fixture.ok(&[
+        "checkpoint",
+        "--clear-awaiting-human",
+        "--awaiting-human",
+        "New gate",
+        "--clear-blockers",
+        "--blocker",
+        "New blocker",
+    ]);
+    assert_eq!(updated["checkpoint"]["awaiting_human"], json!(["New gate"]));
+    assert_eq!(updated["checkpoint"]["blockers"], json!(["New blocker"]));
+    assert_eq!(fixture.session()["awaiting_human"], json!(["New gate"]));
+}

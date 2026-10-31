@@ -448,6 +448,15 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         session.native_change = Some(change);
         changed = true;
     }
+    // Clears run before additions, so entries given in the same call are kept.
+    if args.clear_blockers {
+        session.blockers.clear();
+        changed = true;
+    }
+    if args.clear_awaiting_human {
+        session.awaiting_human.clear();
+        changed = true;
+    }
     for resolved in &args.resolved {
         let before = session.open_questions.len();
         session
@@ -475,14 +484,6 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         }
         changed |= !values.is_empty();
         push_unique(list, values);
-    }
-    if args.clear_blockers {
-        session.blockers.clear();
-        changed = true;
-    }
-    if args.clear_awaiting_human {
-        session.awaiting_human.clear();
-        changed = true;
     }
     for (list, values) in [
         (&mut session.references.criteria, args.criteria),

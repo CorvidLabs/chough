@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test large_native_status_still_gates_by_its_summary_state ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 1.40s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running tests/stages.rs (target/debug/deps/stages-458eff5826836cc1)

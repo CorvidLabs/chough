@@ -1,0 +1,11 @@
+$ git -C <disposable worktree> rev-parse --short HEAD
+1a108d9
+$ specsync change status evolve-chough-into-a-resumable-stage-workflow --json | wc -c
+  100133
+$ chough stage show (before)
+{"stage":"accept","native_change":"evolve-chough-into-a-resumable-stage-workflow"}
+$ chough stage advance (fixed binary)
+{"from":"accept","gate":"native:archived","kind":"advance","to":"done"}
+exit=0
+$ chough status --json | native_summary
+{"native_state":"observed","native_summary":{"next_action":"merge the PR on GitHub if it is still open","state":"archived"}}

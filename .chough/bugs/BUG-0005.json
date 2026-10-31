@@ -21,17 +21,26 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0005-repro-1"
+    "bug-0005-repro-1",
+    "tc-cli-0039-1793475513"
   ],
   "impact": "A real gate can silently disappear from the checkpoint; same ordering applies to --clear-blockers. Workaround: clear and add in separate calls. Fix in a new native change.",
   "classification": "product-defect",
   "scope": "out-of-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Native closeout of evolve-chough-into-a-resumable-stage-workflow",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793475514,
+      "text": "status: open -> verified. Fixed in 6118511 (clears apply before additions); regression test passes.",
+      "observations": [
+        "tc-cli-0039-1793475513"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793474648,
-  "updated_at_unix_seconds": 1793474648
+  "updated_at_unix_seconds": 1793475514
 }
