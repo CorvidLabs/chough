@@ -22,17 +22,26 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0013-repro-1"
+    "bug-0013-repro-1",
+    "bug-0013-fixed-1"
   ],
   "impact": "Long-described native changes cannot be checkpointed; every gated stage move refuses as no-native-change",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Found while checkpointing the release candidate, 2026-10-31",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793488221,
+      "text": "status: open -> verified. Fixed in 3b0b2f7; TC-cli-0066 passed (tc-cli-0066-1793488207).",
+      "observations": [
+        "bug-0013-fixed-1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793488113,
-  "updated_at_unix_seconds": 1793488113
+  "updated_at_unix_seconds": 1793488221
 }

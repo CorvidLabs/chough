@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.43s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/stages.rs (target/debug/deps/stages-b5c96188316f0637)
