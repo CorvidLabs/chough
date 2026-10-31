@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 1
+version: 2
 status: active
 files:
   - src/main.rs
@@ -31,31 +31,47 @@ depends_on: []
 ## Purpose
 
 Provide the optional local helper for Chough's current-agent workflow. It installs
-skills without replacing user files, assembles bounded focused context, reports
-native lifecycle guidance, and validates observations tied to repository content
-and environment. See requirements.md and docs/FRD.md.
+the workflow skill for supported hosts without replacing user files, keeps one
+canonical checkpoint of the current stage, scope, decisions, preferences and human
+gates, routes stage transitions within native lifecycle gates, assembles bounded
+focused context, validates test definitions and runs explicitly invoked automated
+cases, keeps a local bug backlog, supports an optional project-local librarian, and
+records observations tied to repository content and environment. See
+requirements.md and docs/FRD.md.
 
 ## Public API
 
 The binary exposes CLI commands; it does not export a Rust library API. The
-observable command contract is `chough --help` and README.md. Private Rust
-implementation details are not a public library promise.
+observable command contract is `chough --help`, docs/cli.md and README.md. The
+command groups are init, context, status, next, migrate, checkpoint, stage, cases,
+evidence, bug, pref, consent, validate, library and skill.
 
-There are no public Rust exports. Command behavior is specified under Behavioral
-Examples and in the README command reference, rather than presented as Rust API
-symbols to the structural checker.
+Internal modules under src/ make their entry points visible to the crate root only.
+They are implementation details of the binary, not exports or library promises, and
+command behavior is specified under Behavioral Examples and in docs/cli.md rather
+than presented as Rust API symbols to the structural checker.
 
 ## Invariants
 
-1. Initialization never overwrites an existing user file, including an edited skill.
-2. The helper never creates or authenticates human approval, review, or deployment.
-3. HI owns criterion IDs; SpecSync owns its lifecycle and module companions.
-4. Observations bind revision, working content, and environment; current evidence
-   is not equivalent to proven criterion achievement.
-5. Session/module/artifact paths stay inside the selected project. Context is
-   bounded and deterministic for the same files and native tool responses.
-6. Missing tools, missing sources, unsupported schemas, and stale evidence remain
-   visible; they do not silently become successful states.
+1. Initialization and skill installation never overwrite an existing user file;
+   updates replace only files byte-identical to a known earlier bundle.
+2. The helper never creates, records or authenticates human scope approval,
+   implementation review, release or deployment.
+3. HI owns criterion IDs; SpecSync owns its lifecycle, approvals, reviews and
+   archives. The checkpoint references native records and never duplicates their state.
+4. Observations bind revision, working content, environment and, for cases, the
+   definition digest; current evidence is not equivalent to proven criterion achievement.
+5. Managed and selected paths stay inside the project and symlinks are rejected.
+   Context, records and captured output are bounded and deterministic for the same
+   inputs and native tool responses.
+6. Missing tools, missing sources, unsupported schemas, unknown native state and
+   stale evidence remain visible; they never silently become successful states.
+7. The helper executes a product check only when `cases run` or `validate` is
+   explicitly invoked, runs the bound argument vector without a shell, and records
+   passed only when the binding's assertion holds.
+8. `.chough/session.json` is the single writable checkpoint. Transition history is
+   append-only, and schema migration is explicit and preserves the original bytes.
+9. The helper publishes nothing to an external service.
 
 ## Behavioral Examples
 
@@ -72,6 +88,18 @@ Given a selected module and scoped HI family
 When a new agent requests context
 Then it receives instructions, intent, module companions, decisions and next action
 without loading the whole repository or conversation history
+
+Given a checkpoint at plan whose native change is still a draft
+When the agent asks to advance to build
+Then the transition is refused and native status is named as the authority
+
+Given two cases where one bound assertion fails
+When both cases are run
+Then the failing case is recorded failed and the passing case does not hide it
+
+Given a run consent for repeated validation
+When the objective changes
+Then the consent is cleared and project preferences are unchanged
 ```
 
 ## Error Cases
@@ -81,16 +109,23 @@ without loading the whole repository or conversation history
 | Invalid path/schema | A record escapes the root or uses an unsupported version | Fail with an actionable error |
 | Missing native tool/source | Context or lifecycle information is unavailable | Report unavailable/unknown without inventing state |
 | Existing observation ID | An observation record already exists | Refuse replacement and retain the original |
-| Invalid traceability | A criterion or requirement cannot be established | Refuse to record the observation |
+| Invalid traceability | A criterion, requirement or case cannot be established | Refuse to record the observation |
+| Native gate not satisfied | A stage transition needs a native state that is absent or unknown | Refuse the transition and name the native status command |
+| Unauthorized optional track | Repeated validation or release lacks consent or a standing preference | Refuse and explain how a human can authorize it |
+| Vacuous check | A bound command exits zero without its declared assertion | Record not-run or failed, never passed |
+| Schema 1 session | A stage command meets a schema 1 checkpoint | Refuse and name the explicit migration command |
 
 ## Dependencies
 
-Rust dependencies are declared in Cargo.toml. Git supplies revision and working
-content identity; HI supplies scoped intent; SpecSync supplies native lifecycle
-output. The helper invokes no model provider and runs no product tests itself.
+Rust dependencies are declared in Cargo.toml, including a TOML parser for test
+definitions. Git supplies revision and working content identity; HI supplies scoped
+intent; SpecSync supplies native lifecycle output. Cargo, Fledge or another bound
+command runs only when a case is explicitly executed. The helper invokes no model
+provider and no hosted service.
 
 ## Change Log
 
 | Version | Date | Changes |
 |---------|------|---------|
 | 1 | 2026-10-31 | Authorized first-slice bootstrap contract; no native approval claimed |
+| 2 | 2026-10-31 | evolve-chough-into-a-resumable-stage-workflow: Evolve Chough into a resumable stage workflow |
