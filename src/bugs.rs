@@ -257,12 +257,22 @@ fn validate(bug: &Bug) -> Result<()> {
     Ok(())
 }
 
+/// Linked observations that are present; pruned or unavailable ones never count.
+fn present_observations(root: &Path, ids: &[String]) -> Result<Vec<evidence::Evidence>> {
+    let mut present = vec![];
+    for id in ids {
+        if evidence::is_present(root, id)? {
+            present.push(evidence::load(root, id)?);
+        }
+    }
+    Ok(present)
+}
+
 /// Reproduced when a linked observation failed; otherwise the report is unverified.
 fn verification(root: &Path, bug: &Bug) -> Result<&'static str> {
     let mut failed = false;
     let mut passed_after = false;
-    for id in &bug.observations {
-        let observation = evidence::load(root, id)?;
+    for observation in present_observations(root, &bug.observations)? {
         match observation.outcome {
             Outcome::Failed => failed = true,
             Outcome::Passed => passed_after = true,
@@ -576,11 +586,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
         }
     }
     if bug.status == "verified" {
-        let passed = bug
-            .observations
-            .iter()
-            .map(|id| evidence::load(root, id))
-            .collect::<Result<Vec<_>>>()?
+        let passed = present_observations(root, &bug.observations)?
             .iter()
             .any(|observation| observation.outcome == Outcome::Passed);
         ensure!(
@@ -691,6 +697,42 @@ pub(super) fn open_backlog(root: &Path) -> Result<Vec<Value>> {
         .collect()
 }
 
+/// Every observation each bug links, whatever its status, labeled `BUG-NNNN <status>`:
+/// its observations, note observations and regression baseline.
+pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<String>)>> {
+    Ok(load_all(root)?
+        .into_iter()
+        .map(|bug| {
+            let mut ids: Vec<String> = vec![];
+            for id in bug
+                .observations
+                .iter()
+                .chain(bug.notes.iter().flat_map(|note| &note.observations))
+                .chain(&bug.regression_baseline)
+            {
+                if !ids.contains(id) {
+                    ids.push(id.clone());
+                }
+            }
+            (format!("{} {}", bug.id, bug.status), ids)
+        })
+        .collect())
+}
+
+/// Current, historical, pruned or unavailable for each observation a bug links.
+fn observation_labels(root: &Path, bug: &Bug) -> Result<Vec<Value>> {
+    let labels = evidence::Labels::new(root);
+    let mut values = vec![];
+    for id in &bug.observations {
+        values
+            .push(json!({"id": id, "role": "observation", "label": labels.label(root, id, None)?}));
+    }
+    if let Some(id) = &bug.regression_baseline {
+        values.push(json!({"id": id, "role": "regression-baseline", "label": labels.label(root, id, None)?}));
+    }
+    Ok(values)
+}
+
 pub(super) fn open_blocking(root: &Path) -> Result<Vec<String>> {
     Ok(load_all(root)?
         .into_iter()
@@ -737,9 +779,13 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
         })),
         BugCommand::Show { id } => {
             let bug = load(root, &id)?;
-            print_json(
-                &json!({"schema_version": 1, "bug": bug, "verification": verification(root, &bug)?}),
-            )
+            print_json(&json!({
+                "schema_version": 1,
+                "bug": bug,
+                "verification": verification(root, &bug)?,
+                "observation_labels": observation_labels(root, &bug)?,
+                "label_note": "pruned and unavailable observations never count as reproduced, passed or verifying",
+            }))
         }
         BugCommand::Report { id } => {
             let bug = load(root, &id)?;

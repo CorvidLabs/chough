@@ -5,7 +5,7 @@
 use crate::bugs::{self, Finding};
 use crate::cases;
 use crate::checkpoint::read_checkpoint;
-use crate::evidence::Outcome;
+use crate::evidence::{self, Outcome};
 use crate::prefs;
 use crate::records::{
     local_path, now, print_json, read_record, valid_name, write_new, write_replace,
@@ -183,9 +183,11 @@ fn continue_run(root: &Path, mut run: Run) -> Result<()> {
             run.case, run.id
         )
     });
+    let retention = evidence::auto_prune(root);
     print_json(&json!({
         "schema_version": 1,
         "run": run,
+        "retention": retention,
         "label": format!(
             "repeated run: {} of {} attempts, {} failed, {} not run, {} s elapsed; this is not a soak test, live-health check or repair authorization",
             run.completed, run.times, run.failures, run.not_run, run.elapsed_seconds
@@ -193,6 +195,16 @@ fn continue_run(root: &Path, mut run: Run) -> Result<()> {
         "captured_locally": run.bugs,
         "proposal": proposal,
     }))
+}
+
+/// Each stored run's ID with the observations it recorded, in attempt order.
+pub(super) fn run_references(root: &Path) -> Result<Vec<(String, Vec<String>)>> {
+    let mut runs = vec![];
+    for name in crate::records::record_names(root, RUNS_DIR)? {
+        let run = load(root, name.trim_end_matches(".json"))?;
+        runs.push((run.id, run.observations));
+    }
+    Ok(runs)
 }
 
 pub(super) fn run(root: &Path, command: ValidateCommand) -> Result<()> {
@@ -264,9 +276,21 @@ pub(super) fn run(root: &Path, command: ValidateCommand) -> Result<()> {
             continue_run(root, run)
         }
         ValidateCommand::Status => {
+            let labels = evidence::Labels::new(root);
             let mut runs = vec![];
             for name in crate::records::record_names(root, RUNS_DIR)? {
-                runs.push(load(root, name.trim_end_matches(".json"))?);
+                let run = load(root, name.trim_end_matches(".json"))?;
+                let mut observation_labels = vec![];
+                for id in &run.observations {
+                    observation_labels.push(json!({
+                        "id": id,
+                        "label": labels.label(root, id, Some(&run.environment))?,
+                    }));
+                }
+                // The stored counts are kept as recorded; labels never recount them.
+                let mut value = serde_json::to_value(&run)?;
+                value["observation_labels"] = json!(observation_labels);
+                runs.push(value);
             }
             print_json(&json!({
                 "schema_version": 1,

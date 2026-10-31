@@ -105,6 +105,60 @@ Kinds: `product-test`, `structural`, `human-observation`, `delivery-observation`
 `live-health-observation`, `dry-run`. Human approval and delivery stay unknown in
 helper output; an observation is an unauthenticated claim by whoever recorded it.
 
+## Retention
+
+`chough evidence prune` previews by default and changes no file. An observation set is
+one evidence record plus the artifacts under `.chough/artifacts/` that no other record
+references; artifacts elsewhere in the project are never removed. Each set is eligible
+or protected, and the preview lists eligible sets (case, environment, age, outcome,
+bytes, files), protected sets with every reason that applies, totals, the bytes that
+would be reclaimed and a warning when evidence and artifacts exceed 50 MiB.
+
+| Protected because | Reason shown |
+|---|---|
+| Listed in the checkpoint | `checkpoint` |
+| Linked by a bug of any status (observation, note or regression baseline) | `BUG-NNNN <status>` |
+| Listed by an active native change's acceptance manifest | `native active <id>` |
+| Listed by the most recent archived change's manifest (highest finalization timestamp) | `native archive <id>` |
+| The native read failed, or its output had no acceptance entries | `native unavailable` |
+| Not a routine automated run: a non-test kind, or a method other than `automated` | the kind, the method, or `unspecified-method` |
+| Among the newest 3 routine runs for its case and environment | `newest` |
+| The newest routine failure for its case and environment | `last failure` |
+| A failure, or the first or last pass, of a stored validation run | `validation <run>` |
+| Younger than 14 days | `recent` |
+
+Manifests are read with `specsync change status <id> --json` for each directory in
+`.specsync/changes/` and for the latest archive. Without a SpecSync configuration no
+manifest protects a set; when any read is unavailable, fails or lacks
+`acceptance_entries`, every set stays protected.
+
+`--apply` removes eligible sets only under a run consent (`chough consent grant
+retention --source ...`) or the standing preference `retention` (`off`, the default, or
+`auto`, set with `chough pref set retention auto --source ...`). With `auto`, `cases
+run`, `validate run` and `validate resume` apply the same rules after recording and
+report the result in a `retention` field; a failure there is reported, and the recorded
+outcome stands. Before each set is removed, one JSON line is appended to
+`.chough/pruned.jsonl`: ID, case, environment, outcome, kind, revision, observed time,
+artifact digests, record digest, removed files, reason, policy and authority, HEAD at
+pruning and the pruning time. Files leave the working tree only; committed bytes stay
+in Git history, and native archives and ignore rules are untouched. The ledger is read
+up to 16 MiB; an unreadable ledger leaves absent observations `unavailable`.
+
+Referenced observations carry a label in `status`, `next` (`observation_references`
+and each entry in `observations`), `bug show` (`observation_labels`) and `validate
+status` (each run's `observation_labels`):
+
+| Label | Meaning |
+|---|---|
+| `current` | Present and its inputs, artifacts and case definition match now (and the requested environment, when one is given) |
+| `historical` | Present but stale |
+| `pruned` | Absent and listed in `.chough/pruned.jsonl` |
+| `unavailable` | Absent and not in the ledger |
+
+Pruned and unavailable observations never count as current, passed or verifying
+evidence: bug verification ignores them, `bug update --status verified` needs a present
+passed observation, and validation runs keep their recorded counts.
+
 ## Test-case adapters
 
 | Adapter | Runs | Passes only when |

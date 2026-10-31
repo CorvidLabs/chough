@@ -25,8 +25,9 @@ const KEYS: &[(&str, &[&str], &str)] = &[
     ("librarian", &["off", "on"], "off"),
     ("library-dir", &[], "library"),
     ("required-lane", &[], ""),
+    ("retention", &["off", "auto"], "off"),
 ];
-const CONSENT_KEYS: [&str; 3] = ["repeat-validation", "monitoring", "release"];
+const CONSENT_KEYS: [&str; 4] = ["repeat-validation", "monitoring", "release", "retention"];
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -157,7 +158,7 @@ pub(super) fn authorized(root: &Path, session: &Checkpoint, key: &str) -> Result
         return Ok(Some(format!("run consent: {}", consent.source)));
     }
     let (value, origin) = effective(root, key)?;
-    Ok(matches!(value.as_str(), "always" | "standing").then_some(origin))
+    Ok(matches!(value.as_str(), "always" | "standing" | "auto").then_some(origin))
 }
 
 pub(super) fn pref(root: &Path, command: PrefCommand) -> Result<()> {
