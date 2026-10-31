@@ -28,15 +28,22 @@
   "status": "open",
   "regression_baseline": null,
   "duplicate_of": null,
-  "related": [],
+  "related": [
+    "BUG-0002"
+  ],
   "source": "SpecSync rehearsal in a disposable clone, 2026-10-31",
   "notes": [
     {
       "at_unix_seconds": 1793479516,
       "text": "2026-10-31 independent reproduction (specsync 6.1.1, enforcement = strict): change check recorded passed true for specsync check --spec shipping (non-strict) with undocumented exports; check --commit then exited 1 on the effective-contract export errors without recording an attempt, and status kept next_action review. Cause in spec-sync f240d37: change_requires_strict_validation uses only built-in SpecSync paths and modules or --strict, never the project's enforcement setting, and the commit path validates more strictly than the recorded verification.",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793482350,
+      "text": "2026-10-31 correction to the earlier note: configured enforcement = \"strict\" does not fail warnings (specsync check exits 0 under it; only the --strict flag fails), so the cause stated above is wrong. Per spec-sync PR #824's investigation, the effective-contract gate skips the change being verified on its first check, so that check records passed; later check --commit, finalize and audit refuse without recording an attempt, leaving the stale pass current. Fix proposed upstream in spec-sync PR #824 (draft, awaiting scope approval).",
+      "observations": []
     }
   ],
   "created_at_unix_seconds": 1793473164,
-  "updated_at_unix_seconds": 1793479516
+  "updated_at_unix_seconds": 1793482350
 }
