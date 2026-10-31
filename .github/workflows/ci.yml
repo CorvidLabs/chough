@@ -3,8 +3,8 @@ name: CI
 on:
   push:
     branches: [main]
+  # Every pull request, including stacked ones whose base is not main.
   pull_request:
-    branches: [main]
 
 permissions:
   contents: read
@@ -16,39 +16,83 @@ jobs:
   product:
     name: Product / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
       - run: cargo test --locked
       - run: cargo build --locked --release
 
   native-gates:
     name: Fledge / HI / SpecSync
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       # `specsync change audit` compares verification commits with HEAD's ancestry;
       # a shallow clone would report every change as orphaned.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-      - uses: dtolnay/rust-toolchain@stable
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           components: clippy, rustfmt
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
       # Fledge's documented @v1 ref is absent; this reviewed commit contains action.yml.
       - uses: CorvidLabs/fledge@b648ea2a622221d4f2ffbc7ba7aa829e6cf13a51
         with:
           version: v1.7.2
       # Lifecycle writers and CI use SpecSync 6.1.1. The v6.1.1 Action tag keeps a
       # 6.1.0 omitted-input default, so the binary version is passed explicitly.
-      - uses: CorvidLabs/spec-sync@v6.1.1
+      - uses: CorvidLabs/spec-sync@e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa # v6.1.1
         with:
           version: '6.1.1'
           strict: 'true'
           require-coverage: '100'
       - run: cargo install human-intent --version 0.8.0 --locked
       - run: fledge lanes run verify
+
+  archive:
+    name: SpecSync Archive
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: CorvidLabs/spec-sync@e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa # v6.1.1
+        with:
+          version: '6.1.1'
+          strict: 'true'
+          require-coverage: '100'
+      # Independent of product checks and draft/path/stage classification.
+      # Expected red until every native scope has been reviewed and finalized.
+      - name: Inspect native lifecycle closure without writing evidence
+        env:
+          ARCHIVE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python3 .github/scripts/check-specsync-archive.py --base "$ARCHIVE_BASE_SHA"
+
+  ci-fixtures:
+    name: CI gate fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: CorvidLabs/spec-sync@e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa # v6.1.1
+        with:
+          version: '6.1.1'
+          strict: 'true'
+          require-coverage: '100'
+      - run: python3 .github/scripts/test-specsync-archive.py
