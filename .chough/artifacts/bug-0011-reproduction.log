@@ -1,0 +1,6 @@
+# Finding F (remaining part) reproduction: chough built from chough main f19823d; macOS arm64; 2026-10-31T20:42:07Z
+# A stand-in 'specsync' on PATH; the real SpecSync is not involved.
+## stand-in writes 200 MB to stderr, then 200 MB to stdout
+chough next exit=0 native_specsync.state=oversized peak_rss_mib=774 (parse bound 4 MiB; display bound 16 KiB)
+## stand-in never exits
+chough next still running after 30 s; stopped by the reproduction harness

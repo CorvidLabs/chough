@@ -1,0 +1,9 @@
+# Finding E reproduction: chough built from chough main f19823d; specsync 6.1.1; macOS arm64; 2026-10-31
+# Disposable copy of examples/shipping (script: gates-and-execution.sh). Consent in it is SYNTHETIC.
+# 0902: argv [sh,-c,'sleep 20 & sleep 20'] timeout 1 s; 0903: [sh,-c,'sleep 20 & echo started'] timeout 3 s; 0904: 300 MB to stdout, timeout 120 s
+== E: TC-shipping-0902
+  outcome=failed wall=20s limitations=null
+== E: TC-shipping-0903
+  outcome=passed wall=21s limitations=null
+== E: TC-shipping-0904 (300 MB output; peak memory)
+  outcome=passed artifact=1048634 bytes; peak RSS=578 MiB

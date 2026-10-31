@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0010",
+  "title": "Case deadline and output bound fail with descendants and large output",
+  "symptom": "1 s and 3 s deadlines returned after 20-21 s; 300 MB output peaked at 578 MiB",
+  "trigger": "A bound command whose descendant keeps stdout or stderr open, or that writes a lot",
+  "expected": "The run returns by its deadline, descendants are stopped, and retained output stays within the bound while reading",
+  "actual": "Only the direct child is killed; readers wait for EOF and collect everything before truncating",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-006"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+  "steps": [
+    "Bind argv [sh,-c,'sleep 20 & sleep 20'] with timeout_seconds 1",
+    "chough cases run <case>"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0010-repro-1"
+  ],
+  "impact": "A case can hang chough or exhaust memory",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Review finding E, reproduced 2026-10-31 against main f19823d",
+  "notes": [],
+  "created_at_unix_seconds": 1793479500,
+  "updated_at_unix_seconds": 1793479500
+}

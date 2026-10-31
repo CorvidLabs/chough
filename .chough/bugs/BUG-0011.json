@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0011",
+  "title": "Native reads collect unbounded output and have no deadline",
+  "symptom": "chough next held 400 MB of native output (774 MiB peak) and waited indefinitely on a stuck command",
+  "trigger": "A native command that writes very large output or never exits",
+  "expected": "Capture stops retaining at the parse bound while reading, stderr is bounded and drained, and a deadline reports the state as unknown",
+  "actual": "Command::output collects everything; there is no deadline",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-003",
+    "REQ-cli-006"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+  "steps": [
+    "Put a stand-in specsync on PATH that writes 200 MB to each stream, or sleeps",
+    "chough next"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0011-repro-1"
+  ],
+  "impact": "status, next and gates can hang or exhaust memory",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Review finding F, reproduced 2026-10-31 against main f19823d",
+  "notes": [
+    {
+      "at_unix_seconds": 1793479501,
+      "text": "Added despite similar reports: BUG-0004 fixed parsing beyond the display bound; this is capture during reading",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1793479501,
+  "updated_at_unix_seconds": 1793479501
+}

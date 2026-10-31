@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0009",
+  "title": "Stop requested during a validation interval still allows another attempt",
+  "symptom": "validate run --times 3 --interval 4 completed 2 attempts after a stop at 1.5 s",
+  "trigger": "chough validate stop while a repeated run sleeps between attempts",
+  "expected": "No further attempt starts once a stop or pause exists, including after the wait",
+  "actual": "The stop file is checked before the sleep only",
+  "criteria": [
+    "FLOW-9"
+  ],
+  "requirements": [
+    "REQ-cli-011"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+  "steps": [
+    "Grant repeat-validation consent",
+    "validate run <case> --times 3 --interval 4",
+    "validate stop during the first interval"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0009-repro-1"
+  ],
+  "impact": "Repeated runs continue after the human asked them to stop",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Review finding D, reproduced 2026-10-31 against main f19823d",
+  "notes": [
+    {
+      "at_unix_seconds": 1793479500,
+      "text": "Added despite similar reports: Stop timing during the interval, not stop between attempts",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1793479500,
+  "updated_at_unix_seconds": 1793479500
+}
