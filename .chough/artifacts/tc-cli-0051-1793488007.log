@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test every_protection_reason_is_named ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.96s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running tests/evidence.rs (target/debug/deps/evidence-77e875b25cb2dec3)

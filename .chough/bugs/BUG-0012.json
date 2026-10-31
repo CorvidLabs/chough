@@ -20,17 +20,26 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0012-repro-1"
+    "bug-0012-repro-1",
+    "tc-cli-0053-1793488010"
   ],
   "impact": "Raw logs accumulate without bound",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Failing-first tests of the approved release candidate, 2026-10-31",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793488041,
+      "text": "status: open -> verified. Fixed by the release-candidate retention implementation; TC-cli-0050 to TC-cli-0061 passed at the committed tip (observation tc-cli-0053-1793488010 for the apply/ledger test).",
+      "observations": [
+        "tc-cli-0053-1793488010"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793487996,
-  "updated_at_unix_seconds": 1793487996
+  "updated_at_unix_seconds": 1793488041
 }
