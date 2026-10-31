@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 3
+version: 4
 status: active
 files:
   - src/main.rs
@@ -130,3 +130,4 @@ provider and no hosted service.
 | 1 | 2026-10-31 | Authorized first-slice bootstrap contract; no native approval claimed |
 | 2 | 2026-10-31 | evolve-chough-into-a-resumable-stage-workflow: Evolve Chough into a resumable stage workflow |
 | 3 | 2026-10-31 | refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold: Refuse stage moves whose native approval validity, archive integrity or SDD policy does not hold |
+| 4 | 2026-10-31 | bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting: Bound external commands in time and memory and honor validation stop requests after waiting |
