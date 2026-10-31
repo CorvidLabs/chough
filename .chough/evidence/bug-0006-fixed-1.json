@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "id": "bug-0006-fixed-1",
+  "criteria": [
+    "FLOW-5"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "With approval_valid false, plan -> build is refused as refused:native-approval-invalid and names the native next action",
+  "artifacts": [
+    ".chough/artifacts/bug-0006-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0006-fixed-reproduction.log": "9fbd1aeafcb8ef5045a7a5cce68e3d46ea5eebba3d81d35166303488452b96d5"
+  },
+  "observed_at_unix_seconds": 1793481840,
+  "snapshot": {
+    "revision": "80757487bddf9172bd757f78fcfa798e1d7e40b3",
+    "dirty": false,
+    "fingerprint": "4df71aa15c351c690f016c4f1cd384e03b361ecc4a7d050868187695f725733f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Rerun of the recorded disposable reproduction with the binary from 8075748; the regression test is TC-cli-0040"
+  ]
+}

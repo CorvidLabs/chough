@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0043-1793481649",
+  "criteria": [
+    "FLOW-5",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact sdd_policy_is_read_with_specsync_semantics for TC-cli-0043: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0043-1793481649.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0043-1793481649.log": "5e4cf09806c7a680daa0da5fa361a16e79ae2195c1d0ab6f1cc08ea2f2661485"
+  },
+  "observed_at_unix_seconds": 1793481650,
+  "snapshot": {
+    "revision": "80757487bddf9172bd757f78fcfa798e1d7e40b3",
+    "dirty": false,
+    "fingerprint": "4df71aa15c351c690f016c4f1cd384e03b361ecc4a7d050868187695f725733f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0043",
+      "digest": "1febbe8b35867468f6e54d05c2ac67d88a1c19ad10e229bdec0774a995de6167"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "sdd_policy_is_read_with_specsync_semantics"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

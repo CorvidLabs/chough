@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test invalid_native_approval_refuses_every_route_into_build_and_later_stages ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.93s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/stages.rs (target/debug/deps/stages-458eff5826836cc1)

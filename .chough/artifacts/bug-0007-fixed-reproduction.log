@@ -1,0 +1,6 @@
+# Finding B rerun after the fix: chough built from 0xleif/fix/fail-closed-stage-gates 8075748; specsync 6.1.1; macOS arm64; 2026-10-31T21:23:59Z
+# Same disposable reproduction as bug-0007-reproduction.log; approvals and consent in it are SYNTHETIC.
+== B: reset from intent to done while the native change is draft
+  stage before: intent
+  exit=1 -> intent
+  reset --to accept exit=1 -> intent

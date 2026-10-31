@@ -121,7 +121,7 @@ impl Fixture {
         self.git(&["commit", "--allow-empty", "-m", message]);
     }
 
-    /// Stub `hi` and `specsync`; the native change state is read from `.stub-state`.
+    /// Stub `hi` and `specsync`; the native summary is read from `.stub-*` files.
     #[cfg(unix)]
     pub(super) fn stubs(&self) {
         self.write(
@@ -130,7 +130,22 @@ impl Fixture {
         );
         self.write(
             "bin/specsync",
-            "#!/bin/sh\nif [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action for %s\"}}\\n' \"$state\" \"$state\"\n",
+            r#"#!/bin/sh
+# Reports the summary fields SpecSync 6.1.1 reports. Files change them: .stub-state,
+# .stub-approval (true, false or none to omit), .stub-correction (true or false),
+# .stub-validity (terminal evidence when archived; none omits it) and .stub-fail.
+if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
+state=$(cat .stub-state 2>/dev/null || echo draft)
+approval=$(cat .stub-approval 2>/dev/null || echo true)
+correction=$(cat .stub-correction 2>/dev/null || echo true)
+validity=$(cat .stub-validity 2>/dev/null || echo authenticated-history)
+fields=",\"correction_valid\":$correction"
+if [ "$approval" != none ]; then fields="$fields,\"approval_valid\":$approval"; fi
+if [ "$state" = archived ] && [ "$validity" != none ]; then
+    fields="$fields,\"terminal_evidence\":{\"validity\":\"$validity\"}"
+fi
+printf '{"summary":{"state":"%s","next_action":"stub next action for %s"%s}}\n' "$state" "$state" "$fields"
+"#,
         );
         self.executable("bin/hi");
         self.executable("bin/specsync");

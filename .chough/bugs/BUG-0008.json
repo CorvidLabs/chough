@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0008",
+  "title": "Malformed SDD policy is treated as deliberately disabled",
+  "symptom": "Truncated sdd.json, enabled as a string, or no enabled key all gave ungated:sdd-disabled",
+  "trigger": "An unreadable or ill-typed .specsync/sdd.json",
+  "expected": "The gate is refused as unknown policy; only a valid enabled false is ungated",
+  "actual": "Parse failures and wrong types fall through to the ungated path",
+  "criteria": [
+    "FLOW-5"
+  ],
+  "requirements": [
+    "REQ-cli-008",
+    "REQ-cli-003"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "f19823d4287debe65cf8c5a78fa4a2f72d83b9b7",
+  "steps": [
+    "Write { \"enabled\": true, (truncated) to .specsync/sdd.json",
+    "chough stage advance from plan"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0008-repro-1",
+    "bug-0008-fixed-1"
+  ],
+  "impact": "A damaged policy file silently removes every native gate",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Review finding C, reproduced 2026-10-31 against main f19823d",
+  "notes": [
+    {
+      "at_unix_seconds": 1793481843,
+      "text": "status: open -> verified. Fixed in 8075748 (fail-closed stage gates); regression TC-cli-0043 passed (observation tc-cli-0043-1793481649).",
+      "observations": [
+        "bug-0008-fixed-1"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793479500,
+  "updated_at_unix_seconds": 1793481843
+}

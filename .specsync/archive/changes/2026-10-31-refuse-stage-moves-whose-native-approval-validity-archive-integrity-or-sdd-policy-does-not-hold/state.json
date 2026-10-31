@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold",
+  "slug": "refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold",
+  "title": "Refuse stage moves whose native approval validity, archive integrity or SDD policy does not hold",
+  "description": "Refuse stage moves whose native approval validity, archive integrity or SDD policy does not hold",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "ef6695fe9a753112dc77b156d11d9441ea81e529",
+  "created_at": 1793479638,
+  "updated_at": 1793484409,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/stage.rs",
+    "tests/",
+    ".chough/",
+    "docs/cli.md",
+    "skills/chough-workflow/",
+    ".agents/skills/chough-workflow/",
+    ".claude/skills/chough-workflow/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Entering build, test or accept by advance, skip, back or reset is refused unless native status reports state approved, implementing or verifying with summary.approval_valid true and summary.correction_valid not false; the refusal names the failed condition and the native next action. With approval_valid false and an eligible state, plan -> build is refused (BUG-0006, REQ-cli-008).",
+    "Reaching done by advance, skip, reset or release -> done is refused unless native state is archived and summary.terminal_evidence.validity is authenticated-history, exact or successor-covered; corrupt-history, a missing validity or any other state refuses. Reset and back to intent, design and plan stay allowed, and test and accept are also reachable for an archived change with valid terminal evidence (BUG-0007, REQ-cli-008).",
+    "The SDD policy is read with SpecSync semantics: no .specsync/sdd.json, or a valid policy with enabled false, stays ungated with the existing labels; a missing enabled key means enabled; malformed JSON, a non-object, or an ill-typed known field refuses gated moves as refused:sdd-policy-invalid and names the file (BUG-0008, REQ-cli-008, REQ-cli-003).",
+    "Every existing transition, side-stage and release behavior that these rules do not name is unchanged; the full suite, the feature-and-bug exercise and native structural checks pass; regression tests reproduce BUG-0006, BUG-0007 and BUG-0008 with real SpecSync in disposable repositories using clearly synthetic approvals, and the three bugs are verified by passing observations."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "specs/cli/context.md lessons: list human gates and post-verification steps as plain text, not checkboxes; treat a delta as frozen at approval; run the scoped check before executing cases for new requirements; use pub(super), not pub(crate), in binary modules; give disposable repositories a local Git identity and test with GIT_CONFIG_GLOBAL=/dev/null. Invariants 2, 3 and 6: Chough never records approval and unknown native state never becomes success. SpecSync status alone does not detect an edited approved delta (BUG-0002); this change honors what status reports and does not claim to detect delta drift.",
+    "public_contract": "yes"
+  }
+}

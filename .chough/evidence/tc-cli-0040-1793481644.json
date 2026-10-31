@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0040-1793481644",
+  "criteria": [
+    "FLOW-5",
+    "FLOW-2"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact invalid_native_approval_refuses_every_route_into_build_and_later_stages for TC-cli-0040: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0040-1793481644.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0040-1793481644.log": "e064ed4b03384fa493aa098ab76c9a203b6869f1ab674aa86f4bc6b3309c09cb"
+  },
+  "observed_at_unix_seconds": 1793481645,
+  "snapshot": {
+    "revision": "80757487bddf9172bd757f78fcfa798e1d7e40b3",
+    "dirty": false,
+    "fingerprint": "4df71aa15c351c690f016c4f1cd384e03b361ecc4a7d050868187695f725733f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0040",
+      "digest": "3c11dc9e7d02393f631bcdbdbf0be51596fa858e5ca59c6566a53f941963dcb9"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "invalid_native_approval_refuses_every_route_into_build_and_later_stages"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}
