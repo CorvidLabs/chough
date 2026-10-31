@@ -366,3 +366,161 @@ observations and evidence named in the refresh list must be redone by their owne
 - Side stage for adding to or organizing the optional project library and preparing briefs.
 - Returns to its caller; the librarian never becomes a second current source.
 "##;
+
+#[test]
+fn bundle_files_from_the_latest_main_build_are_never_reported_as_edited() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow");
+    for (file, content, digest) in [
+        (
+            "references/checkpoint.md",
+            CHECKPOINT_AT_9CB1C35,
+            "569ff9df89f3564bd1b91c8f231cc6b56af377ab8e2411c57cf052bf5aff71aa",
+        ),
+        (
+            "references/testing.md",
+            TESTING_AT_9CB1C35,
+            "26029a2ee652ddc55b2ef6a68ed3edfa6a699f3a61a8fffa8d4d485f1180f4fb",
+        ),
+    ] {
+        assert_eq!(
+            format!("{:x}", Sha256::digest(content.as_bytes())),
+            digest,
+            "{file}"
+        );
+        fs::write(installed.join(file), content).unwrap();
+    }
+
+    let status = chough(root, &["skill", "status"]);
+    for file in ["references/checkpoint.md", "references/testing.md"] {
+        let state = &skill_state(&status, file)["state"];
+        assert!(
+            *state == "current" || *state == "known-outdated",
+            "{file}: {state}"
+        );
+    }
+
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    for file in bundle_files() {
+        assert_eq!(skill_state(&status, &file)["state"], "current", "{file}");
+    }
+}
+
+/// `skills/chough-workflow/references/checkpoint.md` as shipped by main at 9cb1c35.
+const CHECKPOINT_AT_9CB1C35: &str = r##"# Checkpoint and cold resume
+
+Essential state must never live only in model context. `.chough/session.json` is the
+single writable checkpoint. It works without the librarian and without any other
+storage adapter.
+
+## What it holds
+
+| Field | Content |
+|---|---|
+| `objective`, `stage` | Current outcome, stage, status, side-stage callers and iteration |
+| `native_change` | The SpecSync change ID; native status decides its state |
+| `references` | Criteria, requirements, cases, design sources and files in scope |
+| `decisions`, `open_questions` | Decisions with their reason in the sentence; questions that matter |
+| `completed`, `observations`, `bugs`, `blockers` | Work done and the records that show it |
+| `awaiting_human` | Real gates still waiting for a person |
+| `run_consents` | Consent for this objective only |
+| `next_action` | Suggested next step; never overrides native state |
+
+Standing preferences are in `.chough/preferences.json`, transitions in
+`.chough/transitions.jsonl`, observations in `.chough/evidence/`, bugs in
+`.chough/bugs/` and case definitions in `.chough/cases/`.
+
+## When to save
+
+Save after each meaningful increment, before handing off, before context is cleared,
+and whenever a human gate opens or closes:
+
+```sh
+chough checkpoint --completed "<what was done>" --observation <id> \
+  --decision "<decision, because reason>" --next-action "<next step>"
+```
+
+Write decision summaries and observations, not private reasoning transcripts.
+SpecSync's `Handoff:` line says whether its own records are safe to clear; follow it
+too.
+
+## Resume cold
+
+A fresh agent with none of the earlier conversation:
+
+1. Reads `AGENTS.md`, then this skill.
+2. Runs `chough next --environment <env>` (or reads the files above directly).
+3. Checks native status for `native_change`, freshness of the referenced observations,
+   open blocking bugs and `awaiting_human`.
+4. Continues with `next_valid_action` under the same scope, preferences and gates. It
+   never records a pending human decision itself.
+
+## Schema and concurrency
+
+A schema 1 session keeps working for `context` and `status`. `chough migrate`
+converts it after saving the original bytes to `.chough/session.v1.json`. Hand edits
+are allowed and validated on every read. With several agents, one agent owns the
+checkpoint; others report to it. APS was evaluated as a backend and deferred: it lost
+concurrent read-modify-write updates without error and accepts unknown fields.
+"##;
+
+/// `skills/chough-workflow/references/testing.md` as shipped by main at 9cb1c35.
+const TESTING_AT_9CB1C35: &str = r##"# Focused testing
+
+Test what the change affects, not every criterion the product has.
+
+## Choose the checks
+
+Run `chough cases select --requirement <REQ> --criterion <ID> --path <changed path>`
+for the affected scope. Add `--track copy-localization` when visible text,
+terminology, comprehension or locale behavior changed, and `--track design-qa` when
+visuals or interactions changed. The output lists selected cases, omitted cases with
+reasons, and the project-required lane if one is configured
+(`chough pref set required-lane <lane> --source …`). Also run proportionate
+regressions for nearby behavior and the project's mandatory gates. Explain any
+meaningful omission and record test debt in the native `testing.md`.
+
+| Track | When | Typical method |
+|---|---|---|
+| functional | Always | Automated unit, integration or UI tests; manual checks where needed |
+| copy-localization | Visible text or locale behavior changed | Deterministic string assertions plus reviewer notes |
+| design-qa | Visuals or interactions changed | Rendered comparison with the canonical prototype at the target viewports and states |
+
+## Definitions are not observations
+
+Definitions live in `.chough/cases/<module>.cases.toml` (profile `chough-testing/1`,
+see [the template](../templates/cases.toml)). Each case has a stable ID
+`TC-<module>-NNNN`, links to HI criteria and requirements, setup, steps, explicit
+expected outcomes, method, environments and expected artifact types. Several cases
+can cover one criterion. Never edit an expected outcome to match a failure; retire a
+case (`status = "retired"`) instead of deleting or reusing its ID.
+
+`chough cases check` validates every definition, including its HI and requirement
+links. The digest of a case ignores its position and title, so reordering never
+changes identity, while editing what it asserts makes earlier observations
+`stale-case-definition`.
+
+## Execute honestly
+
+- Automated: `chough cases run <ID> --environment <env>` runs the binding without a
+  shell and records the observation with the captured log. `cargo-test` passes only
+  when exactly one test ran and passed; a filter matching nothing is `not-run`.
+  `fledge-task` and `command` pass only with exit 0 and every `expect_output`
+  fragment present. The command exits 3 when the outcome is not passed.
+- Manual or agent-assisted: `chough cases record <ID> --method manual --verdict 1=pass
+  --verdict 2=fail … --summary "…" --artifact <screenshot>` gives a verdict for every
+  expected outcome; any fail makes the observation failed.
+
+A failing case stays failed even when every other case passes. Do not rerun until
+it passes and report only the pass. Capture the failure with
+[the bug procedure](bugs.md).
+
+AI judgment is never the only oracle when an assertion or a reproducible procedure
+can decide. Keep rendered, copy and human judgments as observations with method and
+limits. Magpie can run real commands, but its generic mode judges exit codes and
+records skipped steps as passes; bind a Magpie run only through `command` with an
+`expect_output` assertion, and only where it is installed.
+"##;
