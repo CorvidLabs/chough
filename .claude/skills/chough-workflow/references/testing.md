@@ -58,10 +58,10 @@ records skipped steps as passes; bind a Magpie run only through `command` with a
 
 Routine reruns are prunable; proof that something still references is not.
 `chough evidence prune` previews eligible and protected observation sets with reasons
-and bytes, and changes nothing. It protects what the checkpoint, a bug or a native
-change lists, non-routine records, the newest 3 automated runs and the newest failure
-per case and environment, validation failures and boundary passes, and anything
-younger than 14 days. Apply only with `--apply` under
+and bytes, and changes nothing. It protects what the checkpoint, a bug, an active
+native change or the most recent archived one lists, non-routine records, the newest
+3 automated runs and the newest failure per case and environment, validation failures
+and boundary passes, and anything younger than 14 days. Apply only with `--apply` under
 `chough consent grant retention --source "<their words>"`, or when a human set
 `chough pref set retention auto --source …` (default `off`), which also prunes after
 `cases run` and `validate run`. Removals are logged in `.chough/pruned.jsonl`. Never
