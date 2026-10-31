@@ -1,6 +1,6 @@
 ---
 id: refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold
-state: approved
+state: implementing
 type: bug_fix
 base_commit: ef6695fe9a753112dc77b156d11d9441ea81e529
 ---
