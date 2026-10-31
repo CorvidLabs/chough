@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "bug-0010-fixed-1",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Fixed binary from bbd9f04 on the recorded reproduction: the 1 s deadline with a pipe-holding sleep descendant returned failed in 1.17 s with a timeout limitation; the 3 s case whose descendant held the pipes after exit returned in 2.21 s with the descendants-stopped limitation; no sleep descendant survived; 300 MB of output peaked at 10 MiB RSS with a 1048697-byte artifact noting 298951439 discarded bytes.",
+  "artifacts": [
+    ".chough/artifacts/bug-0010-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0010-fixed-reproduction.log": "1187579ed785432571ba470bb9f377b7ee5c797a7a65e5563bd3720e9eb1481a"
+  },
+  "observed_at_unix_seconds": 1793483101,
+  "snapshot": {
+    "revision": "bbd9f041fb58f14ed1447420c183984c1a602446",
+    "dirty": false,
+    "fingerprint": "ee2f91fbcc64c326b255a5de022c9dc9eab6d667e7d33f609bf932b3c4c23b46"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0045",
+      "digest": "e846351fbad4c1fe856c44109c72f1486c94aeb56fbf5bf0b8950970c15d1794"
+    },
+    {
+      "id": "TC-cli-0046",
+      "digest": "393432e604ab7cf6c612bde2c750dc1f7e70fcdfedae40da5c3c73ece38b81c9"
+    },
+    {
+      "id": "TC-cli-0047",
+      "digest": "03b6a7c063f31235add5fc8416c448b4d06164270c3f70d131770cfdbf846497"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "macOS arm64 only; Windows descendants whose parent already exited cannot be stopped by taskkill and are reported as incomplete capture instead"
+  ]
+}

@@ -22,17 +22,32 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0010-repro-1"
+    "bug-0010-repro-1",
+    "bug-0010-fixed-1",
+    "tc-cli-0045-1793482731",
+    "tc-cli-0046-1793482734",
+    "tc-cli-0047-1793482738"
   ],
   "impact": "A case can hang chough or exhaust memory",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Review finding E, reproduced 2026-10-31 against main f19823d",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793483111,
+      "text": "status: open -> verified. Fixed in bbd9f04 (bounded runner: per-stream caps while reading, process-group stop at the deadline or 2 s after exit, abandoned readers); regression cases TC-cli-0045 to TC-cli-0047 and the recorded reproduction rerun pass on macOS arm64.",
+      "observations": [
+        "bug-0010-fixed-1",
+        "tc-cli-0045-1793482731",
+        "tc-cli-0046-1793482734",
+        "tc-cli-0047-1793482738"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793479500,
-  "updated_at_unix_seconds": 1793479500
+  "updated_at_unix_seconds": 1793483111
 }

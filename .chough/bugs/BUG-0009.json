@@ -22,12 +22,14 @@
   ],
   "fixture": null,
   "observations": [
-    "bug-0009-repro-1"
+    "bug-0009-repro-1",
+    "bug-0009-fixed-1",
+    "tc-cli-0048-1793482740"
   ],
   "impact": "Repeated runs continue after the human asked them to stop",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -37,8 +39,16 @@
       "at_unix_seconds": 1793479500,
       "text": "Added despite similar reports: Stop timing during the interval, not stop between attempts",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793483111,
+      "text": "status: open -> verified. Fixed in bbd9f04 (stop and pause checked before every attempt, interval waited in 200 ms slices); regression case TC-cli-0048 and the recorded reproduction rerun pass on macOS arm64.",
+      "observations": [
+        "bug-0009-fixed-1",
+        "tc-cli-0048-1793482740"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793479500,
-  "updated_at_unix_seconds": 1793479500
+  "updated_at_unix_seconds": 1793483111
 }

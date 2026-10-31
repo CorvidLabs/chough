@@ -1,0 +1,18 @@
+# Finding E rerun against the fix: chough debug build of bbd9f041fb58f14ed1447420c183984c1a602446 (branch 0xleif/fix/bounded-external-commands); specsync 6.1.1; macOS 26.5.2 arm64 (Darwin 25.5.0); 2026-10-31T21:39:38Z
+# Same script and disposable copy of examples/shipping as bug-0010-reproduction.log (gates-and-execution.sh, plus one line counting surviving `sleep 20` processes before its pkill). Consent in it is SYNTHETIC.
+# 0902: argv [sh,-c,'sleep 20 & sleep 20'] timeout 1 s; 0903: [sh,-c,'sleep 20 & echo started'] timeout 3 s; 0904: 300 MB to stdout, timeout 120 s
+== E: TC-shipping-0902
+  outcome=failed wall=1s limitations=null
+== E: TC-shipping-0903
+  outcome=passed wall=2s limitations=null
+  surviving sleep 20 processes after both runs: 0
+== E: TC-shipping-0904 (300 MB output; peak memory)
+  outcome=passed artifact=1048697 bytes; peak RSS=10 MiB
+# (the script reads limitations from the run report; they are in the observations:)
+# tc-shipping-0902: failed, exit null, ["timed out after 1 s; the command and its descendants were stopped", "expected output missing: \"never printed\"", ...]
+# tc-shipping-0903: passed, exit 0, ["descendants still held output after exit and were stopped", ...]
+# tc-shipping-0904 artifact ends: [truncated: captured output is limited to 1048576 bytes] / [truncated: stdout wrote 300000000 bytes; 298951439 discarded]
+# precise rerun in the same repository with /usr/bin/time -p:
+TC-shipping-0902 outcome=failed real=1.17s surviving=0
+TC-shipping-0903 outcome=passed real=2.21s surviving=0
+# Before the fix (main f19823d): 0902 wall=20s, 0903 wall=21s recorded passed, 0904 peak RSS=578 MiB.
