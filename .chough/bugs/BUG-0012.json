@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0012",
+  "title": "Routine case and validation runs keep every log and observation with no retention",
+  "symptom": "No preview or policy removes superseded routine runs; the REQ-cli-018 tests fail 8 of 8",
+  "trigger": "Repeated cases run or validate run --times N",
+  "expected": "Reference-aware preview, policy-gated pruning, a ledger and current/historical/pruned/unavailable labels",
+  "actual": "evidence prune does not exist; nothing is ever pruned",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-018"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "d4ca8fdf153bc022a7a7698b6027f14ef75cb810",
+  "steps": [
+    "cargo test --test evidence at d761ff2"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0012-repro-1"
+  ],
+  "impact": "Raw logs accumulate without bound",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Failing-first tests of the approved release candidate, 2026-10-31",
+  "notes": [],
+  "created_at_unix_seconds": 1793487996,
+  "updated_at_unix_seconds": 1793487996
+}

@@ -949,3 +949,291 @@ notes = "BUG-0011 regression: a hanging stand-in is timed-out and refused by the
 adapter = "cargo-test"
 test_target = "cli"
 test = "native_reads_end_by_their_deadline_and_retain_bounded_output"
+
+[[case]]
+id = "TC-cli-0050"
+title = "Preview lists sets with reasons and bytes and changes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::preview_lists_sets_with_reasons_and_bytes_and_changes_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "preview_lists_sets_with_reasons_and_bytes_and_changes_nothing"
+
+[[case]]
+id = "TC-cli-0051"
+title = "Every protection reason is named"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::every_protection_reason_is_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "every_protection_reason_is_named"
+
+[[case]]
+id = "TC-cli-0052"
+title = "Newest runs count per case and environment"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::newest_runs_count_per_case_and_environment passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "newest_runs_count_per_case_and_environment"
+
+[[case]]
+id = "TC-cli-0053"
+title = "Apply needs consent or the standing preference and appends the ledger"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::apply_needs_consent_or_the_standing_preference_and_appends_the_ledger passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "apply_needs_consent_or_the_standing_preference_and_appends_the_ledger"
+
+[[case]]
+id = "TC-cli-0054"
+title = "Removed and missing observations are labeled and never count"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::removed_and_missing_observations_are_labeled_and_never_count passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "removed_and_missing_observations_are_labeled_and_never_count"
+
+[[case]]
+id = "TC-cli-0055"
+title = "A validation run keeps its counts after its middle passes are pruned"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned"
+
+[[case]]
+id = "TC-cli-0056"
+title = "Native manifests protect their sets and a failed read protects everything"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::native_manifests_protect_their_sets_and_a_failed_read_protects_everything passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "native_manifests_protect_their_sets_and_a_failed_read_protects_everything"
+
+[[case]]
+id = "TC-cli-0057"
+title = "Automatic pruning follows case runs only when retention is auto"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::automatic_pruning_follows_case_runs_only_when_retention_is_auto passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "automatic_pruning_follows_case_runs_only_when_retention_is_auto"
+
+[[case]]
+id = "TC-cli-0058"
+title = "A multi case record counts in the group of every case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::a_multi_case_record_counts_in_the_group_of_every_case passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "a_multi_case_record_counts_in_the_group_of_every_case"
+
+[[case]]
+id = "TC-cli-0059"
+title = "One artifact spelled two ways is shared and kept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::one_artifact_spelled_two_ways_is_shared_and_kept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "one_artifact_spelled_two_ways_is_shared_and_kept"
+
+[[case]]
+id = "TC-cli-0060"
+title = "Bug fixtures and checkpoint paths protect the sets they name"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name"
+
+[[case]]
+id = "TC-cli-0061"
+title = "Bug show labels note observations once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-018"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::bug_show_labels_note_observations_once passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "bug_show_labels_note_observations_once"
+
+[[case]]
+id = "TC-cli-0062"
+title = "The crate package holds only the helper source and canonical skill"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = ["Cargo.toml", "src/skill.rs", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::the_crate_package_holds_only_the_helper_source_and_canonical_skill passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "the_crate_package_holds_only_the_helper_source_and_canonical_skill"
+
+[[case]]
+id = "TC-cli-0063"
+title = "Init in a new project installs the skill and an empty checkpoint only"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = ["Cargo.toml", "src/skill.rs", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only"
+
+[[case]]
+id = "TC-cli-0064"
+title = "A skill copy from an earlier main build is known outdated and updated"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = ["Cargo.toml", "src/skill.rs", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::a_skill_copy_from_an_earlier_main_build_is_known_outdated_and_updated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "a_skill_copy_from_an_earlier_main_build_is_known_outdated_and_updated"
+
+[[case]]
+id = "TC-cli-0065"
+title = "Bundle files from the latest main build are never reported as edited"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = ["Cargo.toml", "src/skill.rs", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::bundle_files_from_the_latest_main_build_are_never_reported_as_edited passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "bundle_files_from_the_latest_main_build_are_never_reported_as_edited"

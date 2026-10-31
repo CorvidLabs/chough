@@ -1,0 +1,11 @@
+# REQ-cli-018 failing-first run: cargo test --test evidence at d761ff2 (tests added, implementation absent); macOS arm64; 2026-10-31T23:05:34Z
+["consent", "grant", "retention", "--source", "Human: prune"] failed: Error: run consent applies to repeat-validation, monitoring, release
+["evidence", "prune"] failed: error: unrecognized subcommand 'prune'
+["evidence", "prune"] failed: error: unrecognized subcommand 'prune'
+["evidence", "prune"] failed: error: unrecognized subcommand 'prune'
+["evidence", "prune"] failed: error: unrecognized subcommand 'prune'
+["consent", "grant", "retention", "--source", "Human: prune"] failed: Error: run consent applies to repeat-validation, monitoring, release
+error: unrecognized subcommand 'prune'
+["pref", "set", "retention", "auto", "--source", "Human: prune routine runs automatically"] failed: Error: unknown preference retention; known: repeat-validation, monitoring, release, monitor-initiation, librarian, library-dir, required-lane
+test result: FAILED. 0 passed; 8 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.93s
+error: test failed, to rerun pass `--test evidence`
