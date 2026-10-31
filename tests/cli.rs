@@ -552,3 +552,122 @@ fn successful_native_process_with_invalid_json_does_not_establish_lifecycle_stat
         "invalid-output"
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
+    use std::os::unix::fs::PermissionsExt;
+    use std::time::Instant;
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+    fixture.ok(&["checkpoint", "--native-change", "bounded-change"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    let stand_in = |script: &str| {
+        fixture.write("bin/specsync", &format!("#!/bin/sh\n{script}\n"));
+        fs::set_permissions(
+            fixture.root().join("bin/specsync"),
+            fs::Permissions::from_mode(0o755),
+        )
+        .unwrap();
+    };
+    let next = |timeout: Option<&str>| {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
+        command
+            .arg("--root")
+            .arg(fixture.root())
+            .args(["next", "--json"]);
+        let mut paths = vec![fixture.root().join("bin")];
+        paths.extend(std::env::split_paths(
+            &std::env::var_os("PATH").unwrap_or_default(),
+        ));
+        command.env("PATH", std::env::join_paths(paths).unwrap());
+        command.env_remove("CHOUGH_NATIVE_TIMEOUT_SECONDS");
+        if let Some(seconds) = timeout {
+            command.env("CHOUGH_NATIVE_TIMEOUT_SECONDS", seconds);
+        }
+        let started = Instant::now();
+        let output = command.output().unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+        (report, started.elapsed().as_secs())
+    };
+
+    // A native command that never answers (and whose descendant holds its output) is
+    // reported as timed-out by the deadline, and the build gate refuses it.
+    stand_in("sleep 43 &\nsleep 43");
+    let (report, elapsed) = next(Some("2"));
+    assert!(elapsed < 14, "next returned after {elapsed} s");
+    assert_eq!(report["native_specsync"]["state"], "timed-out");
+    let shown = report["native_specsync"]["content"].as_str().unwrap();
+    assert!(shown.contains("no response within 2 s"), "{shown}");
+    assert_eq!(report["native_summary"], Value::Null);
+    assert_eq!(
+        report["checkpoint"]["gate"]["label"],
+        "refused:native-unknown"
+    );
+    assert!(
+        report["checkpoint"]["gate"]["detail"]
+            .as_str()
+            .unwrap()
+            .contains("timed-out")
+    );
+    let survived = (0..30).all(|_| {
+        let running = Command::new("pgrep")
+            .args(["-f", "sleep 43"])
+            .output()
+            .unwrap()
+            .status
+            .success();
+        if running {
+            std::thread::sleep(std::time::Duration::from_millis(100));
+        }
+        running
+    });
+    assert!(!survived, "a native descendant survived");
+
+    // An invalid override is refused visibly instead of being replaced.
+    let (report, _) = next(Some("forever"));
+    assert_eq!(report["native_specsync"]["state"], "unavailable");
+    assert!(
+        report["native_specsync"]["content"]
+            .as_str()
+            .unwrap()
+            .contains(
+                "CHOUGH_NATIVE_TIMEOUT_SECONDS must be a whole number of seconds from 1 to 3600"
+            )
+    );
+
+    // Output beyond the 4 MiB parse bound is counted exactly, not retained.
+    stand_in("yes x | head -c 6000000");
+    let (report, _) = next(None);
+    assert_eq!(report["native_specsync"]["state"], "oversized");
+    let shown = report["native_specsync"]["content"].as_str().unwrap();
+    assert!(shown.contains("output of 6000000 bytes exceeds"), "{shown}");
+    assert!(shown.len() < 17_000);
+    assert_eq!(
+        report["checkpoint"]["gate"]["label"],
+        "refused:native-unknown"
+    );
+
+    // A stderr flood is drained beside stdout and shown within the display bound.
+    stand_in(
+        "yes e | head -c 5000000 >&2\nprintf '{\"summary\":{\"state\":\"approved\",\"next_action\":\"implement\"}}\\n'",
+    );
+    let (report, _) = next(None);
+    assert_eq!(report["native_specsync"]["state"], "observed");
+    assert_eq!(report["native_summary"]["state"], "approved");
+    assert_eq!(report["checkpoint"]["gate"]["label"], "native:approved");
+    stand_in("yes e | head -c 5000000 >&2\nexit 2");
+    let (report, _) = next(None);
+    assert_eq!(report["native_specsync"]["state"], "failed");
+    let shown = report["native_specsync"]["content"].as_str().unwrap();
+    assert!(shown.starts_with("exit=Some(2)"), "{shown}");
+    assert!(shown.contains("[truncated at 16384 bytes"), "{shown}");
+    assert!(shown.len() < 17_000, "{}", shown.len());
+}
