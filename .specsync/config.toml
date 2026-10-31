@@ -1,4 +1,4 @@
-# Native SpecSync configuration (writer/CI: 6.1.1)
+# Native SpecSync configuration (writer/CI: 6.1.0)
 # Docs: https://github.com/CorvidLabs/spec-sync
 
 specs_dir = "specs"

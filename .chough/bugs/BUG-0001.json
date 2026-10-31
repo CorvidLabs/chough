@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0001",
+  "title": "SpecSync config comment still names writer and CI 6.1.0",
+  "symptom": "The header comment in .specsync/config.toml says writer/CI 6.1.0 while lifecycle writers and CI use SpecSync 6.1.1",
+  "trigger": "Reading .specsync/config.toml after the 6.1.1 alignment (D-009)",
+  "expected": "The comment names the version actually used, or no version",
+  "actual": "writer/CI: 6.1.0",
+  "criteria": [
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-003"
+  ],
+  "cases": [],
+  "environment": "repository-text",
+  "revision": "12c8d4009995e13a42a354e4bc59f641ad9d0dfb",
+  "steps": [
+    "Read the first line of .specsync/config.toml",
+    "Compare with .github/workflows/ci.yml and docs/DECISIONS.md D-009"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Misleading comment only; no behavior or gate depends on it. Fixing it needs a native change that covers .specsync/config.toml, which the approved scope does not.",
+  "classification": "evidence-gap",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "specsync change audit on feat/resumable-stage-workflow",
+  "notes": [],
+  "created_at_unix_seconds": 1793473149,
+  "updated_at_unix_seconds": 1793473149
+}
