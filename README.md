@@ -2,8 +2,9 @@
 
 **A portable development workflow kit for coding agents: skills, human intent, specs, testing, and local context for resumable work.**
 
-Chough (pronounced **chuff**) is a portable agent skill with a small Rust helper. It is
-current-agent-first and agent-neutral: the same skill and records are meant for
+Chough (pronounced **chuff**, as in *chuffed*: how you feel when it merges) is a
+portable agent skill with a small Rust helper. It is current-agent-first and
+agent-neutral: the same skill and records are meant for
 capable GPT/Codex, Claude, Grok, Kimi and local-model hosts. You keep working with
 the agent you already use. Chough gives it a shared stage workflow
 and a checkpoint in plain project files. HI keeps the human's wording and criterion
