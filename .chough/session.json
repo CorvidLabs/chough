@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Prepare a reviewable first release candidate (PR #9): reference-aware evidence retention, current guidance and an installable package; no release",
+  "objective": "Land PR #16: bundle hygiene, case binding environment, colour-safe matching, actionable errors",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -74,7 +74,8 @@
     "PR #9 change archived after 0xLeif's review; Chough reached done through native:archived",
     "refused env names in the approved definition amended to match the code; re-approved by 0xLeif",
     "plan step 7 documented-order exercise passed",
-    "TC-cli-0100 and TC-cli-0104 added and passing"
+    "TC-cli-0100 and TC-cli-0104 added and passing",
+    "PR #9 merged earlier; stale awaiting-human entry cleared"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -93,9 +94,7 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Merge of PR #9 (the human's action); nothing is released"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
 }

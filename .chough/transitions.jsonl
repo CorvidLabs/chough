@@ -16,3 +16,4 @@
 {"schema_version":1,"at_unix_seconds":1793488224,"kind":"advance","from":"build","to":"test","reason":"TC-cli-0050 to 0066 passed","gate":"native:verifying","revision":"3b0b2f710131f6a444660953d44e378cb9a87713","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793488226,"kind":"advance","from":"test","to":"accept","reason":"No open blocking bugs","gate":"native:verifying","revision":"3b0b2f710131f6a444660953d44e378cb9a87713","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793490075,"kind":"advance","from":"accept","to":"done","reason":"Archived after 0xLeif's implementation review","gate":"native:archived","revision":"8b18498cb23fbc66f320e426227aa85cb74ca8b7","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793541248,"kind":"gate-closed","from":"done","to":"done","reason":"Merge of PR #9 (the human's action); nothing is released","gate":null,"revision":"aae9d6bfa537f28d4f08566d8ac90da862fc3f9b","refresh":[]}
