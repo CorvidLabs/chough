@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "correct-archived-resume-guidance-and-record-the-kimi-cold-start",
+  "native_change": "align-kimi-integration-with-new-cycle-done-guidance",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -77,7 +77,8 @@
     "Limit this change to BUG-0024 and BUG-0021 plus honest exercise and roadmap records, because the output-size and global-tool issues do not need the same scoped fix",
     "Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007",
     "0xLeif approved the native scope in conversation; SpecSync recorded that decision with actor 0xLeif",
-    "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised"
+    "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised",
+    "0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints"
   ],
   "open_questions": [],
   "completed": [
@@ -146,7 +147,9 @@
     "BUG-0024"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of align-kimi-integration-with-new-cycle-done-guidance"
+  ],
   "run_consents": [],
-  "next_action": "Finalize PR #24 under 0xLeif's authorization: resolve conflicts, run integrated gates, mark ready and merge if they pass; no release or deployment"
+  "next_action": "0xLeif to approve the integration scope; do not implement before native approval"
 }

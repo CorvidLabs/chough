@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0025",
+  "title": "Merged archived done action violates new-cycle contract",
+  "symptom": "The integrated branch follows native summary.next_action instead of the REQ-cli-021 new-cycle action",
+  "trigger": "Run chough next or status for a done checkpoint with an archived authenticated native change at merge b2e2f19",
+  "expected": "Recommend a reason-bearing stage reset and a new native change under REQ-cli-021 without repeating stale lifecycle actions",
+  "actual": "The archived override recommends the native summary.next_action and bypasses main's new-cycle rule",
+  "criteria": [
+    "FLOW-13",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "cases": [
+    "TC-cli-0105"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "b2e2f19d904aec2a5acd73569c8439f5583c01f9",
+  "steps": [
+    "Inspect the merged assess override in src/main.rs",
+    "Run the updated archived-done regression case before removing the override"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "The integrated PR would violate the newer approved contract even though its isolated tests pass",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793560637,
+      "text": "Added despite similar reports: BUG-0024 records the earlier stale review and ship defect; this bug is the later merge violation of main's REQ-cli-021",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1793560637,
+  "updated_at_unix_seconds": 1793560637
+}
