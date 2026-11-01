@@ -1160,7 +1160,11 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
 
 #[test]
 fn tool_and_rust_version_pins_agree() {
-    let read = |file: &str| fs::read_to_string(manifest_dir().join(file)).unwrap();
+    let read = |file: &str| {
+        fs::read_to_string(manifest_dir().join(file))
+            .unwrap()
+            .replace("\r\n", "\n")
+    };
     let (readme, agents, ci, cargo, ci_doc, integrations) = (
         read("README.md"),
         read("AGENTS.md"),
