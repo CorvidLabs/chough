@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0017",
+  "title": "cases check cannot link a requirement from an approved, unmaterialized delta",
+  "symptom": "requirement not found in contract companions for a REQ that exists only in the approved delta",
+  "trigger": "Case linked to a new requirement before change check materializes it",
+  "expected": "An actionable error naming the ordering, and documented order without double runs",
+  "actual": "A bare not-found error; change check refuses while the case task is open",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-005"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "2756dc24a821bbb92021455c704ef7a177123ffa",
+  "steps": [
+    "Approve a change adding REQ-m-N",
+    "Link a case to REQ-m-N; chough cases check"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Cases run twice",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "CorvidLabs/chough#11 (Raven run); reproduced on main 2756dc2",
+  "notes": [],
+  "created_at_unix_seconds": 1793494673,
+  "updated_at_unix_seconds": 1793494673
+}

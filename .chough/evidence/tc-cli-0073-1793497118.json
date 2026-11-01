@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0073-1793497118",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004",
+    "REQ-cli-017"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact observations_without_a_content_identity_stay_stale_after_a_commit for TC-cli-0073: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0073-1793497118.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0073-1793497118.log": "e065d56531190abe1dcb8f2a9eccbbf426754a247f82df98f5416ab2a4adee76"
+  },
+  "observed_at_unix_seconds": 1793497119,
+  "snapshot": {
+    "revision": "e806f783b34792c76961edfb24d42aa73764e6fa",
+    "dirty": false,
+    "fingerprint": "d66a35cb52a1c68205aa77f49cff92943c51c8ae43863ee6ffdd6452f35184da",
+    "content": "7eb66be2577f9e78895e0a93951cf202ab0bfe83611034719cfce6dfd4190e27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0073",
+      "digest": "9e6a6dc2156be99c5c1634f2d29d390b0f1cc51aab691242195ece316ad58869"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "observations_without_a_content_identity_stay_stale_after_a_commit"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

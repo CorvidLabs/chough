@@ -114,13 +114,19 @@ authorizes external actions.
 ## Evidence is scoped, not permanent achievement
 
 A criterion such as LIFE-2 stays durable. An observation says a particular check was
-reported as passed, failed or not run, for specific inputs and an environment. The
-Git fingerprint covers the revision and every tracked or untracked non-ignored file
-except `.chough/` and `target/`; artifacts are hashed separately; case observations
-also bind the case's definition digest. Any of those changing makes the observation
-stale. This is deliberately conservative: a later commit, even one that only touches
-lifecycle metadata, makes earlier observations stale until they are rerun. Reuse across
-metadata-only commits remains an [unapproved, deferred proposal](NEXT_CHANGE.md).
+reported as passed, failed or not run, for specific inputs and an environment. Each
+observation records the Git revision, which is shown and used for regression
+ancestry but not compared. Freshness compares a working content identity that covers
+every tracked or untracked non-ignored file except `.chough/`, `target/` and SpecSync
+lifecycle bookkeeping (a change's state, approval, verification, review,
+finalization, accepted-state and lesson-bundle records and the front-matter `state:`
+of `change.md`); a change's deltas and other artifacts stay covered wherever the
+change directory is. Artifacts are hashed separately; case observations also bind the
+case's definition digest. Any of those changing makes the observation stale, while
+committing only Chough records, an empty commit or SpecSync bookkeeping does not.
+Records without a content identity keep the earlier revision-bound comparison. This
+narrow form of reuse is D-018, which supersedes the deferral in D-016; the broader
+[proposal](NEXT_CHANGE.md) with ancestry checks and a separate label stays unapproved.
 
 The observation kind says what was observed, not how trustworthy it is. Recording
 `human-observation` does not authenticate a person, `deployment-observation` does

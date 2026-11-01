@@ -1,0 +1,33 @@
+# BUG-0015 reproduction: chough at a386c13 (0xleif/fix/evidence-stays-current) with the new tests added and src/ unchanged; macOS 26.5.2 arm64, rustc 1.95.0 (59807616e 2026-04-14); 2026-11-01T01:31:07Z
+$ cargo test --test cli -- --exact committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current committing_edits_already_present_when_observed_keeps_an_observation_current
+
+running 2 tests
+test committing_edits_already_present_when_observed_keeps_an_observation_current ... FAILED
+test committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current ... FAILED
+
+failures:
+
+---- committing_edits_already_present_when_observed_keeps_an_observation_current stdout ----
+
+thread 'committing_edits_already_present_when_observed_keeps_an_observation_current' (132904089) panicked at tests/cli.rs:792:5:
+assertion `left == right` failed
+  left: "stale-revision-or-inputs"
+ right: "current-observation"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current stdout ----
+
+thread 'committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current' (132904090) panicked at tests/cli.rs:770:5:
+assertion `left == right` failed
+  left: "stale-revision-or-inputs"
+ right: "current-observation"
+
+
+failures:
+    committing_edits_already_present_when_observed_keeps_an_observation_current
+    committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 22 filtered out; finished in 5.80s
+
+error: test failed, to rerun pass `--test cli`
+exit=101

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0015",
+  "title": "Committing Chough evidence makes that evidence stale",
+  "symptom": "After cases run and committing .chough/, next reports the observation stale-revision-or-inputs; an empty commit does too",
+  "trigger": "Any commit after recording an observation",
+  "expected": "Only a change to fingerprinted content stales an observation",
+  "actual": "snapshot() in src/evidence.rs hashes the HEAD revision into the fingerprint",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "2756dc24a821bbb92021455c704ef7a177123ffa",
+  "steps": [
+    "chough cases run <case>",
+    "git add .chough && git commit",
+    "chough next: stale-revision-or-inputs"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0015-repro-1",
+    "bug-0015-fixed-1",
+    "tc-cli-0067-1793498630",
+    "tc-cli-0068-1793498632",
+    "tc-cli-0069-1793498635",
+    "tc-cli-0073-1793498650",
+    "tc-cli-0074-1793498652"
+  ],
+  "impact": "Committed evidence can never read as current",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "CorvidLabs/chough#10 (Raven run, CorvidLabs/raven#644); reproduced on main 2756dc2",
+  "notes": [
+    {
+      "at_unix_seconds": 1793496694,
+      "text": "Reproduced before the fix by the new tests; see .chough/artifacts/bug-0015-reproduction.log.",
+      "observations": [
+        "bug-0015-repro-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793497233,
+      "text": "status: open -> verified. Fixed in 4bf46da; the reproduction tests pass at e806f78 (.chough/artifacts/bug-0015-fixed-reproduction.log).",
+      "observations": [
+        "bug-0015-fixed-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793498706,
+      "text": "The reproduction was a test-log observation recorded with evidence add before the fix, not a case-run observation: the regression case definitions TC-cli-0067, 0068, 0069, 0073 and 0074 arrived with the fix commit 4bf46da, so they could not run at the unfixed tip. This note links their current passing case-run observations at the review-fix head.",
+      "observations": [
+        "tc-cli-0067-1793498630",
+        "tc-cli-0068-1793498632",
+        "tc-cli-0069-1793498635",
+        "tc-cli-0073-1793498650",
+        "tc-cli-0074-1793498652"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793494673,
+  "updated_at_unix_seconds": 1793498706
+}

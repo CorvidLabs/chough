@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "id": "bug-0016-fixed-1",
+  "criteria": [
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "After the fix, every SpecSync bookkeeping write, the change.md front-matter state change, their commit and the archive move keep a new observation current; an archived artifact edit or an unlisted file stales it",
+  "artifacts": [
+    ".chough/artifacts/bug-0016-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0016-fixed-reproduction.log": "ebdac59589f4db3932d75d054df88165b9bc3122f21f5aab2e9486e37ee68849"
+  },
+  "observed_at_unix_seconds": 1793497232,
+  "snapshot": {
+    "revision": "e806f783b34792c76961edfb24d42aa73764e6fa",
+    "dirty": false,
+    "fingerprint": "d66a35cb52a1c68205aa77f49cff92943c51c8ae43863ee6ffdd6452f35184da",
+    "content": "7eb66be2577f9e78895e0a93951cf202ab0bfe83611034719cfce6dfd4190e27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0070",
+      "digest": "ee73ffc1f6e8e74e66ad008bf152fa4d3915eba2162bcda3225ca83008d1e449"
+    },
+    {
+      "id": "TC-cli-0072",
+      "digest": "c2adbaa8ca6e791306a83469076acdcd4f307544303cec8738c3535ca47076af"
+    }
+  ],
+  "method": "manual",
+  "limitations": [
+    "Stub change and archive directories, not a real SpecSync finalize; the disposable end-to-end exercise of the documented order was not run"
+  ]
+}

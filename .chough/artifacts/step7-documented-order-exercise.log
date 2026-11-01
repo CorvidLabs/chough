@@ -1,0 +1,498 @@
+
+################ 0. environment ################
+date: 2026-11-01T03:35:35Z
+exercise copy: /private/tmp/claude-501/-Users-leif-Development--CorvidLabs-chough/08d48ab4-faba-46d5-97eb-7e943011e4d4/scratchpad/step7-exercise (git clone of the PR #17 worktree, origin remote removed, gh stubbed to refuse)
+
+$ git log --oneline -1
+d918bbb chore(lifecycle): record keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after verification
+[exit 0]
+
+$ git remote -v
+[exit 0]
+
+$ which chough specsync gh
+/private/tmp/claude-501/-Users-leif-Development--CorvidLabs-chough/08d48ab4-faba-46d5-97eb-7e943011e4d4/scratchpad/step7-bin/chough
+/Users/leif/.cargo/bin/specsync
+/private/tmp/claude-501/-Users-leif-Development--CorvidLabs-chough/08d48ab4-faba-46d5-97eb-7e943011e4d4/scratchpad/step7-bin/gh
+[exit 0]
+
+$ chough --version
+chough 0.1.0
+[exit 0]
+
+$ specsync --version
+specsync 6.1.1
+[exit 0]
+
+$ uname -sm
+Darwin arm64
+[exit 0]
+$ specsync change status keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --json (summary)
+{
+ "approval_valid": true,
+ "artifacts_complete": true,
+ "correction_count": 0,
+ "correction_valid": true,
+ "definition_digest": "ce7b600064d247d37aab968f104214df856ed7dbf8f6f8dab0fc01c9da1dba63",
+ "handoff": {
+  "readiness": "safe",
+  "reason": "verification is current for this working tree; a fresh session here resumes at the independent review",
+  "resume": "specsync change status keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after"
+ },
+ "id": "keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after",
+ "next_action": "run `specsync change review keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --reviewer <human>` after the PR's scoped review passes",
+ "scoped_review_current": false,
+ "state": "verifying",
+ "strict_validation_required": false,
+ "title": "Keep evidence current across commits and SpecSync lifecycle bookkeeping, and verify bugs only by a pass observed after the failure",
+ "verification_commands": [
+  "specsync check --spec cli"
+ ]
+}
+== chough status after [start (no step7 observations yet; all prior records expected historical)] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "33611ed81bafe1ef6462d2e2e908cdc63219ad31d0ef61ce7be30ff1827b70bd", "revision": "d918bbb3f76fc52396638e66e2756ea8d82776ac"}
+native_summary.state: archived
+  counts by freshness: {'stale-revision-or-inputs': 106, 'current-observation': 13}
+tracked observations: 119; not current: 106
+FRESHNESS CHECK OK
+
+################ 1. specsync change check (materialize first; delta modifies requirements; already materialized at ae5ddaa) ################
+
+$ specsync change check keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+Checking keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after…
+✓ keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after verified
+  Next: run `specsync change check keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --commit` if needed, then `specsync change ship-status keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after` (or `ship keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after`) — scoped review then finalize before merging; merging first orphans verification evidence and blocks earlier accepted changes sharing a delivery input from archiving
+  Handoff: safe — verification is current for this working tree; a fresh session here resumes at the independent review
+[exit 0]
+-- paths changed since d918bbb3f76fc52396638e66e2756ea8d82776ac --
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/state.json [bookkeeping]
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification-attempts.json [bookkeeping]
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification.json [bookkeeping]
+
+################ 2. chough cases run TC-cli-0067..TC-cli-0079 ################
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current for TC-cli-0067: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact committing_edits_already_present_when_observed_keeps_an_observation_current for TC-cli-0068: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact any_fingerprinted_content_change_stales_an_observation for TC-cli-0069: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact specsync_bookkeeping_writes_keep_an_observation_current for TC-cli-0070: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact edits_to_a_native_change_scope_stale_an_observation for TC-cli-0071: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact archiving_a_change_keeps_an_observation_current_until_an_artifact_changes for TC-cli-0072: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact observations_without_a_content_identity_stay_stale_after_a_commit for TC-cli-0073: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact a_malformed_content_identity_is_refused for TC-cli-0074: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test cli -- --exact accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated for TC-cli-0075: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test bugs -- --exact a_pass_observed_before_the_latest_failure_does_not_verify_a_bug for TC-cli-0076: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test bugs -- --exact a_pass_observed_after_the_latest_failure_verifies_a_bug for TC-cli-0077: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test bugs -- --exact a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug for TC-cli-0078: passed (exit 0, tests run 1)."
+}
+[exit 0]
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test bugs -- --exact a_bug_without_a_linked_failure_cannot_be_verified for TC-cli-0079: passed (exit 0, tests run 1)."
+}
+[exit 0]
+== chough status after [2. cases run (uncommitted working tree)] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "bed30f000b298ba5ada9a2db680246aeb0c06be47a5fdc09d1db8d275eba46d5", "revision": "d918bbb3f76fc52396638e66e2756ea8d82776ac"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+-- paths changed since d918bbb3f76fc52396638e66e2756ea8d82776ac --
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/state.json [bookkeeping]
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification-attempts.json [bookkeeping]
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification.json [bookkeeping]
+  ??    .chough/artifacts/step7-tc-cli-0067.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0068.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0069.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0070.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0071.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0072.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0073.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0074.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0075.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0076.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0077.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0078.log                                                                                  [chough-record]
+  ??    .chough/artifacts/step7-tc-cli-0079.log                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0067.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0068.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0069.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0070.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0071.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0072.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0073.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0074.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0075.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0076.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0077.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0078.json                                                                                  [chough-record]
+  ??    .chough/evidence/step7-tc-cli-0079.json                                                                                  [chough-record]
+
+################ 3. chough checkpoint --awaiting-human (record the gate) ################
+== chough status after [3. checkpoint --awaiting-human] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "bed30f000b298ba5ada9a2db680246aeb0c06be47a5fdc09d1db8d275eba46d5", "revision": "d918bbb3f76fc52396638e66e2756ea8d82776ac"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+
+################ 4. commit source together with .chough/ ################
+
+$ git add -A
+[exit 0]
+
+$ git commit -q -m step7 exercise: cases and gate records
+[exit 0]
+
+$ git log --oneline -1
+acb79b7 step7 exercise: cases and gate records
+[exit 0]
+== chough status after [4. commit] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "9d8e3db6cdd3ed70a991f35023a0c0545d3c4a9616c619586aa424be06691e0c", "revision": "acb79b7f9dde27e9e1153c4c8629daa1d8b98fc5"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+ .chough/artifacts/step7-tc-cli-0074.log            | 11 ++++
+ .chough/artifacts/step7-tc-cli-0075.log            | 11 ++++
+ .chough/artifacts/step7-tc-cli-0076.log            | 12 +++++
+ .chough/artifacts/step7-tc-cli-0077.log            | 11 ++++
+ .chough/artifacts/step7-tc-cli-0078.log            | 11 ++++
+ .chough/artifacts/step7-tc-cli-0079.log            | 11 ++++
+ .chough/evidence/step7-tc-cli-0067.json            | 52 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0068.json            | 52 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0069.json            | 52 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0070.json            | 52 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0071.json            | 52 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0072.json            | 52 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0073.json            | 53 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0074.json            | 52 +++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0075.json            | 51 ++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0076.json            | 51 ++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0077.json            | 51 ++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0078.json            | 51 ++++++++++++++++++
+ .chough/evidence/step7-tc-cli-0079.json            | 51 ++++++++++++++++++
+ .chough/session.json                               |  3 +-
+ .../state.json                                     |  2 +-
+ .../verification-attempts.json                     | 20 ++++++++
+ .../verification.json                              |  4 +-
+ 30 files changed, 890 insertions(+), 4 deletions(-)
+[exit 0]
+
+################ 5. specsync change check --commit ################
+
+$ specsync change check keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --commit
+Checking (1/2): verifying the materialized tree…
+Committed the materialized spec.
+Checking (2/2): re-verifying against the committed tree…
+Committed the verification evidence.
+Verified, committed, and consistent with the committed tree.
+[exit 0]
+
+$ git log --oneline -3
+44af823 chore(lifecycle): record keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after verification
+246fc6d chore(lifecycle): materialize keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+acb79b7 step7 exercise: cases and gate records
+[exit 0]
+-- files in commits since step 4 --
+M	.specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/state.json
+M	.specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification-attempts.json
+M	.specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification.json
+-- paths changed since HEAD --
+  (no changes)
+-- paths changed since acb79b7f9dde27e9e1153c4c8629daa1d8b98fc5 --
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/state.json [bookkeeping]
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification-attempts.json [bookkeeping]
+  M     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification.json [bookkeeping]
+== chough status after [5. change check --commit] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "786d90c01295a74c58e0545dcd89da4d1aa992856474cb872a4b45a24b3f82ab", "revision": "44af823ef4f6b18fd064a02d088631262ab3a8ba"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+$ specsync change status keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --json (summary)
+{'state': 'verifying', 'approval_valid': True, 'next_action': "run `specsync change review keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --reviewer <human>` after the PR's scoped review passes"}
+
+################ 6. specsync change review --reviewer SIMULATED-step7-not-a-human (disposable copy only) ################
+
+$ specsync change review keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --reviewer SIMULATED-step7-not-a-human
+✓ keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after scoped review recorded as pass at 44af823ef4f6b18fd064a02d088631262ab3a8ba
+  Handoff: safe — verification and review are current; a fresh session resumes at finalize — do not commit before it runs
+[exit 0]
+
+$ git log --oneline -3
+44af823 chore(lifecycle): record keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after verification
+246fc6d chore(lifecycle): materialize keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+acb79b7 step7 exercise: cases and gate records
+[exit 0]
+-- paths changed since 44af823ef4f6b18fd064a02d088631262ab3a8ba --
+  ??    .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/review-attempts.json [bookkeeping]
+  ??    .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/review.json [bookkeeping]
+== chough status after [6. review] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "3ececa71d7e829874de0f021cb4f4732d39212c138746f58fa2cfe0de3c08cd8", "revision": "44af823ef4f6b18fd064a02d088631262ab3a8ba"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+
+################ 7. specsync change finalize (archive move, same PR, no intervening commit) ################
+
+$ specsync change finalize keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+✓ keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after finalized on this PR
+  Archive: /private/tmp/claude-501/-Users-leif-Development--CorvidLabs-chough/08d48ab4-faba-46d5-97eb-7e943011e4d4/scratchpad/step7-exercise/.specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+  Implementation: 44af823ef4f6b18fd064a02d088631262ab3a8ba
+  Lesson bundle: lesson-bundle.md
+  Next: Push this archive, wait until the checks are green, then merge the pull request.
+  Handoff: safe — the change is archived; nothing this session knows is still needed
+[exit 0]
+
+$ git log --oneline -4
+c023cd4 chore(lifecycle): archive keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+44af823 chore(lifecycle): record keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after verification
+246fc6d chore(lifecycle): materialize keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+acb79b7 step7 exercise: cases and gate records
+[exit 0]
+
+$ git status --short
+[exit 0]
+-- paths changed since 44af823ef4f6b18fd064a02d088631262ab3a8ba --
+  A     .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/accepted-state.json [bookkeeping]
+  R097  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/approvals.json -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/approvals.json [bookkeeping]
+  R099  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/change.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/change.md [change.md(front-matter state only is excluded; check diff)]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/context.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/context.md [change-artifact (hashed by change-relative key)]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/deltas/cli.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/deltas/cli.md [change-artifact (hashed by change-relative key)]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/design.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/design.md [change-artifact (hashed by change-relative key)]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/docs.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/docs.md [change-artifact (hashed by change-relative key)]
+  A     .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/finalization.json [bookkeeping]
+  A     .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/lesson-bundle.md [bookkeeping]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/plan.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/plan.md [change-artifact (hashed by change-relative key)]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/requirements.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/requirements.md [change-artifact (hashed by change-relative key)]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/research.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/research.md [change-artifact (hashed by change-relative key)]
+  A     .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/review-attempts.json [bookkeeping]
+  A     .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/review.json [bookkeeping]
+  R099  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/state.json -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/state.json [bookkeeping]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/tasks.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/tasks.md [change-artifact (hashed by change-relative key)]
+  R100  .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/testing.md -> .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/testing.md [change-artifact (hashed by change-relative key)]
+  A     .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification-attempts.json [bookkeeping]
+  A     .specsync/archive/changes/2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification.json [bookkeeping]
+  D     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification-attempts.json [bookkeeping]
+  D     .specsync/changes/keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after/verification.json [bookkeeping]
+-- change.md diff across the archive move (only front-matter state: is excluded) --
+-state: implementing
++state: archived
+== chough status after [7. finalize (archive move)] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "c9348b859f2cb183bf166326fc12c2e90c0aa484a91447a7a73c6e8f0555f406", "revision": "c023cd4a04d2104927c88861721a75b7b95c1e8c"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+$ specsync change status keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --json (summary)
+{'state': 'archived', 'approval_valid': True, 'next_action': 'merge the PR on GitHub if it is still open'}
+2026-11-01-keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
+
+################ 8. after the human decision: clear the gate, then chough stage advance ################
+== chough status after [8a. gate cleared (uncommitted .chough write)] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "c9348b859f2cb183bf166326fc12c2e90c0aa484a91447a7a73c6e8f0555f406", "revision": "c023cd4a04d2104927c88861721a75b7b95c1e8c"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+(note: the copy inherits the branch checkpoint, which still names PR #9 change and stage done, so stage advance cannot exercise accept here)
+
+$ chough stage advance
+Error: done is terminal; release is entered only with `chough stage enter release` when authorized
+[exit 1]
+== chough status after [8b. after stage advance attempt] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "c9348b859f2cb183bf166326fc12c2e90c0aa484a91447a7a73c6e8f0555f406", "revision": "c023cd4a04d2104927c88861721a75b7b95c1e8c"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+
+################ 8c. negative control: a real content edit must stale the observations (then revert) ################
+== chough status after [8c. README.md edited] ==
+snapshot: {"content": "ff49d9c6b41d8279e25f7db20fd2a2c399662ffd11335f92735ad61c172c4382", "dirty": true, "fingerprint": "ebbaf8da9a7794f46a85cb882b73ca4eec3c151b61445a4ecac12c8796faba7f", "revision": "c023cd4a04d2104927c88861721a75b7b95c1e8c"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  stale-revision-or-inputs   historical  rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 13
+FRESHNESS CHECK FAILED
+negative control OK: observations went stale after a README.md edit
+== chough status after [8d. README.md restored] ==
+snapshot: {"content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5", "dirty": false, "fingerprint": "c9348b859f2cb183bf166326fc12c2e90c0aa484a91447a7a73c6e8f0555f406", "revision": "c023cd4a04d2104927c88861721a75b7b95c1e8c"}
+native_summary.state: archived
+  step7-tc-cli-0067          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0068          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0069          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0070          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0071          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0072          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0073          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0074          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0075          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0076          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0077          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0078          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+  step7-tc-cli-0079          passed  current-observation        current     rev=d918bbb content=fc88d131a5f7
+tracked observations: 13; not current: 0
+FRESHNESS CHECK OK
+
+################ 9. bug verification labels for BUG-0014..BUG-0016 in the copy ################
+        "text": "status: open -> verified. Fixed in 4bf46da; the reproduction tests pass at e806f78 (.chough/artifacts/bug-0014-fixed-reproduction.log)."
+    "status": "verified",
+    "symptom": "verification() reports reproduced-and-later-passed when any present linked observation passed",
+        "text": "status: open -> verified. Fixed in 4bf46da; the reproduction tests pass at e806f78 (.chough/artifacts/bug-0015-fixed-reproduction.log)."
+    "status": "verified",
+  "verification": "reproduced-and-later-passed"
+    "actual": "Three re-verifications and a stash were needed in the Raven run",
+    "expected": "Each tool ignores the other's bookkeeping, and the documented order needs one verification",
+    "impact": "Repeated verification and review rebinding",
+
+################ RESULT ################
+STEP7 EXERCISE: all 13 passing case observations stayed current-observation after every step
+
+################ NOTES (appended after the run) ################
+- Disposable copy: git clone of the PR #17 worktree at d918bbb with the origin remote removed and gh stubbed to refuse; nothing was pushed and no GitHub state was read or written (the stub was never invoked).
+- The reviewer label SIMULATED-step7-not-a-human exists only in the disposable copy. It is not a human review.
+- The single "FRESHNESS CHECK FAILED" at 8c is the intended negative control (README.md edit stales all 13; restoring it makes them current again).
+- A first attempt (same order, same results for content identity fc88d131...) queried chough status without --environment, so it showed environment-unchecked instead of current-observation; that was a harness mistake, not product behavior, and this run replaces it.
+- SpecSync writes observed: check -> state.json, verification.json, verification-attempts.json; check --commit -> same three (materialize + verification commits); review -> review.json, review-attempts.json; finalize -> archive move of the change directory plus accepted-state.json, finalization.json, lesson-bundle.md and the change.md front-matter "state: implementing -> archived". No SpecSync write outside the known bookkeeping set.
+- chough stage advance was not exercisable in the copy: the inherited checkpoint still names PR #9's change at stage done.

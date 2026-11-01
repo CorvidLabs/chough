@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test observations_without_a_content_identity_stay_stale_after_a_commit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 1.85s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/cli.rs (target/debug/deps/cli-4b4bbeeb0405a0b9)

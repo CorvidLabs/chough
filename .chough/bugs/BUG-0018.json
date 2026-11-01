@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0018",
+  "title": "Bundled templates contain em dashes that fail CorvidLabs docs gates",
+  "symptom": "templates/frd.md:23 and templates/cases.toml:1 contain U+2014",
+  "trigger": "chough init --host ... in a CorvidLabs repository with a no-dash docs gate",
+  "expected": "The bundle uses no em or en dashes, and existing installs update cleanly",
+  "actual": "Installed copies fail the docs lint",
+  "criteria": [
+    "LIFE-4",
+    "LIFE-9"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "2756dc24a821bbb92021455c704ef7a177123ffa",
+  "steps": [
+    "grep U+2014 in skills/chough-workflow/templates"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Host copies cannot be committed or linted cleanly",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "CorvidLabs/chough#13 (Raven run); reproduced on main 2756dc2",
+  "notes": [],
+  "created_at_unix_seconds": 1793494674,
+  "updated_at_unix_seconds": 1793494674
+}

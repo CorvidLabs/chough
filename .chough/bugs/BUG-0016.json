@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0016",
+  "title": "Chough records and SpecSync verification make each other stale",
+  "symptom": "Uncommitted .chough/ stales SpecSync verification; committing .chough/ forces another change check; lifecycle commits stale Chough observations",
+  "trigger": "Normal cases run, commit, change check, review, finalize sequence",
+  "expected": "Each tool ignores the other's bookkeeping, and the documented order needs one verification",
+  "actual": "Three re-verifications and a stash were needed in the Raven run",
+  "criteria": [
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "2756dc24a821bbb92021455c704ef7a177123ffa",
+  "steps": [
+    "chough cases run; specsync change review",
+    "commit .chough/; specsync change status"
+  ],
+  "fixture": null,
+  "observations": [
+    "bug-0016-repro-1",
+    "bug-0016-fixed-1",
+    "tc-cli-0070-1793498638",
+    "tc-cli-0071-1793498642",
+    "tc-cli-0072-1793498646"
+  ],
+  "impact": "Repeated verification and review rebinding",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "CorvidLabs/chough#12 (Raven run); reproduced on main 2756dc2",
+  "notes": [
+    {
+      "at_unix_seconds": 1793494673,
+      "text": "Added despite similar reports: SpecSync bookkeeping and .chough interplay, beyond the revision salt in #10",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793496694,
+      "text": "Reproduced before the fix by the new tests; see .chough/artifacts/bug-0016-reproduction.log.",
+      "observations": [
+        "bug-0016-repro-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793497233,
+      "text": "status: open -> verified. Fixed in 4bf46da; the reproduction tests pass at e806f78 (.chough/artifacts/bug-0016-fixed-reproduction.log).",
+      "observations": [
+        "bug-0016-fixed-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793498706,
+      "text": "The reproduction was a test-log observation recorded with evidence add before the fix, not a case-run observation: the regression case definitions TC-cli-0070 to TC-cli-0072 arrived with the fix commit 4bf46da, so they could not run at the unfixed tip. This note links their current passing case-run observations at the review-fix head.",
+      "observations": [
+        "tc-cli-0070-1793498638",
+        "tc-cli-0071-1793498642",
+        "tc-cli-0072-1793498646"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793494673,
+  "updated_at_unix_seconds": 1793498706
+}
