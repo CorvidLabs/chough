@@ -105,6 +105,9 @@ stage on that response, and shows:
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
 | `awaiting_human`, `blockers`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest |
 | `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
+| `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest checkpoint decisions, newest first; see [Decision prefixes](#decision-prefixes) |
+| `last_failure` | `{"id", "observed_at_unix_seconds", "summary", "bugs": {"total", "items": [{"id", "status"}]}}` for the failed observation with the greatest recorded `observed_at_unix_seconds` (ties to the greater ID), with at most 3 bugs that link it by their observations, note observations or regression baseline, by bug ID; `null` when no observation failed. No freshness label is computed; run `chough status` or the case for that |
+| `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>]}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `no Lessons section` or `missing` when there is none); and the `.specsync/archive/changes/*/lesson-bundle.md` files, newest first by archive directory name, at most 5 |
 | `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
 
 The text form (the default) carries the same fields as short lines. Each form is at
@@ -113,8 +116,25 @@ taken from a record is cut to at most 512 bytes, counted as JSON escapes it (a c
 character takes six), ending in ` [cut]`, and while the
 output is still over the cap the last entry of the longest list is dropped and
 `truncated` becomes true (text adds `Output truncated at 16384 bytes; run chough
-status.`). It never prints raw native output, observation records, the snapshot or the
-full reference list.
+status.`). The decision items, linked bugs, lesson sources and archived bundle paths are
+lists like the others: they are dropped by the same rule, and their totals are counted
+before any cut. It never prints raw native output, observation records, the snapshot,
+the full reference list or lesson text. The lesson pointer reads only the heading line
+of each source and records nothing: no fold state, ledger or index. Every ordering
+comes from recorded fields or names (checkpoint order, recorded observation time and
+ID, bug ID, archive directory name), never from file modification times or directory
+order, so the same records give byte-identical output in both forms.
+
+### Decision prefixes
+
+Checkpoint decisions stay plain strings (checkpoint schema 2 is unchanged). `next`
+reads a prefix convention best-effort: an entry that begins with `decided:`,
+`rejected:` or `failed:` is shown with that kind, and when it contains ` because `,
+the text after the last ` because ` is its reason and the text before it its text, as
+in `rejected: a structured decision schema because it needs a migration`. Any other
+entry, such as older free text or `2026-10-31: ...`, is shown whole with `kind` and
+`reason` `null`, so the newest entries are always shown. Each text and reason is cut
+to 512 bytes. Nothing validates the convention, and an unknown prefix is just text.
 
 The next valid action follows these rules in order: a schema 1 session runs `chough
 migrate`; a paused stage checks native state and runs `chough stage resume`; open
@@ -126,9 +146,17 @@ when the approved intent already covers the new work), then specsync change new
 "<outcome>" --spec <module> --path <path>, then chough checkpoint --native-change <id>
 --next-action "<next step>".`, with the native next action named as the thing to check
 first (without the `specsync change new` step when native SDD is not configured or is
-disabled), while an archive that does not authenticate keeps its gate refusal; a
-closed gate for the next main stage shows its label and detail; otherwise `Continue
-<stage>: <checkpoint next action>`. Every reset Chough suggests carries `--reason`.
+disabled), while an archive that does not authenticate keeps its gate refusal; at
+intent, design, plan, build, test or accept, when the recorded native change is
+archived with terminal evidence that the done gate accepts, the stage is not continued:
+the action is `Native change <id> is archived while the checkpoint is at <stage>, so
+this cycle's work is closed.` followed by the same new-cycle steps, its command is the
+reset, and the native next action is named as the thing to check first; at accept it
+first says `Record done first: chough stage advance (accept to done is allowed). Then:`
+and its command is `chough stage advance`, the documented close after finalize (release
+and side stages are not affected); a closed gate for the next main stage shows its
+label and detail; otherwise `Continue <stage>: <checkpoint next action>`. Every reset
+Chough suggests carries `--reason`.
 
 ## Approved-delta guard
 

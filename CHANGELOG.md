@@ -4,6 +4,35 @@ All notable changes to Chough are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Fresh-agent handoff blocks in `chough next`, read from existing records and within
+  the same 16384-byte cap: the 5 newest checkpoint decisions with the kind and reason
+  of entries written as `decided:`, `rejected:` or `failed:` `<text> because
+  <reason>` (other entries shown whole; no checkpoint schema change), the latest
+  failed observation by recorded time with the status of each bug that links it, and
+  a pointer to each module's lesson source with the newest archived SpecSync lesson
+  bundles. Output is ordered by recorded fields and names only, so the same records
+  give byte-identical text and JSON.
+- Skill guidance: lessons carry an `observation`, `hypothesis` or `verified` label
+  with their source and limits, a project decision always outranks a lesson, a
+  failure fixed in the same pull request still gets a bug or lesson, and closeout is
+  one quiet pass inside the open native change.
+
+### Fixed
+
+- `chough next` and `chough status` no longer say `Continue <stage>`, or give the
+  build gate refusal, at intent to accept once the recorded native change is
+  archived with authenticated terminal evidence; they name the archive and the new
+  cycle, recording done first at accept.
+
+### Changed
+
+- The skill now says SpecSync 6.1.2 ships `verification_ignored_paths` and why
+  Chough's own repository has not adopted it.
+
 ## [0.1.0] - 2026-11-01
 
 First release. Nothing in this entry is tagged or published yet; the release steps

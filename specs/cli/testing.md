@@ -9,12 +9,16 @@ TC-cli-0037 bind the original integration tests one to one, with later automated
 cases extending that coverage. TC-cli-0101 to TC-cli-0104 cover the exercise, cold
 start, wording review and timing. TC-cli-0105 retains the BUG-0024 archived-resume
 scenarios and covers the BUG-0025 integrated new-cycle regression. TC-cli-0106 is
-the BUG-0021 retrospective Kimi guidance review.
+the BUG-0021 retrospective Kimi guidance review. TC-cli-0126 to TC-cli-0133 cover the
+fresh-agent handoff: the archived-not-done action, the decisions, last failure and
+lesson pointer blocks of `next`, their cap and byte-identical output, the fb6e487
+skill digests, the skill wording review and the graded cold-start protocol in
+`docs/exercises/handoff-cold-start/`.
 
 | Requirement | Verification responsibility | Cases |
 |-------------|-----------------------------|-------|
 | REQ-cli-001 | Init repeated around edited files and partial installed bundles | TC-cli-0001 |
-| REQ-cli-002 | Focused ordered output and session resumption in isolated repo | TC-cli-0002 |
+| REQ-cli-002 | Focused ordered output and session resumption in isolated repo; the lesson source pointer (`<module>.3md`, else the `context.md` Lessons line) with archived bundles and no lesson text; the skill's certainty labels and decision-outranks-lesson rule | TC-cli-0002, 0129, 0132 |
 | REQ-cli-003 | Native status passthrough and unavailable tool states; archived native guidance stays visible without replacing the new-cycle action | TC-cli-0003, 0004, 0105 |
 | REQ-cli-004 | Current → changed content → stale; environment mismatch/unchecked; content identity kept across Chough-only, empty and already-present commits and SpecSync bookkeeping and archive moves, stale on any scope or source edit; legacy records stay revision-bound | TC-cli-0005 to 0008, 0067 to 0073 |
 | REQ-cli-005 | Unknown criterion/requirement and duplicate observation rejected | TC-cli-0009 |
@@ -27,10 +31,10 @@ the BUG-0021 retrospective Kimi guidance review.
 | REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure | TC-cli-0029 to 0032, 0076 to 0079, 0101 |
 | REQ-cli-013 | Preferences separate from consent; authorization for validate | TC-cli-0021, 0033, 0034, 0103 |
 | REQ-cli-014 | Release only when authorized; dry-run kind | TC-cli-0021, 0028, 0103 |
-| REQ-cli-015 | Snapshots keep sources; index lists open bugs; symlinks refused | TC-cli-0035, 0036 |
-| REQ-cli-016 | Per-host install; TC-cli-0037 proves byte-identical installation and safe update mechanics that preserve edits, while TC-cli-0106 reviews the Kimi mapping and documentation without a new host session; 2756dc2 references known-outdated | TC-cli-0037, 0075, 0106 |
+| REQ-cli-015 | Snapshots keep sources; index lists open bugs; symlinks refused; closeout works with the librarian off | TC-cli-0035, 0036, 0132 |
+| REQ-cli-016 | Per-host install; TC-cli-0037 proves byte-identical installation and safe update mechanics that preserve edits, while TC-cli-0106 reviews the Kimi mapping and documentation without a new host session; 2756dc2 and fb6e487 references known-outdated | TC-cli-0037, 0075, 0106, 0131 |
 | REQ-cli-017 | Schema 2 observations; schema 1 still read; optional content identity validated | TC-cli-0026, 0028, 0073, 0074 |
-| REQ-cli-021 | Focused next and status parity, bounded forms and one native read; archived done new-cycle action and precedence; reason-bearing reset replaces and back preserves the checkpoint next action | TC-cli-0105, 0120 to 0122 |
+| REQ-cli-021 | Focused next and status parity, bounded forms and one native read; archived done new-cycle action and precedence; reason-bearing reset replaces and back preserves the checkpoint next action; the archived-not-done action at intent to accept; the decisions, last failure and lesson pointer blocks within the cap, ordered by recorded fields and byte-identical; the graded cold-start handoff | TC-cli-0105, 0120 to 0122, 0126 to 0130, 0133 |
 
 Unix-only tests are gated with `cfg(unix)` because they use shell stubs for native
 tools; their cases list only macOS and Linux environments. Windows runs the portable
