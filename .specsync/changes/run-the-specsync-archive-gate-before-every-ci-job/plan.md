@@ -24,3 +24,7 @@ Branch protection: the org ruleset requiring a check named `Archive` is configur
 ## Risks
 
 `@v6.1.1` ignores the gate inputs, so the step pins the #832 merge commit until a release ships.
+
+## Constraints consulted
+
+AGENTS.md: meaningful files need an active native change, and approval comes from the human (0xLeif), not an agent label.
