@@ -490,6 +490,39 @@ fn gate_records_are_reconciled_with_the_awaiting_human_list() {
     assert_eq!(seconds(&design["elapsed"]), Some(100));
     assert_eq!(design["active"]["label"], "unknown", "{design:#}");
     assert_eq!(design["waiting"]["label"], "unknown");
+
+    // A second gate-opened for a gate already open means it was cleared in between
+    // without a record (a hand edit or a failed append): the earlier opening is closed
+    // at an unknown time and the later one starts a new gate.
+    let reopened = fixture_with(&[
+        transition(Some(T), "advance", "intent", "design", "go"),
+        transition(Some(T + 100), "gate-opened", "design", "design", "Review"),
+        transition(Some(T + 500), "gate-opened", "design", "design", "Review"),
+        transition(Some(T + 1_000), "advance", "design", "plan", "go"),
+    ]);
+    let mut session = reopened.session();
+    session["awaiting_human"] = json!(["Review"]);
+    reopened.write(
+        ".chough/session.json",
+        &serde_json::to_string_pretty(&session).unwrap(),
+    );
+    let report = timing(&reopened, &[]);
+    let gates = report["gates"].as_array().unwrap();
+    assert_eq!(gates.len(), 2, "{report:#}");
+    assert_eq!(at(&gates[0]["opened"]), Some(T + 100));
+    assert_eq!(gates[0]["state"], "closed");
+    assert_eq!(gates[0]["closed"]["unix_seconds"], Value::Null);
+    assert_eq!(
+        gates[0]["closed"]["unknown"],
+        "cleared without a gate record"
+    );
+    assert_eq!(gates[0]["waiting"]["label"], "unknown");
+    assert_eq!(at(&gates[1]["opened"]), Some(T + 500));
+    assert_eq!(gates[1]["state"], "open");
+    let design = &segments(&report, 0)[0];
+    assert_eq!(design["stage"], "design");
+    assert_eq!(design["waiting"]["label"], "unknown", "{design:#}");
+    assert_eq!(design["active"]["label"], "unknown");
 }
 
 #[test]
@@ -559,6 +592,47 @@ fn missing_and_out_of_order_times_are_unknown_never_zero() {
     );
     assert!(rendered.contains("recorded together"));
     assert!(rendered.contains("too few to estimate"));
+
+    // A gate that closes before it opens: one of its times is wrong, so every segment
+    // it could overlap under either reading has unknown waiting and active time.
+    let reversed = fixture_with(&[
+        transition(Some(T), "advance", "intent", "design", "go"),
+        transition(Some(T + 500), "gate-opened", "design", "design", "Skewed"),
+        transition(Some(T + 450), "gate-closed", "design", "design", "Skewed"),
+        transition(Some(T + 1_000), "advance", "design", "plan", "go"),
+    ]);
+    let report = timing(&reversed, &[]);
+    let gate = &report["gates"][0];
+    assert_eq!(gate["waiting"]["seconds"], Value::Null);
+    assert_eq!(gate["waiting"]["reason"], "end before start");
+    for segment in segments(&report, 0) {
+        assert_eq!(segment["waiting"]["label"], "unknown", "{segment:#}");
+        assert_eq!(segment["waiting"]["seconds"], Value::Null);
+        assert_eq!(segment["active"]["label"], "unknown", "{segment:#}");
+    }
+
+    // An open gate whose recorded open time is after now has an unknown open time.
+    let future = fixture_with(&[
+        transition(Some(T), "advance", "intent", "design", "go"),
+        transition(
+            Some(T + 9_000_000_000),
+            "gate-opened",
+            "design",
+            "design",
+            "Ahead",
+        ),
+    ]);
+    let mut session = future.session();
+    session["awaiting_human"] = json!(["Ahead"]);
+    future.write(
+        ".chough/session.json",
+        &serde_json::to_string_pretty(&session).unwrap(),
+    );
+    let report = timing(&future, &[]);
+    let design = &segments(&report, 0)[0];
+    assert_eq!(design["stage"], "design");
+    assert_eq!(design["waiting"]["label"], "unknown", "{design:#}");
+    assert_eq!(design["active"]["label"], "unknown");
 }
 
 #[test]
@@ -607,6 +681,30 @@ fn history_ranges_need_three_samples_and_exclude_idle_time() {
     assert_eq!(estimate("intent")["samples"], 2);
     let rendered = text(&fixture, &[]);
     assert!(rendered.contains("estimate from 3 recorded plan stage times; not a target"));
+
+    // A current cycle that has reached done is complete, so it is a sample.
+    let mut lines = vec![];
+    let mut at = T;
+    for (index, plan) in [100, 200, 300].into_iter().enumerate() {
+        if index > 0 {
+            lines.push(transition(Some(at), "reset", "done", "intent", "next"));
+            at += 5;
+        }
+        lines.push(transition(Some(at), "advance", "intent", "plan", "go"));
+        at += plan;
+        lines.push(transition(Some(at), "advance", "plan", "done", "go"));
+        at += 1_000;
+    }
+    let report = timing(&fixture_with(&lines), &[]);
+    let plan = report["estimates"]["stages"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| entry["stage"] == "plan")
+        .unwrap()
+        .clone();
+    assert_eq!(plan["samples"], 3, "{plan:#}");
+    assert_eq!(plan["max"], 300);
 }
 
 fn write_observation(
@@ -708,8 +806,10 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
     fixture.write(
         ".chough/pruned.jsonl",
         &format!(
-            "{}\n",
-            json!({"schema_version": 1, "id": "fail-pruned", "outcome": "failed", "observed_at_unix_seconds": T + 100, "pruned_at_unix_seconds": T + 2_000})
+            "{}\n{}\n",
+            json!({"schema_version": 1, "id": "fail-pruned", "outcome": "failed", "observed_at_unix_seconds": T + 100, "pruned_at_unix_seconds": T + 2_000}),
+            // A pruned observation whose ledger entry records no outcome.
+            json!({"schema_version": 1, "id": "pruned-no-outcome", "observed_at_unix_seconds": T + 50, "pruned_at_unix_seconds": T + 2_000})
         ),
     );
     let verified = |at: u64| {
@@ -742,6 +842,13 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
         verified(T + 1_000),
     );
     write_bug(&fixture, "BUG-0004", "open", &[], json!([]));
+    write_bug(
+        &fixture,
+        "BUG-0005",
+        "verified",
+        &["fail-late", "pruned-no-outcome", "pass"],
+        verified(T + 1_000),
+    );
     let report = timing(&fixture, &[]);
     let bug = |id: &str| -> Value {
         report["bugs"]
@@ -774,6 +881,12 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
     assert_eq!(three["reproduced"]["unix_seconds"], Value::Null);
     assert_eq!(three["reproduced"]["unknown"], "unavailable");
     assert_eq!(three["fix_time"]["label"], "unknown");
+
+    // A pruned observation whose ledger entry has no outcome could be the earlier failure.
+    let five = bug("BUG-0005");
+    assert_eq!(five["reproduced"]["unix_seconds"], Value::Null);
+    assert_eq!(five["reproduced"]["unknown"], "unavailable");
+    assert_eq!(five["fix_time"]["label"], "unknown");
 
     let four = bug("BUG-0004");
     assert_eq!(
@@ -821,6 +934,15 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
         Some(7),
     );
     write_observation(&fixture, "a-ci", Some("TC-a"), "ci", "passed", T + 30, None);
+    write_observation(
+        &fixture,
+        "a-ci-quick",
+        Some("TC-a"),
+        "ci",
+        "passed",
+        T + 35,
+        Some(0),
+    );
     write_observation(
         &fixture,
         "b-1",
@@ -876,7 +998,14 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
     );
     assert_eq!(seconds(&observations[1]["run_time"]), Some(7));
     assert_eq!(observations[1]["run_time"]["label"], "elapsed wall-clock");
-    assert_eq!(group(json!("TC-a"), "ci")["count"], 1);
+    let ci = group(json!("TC-a"), "ci");
+    assert_eq!(ci["count"], 2);
+    // A run under one second is recorded together, not a measured zero.
+    assert_eq!(seconds(&ci["observations"][1]["run_time"]), Some(0));
+    assert_eq!(
+        ci["observations"][1]["run_time"]["label"],
+        "recorded together"
+    );
     assert_eq!(
         group(json!("TC-b"), "local")["observations"][0]["outcome"],
         "not-run"
@@ -1063,7 +1192,8 @@ fn native_times_come_only_from_status_and_native_records_read_read_only() {
     assert_eq!(at(&newest["verification"]), Some(2_000));
     assert_eq!(at(&newest["review"]), Some(2_500));
     assert_eq!(at(&newest["finalization"]), Some(3_000));
-    // A later reopening supersedes the finalization approval.
+    // A later reopening supersedes the terminal (finalization) approval only; the
+    // definition approval keeps the validity native status reports.
     let gates: Vec<(Value, Value)> = newest["approvals"]
         .as_array()
         .unwrap()
@@ -1073,7 +1203,7 @@ fn native_times_come_only_from_status_and_native_records_read_read_only() {
     assert_eq!(
         gates,
         vec![
-            (json!("definition"), json!("reopened")),
+            (json!("definition"), json!("current")),
             (json!("finalization"), json!("reopened"))
         ]
     );
@@ -1090,6 +1220,20 @@ fn native_times_come_only_from_status_and_native_records_read_read_only() {
         "{failed:#}"
     );
     assert_eq!(failed["approvals"][0]["standing"], "unknown");
+
+    // Changes archived on the same date are ordered by their finalization time, most
+    // recent first, not by name.
+    for (id, finalized) in [("aaa-later", 9_000), ("zzz-earlier", 8_000)] {
+        fixture.write(
+            &format!(".specsync/archive/changes/2026-02-01-{id}/finalization.json"),
+            &format!("{{\"timestamp\": {finalized}}}\n"),
+        );
+    }
+    let report = timing(&fixture, &[]);
+    let history = report["native"]["history"].as_array().unwrap();
+    assert_eq!(history[0]["id"], "aaa-later", "{:#}", report["native"]);
+    assert_eq!(history[1]["id"], "zzz-earlier");
+    assert_eq!(report["native"]["skipped_archived"], 4);
 }
 
 #[cfg(unix)]
