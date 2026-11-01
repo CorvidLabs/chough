@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
+  "implementation_commit": "bf8562043a8bb8a78da85c7aaa0a9aa28a3dea0b",
+  "implementation_tree": "4f9ea9d2d7b1ae61dcc0a3ae4d4522f92c512e47",
+  "contract_digest": "0ca1e56da50d27092a6f0a4d4ce83557d3631f48a50b3c536ed26c6ab7bc4809",
+  "workspace_digest": "3ae33eb67e416c073f30c9ffca5dc2474b907fb0ed1180677e48850b2f66e9c2",
+  "closing_digest": "043ec151d1841ea52bdfdd3e60b766dc1cb6b7006765872fc3cca9d0a649b991",
+  "review_digest": "6261881a06e5174ae03db7e6289fa32836400780104db114983475ce3382afcb",
+  "finalization_digest": "6bd3ee555dc7454f716d52e76ae4438ffc5a9abfc8ebb818f1e26554db322a22",
+  "timestamp": 1793541497
+}

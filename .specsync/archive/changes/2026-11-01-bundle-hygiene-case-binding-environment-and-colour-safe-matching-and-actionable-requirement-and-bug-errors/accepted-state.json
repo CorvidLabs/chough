@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
+  "slug": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
+  "title": "Bundle hygiene, case binding environment and colour-safe matching, and actionable requirement and bug errors",
+  "description": "Bundle hygiene, case binding environment and colour-safe matching, and actionable requirement and bug errors",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "85650d93ad9a811c2c54e08256620d351754da8d",
+  "created_at": 1793494827,
+  "updated_at": 1793541497,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/cases.rs",
+    "src/evidence.rs",
+    "src/bugs.rs",
+    "src/records.rs",
+    "src/skill.rs",
+    "tests/",
+    "docs/",
+    "skills/chough-workflow/",
+    ".agents/skills/chough-workflow/",
+    ".claude/skills/chough-workflow/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Bundle hygiene: no file in the shipped skill bundle (skills/chough-workflow) contains U+2014 or U+2013; templates/frd.md and templates/cases.toml use colons in their place, and a test in tests/package.rs walks every bundle file and fails on either character. KNOWN_PREVIOUS lists the dashed digests (templates/frd.md 5647b56e..., templates/cases.toml 6c7ebaa1...) and the 2756dc2 digest of references/testing.md, the only other bundle file this change edits, so `chough skill status` reports unedited copies from earlier builds as known-outdated, `chough skill update` replaces them, and edited copies stay edited. Chough's own .agents/ and .claude/ copies are refreshed and read current (BUG-0018, LIFE-4, LIFE-9, REQ-cli-016, REQ-cli-019).",
+    "Actionable requirement refusals: a requirement link that cannot be resolved is still refused with the same exit code, and the message names the companion files searched. When the ID has the form REQ-<module>-NNN (module found by removing `REQ-` and the last `-NNN`, so hyphenated modules such as checkout-ui work) and that module's bounded requirements.md contains it under the same token match the refusal uses, the message names that module and says what to do: a cases file binds one module's contract, so move the case to .chough/cases/<module>.cases.toml (cases check, run and record), or pass --contract specs/<module>/<module>.spec.md (evidence add). Otherwise it says the ID may be a typo or a requirement that an approved native change adds but `specsync change check` has not yet materialized, and to run that check before running or recording cases that link it. The hint reads neither the checkpoint nor any delta, and no unresolved link is accepted. This is the error half of BUG-0017; the documented order is the evidence-freshness change's (BUG-0017, BUG-0019, FLOW-7, LIFE-5, REQ-cli-005, REQ-cli-009).",
+    "Actionable bug flag errors: `chough bug add` and `chough bug update` given a scope value in --classification say that the value is a scope and to use --scope, and given a classification value in --scope say the reverse; `--help` for both commands lists the allowed values of both flags. Validation stays in Chough rather than moving to clap, so exit codes and bug record shapes are unchanged (BUG-0019, LIFE-5, REQ-cli-012).",
+    "Declared binding environment: a case binding for any adapter may declare `env`, a table of variable names to string values. Names match [A-Za-z_][A-Za-z0-9_]* and are at most 128 bytes, two names equal ignoring ASCII case are refused (Windows treats them as one), values contain no NUL, and a binding holds at most 32 entries of at most 4 KiB each. For the cargo-test adapter, names that choose what cargo builds or runs are refused, compared ignoring ASCII case: PATH, CARGO, CARGO_HOME, RUSTC, RUSTDOC, RUSTC_WRAPPER, RUSTC_WORKSPACE_WRAPPER, RUSTFLAGS, CARGO_ENCODED_RUSTFLAGS, RUSTDOCFLAGS, CARGO_ENCODED_RUSTDOCFLAGS, RUSTC_BOOTSTRAP, and any name starting with RUSTUP_, CARGO_BUILD_, CARGO_TARGET_ (except CARGO_TARGET_DIR, which stays allowed), CARGO_HOST_, CARGO_PROFILE_ or CARGO_UNSTABLE_. Violations are refused by `cases check` with the case location. The declared variables are set for the executed command on top of the inherited environment; native reads are unchanged. An empty `env` is not serialized, so the digests of existing cases are unchanged and their observations keep their freshness, while adding or editing `env` changes the digest. Every observation of an executed case, with or without `env`, carries the limitation `inherited environment variables were not recorded`; when the binding declares `env`, the observation also names the declared variable names, not their values. Docs say `env` lives in committed case files and is not for secrets, and that for the command and fledge-task adapters a declared PATH can change which program the argv resolves to (FLOW-7, REQ-cli-009, REQ-cli-011).",
+    "Colour-safe output matching: expect_output fragments and the cargo-test count are matched against the captured text with complete terminal escape sequences removed, while the stored artifact stays the raw captured bytes. Removed are CSI sequences (ESC [, parameter bytes 0x30 to 0x3F, intermediate bytes 0x20 to 0x2F, one final byte 0x40 to 0x7E), OSC sequences (ESC ] ended by BEL or ESC backslash before any line break) and two-byte sequences of ESC and one byte from 0x40 to 0x5F. A sequence that does not complete under these rules, including one interrupted by a line break or the end of the output, is left unchanged. Cleaning never removes a line break, so it never lowers the number of lines that start with `test result:`, and a test shows this. When any sequence was removed the observation carries the limitation `terminal escape sequences were removed before matching; the artifact keeps the raw output`. An expect_output fragment that contains ESC (U+001B) is refused by `cases check`, because it could never match the cleaned text. Vitest-style coloured output whose visible text holds `Test Files  1 passed (1)` passes that fragment, and a fragment absent from the visible text still fails. Chough sets no NO_COLOR or other variable by default (FLOW-7, REQ-cli-009, REQ-cli-011).",
+    "Guidance: docs/cli.md documents `env` (not for secrets, the refused cargo-test names, the PATH caution), the standing inherited-environment limitation, escape removal, the new error hints, and, as a change from earlier releases, that an expect_output fragment containing ESC is now refused; the pull request description calls out the same refusal as the one change that can break an existing case file. docs/architecture.md and the skill's references/testing.md say artifacts stay inside the project (no external artifact paths; REQ-cli-006 is unchanged) and that large files such as screenshots should be kept small and may be ignored by Git: the observation keeps the fingerprint, and a clone without the file reads stale-artifact, never passed. They do not recommend Git LFS, because SpecSync `change check` currently refuses tracked LFS files (CorvidLabs/spec-sync#789). The order of cases run, commit, change check, review and finalize is documented by the evidence-freshness change, not this one, so this change does not edit references/build.md, references/plan.md, references/accept.md or references/lifecycle.md (LIFE-4, FLOW-7).",
+    "Bugs are verified in order: before each fix, a new case for each of BUG-0017 (error half), BUG-0018 and BUG-0019 runs at the unfixed tip and records a failed observation, which is linked to its bug first; after the fix the same unchanged case runs again, and that later passed observation is linked. BUG-0018 and BUG-0019 are then set verified. BUG-0017 stays open with a note that its error half is fixed here and its documented-order half belongs to the evidence-freshness change. Behavior these rules do not name is unchanged. The full suite, the feature-and-bug exercise and native structural checks pass on Ubuntu, macOS and Windows CI, and regression tests cover each rule above (LIFE-5, FLOW-7)."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "specs/cli/context.md lessons: list human gates and post-verification steps as plain text, not checkboxes; REQ IDs a delta adds validate only after change check materializes them; a run without a test result is not-run; pub(super), not pub(crate); disposable repositories need a local Git identity. Invariants 1 (updates replace only files identical to a known earlier bundle), 4 (observations bind revision, working content, environment and the case definition digest: a declared env is bound through the digest, and the inherited environment that is not recorded is stated as a limitation on every executed case rather than left silent), 5 (paths stay inside the project; bounded reads), 6 (missing proof never becomes success) and 7 (bound commands run without a shell, and passed only when the assertion holds, so cleaning must never hide a test result line and env must not redirect what cargo test runs). REQ-cli-006 keeps artifact paths inside the project. Case digests must not change for existing cases, so new Binding fields skip serialization when empty. Native SpecSync records and archives are not rewritten. The accept order belongs to the evidence-freshness change (package 1).",
+    "public_contract": "yes"
+  }
+}
