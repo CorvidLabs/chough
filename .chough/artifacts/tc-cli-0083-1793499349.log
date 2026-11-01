@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test gate_records_are_reconciled_with_the_awaiting_human_list ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.44s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/timing.rs (target/debug/deps/timing-db023144b5896392)
