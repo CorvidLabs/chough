@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.55s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/cli.rs (target/debug/deps/cli-4b4bbeeb0405a0b9)

@@ -22,7 +22,11 @@
   "fixture": null,
   "observations": [
     "bug-0014-repro-1",
-    "bug-0014-fixed-1"
+    "bug-0014-fixed-1",
+    "tc-cli-0076-1793498655",
+    "tc-cli-0077-1793498658",
+    "tc-cli-0078-1793498660",
+    "tc-cli-0079-1793498662"
   ],
   "impact": "A bug can read as verified on stale evidence",
   "classification": "product-defect",
@@ -51,8 +55,18 @@
       "observations": [
         "bug-0014-fixed-1"
       ]
+    },
+    {
+      "at_unix_seconds": 1793498706,
+      "text": "The reproduction was a test-log observation recorded with evidence add before the fix, not a case-run observation: the regression case definitions TC-cli-0076 to TC-cli-0079 arrived with the fix commit 4bf46da, so they could not run at the unfixed tip. This note links their current passing case-run observations at the review-fix head.",
+      "observations": [
+        "tc-cli-0076-1793498655",
+        "tc-cli-0077-1793498658",
+        "tc-cli-0078-1793498660",
+        "tc-cli-0079-1793498662"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793489621,
-  "updated_at_unix_seconds": 1793497233
+  "updated_at_unix_seconds": 1793498706
 }
