@@ -1,0 +1,13 @@
+Command copied from README.md at b7483e0: cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1
+Run as: cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1 --root <empty scratch directory>
+cargo: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+exit: 0 after 219 s
+   Compiling specsync v6.1.1
+    Finished `release` profile [optimized] target(s) in 3m 39s
+  Installing <scratch root>/bin/specsync
+   Installed package `specsync v6.1.1` (executable `specsync`)
+     Summary Successfully installed human-intent, fledge, specsync!
+warning: be sure to add `<scratch root>/bin` to your PATH to be able to run the installed binaries
+hi: hi 0.8.0
+fledge: fledge 1.8.0
+specsync: specsync 6.1.1
