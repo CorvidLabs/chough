@@ -18,7 +18,17 @@ CorvidLabs/spec-sync main commit 106aaa4 (the #832 merge) with `archive-gate-onl
 the gate. Fledge remains v1.7.2
 and HI remains 0.8.0. Workflow actions are pinned to verified commit SHAs.
 
-## What Archive checks
+## What the archive jobs check
+
+Two jobs share the word archive. `Archive`, the first job, runs the SpecSync action
+with `archive-gate-only: 'true'` and fails while any change under `.specsync/changes/`
+is still open. `SpecSync Archive` runs
+`.github/scripts/check-specsync-archive.py` after it and is described below.
+
+`SpecSync Archive` is stricter about terminal evidence than Chough's own done gate.
+It accepts only `terminal_evidence.validity: authenticated-history`, while
+`chough stage advance` into done also accepts `exact` and `successor-covered`, so a
+change Chough lets into done can still fail this job.
 
 The inspector runs only native readers: `change audit`, `change list`, and
 `change status <ID>`, all using JSON. Audit checks live definitions, policy,

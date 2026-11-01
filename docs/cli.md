@@ -83,6 +83,9 @@ command is then not run); `timed-out`; and, for JSON status, `oversized` and
 `invalid-output`. Each state other than `observed` leaves lifecycle state unknown,
 and gated transitions refuse it as `refused:native-unknown`. Without a SpecSync
 configuration, status reports `not-configured` and transitions are not natively gated.
+With SpecSync configured and SDD enabled but no native change recorded, Chough runs no
+status command and gated transitions refuse as `refused:no-native-change`; record the
+change with `chough checkpoint --native-change <id>`.
 
 ## Observation outcomes and freshness
 

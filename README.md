@@ -72,13 +72,16 @@ it [the skill](skills/chough-workflow/SKILL.md) directly.
 | accept | Present evidence; native review, then same-PR archive | The human reviews the implementation |
 | release | Optional, only on request or a standing setting | The human |
 
-Any stage can iterate, go back, reset, pause, resume or be skipped with a reason.
+An active stage can iterate or pause. An active main stage after intent can go back,
+and one before done, or release, can be skipped with a reason. A paused stage resumes,
+and reset works from any stage, including a paused or side stage.
 Side stages for bugs, optional repeated validation and the optional librarian return
 to their caller. Stage gates read native SpecSync state, never a saved label:
 reaching build needs a valid scope approval, reaching test or accept needs a valid
 approval or an authenticated archive, and reaching done needs an authenticated native
-archive. A gate that cannot read native state refuses; a project without SpecSync
-configured, or with SDD disabled, is not gated.
+archive. A gate that cannot read native state refuses, and so does one with SpecSync
+configured but no native change recorded (`refused:no-native-change`); a project
+without SpecSync configured, or with SDD disabled, is not gated.
 
 ## What the helper does
 
