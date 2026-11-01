@@ -2,6 +2,11 @@
 
 **A portable development workflow kit for coding agents: skills, human intent, specs, testing, and local context for resumable work.**
 
+[![crates.io](https://img.shields.io/crates/v/chough.svg)](https://crates.io/crates/chough)
+[![CI](https://github.com/CorvidLabs/chough/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CorvidLabs/chough/actions/workflows/ci.yml)
+[![MSRV 1.88](https://img.shields.io/badge/MSRV-1.88-blue.svg)](Cargo.toml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 Chough (pronounced **chuff**, as in *chuffed*: how you feel when it merges) is a
 portable agent skill with a small Rust helper. It is current-agent-first and
 agent-neutral: the same skill and records are meant for

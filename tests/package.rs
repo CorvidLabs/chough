@@ -1110,6 +1110,11 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
             tail.starts_with("or later").then(|| version.to_string())
         })
     };
+    let readme_badge_rust = sources
+        .readme
+        .split_once("img.shields.io/badge/MSRV-")
+        .and_then(|(_, rest)| rest.split_once('-'))
+        .map(|(version, _)| version.to_string());
     let msrv_rust = ci_job(sources.ci, "msrv").iter().find_map(|line| {
         line.trim()
             .strip_prefix("toolchain:")
@@ -1152,6 +1157,7 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
         &[
             ("Cargo.toml", cargo_rust),
             ("README.md", readme_rust),
+            ("README.md badge", readme_badge_rust),
             (".github/workflows/ci.yml MSRV job", msrv_rust),
         ],
     );
@@ -1199,6 +1205,12 @@ fn tool_and_rust_version_pins_agree() {
             "minimum Rust version",
             "Chough needs Rust 1.88",
             "Chough needs Rust 9.9",
+        ),
+        (
+            "README.md badge",
+            "minimum Rust version",
+            "badge/MSRV-1.88-",
+            "badge/MSRV-9.9-",
         ),
         ("AGENTS.md", "HI (human-intent)", "hi 0.8.0", "hi 9.9.9"),
         ("AGENTS.md", "SpecSync", "specsync 6.1.2", "specsync 9.9.9"),
@@ -1296,7 +1308,7 @@ fn tool_and_rust_version_pins_agree() {
     };
     for (file, tool, from, to) in cases {
         let slot = match file {
-            "README.md" => 0,
+            "README.md" | "README.md badge" => 0,
             "AGENTS.md" => 1,
             "Cargo.toml" => 3,
             "docs/ci.md" => 4,
