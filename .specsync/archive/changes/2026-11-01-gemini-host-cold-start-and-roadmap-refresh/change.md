@@ -1,6 +1,6 @@
 ---
 id: gemini-host-cold-start-and-roadmap-refresh
-state: implementing
+state: archived
 type: feature
 base_commit: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
 ---

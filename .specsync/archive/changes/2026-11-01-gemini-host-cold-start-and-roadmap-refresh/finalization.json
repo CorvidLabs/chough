@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "gemini-host-cold-start-and-roadmap-refresh",
+  "implementation_commit": "601da82666809686b0c98635028d7db330edd07a",
+  "implementation_tree": "85608119c29376db66fbcbf6ee8c91b954b4b032",
+  "contract_digest": "fabfb9b526169431a5eac9b4ba0765fce12dccc9d9e82ada4045cb253ba3ed94",
+  "workspace_digest": "d2986b62d3127f6f9c10c92e1c0617b519b2d7686a83bb6c109922955e7f6046",
+  "closing_digest": "3e560ee0e412da299e7b1e17e0de4ffbc14afc018863dab6bba21dfd52364bb4",
+  "review_digest": "bfcc502d1259207440e9495ad45c50f9aa46df37dfcbc857bdd3218c312679e8",
+  "finalization_digest": "70f4516a2e5d1e5d145c5cfb3ae4eb758950620bc471be311d31df3426e0fc79",
+  "timestamp": 1793547352
+}

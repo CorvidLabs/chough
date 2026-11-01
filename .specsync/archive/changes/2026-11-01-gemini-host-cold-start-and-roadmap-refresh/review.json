@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "gemini-host-cold-start-and-roadmap-refresh",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "601da82666809686b0c98635028d7db330edd07a",
+  "contract_digest": "fabfb9b526169431a5eac9b4ba0765fce12dccc9d9e82ada4045cb253ba3ed94",
+  "execution_digest": "42bf5f894cbcbd2944594d400ee8115c9b75332e6e7905d4358df726185d020a",
+  "workspace_digest": "d2986b62d3127f6f9c10c92e1c0617b519b2d7686a83bb6c109922955e7f6046",
+  "timestamp": 1793547323
+}

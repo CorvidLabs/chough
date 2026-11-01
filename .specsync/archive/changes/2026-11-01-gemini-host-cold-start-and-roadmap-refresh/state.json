@@ -7,11 +7,11 @@
   "title": "Gemini host cold start and roadmap refresh",
   "description": "Gemini host cold start and roadmap refresh",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
   "created_at": 1793545905,
-  "updated_at": 1793547153,
+  "updated_at": 1793547368,
   "affected_specs": [
     "cli"
   ],
