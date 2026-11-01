@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0082-1793497597",
+  "criteria": [
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-020",
+    "REQ-cli-007",
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test timing -- --exact checkpoint_gates_append_one_record_when_opened_and_one_when_cleared for TC-cli-0082: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0082-1793497597.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0082-1793497597.log": "f8d31914229fdab558a573403b23286adb9204988c7b4270892bdfd10bf26284"
+  },
+  "observed_at_unix_seconds": 1793497597,
+  "snapshot": {
+    "revision": "ce137fbe7082ad6a9312bd513de18e49f3c9738d",
+    "dirty": false,
+    "fingerprint": "ab496f5bb8613090386aaefb7fdd36b1b6ec655750972981055851eee8c6db61"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0082",
+      "digest": "7925785814bc992c26db5a9359eb55c1ecff7d0fccbe0e3e47e04edda3889965"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "checkpoint_gates_append_one_record_when_opened_and_one_when_cleared"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "duration_seconds": 0
+}
