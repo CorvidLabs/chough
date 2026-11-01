@@ -1885,3 +1885,99 @@ expected = ["tests/cases.rs::an_unterminated_escape_never_hides_a_second_test_re
 adapter = "cargo-test"
 test_target = "cases"
 test = "an_unterminated_escape_never_hides_a_second_test_result"
+
+[[case]]
+id = "TC-cli-0110"
+title = "Tool pins and the minimum Rust version agree across README, AGENTS, CI and Cargo"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9", "LIFE-6"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "AGENTS.md", ".github/workflows/ci.yml", "Cargo.toml", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::tool_and_rust_version_pins_agree passes: every pin is present and equal, and a copy with one pin changed or removed fails naming that file and tool"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "tool_and_rust_version_pins_agree"
+
+[[case]]
+id = "TC-cli-0111"
+title = "The full suite passes with the declared minimum Rust version"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = ["Cargo.toml", "Cargo.lock", "src/", "tests/", ".github/workflows/ci.yml"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["rustup with the 1.88.0 toolchain installed"]
+steps = ["cargo +1.88.0 test --locked"]
+expected = ["Every test target builds and passes with Rust 1.88.0"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "+1.88.0", "test", "--locked"]
+expect_output = ["test result: ok"]
+timeout_seconds = 1800
+
+[[case]]
+id = "TC-cli-0112"
+title = "A skill copy from main before the release prep is known outdated and updated"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4", "LIFE-9"]
+requirements = ["REQ-cli-016", "REQ-cli-019"]
+paths = ["src/skill.rs", "skills/", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated"
+
+[[case]]
+id = "TC-cli-0113"
+title = "The nine skill corrections state what the helper does and host copies are current"
+status = "active"
+track = "copy-localization"
+method = "agent-assisted"
+criteria = ["LIFE-4"]
+requirements = ["REQ-cli-016", "REQ-cli-019"]
+paths = ["skills/", ".agents/", ".claude/", "src/skill.rs"]
+environments = ["local-macos-arm64"]
+artifacts = ["reviewer-note"]
+setup = ["The skill bundle and helper source at the implementation tip"]
+steps = [
+  "Read each of the nine corrections against the source lines the design cites",
+  "Compare .agents/ and .claude/ copies with skills/chough-workflow and run chough skill status --host openai --host claude",
+]
+expected = [
+  "Each corrected statement matches what the cited code does",
+  "Both host copies are byte-identical to the canonical bundle and every file reads current",
+]
+
+[[case]]
+id = "TC-cli-0114"
+title = "The README toolchain command installs the pinned HI, Fledge and SpecSync"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["LIFE-9", "LIFE-6"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["An empty scratch directory used as the cargo install root"]
+steps = ["Copy the Install the toolchain command from README.md, run it with --root set to the scratch directory, then run each installed binary with --version"]
+expected = [
+  "The command exits 0",
+  "The installed binaries report hi 0.8.0, fledge 1.8.0 and specsync 6.1.1",
+]
