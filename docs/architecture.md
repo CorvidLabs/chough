@@ -42,7 +42,7 @@ flowchart TB
 | `.chough/evidence/*.json`, `.chough/artifacts/` | Observations and captured output |
 | `.chough/pruned.jsonl` | Append-only ledger of observation sets removed by retention |
 | `.chough/bugs/*.json` | Local bug backlog |
-| `.chough/validation/` | Limits and progress of optional repeated runs |
+| `.chough/validation/`, `.chough/validation.stop` | Limits and progress of optional repeated runs, and a pending stop request |
 | `library/` (optional) | Snapshots, briefs and a generated index; never a second current source |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
 
@@ -57,7 +57,7 @@ flowchart TB
 | Frozen native archives: SpecSync's record of a closed change, authenticated from Git history | `.specsync/archive/changes/<date>-<id>/` | Committed once; never edited or pruned |
 | Canonical skill: the bundle the binary embeds; edit it here | `skills/chough-workflow/` | Committed and packaged |
 | Installed host copies written by `init` and `skill update` (byte-identical to the canonical bundle in this repository) | `<host>/skills/chough-workflow/`, here `.agents/` and `.claude/` | Committed in the project that uses them |
-| Ignored build output and local caches | `/target`, `.specsync/hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
+| Ignored build output and local caches | `/target`, `.fledge/cache/`, and under `.specsync/`: `hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
 | CI output | GitHub Actions run logs | Kept by the hosted run; no CI artifact is uploaded |
 
 **Retention.** An observation set is one evidence record plus the artifacts no other
@@ -121,7 +121,7 @@ flowchart LR
     transitions["Recent transitions"] --> packet
     prefs["Standing preferences"] --> packet
     bugs["Open bug backlog"] --> packet
-    native["Native change status"] --> packet
+    native["Native change status (chough next)"] --> next
     hi["Scoped HI export"] --> packet
     modules["Module contract, companions, lessons"] --> packet
     missing["Missing, stale, oversized sources"] --> limits["Explicit limits"]

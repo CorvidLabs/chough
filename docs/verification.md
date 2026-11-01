@@ -2,14 +2,17 @@
 
 On 2026-10-31 the four Mermaid sources were rendered with **Mermaid 11.12.0** in
 headless Chromium (Playwright 1.64.1, Chromium headless shell 1248) under Bun 1.4,
-using `docs/diagrams/render.mjs`. The PNG previews were opened and inspected.
+using `docs/diagrams/render.mjs`. The PNG previews were opened and inspected. On
+2026-11-01 the same tooling re-rendered them after the stage gates, the closeout gate
+step and the native status edge were corrected; `ownership.svg` came out
+byte-identical, and the table shows the new preview sizes.
 
 | Source | Committed render | Preview | Inspection |
 |---|---|---|---|
 | [ownership.mmd](diagrams/ownership.mmd) | [ownership.svg](diagrams/ownership.svg) | 1552 × 660 | Labels readable; every arrow reaches its node; the dotted edge marks the optional librarian |
-| [stages.mmd](diagrams/stages.mmd) | [stages.svg](diagrams/stages.svg) | 1079 × 1072 | Main path top to bottom with labelled gates; back edges dotted; release only from done; side stages and the checkpoint tied to "any stage"; no clipping or overlap |
-| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1356 | Human review before `review`, `ship` and archive; changes requested loop back; release dotted and conditional |
-| [context.mmd](diagrams/context.mmd) | [context.svg](diagrams/context.svg) | 1180 × 720 | All inputs reach the packet; limits feed it explicitly |
+| [stages.mmd](diagrams/stages.mmd) | [stages.svg](diagrams/stages.svg) | 1079 × 1142 | Main path top to bottom with labelled gates; back edges dotted; release only from done; side stages and the checkpoint tied to "any stage"; no clipping or overlap |
+| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1496 | Human review before `review`, `ship` and archive; changes requested loop back; release dotted and conditional |
+| [context.mmd](diagrams/context.mmd) | [context.svg](diagrams/context.svg) | 1180 × 636 | Inputs reach the packet; limits feed it explicitly; native status joins at chough next |
 
 Two problems were found and fixed before this record. The first `stages` render was
 1552 × 179, with crowded labels near `done` and an unconnected checkpoint node, so it
