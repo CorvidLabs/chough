@@ -7,7 +7,9 @@ approved native change `evolve-chough-into-a-resumable-stage-workflow`; REQ-cli-
 and REQ-cli-019 come from
 `prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package`;
 REQ-cli-020 comes from
-`report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records`.
+`report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records`;
+REQ-cli-021 and REQ-cli-022 come from
+`focused-chough-next-a-verification-guard-before-build-and-done-stage-resume`.
 The criteria describe
 the intended product. This document refines implementation scope; evidence records
 describe what has actually been observed. Neither is a list of completed work.
@@ -101,7 +103,7 @@ records, bounded context, and direct argument handling.
 
 Trace: LIFE-3, LIFE-4. Contract: [CLI](../specs/cli/cli.spec.md).
 
-## Resumable stage workflow and later requirements (REQ-cli-007 to REQ-cli-020)
+## Resumable stage workflow and later requirements (REQ-cli-007 to REQ-cli-022)
 
 The canonical text of each requirement is in
 [specs/cli/requirements.md](../specs/cli/requirements.md); this section gives the
@@ -123,6 +125,8 @@ cross-module view and its traceability without restating it.
 | REQ-cli-018 | Reference-aware retention: preview by default, apply only under run consent or standing preference, append-only ledger, current, historical, pruned and unavailable labels | LIFE-8, LIFE-2, LIFE-7, FLOW-7, FLOW-13 | tests/evidence.rs |
 | REQ-cli-019 | Installable package without Chough's own records; new projects get the skills and an empty checkpoint; no em or en dash in the bundle | LIFE-9, LIFE-4 | tests/package.rs |
 | REQ-cli-020 | Read-only timing report from existing records, with timestamped awaiting-human gate records; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
+| REQ-cli-021 | Focused `next` view within 16384 bytes, text by default and compact JSON with `--json`, one native status read shared with `status`, and a new-cycle action at a closed done stage; a reset replaces the checkpoint's next action | LIFE-3, FLOW-13, FLOW-2, LIFE-7 | tests/next.rs, tests/stages.rs |
+| REQ-cli-022 | Approved-delta guard: moves to build, test and accept compare SpecSync's approved-delta digests with the current deltas, read-only and bounded, refusing as delta-changed or delta-unverifiable | FLOW-5, LIFE-7, LIFE-1 | tests/stages.rs |
 
 Skill-led behavior with no helper requirement, verified by exercises rather than
 helper tests: intent interviewing and role synthesis (FLOW-3,

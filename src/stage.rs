@@ -3,14 +3,17 @@
 
 use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{
-    append_line, ensure_text, head_revision, local_path, native_json, now, print_json,
-    read_log_tail, read_record,
+    NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
+    local_path, native_json, now, print_json, read_log_tail, read_native_record, read_record,
+    valid_name,
 };
 use crate::{bugs, prefs};
 use anyhow::{Result, bail, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use sha2::{Digest, Sha256};
+use std::collections::BTreeSet;
 use std::path::Path;
 
 pub(super) const TRANSITIONS: &str = ".chough/transitions.jsonl";
@@ -131,6 +134,7 @@ pub(super) struct Gate {
 }
 
 /// Native lifecycle state for the checkpoint's change.
+#[derive(Clone)]
 pub(super) enum NativeState {
     NotConfigured,
     Disabled,
@@ -200,35 +204,68 @@ fn sdd_policy(root: &Path) -> Result<Policy> {
     })
 }
 
-pub(super) fn native_state(root: &Path, change: Option<&str>) -> Result<NativeState> {
-    if !local_path(root, ".specsync/config.toml")?.is_file()
-        && !local_path(root, ".specsync/config.json")?.is_file()
-    {
-        return Ok(NativeState::NotConfigured);
+/// Whether the project has a native SpecSync configuration.
+pub(super) fn native_configured(root: &Path) -> Result<bool> {
+    Ok(local_path(root, ".specsync/config.toml")?.is_file()
+        || local_path(root, ".specsync/config.json")?.is_file())
+}
+
+/// Native state decided without a status read, or the change whose status decides it.
+fn native_prelude<'a>(
+    root: &Path,
+    change: Option<&'a str>,
+) -> Result<std::result::Result<&'a str, NativeState>> {
+    if !native_configured(root)? {
+        return Ok(Err(NativeState::NotConfigured));
     }
     match sdd_policy(root)? {
-        Policy::Absent | Policy::Enabled(false) => return Ok(NativeState::Disabled),
-        Policy::Invalid(reason) => return Ok(NativeState::PolicyInvalid(reason)),
+        Policy::Absent | Policy::Enabled(false) => return Ok(Err(NativeState::Disabled)),
+        Policy::Invalid(reason) => return Ok(Err(NativeState::PolicyInvalid(reason))),
         Policy::Enabled(true) => {}
     }
-    let Some(change) = change else {
-        return Ok(NativeState::NoChange);
-    };
-    let response = native_json(root, "specsync", &["change", "status", change, "--json"]);
-    let Some(value) = response.value else {
-        let section = response.section;
-        return Ok(NativeState::Unknown(format!(
+    Ok(change.ok_or(NativeState::NoChange))
+}
+
+fn state_from_response(response: &NativeJson) -> NativeState {
+    let Some(value) = &response.value else {
+        let section = &response.section;
+        return NativeState::Unknown(format!(
             "{} ({}): {}",
             section.source, section.state, section.content
-        )));
+        ));
     };
     match value.pointer("/summary/state").and_then(Value::as_str) {
-        Some(state) => Ok(NativeState::State(state.to_string(), value.clone())),
-        None => Ok(NativeState::Unknown(format!(
+        Some(state) => NativeState::State(state.to_string(), value.clone()),
+        None => NativeState::Unknown(format!(
             "{}: no summary.state in the response",
             response.section.source
-        ))),
+        )),
     }
+}
+
+pub(super) fn native_state(root: &Path, change: Option<&str>) -> Result<NativeState> {
+    Ok(match native_prelude(root, change)? {
+        Err(state) => state,
+        Ok(change) => state_from_response(&native_json(
+            root,
+            "specsync",
+            &["change", "status", change, "--json"],
+        )),
+    })
+}
+
+/// Native state from a status response already read, so one read serves a whole report.
+/// `response` is the `specsync change status` read made whenever SpecSync is configured.
+pub(super) fn native_state_from(
+    root: &Path,
+    change: Option<&str>,
+    response: Option<&NativeJson>,
+) -> Result<NativeState> {
+    Ok(match (native_prelude(root, change)?, response) {
+        (Err(state), _) => state,
+        (Ok(_), Some(response)) => state_from_response(response),
+        (Ok(_), None) => NativeState::Unknown("native status was not read".into()),
+    })
 }
 
 fn status_command(change: Option<&str>) -> String {
@@ -276,13 +313,25 @@ pub(super) fn destination_gate(
     session: &Checkpoint,
     destination: &str,
 ) -> Result<Option<Gate>> {
-    let Some(need) = prerequisite(destination) else {
+    if prerequisite(destination).is_none() {
         return Ok(None);
-    };
+    }
+    let state = native_state(root, session.native_change.as_deref())?;
+    Ok(gate_for_state(root, session, destination, state))
+}
+
+/// The gate for reaching `destination` given native state already read.
+pub(super) fn gate_for_state(
+    root: &Path,
+    session: &Checkpoint,
+    destination: &str,
+    state: NativeState,
+) -> Option<Gate> {
+    let need = prerequisite(destination)?;
     let change = session.native_change.as_deref();
     let purpose = format!("Reaching {destination}");
     let status = status_command(change);
-    Ok(Some(match native_state(root, change)? {
+    Some(match state {
         NativeState::NotConfigured => Gate {
             allowed: true,
             label: "ungated:not-configured".into(),
@@ -309,11 +358,21 @@ pub(super) fn destination_gate(
             "refused:native-unknown".into(),
             format!("{purpose} cannot be checked, so it is refused. {reason}. Run `{status}`."),
         ),
-        NativeState::State(state, value) => native_gate(&purpose, need, &state, &value, &status),
-    }))
+        NativeState::State(state, value) => native_gate(
+            root,
+            change.unwrap_or_default(),
+            &purpose,
+            need,
+            &state,
+            &value,
+            &status,
+        ),
+    })
 }
 
 fn native_gate(
+    root: &Path,
+    change: &str,
     purpose: &str,
     need: Prerequisite,
     state: &str,
@@ -389,24 +448,372 @@ fn native_gate(
             ),
         );
     }
+    let deltas = match approved_deltas(root, change, value) {
+        Deltas::Unchanged(modules) => {
+            format!("approved deltas unchanged ({})", modules.join(", "))
+        }
+        Deltas::NoSpec => "no semantic deltas (no_spec_change)".into(),
+        Deltas::Changed(modules) => {
+            return refused(
+                "refused:native-delta-changed".into(),
+                format!(
+                    "{purpose} needs the approved semantic deltas; the delta for {} changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or ask the human for a new scope approval (specsync change approve {change} --actor \"<their name>\") and then run specsync change check {change}. Digests use SpecSync 6.1.1's {DELTA_DOMAIN} framing.",
+                    modules.join(", ")
+                ),
+            );
+        }
+        Deltas::Unverifiable(reason) => {
+            return refused(
+                "refused:native-delta-unverifiable".into(),
+                format!(
+                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. Native next action: run {status}; Chough cannot confirm that the approved deltas are unchanged."
+                ),
+            );
+        }
+    };
     Gate {
         allowed: true,
         label: format!("native:{state}"),
-        detail: format!("Native state is {state} with a valid definition approval."),
+        detail: format!("Native state is {state} with a valid definition approval; {deltas}."),
     }
 }
 
-fn required_gate(root: &Path, session: &Checkpoint, destination: &str) -> Result<Gate> {
-    destination_gate(root, session, destination)?
-        .ok_or_else(|| anyhow::anyhow!("{destination} has no native prerequisite"))
+/// SpecSync 6.1.1's domain for approved-delta digests.
+const DELTA_DOMAIN: &str = "specsync.approved-delta.v1";
+
+/// Whether the semantic deltas are the ones the latest definition approval recorded.
+pub(super) enum Deltas {
+    Unchanged(Vec<String>),
+    NoSpec,
+    /// Each module with what changed.
+    Changed(Vec<String>),
+    Unverifiable(String),
 }
 
-pub(super) fn build_gate(root: &Path, session: &Checkpoint) -> Result<Gate> {
-    required_gate(root, session, "build")
+/// SpecSync 6.1.1's `FramedDigest` of one delta: SHA-256 over the length-framed domain,
+/// module name and body, the body with CRLF normalized to LF.
+fn delta_digest(module: &str, body: &[u8]) -> String {
+    let mut text = Vec::with_capacity(body.len());
+    let mut bytes = body.iter().peekable();
+    while let Some(&byte) = bytes.next() {
+        if !(byte == b'\r' && bytes.peek() == Some(&&b'\n')) {
+            text.push(byte);
+        }
+    }
+    let mut hash = Sha256::new();
+    for (tag, value) in [
+        ("domain", DELTA_DOMAIN.as_bytes()),
+        ("module", module.as_bytes()),
+        ("body", text.as_slice()),
+    ] {
+        hash.update((tag.len() as u64).to_be_bytes());
+        hash.update(tag.as_bytes());
+        hash.update((value.len() as u64).to_be_bytes());
+        hash.update(value);
+    }
+    format!("{:x}", hash.finalize())
 }
 
-pub(super) fn accept_gate(root: &Path, session: &Checkpoint) -> Result<Gate> {
-    required_gate(root, session, "done")
+/// Read a native change file read-only within SpecSync's bound: `Ok(None)` when it is
+/// missing, an error message when it cannot be read.
+fn native_file(root: &Path, relative: &str) -> std::result::Result<Option<Vec<u8>>, String> {
+    let path = local_path(root, relative).map_err(|error| format!("{relative}: {error:#}"))?;
+    match read_native_record(&path, NATIVE_RECORD_LIMIT) {
+        Ok(Some(bytes)) => Ok(Some(bytes)),
+        Ok(None) => Err(format!(
+            "{relative} is over the {NATIVE_RECORD_LIMIT}-byte bound"
+        )),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(error) => Err(format!("{relative} cannot be read: {error}")),
+    }
+}
+
+/// Compare the deltas of `change` with the digests its latest definition approval
+/// recorded, as SpecSync 6.1.1 does before verification (REQ-cli-022). It reads the
+/// native approval ledger and deltas only, starts no process and copies nothing.
+pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Deltas {
+    let directory = format!(".specsync/changes/{change}");
+    let ledger_path = format!("{directory}/approvals.json");
+    let ledger = match native_file(root, &ledger_path) {
+        Ok(Some(bytes)) => bytes,
+        Ok(None) => {
+            return Deltas::Unverifiable(format!("the approval ledger {ledger_path} is missing"));
+        }
+        Err(reason) => return Deltas::Unverifiable(reason),
+    };
+    let malformed =
+        || Deltas::Unverifiable(format!("the approval ledger {ledger_path} is malformed"));
+    let Ok(ledger) = serde_json::from_slice::<Value>(&ledger) else {
+        return malformed();
+    };
+    let Some(approvals) = ledger.get("approvals").and_then(Value::as_array) else {
+        return malformed();
+    };
+    let Some(approval) = approvals
+        .iter()
+        .rev()
+        .find(|approval| approval.get("gate").and_then(Value::as_str) == Some("definition"))
+    else {
+        return Deltas::Unverifiable(format!("{ledger_path} has no definition approval"));
+    };
+    let approved = match approval.get("approved_delta_digests") {
+        None | Some(Value::Null) => None,
+        Some(Value::Object(map)) => {
+            let mut digests = std::collections::BTreeMap::new();
+            for (module, digest) in map {
+                match digest.as_str() {
+                    Some(digest)
+                        if valid_name(module)
+                            && is_digest(digest)
+                            && !digest.bytes().any(|byte| byte.is_ascii_uppercase()) =>
+                    {
+                        digests.insert(module.clone(), digest.to_string());
+                    }
+                    _ => return malformed(),
+                }
+            }
+            Some(digests)
+        }
+        Some(_) => return malformed(),
+    };
+    let Some(affected) = value
+        .pointer("/change/affected_specs")
+        .and_then(Value::as_array)
+    else {
+        return Deltas::Unverifiable("native status reports no change.affected_specs".into());
+    };
+    let mut modules = BTreeSet::new();
+    for module in affected {
+        match module.as_str().filter(|module| valid_name(module)) {
+            Some(module) => modules.insert(module.to_string()),
+            None => {
+                return Deltas::Unverifiable(format!(
+                    "native status reports an invalid module name {module} in change.affected_specs"
+                ));
+            }
+        };
+    }
+    let no_spec = value
+        .pointer("/change/no_spec_change")
+        .and_then(Value::as_bool)
+        == Some(true);
+    if let Some(approved) = &approved {
+        modules.extend(approved.keys().cloned());
+    }
+    let mut bodies = vec![];
+    for module in &modules {
+        match native_file(root, &format!("{directory}/deltas/{module}.md")) {
+            Ok(body) => bodies.push((module.clone(), body)),
+            Err(reason) => return Deltas::Unverifiable(reason),
+        }
+    }
+    let no_deltas = bodies.iter().all(|(_, body)| body.is_none());
+    let Some(approved) = approved else {
+        return if no_spec && no_deltas {
+            Deltas::NoSpec
+        } else {
+            Deltas::Unverifiable(format!(
+                "the definition approval in {ledger_path} records no approved_delta_digests"
+            ))
+        };
+    };
+    if no_spec && no_deltas && approved.is_empty() {
+        return Deltas::NoSpec;
+    }
+    let mut changed = vec![];
+    let mut unchanged = vec![];
+    for (module, body) in bodies {
+        match (approved.get(&module), body) {
+            (Some(digest), Some(body)) if *digest == delta_digest(&module, &body) => {
+                unchanged.push(module)
+            }
+            (Some(_), Some(_)) => changed.push(format!("{module} (edited)")),
+            (Some(_), None) => changed.push(format!("{module} (deleted)")),
+            (None, Some(_)) => changed.push(format!("{module} (not in the approval)")),
+            (None, None) if no_spec => {}
+            (None, None) => changed.push(format!("{module} (no approved delta)")),
+        }
+    }
+    if changed.is_empty() {
+        if unchanged.is_empty() {
+            unchanged.push("no modules".into());
+        }
+        Deltas::Unchanged(unchanged)
+    } else {
+        Deltas::Changed(changed)
+    }
+}
+
+/// The approved-delta result for a report, or why it was not checked.
+pub(super) fn delta_summary(root: &Path, change: Option<&str>, state: &NativeState) -> String {
+    let (Some(change), NativeState::State(state, value)) = (change, state) else {
+        return match state {
+            NativeState::State(..) | NativeState::NoChange => {
+                "not checked: no native change recorded".into()
+            }
+            NativeState::Unknown(_) => "not checked: native state unknown".into(),
+            NativeState::NotConfigured | NativeState::Disabled => {
+                "not checked: no native lifecycle".into()
+            }
+            NativeState::PolicyInvalid(_) => "not checked: SDD policy invalid".into(),
+        };
+    };
+    if !BUILD_STATES.contains(&state.as_str()) {
+        return format!("not checked: native state {state}");
+    }
+    if value
+        .pointer("/summary/approval_valid")
+        .and_then(Value::as_bool)
+        != Some(true)
+    {
+        return "not checked: approval_valid is not true".into();
+    }
+    match approved_deltas(root, change, value) {
+        Deltas::Unchanged(modules) => format!("unchanged: {}", modules.join(", ")),
+        Deltas::NoSpec => "no semantic deltas (no_spec_change)".into(),
+        Deltas::Changed(modules) => format!("changed: {}", modules.join(", ")),
+        Deltas::Unverifiable(reason) => format!("unverifiable: {reason}"),
+    }
+}
+
+/// The main stage a forward move from `current` reaches, if any.
+pub(super) fn next_main(current: &str) -> Option<&'static str> {
+    if current == "release" {
+        return Some("done");
+    }
+    ORDER.get(position(current)? + 1).copied()
+}
+
+/// The next valid action with its reason and, when one applies, the command to run.
+pub(super) struct Action {
+    pub(super) action: String,
+    pub(super) reason: String,
+    pub(super) command: Option<String>,
+}
+
+const NEW_CYCLE_RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+
+/// The gate for the next main stage and the next valid action, both evaluated on one
+/// native state, so `next` and `status` report the same decision (REQ-cli-021).
+pub(super) fn assess(
+    root: &Path,
+    session: &Checkpoint,
+    state: &NativeState,
+    blocking: &[String],
+) -> (Option<(String, Gate)>, Action) {
+    let current = session.stage.current.as_str();
+    let gate = next_main(current).and_then(|to| {
+        gate_for_state(root, session, to, state.clone()).map(|gate| (to.to_string(), gate))
+    });
+    let native_next = match state {
+        NativeState::State(_, value) => value
+            .pointer("/summary/next_action")
+            .and_then(Value::as_str)
+            .filter(|text| !text.trim().is_empty()),
+        _ => None,
+    };
+    let action = if session.stage.status == "paused" {
+        Action {
+            action: format!(
+                "The {current} stage is paused. Check native state and freshness, then `chough stage resume`."
+            ),
+            reason: "A paused stage keeps its scope, preferences and gates; native state may have changed meanwhile.".into(),
+            command: Some("chough stage resume".into()),
+        }
+    } else if !session.awaiting_human.is_empty() {
+        Action {
+            action: format!(
+                "Waiting for a human decision: {}. Do not record it on their behalf; continue only independent work within scope.",
+                session.awaiting_human.join("; ")
+            ),
+            reason: "Only a person can close these gates.".into(),
+            command: None,
+        }
+    } else if !blocking.is_empty() && matches!(current, "test" | "accept") {
+        Action {
+            action: format!(
+                "Acceptance-blocking bugs are open ({}); go back to build and retest the affected cases.",
+                blocking.join(", ")
+            ),
+            reason: "Acceptance waits for every blocking bug to be verified or rescoped.".into(),
+            command: Some("chough stage back --to build --reason \"<why>\"".into()),
+        }
+    } else if current == "done" {
+        done_action(root, session, state, native_next)
+    } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
+        Action {
+            action: format!("Gate not open ({}): {}", gate.label, gate.detail),
+            reason: format!("Native state does not allow reaching {to} yet."),
+            command: Some(status_command(session.native_change.as_deref())),
+        }
+    } else {
+        Action {
+            action: format!("Continue {current}: {}", session.next_action),
+            reason: "No gate, human decision or blocking bug stops the current stage; this is the checkpoint's next action.".into(),
+            command: None,
+        }
+    };
+    (gate, action)
+}
+
+/// In stage done: a closed cycle recommends a new one; an archive that does not
+/// authenticate keeps its gate refusal.
+fn done_action(
+    root: &Path,
+    session: &Checkpoint,
+    state: &NativeState,
+    native_next: Option<&str>,
+) -> Action {
+    let steps = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work)";
+    let record = "chough checkpoint --native-change <id> --next-action \"<next step>\"";
+    let new_change = "specsync change new \"<outcome>\" --spec <module> --path <path>";
+    let check_first = native_next
+        .map(|text| format!(" Native next action, check it first: {text}."))
+        .unwrap_or_default();
+    let closed = |action: String, reason: String| Action {
+        action,
+        reason: format!("{reason}{check_first}"),
+        command: Some(NEW_CYCLE_RESET.into()),
+    };
+    let done = gate_for_state(root, session, "done", state.clone());
+    match (state, done) {
+        (NativeState::NotConfigured | NativeState::Disabled, _) => closed(
+            format!("{steps}, then chough checkpoint --next-action \"<next step>\"."),
+            "The cycle is closed; no native lifecycle gates it.".into(),
+        ),
+        (NativeState::NoChange, _) => closed(
+            format!("{steps}, then {new_change}, then {record}."),
+            "No native change is recorded for this cycle, so it is closed.".into(),
+        ),
+        (NativeState::State(..), Some(gate)) if gate.allowed => closed(
+            format!("{steps}, then {new_change}, then {record}."),
+            format!(
+                "The cycle for {} is closed: native state archived, terminal evidence {}.",
+                session
+                    .native_change
+                    .as_deref()
+                    .unwrap_or("the native change"),
+                match state {
+                    NativeState::State(_, value) => value
+                        .pointer("/summary/terminal_evidence/validity")
+                        .and_then(Value::as_str)
+                        .unwrap_or("not reported"),
+                    _ => "not reported",
+                }
+            ),
+        ),
+        (_, Some(gate)) => Action {
+            action: format!("Gate not open ({}): {}", gate.label, gate.detail),
+            reason: "Stage done needs an archived change whose terminal evidence authenticates."
+                .into(),
+            command: Some(status_command(session.native_change.as_deref())),
+        },
+        (_, None) => Action {
+            action: format!("Continue done: {}", session.next_action),
+            reason: "Stage done has no native prerequisite here.".into(),
+            command: None,
+        },
+    }
 }
 
 fn refresh_note(stage: &str) -> &'static str {
@@ -687,6 +1094,12 @@ fn move_back(
         gate_label.as_deref(),
         refresh.clone(),
     )?;
+    if kind == "reset" {
+        // A reset starts a new cycle, so the old next action no longer applies.
+        session.next_action = format!(
+            "New cycle from {from} after reset: {reason}. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+        );
+    }
     session.stage.current = target.into();
     session.stage.callers.clear();
     session.stage.status = "active".into();
@@ -823,7 +1236,7 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
             if let Some(gate) = destination_gate(root, &session, &caller.stage)? {
                 ensure!(
                     gate.allowed,
-                    "return refused ({}): {}; `chough stage reset --to <stage>` moves elsewhere",
+                    "return refused ({}): {}; `chough stage reset --to <stage> --reason \"<why>\"` moves elsewhere",
                     gate.label,
                     gate.detail
                 );

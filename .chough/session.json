@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -62,7 +62,8 @@
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
     "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
     "Draft adds REQ-cli-021 and REQ-cli-022 instead of modifying REQ-cli-008, 016 or 019, because open PR #22 modifies those",
-    "No gate runs specsync change check: measured on 6.1.1 it mutates canonical specs and native records and refuses while tasks are unchecked; the guard recomputes SpecSync's approved-delta digests instead"
+    "No gate runs specsync change check: measured on 6.1.1 it mutates canonical specs and native records and refuses while tasks are unchecked; the guard recomputes SpecSync's approved-delta digests instead",
+    "2026-11-01: 0xLeif approved the scope of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume with the drafter's recommended answers to the open questions; recorded with specsync change approve --actor 0xLeif"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -82,7 +83,8 @@
     "refused env names in the approved definition amended to match the code; re-approved by 0xLeif",
     "plan step 7 documented-order exercise passed",
     "TC-cli-0100 and TC-cli-0104 added and passing",
-    "PR #9 merged earlier; stale awaiting-human entry cleared"
+    "PR #9 merged earlier; stale awaiting-human entry cleared",
+    "Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -101,9 +103,7 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Scope approval of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume, including the open questions in plan.md"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for 0xLeif's scope approval of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume; then specsync change approve with their name and chough stage advance to build"
+  "next_action": "Commit source; mark tasks done; run the scoped specsync change check to materialize REQ-cli-021 and REQ-cli-022; then add and run TC-cli-0120 to TC-cli-0124"
 }
