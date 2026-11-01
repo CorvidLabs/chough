@@ -20,8 +20,9 @@ context for later work, not authenticated approval records.
 | D-013 | Monitor findings are captured locally by default; propose-change only prints a command. | Approved default; whether monitors may start investigations stays unsettled. |
 | D-014 | One canonical stage list in the helper, documented in `references/stages.md`. | Implementation choice; a test keeps them in step. |
 | D-015 | Crate-internal modules use `pub(super)`. | Implementation choice: the binary has no library target, and the contract describes commands rather than Rust symbols. |
-| D-016 | Observation reuse after metadata-only commits (`docs/NEXT_CHANGE.md`) stays unapproved and deferred, not rejected. | Human framing in PR #1; the lifecycle work came first. It is not implemented and needs its own decision. |
+| D-016 | Observation reuse after metadata-only commits (`docs/NEXT_CHANGE.md`) stays unapproved and deferred, not rejected. Superseded by D-018. | Human framing in PR #1; the lifecycle work came first. It is not implemented and needs its own decision. |
 | D-017 | Evidence retention defaults (2026-10-31): protect the newest 3 automated runs and the newest failure per case and environment; only sets older than 14 days are eligible; warn above 50 MiB; `--apply` needs a run consent `retention` or the standing preference `retention auto` (default `off`); with `auto`, `cases run` and `validate run` prune after recording; removals are logged in `.chough/pruned.jsonl`. | Human choice by 0xLeif with the scope approval of `prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package` (REQ-cli-018, LIFE-8). Preview is the default; anything the checkpoint, a bug, an active native change or the most recent archived one references stays; native archives, ignore rules and Git history are untouched. |
+| D-018 | Freshness compares a working content identity, not the revision (2026-11-01): committing only `.chough/` records, an empty commit, SpecSync lifecycle bookkeeping (state, approvals, verification, review, finalization, accepted-state and `lesson-bundle.md` records, and the front-matter `state:` of `change.md`) and archiving a change keep observations current; the revision is still recorded; a record without a content identity keeps the revision-bound comparison; evidence schema 2 gains an optional SHA-256 content digest (REQ-cli-017 modified); `verified` needs a linked failure and a pass observed strictly after the latest one (REQ-cli-012). Supersedes D-016 in this narrower form, with no ancestry check and no separate reuse label. | Human choice by 0xLeif with the scope approval of `keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after`, taking the recommended design answers, including BUG-0014 in scope and docs/NEXT_CHANGE.md marked addressed for content-identical commits. An observation reads current at any revision with the same content identity. |
 
 ## Agreed direction after the bootstrap interview
 
@@ -41,8 +42,9 @@ D-016 record the choices made there. The list is kept as written:
 - Mandatory checkpointing/cold resume even with the librarian off. APS storage and
   a 3md testing profile are candidates, not adopted mandatory dependencies.
 
-The metadata-only observation-reuse proposal is unapproved and deferred in favor of
-lifecycle work, not rejected. See the [lifecycle](lifecycle.md) and [roadmap](ROADMAP.md)
+The metadata-only observation-reuse proposal was deferred in favor of lifecycle work,
+not rejected; D-018 later approved it in a narrower form for content-identical
+commits. See the [lifecycle](lifecycle.md) and [roadmap](ROADMAP.md)
 for the agreed direction and unresolved implementation/policy choices.
 
 Changing product intent requires updating HI through its supported flow, preserving

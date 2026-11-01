@@ -82,6 +82,20 @@ in hosted CI (run 41232974678) while passing locally. Source: that run's log. Sc
 scripts that let native tools commit. Future use: give disposable repositories a
 local identity; test with `GIT_CONFIG_GLOBAL=/dev/null`.
 
+2026-11-01, Chough evidence and SpecSync verification: committing Chough records made
+every observation stale (HEAD was hashed into the fingerprint), SpecSync's per-change
+bookkeeping writes staled them too, and SpecSync's verification digest covers
+`.chough/`, so a cases run, commit, check, review and finalize sequence needed three
+re-verifications and a stash. Source: the Raven run, CorvidLabs/raven#644 (reported as
+CorvidLabs/chough#10 and #12; BUG-0015, BUG-0016). Scope: any project using Chough
+evidence with SpecSync 6.1.1 changes. Future use: freshness compares content without
+SpecSync bookkeeping, and the accept order runs `change check --commit` after
+committing `.chough/`, with no Chough write before finalize. Also: listing `.chough/`
+in a change's affected paths makes every checkpoint or evidence edit stale its
+verification, so do not list it; and SpecSync applies a MODIFIED requirement only to
+an exact `### REQ-cli-NNN` heading. Retire the ordering part when SpecSync ships an
+opt-in verification exclusion (proposed upstream as `verification_ignored_paths`).
+
 Add further lessons only from observed work, with source, applicable scope, concrete
 future use and revision or retirement guidance. A future native cli.3md would become
 the lesson source in place of this section.

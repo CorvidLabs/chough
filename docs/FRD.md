@@ -55,18 +55,22 @@ Trace: LIFE-1, LIFE-6, LIFE-7. Contract: [CLI](../specs/cli/cli.spec.md).
 
 ## REQ-cli-004: Bind observations to their scope
 
-The helper SHALL bind each observation to a Git revision and worktree fingerprint,
-an explicit environment, a kind, an outcome, and supporting artifacts. Status SHALL
-distinguish current observations from stale observations and environment mismatches.
-An observation is an assertion by its recorder, not authenticated human acceptance.
+The helper SHALL record with each observation a Git revision, a working content
+identity, an explicit environment, a kind, an outcome, and supporting artifacts.
+Status SHALL distinguish current observations from stale observations and environment
+mismatches. Freshness compares the content identity, which leaves out Chough's own
+records, build output and SpecSync lifecycle bookkeeping; the revision is recorded
+for display and regression ancestry but not compared. An observation is an assertion
+by its recorder, not authenticated human acceptance.
 
 Acceptance: a recorded observation is current for unchanged inputs in the same
-environment; changing code or the requested environment makes that limitation visible.
-Writing Chough's own records without a new commit does not itself invalidate earlier
-observations. Every new HEAD, including a metadata-only commit, remains stale under
-the current implementation.
+environment; changing code, a native change's deltas or artifacts, or the requested
+environment makes that limitation visible. Writing or committing only Chough's own
+records, an empty commit, SpecSync bookkeeping writes and archiving a change do not
+invalidate earlier observations. A record without a content identity, from an earlier
+Chough, stays stale after any new commit.
 
-Trace: LIFE-2, LIFE-7. Contract: [CLI](../specs/cli/cli.spec.md).
+Trace: LIFE-2, LIFE-6, LIFE-7. Contract: [CLI](../specs/cli/cli.spec.md).
 
 ## REQ-cli-005: Preserve traceability
 
@@ -121,7 +125,9 @@ this change's own native record).
 
 Excluded: APS as a checkpoint backend (qualified and deferred, see D-010), Magpie,
 Rune, Trust, Augur and Attest integration, real releases or live monitoring,
-publishing issues, and reuse of observations after metadata-only commits.
+publishing issues, and reuse of observations after metadata-only commits (later
+approved in a narrow form as D-018: content-identical commits keep observations
+current; ancestry checks and a separate reuse label stay excluded).
 
 ## Skill-led behavior in the first slice
 

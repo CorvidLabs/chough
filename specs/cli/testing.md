@@ -13,7 +13,7 @@ the exercise, the cold start and the wording review).
 | REQ-cli-001 | Init repeated around edited files and partial installed bundles | TC-cli-0001 |
 | REQ-cli-002 | Focused ordered output and session resumption in isolated repo | TC-cli-0002 |
 | REQ-cli-003 | Native status passthrough and unavailable tool states | TC-cli-0003, 0004 |
-| REQ-cli-004 | Current → changed content → stale; environment mismatch/unchecked | TC-cli-0005 to 0008 |
+| REQ-cli-004 | Current → changed content → stale; environment mismatch/unchecked; content identity kept across Chough-only, empty and already-present commits and SpecSync bookkeeping and archive moves, stale on any scope or source edit; legacy records stay revision-bound | TC-cli-0005 to 0008, 0067 to 0073 |
 | REQ-cli-005 | Unknown criterion/requirement and duplicate observation rejected | TC-cli-0009 |
 | REQ-cli-006 | Traversal/symlink escape, unsupported schema and bounded output | TC-cli-0010 to 0014 |
 | REQ-cli-007 | Schema 2 checkpoint, cross-process round trip, explicit migration | TC-cli-0015 to 0017, 0102 |
@@ -21,16 +21,20 @@ the exercise, the cold start and the wording review).
 | REQ-cli-009 | Definition validation, location in errors, position-free digests | TC-cli-0022 to 0024 |
 | REQ-cli-010 | Focused selection with tracks and omissions | TC-cli-0025, 0101 |
 | REQ-cli-011 | Failing, not-run, missing-output, timeout and build-failure outcomes; verdicts; stop and resume | TC-cli-0026, 0027, 0034, 0101, 0103 |
-| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope | TC-cli-0029 to 0032, 0101 |
+| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure | TC-cli-0029 to 0032, 0076 to 0079, 0101 |
 | REQ-cli-013 | Preferences separate from consent; authorization for validate | TC-cli-0021, 0033, 0034, 0103 |
 | REQ-cli-014 | Release only when authorized; dry-run kind | TC-cli-0021, 0028, 0103 |
 | REQ-cli-015 | Snapshots keep sources; index lists open bugs; symlinks refused | TC-cli-0035, 0036 |
-| REQ-cli-016 | Per-host install; update keeps edits | TC-cli-0037 |
-| REQ-cli-017 | Schema 2 observations; schema 1 still read | TC-cli-0026, 0028 |
+| REQ-cli-016 | Per-host install; update keeps edits; 2756dc2 references known-outdated | TC-cli-0037, 0075 |
+| REQ-cli-017 | Schema 2 observations; schema 1 still read; optional content identity validated | TC-cli-0026, 0028, 0073, 0074 |
 
 Unix-only tests are gated with `cfg(unix)` because they use shell stubs for native
 tools; their cases list only macOS and Linux environments. Windows runs the portable
-tests and the build.
+tests and the build. The content-identity freshness tests (TC-cli-0067 to 0074, with
+a CRLF `change.md` in TC-cli-0070) and the bug-ordering tests (TC-cli-0076 to 0079)
+are portable: their `hi` and `specsync` stand-ins are compiled programs on Windows, so
+Windows CI exercises the `/`-separated path and change keys and CRLF front matter; the
+exec-bit test stays Unix-only.
 
 No physical deployment, live monitoring, authenticated human acceptance, APS,
 Magpie or other unbuilt integration is covered by this test contract.
@@ -52,8 +56,12 @@ native check.
   `local-macos-arm64`, each with its captured log; `chough cases record` recorded the
   agent-assisted TC-cli-0102 (cold start) and TC-cli-0103 (wording) as passed with
   their limits. Records: `.chough/evidence/`, logs and notes: `.chough/artifacts/`.
-  Committing these records moves HEAD, so later status reports them as
-  stale-revision-or-inputs by design; hosted CI reruns the product tests at the tip.
+  Those records were written before observations carried a content identity, so
+  they keep the revision-bound comparison and read stale-revision-or-inputs after any
+  commit. Records written since keep their freshness across commits that change no
+  fingerprinted content (REQ-cli-004 as modified by
+  keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after);
+  hosted CI reruns the product tests at the tip.
 - Exercises: docs/exercises/feature-bug-loop.md, visual-design.md, intent.md and
   cold-start.md, with diagrams verified in docs/verification.md.
 

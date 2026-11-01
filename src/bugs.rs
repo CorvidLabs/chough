@@ -296,21 +296,32 @@ fn present_observations(root: &Path, ids: &[String]) -> Result<Vec<evidence::Evi
     Ok(present)
 }
 
-/// Reproduced when a linked observation failed; otherwise the report is unverified.
+/// The latest present linked failure, and whether a present linked pass was observed
+/// strictly after it. Pruned or unavailable observations never count.
+fn order(root: &Path, bug: &Bug) -> Result<Option<(evidence::Evidence, bool)>> {
+    let present = present_observations(root, &bug.observations)?;
+    let Some(latest_failure) = present
+        .iter()
+        .filter(|observation| observation.outcome == Outcome::Failed)
+        .max_by_key(|observation| observation.observed_at_unix_seconds)
+        .cloned()
+    else {
+        return Ok(None);
+    };
+    let passed_after = present.iter().any(|observation| {
+        observation.outcome == Outcome::Passed
+            && observation.observed_at_unix_seconds > latest_failure.observed_at_unix_seconds
+    });
+    Ok(Some((latest_failure, passed_after)))
+}
+
+/// Unverified until a failure is linked; reproduced and later passed only when a pass
+/// was observed strictly after the latest failure (REQ-cli-012).
 fn verification(root: &Path, bug: &Bug) -> Result<&'static str> {
-    let mut failed = false;
-    let mut passed_after = false;
-    for observation in present_observations(root, &bug.observations)? {
-        match observation.outcome {
-            Outcome::Failed => failed = true,
-            Outcome::Passed => passed_after = true,
-            Outcome::NotRun => {}
-        }
-    }
-    Ok(match (failed, passed_after) {
-        (false, _) => "unverified",
-        (true, false) => "reproduced",
-        (true, true) => "reproduced-and-later-passed",
+    Ok(match order(root, bug)? {
+        None => "unverified",
+        Some((_, false)) => "reproduced",
+        Some((_, true)) => "reproduced-and-later-passed",
     })
 }
 
@@ -614,13 +625,17 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
         }
     }
     if bug.status == "verified" {
-        let passed = present_observations(root, &bug.observations)?
-            .iter()
-            .any(|observation| observation.outcome == Outcome::Passed);
-        ensure!(
-            passed,
-            "verified needs a linked passed observation after the fix"
-        );
+        match order(root, &bug)? {
+            None => bail!(
+                "verified needs a linked failed observation that reproduces the bug, then a linked passed observation after it; no failed observation is linked"
+            ),
+            Some((failure, false)) => bail!(
+                "verified needs a linked passed observation after the fix, observed after the latest linked failure {} (observed_at_unix_seconds {})",
+                failure.id,
+                failure.observed_at_unix_seconds
+            ),
+            Some((_, true)) => {}
+        }
     }
     check_regression(root, &bug)?;
     if let Some(note) = &args.note {

@@ -82,7 +82,7 @@ state, never by a saved label.
 | `checkpoint`, `migrate` | Keep the single checkpoint; migrate schema 1 explicitly |
 | `stage …` | Advance, skip, iterate, back, reset, pause, resume, enter and return |
 | `cases check/select/run/record` | Validate `chough-testing/1` definitions, select focused cases, record honest outcomes |
-| `evidence add` | Record an observation bound to revision, inputs, environment and artifacts |
+| `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
 | `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |

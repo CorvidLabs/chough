@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 6
+version: 7
 status: active
 files:
   - src/main.rs
@@ -61,8 +61,11 @@ than presented as Rust API symbols to the structural checker.
    implementation review, release or deployment.
 3. HI owns criterion IDs; SpecSync owns its lifecycle, approvals, reviews and
    archives. The checkpoint references native records and never duplicates their state.
-4. Observations bind revision, working content, environment and, for cases, the
-   definition digest; current evidence is not equivalent to proven criterion achievement.
+4. Observations record revision, working content, environment and, for cases, the
+   definition digest. Freshness compares the working content, which leaves out
+   Chough records, build output and SpecSync lifecycle bookkeeping; the revision is
+   recorded but not compared, except for records without a content identity. Current
+   evidence is not equivalent to proven criterion achievement.
 5. Managed and selected paths stay inside the project and symlinks are rejected.
    Context, records and captured output are bounded and deterministic for the same
    inputs and native tool responses.
@@ -134,4 +137,5 @@ provider and no hosted service.
 | 3 | 2026-10-31 | refuse-stage-moves-whose-native-approval-validity-archive-integrity-or-sdd-policy-does-not-hold: Refuse stage moves whose native approval validity, archive integrity or SDD policy does not hold |
 | 4 | 2026-10-31 | bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting: Bound external commands in time and memory and honor validation stop requests after waiting |
 | 5 | 2026-10-31 | prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package: Prepare a first release candidate with reference-aware evidence retention, current guidance and an installable package |
-| 6 | 2026-11-01 | report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records: Report how long stages, tests, bug fixes and human decisions took, from existing records |
+| 6 | 2026-11-01 | keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after: Keep evidence current across commits and SpecSync lifecycle bookkeeping, and verify bugs only by a pass observed after the failure |
+| 7 | 2026-11-01 | report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records: Report how long stages, tests, bug fixes and human decisions took, from existing records |

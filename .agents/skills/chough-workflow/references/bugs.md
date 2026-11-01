@@ -57,7 +57,9 @@ what you searched and its limits.
   the current change.
 
 After a fix, link the passing observation and set `--status verified`, which needs a
-linked passed observation. Bugs found after closure normally become new native
+linked failed observation and a linked passed observation observed after the latest
+linked failure; an older pass, or one in the same second, leaves the bug
+`reproduced`. Bugs found after closure normally become new native
 changes; use native recovery only when the original recorded evidence needs repair.
 
 ## Report candidates
