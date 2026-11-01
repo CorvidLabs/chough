@@ -15,12 +15,15 @@ Chough records what stage work is in, what was decided, what was actually checke
 ![Chough and the tools that own its records](docs/diagrams/ownership.svg)
 
 Chough is a public CorvidLabs repository. **No release exists yet**: nothing is
-published to crates.io, tagged, hosted or deployed. A first release candidate is in
-progress ([PR #9](https://github.com/CorvidLabs/chough/pull/9)).
+published to crates.io, tagged, hosted or deployed. The first release candidate
+([PR #9](https://github.com/CorvidLabs/chough/pull/9)) is merged, and version 0.1.0
+is being prepared from `main`; until it is tagged, install from the repository as
+shown below.
 
 ## Install
 
-Chough needs a Rust toolchain. Install the helper from the repository:
+Chough needs Rust 1.88 or later. Once 0.1.0 is on crates.io, install it with `cargo
+install chough --locked`. Until then, install the helper from the repository:
 
 ```sh
 cargo install --git https://github.com/CorvidLabs/chough --locked
@@ -71,8 +74,11 @@ it [the skill](skills/chough-workflow/SKILL.md) directly.
 
 Any stage can iterate, go back, reset, pause, resume or be skipped with a reason.
 Side stages for bugs, optional repeated validation and the optional librarian return
-to their caller. Entering build and leaving accept are gated by native SpecSync
-state, never by a saved label.
+to their caller. Stage gates read native SpecSync state, never a saved label:
+reaching build needs a valid scope approval, reaching test or accept needs a valid
+approval or an authenticated archive, and reaching done needs an authenticated native
+archive. A gate that cannot read native state refuses; a project without SpecSync
+configured, or with SDD disabled, is not gated.
 
 ## What the helper does
 
@@ -82,7 +88,7 @@ state, never by a saved label.
 | `next`, `status`, `context` | Resume: stage, gates, freshness, open bugs, focused sources |
 | `checkpoint`, `migrate` | Keep the single checkpoint; migrate schema 1 explicitly |
 | `stage …` | Advance, skip, iterate, back, reset, pause, resume, enter and return |
-| `cases check/select/run/record` | Validate `chough-testing/1` definitions, select focused cases, record honest outcomes |
+| `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
 | `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
 | `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
@@ -99,7 +105,7 @@ behavioral proof or human acceptance.
 | Where | What runs |
 |---|---|
 | Hosted CI: Ubuntu, macOS, Windows | `cargo test` and a release build |
-| Hosted CI: Ubuntu | Fledge `verify` lane (format, lint, tests), HI and SpecSync checks, the native archive gate and its fixtures |
+| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
 Other platforms and hosts may work but have not been exercised.
@@ -110,8 +116,10 @@ Other platforms and hosts may work but have not been exercised.
   be stopped; the run returns on time with an incomplete capture, never `passed`.
 - Calls to Git (fingerprints and revisions) are not yet bounded in time or output.
 - SpecSync's change status does not yet flag an approved delta edited after approval;
-  a fix is proposed in
-  [CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/issues/823).
+  the fix is scoped, not yet implemented or released, in
+  [CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823).
+- In a repository with no commits yet, `chough next` reports the raw `git rev-parse
+  HEAD` error as the snapshot; make a first commit before relying on freshness.
 - Hosts other than Claude Code and Codex have not had real discovery or cold-start
   exercises.
 
@@ -141,7 +149,8 @@ files.
 
 - [Architecture](docs/architecture.md), [lifecycle](docs/lifecycle.md), [CLI reference](docs/cli.md)
 - [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
-- [Deferred, unapproved evidence-reuse proposal](docs/NEXT_CHANGE.md)
+- [Evidence-reuse proposal](docs/NEXT_CHANGE.md): addressed for content-identical
+  commits by D-018; its ancestry check and reuse label remain unapproved
 - [Diagram rendering and visual verification](docs/verification.md)
 
 MIT licensed. This repository's visibility and its software license are separate facts.
