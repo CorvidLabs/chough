@@ -1,0 +1,72 @@
+# Reproduction of BUG-0018
+revision: 282c5bdfeb7bae5cc84f3ac8236652a4536080af
+source tree: 0 uncommitted src/skills paths
+platform: Darwin 25.5.0 arm64
+date: 2026-11-01T02:41:56Z
+binary: target/debug/chough (chough 0.1.0)
+project: disposable temporary directory
+
+$ /Users/leif/Development/_CorvidLabs/_worktrees/chough-bundle/target/debug/chough --root /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/tmp.bCoYfezlVQ init --objective Try Chough --host claude --host openai
+{
+  "created": [
+    ".chough/session.json",
+    ".claude/skills/chough-workflow/SKILL.md",
+    ".claude/skills/chough-workflow/agents/openai.yaml",
+    ".claude/skills/chough-workflow/references/accept.md",
+    ".claude/skills/chough-workflow/references/bugs.md",
+    ".claude/skills/chough-workflow/references/build.md",
+    ".claude/skills/chough-workflow/references/checkpoint.md",
+    ".claude/skills/chough-workflow/references/design.md",
+    ".claude/skills/chough-workflow/references/intent.md",
+    ".claude/skills/chough-workflow/references/librarian.md",
+    ".claude/skills/chough-workflow/references/lifecycle.md",
+    ".claude/skills/chough-workflow/references/plan.md",
+    ".claude/skills/chough-workflow/references/release.md",
+    ".claude/skills/chough-workflow/references/roles.md",
+    ".claude/skills/chough-workflow/references/stages.md",
+    ".claude/skills/chough-workflow/references/testing.md",
+    ".claude/skills/chough-workflow/references/validate.md",
+    ".claude/skills/chough-workflow/templates/brief.md",
+    ".claude/skills/chough-workflow/templates/bug-report.md",
+    ".claude/skills/chough-workflow/templates/cases.toml",
+    ".claude/skills/chough-workflow/templates/frd.md",
+    ".claude/skills/chough-workflow/templates/prototype/COMPANION.md",
+    ".claude/skills/chough-workflow/templates/prototype/index.html",
+    ".claude/skills/chough-workflow/templates/prototype/styles.css",
+    ".claude/skills/chough-workflow/templates/review-findings.md",
+    ".agents/skills/chough-workflow/SKILL.md",
+    ".agents/skills/chough-workflow/agents/openai.yaml",
+    ".agents/skills/chough-workflow/references/accept.md",
+    ".agents/skills/chough-workflow/references/bugs.md",
+    ".agents/skills/chough-workflow/references/build.md",
+    ".agents/skills/chough-workflow/references/checkpoint.md",
+    ".agents/skills/chough-workflow/references/design.md",
+    ".agents/skills/chough-workflow/references/intent.md",
+    ".agents/skills/chough-workflow/references/librarian.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/plan.md",
+    ".agents/skills/chough-workflow/references/release.md",
+    ".agents/skills/chough-workflow/references/roles.md",
+    ".agents/skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/references/testing.md",
+    ".agents/skills/chough-workflow/references/validate.md",
+    ".agents/skills/chough-workflow/templates/brief.md",
+    ".agents/skills/chough-workflow/templates/bug-report.md",
+    ".agents/skills/chough-workflow/templates/cases.toml",
+    ".agents/skills/chough-workflow/templates/frd.md",
+    ".agents/skills/chough-workflow/templates/prototype/COMPANION.md",
+    ".agents/skills/chough-workflow/templates/prototype/index.html",
+    ".agents/skills/chough-workflow/templates/prototype/styles.css",
+    ".agents/skills/chough-workflow/templates/review-findings.md"
+  ],
+  "hosts": [
+    "claude",
+    "openai"
+  ],
+  "preserved": [],
+  "schema_version": 1
+}
+[exit 0]
+
+$ grep -rnI for U+2013 and U+2014 in .claude/skills .agents/skills
+[exit 1] (0 means a dash was found; 1 means none)

@@ -1705,3 +1705,183 @@ expected = ["tests/bugs.rs::a_bug_without_a_linked_failure_cannot_be_verified pa
 adapter = "cargo-test"
 test_target = "bugs"
 test = "a_bug_without_a_linked_failure_cannot_be_verified"
+
+[[case]]
+id = "TC-cli-0090"
+title = "The shipped skill bundle holds no em or en dash"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9", "LIFE-4"]
+requirements = ["REQ-cli-019"]
+paths = ["skills/chough-workflow/", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::the_shipped_bundle_holds_no_em_or_en_dash passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "the_shipped_bundle_holds_no_em_or_en_dash"
+
+[[case]]
+id = "TC-cli-0091"
+title = "Dashed bundle copies from main 2756dc2 are known-outdated and updated"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4", "LIFE-9"]
+requirements = ["REQ-cli-016", "REQ-cli-019"]
+paths = ["src/skill.rs", "skills/chough-workflow/", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::dashed_copies_from_main_2756dc2_are_known_outdated_and_updated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "dashed_copies_from_main_2756dc2_are_known_outdated_and_updated"
+
+[[case]]
+id = "TC-cli-0092"
+title = "A scope given as a classification, or the reverse, names the right flag"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag"
+
+[[case]]
+id = "TC-cli-0093"
+title = "A requirement of another module names the cases file that binds it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5"]
+requirements = ["REQ-cli-005", "REQ-cli-009"]
+paths = ["src/evidence.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_requirement_of_another_module_names_the_cases_file_that_binds_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_requirement_of_another_module_names_the_cases_file_that_binds_it"
+
+[[case]]
+id = "TC-cli-0094"
+title = "An unresolved requirement is refused with the check-first hint"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5"]
+requirements = ["REQ-cli-005", "REQ-cli-009"]
+paths = ["src/evidence.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::an_unresolved_requirement_is_refused_with_the_check_first_hint passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "an_unresolved_requirement_is_refused_with_the_check_first_hint"
+
+[[case]]
+id = "TC-cli-0095"
+title = "Evidence add names the contract for another module's requirement"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5"]
+requirements = ["REQ-cli-005"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::evidence_add_names_the_contract_for_another_modules_requirement passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "evidence_add_names_the_contract_for_another_modules_requirement"
+
+[[case]]
+id = "TC-cli-0096"
+title = "Binding env is bounded and refused with its location"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-009"]
+paths = ["src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::binding_env_is_bounded_and_refused_with_its_location passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "binding_env_is_bounded_and_refused_with_its_location"
+
+[[case]]
+id = "TC-cli-0097"
+title = "A declared variable reaches the command and is named without its value"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/cases.rs", "src/records.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_declared_variable_reaches_the_command_and_is_named_without_its_value passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_declared_variable_reaches_the_command_and_is_named_without_its_value"
+
+[[case]]
+id = "TC-cli-0098"
+title = "Coloured output matches its visible text and the artifact keeps the raw bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes"
+
+[[case]]
+id = "TC-cli-0099"
+title = "An unterminated escape never hides a second test result"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::an_unterminated_escape_never_hides_a_second_test_result passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "an_unterminated_escape_never_hides_a_second_test_result"

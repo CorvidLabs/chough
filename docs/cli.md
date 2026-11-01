@@ -201,6 +201,90 @@ passed observation, and validation runs keep their recorded counts.
 | `fledge-task` | `fledge run <task>` | Exit 0 and every `expect_output` fragment appears |
 | `command` | The argv as written | Exit 0 and every `expect_output` fragment appears |
 
+### Binding environment
+
+Any binding may declare `env`, a table of variable names and string values that are
+set for the executed command on top of the inherited environment. Chough never clears
+the inherited environment and sets no variable of its own, not even `NO_COLOR`; add
+`NO_COLOR = "1"` yourself when a tool should print plain text. Native reads are
+unaffected.
+
+```toml
+[case.bind]
+adapter = "command"
+argv = ["npx", "vitest", "run"]
+expect_output = ["Test Files  1 passed (1)"]
+env = { NO_COLOR = "1", PORT = "4173" }
+```
+
+`cases check` refuses, with the case location: a name that does not match
+`[A-Za-z_][A-Za-z0-9_]*` or is longer than 128 bytes; two names equal ignoring ASCII
+case (Windows treats them as one variable); a value containing NUL or longer than
+4 KiB; and more than 32 entries. A `cargo-test` binding also cannot declare, in any
+ASCII case, a name that chooses what cargo builds or runs: `PATH`, `CARGO`,
+`CARGO_HOME`, `RUSTC`, `RUSTDOC`, `RUSTC_WRAPPER`, `RUSTC_WORKSPACE_WRAPPER`,
+`RUSTFLAGS`, `CARGO_ENCODED_RUSTFLAGS`, `RUSTDOCFLAGS`,
+`CARGO_ENCODED_RUSTDOCFLAGS`, `RUSTC_BOOTSTRAP`, and any name starting with
+`RUSTUP_` (the toolchain), `CARGO_BUILD_`, `CARGO_TARGET_` (a per-target runner,
+linker or flags, which can carry `-C linker=...`), `CARGO_HOST_`, `CARGO_PROFILE_`
+or `CARGO_UNSTABLE_`. `CARGO_TARGET_DIR`, which only chooses where cargo writes, is
+allowed. For `command` and `fledge-task`, which name their
+program in argv, a declared `PATH` can change which program that name resolves to.
+
+`env` lives in the committed case file, so it is not a place for secrets. Its names
+and values are part of the case digest: adding or editing `env` makes earlier
+observations `stale-case-definition`, while an omitted or empty `env` leaves the
+digest of an existing case unchanged. An observation names the declared variables,
+`declared environment set: NAME, ...`, never their values. Every observation of an
+executed case, with or without `env`, carries the limitation `inherited environment
+variables were not recorded`: the inherited environment can still change what a
+binding does, and the record cannot show it.
+
+### Output matching
+
+`expect_output` fragments and the `cargo-test` count of `test result:` lines are
+matched against the captured text with complete terminal escape sequences removed;
+the artifact keeps the raw captured bytes. Removed are CSI sequences (`ESC [`,
+parameter bytes 0x30 to 0x3F, intermediate bytes 0x20 to 0x2F, one final byte 0x40 to
+0x7E), OSC sequences (`ESC ]` ended by BEL or `ESC \` before any line break) and
+two-byte sequences of `ESC` and one byte from 0x40 to 0x5F. A sequence that does not
+complete under these rules, including one cut by a line break or the end of the
+output, is left unchanged. Removal never removes a line break, so it can never lower
+the number of `test result:` lines. When anything was removed, the observation carries
+the limitation `terminal escape sequences were removed before matching; the artifact
+keeps the raw output`.
+
+Changed from earlier releases: an `expect_output` fragment that contains ESC
+(U+001B) is now refused by `cases check`, because it could never match the cleaned
+text. A case file that matched raw escape codes must match the visible text instead.
+
+### Error hints
+
+A requirement link that no searched companion holds is refused as before, with the
+same exit code, and the message names the companions searched,
+`requirement <ID> not found in specs/<module>/requirements.md`, then a likely cause:
+
+- When the ID has the form `REQ-<module>-NNN` (the module is what remains after
+  removing `REQ-` and the last `-NNN`, so `REQ-checkout-ui-004` names `checkout-ui`)
+  and that module's `requirements.md` holds it, the message names the module and the
+  fix. A cases file binds one module's contract, so `cases check`, `run` and `record`
+  say to move the case to `.chough/cases/<module>.cases.toml`; `evidence add` says to
+  add `--contract specs/<module>/<module>.spec.md`.
+- Otherwise the ID may be a typo, or a requirement an approved native change adds
+  that `specsync change check` has not yet materialized: run that check before running
+  or recording cases that link it, as the [accept order](../skills/chough-workflow/references/accept.md)
+  does first when the delta adds or modifies requirements.
+
+The hint reads neither the checkpoint nor any native delta, and no unresolved link is
+accepted.
+
+`bug add` and `bug update` refuse a scope value given as `--classification` with
+``; `<value>` is a scope: use --scope <value>``, and a classification given as
+`--scope` with the reverse hint; the exit code and the bug record are unchanged.
+`--help` for both commands lists the values: scope `blocking`, `in-scope` or
+`out-of-scope`; classification `unclassified`, `product-defect`, `regression`,
+`environment`, `requirement-gap` or `evidence-gap`.
+
 ## Timing
 
 `chough timing` reads existing records and writes none: every file under `.chough/`

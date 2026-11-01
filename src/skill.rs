@@ -99,6 +99,21 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/bugs.md",
         "a5497e45df7d2f7593f85101e47062d6bc605bfd1389ac27084d9f6ab1479b32",
     ),
+    // Main 2756dc2 (PR #9); superseded by the bundle hygiene change (#13): the two
+    // templates held em dashes, and references/testing.md gained env, escape removal
+    // and artifact guidance.
+    (
+        "templates/frd.md",
+        "5647b56e21f6667d1ed97381bcbd67a7baf2f60dd8332abcb269e72d4759fd23",
+    ),
+    (
+        "templates/cases.toml",
+        "6c7ebaa10b099829bc0db4529e28286ded721b0dfa9b5635a3ae0f37d9d91d4a",
+    ),
+    (
+        "references/testing.md",
+        "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

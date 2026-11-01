@@ -176,7 +176,7 @@ fn check_validates_links_against_native_records() {
     assert!(
         fixture
             .fails(&["cases", "check"])
-            .contains("requirement not found")
+            .contains("requirement REQ-cli-999 not found in specs/cli/requirements.md")
     );
     fixture.write(
         ".chough/cases/cli.cases.toml",
@@ -683,5 +683,413 @@ fn output_beyond_the_per_stream_bound_is_counted_not_retained() {
         artifact.contains("[truncated: stderr wrote 2500000 bytes; 2500000 discarded]"),
         "{}",
         &artifact[artifact.len() - 300..]
+    );
+}
+
+/// A project with the portable `hi` stand-in and the given cases, before any run.
+fn checked_fixture(cases: &str) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.write(".chough/cases/cli.cases.toml", &format!("{HEADER}{cases}"));
+    fixture
+}
+
+fn refused_with(fixture: &Fixture, args: &[&str], fragments: &[&str]) -> String {
+    let output = fixture.run(args);
+    let error = String::from_utf8_lossy(&output.stderr).into_owned();
+    // Validation failures keep the general error exit code.
+    assert_eq!(output.status.code(), Some(1), "{args:?}: {error}");
+    for fragment in fragments {
+        assert!(error.contains(fragment), "expected {fragment:?} in {error}");
+    }
+    error
+}
+
+#[test]
+fn a_requirement_of_another_module_names_the_cases_file_that_binds_it() {
+    let fixture = checked_fixture(&case(
+        "TC-cli-0001",
+        "functional",
+        "REQ-checkout-ui-004",
+        "",
+    ));
+    fixture.write("specs/checkout-ui/checkout-ui.spec.md", "# Checkout UI\n");
+    fixture.write(
+        "specs/checkout-ui/requirements.md",
+        "### REQ-checkout-ui-004\nShow the order total.\n",
+    );
+    let expected = [
+        ".chough/cases/cli.cases.toml: case TC-cli-0001",
+        "requirement REQ-checkout-ui-004 not found in specs/cli/requirements.md",
+        "REQ-checkout-ui-004 belongs to module checkout-ui (specs/checkout-ui/requirements.md)",
+        "a cases file binds one module's contract, so move the case to .chough/cases/checkout-ui.cases.toml",
+    ];
+    let error = refused_with(&fixture, &["cases", "check"], &expected);
+    assert!(!error.contains("specsync change check"), "{error}");
+    refused_with(
+        &fixture,
+        &[
+            "cases",
+            "record",
+            "TC-cli-0001",
+            "--environment",
+            "local",
+            "--method",
+            "manual",
+            "--verdict",
+            "1=pass",
+            "--verdict",
+            "2=pass",
+            "--summary",
+            "Looked",
+        ],
+        &expected,
+    );
+    assert!(!fixture.exists(".chough/evidence"));
+}
+
+#[test]
+fn an_unresolved_requirement_is_refused_with_the_check_first_hint() {
+    let neutral = "it may be a typo, or a requirement an approved native change adds that is not yet materialized: run specsync change check <change> before running or recording cases that link it";
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.write("specs/checkout-ui/checkout-ui.spec.md", "# Checkout UI\n");
+    fixture.write(
+        "specs/checkout-ui/requirements.md",
+        "### REQ-checkout-ui-004\nShow the order total.\n",
+    );
+    for requirement in [
+        // A typo, or a delta requirement not yet materialized, in the searched module.
+        "REQ-cli-999",
+        // Another module that does not hold the ID, also under the token match.
+        "REQ-checkout-ui-009",
+        "REQ-checkout-ui-00",
+        // A module that does not exist, and one that is not a valid name.
+        "REQ-billing-001",
+        "REQ-a.b-001",
+    ] {
+        fixture.write(
+            ".chough/cases/cli.cases.toml",
+            &format!(
+                "{HEADER}{}",
+                case("TC-cli-0001", "functional", requirement, "")
+            ),
+        );
+        let error = refused_with(
+            &fixture,
+            &["cases", "check"],
+            &[
+                ".chough/cases/cli.cases.toml: case TC-cli-0001",
+                &format!("requirement {requirement} not found in specs/cli/requirements.md"),
+                neutral,
+            ],
+        );
+        assert!(!error.contains("belongs to module"), "{error}");
+    }
+}
+
+#[test]
+fn binding_env_is_bounded_and_refused_with_its_location() {
+    let command = "adapter = \"command\"\nargv = [\"tool\"]\nexpect_output = [\"ok\"]";
+    let cargo = "adapter = \"cargo-test\"\ntest_target = \"cli\"\ntest = \"one\"";
+    let many = (0..33)
+        .map(|index| format!("V{index} = \"x\""))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let long_name = format!("N{}", "A".repeat(128));
+    let long_value = "v".repeat(4_097);
+    let mut refusals = vec![
+        (
+            command,
+            "env = { \"1BAD\" = \"x\" }".to_string(),
+            "env name 1BAD",
+        ),
+        (
+            command,
+            "env = { \"BAD-NAME\" = \"x\" }".into(),
+            "env name BAD-NAME",
+        ),
+        (
+            command,
+            format!("env = {{ {long_name} = \"x\" }}"),
+            "128 bytes",
+        ),
+        (
+            command,
+            "env = { Greeting = \"a\", GREETING = \"b\" }".into(),
+            "equal ignoring ASCII case",
+        ),
+        (command, "env = { GREETING = \"a\\u0000b\" }".into(), "NUL"),
+        (command, format!("env = {{ {many} }}"), "at most 32"),
+        (
+            command,
+            format!("env = {{ BIG = \"{long_value}\" }}"),
+            "4096 bytes",
+        ),
+        (
+            command,
+            "expect_output = [\"\\u001b[32mok\"]".into(),
+            "contains ESC",
+        ),
+    ];
+    for name in [
+        "Path",
+        "cargo",
+        "Cargo_Home",
+        "rustc",
+        "RustDoc",
+        "rustc_wrapper",
+        "Rustc_Workspace_Wrapper",
+        "rustflags",
+        "Cargo_Encoded_Rustflags",
+        "cargo_build_target",
+        "CARGO_BUILD_RUSTC",
+        "Cargo_Target_x86_64_unknown_linux_gnu_Runner",
+        // A toolchain override, a linker or target-level flags (which can carry
+        // `-C linker=...`) replace the test binary as surely as RUSTFLAGS does.
+        "RUSTUP_TOOLCHAIN",
+        "Rustup_Home",
+        "CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER",
+        "cargo_target_x86_64_pc_windows_msvc_rustflags",
+        "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTDOCFLAGS",
+        "CARGO_HOST_LINKER",
+        "RUSTDOCFLAGS",
+        "Cargo_Encoded_Rustdocflags",
+        "CARGO_PROFILE_TEST_DEBUG_ASSERTIONS",
+        "CARGO_UNSTABLE_BUILD_STD",
+        "RUSTC_BOOTSTRAP",
+    ] {
+        refusals.push((
+            cargo,
+            format!("env = {{ {name} = \"x\" }}"),
+            "chooses what cargo builds or runs",
+        ));
+    }
+    let fixture = checked_fixture("");
+    for (binding, extra, message) in refusals {
+        // An inline `expect_output` replaces the one the command binding declares.
+        let binding = if extra.starts_with("expect_output") {
+            binding.replace("\nexpect_output = [\"ok\"]", "")
+        } else {
+            binding.to_string()
+        };
+        fixture.write(
+            ".chough/cases/cli.cases.toml",
+            &format!("{HEADER}{}", bound("TC-cli-0002", &binding, &extra)),
+        );
+        refused_with(
+            &fixture,
+            &["cases", "check"],
+            &[".chough/cases/cli.cases.toml: case TC-cli-0002", message],
+        );
+    }
+    // Names cargo reads but that do not choose what it builds or runs stay allowed,
+    // as does any name for the other adapters.
+    for (binding, extra) in [
+        (
+            cargo,
+            "env = { RUST_BACKTRACE = \"1\", CARGO_TARGET_DIR = \"target\", CARGO_BUILD = \"x\", CARGO_TERM_COLOR = \"never\" }",
+        ),
+        (
+            command,
+            "env = { PATH = \"bin\", NO_COLOR = \"1\", _private = \"\" }",
+        ),
+    ] {
+        fixture.write(
+            ".chough/cases/cli.cases.toml",
+            &format!("{HEADER}{}", bound("TC-cli-0002", binding, extra)),
+        );
+        assert_eq!(fixture.ok(&["cases", "check"])["valid"], true, "{extra}");
+    }
+}
+
+#[test]
+fn an_empty_env_keeps_the_case_digest_and_editing_env_changes_it() {
+    let binding = "adapter = \"command\"\nargv = [\"tool\"]\nexpect_output = [\"ok\"]";
+    let fixture = checked_fixture(&bound("TC-cli-0002", binding, ""));
+    let digest = |fixture: &Fixture| list(fixture)[0]["digest"].as_str().unwrap().to_string();
+    // The digest this definition had at main 2756dc2, before `env` existed.
+    let original = digest(&fixture);
+    assert_eq!(original, DIGEST_AT_2756DC2);
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{}", bound("TC-cli-0002", binding, "env = {}")),
+    );
+    assert_eq!(digest(&fixture), original);
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!(
+            "{HEADER}{}",
+            bound("TC-cli-0002", binding, "env = { NO_COLOR = \"1\" }")
+        ),
+    );
+    let declared = digest(&fixture);
+    assert_ne!(declared, original);
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!(
+            "{HEADER}{}",
+            bound("TC-cli-0002", binding, "env = { NO_COLOR = \"0\" }")
+        ),
+    );
+    let edited = digest(&fixture);
+    assert_ne!(edited, declared);
+    assert_ne!(edited, original);
+}
+
+/// `bound("TC-cli-0002", <command binding>, "")` as digested at main 2756dc2.
+const DIGEST_AT_2756DC2: &str = "7e6c13eda25ecad83cc42f630af994d06d9b9a4aed1d3fd33247aa726496825f";
+
+fn env_printer(id: &str, extra: &str, expect: &str) -> String {
+    #[cfg(unix)]
+    let argv = r#"["sh", "-c", "printf 'greeting=%s\n' \"$CHOUGH_GREETING\""]"#;
+    #[cfg(windows)]
+    let argv = r#"["cmd", "/c", "echo greeting=%CHOUGH_GREETING%"]"#;
+    bound(
+        id,
+        &format!(
+            "adapter = \"command\"\nargv = {argv}\nexpect_output = [\"{expect}\"]\ntimeout_seconds = 60"
+        ),
+        extra,
+    )
+}
+
+const INHERITED: &str = "inherited environment variables were not recorded";
+
+#[test]
+fn a_declared_variable_reaches_the_command_and_is_named_without_its_value() {
+    let fixture = bounded_fixture(&format!(
+        "{}{}",
+        env_printer(
+            "TC-cli-0001",
+            "env = { CHOUGH_GREETING = \"hello-from-the-case\" }",
+            "greeting=hello-from-the-case"
+        ),
+        env_printer("TC-cli-0002", "", "greeting="),
+    ));
+    let (_, report, record) = timed_run(&fixture, "TC-cli-0001");
+    assert_eq!(report["outcome"], "passed", "{record}");
+    let declared = limitations(&record);
+    assert!(declared.contains(&INHERITED.to_string()), "{record}");
+    assert!(
+        declared.contains(&"declared environment set: CHOUGH_GREETING".to_string()),
+        "{record}"
+    );
+    // The value is bound through the case digest, never copied into the observation.
+    assert!(
+        !record.to_string().contains("hello-from-the-case"),
+        "{record}"
+    );
+    assert!(
+        fixture
+            .read(record["artifacts"][0].as_str().unwrap())
+            .contains("greeting=hello-from-the-case")
+    );
+
+    let (_, report, record) = timed_run(&fixture, "TC-cli-0002");
+    assert_eq!(report["outcome"], "passed", "{record}");
+    let undeclared = limitations(&record);
+    assert!(undeclared.contains(&INHERITED.to_string()), "{record}");
+    assert!(
+        !undeclared
+            .iter()
+            .any(|limitation| limitation.starts_with("declared environment")),
+        "{record}"
+    );
+    assert!(
+        !fixture
+            .read(record["artifacts"][0].as_str().unwrap())
+            .contains("hello-from-the-case")
+    );
+}
+
+/// Vitest-style coloured summary: bold, dim and colour codes split the visible text
+/// ` Test Files  1 passed (1)`, followed by an OSC 8 hyperlink and a two-byte escape.
+const COLOURED: &[u8] = b"\x1b[2m Test Files \x1b[22m \x1b[1m\x1b[32m1 passed\x1b[39m\x1b[22m\x1b[90m (1)\x1b[39m\n\x1b]8;;file:///report\x07report\x1b]8;;\x1b\\ written\x1bM\n";
+
+fn printer(id: &str, file: &str, expect: &str) -> String {
+    #[cfg(unix)]
+    let argv = format!(r#"["cat", "{file}"]"#);
+    #[cfg(windows)]
+    let argv = format!(r#"["cmd", "/c", "type {file}"]"#);
+    bound(
+        id,
+        &format!(
+            "adapter = \"command\"\nargv = {argv}\nexpect_output = [\"{expect}\"]\ntimeout_seconds = 60"
+        ),
+        "",
+    )
+}
+
+const ESCAPES_REMOVED: &str =
+    "terminal escape sequences were removed before matching; the artifact keeps the raw output";
+
+#[test]
+fn coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes() {
+    let fixture = bounded_fixture(&format!(
+        "{}{}{}",
+        printer("TC-cli-0001", "coloured.txt", "Test Files  1 passed (1)"),
+        printer("TC-cli-0002", "coloured.txt", "Test Files  2 passed"),
+        printer("TC-cli-0003", "plain.txt", "Test Files  1 passed (1)"),
+    ));
+    std::fs::write(fixture.root().join("coloured.txt"), COLOURED).unwrap();
+    fixture.write("plain.txt", " Test Files  1 passed (1)\n");
+
+    let (_, report, record) = timed_run(&fixture, "TC-cli-0001");
+    assert_eq!(report["outcome"], "passed", "{record}");
+    assert!(
+        limitations(&record).contains(&ESCAPES_REMOVED.to_string()),
+        "{record}"
+    );
+    let artifact = std::fs::read(
+        fixture
+            .root()
+            .join(record["artifacts"][0].as_str().unwrap()),
+    )
+    .unwrap();
+    let mut raw = b"--- stdout ---\n".to_vec();
+    raw.extend(COLOURED);
+    raw.extend(b"\n--- stderr ---\n");
+    assert_eq!(artifact, raw, "the artifact must keep the captured bytes");
+
+    // A fragment absent from the visible text still fails.
+    let (_, report, record) = timed_run(&fixture, "TC-cli-0002");
+    assert_eq!(report["outcome"], "failed", "{record}");
+    assert!(
+        limitations(&record)
+            .iter()
+            .any(|limitation| limitation.starts_with("expected output missing")),
+        "{record}"
+    );
+
+    // Output without escapes carries no escape limitation.
+    let (_, report, record) = timed_run(&fixture, "TC-cli-0003");
+    assert_eq!(report["outcome"], "passed", "{record}");
+    assert!(
+        !limitations(&record).contains(&ESCAPES_REMOVED.to_string()),
+        "{record}"
+    );
+}
+
+#[test]
+fn an_unterminated_escape_never_hides_a_second_test_result() {
+    // Two test result lines, each for one test, with an OSC that a line break
+    // interrupts between them: a cleaner that ran on to the later BEL would hide the
+    // first line and count one test.
+    let output = "running 1 test\ntest first ... ok\n\x1b]0;printed by a test\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out\nrunning 1 test\ntest second ... ok\x07\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out";
+    let fixture = bounded_fixture(&bound(
+        "TC-cli-0001",
+        "adapter = \"cargo-test\"\ntest_target = \"cli\"\ntest = \"first\"",
+        "",
+    ));
+    common::stand_in(&fixture.root().join("bin"), "cargo", output);
+    let (_, report, record) = timed_run(&fixture, "TC-cli-0001");
+    assert_eq!(report["outcome"], "not-run", "{record}");
+    assert_eq!(record["tests_run"], 2, "{record}");
+    assert!(
+        limitations(&record).contains(&"the binding should select exactly one test; 2 ran".into()),
+        "{record}"
     );
 }

@@ -357,3 +357,70 @@ fn a_bug_without_a_linked_failure_cannot_be_verified() {
         "open"
     );
 }
+
+#[test]
+fn a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let refused = |output: std::process::Output, hint: &str| {
+        // The refusal keeps the validation exit code; clap's usage errors exit 2.
+        assert_eq!(
+            output.status.code(),
+            Some(1),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let error = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(error.contains(hint), "expected {hint:?} in {error}");
+    };
+    refused(
+        add_bug(&fixture, &["--classification", "blocking"]),
+        "`blocking` is a scope: use --scope blocking",
+    );
+    refused(
+        add_bug(&fixture, &["--scope", "product-defect"]),
+        "`product-defect` is a classification: use --classification product-defect",
+    );
+    assert!(!fixture.exists(".chough/bugs/BUG-0001.json"));
+
+    json(&add_bug(&fixture, &[]));
+    let before = fixture.read(".chough/bugs/BUG-0001.json");
+    let update = |flag: &str, value: &str| fixture.run(&["bug", "update", "BUG-0001", flag, value]);
+    refused(
+        update("--classification", "out-of-scope"),
+        "`out-of-scope` is a scope: use --scope out-of-scope",
+    );
+    refused(
+        update("--scope", "regression"),
+        "`regression` is a classification: use --classification regression",
+    );
+    assert_eq!(fixture.read(".chough/bugs/BUG-0001.json"), before);
+
+    // A value that is neither keeps the plain refusal.
+    let output = update("--scope", "urgent");
+    assert_eq!(output.status.code(), Some(1));
+    let error = String::from_utf8_lossy(&output.stderr);
+    assert!(error.contains("scope must be one of"), "{error}");
+    assert!(!error.contains("use --classification"), "{error}");
+
+    for command in ["add", "update"] {
+        let help = fixture.run(&["bug", command, "--help"]);
+        let text = String::from_utf8_lossy(&help.stdout);
+        for value in [
+            "blocking",
+            "in-scope",
+            "out-of-scope",
+            "unclassified",
+            "product-defect",
+            "regression",
+            "environment",
+            "requirement-gap",
+            "evidence-gap",
+        ] {
+            assert!(
+                text.contains(value),
+                "bug {command} --help lacks {value}: {text}"
+            );
+        }
+    }
+}

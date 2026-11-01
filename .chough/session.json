@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Land PR #17: keep evidence current across commits and SpecSync lifecycle bookkeeping, and verify bugs only by a pass observed after the failure; no release",
+  "objective": "Land PR #16: bundle hygiene, case binding environment, colour-safe matching, actionable errors",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records",
+  "native_change": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -53,6 +53,7 @@
     "2026-10-31: 0xLeif approved the scopes of PRs #3, #7 and #8 (\"I approve\"); recorded with specsync change approve --actor 0xLeif (digests 8ee404db, d2f17060, d358e8b1)",
     "2026-10-31: 0xLeif reviewed and accepted the implementations of PRs #3, #7 and #8; reviews recorded with specsync change review --reviewer 0xLeif (#3 and #7 now; #8 after its rebase)",
     "2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion",
+    "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
     "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed"
   ],
@@ -71,8 +72,10 @@
     "PR #7 change archived at ef9de16 after review; Chough reached done through gate native:archived",
     "Retention, packaging and docs implemented in three reviewed streams and merged into PR #9; BUG-0012 reproduced at d761ff2 and verified at 30b74f8; BUG-0013 found, fixed at 3b0b2f7 and verified; TC-cli-0050 to TC-cli-0066 passed",
     "PR #9 change archived after 0xLeif's review; Chough reached done through native:archived",
+    "refused env names in the approved definition amended to match the code; re-approved by 0xLeif",
     "plan step 7 documented-order exercise passed",
-    "TC-cli-0100 and TC-cli-0104 added and passing"
+    "TC-cli-0100 and TC-cli-0104 added and passing",
+    "PR #9 merged earlier; stale awaiting-human entry cleared"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -81,8 +84,7 @@
     "bug-0004-repro-1",
     "tc-cli-0038-1793475511",
     "tc-cli-0039-1793475513",
-    "bug-0004-fixed-1",
-    "step7-documented-order-exercise"
+    "bug-0004-fixed-1"
   ],
   "bugs": [
     "BUG-0001",
@@ -94,5 +96,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "specsync change review report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records --reviewer 0xLeif, then ship"
+  "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
 }

@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "bug-0017-fixed-1",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-005",
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "At 282c5bd (fixed), the same reproduction named specs/cli/requirements.md and gave the typo or not-yet-materialized hint to run specsync change check first; case run tc-cli-0094-1793500898 passed.",
+  "artifacts": [
+    ".chough/artifacts/bug-0017-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0017-fixed-reproduction.log": "88a447fe7c6cb3cce07c7e5f080e6e292756308cee482d06df5c44a776c18ac2"
+  },
+  "observed_at_unix_seconds": 1793500930,
+  "snapshot": {
+    "revision": "282c5bdfeb7bae5cc84f3ac8236652a4536080af",
+    "dirty": false,
+    "fingerprint": "dea19cfdf6cc52ecd21e942c4862ea68260b93cc38ed8f8d18f694ca2a6f0803",
+    "content": "e9daf2396e35880630ab04c9ea0f4ccc9d1acd8a9b7b4b1f08954372cd329155"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0094",
+      "digest": "058cef64fdff2d9ed0f88b66cc5503eaf63caaf73b195df6fc6485238ef273b2"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Error half only; the documented-order half belongs to the evidence-freshness change",
+    "Reproduced in a disposable project on macOS only"
+  ]
+}

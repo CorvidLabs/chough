@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "bug-0018-repro-1",
+  "criteria": [
+    "LIFE-4",
+    "LIFE-9"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "At fce3d98 (unfixed), chough init --host claude --host openai copied templates/cases.toml:1 and templates/frd.md:23 with U+2014 into both host directories; the case TC-cli-0090 run tc-cli-0090-1793500284 also failed.",
+  "artifacts": [
+    ".chough/artifacts/bug-0018-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0018-reproduction.log": "fa00bb34fb69b1318c515364515c0fc9f531b67e229c4d21941eecda036a9bac"
+  },
+  "observed_at_unix_seconds": 1793500326,
+  "snapshot": {
+    "revision": "fce3d98d9b4d093c77513c09bb23f97706f11fbe",
+    "dirty": false,
+    "fingerprint": "16a8159b576eb90e3b819aec970993843fedfd8f5a972a79d793394b5a932bca",
+    "content": "2576e5f2f6b87c584c38e7fc14434299f7863a6f516aeadd71f8ad9ca7a194e7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0090",
+      "digest": "1f872622615fe10f0fa6922e02bbdc38c50f21b4ae4ba80857e5cd266daaf82d"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Reproduced in a disposable project on macOS only"
+  ]
+}

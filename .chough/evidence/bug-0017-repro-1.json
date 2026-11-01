@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "bug-0017-repro-1",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-005",
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "At fce3d98 (unfixed), a cli case linking a requirement absent from specs/cli/requirements.md (as an unmaterialized delta ID would be) gave the bare 'requirement not found in contract companions' error with no hint; case run tc-cli-0094-1793500286 also failed.",
+  "artifacts": [
+    ".chough/artifacts/bug-0017-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0017-reproduction.log": "b8e45cb461bcf6588d3bdee422a3553edae88eb0c34f15fc2d88bc03710be7cd"
+  },
+  "observed_at_unix_seconds": 1793500327,
+  "snapshot": {
+    "revision": "fce3d98d9b4d093c77513c09bb23f97706f11fbe",
+    "dirty": false,
+    "fingerprint": "16a8159b576eb90e3b819aec970993843fedfd8f5a972a79d793394b5a932bca",
+    "content": "2576e5f2f6b87c584c38e7fc14434299f7863a6f516aeadd71f8ad9ca7a194e7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0094",
+      "digest": "058cef64fdff2d9ed0f88b66cc5503eaf63caaf73b195df6fc6485238ef273b2"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Error half only; the documented-order half belongs to the evidence-freshness change",
+    "Reproduced in a disposable project on macOS only"
+  ]
+}

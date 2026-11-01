@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0097-1793540788",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-011"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cases -- --exact a_declared_variable_reaches_the_command_and_is_named_without_its_value for TC-cli-0097: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0097-1793540788.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0097-1793540788.log": "5ff55beaeff7f8a601665f320cb244ce5bf6c69827f917fe4b53a48c98d017aa"
+  },
+  "observed_at_unix_seconds": 1793540790,
+  "snapshot": {
+    "revision": "235d1ac77f65181826b2d56b60525858d5b4d604",
+    "dirty": false,
+    "fingerprint": "822b3f24d4139f4a528a151cc1a9f39b0623c280c78c502cbfbe2839e29f230e",
+    "content": "854707f8e816bf30b3e3859409e94b731773df07175e5b9a915ad1bf292adfdd"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0097",
+      "digest": "582fac83e15815c1d6601e7df036dfbd5d285ba17b97d76ce1d851a70b6d4aec"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cases",
+    "--",
+    "--exact",
+    "a_declared_variable_reaches_the_command_and_is_named_without_its_value"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

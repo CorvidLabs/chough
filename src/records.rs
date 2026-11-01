@@ -480,10 +480,12 @@ fn stop_tree(child: &mut Child) -> bool {
 /// open after the command exits (2 s grace, bounded by the deadline but at least
 /// 200 ms), the command and its descendants are stopped (Unix: its process group;
 /// Windows: its process tree); readers still blocked a second later are abandoned,
-/// never awaited.
+/// never awaited. `env` is set on top of the inherited environment, which is never
+/// cleared.
 pub(super) fn run_bounded(
     root: &Path,
     argv: &[impl AsRef<OsStr>],
+    env: &[(String, String)],
     limits: &Limits,
 ) -> io::Result<Captured> {
     let Some((program, arguments)) = argv.split_first() else {
@@ -495,6 +497,7 @@ pub(super) fn run_bounded(
     let mut command = Command::new(program);
     command
         .args(arguments)
+        .envs(env.iter().map(|(name, value)| (name, value)))
         .current_dir(root)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
@@ -644,7 +647,7 @@ fn native_capture(
         stderr_cap: LIMIT,
         deadline,
     };
-    let output = run_bounded(root, &argv, &limits)
+    let output = run_bounded(root, &argv, &[], &limits)
         .map_err(|error| unknown("unavailable", format!("Unknown: {error}")))?;
     if output.timed_out {
         let stopped = if output.descendants_stopped {
@@ -863,7 +866,7 @@ mod tests {
     fn an_empty_argument_vector_is_refused() {
         let root = tempfile::tempdir().unwrap();
         let empty: [&str; 0] = [];
-        assert!(run_bounded(root.path(), &empty, &limits(8, 1)).is_err());
+        assert!(run_bounded(root.path(), &empty, &[], &limits(8, 1)).is_err());
     }
 
     #[test]
@@ -874,7 +877,7 @@ mod tests {
         let argv = script("cat big.txt; cat big.txt >&2");
         #[cfg(windows)]
         let argv = script("type big.txt & type big.txt 1>&2");
-        let output = run_bounded(root.path(), &argv, &limits(4_096, 60)).unwrap();
+        let output = run_bounded(root.path(), &argv, &[], &limits(4_096, 60)).unwrap();
         assert_eq!(output.exit_code, Some(0));
         assert_eq!(
             (output.stdout.len(), output.stdout_total),
@@ -895,7 +898,7 @@ mod tests {
         #[cfg(windows)]
         let argv = script("start /b ping -n 30 127.0.0.1 & ping -n 30 127.0.0.1");
         let started = Instant::now();
-        let output = run_bounded(root.path(), &argv, &limits(4_096, 1)).unwrap();
+        let output = run_bounded(root.path(), &argv, &[], &limits(4_096, 1)).unwrap();
         let elapsed = started.elapsed();
         assert!(elapsed < Duration::from_secs(10), "{elapsed:?}");
         assert!(output.timed_out && output.descendants_stopped);
@@ -913,7 +916,7 @@ mod tests {
         #[cfg(windows)]
         let argv = script("start /b ping -n 30 127.0.0.1 & echo started");
         let started = Instant::now();
-        let output = run_bounded(root.path(), &argv, &limits(4_096, 20)).unwrap();
+        let output = run_bounded(root.path(), &argv, &[], &limits(4_096, 20)).unwrap();
         let elapsed = started.elapsed();
         assert!(elapsed < Duration::from_secs(10), "{elapsed:?}");
         assert!(output.held_open && !output.timed_out);
@@ -930,7 +933,7 @@ mod tests {
     fn a_command_that_closes_its_output_early_is_still_awaited_to_its_exit() {
         let root = tempfile::tempdir().unwrap();
         let argv = script("exec >/dev/null 2>&1; sleep 1; exit 4");
-        let output = run_bounded(root.path(), &argv, &limits(64, 20)).unwrap();
+        let output = run_bounded(root.path(), &argv, &[], &limits(64, 20)).unwrap();
         assert_eq!(output.exit_code, Some(4));
         assert!(!output.timed_out && !output.held_open && !output.capture_incomplete);
     }

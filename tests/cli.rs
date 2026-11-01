@@ -1192,3 +1192,93 @@ not published. Review it, and post it only when the human asks. Then return the
 resulting URL and add it to the record with a note. Record a lesson in the native
 module source only when its source, scope and future use are clear.
 "#;
+
+#[test]
+fn evidence_add_names_the_contract_for_another_modules_requirement() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    fixture.write("specs/checkout-ui/checkout-ui.spec.md", "# Checkout UI\n");
+    fixture.write(
+        "specs/checkout-ui/requirements.md",
+        "### REQ-checkout-ui-004\nShow the order total.\n",
+    );
+    let add = |requirement: &str| {
+        fixture.run(&[
+            "evidence",
+            "add",
+            "cross-module",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            requirement,
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "test-local",
+            "--summary",
+            "Observed the order total",
+        ])
+    };
+    for (requirement, hints, absent) in [
+        (
+            "REQ-checkout-ui-004",
+            vec![
+                "requirement REQ-checkout-ui-004 not found in specs/cli/requirements.md",
+                "REQ-checkout-ui-004 belongs to module checkout-ui (specs/checkout-ui/requirements.md)",
+                "add --contract specs/checkout-ui/checkout-ui.spec.md",
+            ],
+            "specsync change check",
+        ),
+        (
+            "REQ-cli-999",
+            vec![
+                "requirement REQ-cli-999 not found in specs/cli/requirements.md",
+                "it may be a typo, or a requirement an approved native change adds that is not yet materialized: run specsync change check <change>",
+            ],
+            "belongs to module",
+        ),
+    ] {
+        let output = add(requirement);
+        let error = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert_eq!(output.status.code(), Some(1), "{error}");
+        for hint in hints {
+            assert!(error.contains(hint), "expected {hint:?} in {error}");
+        }
+        assert!(!error.contains(absent), "{error}");
+    }
+    assert!(
+        !fixture
+            .root()
+            .join(".chough/evidence/cross-module.json")
+            .exists()
+    );
+    // With the owning contract named, the same link is accepted.
+    let output = fixture.run(&[
+        "evidence",
+        "add",
+        "cross-module",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-checkout-ui-004",
+        "--contract",
+        "specs/checkout-ui/checkout-ui.spec.md",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "passed",
+        "--environment",
+        "test-local",
+        "--summary",
+        "Observed the order total",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}

@@ -1,0 +1,53 @@
+# Reproduction of BUG-0017
+revision: 282c5bdfeb7bae5cc84f3ac8236652a4536080af
+source tree: 0 uncommitted src/skills paths
+platform: Darwin 25.5.0 arm64
+date: 2026-11-01T02:41:55Z
+binary: target/debug/chough (chough 0.1.0)
+project: disposable temporary directory
+
+$ /Users/leif/Development/_CorvidLabs/_worktrees/chough-bundle/target/debug/chough --root /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/tmp.kShsDYVxkY init --objective Try Chough --intent-scope LIFE --module cli
+{
+  "created": [
+    ".chough/session.json",
+    ".agents/skills/chough-workflow/SKILL.md",
+    ".agents/skills/chough-workflow/agents/openai.yaml",
+    ".agents/skills/chough-workflow/references/accept.md",
+    ".agents/skills/chough-workflow/references/bugs.md",
+    ".agents/skills/chough-workflow/references/build.md",
+    ".agents/skills/chough-workflow/references/checkpoint.md",
+    ".agents/skills/chough-workflow/references/design.md",
+    ".agents/skills/chough-workflow/references/intent.md",
+    ".agents/skills/chough-workflow/references/librarian.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/plan.md",
+    ".agents/skills/chough-workflow/references/release.md",
+    ".agents/skills/chough-workflow/references/roles.md",
+    ".agents/skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/references/testing.md",
+    ".agents/skills/chough-workflow/references/validate.md",
+    ".agents/skills/chough-workflow/templates/brief.md",
+    ".agents/skills/chough-workflow/templates/bug-report.md",
+    ".agents/skills/chough-workflow/templates/cases.toml",
+    ".agents/skills/chough-workflow/templates/frd.md",
+    ".agents/skills/chough-workflow/templates/prototype/COMPANION.md",
+    ".agents/skills/chough-workflow/templates/prototype/index.html",
+    ".agents/skills/chough-workflow/templates/prototype/styles.css",
+    ".agents/skills/chough-workflow/templates/review-findings.md"
+  ],
+  "hosts": [
+    "openai"
+  ],
+  "preserved": [],
+  "schema_version": 1
+}
+[exit 0]
+
+(a cli case links REQ-cli-002, as if an approved delta adds it before change check materializes it)
+$ /Users/leif/Development/_CorvidLabs/_worktrees/chough-bundle/target/debug/chough --root /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/tmp.kShsDYVxkY cases check
+Error: .chough/cases/cli.cases.toml: case TC-cli-0001
+
+Caused by:
+    requirement REQ-cli-002 not found in specs/cli/requirements.md; it may be a typo, or a requirement an approved native change adds that is not yet materialized: run specsync change check <change> before running or recording cases that link it
+[exit 1]
+

@@ -77,6 +77,14 @@ observation is labelled `current`, `historical` (present but stale), `pruned` (a
 and in the ledger) or `unavailable` (absent and not in it); pruned and unavailable
 ones never count as current or passed.
 
+**Large artifacts.** Artifacts stay inside the project: absolute, `..` and symlinked
+paths are refused, and there is no external artifact location. Keep screenshots,
+recordings and other binaries small. A large one may be ignored by Git
+(`.gitignore` or `.git/info/exclude`): the observation still keeps its fingerprint
+and reads `current-observation` where the file exists, while a clone without the file
+reads `stale-artifact`, never passed. Git LFS is not recommended, because SpecSync
+`change check` currently refuses tracked LFS files (CorvidLabs/spec-sync#789).
+
 ## Checkpoint authority
 
 There is exactly one writable checkpoint. Hand edits are allowed and validated on

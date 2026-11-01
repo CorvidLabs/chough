@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.64s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/bugs.rs (target/debug/deps/bugs-84c5024159755c26)

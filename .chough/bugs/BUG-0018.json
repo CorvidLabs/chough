@@ -20,16 +20,38 @@
     "grep U+2014 in skills/chough-workflow/templates"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "tc-cli-0090-1793500284",
+    "bug-0018-repro-1",
+    "tc-cli-0090-1793500893",
+    "bug-0018-fixed-1"
+  ],
   "impact": "Host copies cannot be committed or linted cleanly",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "CorvidLabs/chough#13 (Raven run); reproduced on main 2756dc2",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793500333,
+      "text": "Reproduced at fce3d98 before any fix: case TC-cli-0090 failed and the init reproduction found both dashes in the host copies.",
+      "observations": [
+        "tc-cli-0090-1793500284",
+        "bug-0018-repro-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793500931,
+      "text": "status: open -> verified. Fixed by the bundle hygiene change: the unchanged case TC-cli-0090 and the init reproduction pass at 282c5bd, after the linked failures.",
+      "observations": [
+        "tc-cli-0090-1793500893",
+        "bug-0018-fixed-1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793494674,
-  "updated_at_unix_seconds": 1793494674
+  "updated_at_unix_seconds": 1793500931
 }

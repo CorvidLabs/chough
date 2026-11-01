@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test the_shipped_bundle_holds_no_em_or_en_dash ... FAILED
+
+failures:
+
+---- the_shipped_bundle_holds_no_em_or_en_dash stdout ----
+
+thread 'the_shipped_bundle_holds_no_em_or_en_dash' (145541951) panicked at tests/package.rs:540:5:
+templates/cases.toml:1: em or en dash
+templates/frd.md:23: em or en dash
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_shipped_bundle_holds_no_em_or_en_dash
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.01s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/package.rs (target/debug/deps/package-1becac6ef9d733f9)
+error: test failed, to rerun pass `--test package`

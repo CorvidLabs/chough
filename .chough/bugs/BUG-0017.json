@@ -20,7 +20,12 @@
     "Link a case to REQ-m-N; chough cases check"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "tc-cli-0094-1793500286",
+    "bug-0017-repro-1",
+    "tc-cli-0094-1793500898",
+    "bug-0017-fixed-1"
+  ],
   "impact": "Cases run twice",
   "classification": "product-defect",
   "scope": "in-scope",
@@ -29,7 +34,24 @@
   "duplicate_of": null,
   "related": [],
   "source": "CorvidLabs/chough#11 (Raven run); reproduced on main 2756dc2",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793500334,
+      "text": "Error half reproduced at fce3d98 before any fix: case TC-cli-0094 failed and the reproduction showed the bare not-found error.",
+      "observations": [
+        "tc-cli-0094-1793500286",
+        "bug-0017-repro-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793500931,
+      "text": "Error half fixed by the bundle hygiene change: the unchanged case TC-cli-0094 and the reproduction pass at 282c5bd. The bug stays open: its documented-order half (no double runs) belongs to the evidence-freshness change.",
+      "observations": [
+        "tc-cli-0094-1793500898",
+        "bug-0017-fixed-1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1793494673
+  "updated_at_unix_seconds": 1793500931
 }

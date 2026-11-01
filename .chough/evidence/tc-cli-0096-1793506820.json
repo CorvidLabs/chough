@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0096-1793506820",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cases -- --exact binding_env_is_bounded_and_refused_with_its_location for TC-cli-0096: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0096-1793506820.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0096-1793506820.log": "5497461696bdd3f021a67919e8dc2784114dd9ab0fe04e5c4eaff6475865ef72"
+  },
+  "observed_at_unix_seconds": 1793506823,
+  "snapshot": {
+    "revision": "a3a8171009b65d56c084829d5857ba2647180f3f",
+    "dirty": false,
+    "fingerprint": "3ea5e4df71045f7db8c96b715c88e52f72b608db46226004f1f0d9a8ee277445",
+    "content": "d0dee56b9a868f8291c4a8555349e6be8b429c9924c297177ff96a6e48072bcb"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0096",
+      "digest": "608553d197944c29740d4e79c07d58467cfc93df62ee540ef929f44aeb1d8797"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cases",
+    "--",
+    "--exact",
+    "binding_env_is_bounded_and_refused_with_its_location"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ]
+}

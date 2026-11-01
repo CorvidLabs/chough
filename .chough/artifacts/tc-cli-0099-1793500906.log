@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test an_unterminated_escape_never_hides_a_second_test_result ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 16 filtered out; finished in 1.30s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/cases.rs (target/debug/deps/cases-aebdf6374da16d6b)

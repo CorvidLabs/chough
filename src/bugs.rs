@@ -120,8 +120,12 @@ pub(super) struct AddArgs {
     /// A recorded observation that shows the failure.
     #[arg(long = "observation")]
     observations: Vec<String>,
+    /// One of unclassified, product-defect, regression, environment, requirement-gap or
+    /// evidence-gap. Scope values go in --scope.
     #[arg(long, default_value = "unclassified")]
     classification: String,
+    /// One of blocking, in-scope or out-of-scope. Classification values go in
+    /// --classification.
     #[arg(long, default_value = "in-scope")]
     scope: String,
     /// A passed observation at an earlier, ancestor revision (required for regression).
@@ -139,8 +143,12 @@ pub(super) struct UpdateArgs {
     id: String,
     #[arg(long)]
     status: Option<String>,
+    /// One of unclassified, product-defect, regression, environment, requirement-gap or
+    /// evidence-gap. Scope values go in --scope.
     #[arg(long)]
     classification: Option<String>,
+    /// One of blocking, in-scope or out-of-scope. Classification values go in
+    /// --classification.
     #[arg(long)]
     scope: Option<String>,
     #[arg(long)]
@@ -211,6 +219,15 @@ fn valid_bug_id(id: &str) -> bool {
         .is_some_and(|number| number.len() == 4 && number.bytes().all(|byte| byte.is_ascii_digit()))
 }
 
+/// A hint for a value that belongs to the other of `--scope` and `--classification`.
+fn other_flag(value: &str, other: &[&str], flag: &str) -> String {
+    if other.contains(&value) {
+        format!("; `{value}` is a {flag}: use --{flag} {value}")
+    } else {
+        String::new()
+    }
+}
+
 fn validate(bug: &Bug) -> Result<()> {
     ensure!(bug.schema_version == 1, "unsupported bug schema_version");
     ensure!(valid_bug_id(&bug.id), "invalid bug ID {}", bug.id);
@@ -233,13 +250,15 @@ fn validate(bug: &Bug) -> Result<()> {
     );
     ensure!(
         SCOPES.contains(&bug.scope.as_str()),
-        "scope must be one of {}",
-        SCOPES.join(", ")
+        "scope must be one of {}{}",
+        SCOPES.join(", "),
+        other_flag(&bug.scope, &CLASSES, "classification")
     );
     ensure!(
         CLASSES.contains(&bug.classification.as_str()),
-        "classification must be one of {}",
-        CLASSES.join(", ")
+        "classification must be one of {}{}",
+        CLASSES.join(", "),
+        other_flag(&bug.classification, &SCOPES, "scope")
     );
     for id in bug
         .criteria

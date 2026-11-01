@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "id": "bug-0019-fixed-1",
+  "criteria": [
+    "LIFE-5",
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-012",
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "At 282c5bd (fixed), the same reproduction named --scope and --classification in the flag errors, --help listed the values, and the cross-module case named checkout-ui and its cases file; case runs tc-cli-0092-1793500895 and tc-cli-0093-1793500897 passed.",
+  "artifacts": [
+    ".chough/artifacts/bug-0019-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0019-fixed-reproduction.log": "219db16dd55e37e8f97c37f362d3c26f645636ec5c1ab781626cf22f6864caae"
+  },
+  "observed_at_unix_seconds": 1793500930,
+  "snapshot": {
+    "revision": "282c5bdfeb7bae5cc84f3ac8236652a4536080af",
+    "dirty": false,
+    "fingerprint": "dea19cfdf6cc52ecd21e942c4862ea68260b93cc38ed8f8d18f694ca2a6f0803",
+    "content": "e9daf2396e35880630ab04c9ea0f4ccc9d1acd8a9b7b4b1f08954372cd329155"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0092",
+      "digest": "e7077db93b58fdb69da20a59f0186755f46ec1c82a31734bb8261767279211f3"
+    },
+    {
+      "id": "TC-cli-0093",
+      "digest": "0209056257b64c5ffd5778f62a8a66c247a21980718d72503fac20729151086f"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Reproduced in a disposable project on macOS only"
+  ]
+}

@@ -1,0 +1,76 @@
+# Reproduction of BUG-0018
+revision: fce3d98d9b4d093c77513c09bb23f97706f11fbe
+source tree: 0 uncommitted src/skills paths
+platform: Darwin 25.5.0 arm64
+date: 2026-11-01T02:31:51Z
+binary: target/debug/chough (chough 0.1.0)
+project: disposable temporary directory
+
+$ /Users/leif/Development/_CorvidLabs/_worktrees/chough-bundle/target/debug/chough --root /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/tmp.cMX13R1thn init --objective Try Chough --host claude --host openai
+{
+  "created": [
+    ".chough/session.json",
+    ".claude/skills/chough-workflow/SKILL.md",
+    ".claude/skills/chough-workflow/agents/openai.yaml",
+    ".claude/skills/chough-workflow/references/accept.md",
+    ".claude/skills/chough-workflow/references/bugs.md",
+    ".claude/skills/chough-workflow/references/build.md",
+    ".claude/skills/chough-workflow/references/checkpoint.md",
+    ".claude/skills/chough-workflow/references/design.md",
+    ".claude/skills/chough-workflow/references/intent.md",
+    ".claude/skills/chough-workflow/references/librarian.md",
+    ".claude/skills/chough-workflow/references/lifecycle.md",
+    ".claude/skills/chough-workflow/references/plan.md",
+    ".claude/skills/chough-workflow/references/release.md",
+    ".claude/skills/chough-workflow/references/roles.md",
+    ".claude/skills/chough-workflow/references/stages.md",
+    ".claude/skills/chough-workflow/references/testing.md",
+    ".claude/skills/chough-workflow/references/validate.md",
+    ".claude/skills/chough-workflow/templates/brief.md",
+    ".claude/skills/chough-workflow/templates/bug-report.md",
+    ".claude/skills/chough-workflow/templates/cases.toml",
+    ".claude/skills/chough-workflow/templates/frd.md",
+    ".claude/skills/chough-workflow/templates/prototype/COMPANION.md",
+    ".claude/skills/chough-workflow/templates/prototype/index.html",
+    ".claude/skills/chough-workflow/templates/prototype/styles.css",
+    ".claude/skills/chough-workflow/templates/review-findings.md",
+    ".agents/skills/chough-workflow/SKILL.md",
+    ".agents/skills/chough-workflow/agents/openai.yaml",
+    ".agents/skills/chough-workflow/references/accept.md",
+    ".agents/skills/chough-workflow/references/bugs.md",
+    ".agents/skills/chough-workflow/references/build.md",
+    ".agents/skills/chough-workflow/references/checkpoint.md",
+    ".agents/skills/chough-workflow/references/design.md",
+    ".agents/skills/chough-workflow/references/intent.md",
+    ".agents/skills/chough-workflow/references/librarian.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/plan.md",
+    ".agents/skills/chough-workflow/references/release.md",
+    ".agents/skills/chough-workflow/references/roles.md",
+    ".agents/skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/references/testing.md",
+    ".agents/skills/chough-workflow/references/validate.md",
+    ".agents/skills/chough-workflow/templates/brief.md",
+    ".agents/skills/chough-workflow/templates/bug-report.md",
+    ".agents/skills/chough-workflow/templates/cases.toml",
+    ".agents/skills/chough-workflow/templates/frd.md",
+    ".agents/skills/chough-workflow/templates/prototype/COMPANION.md",
+    ".agents/skills/chough-workflow/templates/prototype/index.html",
+    ".agents/skills/chough-workflow/templates/prototype/styles.css",
+    ".agents/skills/chough-workflow/templates/review-findings.md"
+  ],
+  "hosts": [
+    "claude",
+    "openai"
+  ],
+  "preserved": [],
+  "schema_version": 1
+}
+[exit 0]
+
+$ grep -rnI for U+2013 and U+2014 in .claude/skills .agents/skills
+.claude/skills/chough-workflow/templates/cases.toml:1:# .chough/cases/<module>.cases.toml — test-case definitions only.
+.claude/skills/chough-workflow/templates/frd.md:23:- <Assumption> — why it matters, and what changes if it is wrong.
+.agents/skills/chough-workflow/templates/cases.toml:1:# .chough/cases/<module>.cases.toml — test-case definitions only.
+.agents/skills/chough-workflow/templates/frd.md:23:- <Assumption> — why it matters, and what changes if it is wrong.
+[exit 0] (0 means a dash was found; 1 means none)

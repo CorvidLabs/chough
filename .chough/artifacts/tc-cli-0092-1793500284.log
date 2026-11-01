@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag ... FAILED
+
+failures:
+
+---- a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag stdout ----
+
+thread 'a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag' (145544305) panicked at tests/bugs.rs:374:9:
+expected "`blocking` is a scope: use --scope blocking" in Error: classification must be one of unclassified, product-defect, regression, environment, requirement-gap, evidence-gap
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.43s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/bugs.rs (target/debug/deps/bugs-84c5024159755c26)
+error: test failed, to rerun pass `--test bugs`
