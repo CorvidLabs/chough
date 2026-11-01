@@ -847,6 +847,19 @@ fn binding_env_is_bounded_and_refused_with_its_location() {
         "cargo_build_target",
         "CARGO_BUILD_RUSTC",
         "Cargo_Target_x86_64_unknown_linux_gnu_Runner",
+        // A toolchain override, a linker or target-level flags (which can carry
+        // `-C linker=...`) replace the test binary as surely as RUSTFLAGS does.
+        "RUSTUP_TOOLCHAIN",
+        "Rustup_Home",
+        "CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER",
+        "cargo_target_x86_64_pc_windows_msvc_rustflags",
+        "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTDOCFLAGS",
+        "CARGO_HOST_LINKER",
+        "RUSTDOCFLAGS",
+        "Cargo_Encoded_Rustdocflags",
+        "CARGO_PROFILE_TEST_DEBUG_ASSERTIONS",
+        "CARGO_UNSTABLE_BUILD_STD",
+        "RUSTC_BOOTSTRAP",
     ] {
         refusals.push((
             cargo,
@@ -877,7 +890,7 @@ fn binding_env_is_bounded_and_refused_with_its_location() {
     for (binding, extra) in [
         (
             cargo,
-            "env = { RUST_BACKTRACE = \"1\", CARGO_TARGET_DIR = \"target\", CARGO_BUILD = \"x\" }",
+            "env = { RUST_BACKTRACE = \"1\", CARGO_TARGET_DIR = \"target\", Cargo_Target_Dir_Note = \"x\", CARGO_BUILD = \"x\", CARGO_TERM_COLOR = \"never\" }",
         ),
         (
             command,

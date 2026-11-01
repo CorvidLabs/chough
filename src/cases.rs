@@ -726,6 +726,11 @@ fn cargo_counts(output: &str) -> (u64, u64) {
     (passed, failed)
 }
 
+/// The counts the cargo-test adapter judges a run by.
+fn matched_counts(_raw: &str, cleaned: &str) -> (u64, u64) {
+    cargo_counts(cleaned)
+}
+
 fn argv_for(binding: &Binding) -> Vec<String> {
     match binding.adapter.as_str() {
         "cargo-test" => vec![
@@ -828,7 +833,7 @@ pub(super) fn run_case(
         });
         Outcome::Failed
     } else if binding.adapter == "cargo-test" {
-        let (passed, failed) = cargo_counts(&text);
+        let (passed, failed) = matched_counts(&String::from_utf8_lossy(&output), &text);
         tests_run = Some(passed + failed);
         if passed + failed == 0 && execution.exit_code != Some(0) {
             limitations.push(format!(
@@ -1094,7 +1099,7 @@ pub(super) fn run(root: &Path, command: CasesCommand) -> Result<Option<i32>> {
 
 #[cfg(test)]
 mod tests {
-    use super::{cargo_counts, strip_escapes};
+    use super::{cargo_counts, matched_counts, strip_escapes};
 
     fn clean(input: &[u8]) -> (String, bool) {
         let (bytes, removed) = strip_escapes(input);
@@ -1207,10 +1212,35 @@ mod tests {
                 result_lines(&cleaned) >= result_lines(&input),
                 "{input:?} -> {cleaned:?}"
             );
-            let before = cargo_counts(&String::from_utf8_lossy(&input));
-            let after = cargo_counts(&String::from_utf8_lossy(&cleaned));
+            let raw = String::from_utf8_lossy(&input);
+            let before = cargo_counts(&raw);
+            let after = matched_counts(&raw, &String::from_utf8_lossy(&cleaned));
             assert!(after.0 >= before.0 && after.1 >= before.1, "{input:?}");
         }
+    }
+
+    #[test]
+    fn a_sequence_that_swallows_a_count_never_lowers_the_matched_counts() {
+        // CSI parameter bytes include digits and `;` and intermediate bytes include a
+        // space, so `ESC[0;1 p` swallows the `1` that the raw text counts as a result.
+        let raw =
+            b"test result: ok. 1 passed; 0 failed\ntest result: ok. 0 passed;\x1b[0;1 passed\n";
+        let (cleaned, removed) = strip_escapes(raw);
+        assert!(removed);
+        let raw = String::from_utf8_lossy(raw);
+        let cleaned = String::from_utf8_lossy(&cleaned);
+        assert_eq!(cargo_counts(&raw), (2, 0));
+        assert_eq!(cargo_counts(&cleaned), (1, 0));
+        // Two tests ran by the raw count, so the run cannot read as a one-test pass.
+        assert_eq!(matched_counts(&raw, &cleaned), (2, 0));
+        // A count that only cleaning reveals, such as coloured output, still counts.
+        let coloured = "test result: ok. \x1b[32m1\x1b[0m passed; \x1b[31m0\x1b[0m failed";
+        let (visible, _) = strip_escapes(coloured.as_bytes());
+        assert_eq!(cargo_counts(coloured), (0, 0));
+        assert_eq!(
+            matched_counts(coloured, &String::from_utf8_lossy(&visible)),
+            (1, 0)
+        );
     }
 
     #[test]
