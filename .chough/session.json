@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "align-kimi-integration-with-new-cycle-done-guidance",
+  "native_change": "use-collision-resistant-slug-identities-for-new-bugs",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -23,7 +23,9 @@
       "FLOW-10",
       "LIFE-3",
       "FLOW-5",
-      "LIFE-4"
+      "LIFE-4",
+      "FLOW-8",
+      "LIFE-5"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -32,7 +34,8 @@
       "REQ-cli-003",
       "REQ-cli-016",
       "REQ-cli-021",
-      "REQ-cli-022"
+      "REQ-cli-022",
+      "REQ-cli-012"
     ],
     "cases": [
       "TC-cli-0101",
@@ -78,7 +81,8 @@
     "Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007",
     "0xLeif approved the native scope in conversation; SpecSync recorded that decision with actor 0xLeif",
     "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised",
-    "0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints"
+    "0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints",
+    "0xLeif approved a separate native change for slug-based bug identity with legacy numeric compatibility and no bulk migration"
   ],
   "open_questions": [],
   "completed": [
@@ -161,7 +165,9 @@
     "BUG-0025"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of use-collision-resistant-slug-identities-for-new-bugs"
+  ],
   "run_consents": [],
-  "next_action": "No further Chough lifecycle action; GitHub owns PR #24 merge status, and no release or deployment follows"
+  "next_action": "0xLeif to approve the bug identity scope; do not change the allocator before native approval"
 }

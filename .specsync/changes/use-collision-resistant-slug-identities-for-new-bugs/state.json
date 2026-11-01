@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "use-collision-resistant-slug-identities-for-new-bugs",
+  "slug": "use-collision-resistant-slug-identities-for-new-bugs",
+  "title": "Use collision-resistant slug identities for new bugs",
+  "description": "Use collision-resistant slug identities for new bugs",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "7357d41ab92e737fea1ad1e733c38f5447226fb9",
+  "created_at": 1793567525,
+  "updated_at": 1793567578,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/bugs.rs",
+    "tests/bugs.rs",
+    "tests/optional.rs",
+    "specs/cli/requirements.md",
+    "specs/cli/testing.md",
+    "specs/cli/tasks.md",
+    "specs/cli/cli.spec.md",
+    "docs/FRD.md",
+    "docs/cli.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Manual and automatic creation of distinct bug reports in independent roots at the same legacy numeric high-water mark produces different IDs in the form BUG-<lowercase-title-slug>-<24-lowercase-hex>; the pre-fix identical-ID failure is recorded and linked before implementation and the later pass verifies the fix.",
+    "Title normalization produces bounded lowercase ASCII slugs and preserves the complete 24-hex digest within the existing 100-byte ID limit. IDs are generated once from a versioned domain-separated SHA-256 creation payload and are never recomputed during updates.",
+    "Every legacy BUG-NNNN record remains readable and usable without bulk migration or renumbering. Bug schema 1 is unchanged; duplicate and related links work across legacy and new forms, and the docs state that older Chough versions need an upgrade for new IDs.",
+    "Atomic create-new refuses a same-ID different-content result without overwriting or falling back to numeric allocation. Evidence, artifact, validation, snapshot, transition, case, HI, requirement and SpecSync ID schemes are unchanged.",
+    "TC-cli-0125 covers the collision and compatibility behavior if still free on the base. Focused Rust tests, affected cases, cargo fmt, Clippy with warnings denied, full cargo test, fledge verify and pre-push pass with CI-matching tools. No new integration, runtime, service, release or deployment is introduced."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "REQ-cli-012 keeps local bug evidence append-only and verified only by a later pass; FLOW-7 keeps case IDs stable and LIFE-2 keeps acceptance IDs permanent; use the existing 100-byte valid_name bound and existing sha2 0.10 dependency with no new dependency; do not list .chough as a native affected path; retain legacy BUG-NNNN fixtures and all old observations and frozen archives; human gates stay plain text in tasks; no em or en dashes in added docs or records; match the current CI versions HI 0.8.0, Fledge 1.7.2 and SpecSync 6.1.1; no bulk migration, integration, runtime, service, release or deployment",
+    "public_contract": "yes"
+  }
+}
