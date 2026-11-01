@@ -1,4 +1,49 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793561305,
+      "digest": "305a79f2eefdb81dd4c004410d4ca128613ed37c2f7f986c373bdfb5a9f4e923",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "align-kimi-integration-with-new-cycle-done-guidance",
+        "title": "Align Kimi integration with new-cycle done guidance",
+        "description": "Align Kimi integration with new-cycle done guidance",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "README.md",
+          "docs/ROADMAP.md",
+          "docs/exercises/cold-start.md",
+          "docs/walkthrough.md",
+          "specs/cli/tasks.md",
+          "specs/cli/testing.md",
+          "src/main.rs",
+          "tests/next.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-021 already requires new-cycle guidance for archived done checkpoints; this integration follows that contract and records evidence without a canonical delta",
+        "acceptance_criteria": [
+          "Archived done checkpoints with authenticated native evidence follow REQ-cli-021 by recommending a new cycle with a reason-bearing reset. They never repeat stale native review or ship actions. Pause, human gates, blocking bugs, closed-gate precedence and the unchanged checkpoint action retain their existing behavior.",
+          "Focused Rust tests and fledge lanes run verify and pre-push pass with HI 0.8.0, Fledge 1.7.2 and SpecSync 6.1.1. The PR remains draft through implementation review. Merge follows only after archive and passing checks under 0xLeif explicit instruction. No release or deployment is claimed.",
+          "TC-cli-0105 is updated to the newer REQ-cli-021 contract. A failure at the integrated pre-fix tip is linked to BUG-0025 before implementation, followed by a later passing observation. TC-cli-0121 and TC-cli-0122 also pass. Original observations remain retained and historical.",
+          "The Kimi records and affected docs distinguish the superseded native-routing implementation from integrated new-cycle behavior. BUG-0024 remains separate from main open BUG-0020 and the new integration defect is BUG-0025. No frozen archive is edited and no fresh post-fix Kimi run is claimed."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "REQ-cli-021 governs archived done behavior; preserve focused bounded next output and one native read plus the REQ-cli-022 approved-delta guard; do not list .chough as an affected path; retain old observations and never edit frozen archives; use HI 0.8.0 and Fledge 1.7.2 and SpecSync 6.1.1; no new integration or runtime or service or duplicate lifecycle state; no em or en dashes in added records or docs",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
   "reopenings": []
 }

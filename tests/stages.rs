@@ -368,7 +368,10 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
 
 #[cfg(unix)]
 #[test]
-fn done_archived_native_guidance_drives_next_and_status() {
+fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
+    const NEW_CYCLE: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
+    const RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+
     let fixture = Fixture::new();
     fixture.stubs();
     fixture.native("archived");
@@ -393,6 +396,8 @@ fn done_archived_native_guidance_drives_next_and_status() {
                 "state": report["native"]["state"],
                 "next_action": report["native"]["next_action"],
             });
+            report["next_valid_reason"] = report["next_valid_action"]["reason"].clone();
+            report["next_valid_command"] = report["next_valid_action"]["command"].clone();
             report["next_valid_action"] = report["next_valid_action"]["action"].clone();
         } else {
             assert_eq!(report["session_next_action"], stale, "{command}");
@@ -406,18 +411,31 @@ fn done_archived_native_guidance_drives_next_and_status() {
         report
     };
 
+    fixture.write(".stub-count", "");
     let session_bytes = fixture.read(".chough/session.json");
     for command in ["next", "status"] {
-        let report = assert_action(
-            command,
-            "Continue done: stub next action for archived",
-            &session_bytes,
-        );
+        let report = assert_action(command, NEW_CYCLE, &session_bytes);
+        assert_eq!(fixture.native_calls(), 1, "{command} native reads");
         assert_eq!(report["native_summary"]["state"], "archived");
         assert_eq!(
             report["native_summary"]["next_action"],
             "stub next action for archived"
         );
+        let action = report["next_valid_action"].as_str().unwrap();
+        assert!(!action.contains(stale), "{command}: {action}");
+        if command == "next" {
+            assert_eq!(report["next_valid_command"], RESET);
+            let reason = report["next_valid_reason"].as_str().unwrap();
+            assert!(
+                reason.contains("The cycle for archived-change is closed: native state archived, terminal evidence authenticated-history."),
+                "{reason}"
+            );
+            assert!(
+                reason
+                    .contains("Native next action, check it first: stub next action for archived."),
+                "{reason}"
+            );
+        }
     }
 
     fixture.ok(&["stage", "pause", "--reason", "Waiting for a person"]);
@@ -447,9 +465,8 @@ fn done_archived_native_guidance_drives_next_and_status() {
         "#!/bin/sh\nprintf '%s\\n' '{\"summary\":{\"state\":\"archived\",\"terminal_evidence\":{\"validity\":\"authenticated-history\"}}}'\n",
     );
     let session_bytes = fixture.read(".chough/session.json");
-    let fallback = "Done checkpoint has no archived native next action; inspect native SpecSync status before further lifecycle action.";
     for command in ["next", "status"] {
-        let report = assert_action(command, fallback, &session_bytes);
+        let report = assert_action(command, NEW_CYCLE, &session_bytes);
         assert_eq!(report["native_summary"]["state"], "archived");
         assert!(report["native_summary"]["next_action"].is_null());
     }
@@ -474,7 +491,7 @@ fn done_archived_native_guidance_drives_next_and_status() {
             &format!("#!/bin/sh\nprintf '%s\\n' '{response}'\n"),
         );
         for command in ["next", "status"] {
-            let report = assert_action(command, fallback, &session_bytes);
+            let report = assert_action(command, NEW_CYCLE, &session_bytes);
             assert_eq!(report["native_summary"]["state"], "archived");
             let shown_action = if command == "next" && !next_action.is_string() {
                 Value::Null
@@ -500,9 +517,8 @@ fn done_archived_native_guidance_drives_next_and_status() {
         "bin/specsync",
         &format!("#!/bin/sh\nprintf '%s\\n' '{response}'\n"),
     );
-    let expected = format!("Continue done: {native_action}");
     for command in ["next", "status"] {
-        let report = assert_action(command, &expected, &session_bytes);
+        let report = assert_action(command, NEW_CYCLE, &session_bytes);
         assert_eq!(report["native_summary"]["state"], "archived");
         assert_eq!(report["native_summary"]["next_action"], native_action);
     }
@@ -543,6 +559,23 @@ fn done_archived_native_guidance_drives_next_and_status() {
             assert!(report["native_summary"].is_null());
         }
     }
+
+    fs::remove_file(fixture.root().join(".stub-fail")).unwrap();
+    let next = fixture.ok(&["next", "--json"]);
+    let command = next["next_valid_action"]["command"].as_str().unwrap();
+    assert_eq!(command, RESET);
+    let arguments = words(&command.replace("<why>", "Start approved follow-up"));
+    assert_eq!(arguments[0], "chough");
+    let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
+    fixture.ok(&arguments);
+    assert_eq!(
+        fixture.session()["next_action"],
+        "New cycle from done after reset: Start approved follow-up. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+    );
+    assert_eq!(
+        transitions(&fixture).pop().unwrap()["reason"],
+        "Start approved follow-up"
+    );
 }
 
 #[cfg(unix)]
@@ -996,19 +1029,40 @@ fn done_fixture(id: &str) -> Fixture {
 
 #[cfg(unix)]
 #[test]
-fn done_with_an_archived_change_uses_native_guidance_and_resets_with_a_reason() {
+fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
     let fixture = done_fixture("closed-change");
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     let text = action["action"].as_str().unwrap();
-    assert_eq!(
-        text,
-        "Continue done: merge the PR on GitHub if it is still open"
+    assert!(
+        text.starts_with("Start a new cycle: chough stage reset --to intent --reason \"<why>\""),
+        "{text}"
     );
+    for part in [
+        "--to plan",
+        "specsync change new \"<outcome>\" --spec <module> --path <path>",
+        "chough checkpoint --native-change <id> --next-action \"<next step>\"",
+    ] {
+        assert!(text.contains(part), "missing {part:?}: {text}");
+    }
     assert!(!text.contains("specsync change review"), "{text}");
     let reason = action["reason"].as_str().unwrap();
-    assert!(reason.contains("Native summary.next_action"), "{reason}");
-    assert_eq!(action["command"], Value::Null);
+    assert!(
+        reason.contains(
+            "The cycle for closed-change is closed: native state archived, terminal evidence exact."
+        ),
+        "{reason}"
+    );
+    assert!(
+        reason.contains(
+            "Native next action, check it first: merge the PR on GitHub if it is still open."
+        ),
+        "{reason}"
+    );
+    assert_eq!(
+        action["command"],
+        "chough stage reset --to intent --reason \"<why>\""
+    );
     let status = fixture.ok(&["status", "--json"]);
     assert_eq!(status["next_valid_action"], action["action"]);
     assert_eq!(
@@ -1016,15 +1070,17 @@ fn done_with_an_archived_change_uses_native_guidance_and_resets_with_a_reason() 
         "specsync change review old-change --reviewer 0xLeif, then ship"
     );
     let shown = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
-    assert!(shown.contains("Next: Continue done"), "{shown}");
+    assert!(shown.contains("Next: Start a new cycle"), "{shown}");
     assert!(
         shown.contains("Native next action: merge the PR on GitHub"),
         "{shown}"
     );
 
-    // A reset with a reason still succeeds and replaces the stale next action; the
-    // transition keeps the reason.
-    let command = "chough stage reset --to intent --reason \"<why>\""
+    // The suggested reset, with its placeholder filled, succeeds and replaces the stale
+    // next action; the transition keeps the reason.
+    let command = action["command"]
+        .as_str()
+        .unwrap()
         .replace("<why>", "New work: a focused view");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough");

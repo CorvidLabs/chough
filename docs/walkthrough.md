@@ -112,9 +112,12 @@ the command to run. `chough status` is the full JSON report. The
 doing exactly this on the sample. Separately, it records one Kimi cold start in this
 repository, not that sample. Kimi discovered the skill and reached the archived
 native state, but could not safely cold-resume because `next` and `status` gave stale
-review and ship guidance, recorded as BUG-0024. TC-cli-0105 covers the correction as
-an automated regression; Kimi did not return to validate the corrected build. See the
-exercise for the full observation and limits.
+review and ship guidance, recorded as BUG-0024. The earlier native-routing fix was
+superseded during merge by main's newer REQ-cli-021 new-cycle behavior. BUG-0025 records
+that distinct integration defect and is verified by the later linked TC-cli-0105 pass
+under the approved alignment change. TC-cli-0105 covers the new-cycle behavior as an
+automated regression; Kimi did not return to validate a corrected build. See the exercise
+for the full observation and limits.
 
 ## Read freshness precisely
 

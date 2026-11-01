@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -106,7 +106,10 @@
     "Implemented archived native next-action routing, Kimi skill guidance with safe updates, and the approved roadmap and host documentation refresh",
     "Final TC-cli-0105, TC-cli-0037 and TC-cli-0106 observations passed on the completed content; BUG-0024 and BUG-0021 verified from later passes",
     "Native materialization passed, and the final CI-matching fledge verify lane completed all 9 steps in 82.220 seconds",
-    "Native change archived at 2189038 after 0xLeif authorized finalization; Chough advanced from accept to done"
+    "Native change archived at 2189038 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "Integrated main's REQ-cli-021 new-cycle behavior, retained the BUG-0025 failure-first evidence, corrected the Kimi docs and recorded focused passes",
+    "Final-content TC-cli-0105, TC-cli-0106, TC-cli-0121 and TC-cli-0122 passed; BUG-0025 has a retained failure followed by later passes",
+    "The final full verify lane passed all 9 steps in 74.258 seconds with CI-matching tools after the final-content case passes"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -132,7 +135,16 @@
     "tc-cli-0124-1793553276",
     "tc-cli-0105-1793553670",
     "tc-cli-0037-1793553673",
-    "tc-cli-0106-kimi-final"
+    "tc-cli-0106-kimi-final",
+    "tc-cli-0105-bug-0025-pre-fix",
+    "tc-cli-0105-bug-0025-post-fix",
+    "tc-cli-0121-new-cycle-post-fix",
+    "tc-cli-0122-reset-next-action-post-fix",
+    "tc-cli-0106-kimi-integration",
+    "tc-cli-0105-integration-final",
+    "tc-cli-0106-integration-final",
+    "tc-cli-0121-integration-final",
+    "tc-cli-0122-integration-final"
   ],
   "bugs": [
     "BUG-0001",
@@ -144,12 +156,13 @@
     "BUG-0021",
     "BUG-0022",
     "BUG-0023",
-    "BUG-0024"
+    "BUG-0024",
+    "BUG-0025"
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of align-kimi-integration-with-new-cycle-done-guidance"
+    "Implementation review of align-kimi-integration-with-new-cycle-done-guidance"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to approve the integration scope; do not implement before native approval"
+  "next_action": "0xLeif to review the integrated implementation and evidence; no native review or finalization before that decision"
 }

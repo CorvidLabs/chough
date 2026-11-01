@@ -23,11 +23,15 @@
     "Run the updated archived-done regression case before removing the override"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "tc-cli-0105-bug-0025-pre-fix",
+    "tc-cli-0105-bug-0025-post-fix",
+    "tc-cli-0105-integration-final"
+  ],
   "impact": "The integrated PR would violate the newer approved contract even though its isolated tests pass",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -37,8 +41,29 @@
       "at_unix_seconds": 1793560637,
       "text": "Added despite similar reports: BUG-0024 records the earlier stale review and ship defect; this bug is the later merge violation of main's REQ-cli-021",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793561805,
+      "text": "Pre-fix TC-cli-0105 reproduced the archived native action at integrated tip f38e70f before the src/main.rs fix.",
+      "observations": [
+        "tc-cli-0105-bug-0025-pre-fix"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793562025,
+      "text": "status: open -> verified. Post-fix TC-cli-0105 passed after the linked pre-fix failure; focused stages and next tests also passed.",
+      "observations": [
+        "tc-cli-0105-bug-0025-post-fix"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793563704,
+      "text": "Final-content TC-cli-0105 passed after the retained pre-fix failure and after all fingerprinted documentation and native task edits",
+      "observations": [
+        "tc-cli-0105-integration-final"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793560637,
-  "updated_at_unix_seconds": 1793560637
+  "updated_at_unix_seconds": 1793563704
 }

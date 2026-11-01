@@ -1888,22 +1888,22 @@ test = "an_unterminated_escape_never_hides_a_second_test_result"
 
 [[case]]
 id = "TC-cli-0105"
-title = "Archived native guidance drives next and status"
+title = "Archived done recommends a new cycle and preserves report precedence"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["FLOW-13", "LIFE-3"]
-requirements = ["REQ-cli-003", "REQ-cli-007"]
-paths = ["src/main.rs", "tests/stages.rs"]
+requirements = ["REQ-cli-021", "REQ-cli-003", "REQ-cli-007"]
+paths = ["src/main.rs", "src/stage.rs", "tests/stages.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/stages.rs::done_archived_native_guidance_drives_next_and_status passes"]
-notes = "BUG-0024 regression coverage."
+expected = ["tests/stages.rs::done_archived_change_recommends_new_cycle_and_preserves_precedence passes"]
+notes = "BUG-0024 scenarios retained; BUG-0025 integration regression coverage."
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "stages"
-test = "done_archived_native_guidance_drives_next_and_status"
+test = "done_archived_change_recommends_new_cycle_and_preserves_precedence"
 
 [[case]]
 id = "TC-cli-0106"

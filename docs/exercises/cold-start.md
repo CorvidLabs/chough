@@ -118,6 +118,14 @@ SpecSync 6.1.1, so it was neither final CI-toolchain verification nor hosted CI.
 Later release-verified HI 0.8.0 and Fledge 1.7.2 tools were placed under
 `target/tmp/ci-tools`; SpecSync 6.1.1 is required with them for final checks.
 
+Integration follow-up: the earlier native-routing fix for BUG-0024 was superseded
+during merge by main's newer REQ-cli-021 new-cycle behavior. BUG-0025 records that
+distinct integration defect at merge `b2e2f19`. Its later linked pass
+`tc-cli-0105-bug-0025-post-fix` verifies it under approved change
+`align-kimi-integration-with-new-cycle-done-guidance`. Main's BUG-0020 is a separate
+open older-workflow approval-matching issue, not another name for either archived-resume
+defect. This integration history does not change the original cold-start verdict.
+
 Evidence and limits: see the [concise Kimi log](../../.chough/artifacts/kimi-cold-start.log)
 and [TC-cli-0106](../../specs/cli/testing.md). The original observation
 `tc-cli-0106-kimi-original` failed because the mapping guidance and consistent

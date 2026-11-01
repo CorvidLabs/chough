@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test reset_replaces_the_next_action_and_back_keeps_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.60s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/stages.rs (target/debug/deps/stages-b5c96188316f0637)

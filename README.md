@@ -120,8 +120,12 @@ behavioral proof or human acceptance.
 One 2026-11-01 Kimi Code CLI 0.41.0 run on macOS arm64 auto-discovered the `.agents`
 skill, built successfully and attempted a cold resume. It could not safely resume the
 archived work because `next` and `status` repeated stale review and ship guidance,
-recorded as BUG-0024; it also exposed BUG-0021's missing mapping guidance. Later fixes
-have TC-cli-0105 regression and TC-cli-0106 documentation review coverage, not a fresh
+recorded as BUG-0024; it also exposed BUG-0021's missing mapping guidance. The earlier
+native-routing fix for BUG-0024 was superseded during merge by main's newer REQ-cli-021
+new-cycle behavior. BUG-0025 records the distinct integration defect and is verified by
+the later linked TC-cli-0105 pass under the approved alignment change. TC-cli-0105
+covers the new-cycle regression and TC-cli-0106 retrospectively reviews the
+documentation. Their evidence is not a fresh
 post-fix Kimi rerun. Other platforms may work but have not been exercised.
 
 ## Known limitations

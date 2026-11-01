@@ -15,6 +15,11 @@ native change package until it is archived.
   [TC-cli-0106](testing.md) review. Discovery passed, while safe cold resume
   exposed BUG-0024 and missing mapping guidance BUG-0021. Any later TC-cli-0106
   pass is a retrospective documentation review, not another Kimi run.
+- [x] Align the integrated archived-done action with REQ-cli-021. TC-cli-0105
+  reproduced BUG-0025 before the override was removed and passed afterward;
+  TC-cli-0121, TC-cli-0122, focused Rust tests and the local verify and pre-push
+  lanes passed. BUG-0025 is verified from the later pass. Original observations
+  remain retained, and no fresh Kimi run or hosted check is claimed.
 
 Open follow-ups, not part of the approved change:
 

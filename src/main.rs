@@ -290,31 +290,7 @@ fn assess(root: &Path) -> Result<Assessment> {
         ),
         Some(checkpoint) => {
             let state = stage::native_state_from(root, change, native.as_ref())?;
-            let (gate, mut action) = stage::assess(root, checkpoint, &state, &blocking);
-            let current = checkpoint.stage.current.as_str();
-            let has_precedence = checkpoint.stage.status == "paused"
-                || !checkpoint.awaiting_human.is_empty()
-                || (!blocking.is_empty() && matches!(current, "test" | "accept"))
-                || action.action.starts_with("Gate not open (");
-            if current == "done" && !has_precedence {
-                action = match &state {
-                    stage::NativeState::State(native_state, value) if native_state == "archived" => {
-                        match value.pointer("/summary/next_action").and_then(Value::as_str) {
-                            Some(next_action) if !next_action.trim().is_empty() => stage::Action {
-                                action: format!("Continue done: {next_action}"),
-                                reason: "Native summary.next_action guides an archived done checkpoint; session_next_action remains unchanged.".into(),
-                                command: None,
-                            },
-                            _ => stage::Action {
-                                action: "Done checkpoint has no archived native next action; inspect native SpecSync status before further lifecycle action.".into(),
-                                reason: "Native summary.next_action is absent, blank or not a string.".into(),
-                                command: change.map(|change| format!("specsync change status {change}")),
-                            },
-                        }
-                    }
-                    _ => action,
-                };
-            }
+            let (gate, action) = stage::assess(root, checkpoint, &state, &blocking);
             (gate, action, Some(stage::delta_summary(root, change, &state)))
         }
     };

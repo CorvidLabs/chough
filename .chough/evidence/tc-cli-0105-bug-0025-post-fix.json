@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0105-bug-0025-post-fix",
+  "criteria": [
+    "FLOW-13",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021",
+    "REQ-cli-003",
+    "REQ-cli-007"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact done_archived_change_recommends_new_cycle_and_preserves_precedence for TC-cli-0105: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0105-bug-0025-post-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0105-bug-0025-post-fix.log": "b0020a976e4770f7bef7aeece8a2ed883eb91ce717f318c45ed72c28220d2fe0"
+  },
+  "observed_at_unix_seconds": 1793561981,
+  "snapshot": {
+    "revision": "f38e70f58a6dbb65e3be21d066ffa243e2bde234",
+    "dirty": true,
+    "fingerprint": "a05241b10250e4fdf243da3e57437fe649d13e672a1f5a0af35a434a26ec4c46",
+    "content": "71723223eb386b945ffeec41e1d9056ed5c2224ac7f916d3eb56819f38d91234"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0105",
+      "digest": "61acdd91c64609ec4bcea9cf12f598d6d2d074f6ff9ce2f061329008fbed8a20"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "done_archived_change_recommends_new_cycle_and_preserves_precedence"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
