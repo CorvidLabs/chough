@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Use collision-resistant identities for new bugs while preserving legacy records",
+  "objective": "Make checkpoint merges safe across parallel changes while preserving one canonical checkpoint",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "use-collision-resistant-slug-identities-for-new-bugs",
+  "native_change": "make-checkpoint-merges-safe-across-parallel-changes",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -130,7 +130,8 @@
     "The full verify lane passed all 9 steps in 79.865 seconds and the exercise created and verified a real slug-based bug ID; final TC-cli-0125 also passed",
     "Native bug identity change archived at aee2af3 after 0xLeif authorized finalization; Chough advanced from accept to done",
     "0.1.0 release prep implemented: pins, MSRV job and rust-version, nine skill corrections with KNOWN_PREVIOUS and host refresh, context history, README, CHANGELOG, docs/releasing.md, D-019",
-    "TC-cli-0110 and 0112 failed before the fix and passed at f6416a5 with TC-cli-0111, 0113, 0114, 0064 and 0065"
+    "TC-cli-0110 and 0112 failed before the fix and passed at f6416a5 with TC-cli-0111, 0113, 0114, 0064 and 0065",
+    "PR #26 was merged by 0xLeif as b35acaf0804f84a2c56fcee4b3ca1504cf74c95e, observed on GitHub"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -197,8 +198,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Merge of PR #26 after hosted CI"
+    "Scope approval of make-checkpoint-merges-safe-across-parallel-changes"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to decide whether to merge PR #26 after conflicts are resolved and current checks pass"
+  "next_action": "0xLeif to approve the checkpoint merge scope; do not implement before native approval"
 }
