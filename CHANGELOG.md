@@ -4,7 +4,7 @@ All notable changes to Chough are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-01
 
 First release. Nothing in this entry is tagged or published yet; the release steps
 are in [docs/releasing.md](docs/releasing.md).
@@ -63,4 +63,4 @@ are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
-[0.1.0]: https://github.com/CorvidLabs/chough/commits/main
+[0.1.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.1.0
