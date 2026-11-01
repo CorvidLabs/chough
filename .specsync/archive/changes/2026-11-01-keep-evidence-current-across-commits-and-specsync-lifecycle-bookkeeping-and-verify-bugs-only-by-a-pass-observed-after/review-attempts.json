@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "e844d6fed7d92035b4476bcf4ce322d7aaa80854",
+      "contract_digest": "ce7b600064d247d37aab968f104214df856ed7dbf8f6f8dab0fc01c9da1dba63",
+      "execution_digest": "226da246b0ec6e6e969cdfedbbbf4ca89dcec587e8a9ea5d9d3e0534f1166e82",
+      "workspace_digest": "1ba92cf27c68d688f8ab5eff2a451541d564db83067667fc74f12a29e013abea",
+      "timestamp": 1793505461
+    }
+  ]
+}
