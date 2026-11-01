@@ -36,13 +36,14 @@ Acceptance Criteria
 
 ### REQUIREMENT REQ-cli-012
 
-Local bug backlog. The helper SHALL persist bug records in `.chough/bugs/` with symptom, trigger, expected and actual behavior, criterion, requirement and case links, environment, revision, evidence references, impact, classification, scope and status. It SHALL list open bugs for a fresh session and SHALL search existing records by symptom, trigger and affected IDs before a new record is added. A bug SHALL remain unverified until a failed observation is linked, and a regression classification SHALL require a passed observation at an ancestor revision. Additional evidence SHALL be appended rather than overwritten. A classification or scope value given to the other field SHALL be refused with the correct flag named, and help SHALL list both value sets. The helper SHALL render a report candidate and SHALL NOT publish it. Trace: FLOW-8, LIFE-5.
+Local bug backlog. The helper SHALL persist bug records in `.chough/bugs/` with symptom, trigger, expected and actual behavior, criterion, requirement and case links, environment, revision, evidence references, impact, classification, scope and status. It SHALL list open bugs for a fresh session and SHALL search existing records by symptom, trigger and affected IDs before a new record is added. A bug SHALL remain unverified until a failed observation is linked, and a regression classification SHALL require a passed observation at an ancestor revision. A bug SHALL read as reproduced and later passed, and SHALL accept the verified status, only when a present linked passed observation was observed strictly after its most recent present linked failed observation. Additional evidence SHALL be appended rather than overwritten. The helper SHALL render a report candidate and SHALL NOT publish it. Trace: FLOW-8, LIFE-5.
 
 Acceptance Criteria
 - A sample failure becomes a reproduced and classified bug; a second report of the same symptom is found by search and its evidence is appended.
 - A regression classification without a passed observation at an ancestor revision is refused.
 - An out-of-scope bug stays in the open backlog without changing the checkpoint scope.
 - Rendering a report candidate prints Markdown and performs no network action.
+- A pass observed before, or in the same second as, the latest linked failure leaves the bug reproduced and the verified status is refused; a bug with no linked failure cannot be marked verified.
 - `--classification blocking` is refused with a hint to use `--scope`, and `--scope product-defect` with a hint to use `--classification`.
 
 ### REQUIREMENT REQ-cli-019
