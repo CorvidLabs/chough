@@ -1,6 +1,6 @@
 ---
 id: focused-chough-next-a-verification-guard-before-build-and-done-stage-resume
-state: approved
+state: implementing
 type: feature
 base_commit: ee6e3d2fd69e1fb979873676b7b02d8d86a9074d
 ---
