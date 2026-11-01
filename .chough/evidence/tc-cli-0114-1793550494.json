@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0114-1793550494",
+  "criteria": [
+    "LIFE-9",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass. The Install the toolchain command copied from README.md at f8cf4e1, run with cargo 1.95.0 and --root set to an empty scratch directory, exited 0 after 223 s and installed hi 0.8.0, fledge 1.8.0 and specsync 6.1.1",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0114-toolchain-install-f8cf4e1.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0114-toolchain-install-f8cf4e1.log": "a0068ab9368b0145ac32eedc9fa8a14c8be2f4e3f7c0f121c24f64b382b5ba5c"
+  },
+  "observed_at_unix_seconds": 1793550495,
+  "snapshot": {
+    "revision": "f8cf4e1eaa8caac1041fb1fdb728b4fdbad8fa63",
+    "dirty": false,
+    "fingerprint": "45f6f8dd719f120b2a0267c2ff81a5e7933de18faa921f24e2fa303ae9ba0c37",
+    "content": "07ce6de08d0f1c1e32606ca4488ca97fd64c4ddf0d0390755c66decd46256c3e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0114",
+      "digest": "4ff62af0d19b152050d1208904f2aff873c0d1993cfcf93bf63a0e31cd30a4c9"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "One local run on macOS arm64 with cargo 1.95.0 and a warm crates.io download cache; the full cargo output was kept only in scratch, the artifact holds its tail"
+  ]
+}
