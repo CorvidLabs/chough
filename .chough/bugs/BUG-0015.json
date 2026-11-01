@@ -22,7 +22,9 @@
     "chough next: stale-revision-or-inputs"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "bug-0015-repro-1"
+  ],
   "impact": "Committed evidence can never read as current",
   "classification": "product-defect",
   "scope": "in-scope",
@@ -31,7 +33,15 @@
   "duplicate_of": null,
   "related": [],
   "source": "CorvidLabs/chough#10 (Raven run, CorvidLabs/raven#644); reproduced on main 2756dc2",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793496694,
+      "text": "Reproduced before the fix by the new tests; see .chough/artifacts/bug-0015-reproduction.log.",
+      "observations": [
+        "bug-0015-repro-1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1793494673
+  "updated_at_unix_seconds": 1793496694
 }

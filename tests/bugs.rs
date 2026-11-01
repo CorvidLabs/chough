@@ -140,6 +140,9 @@ fn a_reproduced_bug_is_deduplicated_and_keeps_added_evidence() {
             .contains("passed observation")
     );
     observe(&fixture, "fixed-1", "passed");
+    // The fix must be observed strictly after the latest failure (REQ-cli-012); both
+    // records can land in one second, so the later time is written directly.
+    fixture.observed_at("fixed-1", fixture.observed_time("repro-2") + 1);
     let verified = fixture.ok(&[
         "bug",
         "update",
@@ -233,4 +236,130 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "advance"]);
     assert_eq!(fixture.session()["stage"]["current"], "accept");
+}
+
+/// A committed fixture with the given observations at the given times, linked to one bug.
+#[cfg(unix)]
+fn ordered_bug(observations: &[(&str, &str, u64)]) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let mut extra = vec!["--classification", "product-defect"];
+    for (id, outcome, seconds) in observations {
+        observe(&fixture, id, outcome);
+        fixture.observed_at(id, *seconds);
+        extra.extend(["--observation", id]);
+    }
+    json(&add_bug(&fixture, &extra));
+    fixture
+}
+
+/// The verification label on every surface that shows one.
+#[cfg(unix)]
+fn labels(fixture: &Fixture) -> Vec<String> {
+    let show = fixture.ok(&["bug", "show", "BUG-0001"]);
+    let list = fixture.ok(&["bug", "list"]);
+    let status = fixture.ok(&["status", "--json"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let report = String::from_utf8(fixture.run(&["bug", "report", "BUG-0001"]).stdout).unwrap();
+    let reported = report
+        .lines()
+        .find_map(|line| line.split_once("verification: "))
+        .map(|(_, label)| label.to_string())
+        .unwrap();
+    vec![
+        show["verification"].as_str().unwrap().to_string(),
+        list["bugs"][0]["verification"]
+            .as_str()
+            .unwrap()
+            .to_string(),
+        status["open_bugs"][0]["verification"]
+            .as_str()
+            .unwrap()
+            .to_string(),
+        next["open_bugs"][0]["verification"]
+            .as_str()
+            .unwrap()
+            .to_string(),
+        reported,
+    ]
+}
+
+#[cfg(unix)]
+#[test]
+fn a_pass_observed_before_the_latest_failure_does_not_verify_a_bug() {
+    let fixture = ordered_bug(&[
+        ("old-pass", "passed", 1_793_000_000),
+        ("new-failure", "failed", 1_793_000_100),
+    ]);
+    assert_eq!(labels(&fixture), vec!["reproduced"; 5]);
+    let error = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
+    assert!(
+        error.contains("new-failure") && error.contains("passed observation"),
+        "{error}"
+    );
+    assert_eq!(
+        fixture.ok(&["bug", "show", "BUG-0001"])["bug"]["status"],
+        "open"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_pass_observed_after_the_latest_failure_verifies_a_bug() {
+    let fixture = ordered_bug(&[
+        ("first-failure", "failed", 1_793_000_000),
+        ("between-pass", "passed", 1_793_000_050),
+        ("second-failure", "failed", 1_793_000_100),
+    ]);
+    // A pass between two failures is older than the latest failure.
+    assert_eq!(labels(&fixture), vec!["reproduced"; 5]);
+    observe(&fixture, "later-pass", "passed");
+    fixture.observed_at("later-pass", 1_793_000_101);
+    let verified = fixture.ok(&[
+        "bug",
+        "update",
+        "BUG-0001",
+        "--status",
+        "verified",
+        "--observation",
+        "later-pass",
+    ]);
+    assert_eq!(verified["verification"], "reproduced-and-later-passed");
+    assert_eq!(verified["bug"]["status"], "verified");
+    let show = fixture.ok(&["bug", "show", "BUG-0001"]);
+    assert_eq!(show["verification"], "reproduced-and-later-passed");
+    assert_eq!(
+        fixture.ok(&["bug", "list", "--all"])["bugs"][0]["verification"],
+        "reproduced-and-later-passed"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug() {
+    let fixture = ordered_bug(&[
+        ("repro-same-second", "failed", 1_793_000_000),
+        ("fix-same-second", "passed", 1_793_000_000),
+    ]);
+    assert_eq!(labels(&fixture), vec!["reproduced"; 5]);
+    let error = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
+    assert!(
+        error.contains("repro-same-second") && error.contains("passed observation"),
+        "{error}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_bug_without_a_linked_failure_cannot_be_verified() {
+    let fixture = ordered_bug(&[("only-pass", "passed", 1_793_000_000)]);
+    assert_eq!(labels(&fixture), vec!["unverified"; 5]);
+    let error = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
+    assert!(error.contains("failed observation"), "{error}");
+    assert_eq!(
+        fixture.ok(&["bug", "show", "BUG-0001"])["bug"]["status"],
+        "open"
+    );
 }

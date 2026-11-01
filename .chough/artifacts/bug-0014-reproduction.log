@@ -1,0 +1,91 @@
+# BUG-0014 reproduction: chough at a386c13 (0xleif/fix/evidence-stays-current) with the new tests added and src/ unchanged; macOS 26.5.2 arm64, rustc 1.95.0 (59807616e 2026-04-14); 2026-11-01T01:31:15Z
+$ cargo test --test bugs -- --exact a_pass_observed_before_the_latest_failure_does_not_verify_a_bug a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug a_bug_without_a_linked_failure_cannot_be_verified a_pass_observed_after_the_latest_failure_verifies_a_bug
+
+running 4 tests
+test a_pass_observed_before_the_latest_failure_does_not_verify_a_bug ... FAILED
+test a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug ... FAILED
+test a_bug_without_a_linked_failure_cannot_be_verified ... FAILED
+test a_pass_observed_after_the_latest_failure_verifies_a_bug ... FAILED
+
+failures:
+
+---- a_pass_observed_before_the_latest_failure_does_not_verify_a_bug stdout ----
+
+thread 'a_pass_observed_before_the_latest_failure_does_not_verify_a_bug' (132917762) panicked at tests/bugs.rs:296:5:
+assertion `left == right` failed
+  left: ["reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed"]
+ right: ["reproduced", "reproduced", "reproduced", "reproduced", "reproduced"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug stdout ----
+
+thread 'a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug' (132917760) panicked at tests/bugs.rs:346:5:
+assertion `left == right` failed
+  left: ["reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed"]
+ right: ["reproduced", "reproduced", "reproduced", "reproduced", "reproduced"]
+
+---- a_bug_without_a_linked_failure_cannot_be_verified stdout ----
+
+thread 'a_bug_without_a_linked_failure_cannot_be_verified' (132917759) panicked at tests/common/mod.rs:69:9:
+["bug", "update", "BUG-0001", "--status", "verified"] unexpectedly succeeded: {
+  "bug": {
+    "actual": "Shipping fee of 4.99 applied",
+    "cases": [],
+    "classification": "product-defect",
+    "created_at_unix_seconds": 1793496677,
+    "criteria": [],
+    "duplicate_of": null,
+    "environment": "test-local",
+    "expected": "Free shipping at 50.00",
+    "fixture": null,
+    "id": "BUG-0001",
+    "impact": "Not yet assessed.",
+    "notes": [
+      {
+        "at_unix_seconds": 1793496677,
+        "observations": [],
+        "text": "status: open -> verified"
+      }
+    ],
+    "observations": [
+      "only-pass"
+    ],
+    "regression_baseline": null,
+    "related": [],
+    "requirements": [
+      "REQ-cli-001"
+    ],
+    "revision": "d74260edeaac41a5617d2c24383dd5e5f4cfafc2",
+    "schema_version": 1,
+    "scope": "in-scope",
+    "source": "manual report",
+    "status": "verified",
+    "steps": [],
+    "symptom": "Order of exactly 50.00 is charged shipping",
+    "title": "Shipping is charged at exactly the free threshold",
+    "trigger": "Checkout total equal to the free shipping threshold",
+    "updated_at_unix_seconds": 1793496677
+  },
+  "schema_version": 1,
+  "verification": "unverified"
+}
+
+
+---- a_pass_observed_after_the_latest_failure_verifies_a_bug stdout ----
+
+thread 'a_pass_observed_after_the_latest_failure_verifies_a_bug' (132917761) panicked at tests/bugs.rs:317:5:
+assertion `left == right` failed
+  left: ["reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed", "reproduced-and-later-passed"]
+ right: ["reproduced", "reproduced", "reproduced", "reproduced", "reproduced"]
+
+
+failures:
+    a_bug_without_a_linked_failure_cannot_be_verified
+    a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug
+    a_pass_observed_after_the_latest_failure_verifies_a_bug
+    a_pass_observed_before_the_latest_failure_does_not_verify_a_bug
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 4 filtered out; finished in 2.23s
+
+error: test failed, to rerun pass `--test bugs`
+exit=101

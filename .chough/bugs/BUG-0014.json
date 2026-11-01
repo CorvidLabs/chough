@@ -20,7 +20,9 @@
     "chough bug show"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "bug-0014-repro-1"
+  ],
   "impact": "A bug can read as verified on stale evidence",
   "classification": "product-defect",
   "scope": "in-scope",
@@ -34,8 +36,15 @@
       "at_unix_seconds": 1793495829,
       "text": "scope: out-of-scope -> in-scope. Moved in scope for draft change keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after (grouping agreed by the human; scope approval still pending).",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793496694,
+      "text": "Reproduced before the fix by the new tests; see .chough/artifacts/bug-0014-reproduction.log.",
+      "observations": [
+        "bug-0014-repro-1"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793489621,
-  "updated_at_unix_seconds": 1793495829
+  "updated_at_unix_seconds": 1793496694
 }

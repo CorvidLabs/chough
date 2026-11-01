@@ -671,3 +671,502 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     assert!(shown.contains("[truncated at 16384 bytes"), "{shown}");
     assert!(shown.len() < 17_000, "{}", shown.len());
 }
+
+#[cfg(unix)]
+impl Fixture {
+    /// Stage everything and commit, as `git add -A && git commit` would.
+    fn commit_all(&self, message: &str) {
+        self.git(&["add", "-A"]);
+        self.git(&[
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--allow-empty",
+            "-m",
+            message,
+        ]);
+    }
+
+    fn freshness(&self, id: &str) -> String {
+        let status = self.ok(&["status", "--environment", "test-local", "--json"]);
+        status["observations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|observation| observation["record"]["id"] == id)
+            .unwrap_or_else(|| panic!("no observation {id}"))["freshness"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    }
+
+    fn observe(&self, id: &str) {
+        let output = self.add(id, "product-test", "passed");
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(self.freshness(id), "current-observation", "{id}");
+    }
+
+    fn head(&self) -> String {
+        let output = Command::new("git")
+            .current_dir(self.root())
+            .args(["rev-parse", "HEAD"])
+            .output()
+            .unwrap();
+        String::from_utf8(output.stdout).unwrap().trim().to_string()
+    }
+
+    /// A committed fixture with a stub native change in `.specsync/changes/<id>/`.
+    fn change_fixture(&self) {
+        self.write(
+            &format!("{CHANGE}/change.md"),
+            "---\nid: demo-change\nstate: draft\ntype: bug_fix\n---\n\n# Demo change\n\nstate: as noted in the body\n",
+        );
+        self.write(
+            &format!("{CHANGE}/deltas/cli.md"),
+            "## MODIFIED\n\n### REQUIREMENT REQ-cli-001\n\nPreserve files.\n",
+        );
+        for artifact in ["requirements.md", "testing.md", "tasks.md", "design.md"] {
+            self.write(&format!("{CHANGE}/{artifact}"), "# Artifact\n");
+        }
+        self.write(&format!("{CHANGE}/state.json"), "{\"state\":\"draft\"}\n");
+        self.evidence_fixture();
+    }
+}
+
+#[cfg(unix)]
+const CHANGE: &str = ".specsync/changes/demo-change";
+#[cfg(unix)]
+const ARCHIVE: &str = ".specsync/archive/changes/2026-10-31-demo-change";
+#[cfg(unix)]
+const BOOKKEEPING: [&str; 9] = [
+    "state.json",
+    "approvals.json",
+    "verification.json",
+    "verification-attempts.json",
+    "review.json",
+    "review-attempts.json",
+    "finalization.json",
+    "accepted-state.json",
+    "lesson-bundle.md",
+];
+
+#[cfg(unix)]
+#[test]
+fn committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    let revision = fixture.head();
+    fixture.observe("observed");
+    fixture.git(&["add", ".chough"]);
+    fixture.commit_all("record the observation");
+    assert_eq!(fixture.freshness("observed"), "current-observation");
+    fixture.commit_all("an empty commit");
+    assert_eq!(fixture.freshness("observed"), "current-observation");
+    // The revision is still recorded and shown; it no longer decides freshness.
+    let status = fixture.ok(&["status", "--environment", "test-local", "--json"]);
+    assert_eq!(
+        status["observations"][0]["record"]["snapshot"]["revision"],
+        revision.as_str()
+    );
+    assert_ne!(status["snapshot"]["revision"], revision.as_str());
+}
+
+#[cfg(unix)]
+#[test]
+fn committing_edits_already_present_when_observed_keeps_an_observation_current() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    fixture.write("src/input.txt", "edited before the observation\n");
+    fixture.write("src/added.txt", "untracked when observed\n");
+    fs::remove_file(fixture.root().join("AGENTS.md")).unwrap();
+    fixture.observe("observed");
+    fixture.commit_all("commit what was observed");
+    assert_eq!(fixture.freshness("observed"), "current-observation");
+    // Restoring the deleted file is a content change.
+    fixture.write("AGENTS.md", "Project instructions\n");
+    assert_eq!(fixture.freshness("observed"), "stale-revision-or-inputs");
+}
+
+#[cfg(unix)]
+#[test]
+fn any_fingerprinted_content_change_stales_an_observation() {
+    let fixture = Fixture::new();
+    fixture.change_fixture();
+    for (index, (name, content)) in [
+        ("src/input.txt", "a tracked edit\n"),
+        ("src/untracked.txt", "a new untracked file\n"),
+        ("specs/cli/requirements.md", "### REQ-cli-001\nChanged.\n"),
+        (".specsync/config.toml", "source_dirs = [\"lib\"]\n"),
+        (".specsync/registry.toml", "[registry]\n"),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let id = format!("before-{index}");
+        fixture.observe(&id);
+        fixture.write(name, content);
+        assert_eq!(fixture.freshness(&id), "stale-revision-or-inputs", "{name}");
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn specsync_bookkeeping_writes_keep_an_observation_current() {
+    let fixture = Fixture::new();
+    fixture.change_fixture();
+    fixture.observe("observed");
+    for name in BOOKKEEPING {
+        fixture.write(
+            &format!("{CHANGE}/{name}"),
+            &format!("{{\"written_by\":\"specsync\",\"file\":\"{name}\"}}\n"),
+        );
+        assert_eq!(
+            fixture.freshness("observed"),
+            "current-observation",
+            "{name}"
+        );
+    }
+    // Materialization changes only the front-matter state.
+    fixture.write(
+        &format!("{CHANGE}/change.md"),
+        "---\nid: demo-change\nstate: implementing\ntype: bug_fix\n---\n\n# Demo change\n\nstate: as noted in the body\n",
+    );
+    assert_eq!(fixture.freshness("observed"), "current-observation");
+    // What `specsync change check --commit` commits.
+    fixture.commit_all("specsync verification");
+    assert_eq!(fixture.freshness("observed"), "current-observation");
+}
+
+#[cfg(unix)]
+#[test]
+fn edits_to_a_native_change_scope_stale_an_observation() {
+    let fixture = Fixture::new();
+    fixture.change_fixture();
+    for (index, (name, content)) in [
+        ("deltas/cli.md", "## MODIFIED\n\n### REQUIREMENT REQ-cli-001\n\nRewritten.\n"),
+        ("requirements.md", "# Requirements, edited\n"),
+        ("testing.md", "# Testing, edited\n"),
+        ("tasks.md", "- [x] done\n"),
+        ("research.md", "# A new artifact\n"),
+        ("deltas/state.json", "{\"not\":\"bookkeeping here\"}\n"),
+        (
+            "change.md",
+            "---\nid: demo-change\nstate: draft\ntype: bug_fix\n---\n\n# Demo change\n\nstate: rewritten in the body\n",
+        ),
+        (
+            "change.md",
+            "---\nid: demo-change\nstate: draft\ntype: feature\n---\n\n# Demo change\n\nstate: rewritten in the body\n",
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let id = format!("before-{index}");
+        fixture.observe(&id);
+        fixture.write(&format!("{CHANGE}/{name}"), content);
+        assert_eq!(fixture.freshness(&id), "stale-revision-or-inputs", "{name}");
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn archiving_a_change_keeps_an_observation_current_until_an_artifact_changes() {
+    let fixture = Fixture::new();
+    fixture.change_fixture();
+    fixture.observe("observed");
+    fs::create_dir_all(fixture.root().join(".specsync/archive/changes")).unwrap();
+    fs::rename(fixture.root().join(CHANGE), fixture.root().join(ARCHIVE)).unwrap();
+    for name in [
+        "review.json",
+        "finalization.json",
+        "accepted-state.json",
+        "lesson-bundle.md",
+    ] {
+        fixture.write(&format!("{ARCHIVE}/{name}"), "{\"finalized\":true}\n");
+    }
+    fixture.write(
+        &format!("{ARCHIVE}/change.md"),
+        "---\nid: demo-change\nstate: archived\ntype: bug_fix\n---\n\n# Demo change\n\nstate: as noted in the body\n",
+    );
+    assert_eq!(fixture.freshness("observed"), "current-observation");
+    fixture.commit_all("archive the change");
+    assert_eq!(fixture.freshness("observed"), "current-observation");
+
+    fixture.write(
+        &format!("{ARCHIVE}/deltas/cli.md"),
+        "## MODIFIED\n\nEdited.\n",
+    );
+    assert_eq!(fixture.freshness("observed"), "stale-revision-or-inputs");
+    fixture.observe("after-edit");
+    fixture.write(
+        &format!("{ARCHIVE}/notes.md"),
+        "not on the bookkeeping list\n",
+    );
+    assert_eq!(fixture.freshness("after-edit"), "stale-revision-or-inputs");
+}
+
+#[cfg(unix)]
+#[test]
+fn observations_without_a_content_identity_stay_stale_after_a_commit() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    fixture.observe("legacy");
+    let name = fixture.root().join(".chough/evidence/legacy.json");
+    let mut record: Value = serde_json::from_str(&fs::read_to_string(&name).unwrap()).unwrap();
+    record["snapshot"]
+        .as_object_mut()
+        .unwrap()
+        .remove("content");
+    fs::write(&name, serde_json::to_string_pretty(&record).unwrap() + "\n").unwrap();
+    assert_eq!(fixture.freshness("legacy"), "current-observation");
+    fixture.commit_all("an empty commit");
+    assert_eq!(fixture.freshness("legacy"), "stale-revision-or-inputs");
+}
+
+#[cfg(unix)]
+#[test]
+fn a_malformed_content_identity_is_refused() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    fixture.observe("malformed");
+    let name = fixture.root().join(".chough/evidence/malformed.json");
+    let mut record: Value = serde_json::from_str(&fs::read_to_string(&name).unwrap()).unwrap();
+    record["snapshot"]["content"] = json!("not-a-sha256-digest");
+    fs::write(&name, serde_json::to_string_pretty(&record).unwrap() + "\n").unwrap();
+    let output = fixture.run(&["status", "--environment", "test-local", "--json"]);
+    assert!(!output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("invalid evidence"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture.root().join(".agents/skills/chough-workflow");
+    let shipped = [
+        ("references/accept.md", ACCEPT_AT_2756DC2),
+        ("references/lifecycle.md", LIFECYCLE_AT_2756DC2),
+        ("references/bugs.md", BUGS_AT_2756DC2),
+    ];
+    for (file, content) in shipped {
+        fs::write(installed.join(file), content).unwrap();
+    }
+    let state = |report: &Value, file: &str| {
+        report["hosts"][0]["files"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["file"] == file)
+            .unwrap()["state"]
+            .clone()
+    };
+    let status = fixture.ok(&["skill", "status"]);
+    for (file, _) in shipped {
+        assert_eq!(state(&status, file), "known-outdated", "{file}");
+    }
+    fixture.ok(&["skill", "update"]);
+    let status = fixture.ok(&["skill", "status"]);
+    for (file, _) in shipped {
+        assert_eq!(state(&status, file), "current", "{file}");
+    }
+}
+
+/// `skills/chough-workflow/references/accept.md` as shipped by main at 2756dc2.
+const ACCEPT_AT_2756DC2: &str = r#"# Acceptance and native closeout
+
+Acceptance is where the human decides whether the implementation is what they
+wanted. Agent review, a passing command, scope approval or an actor label never
+stands in for that decision.
+
+## Prepare the review
+
+1. Run the project lanes and the native scoped check when native status allows it:
+   `specsync change check <id> --commit` (stage new source files first).
+2. Push the branch, open or update the pull request, and observe hosted CI at the
+   real tip. Report product tests, structural checks, native lifecycle state,
+   provenance and platforms separately.
+3. Present to the human: what changed, the current verification, the relevant case
+   observations with freshness, open bugs and limits, and what was not checked.
+4. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
+
+If native archive checks are red because review has not happened, say exactly that.
+Do not claim all checks are green and do not bypass the gate.
+
+## After the human decides
+
+Only after a real review decision, record it and close natively, following native
+status rather than a remembered sequence:
+
+```sh
+specsync change review <id> --reviewer "<the human>"
+specsync change ship <id>        # or: specsync change finalize <id>
+```
+
+Do not commit between review and finalize. Push the archive commit on the same pull
+request, wait for required checks, then merge through the repository's normal
+process. If several changes share a pull request, review and finalize them one at a
+time. If evidence went stale, use the recovery action that `specsync change status`
+names.
+
+Then `chough stage advance` moves accept to done; it is refused until native state is
+`archived`. Finishing never enters release.
+
+## Compounding
+
+Lessons can be recorded at any stage. Put them in the module's native lesson source
+(`<module>.3md` later plane when present, otherwise `context.md`) with the source,
+the scope where it applies and the future action it changes. A lesson that changes
+behavior or policy may need its own native change. Archival does not mean no bug
+remains; open bugs stay in the backlog.
+"#;
+
+/// `skills/chough-workflow/references/lifecycle.md` as shipped by main at 2756dc2.
+const LIFECYCLE_AT_2756DC2: &str = r#"# Native lifecycle and evidence
+
+Installed `specsync change status <id> --json`, `specsync change ship-status <id>` and
+command help are authoritative for the current state and recovery path. This
+reference follows SpecSync 6.1; do not hardcode it over another version's output.
+Match the SpecSync version used by lifecycle writers and CI.
+
+## Shape of a change
+
+```text
+new → interview → artifacts and delta → one human scope approval → implement →
+check --commit → push, CI → human implementation review → review → ship/finalize →
+push archive, CI → merge
+```
+
+| Native state | Chough stage | Gate |
+|---|---|---|
+| draft | intent, design, plan | build, test, accept and done refused |
+| approved, implementing, verifying, with `approval_valid` true | build, test, accept | build, test and accept allowed; done refused |
+| archived, with authenticated `terminal_evidence` | test, accept, done | done allowed; build refused (new work needs a new change) |
+
+Chough reads `summary.state`, `summary.approval_valid`, `summary.correction_valid` and,
+for archived changes, `summary.terminal_evidence.validity`. The same prerequisite
+applies whichever command moves the stage (advance, skip, back, reset, return or
+release → done). It refuses when status is missing, cannot be decoded or reports an
+invalid approval, and when `.specsync/sdd.json` is not a valid SpecSync policy. It never runs `approve`, `review` or `finalize` for you.
+
+## Approval
+
+Record `specsync change approve <id> --actor "<human>"` only after a real human
+decision about this concrete definition. A general instruction to keep working is
+not approval of a new definition. Actor text is a portable claim, not identity.
+
+## Verification
+
+`specsync change check <id> --commit` materializes the approved delta and records
+targeted structural verification. Stage new source files first. It does not run the
+project's tests; product checks are separate observations. It refuses an edited
+delta and incomplete tasks. Fix real failures; if evidence is stale, follow the exact
+recovery action status names.
+
+## Review, archive, merge
+
+Push only after the applicable local gates and observe required CI at the actual tip.
+After the human reviews the change package, diff, delta and evidence:
+
+```sh
+specsync change review <id> --reviewer "<human>"
+specsync change ship <id>
+```
+
+The reviewer may be the scope approver. Do not commit between review and ship or
+finalize. Archive on the same pull request, push the archive commit, wait for its
+checks, and merge only when every change on that pull request is archived. Review and
+finalize several changes one at a time.
+
+Merge, package publication, release, deployment and live health are separate
+observations; see [release.md](release.md).
+
+## Evidence records
+
+`chough cases run` and `chough evidence add` bind an observation to the Git revision,
+working-tree fingerprint, environment, artifacts and, for cases, the definition
+digest. They do not authenticate a witness or verify a remote artifact. A changed
+input, artifact, case definition or environment makes the observation stale.
+"#;
+
+/// `skills/chough-workflow/references/bugs.md` as shipped by main at 2756dc2.
+const BUGS_AT_2756DC2: &str = r#"# Reproduce, classify, deduplicate and record a bug
+
+Use this procedure for a suspected defect, including a failing case. Bugs live
+locally first in `.chough/bugs/`. A request to investigate does not authorize
+posting an issue, comment or message; publication needs an explicit request or an
+authorization the human already established.
+
+## Establish the failure
+
+Find the applicable HI criterion, requirement and case. If the intended behavior is
+unclear, keep the observation and ask the smallest question that separates a defect
+from a new request. Do not rewrite intent to match the implementation.
+
+Reduce the reproduction to the smallest safe fixture and steps. Run it and record the
+result as an observation: `chough cases run <case> --environment <env>` for a bound
+case, or `chough evidence add … --outcome failed` with the saved output. A bug without
+a linked failed observation is reported as `unverified`. Avoid real credentials,
+private data or destructive production actions when a local fixture suffices.
+
+## Classify from evidence
+
+| Class | Evidence needed |
+|---|---|
+| product-defect | Observed behavior contradicts an applicable criterion or contract |
+| regression | Fails now, and a passed observation at an earlier ancestor revision exists (`--regression-baseline <observation>`) |
+| environment | The failure is isolated to an identified environment or tool input |
+| requirement-gap | Behavior is observed, but the intended outcome is unresolved |
+| evidence-gap | Existing claims cannot be reproduced or their evidence is missing or stale |
+
+A plausible cause is a hypothesis until a test supports it. A remembered "it used to
+work" is not a regression baseline. State impact separately from priority.
+
+## Search, then record
+
+```sh
+chough bug search "<symptom and trigger>" --requirement <REQ> --case <case>
+chough bug add --title "…" --symptom "…" --trigger "…" --expected "…" --actual "…" \
+  --environment <env> --requirement <REQ> --case <case> --observation <failed-obs> \
+  --step "…" --scope blocking|in-scope|out-of-scope --classification product-defect
+```
+
+`bug add` refuses when a similar bug exists. Compare symptom, trigger and affected
+behavior, not titles. For the same defect, append to the existing record with
+`chough bug update <BUG> --observation <id> --note "<what this adds>"`; for a related
+but distinct one, add with `--distinct "<why>"` and link it with `--related`.
+
+Search wider sources only when they are in scope, for example `fledge github issues
+--state all --limit 100 --json`. That list is bounded and can hide fetch errors; say
+what you searched and its limits.
+
+## Scope decides the next step
+
+- `blocking`: the acceptance-relevant behavior is wrong. `chough stage advance` from
+  test refuses while it is open; go back to build, fix, and rerun the focused cases.
+- `in-scope`: fix within the approved scope when practical.
+- `out-of-scope`: keep it visible in the backlog for later work. It does not expand
+  the current change.
+
+After a fix, link the passing observation and set `--status verified`, which needs a
+linked passed observation. Bugs found after closure normally become new native
+changes; use native recovery only when the original recorded evidence needs repair.
+
+## Report candidates
+
+`chough bug report <BUG>` prints a Markdown candidate built from the record, marked as
+not published. Review it, and post it only when the human asks. Then return the
+resulting URL and add it to the record with a note. Record a lesson in the native
+module source only when its source, scope and future use are clear.
+"#;

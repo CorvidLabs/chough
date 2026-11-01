@@ -86,6 +86,25 @@ impl Fixture {
         ]);
     }
 
+    /// Set an observation's recorded time, since `now()` is not injectable and two
+    /// observations recorded in a row often share a second.
+    pub(super) fn observed_at(&self, id: &str, seconds: u64) {
+        let name = format!(".chough/evidence/{id}.json");
+        let mut record: Value = serde_json::from_str(&self.read(&name)).unwrap();
+        record["observed_at_unix_seconds"] = Value::from(seconds);
+        self.write(
+            &name,
+            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+        );
+    }
+
+    /// The recorded time of an observation.
+    pub(super) fn observed_time(&self, id: &str) -> u64 {
+        let record: Value =
+            serde_json::from_str(&self.read(&format!(".chough/evidence/{id}.json"))).unwrap();
+        record["observed_at_unix_seconds"].as_u64().unwrap()
+    }
+
     pub(super) fn session(&self) -> Value {
         serde_json::from_str(&self.read(".chough/session.json")).unwrap()
     }

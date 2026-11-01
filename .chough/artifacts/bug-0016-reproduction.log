@@ -1,0 +1,33 @@
+# BUG-0016 reproduction: chough at a386c13 (0xleif/fix/evidence-stays-current) with the new tests added and src/ unchanged; macOS 26.5.2 arm64, rustc 1.95.0 (59807616e 2026-04-14); 2026-11-01T01:31:13Z
+$ cargo test --test cli -- --exact specsync_bookkeeping_writes_keep_an_observation_current archiving_a_change_keeps_an_observation_current_until_an_artifact_changes
+
+running 2 tests
+test specsync_bookkeeping_writes_keep_an_observation_current ... FAILED
+test archiving_a_change_keeps_an_observation_current_until_an_artifact_changes ... FAILED
+
+failures:
+
+---- specsync_bookkeeping_writes_keep_an_observation_current stdout ----
+
+thread 'specsync_bookkeeping_writes_keep_an_observation_current' (132913406) panicked at tests/cli.rs:831:9:
+assertion `left == right` failed: state.json
+  left: "stale-revision-or-inputs"
+ right: "current-observation"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- archiving_a_change_keeps_an_observation_current_until_an_artifact_changes stdout ----
+
+thread 'archiving_a_change_keeps_an_observation_current_until_an_artifact_changes' (132913405) panicked at tests/cli.rs:899:5:
+assertion `left == right` failed
+  left: "stale-revision-or-inputs"
+ right: "current-observation"
+
+
+failures:
+    archiving_a_change_keeps_an_observation_current_until_an_artifact_changes
+    specsync_bookkeeping_writes_keep_an_observation_current
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 22 filtered out; finished in 2.06s
+
+error: test failed, to rerun pass `--test cli`
+exit=101

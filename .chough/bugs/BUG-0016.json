@@ -21,7 +21,9 @@
     "commit .chough/; specsync change status"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "bug-0016-repro-1"
+  ],
   "impact": "Repeated verification and review rebinding",
   "classification": "product-defect",
   "scope": "in-scope",
@@ -35,8 +37,15 @@
       "at_unix_seconds": 1793494673,
       "text": "Added despite similar reports: SpecSync bookkeeping and .chough interplay, beyond the revision salt in #10",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793496694,
+      "text": "Reproduced before the fix by the new tests; see .chough/artifacts/bug-0016-reproduction.log.",
+      "observations": [
+        "bug-0016-repro-1"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1793494673
+  "updated_at_unix_seconds": 1793496694
 }
