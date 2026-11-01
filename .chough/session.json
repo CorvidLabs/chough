@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Prepare the 0.1.0 release: pinned toolchain with one install command, checked MSRV, accurate skill guidance and contract wording, change log",
+  "objective": "Project-local learning and reliable handoffs, first slice: chough next shows recent decisions, the last failure and a lessons pointer within its size cap, never says Continue <stage> after the native change is archived, and the skill labels lesson certainty and closes out quietly inside the open change",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill",
+  "native_change": "fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -23,14 +23,19 @@
       "FLOW-10",
       "LIFE-4",
       "LIFE-6",
-      "LIFE-9"
+      "LIFE-9",
+      "LIFE-1",
+      "LIFE-3",
+      "FLOW-12"
     ],
     "requirements": [
       "REQ-cli-007",
       "REQ-cli-008",
       "REQ-cli-011",
       "REQ-cli-016",
-      "REQ-cli-019"
+      "REQ-cli-019",
+      "REQ-cli-021",
+      "REQ-cli-002"
     ],
     "cases": [
       "TC-cli-0101",
@@ -66,10 +71,10 @@
     "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
     "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
-    "0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json"
-  ],
-  "open_questions": [
-    "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
+    "0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json",
+    "decided: cold-start proof is a frozen seeded fixture repo plus a written pass/fail rubric, hashed as an observation before implementation; a fresh agent on a different host (Kimi Code CLI 0.41.0 or Codex CLI 0.153.4) runs on main as a mandatory baseline and then on the change, 0xLeif grades, plus one run on this real repo, because a fresh command process or the author grading cannot show a cold handoff works (0xLeif, 2026-11-01)",
+    "decided: lessons live in the existing specs/<module>/context.md Lessons section, which SpecSync already briefs; Chough only points at them, with no .3md and no library/ store, because a second lesson store would compete with SpecSync (0xLeif, 2026-11-01)",
+    "decided: assumption, to state in design: checkpoint decisions stay Vec<String>; a prefix convention (rejected: <approach> because <reason>, failed: <experiment> because <reason>, decided: ...) is read best-effort with a latest-N fallback, because a structured decision schema would need a checkpoint migration (REQ-cli-007) and conflict with PR #26"
   ],
   "open_questions": [],
   "completed": [
@@ -89,7 +94,8 @@
     "TC-cli-0100 and TC-cli-0104 added and passing",
     "PR #9 merged earlier; stale awaiting-human entry cleared",
     "0.1.0 release prep implemented: pins, MSRV job and rust-version, nine skill corrections with KNOWN_PREVIOUS and host refresh, context history, README, CHANGELOG, docs/releasing.md, D-019",
-    "TC-cli-0110 and 0112 failed before the fix and passed at f6416a5 with TC-cli-0111, 0113, 0114, 0064 and 0065"
+    "TC-cli-0110 and 0112 failed before the fix and passed at f6416a5 with TC-cli-0111, 0113, 0114, 0064 and 0065",
+    "Drafted native change fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer (MODIFIED REQ-cli-021 and REQ-cli-002; cases TC-cli-0126 to TC-cli-0133 reserved in testing.md); specsync change status names change approve next and change audit passes"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -125,7 +131,9 @@
     "BUG-0025"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer"
+  ],
   "run_consents": [],
-  "next_action": "specsync change check --commit, push, CI after archive, then 0xLeif's implementation review"
+  "next_action": "Wait for 0xLeif's scope approval of fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer (only he runs or authorizes specsync change approve). After approval and before any implementation: freeze docs/exercises/handoff-cold-start/seed.sh and rubric.md, record their hashes as one observation, and run the mandatory baseline on main (fb6e487) on a different host (Kimi Code CLI 0.41.0 or Codex CLI 0.153.4) for 0xLeif to grade."
 }
