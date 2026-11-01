@@ -886,6 +886,32 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
     assert_eq!(fixture.session()["next_action"], "Keep this step");
 }
 
+#[test]
+fn reset_replaces_the_next_action_and_back_keeps_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["checkpoint", "--next-action", "Finish the old plan"]);
+    fixture.ok(&["stage", "back", "--to", "design", "--reason", "Revisit"]);
+    assert_eq!(fixture.session()["next_action"], "Finish the old plan");
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "plan",
+        "--reason",
+        "Different work",
+    ]);
+    assert_eq!(
+        fixture.session()["next_action"],
+        "New cycle from design after reset: Different work. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+    );
+    let last = transitions(&fixture).pop().unwrap();
+    assert_eq!(last["kind"], "reset");
+    assert_eq!(last["reason"], "Different work");
+}
+
 #[cfg(unix)]
 #[test]
 fn done_keeps_the_gate_refusal_for_an_archive_that_does_not_authenticate() {

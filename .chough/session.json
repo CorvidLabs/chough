@@ -37,7 +37,12 @@
       "TC-cli-0102",
       "TC-cli-0103",
       "TC-cli-0038",
-      "TC-cli-0039"
+      "TC-cli-0039",
+      "TC-cli-0120",
+      "TC-cli-0121",
+      "TC-cli-0122",
+      "TC-cli-0123",
+      "TC-cli-0124"
     ],
     "design": [],
     "files": []
@@ -105,5 +110,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit source; mark tasks done; run the scoped specsync change check to materialize REQ-cli-021 and REQ-cli-022; then add and run TC-cli-0120 to TC-cli-0124"
+  "next_action": "Run TC-cli-0120 to TC-cli-0124, commit the records, then specsync change check --commit"
 }
