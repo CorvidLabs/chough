@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Land PR #16: bundle hygiene, case binding environment, colour-safe matching, actionable errors",
+  "objective": "Focused chough next, a verification guard before build, and done-stage resume (0.1.0 blocking decisions from 0xLeif)",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
+  "native_change": "focused-chough-next-a-verification-guard-before-build-and-done-stage-resume",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -20,12 +20,17 @@
       "FLOW-13",
       "LIFE-2",
       "LIFE-7",
-      "FLOW-10"
+      "FLOW-10",
+      "LIFE-3",
+      "FLOW-5",
+      "LIFE-4"
     ],
     "requirements": [
       "REQ-cli-007",
       "REQ-cli-008",
-      "REQ-cli-011"
+      "REQ-cli-011",
+      "REQ-cli-021",
+      "REQ-cli-022"
     ],
     "cases": [
       "TC-cli-0101",
@@ -55,7 +60,9 @@
     "2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion",
     "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
-    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed"
+    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
+    "Draft adds REQ-cli-021 and REQ-cli-022 instead of modifying REQ-cli-008, 016 or 019, because open PR #22 modifies those",
+    "No gate runs specsync change check: measured on 6.1.1 it mutates canonical specs and native records and refuses while tasks are unchecked; the guard recomputes SpecSync's approved-delta digests instead"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -94,7 +101,9 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume, including the open questions in plan.md"
+  ],
   "run_consents": [],
-  "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+  "next_action": "Wait for 0xLeif's scope approval of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume; then specsync change approve with their name and chough stage advance to build"
 }
