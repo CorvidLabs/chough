@@ -1,6 +1,6 @@
 ---
 id: make-checkpoint-merges-safe-across-parallel-changes
-state: draft
+state: implementing
 type: feature
 base_commit: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
 ---

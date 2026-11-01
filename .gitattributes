@@ -3,3 +3,5 @@
 # The Markdown preview also joins a single newline into a space and glues the
 # planes into one paragraph. Plain text keeps each plane on its own line.
 *.3md linguist-language=Text
+
+.chough/session.json merge=chough-session

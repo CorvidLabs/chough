@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee",
+  "title": "Checkpoint parallel merge conflicts in real Git",
+  "symptom": "Compatible additive schema 2 checkpoint edits remain unresolved in a real Git merge",
+  "trigger": "Merge two branches from one schema 2 base with one-side removals and an identical addition, first without a Chough driver and then with the documented driver",
+  "expected": "Git cleanly merges compatible collections in base, ours, theirs order and preserves one-side removals",
+  "actual": "Ordinary Git reports a content conflict with conflict markers; the configured driver exits on unexpected argument --merge and leaves the path unresolved",
+  "criteria": [
+    "FLOW-13",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-007"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "5bab395af745e328e918a5f358c5149d673e47ca",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "checkpoint-merge-real-git-pre-fix",
+    "checkpoint-merge-real-git-post-fix",
+    "checkpoint-merge-real-git-final"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793576349,
+      "text": "status: open -> verified. The unchanged real Git regression passed after the merge implementation and review fixes",
+      "observations": [
+        "checkpoint-merge-real-git-post-fix"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793576842,
+      "text": "Final-content real Git regression passed after all implementation, documentation and native task edits",
+      "observations": [
+        "checkpoint-merge-real-git-final"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793575372,
+  "updated_at_unix_seconds": 1793576842
+}

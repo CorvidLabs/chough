@@ -1,4 +1,63 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793575009,
+      "digest": "2944df08e2d2c903b313f3bdd00f825dc4dfe42fa4351bf287170331f5e855b0",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-checkpoint-merges-safe-across-parallel-changes",
+        "title": "Make checkpoint merges safe across parallel changes",
+        "description": "Make checkpoint merges safe across parallel changes",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          ".claude/skills/chough-workflow/references/checkpoint.md",
+          ".gitattributes",
+          "README.md",
+          "docs/FRD.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/cli/tasks.md",
+          "specs/cli/testing.md",
+          "src/checkpoint.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/cli.rs",
+          "tests/optional.rs",
+          "tests/package.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A .gitattributes declaration and documented per-clone Git driver invoke the same command without changing Git configuration during init. A real Git fixture proves compatible merges and unresolved current-cycle conflicts. The explicit command remains the fallback when no driver is available.",
+          "Failure-first evidence is retained for the current conflicting checkpoint behavior and linked to a local bug before implementation, followed by a later pass. Existing schema 1 read and migration behavior, one-owner live writes, native SpecSync authority and all non-checkpoint ID schemes remain unchanged.",
+          "Focused and full Rust tests, real Git merge tests, formatting, Clippy with warnings denied, fledge verify and pre-push pass with the current CI tool versions. No new case number is allocated; evidence uses explicit readable IDs. No release or deployment is introduced.",
+          "Objective, intent scope, modules, stage, native change, next action, run consents, blockers and awaiting-human gates merge as one current-cycle group: an unchanged or identical side is selected, while conflicting changes refuse with a named reason. Every refusal leaves all inputs byte-identical and creates no transition, gate, approval, review or consent record.",
+          "Schema 1, malformed input, unknown fields, mixed versions and output beyond existing bounds fail closed. The canonical checkpoint remains .chough/session.json with no second writable store, runtime, service or duplicate lifecycle state.",
+          "`chough checkpoint --merge <base> <ours> <theirs>` performs a bounded three-way merge of schema 2 checkpoints. Exact-string history and reference collections preserve base order plus ours-only and theirs-only additions, identical additions appear once, and one-side removals are not resurrected."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "REQ-cli-007 keeps one canonical schema 2 checkpoint at .chough/session.json with explicit schema 1 migration and no second writable store; one agent still owns live checkpoint writes; merge never fabricates transitions or human decisions; native SpecSync remains authoritative; do not list .chough as a native affected path; preserve all legacy records and old observations; the Git driver is optional per-clone configuration and init must not mutate it; canonical and installed skill references stay byte-identical and previous digests are recognized; no new case number or non-checkpoint ID scheme changes; no em or en dashes; use current CI versions HI 0.8.0, Fledge 1.8.0 and SpecSync 6.1.2; no runtime, service, release or deployment",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "80991ac9a0d8915ee9fcfc54336ea0fd190dd0fd3b61c4a264d4d781b0c76d10"
+      }
+    }
+  ],
   "reopenings": []
 }

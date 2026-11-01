@@ -1,0 +1,61 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
+     Running tests/stages.rs (target/debug/deps/stages-b5c96188316f0637)
+
+running 1 test
+command: git merge --no-edit theirs
+exit status: exit status: 0
+stdout:
+{"checkpoint":{"awaiting_human":[],"blockers":[],"bugs":[],"completed":[],"decisions":["base keep","ours addition","shared addition","theirs addition"],"intent_scope":"FLOW-13","modules":["cli"],"native_change":"merge-checkpoints","next_action":"Merge compatible edits","objective":"Merge parallel checkpoint edits","observations":[],"open_questions":[],"references":{"cases":[],"criteria":["FLOW-13"],"design":[],"files":[],"requirements":["REQ-cli-007"]},"run_consents":[],"schema_version":2,"stage":{"callers":[],"current":"build","iteration":1,"status":"active"}},"merged":true,"schema_version":1}
+Auto-merging .chough/session.json
+Merge made by the 'ort' strategy.
+ .chough/session.json | 50 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
+
+stderr:
+
+resulting .chough/session.json bytes:
+{
+  "schema_version": 2,
+  "objective": "Merge parallel checkpoint edits",
+  "intent_scope": "FLOW-13",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "merge-checkpoints",
+  "references": {
+    "criteria": [
+      "FLOW-13"
+    ],
+    "requirements": [
+      "REQ-cli-007"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "base keep",
+    "ours addition",
+    "shared addition",
+    "theirs addition"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Merge compatible edits"
+}
+
+test real_git_driver_merges_compatible_checkpoint_changes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 32 filtered out; finished in 3.28s
+
