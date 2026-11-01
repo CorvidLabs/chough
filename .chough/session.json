@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -80,7 +80,8 @@
     "TC-cli-0100 and TC-cli-0104 added and passing",
     "PR #9 merged earlier; stale awaiting-human entry cleared",
     "Completed cold start exercise as Gemini host on macOS arm64; drafted native change definition with 7 complete artifacts; reserved TC-cli-0105; stopped at scope gate",
-    "Implemented guidance updates in SKILL.md and checkpoint.md with byte parity in .agents and .claude; added prior digests to KNOWN_PREVIOUS in src/skill.rs; refreshed roadmap rows in docs/ROADMAP.md and added Gemini host cold start in docs/exercises/cold-start.md; recorded TC-cli-0105 observation"
+    "Implemented guidance updates in SKILL.md and checkpoint.md with byte parity in .agents and .claude; added prior digests to KNOWN_PREVIOUS in src/skill.rs; refreshed roadmap rows in docs/ROADMAP.md and added Gemini host cold start in docs/exercises/cold-start.md; recorded TC-cli-0105 observation",
+    "Finalized and shipped native change to archive on PR #20; advanced stage to done via gate native:archived"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -100,9 +101,7 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of gemini-host-cold-start-and-roadmap-refresh"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Obtain human implementation review of gemini-host-cold-start-and-roadmap-refresh from 0xLeif"
+  "next_action": "Merge PR #20 on GitHub once CI checks are green"
 }

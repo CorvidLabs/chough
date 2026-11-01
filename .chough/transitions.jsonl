@@ -24,3 +24,5 @@
 {"schema_version":1,"at_unix_seconds":1793546852,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:approved","revision":"9cf1427e87a28175dc535a632998afa0de73d7c1","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793546856,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:approved","revision":"9cf1427e87a28175dc535a632998afa0de73d7c1","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793547118,"kind":"gate-opened","from":"accept","to":"accept","reason":"Implementation review of gemini-host-cold-start-and-roadmap-refresh","gate":null,"revision":"9cf1427e87a28175dc535a632998afa0de73d7c1","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793547379,"kind":"gate-closed","from":"accept","to":"accept","reason":"Implementation review of gemini-host-cold-start-and-roadmap-refresh","gate":null,"revision":"dc3f9b5c0fb2b8b895a5af40e15000c90f88a0f1","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793547399,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"dc3f9b5c0fb2b8b895a5af40e15000c90f88a0f1","refresh":[]}
