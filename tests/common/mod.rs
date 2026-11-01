@@ -157,22 +157,51 @@ impl Fixture {
             r#"#!/bin/sh
 # Reports the summary fields SpecSync 6.1.1 reports. Files change them: .stub-state,
 # .stub-approval (true, false or none to omit), .stub-correction (true or false),
-# .stub-validity (terminal evidence when archived; none omits it) and .stub-fail.
+# .stub-validity (terminal evidence when archived; none omits it), .stub-next (the
+# native next action), .stub-affected (the quoted modules of change.affected_specs;
+# none omits the change object), .stub-no-spec (true or false) and .stub-fail. When
+# .stub-count exists, every call appends a line to .stub-calls.
+if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
 if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
 state=$(cat .stub-state 2>/dev/null || echo draft)
 approval=$(cat .stub-approval 2>/dev/null || echo true)
 correction=$(cat .stub-correction 2>/dev/null || echo true)
 validity=$(cat .stub-validity 2>/dev/null || echo authenticated-history)
+next=$(cat .stub-next 2>/dev/null || echo "stub next action for $state")
+affected=$(cat .stub-affected 2>/dev/null || echo '')
+nospec=$(cat .stub-no-spec 2>/dev/null || echo true)
 fields=",\"correction_valid\":$correction"
 if [ "$approval" != none ]; then fields="$fields,\"approval_valid\":$approval"; fi
 if [ "$state" = archived ] && [ "$validity" != none ]; then
     fields="$fields,\"terminal_evidence\":{\"validity\":\"$validity\"}"
 fi
-printf '{"summary":{"state":"%s","next_action":"stub next action for %s"%s}}\n' "$state" "$state" "$fields"
+change=""
+if [ "$affected" != none ]; then
+    change=",\"change\":{\"affected_specs\":[$affected],\"no_spec_change\":$nospec}"
+fi
+printf '{"summary":{"state":"%s","next_action":"%s"%s}%s}\n' "$state" "$next" "$fields" "$change"
 "#,
         );
         self.executable("bin/hi");
         self.executable("bin/specsync");
+    }
+
+    /// Write a native definition approval for `id` with no semantic deltas, as SpecSync
+    /// records one for a no-spec-change scope, so the approved-delta guard passes.
+    pub(super) fn no_spec_approval(&self, id: &str) {
+        self.write(
+            &format!(".specsync/changes/{id}/approvals.json"),
+            "{\"approvals\":[{\"gate\":\"definition\",\"actor\":\"SYNTHETIC-test-approver\",\"approved_delta_digests\":{}}],\"reopenings\":[]}\n",
+        );
+    }
+
+    /// How many times the `specsync` stub ran since the count was last reset; counting
+    /// starts once `.stub-count` exists.
+    pub(super) fn native_calls(&self) -> usize {
+        let path = self.root().join(".stub-calls");
+        let count = fs::read_to_string(&path).map_or(0, |text| text.lines().count());
+        let _ = fs::remove_file(path);
+        count
     }
 
     #[cfg(unix)]

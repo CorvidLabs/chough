@@ -15,10 +15,11 @@ their JSON.
 |---|---|
 | `init` | `--objective`, `--intent-scope`, repeated `--module`, repeated `--host openai\|claude\|codex\|cursor\|gemini\|grok` (default openai). Creates a schema 2 checkpoint and the skill bundle; preserves existing files. |
 | `context [--json]` | Focused packet: instructions, intent, scoped HI export, module sources, recent transitions, valid transitions, preferences, open bugs. Markdown by default. |
-| `status`, `next` `[--environment NAME]` | Identical JSON (a `--json` flag is accepted and changes nothing): checkpoint, the native gate out of the current stage in `checkpoint.gate` (`plan` to `build` and `accept` to `done` only; `null` elsewhere), valid transitions, `next_valid_action`, native status, snapshot, observations with freshness, open and blocking bugs. |
+| `status [--environment NAME]` | The full view, always JSON (`--json` is accepted and changes nothing): checkpoint, the native gate for the next main stage in `checkpoint.gate` (`null` when that stage has no prerequisite), valid transitions, `next_valid_action`, native status, snapshot, observations with freshness, open and blocking bugs. |
+| `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). Earlier builds printed the full status JSON here; scripts that read `next_valid_action` now read `.next_valid_action.action` from `next --json`, or use `status`. |
 | `migrate [--stage S]` | Converts a schema 1 session after saving its bytes to `.chough/session.v1.json`; refuses if that backup exists. |
 | `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved. |
-| `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
+| `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
 | `cases check\|list\|select\|run\|record` | Validate definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` exit 3 when the recorded outcome is not passed. |
 | `evidence add ID`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
@@ -35,9 +36,10 @@ Managed JSON is bounded to 64 KiB, case files to 256 KiB, captured output to 1 M
 context to 16 KiB per section and 128 KiB in total, sessions to 16 modules, each
 checkpoint list to 200 items and side-stage nesting to 4 levels.
 Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
-up to 16 KiB; `status` and `next` carry the parsed state and next action in
-`native_summary`. Larger output is reported as `oversized` and refuses gated
-transitions.
+up to 16 KiB; `status` carries the parsed state and next action in `native_summary`
+and `next` in `native`. Larger output is reported as `oversized` and refuses gated
+transitions. `status` and `next` each run `specsync change status` at most once and
+evaluate the gate on that response.
 Unknown fields and unsupported schema versions are rejected. Paths are
 project-relative; traversal and symlinks are rejected. Native tools and bound
 commands receive direct arguments, never shell-evaluated text.
@@ -87,6 +89,70 @@ With SpecSync configured and SDD enabled but no native change recorded, gated
 transitions run no status command and refuse as `refused:no-native-change`, while
 `status` and `next` still show the unscoped `specsync change status --json`. Record
 the change with `chough checkpoint --native-change <id>`.
+
+## The next view
+
+`chough next` is what a resuming agent reads first; `chough status` is the full view.
+It makes one `specsync change status` read, evaluates the gate for the next main
+stage on that response, and shows:
+
+| JSON field | Content |
+|---|---|
+| `schema_version`, `view` | `1` and `next` |
+| `objective`, `stage` | The objective; current stage, status, iteration and side-stage callers |
+| `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`); unknown values are `null` |
+| `next_valid_action` | `action`, `reason` and, when one applies, `command`; `status` reports the same `action` as its `next_valid_action` |
+| `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
+| `awaiting_human`, `blockers`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest |
+| `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
+| `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
+
+The text form (the default) carries the same fields as short lines. Each form is at
+most 16384 bytes: every list shows at most 10 entries beside its total, every string
+taken from a record is cut to at most 512 bytes, counted as JSON escapes it (a control
+character takes six), ending in ` [cut]`, and while the
+output is still over the cap the last entry of the longest list is dropped and
+`truncated` becomes true (text adds `Output truncated at 16384 bytes; run chough
+status.`). It never prints raw native output, observation records, the snapshot or the
+full reference list.
+
+The next valid action follows these rules in order: a schema 1 session runs `chough
+migrate`; a paused stage checks native state and runs `chough stage resume`; open
+awaiting-human gates are named and left to the human; open blocking bugs at test or
+accept send work back to build; in stage `done`, an archived change whose terminal
+evidence authenticates, or no recorded native change, closes the cycle and the action
+is `Start a new cycle: chough stage reset --to intent --reason "<why>" (or --to plan
+when the approved intent already covers the new work), then specsync change new
+"<outcome>" --spec <module> --path <path>, then chough checkpoint --native-change <id>
+--next-action "<next step>".`, with the native next action named as the thing to check
+first (without the `specsync change new` step when native SDD is not configured or is
+disabled), while an archive that does not authenticate keeps its gate refusal; a
+closed gate for the next main stage shows its label and detail; otherwise `Continue
+<stage>: <checkpoint next action>`. Every reset Chough suggests carries `--reason`.
+
+## Approved-delta guard
+
+SpecSync 6.1.1 keeps `approval_valid` true after an approved semantic delta is edited
+(BUG-0002). So before a move to build, test or accept (by advance, skip, back, reset
+or return) on a change in state approved, implementing or verifying with
+`approval_valid` true, Chough reads `.specsync/changes/<id>/approvals.json` read-only
+within 4 MiB, SpecSync's change-artifact bound, takes the last `definition` approval,
+and compares its `approved_delta_digests` with digests of `deltas/<module>.md` for
+every module in the status response's `change.affected_specs` (and every approved
+module), computed with SpecSync 6.1.1's `specsync.approved-delta.v1` framing: SHA-256
+over the length-framed domain, module name and body, the body with CRLF normalized to
+LF.
+
+| Label | When | Next native action |
+|---|---|---|
+| `refused:native-delta-changed` | A delta differs from its approved digest, is deleted, or belongs to a module not in the approval | Restore the approved delta, or ask the human for a new scope approval (`specsync change approve <id> --actor "<their name>"`) and then run `specsync change check <id>` |
+| `refused:native-delta-unverifiable` | The ledger is missing, unreadable, over 4 MiB or malformed; it has no definition approval; status reports no `change.affected_specs`; a module name is not one SpecSync 6.1.1 accepts; a delta cannot be read | Run `specsync change status <id>` |
+| `refused:native-delta-unverifiable` | A change with deltas has an approval without `approved_delta_digests` | Ask the human for a new scope approval (`specsync change approve <id> --actor "<their name>"`), which records the digests, and then run `specsync change check <id>`; a status read cannot clear it |
+
+A no-spec-change approval with no deltas and an empty or absent digest map passes. The
+guard starts no process and copies nothing; no gate runs `specsync change check`,
+which writes canonical specs and native records and runs verification commands.
+Archived changes keep the terminal-evidence rule.
 
 ## Observation outcomes and freshness
 
@@ -187,9 +253,10 @@ pruning and the pruning time. Files leave the working tree only; committed bytes
 in Git history, and native archives and ignore rules are untouched. The ledger is read
 up to 16 MiB; an unreadable ledger leaves absent observations `unavailable`.
 
-Referenced observations carry a label in `status`, `next` (`observation_references`
-and each entry in `observations`), `bug show` (`observation_labels`) and `validate
-status` (each run's `observation_labels`):
+Referenced observations carry a label in `status` (`observation_references` and each
+entry in `observations`), `next` (the referenced ones that are not current, in
+`observations.items`), `bug show` (`observation_labels`) and `validate status` (each
+run's `observation_labels`):
 
 | Label | Meaning |
 |---|---|

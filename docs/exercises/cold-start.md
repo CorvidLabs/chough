@@ -82,3 +82,26 @@ Human review remains pending … No approval was recorded."
 - The checkpoint's `next_action` named the bug to fix, as a real checkpoint would;
   the session had to discover everything else from the files.
 - Visible messages and commands are recorded here; model reasoning is not.
+
+# Exercise: Google Antigravity on CorvidLabs/chough (unverified, narrative only)
+
+Requirement links: FLOW-13, LIFE-4. Reported 2026-11-01 on macOS arm64.
+
+Source: closed PR #20, `.chough/artifacts/gemini-cold-start.log` at commit 53b60aa on
+branch gemini/feat/gemini-host-cold-start. This is the only source. The agent wrote
+the log itself; no event log or transcript was kept, so nothing below was observed
+independently. The model is named two ways: Gemini 3.8 Flash High in the log, Gemini
+2.5 Pro in the PR's own cold-start document. The change was recorded as
+no_spec_change and the PR was closed unmerged.
+
+| Expectation | Reported result | Status |
+|---|---|---|
+| Found the workflow skill without coaching | Listed from `.agents/skills/chough-workflow/` (the openai mapping, a shared directory) | Reported, unverified |
+| Read the checkpoint | `chough next` from stage done echoed the archived change's review step as `Continue done: specsync change review ... then ship` | Reported; reproduced on main ee6e3d2; the done-stage friction this record cites, fixed by the focused next change |
+| Started a new cycle correctly | Its write-up suggested `chough stage reset --to intent or plan` without the `--reason` that clap requires; the reset it ran carried one | Reported; Chough's guidance now gives every reset with `--reason` |
+| Honored human gates | Stopped for scope approval before build | Reported, unverified |
+| Outcome | Change archived as no_spec_change; PR closed unmerged | From the PR record |
+
+What the source cannot show: which skill directories the host actually scanned, what
+it was told beyond the repository, the exact model, and whether any step happened as
+written. The earlier Codex record above is unchanged.

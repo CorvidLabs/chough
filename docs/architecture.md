@@ -93,7 +93,12 @@ paths). Commands replace it atomically. With several agents, one agent owns the
 checkpoint and the others report back; there is no distributed lock. APS was
 evaluated as a backend and deferred (D-010). The checkpoint stores decision summaries
 and references, never reasoning transcripts, and it never stores native lifecycle
-state: it stores the change ID and reads status when a gate matters.
+state: it stores the change ID and reads status when a gate matters. Because SpecSync
+6.1.1 status does not report an edited approved delta (BUG-0002), the gate into build,
+test and accept also reads the native approval ledger
+(`.specsync/changes/<id>/approvals.json`) and the change's deltas read-only, within
+4 MiB each, and compares SpecSync's own approved-delta digests; it copies nothing into
+Chough's records and starts no process.
 
 ## Timing is derived, not stored
 
@@ -130,7 +135,9 @@ flowchart LR
 ```
 
 `chough context` assembles the packet within 16 KiB per section and 128 KiB in
-total; `chough next` adds native status, freshness, gates and the next valid action.
+total; `chough next` adds native status, freshness, gates and the next valid action
+as a focused view of at most 16 KiB from one native status read, and `chough status`
+is the full report.
 Missing or truncated sources stay visible. Context is source material: it may contain
 user or repository text, and it never overrides the host's instructions or
 authorizes external actions.

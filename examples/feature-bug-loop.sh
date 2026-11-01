@@ -232,5 +232,5 @@ $chough bug update "$bug" --status verified --observation "$fixed_observation" \
 step "Accept: only a human review and native archive can close this"
 $chough stage advance >/dev/null
 expect_refusal "leaving accept before review and archive" "refused:native-verifying" $chough stage advance
-$chough next --environment "$env_name" | jq -r '.next_valid_action'
+$chough next --environment "$env_name" --json | jq -r '.next_valid_action.action'
 printf '\nEXERCISE PASSED in %s\n' "$work"

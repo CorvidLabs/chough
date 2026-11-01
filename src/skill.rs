@@ -114,7 +114,8 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
     ),
-    // Main 5af3f78 (PR #19); superseded by the 0.1.0 release prep.
+    // Main 5af3f78 (PR #19) and main ee6e3d2 (0.1.0 docs sweep); superseded by the 0.1.0
+    // release prep and the focused next change.
     (
         "SKILL.md",
         "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
@@ -142,6 +143,15 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "templates/cases.toml",
         "8a07e72f5f72668f6b440a14d457a8352850a94413ba7e1b5962abc5cdae234a",
+    ),
+    // Main 99a61ec (PR #23, focused next); superseded by the 0.1.0 release prep.
+    (
+        "SKILL.md",
+        "78656f0d9ad32c55ee95f24f1abd42a3339ecff817dd5bf4782bab0d58182183",
+    ),
+    (
+        "references/checkpoint.md",
+        "33f4266b10dea45b674164c73ed0dc556857541f790c1db5c56390e7138f2c14",
     ),
 ];
 

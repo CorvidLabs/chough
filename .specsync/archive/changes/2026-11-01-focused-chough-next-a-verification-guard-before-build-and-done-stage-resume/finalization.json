@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "focused-chough-next-a-verification-guard-before-build-and-done-stage-resume",
+  "implementation_commit": "2058870c298d6ff8be582c7cd182ac1479a63028",
+  "implementation_tree": "4e6257ca2b18ba85f0fc10db69cc687792cce038",
+  "contract_digest": "283ef1b5ff573265fe33e81768b6440187b238b416322e9aa17d563803ecf5d2",
+  "workspace_digest": "3f85d5bb4ed3e006b132969ce7c2c6a3f099cc7bdcaad5aa9b5d3c12cc5b5fa2",
+  "closing_digest": "e3b0d9574267f4fc6c1c797b32ba419fb8a89cc6b888455ceadf554242ba4435",
+  "review_digest": "df28278f15fd8ccbb5135e5fc69e2df6a4345960fc5588eaa58659ad30995dfa",
+  "finalization_digest": "a407b905165d4919623fc3e9588374c8f5401eed9a75938f359952ecb873242b",
+  "timestamp": 1793553518
+}

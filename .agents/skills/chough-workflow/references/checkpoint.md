@@ -52,14 +52,20 @@ too.
 A fresh agent with none of the earlier conversation:
 
 1. Reads `AGENTS.md`, then this skill.
-2. Runs `chough next --environment <env>` (or reads the files above directly).
+2. Runs `chough next --environment <env>` (or reads the files above directly); it is
+   the focused view, and `chough status` is the full one.
 3. Checks native status for `native_change`, freshness of the referenced observations,
    open blocking bugs and `awaiting_human`. A referenced observation is `current`,
    `historical` (present but stale), `pruned` (removed by retention, in the ledger) or
    `unavailable` (missing, not in the ledger); only a current one counts, so rerun the
    others rather than treat them as passed.
 4. Continues with `next_valid_action` under the same scope, preferences and gates. It
-   never records a pending human decision itself.
+   never records a pending human decision itself. In stage done with the native
+   change archived, the cycle is closed: `chough next` recommends `chough stage reset
+   --to intent --reason "<why>"` (or `--to plan` when the approved intent already
+   covers the new work), then `specsync change new "<outcome>" --spec <module> --path
+   <path>` and `chough checkpoint --native-change <id> --next-action "<next step>"`.
+   A reset replaces the checkpoint's next action.
 
 ## Schema and concurrency
 

@@ -34,6 +34,12 @@ are in [docs/releasing.md](docs/releasing.md).
 - Case binding `env`, matching on visible text with terminal escape sequences removed
   (an `expect_output` fragment containing ESC is refused), and actionable
   requirement and bug errors ([#16](https://github.com/CorvidLabs/chough/pull/16)).
+- A compact `chough next` view, text or `--json`, each form within 16384 bytes with
+  bounded lists and stated totals; an approved-delta guard that refuses moves to
+  build, test or accept when an affected native delta no longer matches its
+  approval digest, since SpecSync 6.1.1 status does not report it (BUG-0002); and done-stage resume that recommends a new
+  cycle once the native change is archived
+  ([#23](https://github.com/CorvidLabs/chough/pull/23)).
 - Release preparation: pinned HI 0.8.0, SpecSync 6.1.1 and Fledge 1.8.0 with one
   install command and a test that keeps the pins in agreement, a minimum Rust
   version of 1.88 checked in CI, skill guidance corrected against the helper, and

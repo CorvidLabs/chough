@@ -42,8 +42,13 @@
       "at_unix_seconds": 1793482350,
       "text": "Fix proposed upstream in spec-sync PR #823 (draft, awaiting scope approval): status reports approval_valid false and names changed_approved_deltas when an approved delta body changes.",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793552154,
+      "text": "2026-11-01: Chough now guards this upstream defect: moves to build, test and accept compare SpecSync 6.1.1's approved-delta digests with the current deltas and refuse as refused:native-delta-changed or refused:native-delta-unverifiable (REQ-cli-022). Rehearsed with real SpecSync 6.1.1 in a disposable examples/shipping copy: status kept approval_valid true after the delta edit and chough stage advance refused. Stays open until CI pins a SpecSync release that reports an edited approved delta (spec-sync #823).",
+      "observations": []
     }
   ],
   "created_at_unix_seconds": 1793473164,
-  "updated_at_unix_seconds": 1793482350
+  "updated_at_unix_seconds": 1793552154
 }

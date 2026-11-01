@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0124-1793553276",
+  "criteria": [
+    "FLOW-5",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-022"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable for TC-cli-0124: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0124-1793553276.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0124-1793553276.log": "65ac5c1b4d485a9f7da890c46464d28569786204aca34dd75c484a258621ce5a"
+  },
+  "observed_at_unix_seconds": 1793553277,
+  "snapshot": {
+    "revision": "72fe1e2691ed1089e74cbed86d2a26dc184d8daa",
+    "dirty": false,
+    "fingerprint": "9176891de6eba764618eda9adf1656232bf2f577f0722a33e0ab5fd98dbce627",
+    "content": "14611dc0ebfff7c0831ccdd568ac6e241d137e4a2fadac9036a6657628cb6fd5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0124",
+      "digest": "7d0370dc1cac72f5e647ce7e80f0c1be6b3766ccbd5f5fa6cba6f211b4661dca"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
