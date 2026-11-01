@@ -2,19 +2,32 @@
 
 On 2026-10-31 the four Mermaid sources were rendered with **Mermaid 11.12.0** in
 headless Chromium (Playwright 1.64.1, Chromium headless shell 1248) under Bun 1.4,
-using `docs/diagrams/render.mjs`. The PNG previews were opened and inspected.
+using `docs/diagrams/render.mjs`. The PNG previews were opened and inspected. On
+2026-11-01 the same tooling re-rendered them after the stage gates, the closeout gate
+step and the native status edge were corrected; `ownership.svg` came out
+byte-identical, and the table shows the new preview sizes.
 
 | Source | Committed render | Preview | Inspection |
 |---|---|---|---|
 | [ownership.mmd](diagrams/ownership.mmd) | [ownership.svg](diagrams/ownership.svg) | 1552 × 660 | Labels readable; every arrow reaches its node; the dotted edge marks the optional librarian |
-| [stages.mmd](diagrams/stages.mmd) | [stages.svg](diagrams/stages.svg) | 1079 × 1072 | Main path top to bottom with labelled gates; back edges dotted; release only from done; side stages and the checkpoint tied to "any stage"; no clipping or overlap |
-| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1356 | Human review before `review`, `ship` and archive; changes requested loop back; release dotted and conditional |
-| [context.mmd](diagrams/context.mmd) | [context.svg](diagrams/context.svg) | 1180 × 720 | All inputs reach the packet; limits feed it explicitly |
+| [stages.mmd](diagrams/stages.mmd) | [stages.svg](diagrams/stages.svg) | 1073 × 1204 | Main path top to bottom with labelled gates; back edges dotted; release only from done; side stages and the checkpoint tied to "any stage"; every edge label sits on its own edge with an opaque background, and no edge crosses another edge's label |
+| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1496 | Human review before `review`, `ship` and archive; changes requested loop back; release dotted and conditional |
+| [context.mmd](diagrams/context.mmd) | [context.svg](diagrams/context.svg) | 1180 × 636 | Inputs reach the packet; limits feed it explicitly; native status joins at chough next |
 
 Two problems were found and fixed before this record. The first `stages` render was
 1552 × 179, with crowded labels near `done` and an unconnected checkpoint node, so it
 was redrawn top to bottom. In `lifecycle`, a label wrapped inside `--commit` and was
 reworded.
+
+A later review found that the 1079 × 1142 `stages` render drew the build to test
+edge through its own wrapped gate label: with SVG text labels, Mermaid 11.12.0
+left-aligns a wrapped edge label beside the edge instead of centring it on the edge.
+`stages.mmd` now sets `htmlLabels: true` in its front matter, so its labels are HTML
+inside `foreignObject` and are centred, with an opaque background. The other three
+diagrams keep the SVG text labels set in `render.mjs`; this `htmlLabels` change left
+their SVGs byte-identical to the earlier 2026-11-01 render. A viewer that does not render
+`foreignObject` shows the `stages` boxes and edges without their text; browsers and
+GitHub do render it.
 
 ## Earlier record (PR #1)
 

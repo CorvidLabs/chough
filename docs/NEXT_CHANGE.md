@@ -29,7 +29,7 @@ avoiding a claim that a test ran at the new revision. Keeping exact-revision-onl
 freshness is also a valid product choice. No implementation of reuse exists yet.
 
 Trace: LIFE-2, LIFE-3, LIFE-7; REQ-cli-004 and REQ-cli-005;
-[CLI contract](../specs/cli/cli.spec.md), [freshness semantics](walkthrough.md#interpret-freshness-precisely).
+[CLI contract](../specs/cli/cli.spec.md), [freshness semantics](walkthrough.md#read-freshness-precisely).
 
 ## Proposed acceptance criteria
 

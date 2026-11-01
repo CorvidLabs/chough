@@ -14,11 +14,11 @@ flowchart TB
     intent -. "skip design with a reason" .-> plan
     design --> plan["plan: native change, one scope approval"]
     plan -->|"gate: native definition approved"| build["build: approved tasks"]
-    build --> test["test: focused cases, three tracks"]
-    test -->|"gate: no open blocking bug"| accept["accept: evidence for human review"]
-    accept -->|"gate: native change archived"| done["done"]
+    build -->|"gate: native approval valid or archived"| test["test: focused cases, three tracks"]
+    test -->|"gate: no open blocking bug; native approval valid or archived"| accept["accept: evidence for human review"]
+    accept -->|"gate: native change archived, terminal evidence authenticates"| done["done"]
     done -. "only on request or standing setting" .-> release["release: optional, real commands"]
-    release --> done
+    release -->|"same archive gate"| done
     test -. "back: blocking bug" .-> build
     plan -. "back" .-> intent
     any(["any stage"]) -. "enter, then return to caller" .-> side["side stages: bugs, validate, librarian"]
@@ -28,7 +28,14 @@ flowchart TB
 Every stage shares one contract (purpose, inputs, outputs and owners, roles,
 completion evidence, approval policy, questions, checkpoint content and transitions),
 documented in [references/stages.md](../skills/chough-workflow/references/stages.md).
-Any stage can iterate, go back, reset, pause, resume or be skipped with a reason.
+An active stage can iterate or pause, and a paused one can resume; advance, skip,
+back, iterate, pause, enter and return all need an active stage. Reset is the one move
+that also works from a paused stage or a side stage, and it leaves the stage active.
+Every main stage before done, and release, can be skipped with a reason; skip moves
+forward and meets the same gates as advance. Any main stage after intent, and release,
+can go back to an earlier main stage. Back, reset and return also meet the native gate
+of the stage they land on. A side stage returns to its caller before it can advance,
+skip or go back.
 History is append-only; going back lists what to refresh and, after native
 approval, points to native reapproval for changes to intent, contract, acceptance
 criteria or scope.
@@ -53,7 +60,8 @@ records, and a failing case stays failed even when others pass. See
 
 ```mermaid
 flowchart TB
-    tests["Focused cases pass; blocking bugs closed"] --> check["Native scoped check, committed"]
+    tests["Focused cases pass; blocking bugs closed"] --> gate["Record the awaiting-human gate; commit source with .chough/"]
+    gate --> check["Native scoped check, committed"]
     check --> push["Push branch; hosted CI at the real tip"]
     push --> present["Present evidence, open bugs and limits"]
     present --> human{"Human implementation review"}
@@ -87,7 +95,15 @@ targeted structural verification; it does not run product tests and refuses whil
 tasks are unchecked. The human implementation review happens after verification and
 before archive; the native `review` record follows a real decision only. Then `ship`
 or `finalize` archives on the same pull request without an intervening commit.
-`chough stage advance` leaves accept only when native state is `archived`.
+Every move that lands on done needs native state `archived` with authenticated
+terminal evidence: `chough stage advance` or `stage skip` from accept, `stage advance`
+or `stage skip` from release, `stage reset --to done`, and `stage return` to a caller
+that was done. Build needs a valid definition approval, and test and accept need that
+approval or such an archive. Unknown or unavailable native state, an invalid approval
+and an invalid SDD policy refuse these moves, and so does SpecSync configured with SDD
+enabled but no native change recorded in the checkpoint (`refused:no-native-change`;
+record it with `chough checkpoint --native-change <id>`). No SpecSync configuration or
+a valid disabled policy leaves them ungated.
 
 ## Release, monitoring and learning
 
@@ -101,7 +117,7 @@ source, scope and future use.
 ## Adoption in this repository
 
 The bootstrap used native structural checks with SDD disabled and claimed no
-approval. Chough then adopted the workflow-v2 lifecycle (commit c582a10), and the
-first fully native change is `evolve-chough-into-a-resumable-stage-workflow`, approved
-by the human before implementation. Its implementation review and archive are human
-and native steps that the agent does not perform.
+approval. Chough then adopted the workflow-v2 lifecycle (commit c582a10). The first
+fully native change, `evolve-chough-into-a-resumable-stage-workflow`, was approved by
+the human before implementation, reviewed by the human at acceptance and archived on
+2026-10-31; later changes are archived the same way in `.specsync/archive/changes/`.
