@@ -1,23 +1,39 @@
 # Chough CI and native closure
 
-The CI workflow preserves product tests and release builds on Ubuntu, macOS, and
-Windows, plus formatting, Clippy, HI, and strict 100% SpecSync structural coverage.
-`CI gate fixtures` exercises native archive inspection in disposable Git repos.
-`SpecSync Archive` independently checks that every native scope is archived before
-merge. It runs on draft PRs and can be expected red during work.
+The CI workflow runs a first job, `Archive`, that every other job needs: if a pull
+request has any open SpecSync change under `.specsync/changes/`, Archive fails and no
+other job runs until the change is archived. After it, CI runs product tests and
+release builds on Ubuntu, macOS, and Windows, plus formatting, Clippy, HI, and strict
+100% SpecSync structural coverage. `CI gate fixtures` exercises native archive
+inspection in disposable Git repos. `SpecSync Archive` then checks that every native
+scope, including archived history, is authenticated before merge. Expect a draft PR
+with an open change to show Archive red and every other job skipped.
 
-The gate uses published SpecSync **6.1.1**, its pinned action commit, and the
-upstream action's release archive/checksum verification. The action version input
-is explicit: the v6.1.1 wrapper's default binary is 6.1.0. Fledge is 1.8.0,
-installed by the Fledge Action at its reviewed commit with `version: v1.8.0` (the
-GitHub release of the version published to crates.io), and HI is 0.8.0, installed
-with `cargo install human-intent --version 0.8.0 --locked`. These pins match
-README.md and AGENTS.md; `tests/package.rs::tool_and_rust_version_pins_agree` fails
-when they disagree. The `MSRV / 1.88.0` job runs `cargo test --locked` with Rust
-1.88.0, the `rust-version` in Cargo.toml. Workflow actions are pinned to verified
-commit SHAs.
+The `SpecSync Archive`, `Fledge / HI / SpecSync` and `CI gate fixtures` jobs use
+published SpecSync **6.1.1**, its pinned action commit, and the upstream action's
+release archive/checksum verification. The action version input is explicit: the
+v6.1.1 wrapper's default binary is 6.1.0. The `Archive` job pins the
+CorvidLabs/spec-sync main commit 106aaa4 (the #832 merge) with `archive-gate-only:
+'true'`, because v6.1.1 ignores that input; move it to a release tag once one ships
+the gate. Fledge is 1.8.0, installed by the Fledge Action at its reviewed commit with
+`version: v1.8.0` (the GitHub release of the version published to crates.io), and HI
+is 0.8.0, installed with `cargo install human-intent --version 0.8.0 --locked`. These
+pins match README.md and AGENTS.md; `tests/package.rs::tool_and_rust_version_pins_agree`
+fails when they disagree. The `MSRV / 1.88.0` job runs `cargo test --locked` with
+Rust 1.88.0, the `rust-version` in Cargo.toml. Workflow actions are pinned to
+verified commit SHAs.
 
-## What Archive checks
+## What the archive jobs check
+
+Two jobs share the word archive. `Archive`, the first job, runs the SpecSync action
+with `archive-gate-only: 'true'` and fails while any change under `.specsync/changes/`
+is still open. `SpecSync Archive` runs
+`.github/scripts/check-specsync-archive.py` after it and is described below.
+
+`SpecSync Archive` is stricter about terminal evidence than Chough's own done gate.
+It accepts only `terminal_evidence.validity: authenticated-history`, while
+`chough stage advance` into done also accepts `exact` and `successor-covered`, so a
+change Chough lets into done can still fail this job.
 
 The inspector runs only native readers: `change audit`, `change list`, and
 `change status <ID>`, all using JSON. Audit checks live definitions, policy,
@@ -64,6 +80,7 @@ select the correct tool for that invocation without replacing global tools.
 After these jobs exist on main and the effect on active PRs is reviewed, recommend
 requiring these exact contexts:
 
+- `Archive`
 - `Product / ubuntu-latest`
 - `Product / macos-latest`
 - `Product / windows-latest`
@@ -79,14 +96,19 @@ endpoint first returned HTTP 403 to the connected GitHub App. A later read with 
 owner's credentials showed required status checks enabled with no contexts or checks
 listed, admins included, linear history required and force pushes disallowed; the
 effective rules endpoint (including organization rulesets) returned `[]`. No check is
-required to merge today, so Archive is not yet enforced. This PR changes no branch rules. A separately authorized repository
+required to merge today (rechecked 2026-11-01: no required contexts or checks, and the
+effective rules endpoint returned `[]`), so neither `Archive` nor `SpecSync Archive`
+is enforced. The CI workflow changes no branch rules. A separately authorized repository
 administrator must verify the effective configuration and activate required
 checks after introduction.
 
 ## Runtime integration follow-up
 
 The stage-workflow PR (#2) is merged and its native audit task is preserved here.
-Stage-gate, stop-during-interval and bounded-process/descendant-output regressions
-are added by the bug-fix changes for BUG-0006 to BUG-0011. Still open: nonempty
-case/profile/traceability checks, complete installed skill bundle checks, cold-resume
-fixtures and current evidence checks. Those planned checks are not reported as green here.
+The stage-gate, stop-during-interval and bounded-process/descendant-output
+regressions were added by the bug-fix changes for BUG-0006 to BUG-0011, which are
+verified and archived. CI's `verify` lane runs `chough cases check` (profile and
+HI/native traceability) and the feature-bug exercise, and the product tests check that
+`init` installs the complete skill bundle. Still open: failing when a project has no
+case definitions, cold-resume fixtures and checking that recorded evidence is current.
+Those planned checks are not reported as green here.

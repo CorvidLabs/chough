@@ -3,7 +3,12 @@
 These are agent-derived functional requirements traced to the human's durable
 [LIFE](../hi/life.md) and [FLOW](../hi/flow.md) criteria. REQ-cli-001 to REQ-cli-006
 come from the authorized first slice; REQ-cli-007 to REQ-cli-017 come from the
-approved native change `evolve-chough-into-a-resumable-stage-workflow`. The criteria describe
+approved native change `evolve-chough-into-a-resumable-stage-workflow`; REQ-cli-018
+and REQ-cli-019 come from
+`prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package`;
+REQ-cli-020 comes from
+`report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records`.
+The criteria describe
 the intended product. This document refines implementation scope; evidence records
 describe what has actually been observed. Neither is a list of completed work.
 
@@ -82,7 +87,7 @@ Acceptance: recorded links survive serialization and resumed status. A malformed
 unsupported record produces an actionable diagnostic. The helper does not change HI
 criteria when evidence changes.
 
-Trace: LIFE-1, LIFE-2, LIFE-5. Contract: [CLI](../specs/cli/cli.spec.md).
+Trace: LIFE-1, LIFE-2, LIFE-5, FLOW-7. Contract: [CLI](../specs/cli/cli.spec.md).
 
 ## REQ-cli-006: Keep local context bounded and safe
 
@@ -96,7 +101,7 @@ records, bounded context, and direct argument handling.
 
 Trace: LIFE-3, LIFE-4. Contract: [CLI](../specs/cli/cli.spec.md).
 
-## Resumable stage workflow (REQ-cli-007 to REQ-cli-017)
+## Resumable stage workflow and later requirements (REQ-cli-007 to REQ-cli-020)
 
 The canonical text of each requirement is in
 [specs/cli/requirements.md](../specs/cli/requirements.md); this section gives the
@@ -105,7 +110,7 @@ cross-module view and its traceability without restating it.
 | Requirement | Observable behavior | Criteria | Verification |
 |---|---|---|---|
 | REQ-cli-007 | One schema 2 checkpoint; explicit migration keeps schema 1 bytes | FLOW-13, LIFE-3 | tests/stages.rs; cold-start exercise |
-| REQ-cli-008 | Stage routing with append-only history; build and closing gated by native state | FLOW-2, FLOW-5, FLOW-10, LIFE-1 | tests/stages.rs; feature-and-bug exercise |
+| REQ-cli-008 | Stage routing with append-only history; every route into build, test, accept and done meets its native prerequisite, and unknown native state, invalid approval, unauthenticated archives or an invalid SDD policy refuse | FLOW-2, FLOW-5, FLOW-10, LIFE-1 | tests/stages.rs; feature-and-bug exercise |
 | REQ-cli-009 | `chough-testing/1` definitions with stable IDs and position-free digests | FLOW-7, LIFE-2 | tests/cases.rs |
 | REQ-cli-010 | Focused selection with tracks and stated omissions | FLOW-6 | tests/cases.rs; both exercises |
 | REQ-cli-011 | Explicit case execution; vacuous and environment failures are not-run | FLOW-7, FLOW-9, LIFE-7 | tests/cases.rs, tests/optional.rs |
@@ -115,6 +120,8 @@ cross-module view and its traceability without restating it.
 | REQ-cli-015 | Optional librarian with source-linked snapshots and index | FLOW-12 | tests/optional.rs |
 | REQ-cli-016 | Per-host skill install; updates never replace edits | FLOW-1, LIFE-4 | tests/optional.rs; host discovery checks |
 | REQ-cli-017 | Observation schema 2; schema 1 still read | LIFE-2, LIFE-7, FLOW-7 | tests/cases.rs |
+| REQ-cli-018 | Reference-aware retention: preview by default, apply only under run consent or standing preference, append-only ledger, current, historical, pruned and unavailable labels | LIFE-8, LIFE-2, LIFE-7, FLOW-7, FLOW-13 | tests/evidence.rs |
+| REQ-cli-019 | Installable package without Chough's own records; new projects get the skills and an empty checkpoint; no em or en dash in the bundle | LIFE-9, LIFE-4 | tests/package.rs |
 | REQ-cli-020 | Read-only timing report from existing records, with timestamped awaiting-human gate records; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 
 Skill-led behavior with no helper requirement, verified by exercises rather than

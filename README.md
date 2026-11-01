@@ -89,10 +89,16 @@ it [the skill](skills/chough-workflow/SKILL.md) directly.
 | accept | Present evidence; native review, then same-PR archive | The human reviews the implementation |
 | release | Optional, only on request or a standing setting | The human |
 
-Any stage can iterate, go back, reset, pause, resume or be skipped with a reason.
+An active stage can iterate or pause. An active main stage after intent can go back,
+and one before done, or release, can be skipped with a reason. A paused stage resumes,
+and reset works from any stage, including a paused or side stage.
 Side stages for bugs, optional repeated validation and the optional librarian return
-to their caller. Entering build and leaving accept are gated by native SpecSync
-state, never by a saved label.
+to their caller. Stage gates read native SpecSync state, never a saved label:
+reaching build needs a valid scope approval, reaching test or accept needs a valid
+approval or an authenticated archive, and reaching done needs an authenticated native
+archive. A gate that cannot read native state refuses, and so does one with SpecSync
+configured but no native change recorded (`refused:no-native-change`); a project
+without SpecSync configured, or with SDD disabled, is not gated.
 
 ## What the helper does
 
@@ -102,7 +108,7 @@ state, never by a saved label.
 | `next`, `status`, `context` | Resume: stage, gates, freshness, open bugs, focused sources |
 | `checkpoint`, `migrate` | Keep the single checkpoint; migrate schema 1 explicitly |
 | `stage …` | Advance, skip, iterate, back, reset, pause, resume, enter and return |
-| `cases check/select/run/record` | Validate `chough-testing/1` definitions, select focused cases, record honest outcomes |
+| `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
 | `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
 | `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
@@ -120,7 +126,7 @@ behavioral proof or human acceptance.
 |---|---|
 | Hosted CI: Ubuntu, macOS, Windows | `cargo test` and a release build |
 | Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
-| Hosted CI: Ubuntu | Fledge `verify` lane (format, lint, tests), HI and SpecSync checks, the native archive gate and its fixtures |
+| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
 Other platforms and hosts may work but have not been exercised.
@@ -130,9 +136,12 @@ Other platforms and hosts may work but have not been exercised.
 - On Windows, a bounded command's descendants whose parent has already exited cannot
   be stopped; the run returns on time with an incomplete capture, never `passed`.
 - Calls to Git (fingerprints and revisions) are not yet bounded in time or output.
-- SpecSync's change status does not yet flag an approved delta edited after approval;
-  a fix is proposed in
-  [CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/issues/823).
+- SpecSync 6.1.1's change status does not flag an approved delta edited after
+  approval; the fix is merged on SpecSync main
+  ([CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823)) but
+  not yet released.
+- In a repository with no commits yet, `chough next` reports the raw `git rev-parse
+  HEAD` error as the snapshot; make a first commit before relying on freshness.
 - Hosts other than Claude Code and Codex have not had real discovery or cold-start
   exercises.
 
@@ -162,7 +171,8 @@ files.
 
 - [Architecture](docs/architecture.md), [lifecycle](docs/lifecycle.md), [CLI reference](docs/cli.md)
 - [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
-- [Deferred, unapproved evidence-reuse proposal](docs/NEXT_CHANGE.md)
+- [Evidence-reuse proposal](docs/NEXT_CHANGE.md): addressed for content-identical
+  commits by D-018; its ancestry check and reuse label remain unapproved
 - [Diagram rendering and visual verification](docs/verification.md)
 - [Release steps](docs/releasing.md) and the [change log](CHANGELOG.md)
 

@@ -42,8 +42,10 @@ The first run had no `Cargo.lock`, so `cargo test --locked` stopped before compi
 and the adapter recorded `failed`, as if the planted assertion had failed. That was an
 environment failure, not evidence about the behavior. The adapter now records
 `not-run` with a limitation when cargo exits without a test result, the sample ships a
-lockfile, and a regression test covers it (`fix(cases)` commit 97410b8). The exercise
-now asserts the real failure: one test ran and `left: 499, right: 0`.
+lockfile, and a regression test covers it (`fix(cases)` commit 97410b8 in PR #2,
+squash-merged as 4008346). The exercise now asserts that TC-shipping-0001 records
+`failed`, which the adapter reports only after a test ran; its log shows
+`left: 499, right: 0`.
 
 ## Prepare a cold start
 

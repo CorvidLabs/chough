@@ -1,5 +1,6 @@
 flowchart TB
-    tests["Focused cases pass; blocking bugs closed"] --> check["Native scoped check, committed"]
+    tests["Focused cases pass; blocking bugs closed"] --> gate["Record the awaiting-human gate; commit source with .chough/"]
+    gate --> check["Native scoped check, committed"]
     check --> push["Push branch; hosted CI at the real tip"]
     push --> present["Present evidence, open bugs and limits"]
     present --> human{"Human implementation review"}
