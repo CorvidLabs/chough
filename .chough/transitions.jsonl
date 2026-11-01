@@ -46,3 +46,5 @@
 {"schema_version":1,"at_unix_seconds":1793563673,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"f38e70f58a6dbb65e3be21d066ffa243e2bde234","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793563908,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"f38e70f58a6dbb65e3be21d066ffa243e2bde234","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793563908,"kind":"gate-opened","from":"accept","to":"accept","reason":"Implementation review of align-kimi-integration-with-new-cycle-done-guidance","gate":null,"revision":"f38e70f58a6dbb65e3be21d066ffa243e2bde234","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793564525,"kind":"gate-closed","from":"accept","to":"accept","reason":"Implementation review of align-kimi-integration-with-new-cycle-done-guidance","gate":null,"revision":"a91e06622a5575d80df5c08ea1db94b9a9207882","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793564542,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"a91e06622a5575d80df5c08ea1db94b9a9207882","refresh":[]}

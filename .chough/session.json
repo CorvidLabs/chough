@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -109,7 +109,8 @@
     "Native change archived at 2189038 after 0xLeif authorized finalization; Chough advanced from accept to done",
     "Integrated main's REQ-cli-021 new-cycle behavior, retained the BUG-0025 failure-first evidence, corrected the Kimi docs and recorded focused passes",
     "Final-content TC-cli-0105, TC-cli-0106, TC-cli-0121 and TC-cli-0122 passed; BUG-0025 has a retained failure followed by later passes",
-    "The final full verify lane passed all 9 steps in 74.258 seconds with CI-matching tools after the final-content case passes"
+    "The final full verify lane passed all 9 steps in 74.258 seconds with CI-matching tools after the final-content case passes",
+    "Native integration change archived at a91e066 after 0xLeif authorized finalization; Chough advanced from accept to done"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -160,9 +161,7 @@
     "BUG-0025"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of align-kimi-integration-with-new-cycle-done-guidance"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif to review the integrated implementation and evidence; no native review or finalization before that decision"
+  "next_action": "No further Chough lifecycle action; GitHub owns PR #24 merge status, and no release or deployment follows"
 }
