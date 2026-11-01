@@ -910,6 +910,25 @@ fn reset_replaces_the_next_action_and_back_keeps_it() {
     let last = transitions(&fixture).pop().unwrap();
     assert_eq!(last["kind"], "reset");
     assert_eq!(last["reason"], "Different work");
+
+    // The next action keeps the checkpoint's own 4096-byte bound and stays one line,
+    // while the transition keeps the reason whole.
+    let reason = format!("Line one\nline two {}", "r".repeat(4_096 - 18));
+    assert_eq!(reason.len(), 4_096);
+    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", &reason]);
+    let next_action = fixture.session()["next_action"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(next_action.len() <= 4_096, "{} bytes", next_action.len());
+    assert!(
+        next_action.starts_with("New cycle from plan after reset: Line one line two rrr"),
+        "{next_action:.80}"
+    );
+    assert!(!next_action.contains('\n'));
+    assert!(next_action.ends_with("and set the next action."));
+    assert_eq!(transitions(&fixture).pop().unwrap()["reason"], reason);
+    fixture.ok(&["checkpoint", "--next-action", &next_action]);
 }
 
 #[cfg(unix)]
@@ -1208,6 +1227,40 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
     fixture.write(&delta, DELTA);
     fixture.ok(&["stage", "advance"]);
     assert_eq!(stage(&fixture), "accept");
+
+    // Module names SpecSync 6.1.1 accepts, such as `a.b` and `Módulo`, are compared
+    // like any other: approved deltas pass and an edited one refuses.
+    let modules = ["a.b", "Módulo"];
+    fixture.write(".stub-affected", "\"cli\",\"a.b\",\"Módulo\"\n");
+    let mut digests = serde_json::Map::new();
+    digests.insert("cli".into(), json!(delta_digest("cli", DELTA.as_bytes())));
+    for module in modules {
+        fixture.write(&format!(".specsync/changes/{id}/deltas/{module}.md"), DELTA);
+        digests.insert(module.into(), json!(delta_digest(module, DELTA.as_bytes())));
+    }
+    fixture.write(
+        &format!(".specsync/changes/{id}/approvals.json"),
+        &json!({"approvals": [{"gate": "definition", "approved_delta_digests": digests}], "reopenings": []})
+            .to_string(),
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["native"]["approved_deltas"], "unchanged: Módulo, a.b, cli",
+        "{next}"
+    );
+    fixture.write(
+        &format!(".specsync/changes/{id}/deltas/a.b.md"),
+        &format!("{DELTA}\nMore.\n"),
+    );
+    refused_unchanged(
+        &fixture,
+        &["stage", "reset", "--to", "build", "--reason", "Restart"],
+        changed,
+        "a.b (edited)",
+    );
+    fixture.write(&format!(".specsync/changes/{id}/deltas/a.b.md"), DELTA);
+    fixture.ok(&["stage", "reset", "--to", "build", "--reason", "Restart"]);
+    assert_eq!(stage(&fixture), "build");
 }
 
 #[cfg(unix)]
@@ -1220,21 +1273,33 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     let unverifiable = "refused:native-delta-unverifiable";
     let status = format!("specsync change status {id}");
     let digest = delta_digest("cli", DELTA.as_bytes());
-    let cases: Vec<(&str, String)> = vec![
-        ("malformed", "{\"approvals\": [".into()),
-        ("malformed", "{\"approvals\": \"none\"}".into()),
+    // An approval without digests can only be cleared by a new approval, so its
+    // refusal names that rather than a status read.
+    let approve = format!("specsync change approve {id} --actor \"<their name>\"");
+    let cases: Vec<(&str, String, &str)> = vec![
+        ("malformed", "{\"approvals\": [".into(), &status),
+        ("malformed", "{\"approvals\": \"none\"}".into(), &status),
         (
             "no definition approval",
             json!({"approvals": [{"gate": "review"}]}).to_string(),
+            &status,
         ),
         (
             "approved_delta_digests",
             json!({"approvals": [{"gate": "definition"}]}).to_string(),
+            &approve,
         ),
         (
             "malformed",
             json!({"approvals": [{"gate": "definition", "approved_delta_digests": {"cli": "short"}}]})
                 .to_string(),
+            &status,
+        ),
+        (
+            "malformed",
+            json!({"approvals": [{"gate": "definition", "approved_delta_digests": {"../cli": digest}}]})
+                .to_string(),
+            &status,
         ),
         (
             "4194304",
@@ -1242,16 +1307,27 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
                 "{{\"approvals\":[{{\"gate\":\"definition\",\"approved_delta_digests\":{{\"cli\":\"{digest}\"}}}}],\"padding\":\"{}\"}}",
                 "x".repeat(4 * 1_048_576)
             ),
+            &status,
         ),
     ];
-    for (why, content) in cases {
+    for (why, content, remedy) in cases {
         fixture.write(&ledger, &content);
         refused_unchanged(&fixture, &["stage", "advance"], unverifiable, why);
-        refused_unchanged(&fixture, &["stage", "advance"], unverifiable, &status);
+        refused_unchanged(&fixture, &["stage", "advance"], unverifiable, remedy);
     }
     fs::remove_file(fixture.root().join(&ledger)).unwrap();
     refused_unchanged(&fixture, &["stage", "advance"], unverifiable, "missing");
     fixture.write(&ledger, &approved);
+    // A module name that is not one plain path segment is never read as a path.
+    for module in ["../cli", "a/b", "nested\\cli", ".", "trailing."] {
+        fixture.write(".stub-affected", &format!("{}\n", json!(module)));
+        refused_unchanged(
+            &fixture,
+            &["stage", "reset", "--to", "build", "--reason", "Restart"],
+            unverifiable,
+            "invalid module name",
+        );
+    }
     fixture.write(".stub-affected", "none\n");
     refused_unchanged(
         &fixture,

@@ -5,7 +5,6 @@ use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{
     NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
     local_path, native_json, now, print_json, read_log_tail, read_native_record, read_record,
-    valid_name,
 };
 use crate::{bugs, prefs};
 use anyhow::{Result, bail, ensure};
@@ -470,6 +469,14 @@ fn native_gate(
                 ),
             );
         }
+        Deltas::Unrecorded(reason) => {
+            return refused(
+                "refused:native-delta-unverifiable".into(),
+                format!(
+                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. Native next action: ask the human for a new scope approval (specsync change approve {change} --actor \"<their name>\"), which records the digests, and then run specsync change check {change}; a status read cannot clear this."
+                ),
+            );
+        }
     };
     Gate {
         allowed: true,
@@ -488,6 +495,8 @@ pub(super) enum Deltas {
     /// Each module with what changed.
     Changed(Vec<String>),
     Unverifiable(String),
+    /// The latest definition approval records no digests; only a new approval can.
+    Unrecorded(String),
 }
 
 /// SpecSync 6.1.1's `FramedDigest` of one delta: SHA-256 over the length-framed domain,
@@ -512,6 +521,37 @@ fn delta_digest(module: &str, body: &[u8]) -> String {
         hash.update(value);
     }
     format!("{:x}", hash.finalize())
+}
+
+/// A module name SpecSync 6.1.1 accepts (`validate_module_name`): one plain path
+/// segment with no separator, Windows-invalid or control character, no surrounding
+/// space or trailing dot, no reserved device basename, and room for `.spec.md` in a
+/// 255-byte component. Only such a name is read as `deltas/<module>.md`.
+fn module_name(name: &str) -> bool {
+    let mut components = Path::new(name).components();
+    let segment = matches!(components.next(), Some(std::path::Component::Normal(_)))
+        && components.next().is_none();
+    let basename = name
+        .split('.')
+        .next()
+        .unwrap_or_default()
+        .to_ascii_uppercase();
+    let device = matches!(basename.as_str(), "CON" | "PRN" | "AUX" | "NUL")
+        || (basename.len() == 4
+            && (basename.starts_with("COM") || basename.starts_with("LPT"))
+            && matches!(basename.as_bytes()[3], b'1'..=b'9'));
+    segment
+        && !name.chars().any(|character| {
+            character.is_control()
+                || matches!(
+                    character,
+                    '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*'
+                )
+        })
+        && name == name.trim()
+        && !name.ends_with('.')
+        && name.len() + ".spec.md".len() <= 255
+        && !device
 }
 
 /// Read a native change file read-only within SpecSync's bound: `Ok(None)` when it is
@@ -563,7 +603,7 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
             for (module, digest) in map {
                 match digest.as_str() {
                     Some(digest)
-                        if valid_name(module)
+                        if module_name(module)
                             && is_digest(digest)
                             && !digest.bytes().any(|byte| byte.is_ascii_uppercase()) =>
                     {
@@ -584,7 +624,7 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
     };
     let mut modules = BTreeSet::new();
     for module in affected {
-        match module.as_str().filter(|module| valid_name(module)) {
+        match module.as_str().filter(|module| module_name(module)) {
             Some(module) => modules.insert(module.to_string()),
             None => {
                 return Deltas::Unverifiable(format!(
@@ -612,7 +652,7 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
         return if no_spec && no_deltas {
             Deltas::NoSpec
         } else {
-            Deltas::Unverifiable(format!(
+            Deltas::Unrecorded(format!(
                 "the definition approval in {ledger_path} records no approved_delta_digests"
             ))
         };
@@ -672,7 +712,9 @@ pub(super) fn delta_summary(root: &Path, change: Option<&str>, state: &NativeSta
         Deltas::Unchanged(modules) => format!("unchanged: {}", modules.join(", ")),
         Deltas::NoSpec => "no semantic deltas (no_spec_change)".into(),
         Deltas::Changed(modules) => format!("changed: {}", modules.join(", ")),
-        Deltas::Unverifiable(reason) => format!("unverifiable: {reason}"),
+        Deltas::Unverifiable(reason) | Deltas::Unrecorded(reason) => {
+            format!("unverifiable: {reason}")
+        }
     }
 }
 
@@ -1095,10 +1137,25 @@ fn move_back(
         refresh.clone(),
     )?;
     if kind == "reset" {
-        // A reset starts a new cycle, so the old next action no longer applies.
-        session.next_action = format!(
-            "New cycle from {from} after reset: {reason}. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
-        );
+        // A reset starts a new cycle, so the old next action no longer applies. The
+        // reason is kept on one line and cut so the next action stays within 4096 bytes;
+        // the transition keeps it whole.
+        let head = format!("New cycle from {from} after reset: ");
+        let tail = ". Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.";
+        let room = 4_096 - head.len() - tail.len();
+        let mut line = String::new();
+        for character in reason
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .chars()
+        {
+            if line.len() + character.len_utf8() > room {
+                break;
+            }
+            line.push(character);
+        }
+        session.next_action = format!("{head}{line}{tail}");
     }
     session.stage.current = target.into();
     session.stage.callers.clear();
@@ -1262,4 +1319,116 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         save_checkpoint(root, &session)?;
     }
     report(root, &session, applied)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const DELTA: &str = "## ADDED\n\n### REQUIREMENT REQ-cli-090\n\nThe helper SHALL do it.\n";
+
+    /// The guard's own digest matches every digest SpecSync recorded in this
+    /// repository's archive, on every platform.
+    #[test]
+    fn product_digests_match_every_archived_approval() {
+        let archive = Path::new(env!("CARGO_MANIFEST_DIR")).join(".specsync/archive/changes");
+        let mut compared = 0;
+        for entry in std::fs::read_dir(&archive).unwrap() {
+            let directory = entry.unwrap().path();
+            let ledger: Value =
+                serde_json::from_slice(&std::fs::read(directory.join("approvals.json")).unwrap())
+                    .unwrap();
+            let approval = ledger["approvals"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .rev()
+                .find(|approval| approval["gate"] == "definition")
+                .unwrap();
+            for (module, digest) in approval["approved_delta_digests"].as_object().unwrap() {
+                let body = std::fs::read(directory.join(format!("deltas/{module}.md"))).unwrap();
+                assert_eq!(delta_digest(module, &body), digest.as_str().unwrap());
+                compared += 1;
+            }
+        }
+        assert!(compared >= 7, "only {compared} archived digests compared");
+    }
+
+    fn deltas(root: &Path, affected: &[&str], approval: Value) -> Deltas {
+        let directory = root.join(".specsync/changes/guarded");
+        std::fs::create_dir_all(directory.join("deltas")).unwrap();
+        std::fs::write(
+            directory.join("approvals.json"),
+            json!({"approvals": [approval]}).to_string(),
+        )
+        .unwrap();
+        let status = json!({"change": {"affected_specs": affected, "no_spec_change": false}});
+        approved_deltas(root, "guarded", &status)
+    }
+
+    /// The guard's comparison, on every platform: matching deltas, including after a
+    /// line-ending-only edit and for names SpecSync accepts, pass; edits, deletions and
+    /// approvals without digests do not; a path-like module name is never read.
+    #[test]
+    fn approved_deltas_compare_on_every_platform() {
+        let root = tempfile::tempdir().unwrap();
+        let root = root.path();
+        let delta =
+            |module: &str| root.join(format!(".specsync/changes/guarded/deltas/{module}.md"));
+        let modules = ["cli", "a.b", "Módulo"];
+        let mut digests = serde_json::Map::new();
+        for module in modules {
+            digests.insert(module.into(), json!(delta_digest(module, DELTA.as_bytes())));
+        }
+        let approval = json!({"gate": "definition", "approved_delta_digests": digests});
+        std::fs::create_dir_all(root.join(".specsync/changes/guarded/deltas")).unwrap();
+        for module in modules {
+            std::fs::write(delta(module), DELTA).unwrap();
+        }
+        assert!(matches!(
+            deltas(root, &modules, approval.clone()),
+            Deltas::Unchanged(found) if found.len() == 3
+        ));
+        std::fs::write(delta("a.b"), DELTA.replace('\n', "\r\n")).unwrap();
+        assert!(matches!(
+            deltas(root, &modules, approval.clone()),
+            Deltas::Unchanged(_)
+        ));
+        std::fs::write(delta("a.b"), format!("{DELTA}More.\n")).unwrap();
+        assert!(matches!(
+            deltas(root, &modules, approval.clone()),
+            Deltas::Changed(found) if found == ["a.b (edited)"]
+        ));
+        std::fs::remove_file(delta("a.b")).unwrap();
+        assert!(matches!(
+            deltas(root, &modules, approval.clone()),
+            Deltas::Changed(found) if found == ["a.b (deleted)"]
+        ));
+        assert!(matches!(
+            deltas(root, &["cli"], json!({"gate": "definition"})),
+            Deltas::Unrecorded(_)
+        ));
+        for name in [
+            "../cli",
+            "a/b",
+            "a\\b",
+            ".",
+            "..",
+            "trailing.",
+            " cli",
+            "CON",
+            "com1.x",
+            "a:b",
+        ] {
+            assert!(!module_name(name), "{name}");
+            assert!(matches!(
+                deltas(root, &[name], approval.clone()),
+                Deltas::Unverifiable(_)
+            ));
+        }
+        for name in ["cli", "a.b", "Módulo", "v2", "auth-service", "user_profile"] {
+            assert!(module_name(name), "{name}");
+        }
+        assert!(module_name(&"m".repeat(247)) && !module_name(&"m".repeat(248)));
+    }
 }

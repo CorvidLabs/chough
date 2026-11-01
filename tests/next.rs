@@ -406,4 +406,57 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
             .unwrap()
             .starts_with(action.trim_end_matches(" [cut]"))
     );
+
+    // Strings that JSON escapes to six bytes per character stay within the cap too:
+    // each string is bounded by its escaped length, not its raw length.
+    let control = "\u{1}".repeat(600);
+    let escaped = "\\u0001".repeat(600);
+    fixture.write(
+        "bin/specsync",
+        &format!(
+            "#!/bin/sh\necho \"$*\" >>.stub-calls\nprintf '%s\\n' '{{\"summary\":{{\"state\":\"{escaped}\",\"next_action\":\"{escaped}\",\"approval_valid\":true,\"correction_valid\":true,\"terminal_evidence\":{{\"validity\":\"{escaped}\"}}}},\"change\":{{\"affected_specs\":[],\"no_spec_change\":true}}}}'\n"
+        ),
+    );
+    session["objective"] = json!(control);
+    session["next_action"] = json!(control);
+    // Within the 64 KiB session bound: four escaped strings in each list.
+    let list = |prefix: &str| -> Vec<String> {
+        (0..40)
+            .map(|index| {
+                if index < 4 {
+                    control.clone()
+                } else {
+                    format!("{prefix} {index:02}")
+                }
+            })
+            .collect()
+    };
+    session["awaiting_human"] = json!(list("Gate"));
+    session["blockers"] = json!(list("Blocker"));
+    let session_text = serde_json::to_string(&session).unwrap();
+    assert!(session_text.len() < 65_536, "{}", session_text.len());
+    fixture.write(".chough/session.json", &session_text);
+    let raw = text(&fixture, &["next", "--json"]);
+    assert!(raw.len() <= NEXT_LIMIT, "JSON form is {} bytes", raw.len());
+    let next: Value = serde_json::from_str(&raw).unwrap();
+    assert!(
+        next["native"]["state"]
+            .as_str()
+            .unwrap()
+            .ends_with(" [cut]")
+    );
+    let mut found = vec![];
+    strings(&next, &mut found);
+    for value in &found {
+        let width = serde_json::to_string(value).unwrap().len() - 2;
+        assert!(width <= 512, "{width} escaped bytes: {value:?}");
+    }
+    assert!(next["objective"].as_str().unwrap().ends_with(" [cut]"));
+    assert_eq!(next["awaiting_human"]["total"], 40);
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.len() <= NEXT_LIMIT,
+        "text form is {} bytes",
+        shown.len()
+    );
 }

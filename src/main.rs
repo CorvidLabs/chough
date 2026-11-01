@@ -383,14 +383,30 @@ const LISTS: [&str; 4] = [
     "observations",
 ];
 
-/// Cut text at a character boundary to at most STRING_LIMIT bytes, marking the cut.
+/// The bytes `character` takes inside a JSON string, as serde_json escapes it.
+fn escaped_width(character: char) -> usize {
+    match character {
+        '"' | '\\' | '\u{8}' | '\u{c}' | '\n' | '\r' | '\t' => 2,
+        character if character < ' ' => 6,
+        character => character.len_utf8(),
+    }
+}
+
+/// Cut text at a character boundary so that it takes at most STRING_LIMIT bytes both
+/// raw and escaped in JSON, marking the cut. A control character escapes to six bytes,
+/// so the escaped width, not the raw length, bounds the JSON form.
 fn cut(text: &str) -> String {
-    if text.len() <= STRING_LIMIT {
+    if text.chars().map(escaped_width).sum::<usize>() <= STRING_LIMIT {
         return text.to_string();
     }
-    let mut end = STRING_LIMIT - CUT.len();
-    while !text.is_char_boundary(end) {
-        end -= 1;
+    let mut width = 0;
+    let mut end = 0;
+    for (index, character) in text.char_indices() {
+        width += escaped_width(character);
+        if width > STRING_LIMIT - CUT.len() {
+            break;
+        }
+        end = index + character.len_utf8();
     }
     format!("{}{CUT}", &text[..end])
 }
@@ -680,4 +696,30 @@ fn next_text(view: &Value) -> String {
         ));
     }
     lines.join("\n") + "\n"
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Every cut string fits STRING_LIMIT both raw and escaped in JSON, so the next view
+    /// stays within its cap whatever characters a record holds.
+    #[test]
+    fn cut_bounds_the_escaped_width() {
+        for text in [
+            "\u{1}".repeat(600),
+            "\"".repeat(600),
+            "\\".repeat(600),
+            "\n".repeat(600),
+            "é".repeat(600),
+            "x".repeat(600),
+            format!("{}{}", "x".repeat(500), "\u{1}".repeat(20)),
+        ] {
+            let kept = cut(&text);
+            let escaped = Value::from(kept.clone()).to_string().len() - 2;
+            assert!(escaped <= STRING_LIMIT, "{escaped} escaped bytes");
+            assert!(kept.ends_with(CUT), "{kept:?}");
+        }
+        assert_eq!(cut("short \u{1}"), "short \u{1}");
+    }
 }
