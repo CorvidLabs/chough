@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "id": "handoff-cold-start-frozen-pair-1",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Frozen cold-start pair for TC-cli-0133 before implementation: seed.sh sha256 2cfa209a24359f3ada3844f75228200026c782759f1967f4ceba52f186c0d60d, rubric.md sha256 f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17. Two seeds into fresh directories built identical repositories: HEAD c1b7e74b50ead7677f29d7150bf63550acb59469, tree 9be61b11fd4ff2dfabd1725edeee5e1923dc0d0c. In the seeded repository chough next (main fb6e487 build) exited 0 with 1009 bytes of text and 1406 bytes of JSON, chough status exited 0 with 7506 bytes, chough cases check was valid, hi check had no problems and python3 -m unittest passed.",
+  "artifacts": [
+    "docs/exercises/handoff-cold-start/seed.sh",
+    "docs/exercises/handoff-cold-start/rubric.md"
+  ],
+  "artifact_fingerprints": {
+    "docs/exercises/handoff-cold-start/rubric.md": "f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17",
+    "docs/exercises/handoff-cold-start/seed.sh": "2cfa209a24359f3ada3844f75228200026c782759f1967f4ceba52f186c0d60d"
+  },
+  "observed_at_unix_seconds": 1793573768,
+  "snapshot": {
+    "revision": "c85a038b0693544a9ecd61aa06b1abeb9bc83b89",
+    "dirty": true,
+    "fingerprint": "4e4b6f444e92c48298e69524331cd2db996b12e660355a2bf267ed6dd540758b",
+    "content": "4ca1a13fa978da2950aa5fea68e82dc7c39453f6d68f375aab9a5a275ca71358"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "limitations": [
+    "Structural check of the fixture only; no fresh-agent run (baseline, change or real-repository) has been performed",
+    "0xLeif has not yet read the frozen rubric; his reading will be recorded as his statement, not as an approval",
+    "Seeded on macOS arm64 with git and Python 3.14.8 only; reproducibility on other platforms or Git versions was not checked",
+    "The seeded records were captured from the fb6e487 helper and written as static files with fixed times and one normalized log path"
+  ]
+}
