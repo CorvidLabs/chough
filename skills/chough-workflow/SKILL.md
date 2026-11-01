@@ -63,6 +63,9 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
 Chough runs in the current agent; no provider API or runtime is required. `chough init
 --host <openai|claude|codex|cursor|gemini|grok>` copies this bundle into that host's
 project skill directory, and `chough skill status` shows whether a copy is current,
-edited or outdated. Confirm that the host actually lists the skill; otherwise give
-it this file directly. Subagents are optional: [roles.md](references/roles.md) also
-works as sequential passes.
+edited or outdated. For Kimi Code CLI, use `chough init --host openai`. The existing
+`openai` mapping installs `.agents/skills/chough-workflow/`; Kimi Code CLI 0.41.0 was
+observed discovering `.agents/skills/chough-workflow/SKILL.md` in one macOS session.
+There is no separate `kimi` host value. Confirm that the host actually lists the skill;
+otherwise give it this file directly. Subagents are optional:
+[roles.md](references/roles.md) also works as sequential passes.

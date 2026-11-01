@@ -365,6 +365,148 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
 
 #[cfg(unix)]
 #[test]
+fn done_archived_native_guidance_drives_next_and_status() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("archived");
+    fixture.init();
+    let stale = "specsync change review archived-change, then ship";
+    fixture.ok(&[
+        "checkpoint",
+        "--native-change",
+        "archived-change",
+        "--next-action",
+        stale,
+    ]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "done",
+        "--reason",
+        "Archived native closeout",
+    ]);
+    assert_eq!(stage(&fixture), "done");
+
+    let assert_action = |command: &str, expected: &str, session_bytes: &str| {
+        let report = fixture.ok(&[command, "--json"]);
+        assert_eq!(report["next_valid_action"], expected, "{command}");
+        assert_eq!(report["session_next_action"], stale, "{command}");
+        assert_eq!(
+            fixture.read(".chough/session.json"),
+            session_bytes,
+            "{command} rewrote the session"
+        );
+        report
+    };
+
+    let session_bytes = fixture.read(".chough/session.json");
+    for command in ["next", "status"] {
+        let report = assert_action(
+            command,
+            "Continue done: stub next action for archived",
+            &session_bytes,
+        );
+        assert_eq!(report["native_summary"]["state"], "archived");
+        assert_eq!(
+            report["native_summary"]["next_action"],
+            "stub next action for archived"
+        );
+    }
+
+    fixture.ok(&["stage", "pause", "--reason", "Waiting for a person"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
+    let session_bytes = fixture.read(".chough/session.json");
+    for command in ["next", "status"] {
+        assert_action(
+            command,
+            "The done stage is paused. Check native state and freshness, then `chough stage resume`.",
+            &session_bytes,
+        );
+    }
+
+    fixture.ok(&["stage", "resume"]);
+    let session_bytes = fixture.read(".chough/session.json");
+    for command in ["next", "status"] {
+        assert_action(
+            command,
+            "Waiting for a human decision: Human scope decision. Do not record it on their behalf; continue only independent work within scope.",
+            &session_bytes,
+        );
+    }
+
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nprintf '%s\\n' '{\"summary\":{\"state\":\"archived\"}}'\n",
+    );
+    let session_bytes = fixture.read(".chough/session.json");
+    let fallback = "Done checkpoint has no archived native next action; inspect native SpecSync status before further lifecycle action.";
+    for command in ["next", "status"] {
+        let report = assert_action(command, fallback, &session_bytes);
+        assert_eq!(report["native_summary"]["state"], "archived");
+        assert!(report["native_summary"]["next_action"].is_null());
+    }
+
+    for (label, next_action) in [
+        ("null", Value::Null),
+        ("whitespace-only", json!(" \t\n ")),
+        ("non-string number", json!(42)),
+        ("non-string boolean", json!(false)),
+        ("non-string object", json!({"action": "nested"})),
+        ("non-string array", json!(["nested"])),
+    ] {
+        let response = json!({
+            "summary": {"state": "archived", "next_action": next_action.clone()}
+        });
+        fixture.write(
+            "bin/specsync",
+            &format!("#!/bin/sh\nprintf '%s\\n' '{response}'\n"),
+        );
+        for command in ["next", "status"] {
+            let report = assert_action(command, fallback, &session_bytes);
+            assert_eq!(report["native_summary"]["state"], "archived");
+            assert_eq!(
+                report["native_summary"]["next_action"], next_action,
+                "{command}: {label}"
+            );
+        }
+    }
+
+    let native_action = " \tstub next action for archived \t";
+    let response = json!({
+        "summary": {"state": "archived", "next_action": native_action}
+    });
+    fixture.write(
+        "bin/specsync",
+        &format!("#!/bin/sh\nprintf '%s\\n' '{response}'\n"),
+    );
+    let expected = format!("Continue done: {native_action}");
+    for command in ["next", "status"] {
+        let report = assert_action(command, &expected, &session_bytes);
+        assert_eq!(report["native_summary"]["state"], "archived");
+        assert_eq!(report["native_summary"]["next_action"], native_action);
+    }
+
+    fixture.stubs();
+    fixture.write(".stub-fail", "");
+    for command in ["next", "status"] {
+        let report = assert_action(command, fallback, &session_bytes);
+        assert_eq!(report["native_specsync"]["state"], "failed");
+        assert!(
+            report["native_specsync"]["content"]
+                .as_str()
+                .unwrap()
+                .contains("status failed"),
+            "{command}: {}",
+            report["native_specsync"]["content"]
+        );
+        assert!(report["native_summary"].is_null());
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn large_native_status_still_gates_by_its_summary_state() {
     let fixture = Fixture::new();
     fixture.stubs();

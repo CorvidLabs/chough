@@ -307,6 +307,16 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
                 )
             } else if let Some((_, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
                 format!("Gate not open ({}): {}", gate.label, gate.detail)
+            } else if current_stage == "done" {
+                match (
+                    native_summary.get("state").and_then(Value::as_str),
+                    native_summary.get("next_action").and_then(Value::as_str),
+                ) {
+                    (Some("archived"), Some(next_action)) if !next_action.trim().is_empty() => {
+                        format!("Continue done: {next_action}")
+                    }
+                    _ => "Done checkpoint has no archived native next action; inspect native SpecSync status before further lifecycle action.".to_string(),
+                }
             } else {
                 format!("Continue {current_stage}: {}", checkpoint.next_action)
             };

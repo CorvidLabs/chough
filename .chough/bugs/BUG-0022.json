@@ -19,7 +19,8 @@
   "fixture": null,
   "observations": [
     "kimi-cold-start-5af3f78",
-    "kimi-cold-start-5af3f78-scope"
+    "kimi-cold-start-5af3f78-scope",
+    "tc-cli-0106-kimi-original"
   ],
   "impact": "The first verify lane is not evidence from the exact CI toolchain",
   "classification": "environment",
@@ -48,8 +49,15 @@
       "observations": [
         "kimi-cold-start-5af3f78-scope"
       ]
+    },
+    {
+      "at_unix_seconds": 1793551402,
+      "text": "The original TC-cli-0106 retrospective observation preserves evidence for this finding before the approved fixes; scope and open status are unchanged",
+      "observations": [
+        "tc-cli-0106-kimi-original"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793546202,
-  "updated_at_unix_seconds": 1793550646
+  "updated_at_unix_seconds": 1793551402
 }

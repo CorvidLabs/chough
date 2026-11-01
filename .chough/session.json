@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -64,7 +64,9 @@
     "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
     "The human task supplies the intent and requested deliverables; no native scope approval is inferred",
     "Limit this change to BUG-0020 and BUG-0021 plus honest exercise and roadmap records, because the output-size and global-tool issues do not need the same scoped fix",
-    "Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007"
+    "Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007",
+    "0xLeif approved the native scope in conversation; SpecSync recorded that decision with actor 0xLeif",
+    "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised"
   ],
   "open_questions": [],
   "completed": [
@@ -84,7 +86,11 @@
     "TC-cli-0100 and TC-cli-0104 added and passing",
     "PR #9 merged earlier; stale awaiting-human entry cleared",
     "Kimi Code CLI 0.41.0 cold start on macOS arm64: discovery, build, native checks and baseline verify observed; four friction items classified as BUG-0020 to BUG-0023",
-    "Preserved the concise Kimi cold-start log and recorded failed observation kimi-cold-start-5af3f78 with discovery successes, cold-resume failure and tool and coaching limits"
+    "Preserved the concise Kimi cold-start log and recorded failed observation kimi-cold-start-5af3f78 with discovery successes, cold-resume failure and tool and coaching limits",
+    "TC-cli-0105 and TC-cli-0106 failed at the unfixed tip for the approved archived-guidance and Kimi-guidance defects; failures linked before implementation",
+    "Implemented archived native next-action routing, Kimi skill guidance with safe updates, and the approved roadmap and host documentation refresh",
+    "Final TC-cli-0105, TC-cli-0037 and TC-cli-0106 observations passed on the completed content; BUG-0020 and BUG-0021 verified from later passes",
+    "Native materialization passed, and the final CI-matching fledge verify lane completed all 9 steps in 82.220 seconds"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -95,7 +101,12 @@
     "tc-cli-0039-1793475513",
     "bug-0004-fixed-1",
     "kimi-cold-start-5af3f78",
-    "kimi-cold-start-5af3f78-scope"
+    "kimi-cold-start-5af3f78-scope",
+    "tc-cli-0105-1793551352",
+    "tc-cli-0106-kimi-original",
+    "tc-cli-0105-1793553670",
+    "tc-cli-0037-1793553673",
+    "tc-cli-0106-kimi-final"
   ],
   "bugs": [
     "BUG-0001",
@@ -110,8 +121,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of correct-archived-resume-guidance-and-record-the-kimi-cold-start"
+    "Implementation review of correct-archived-resume-guidance-and-record-the-kimi-cold-start"
   ],
   "run_consents": [],
-  "next_action": "Wait for 0xLeif to decide the native scope; do not build before valid native approval"
+  "next_action": "Wait for 0xLeif to review the implementation; do not record native review or archive without explicit instruction"
 }

@@ -15,8 +15,9 @@ Chough records what stage work is in, what was decided, what was actually checke
 ![Chough and the tools that own its records](docs/diagrams/ownership.svg)
 
 Chough is a public CorvidLabs repository. **No release exists yet**: nothing is
-published to crates.io, tagged, hosted or deployed. A first release candidate is in
-progress ([PR #9](https://github.com/CorvidLabs/chough/pull/9)).
+published to crates.io, tagged, hosted or deployed. The first release candidate
+merged in [PR #9](https://github.com/CorvidLabs/chough/pull/9) as `2756dc2` on
+2026-10-31. This merge is not a release.
 
 ## Install
 
@@ -51,9 +52,11 @@ chough next --environment local
 `init` never overwrites existing files. It writes the checkpoint
 `.chough/session.json` and copies the skill bundle into each requested host's
 project skill directory (`openai` → `.agents/skills`, `claude` → `.claude/skills`,
-also `codex`, `cursor`, `gemini`, `grok`). Then ask your agent in plain language,
-for example "Use the Chough workflow to add free shipping at fifty dollars", or give
-it [the skill](skills/chough-workflow/SKILL.md) directly.
+also `codex`, `cursor`, `gemini`, `grok`). Kimi Code CLI uses the existing `openai`
+installer value and discovers `.agents/skills/chough-workflow/SKILL.md`. Then ask
+your agent in plain language, for example "Use the Chough workflow to add free
+shipping at fifty dollars", or give it
+[the skill](skills/chough-workflow/SKILL.md) directly.
 
 ## The loop
 
@@ -102,7 +105,11 @@ behavioral proof or human acceptance.
 | Hosted CI: Ubuntu | Fledge `verify` lane (format, lint, tests), HI and SpecSync checks, the native archive gate and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
-Other platforms and hosts may work but have not been exercised.
+One 2026-11-01 Kimi Code CLI 0.41.0 run on macOS arm64 auto-discovered the `.agents`
+skill, built successfully and exercised cold resume. It exposed BUG-0020's stale
+archived action and BUG-0021's missing mapping guidance. Later fixes have TC-cli-0105
+regression and TC-cli-0106 documentation review coverage, not a fresh post-fix Kimi
+rerun. Other platforms may work but have not been exercised.
 
 ## Known limitations
 
@@ -112,8 +119,8 @@ Other platforms and hosts may work but have not been exercised.
 - SpecSync's change status does not yet flag an approved delta edited after approval;
   a fix is proposed in
   [CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/issues/823).
-- Hosts other than Claude Code and Codex have not had real discovery or cold-start
-  exercises.
+- Cursor, Gemini and Grok have not had real discovery or cold-start exercises. Kimi
+  remains limited to the single run above, with no fresh post-fix run.
 
 See [integrations and limits](docs/integrations.md) for the rest.
 

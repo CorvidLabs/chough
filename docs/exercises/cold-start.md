@@ -67,7 +67,8 @@ Human review remains pending … No approval was recorded."
 
 ## Limits and follow-ups
 
-- One run of one agent on one sample. A Claude Code, Grok or Kimi run was not performed.
+- One run of one agent on one sample. No Claude Code, Cursor, Gemini, Grok or Kimi
+  run was performed on that sample.
 - The sandbox prevented commits, so the fix is uncommitted in the sample. Its own
   observations now read `stale-revision-or-inputs`, because it then edited the tracked
   `change.md` and SpecSync rewrote its records. That is Chough's conservative
@@ -82,3 +83,43 @@ Human review remains pending … No approval was recorded."
 - The checkpoint's `next_action` named the bug to fix, as a real checkpoint would;
   the session had to discover everything else from the files.
 - Visible messages and commands are recorded here; model reasoning is not.
+
+## Kimi cold start: 2026-11-01
+
+Host and environment: Kimi Code CLI 0.41.0 on macOS arm64, environment
+`local-macos-arm64`, worktree `.worktrees/kimi-host-cold-start`, branch
+`kimi/feat/kimi-host-cold-start`, base `5af3f78`.
+
+Input and discovery: the supplied task named the repository, objective, `AGENTS.md`
+and canonical skill. Kimi independently listed and loaded
+`.agents/skills/chough-workflow/SKILL.md` as a Project skill. Discovery passed in
+this run, with that explicit task guidance; this does not prove discovery in every
+Kimi configuration.
+
+Commands and results:
+
+1. `cargo build --locked` passed in 10 seconds.
+2. `chough next --environment local-macos-arm64` emitted 11,567 JSON lines in 16
+   seconds. It reported stage `done` and native state `archived`, but its valid action
+   repeated stale review and ship guidance. Native SpecSync status confirmed the
+   archived state and advised merging the PR if it was still open.
+3. `chough status --json` emitted about 11,567 JSON lines in 36 seconds and repeated
+   the same contradiction.
+4. `chough skill status` reported every installed bundle file current, and
+   `chough cases check` reported valid definitions.
+5. The local baseline verify lane passed 9 steps in 114 seconds.
+
+Findings and scope: BUG-0020 records the stale archived action, and BUG-0021 records
+the absent Kimi mapping guidance; both are in this change. BUG-0022 records initial
+tool drift, and BUG-0023 records oversized `next` and `status` output; both remain
+open and out of scope. The baseline used HI 0.5.0 and Fledge 1.8.0 with SpecSync
+6.1.1, so it was neither final CI-toolchain verification nor hosted CI. Later
+release-verified HI 0.8.0 and Fledge 1.7.2 tools were placed under
+`target/tmp/ci-tools`; SpecSync 6.1.1 is required with them for final checks.
+
+Evidence and limits: see the [concise Kimi log](../../.chough/artifacts/kimi-cold-start.log)
+and [TC-cli-0106](../../specs/cli/testing.md). The original observation
+`tc-cli-0106-kimi-original` failed because the mapping guidance and consistent
+corrected documents were absent at base. Any later TC-cli-0106 pass is a
+retrospective documentation review, not another Kimi execution. No fresh post-fix
+Kimi run, agent-recorded human decision, release or deployment is claimed.

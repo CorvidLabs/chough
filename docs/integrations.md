@@ -10,6 +10,7 @@ guided by the skill or kept as a qualified, deferred or unavailable adapter.
 |---|---|---|
 | Claude Code 2.1.316 | `.claude/skills/chough-workflow/` | Discovered in two fresh headless sessions; `.agents/skills` alone was not discovered (answer: NONE) |
 | Codex CLI 0.153.4 | `.agents/skills/chough-workflow/` (openai mapping) | A fresh session followed the `AGENTS.md` router to the installed skill and completed a cold start; native discovery of that directory was not tested separately |
+| Kimi Code CLI 0.41.0 | `.agents/skills/chough-workflow/` (openai mapping) | One macOS arm64 run on 2026-11-01 auto-discovered and loaded the skill and exercised cold resume. It exposed BUG-0020's stale archived-action defect; no fresh post-fix Kimi run was performed |
 | Cursor, Gemini, Grok | `.cursor/skills`, `.gemini/skills`, `.grok/skills` | Mapping from the CorvidLabs skills installer; not exercised |
 | Any host | Give the agent `skills/chough-workflow/SKILL.md` | The skill reads as plain Markdown |
 

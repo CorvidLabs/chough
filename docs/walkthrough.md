@@ -22,7 +22,9 @@ chough init --objective "Free shipping from fifty dollars" \
 chough skill status
 ```
 
-Claude Code discovers `.claude/skills/chough-workflow/`; for other hosts add their
+Claude Code discovers `.claude/skills/chough-workflow/`. Kimi Code CLI users should
+initialize with `--host openai`, which installs `.agents/skills/chough-workflow/`,
+the directory Kimi discovered in the observed run. For other hosts, add their
 `--host` or point the agent at the skill file.
 
 ## Intent and design
@@ -100,7 +102,12 @@ chough next --environment local
 It reports the stage, the gate for the current stage, freshness of the referenced
 observations, open and blocking bugs, standing preferences, pending human decisions
 and the next valid action. The [cold-start exercise](exercises/cold-start.md) records
-an independent Codex session doing exactly this on the sample.
+an independent Codex session doing exactly this on the sample. Separately, it records
+one Kimi cold start in this repository, not that sample. Kimi discovered the skill
+and reached the archived native state, but `next` and `status` gave stale review and
+ship guidance, recorded as BUG-0020. TC-cli-0105 covers the correction as an
+automated regression; Kimi did not return to validate the corrected build. See the
+exercise for the full observation and limits.
 
 ## Read freshness precisely
 

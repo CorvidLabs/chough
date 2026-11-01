@@ -114,6 +114,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
     ),
+    // Base 5af3f78; superseded by the Kimi host guidance (BUG-0021).
+    (
+        "SKILL.md",
+        "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

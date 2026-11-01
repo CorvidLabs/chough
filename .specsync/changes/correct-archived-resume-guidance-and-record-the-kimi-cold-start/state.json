@@ -7,10 +7,11 @@
   "title": "Correct archived resume guidance and record the Kimi cold start",
   "description": "Correct archived resume guidance and record the Kimi cold start",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
   "created_at": 1793547244,
-  "updated_at": 1793550546,
+  "updated_at": 1793554724,
   "affected_specs": [
     "cli"
   ],
