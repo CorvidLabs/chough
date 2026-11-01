@@ -24,7 +24,7 @@ the BUG-0021 retrospective Kimi guidance review.
 | REQ-cli-009 | Definition validation, location in errors, position-free digests | TC-cli-0022 to 0024 |
 | REQ-cli-010 | Focused selection with tracks and omissions | TC-cli-0025, 0101 |
 | REQ-cli-011 | Failing, not-run, missing-output, timeout and build-failure outcomes; verdicts; stop and resume | TC-cli-0026, 0027, 0034, 0101, 0103 |
-| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure | TC-cli-0029 to 0032, 0076 to 0079, 0101 |
+| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure; TC-cli-0125 retains `tc-cli-0125-collision-pre-fix`, the failed `local-macos-arm64` observation of independent-root manual and automatic ID collisions, and the strictly later `tc-cli-0125-collision-post-fix` pass for distinct new-form IDs, schema 1 legacy compatibility and cross-form duplicate and related links | TC-cli-0029 to 0032, 0076 to 0079, 0101, 0125 (failed then passed on `local-macos-arm64`) |
 | REQ-cli-013 | Preferences separate from consent; authorization for validate | TC-cli-0021, 0033, 0034, 0103 |
 | REQ-cli-014 | Release only when authorized; dry-run kind | TC-cli-0021, 0028, 0103 |
 | REQ-cli-015 | Snapshots keep sources; index lists open bugs; symlinks refused | TC-cli-0035, 0036 |

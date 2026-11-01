@@ -22,7 +22,7 @@ their JSON.
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
 | `cases check\|list\|select\|run\|record` | Validate definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` exit 3 when the recorded outcome is not passed. |
 | `evidence add ID`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
-| `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
+| `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
 | `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` off, on; `library-dir` a path (default `library`); `required-lane` a name (default empty); `retention` off, auto. Only `always`, `standing` and `auto` authorize without a run consent. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. `resume ID` continues a run; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
@@ -50,6 +50,42 @@ commands receive direct arguments, never shell-evaluated text.
 | Observation | 2 (schema 1 still read). The optional `duration_seconds` that `cases run` adds is a schema 2 field; because unknown fields are rejected, Chough builds from before it (including the 2756dc2 release candidate) refuse a repository holding such records, so use this build or later there. |
 | Case file | `profile = "chough-testing/1"` |
 | Bug, preferences, transition (including `gate-opened` and `gate-closed`), validation run | 1 |
+
+### Bug identities
+
+Every new bug uses `BUG-<lowercase-title-slug>-<24-lowercase-hex>`. Manual `bug add`
+and automatic failure capture call the same generator when they create a record. The
+generator hashes the ASCII domain `chough/bug-id/v1`, one zero byte and a canonical
+JSON creation payload containing all initial bug fields other than the ID and update
+timestamp. The first 12 SHA-256 digest bytes become the complete 24-character
+lowercase hexadecimal suffix.
+
+To form the slug, Chough lowercases ASCII letters, replaces each maximal run of
+characters outside ASCII `a` to `z` and `0` to `9` with one hyphen, and trims leading
+and trailing hyphens. There is no Unicode transliteration. An empty result becomes
+`bug`. The slug is limited to 71 bytes, with any trailing hyphen left by truncation
+removed, so the whole ID is at most 100 bytes and the separator and digest are never
+truncated.
+
+The ID is generated once and stored in the schema 1 record and its filename. No
+canonical payload or new schema field is persisted. Updates never recompute the ID or
+rename the record, even when the title or other creation content has changed.
+Automatic capture that appends to an existing open bug also preserves its ID.
+
+Exact legacy `BUG-NNNN` IDs and new-form IDs are both accepted for loading, listing,
+search, show, report, updates and evidence references. `duplicate_of` and `related`
+links resolve either form in both directions. Every legacy record remains schema 1 at
+its existing path without migration, renumbering or rewriting old observations and
+archives. Older Chough versions that accept only `BUG-NNNN` must be upgraded before
+reading, referencing or updating repositories containing new-form IDs; downgrading is
+not a migration path.
+
+Creation makes one candidate ID and one atomic create-new attempt. An existing
+candidate path is refused without overwrite. A same-ID different-content result
+reports a collision and leaves the existing record byte-identical; identical existing
+content also remains untouched. Creation never falls back to numeric allocation,
+retries the digest or makes a second candidate. Evidence, artifact, validation,
+snapshot, transition, case, HI, requirement and SpecSync ID schemes are unchanged.
 
 ## Execution bounds
 
@@ -220,7 +256,7 @@ would be reclaimed and a warning when evidence and artifacts exceed 50 MiB.
 | Protected because | Reason shown |
 |---|---|
 | Listed in the checkpoint, as an observation or as a `--design` or `--file` path naming the record or one of its artifacts | `checkpoint` |
-| Linked by a bug of any status (observation, note or regression baseline), or named by its fixture path | `BUG-NNNN <status>` |
+| Linked by a bug of any status (observation, note or regression baseline), or named by its fixture path | `<bug-id> <status>` |
 | Listed by an active native change's acceptance manifest | `native active <id>` |
 | Listed by the most recent archived change's manifest (highest finalization timestamp) | `native archive <id>` |
 | The native read failed, or its output had no acceptance entries | `native unavailable` |

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 9
+version: 11
 status: active
 files:
   - src/main.rs
@@ -77,6 +77,11 @@ than presented as Rust API symbols to the structural checker.
 8. `.chough/session.json` is the single writable checkpoint. Transition history is
    append-only, and schema migration is explicit and preserves the original bytes.
 9. The helper publishes nothing to an external service.
+10. Bug records remain schema 1. Manual and automatic creation share one generator
+    for `BUG-<lowercase-title-slug>-<24-lowercase-hex>` IDs, whose creation-time
+    digest, ID and filename never change during updates. Exact legacy `BUG-NNNN`
+    records remain usable without migration or renumbering, and duplicate and related
+    links accept either ID form.
 
 ## Behavioral Examples
 
@@ -105,6 +110,11 @@ Then the failing case is recorded failed and the passing case does not hide it
 Given a run consent for repeated validation
 When the objective changes
 Then the consent is cleared and project preferences are unchanged
+
+Given independent roots at the same legacy numeric high-water mark
+When distinct bug reports are created manually and by automatic failure capture
+Then each distinct report receives a different new-form ID
+And legacy schema 1 records and cross-form duplicate and related links remain usable
 ```
 
 ## Error Cases
@@ -114,6 +124,7 @@ Then the consent is cleared and project preferences are unchanged
 | Invalid path/schema | A record escapes the root or uses an unsupported version | Fail with an actionable error |
 | Missing native tool/source | Context or lifecycle information is unavailable | Report unavailable/unknown without inventing state |
 | Existing observation ID | An observation record already exists | Refuse replacement and retain the original |
+| Existing bug ID | A new bug candidate ID already exists, including a same-ID different-content result | Refuse creation and leave the original record byte-identical, with no overwrite, digest retry or numeric fallback |
 | Invalid traceability | A criterion, requirement or case cannot be established | Refuse to record the observation |
 | Native gate not satisfied | A stage transition needs a native state that is absent or unknown | Refuse the transition and name the native status command |
 | Unauthorized optional track | Repeated validation or release lacks consent or a standing preference | Refuse and explain how a human can authorize it |
@@ -142,3 +153,4 @@ provider and no hosted service.
 | 8 | 2026-11-01 | bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors: Bundle hygiene, case binding environment and colour-safe matching, and actionable requirement and bug errors |
 | 9 | 2026-11-01 | focused-chough-next-a-verification-guard-before-build-and-done-stage-resume: Focused chough next, a verification guard before build, and done-stage resume |
 | 10 | 2026-11-01 | prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill: Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log |
+| 11 | 2026-11-01 | use-collision-resistant-slug-identities-for-new-bugs: Use collision-resistant slug identities for new bugs |

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "use-collision-resistant-slug-identities-for-new-bugs",
+  "implementation_commit": "4fd09eb974e0b4df70fb75c6f47b5fccab0367f2",
+  "implementation_tree": "1064d354e0db24344c2af6ca22da76f819b8631e",
+  "contract_digest": "10c16c2fe5e514cd15d1a00bfe01edb40b4040e6bde795676815faa2a55dd10b",
+  "workspace_digest": "d368bca4508209ceb02f6dfce9fb441721182d6d21315f3d015c821d2651289d",
+  "closing_digest": "1b0753eabc22ecdd8204fa73c304d73f7d8dcf0d2c1bf5fb1530913377228629",
+  "review_digest": "18772101122a0fc35b12890b9b9658650d7960e68be7cfd025c630b0a81fcd0c",
+  "finalization_digest": "9897cfc671c0111514accb9bcce80954999df0c24cbc96d6a6a952eb787e4b4a",
+  "timestamp": 1793572466
+}
