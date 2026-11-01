@@ -84,9 +84,14 @@ chough stage advance        # refused: refused:native-verifying
 chough next --environment local
 ```
 
-The agent pushes the branch, observes CI and presents the evidence. Your
-implementation review is the decision; only after it does the agent run `specsync
-change review` and `ship` on the same pull request. Release is a separate, optional
+Before presenting, the agent records the gate (`chough checkpoint --awaiting-human
+"Implementation review of free-shipping-at-the-threshold"`), commits the source
+together with `.chough/`, runs `specsync change check free-shipping-at-the-threshold
+--commit`, pushes the branch and observes CI. Your implementation review is the
+decision; only after it does the agent run `specsync change review` and then `ship` or
+`finalize` on the same pull request, writing nothing to `.chough/` in between, and
+only then clears the gate and runs `chough stage advance`. See [the closeout
+order](lifecycle.md#acceptance-and-native-closeout). Release is a separate, optional
 request.
 
 ## Resume cold
