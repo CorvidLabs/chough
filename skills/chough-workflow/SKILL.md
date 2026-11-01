@@ -26,8 +26,9 @@ second ledger, and never record a human decision that a human did not make.
    current stage.
 
 With no checkpoint, run `chough init --objective "<outcome>" --intent-scope <HI-family>
---module <module>` (add `--host claude` or another host as needed); it never
-overwrites existing files. A schema 1 session is migrated only with `chough migrate`.
+--module <module>`; it never overwrites existing files. Without `--host` it installs
+the skill for `openai`; any `--host` replaces that default, so repeat it for each
+host you want, for example `--host openai --host claude`. A schema 1 session is migrated only with `chough migrate`.
 
 ## Stages
 

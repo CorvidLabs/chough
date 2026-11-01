@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Exercise a Kimi host cold start, carry observed fixes through one native change, and refresh the roadmap",
+  "objective": "Use collision-resistant identities for new bugs while preserving legacy records",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -25,7 +25,9 @@
       "FLOW-5",
       "LIFE-4",
       "FLOW-8",
-      "LIFE-5"
+      "LIFE-5",
+      "LIFE-6",
+      "LIFE-9"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -35,7 +37,8 @@
       "REQ-cli-016",
       "REQ-cli-021",
       "REQ-cli-022",
-      "REQ-cli-012"
+      "REQ-cli-012",
+      "REQ-cli-019"
     ],
     "cases": [
       "TC-cli-0101",
@@ -49,7 +52,12 @@
       "TC-cli-0121",
       "TC-cli-0122",
       "TC-cli-0123",
-      "TC-cli-0124"
+      "TC-cli-0124",
+      "TC-cli-0110",
+      "TC-cli-0111",
+      "TC-cli-0112",
+      "TC-cli-0113",
+      "TC-cli-0114"
     ],
     "design": [],
     "files": []
@@ -82,7 +90,9 @@
     "0xLeif approved the native scope in conversation; SpecSync recorded that decision with actor 0xLeif",
     "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised",
     "0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints",
-    "0xLeif approved a separate native change for slug-based bug identity with legacy numeric compatibility and no bulk migration"
+    "0xLeif approved a separate native change for slug-based bug identity with legacy numeric compatibility and no bulk migration",
+    "0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json",
+    "0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup"
   ],
   "open_questions": [],
   "completed": [
@@ -118,7 +128,9 @@
     "Recorded the independent-root collision before implementation, implemented dual-form collision-resistant bug IDs, and passed focused tests and Clippy after the race-diagnostic fix",
     "Materialized REQ-cli-012, recorded tc-cli-0125-collision-post-fix after the retained failure, and verified BUG-0026",
     "The full verify lane passed all 9 steps in 79.865 seconds and the exercise created and verified a real slug-based bug ID; final TC-cli-0125 also passed",
-    "Native bug identity change archived at aee2af3 after 0xLeif authorized finalization; Chough advanced from accept to done"
+    "Native bug identity change archived at aee2af3 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "0.1.0 release prep implemented: pins, MSRV job and rust-version, nine skill corrections with KNOWN_PREVIOUS and host refresh, context history, README, CHANGELOG, docs/releasing.md, D-019",
+    "TC-cli-0110 and 0112 failed before the fix and passed at f6416a5 with TC-cli-0111, 0113, 0114, 0064 and 0065"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -156,7 +168,18 @@
     "tc-cli-0122-integration-final",
     "tc-cli-0125-collision-pre-fix",
     "tc-cli-0125-collision-post-fix",
-    "tc-cli-0125-collision-final"
+    "tc-cli-0125-collision-final",
+    "tc-cli-0064-1793488031",
+    "tc-cli-0064-1793548662",
+    "tc-cli-0065-1793488032",
+    "tc-cli-0065-1793548663",
+    "tc-cli-0110-1793548337",
+    "tc-cli-0110-1793548659",
+    "tc-cli-0111-1793548664",
+    "tc-cli-0112-1793548338",
+    "tc-cli-0112-1793548660",
+    "tc-cli-0113-1793548805",
+    "tc-cli-0114-1793549250"
   ],
   "bugs": [
     "BUG-0001",
@@ -177,5 +200,5 @@
     "Merge of PR #26 after hosted CI"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to decide whether to merge PR #26 after the complete hosted checks pass"
+  "next_action": "0xLeif to decide whether to merge PR #26 after conflicts are resolved and current checks pass"
 }

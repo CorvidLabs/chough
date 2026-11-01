@@ -12,7 +12,7 @@ import sys
 import tempfile
 import tomllib
 
-VERSION = "specsync 6.1.1"
+VERSION = "specsync 6.1.2"
 MAX_OUTPUT = 8 * 1024 * 1024
 
 

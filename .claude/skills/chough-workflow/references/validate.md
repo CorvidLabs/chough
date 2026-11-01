@@ -20,10 +20,16 @@ effective values and where each came from.
 ## Run, stop, resume
 
 `chough validate run <case> --times N [--interval S] --environment <env>` repeats an
-automated case in the foreground and records every attempt. `chough validate stop`
-asks it to halt before the next attempt; `chough validate resume <run>` continues
-with the same stored limits after re-checking authorization. `chough validate
-status` lists runs.
+automated case in the foreground and records every attempt. It needs a
+`repeat-validation` run consent or the standing preference `always`; a `monitoring`
+consent or preference only allows entering the validate stage, not `validate run`.
+
+`chough validate stop` leaves a stop request in `.chough/validation.stop`. The running
+repetition halts before its next attempt, and any later run halts at once, until
+`chough validate resume <run>` clears the request and continues that run with the
+same stored limits after re-checking authorization. Pausing the stage
+(`chough stage pause`) pauses a run the same way. `chough validate status` lists
+runs.
 
 Each failure is kept locally: it opens or extends a bug for that case, which stays in
 the backlog after a restart. Results are labelled as repeated runs with attempts,

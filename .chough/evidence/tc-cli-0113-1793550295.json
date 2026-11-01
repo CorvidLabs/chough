@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0113-1793550295",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass. At 25ced79 the helper source and bundle are unchanged since f6416a5 and spot checks of the cited lines match the nine corrections; .agents and .claude copies are byte-identical and all 24 files read current for both hosts",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0113-recheck-25ced79.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0113-recheck-25ced79.md": "02bdc36d34caf431286b9961201e8f565f03ff5ff6f4d86f5cf16b019beb4591"
+  },
+  "observed_at_unix_seconds": 1793550296,
+  "snapshot": {
+    "revision": "25ced79d0a47a295ce9bc3df02819fa740804b56",
+    "dirty": false,
+    "fingerprint": "e736656a4600cdd23f89082f6247e2aee447b111d50b64ca68729ce5caaeebe8",
+    "content": "07ce6de08d0f1c1e32606ca4488ca97fd64c4ddf0d0390755c66decd46256c3e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0113",
+      "digest": "907673c3652c2c7981f1ce0a550cb34982496545acea99f4029fcd5664d61e46"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "copy-localization",
+  "limitations": [
+    "Rechecked by an agent in the builder's workflow, not an independent reviewer; the earlier full reading is in tc-cli-0113-reviewer-note.md"
+  ]
+}

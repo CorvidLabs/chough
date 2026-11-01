@@ -1,0 +1,204 @@
+--- stdout ---
+
+running 22 tests
+test timing::tests::archive_directories_name_their_change ... ok
+test cases::tests::incomplete_or_unknown_sequences_are_kept ... ok
+test records::tests::an_abandoned_reader_stops_retaining ... ok
+test timing::tests::only_a_recorded_status_change_marks_verified ... ok
+test records::tests::native_deadline_override_is_validated ... ok
+test cases::tests::a_sequence_that_swallows_a_count_never_lowers_the_matched_counts ... ok
+test timing::tests::overlapping_gates_are_counted_once ... ok
+test timing::tests::spans_never_go_negative_or_hide_unknowns ... ok
+test timing::tests::utc_times_are_iso_8601 ... ok
+test cases::tests::complete_sequences_are_removed ... ok
+test records::tests::a_reader_retains_at_most_its_cap_while_counting_every_byte ... ok
+test tests::cut_bounds_the_escaped_width ... ok
+test records::tests::an_empty_argument_vector_is_refused ... ok
+test records::tests::a_full_log_read_keeps_whole_lines_within_its_bound ... ok
+test stage::tests::product_digests_match_every_archived_approval ... ok
+test stage::tests::approved_deltas_compare_on_every_platform ... ok
+test records::tests::both_streams_are_counted_beyond_their_caps ... ok
+test cases::tests::cleaning_a_long_unterminated_line_is_linear ... ok
+test cases::tests::cleaning_keeps_every_line_break_and_never_hides_a_test_result_line ... ok
+test records::tests::a_deadline_stops_descendants_that_hold_the_pipes ... ok
+test records::tests::a_command_that_closes_its_output_early_is_still_awaited_to_its_exit ... ok
+test records::tests::output_held_open_after_exit_ends_the_run_within_the_grace ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.06s
+
+
+running 9 tests
+test unverified_out_of_scope_bugs_stay_visible_without_changing_scope ... ok
+test a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag ... ok
+test an_open_blocking_bug_sends_work_back_to_build ... ok
+test regression_needs_a_passed_observation_at_an_earlier_ancestor_revision ... ok
+test a_bug_without_a_linked_failure_cannot_be_verified ... ok
+test a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug ... ok
+test a_pass_observed_after_the_latest_failure_verifies_a_bug ... ok
+test a_reproduced_bug_is_deduplicated_and_keeps_added_evidence ... ok
+test a_pass_observed_before_the_latest_failure_does_not_verify_a_bug ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.22s
+
+
+running 17 tests
+test case_identity_survives_reordering_and_title_edits ... ok
+test an_empty_env_keeps_the_case_digest_and_editing_env_changes_it ... ok
+test definitions_with_bad_shapes_are_refused_with_their_location ... ok
+test selection_is_focused_on_the_affected_scope_and_tracks ... ok
+test an_unresolved_requirement_is_refused_with_the_check_first_hint ... ok
+test a_requirement_of_another_module_names_the_cases_file_that_binds_it ... ok
+test check_validates_links_against_native_records ... ok
+test binding_env_is_bounded_and_refused_with_its_location ... ok
+test manual_records_need_a_verdict_for_every_expected_outcome ... ok
+test schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct ... ok
+test output_beyond_the_per_stream_bound_is_counted_not_retained ... ok
+test coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes ... ok
+test a_declared_variable_reaches_the_command_and_is_named_without_its_value ... ok
+test a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline ... ok
+test an_unterminated_escape_never_hides_a_second_test_result ... ok
+test a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline ... ok
+test execution_records_failures_and_vacuous_runs_honestly ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.51s
+
+
+running 25 tests
+test init_rejects_unreadable_session_sizes_before_writing ... ok
+test invalid_modules_and_future_schemas_are_rejected ... ok
+test oversized_records_fail_explicitly ... ok
+test init_preserves_user_files_and_installs_a_complete_skill ... ok
+test accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated ... ok
+test symlink_write_escape_is_rejected_before_any_file_is_created ... ok
+test aggregate_context_budget_is_explicit ... ok
+test context_resumes_deterministically_and_prefers_native_lesson_source ... ok
+test missing_native_tools_remain_unknown ... ok
+test invalid_traceability_and_escaped_artifacts_are_rejected ... ok
+test evidence_add_names_the_contract_for_another_modules_requirement ... ok
+test successful_native_process_with_invalid_json_does_not_establish_lifecycle_state ... ok
+test native_reads_end_by_their_deadline_and_retain_bounded_output ... ok
+test executable_mode_changes_stale_observations ... ok
+test observations_bind_revision_inputs_and_environment_without_granting_acceptance ... ok
+test artifacts_inside_managed_records_are_independently_bound ... ok
+test observations_without_a_content_identity_stay_stale_after_a_commit ... ok
+test committing_edits_already_present_when_observed_keeps_an_observation_current ... ok
+test a_malformed_content_identity_is_refused ... ok
+test committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current ... ok
+test untracked_inputs_also_stale_observations ... ok
+test archiving_a_change_keeps_an_observation_current_until_an_artifact_changes ... ok
+test any_fingerprinted_content_change_stales_an_observation ... ok
+test specsync_bookkeeping_writes_keep_an_observation_current ... ok
+test edits_to_a_native_change_scope_stale_an_observation ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.99s
+
+
+running 12 tests
+test newest_runs_count_per_case_and_environment ... ok
+test every_protection_reason_is_named ... ok
+test a_multi_case_record_counts_in_the_group_of_every_case ... ok
+test preview_lists_sets_with_reasons_and_bytes_and_changes_nothing ... ok
+test bug_show_labels_note_observations_once ... ok
+test one_artifact_spelled_two_ways_is_shared_and_kept ... ok
+test bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name ... ok
+test a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned ... ok
+test apply_needs_consent_or_the_standing_preference_and_appends_the_ledger ... ok
+test removed_and_missing_observations_are_labeled_and_never_count ... ok
+test native_manifests_protect_their_sets_and_a_failed_read_protects_everything ... ok
+test automatic_pruning_follows_case_runs_only_when_retention_is_auto ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.73s
+
+
+running 3 tests
+test next_prints_a_compact_action_view_as_text_by_default_and_json_with_a_flag ... ok
+test next_and_status_each_read_native_status_once_and_agree_on_the_action ... ok
+test both_forms_stay_within_the_cap_with_totals_for_large_records ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.91s
+
+
+running 6 tests
+test snapshotting_a_symlink_is_refused ... ok
+test skills_install_per_host_and_update_only_unmodified_files ... ok
+test standing_preferences_need_a_source_and_stay_separate_from_consent ... ok
+test librarian_snapshots_originals_and_indexes_the_open_backlog ... ok
+test repeated_validation_needs_authority_honors_stop_and_persists_findings ... ok
+test repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.42s
+
+
+running 10 tests
+test the_shipped_bundle_holds_no_em_or_en_dash ... ok
+test the_crate_package_holds_only_the_helper_source_and_canonical_skill ... ok
+test tool_and_rust_version_pins_agree ... ok
+test bundle_files_from_the_latest_main_build_are_never_reported_as_edited ... ok
+test a_skill_copy_from_an_earlier_main_build_is_known_outdated_and_updated ... ok
+test init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only ... ok
+test checkpoint_and_plan_references_from_main_2756dc2_are_known_outdated ... ok
+test a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated ... ok
+test dashed_copies_from_main_2756dc2_are_known_outdated_and_updated ... ok
+test skill_and_checkpoint_copies_from_main_ee6e3d2_are_known_outdated_and_edited_copies_stay ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+
+running 23 tests
+test recomputed_digests_match_every_archived_approval_in_this_repository ... ok
+test migration_is_explicit_and_preserves_schema_1_bytes ... ok
+test init_writes_a_schema_2_checkpoint_at_intent ... ok
+test every_stage_is_documented_in_the_shared_stage_contract ... ok
+test clear_flags_apply_before_new_entries ... ok
+test native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes ... ok
+test checkpoint_round_trips_across_processes_and_rejects_unknown_fields ... ok
+test reset_replaces_the_next_action_and_back_keeps_it ... ok
+test optional_side_stages_and_release_need_authorization ... ok
+test transitions_cover_every_kind_and_keep_history ... ok
+test done_keeps_the_gate_refusal_for_an_archive_that_does_not_authenticate ... ok
+test done_with_an_archived_change_recommends_a_new_cycle_with_a_reason ... ok
+test done_without_a_native_change_or_with_sdd_disabled_recommends_the_reset ... ok
+test reset_back_and_release_meet_their_destination_prerequisites ... ok
+test large_native_status_still_gates_by_its_summary_state ... ok
+test return_from_a_side_stage_meets_the_caller_prerequisite ... ok
+test native_state_gates_build_and_closing_without_inventing_it ... ok
+test invalid_native_approval_refuses_every_route_into_build_and_later_stages ... ok
+test sdd_policy_is_read_with_specsync_semantics ... ok
+test a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable ... ok
+test a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_changed ... ok
+test the_guard_accepts_every_archived_approval_in_this_repository ... ok
+test real_specsync_approval_reported_invalid_refuses_build ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.12s
+
+
+running 12 tests
+test bug_fix_times_come_from_observations_notes_and_the_retention_ledger ... ok
+test every_transition_kind_yields_the_expected_segments_and_cycles ... ok
+test observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock ... ok
+test gate_records_are_reconciled_with_the_awaiting_human_list ... ok
+test history_ranges_need_three_samples_and_exclude_idle_time ... ok
+test gate_records_start_or_end_no_segment_and_give_waiting_time ... ok
+test missing_and_out_of_order_times_are_unknown_never_zero ... ok
+test checkpoint_gates_append_one_record_when_opened_and_one_when_cleared ... ok
+test native_times_come_only_from_status_and_native_records_read_read_only ... ok
+test a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown ... ok
+test a_case_run_records_its_run_time_and_the_report_shows_it ... ok
+test transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.28s
+
+
+--- stderr ---
+   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/_worktrees/chough-release)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.62s
+     Running unittests src/main.rs (target/debug/deps/chough-7f28e27483509413)
+     Running tests/bugs.rs (target/debug/deps/bugs-0299a12fe6ca4faf)
+     Running tests/cases.rs (target/debug/deps/cases-6b465ebd260453a0)
+     Running tests/cli.rs (target/debug/deps/cli-e0664bb2f2587167)
+     Running tests/evidence.rs (target/debug/deps/evidence-aae17402a49a60c3)
+     Running tests/next.rs (target/debug/deps/next-59a7ea3fd4df5267)
+     Running tests/optional.rs (target/debug/deps/optional-adebc2c6a0aa5cf4)
+     Running tests/package.rs (target/debug/deps/package-47f924a73cbfd615)
+     Running tests/stages.rs (target/debug/deps/stages-0194d642e5e2d30a)
+     Running tests/timing.rs (target/debug/deps/timing-93d5868d6fd75f98)

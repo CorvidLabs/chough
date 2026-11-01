@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0114-1793549250",
+  "criteria": [
+    "LIFE-9",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass. The Install the toolchain command copied from README.md at f6416a5, run with cargo 1.95.0 and --root set to an empty scratch directory, exited 0 after 448 s and installed hi 0.8.0, fledge 1.8.0 and specsync 6.1.1",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0114-toolchain-install.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0114-toolchain-install.log": "d81895c76014d098175ac580bf9662f55aea90b0840d0665dfcdffee97754eb0"
+  },
+  "observed_at_unix_seconds": 1793549250,
+  "snapshot": {
+    "revision": "f6416a5938889833fedb68d7fb951c263e9982f1",
+    "dirty": false,
+    "fingerprint": "3dec102a1b508ebdc49708c0534f52118202403efc34f627f394441ccdbcc74f",
+    "content": "93b76b70c7c68d40d648604f0b69bccfcd632d6a0e028dcebd2ddc87e889aa22"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0114",
+      "digest": "4ff62af0d19b152050d1208904f2aff873c0d1993cfcf93bf63a0e31cd30a4c9"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "One local run on macOS arm64 with cargo 1.95.0; the full cargo output was kept only in scratch, the artifact holds its tail"
+  ]
+}
