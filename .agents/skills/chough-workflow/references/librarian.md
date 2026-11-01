@@ -25,6 +25,23 @@ chough stage return --note "Snapshot 2026-10-31-1 taken"
 - Briefs in `briefs/` are focused next-session summaries written from
   [the brief template](../templates/brief.md), linking to originals.
 
+## Closeout
+
+Closeout is one quiet skill pass inside the open native change, before `specsync
+change check <id> --commit` and finalize. It is a skill step, not a command or a gate,
+and it works with the librarian preference off (REQ-cli-015):
+
+1. Write the supported lessons from this change into the module lesson source, each
+   with its certainty label (`observation`, `hypothesis` or `verified`), source and
+   limits (see [accept.md](accept.md)).
+2. Check that new checkpoint decisions carry a reason and that verified bugs link
+   their failed and passed observations.
+3. Add one `completed` checkpoint entry for the closeout.
+4. End with one closeout summary of at most 12 lines.
+
+Closeout never edits specs after archive: a lesson found later goes into a new native
+change. A library brief is written only when the librarian is on.
+
 ## Boundaries
 
 Living HI, prototypes, contracts and native archives stay in their owning locations;

@@ -159,6 +159,28 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "SKILL.md",
         "f479854d764ce83917a15889c16b9bf447c3c2e8e208224515f784ca1c57ad40",
     ),
+    // Main fb6e487; superseded by the learning handoff change (lesson certainty labels,
+    // decision prefixes, closeout and the shipped `verification_ignored_paths`).
+    (
+        "references/accept.md",
+        "4e085b88eaa66a59fd6c8ce7d3acb1201b46292603a2cf13ab5333fc5ea85d86",
+    ),
+    (
+        "references/bugs.md",
+        "df42d472ae25b0ed07ad3beb1257ce77c3fe4e159feefe8e70e7c18ec03a6945",
+    ),
+    (
+        "references/checkpoint.md",
+        "28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf",
+    ),
+    (
+        "references/librarian.md",
+        "df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17",
+    ),
+    (
+        "references/lifecycle.md",
+        "e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

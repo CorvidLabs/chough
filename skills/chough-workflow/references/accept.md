@@ -25,9 +25,12 @@ records. Follow native status where it names a different next action.
 Between the check in step 5 and finalize, nothing writes to `.chough/` and nothing is
 committed. Committing Chough records or SpecSync bookkeeping does not make Chough
 observations stale, but SpecSync's verification digest covers every non-ignored file,
-including `.chough/`. Until SpecSync offers an opt-in verification exclusion (the
-proposed upstream `verification_ignored_paths`), any Chough write in that window
-forces another `change check`.
+including `.chough/`. SpecSync 6.1.2 ships an opt-in verification exclusion,
+`verification_ignored_paths`, but Chough's own repository has not adopted it: its
+entries are directory prefixes, so covering `.chough/session.json` would also hide
+`.chough/cases/`, whose case definitions must stay verified. Unless a project lists
+only directories that are safe to leave out, any Chough write in that window forces
+another `change check`.
 
 If native archive checks are red because review has not happened, say exactly that.
 Do not claim all checks are green and do not bypass the gate.
@@ -53,7 +56,22 @@ finalize them one at a time. If evidence went stale, use the recovery action tha
 ## Compounding
 
 Lessons can be recorded at any stage. Put them in the module's native lesson source
-(`<module>.3md` later plane when present, otherwise `context.md`) with the source,
-the scope where it applies and the future action it changes. A lesson that changes
-behavior or policy may need its own native change. Archival does not mean no bug
-remains; open bugs stay in the backlog.
+(`<module>.3md` later plane when present, otherwise the Lessons section of
+`context.md`) with the source, the scope where it applies and the future action it
+changes. `chough next` points to that source; Chough keeps no lesson store of its own.
+
+Each lesson carries a certainty label:
+
+- `observation`: something seen once, with what was run and where.
+- `hypothesis`: a likely explanation not yet tested. It is a prompt to check, not a
+  rule.
+- `verified`: supported by a test or a repeated observation.
+
+Each lesson names its source (an observation ID, a bug ID or a commit) and its limits
+(where it applies and where it was not checked). A project decision, meaning a
+checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, always
+outranks a lesson. A lesson never changes a decision; if a lesson argues against one,
+raise it with the human. A lesson that changes behavior or policy may need its own
+native change. Write lessons from a change during closeout, inside the open native
+change (see [librarian.md](librarian.md)). Archival does not mean no bug remains;
+open bugs stay in the backlog.

@@ -499,6 +499,79 @@ fn checkpoint_and_plan_references_from_main_2756dc2_are_known_outdated() {
     }
 }
 
+#[test]
+fn a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow");
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/skill-fb6e487");
+    let files = [
+        (
+            "references/accept.md",
+            "4e085b88eaa66a59fd6c8ce7d3acb1201b46292603a2cf13ab5333fc5ea85d86",
+        ),
+        (
+            "references/bugs.md",
+            "df42d472ae25b0ed07ad3beb1257ce77c3fe4e159feefe8e70e7c18ec03a6945",
+        ),
+        (
+            "references/checkpoint.md",
+            "28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf",
+        ),
+        (
+            "references/librarian.md",
+            "df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17",
+        ),
+        (
+            "references/lifecycle.md",
+            "e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235",
+        ),
+    ];
+    for (file, digest) in files {
+        // The known digests are of LF bytes; a Windows checkout may have converted them.
+        let old = fs::read_to_string(fixtures.join(file))
+            .unwrap()
+            .replace("\r\n", "\n");
+        assert_eq!(
+            format!("{:x}", Sha256::digest(old.as_bytes())),
+            digest,
+            "{file}"
+        );
+        fs::write(installed.join(file), old).unwrap();
+    }
+    let status = chough(root, &["skill", "status"]);
+    for (file, _) in files {
+        assert_eq!(
+            skill_state(&status, file)["state"],
+            "known-outdated",
+            "{file}"
+        );
+    }
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    for file in bundle_files() {
+        assert_eq!(skill_state(&status, &file)["state"], "current", "{file}");
+    }
+
+    // A copy edited from the fb6e487 version is edited, and update keeps it.
+    for (file, _) in files {
+        let mut edited = fs::read_to_string(fixtures.join(file))
+            .unwrap()
+            .replace("\r\n", "\n");
+        edited.push_str("\nA local note.\n");
+        fs::write(installed.join(file), &edited).unwrap();
+        let status = chough(root, &["skill", "status"]);
+        assert_eq!(skill_state(&status, file)["state"], "edited", "{file}");
+        chough(root, &["skill", "update"]);
+        assert_eq!(
+            fs::read_to_string(installed.join(file)).unwrap(),
+            edited,
+            "{file}"
+        );
+    }
+}
+
 /// `skills/chough-workflow/references/checkpoint.md` as shipped by main at 9cb1c35.
 const CHECKPOINT_AT_9CB1C35: &str = r##"# Checkpoint and cold resume
 

@@ -15,10 +15,12 @@ clear gate, stage advance → push archive, CI → merge
 ```
 
 Between `check --commit` and finalize, nothing writes to `.chough/` and nothing is
-committed: SpecSync's verification digest covers `.chough/`, and until SpecSync offers
-an opt-in verification exclusion (the proposed upstream `verification_ignored_paths`)
-any Chough write in that window forces another `change check`. See
-[accept.md](accept.md) for the full order.
+committed: SpecSync's verification digest covers `.chough/`. SpecSync 6.1.2 ships an
+opt-in exclusion, `verification_ignored_paths`, but Chough's own repository has not
+adopted it, because entries are directory prefixes and covering `.chough/session.json`
+would also hide `.chough/cases/`. Unless a project lists only safe directories, any
+Chough write in that window forces another `change check`. See [accept.md](accept.md)
+for the full order.
 
 | Native state | Chough stage | Gate |
 |---|---|---|
