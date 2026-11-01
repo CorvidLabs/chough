@@ -30,6 +30,19 @@ decisions, which is today's information moved into the focused view. No migratio
 no new field, no validation of the convention (an unknown prefix such as `note:` is
 just text).
 
+In the checkpoint this assumption is recorded unprefixed and labelled as the agent's,
+so the decisions block shows it whole with no kind and it never reads as a human
+decision. The first draft recorded it with a `decided:` prefix and ended 0xLeif's two
+settled answers with reasons that were the agent's, not his. On 2026-11-01 the three
+entries were removed from `.chough/session.json` by hand (the CLI has no flag to
+remove a decision; this edit leaves no transition record) and re-added with `chough
+checkpoint --decision`: his two answers in his words with no reason, the assumption
+unprefixed. A `completed` checkpoint entry records the correction. The agent's
+rationale stays here: a fresh command process or the author grading cannot show that
+a cold handoff works; a second lesson store would compete with SpecSync; a structured
+decision schema would need a checkpoint migration (REQ-cli-007) and could conflict
+with PR #26.
+
 ## Archived-not-done (REQ-cli-021)
 
 The Action chain in `src/stage.rs` (rules in order, first wins) becomes:
@@ -101,14 +114,22 @@ freshness. File modification times and directory order are never consulted.
 
 ## Lessons pointer
 
-For each module in the checkpoint (at most 16, as `chough context` already enforces):
+For each module in the checkpoint (the checkpoint allows at most 16; the view lists at most 10 in checkpoint order, with their total, like every other list):
 if `specs/<module>/<module>.3md` is a file, the source is that path with no section
 line; otherwise `specs/<module>/context.md`, with `section_line` the 1-based line of
 the first line that is exactly `## Lessons`, or `null` with the note `no Lessons
 section`; a missing file says `missing`. Only the heading is searched; no lesson text
 is copied. Archived bundles: list `.specsync/archive/changes/*/lesson-bundle.md` that
 exist, sort by archive directory name descending (names are date-prefixed by SpecSync),
-total plus the first 5 paths. No fold state, no ledger. Text:
+total plus the first 5 paths. No fold state, no ledger.
+
+Chough creates no `.3md`, following 0xLeif's settled answer (lessons live in the
+module `context.md` Lessons section; no `.3md`, no `library/` store). The `.3md`
+branch only follows the existing canonical REQ-cli-002 rule and SpecSync's briefing,
+which reads `<module>.3md` in place of `context.md` when one exists, so the pointer
+always names what SpecSync briefs. This repository has none. Reading "No .3md" as
+"Chough creates none" rather than "never point at one" is the drafter's
+interpretation, for 0xLeif to confirm or correct at scope approval. Text:
 
 ```text
 Lessons: specs/cli/context.md (## Lessons at line 59); 14 archived lesson bundles, newest:
@@ -118,9 +139,10 @@ Lessons: specs/cli/context.md (## Lessons at line 59); 14 archived lesson bundle
 
 ## Size and determinism
 
-The new lists join `LISTS` in `src/main.rs`, so `fit` can drop their entries when the
+The new lists (decision items, lesson sources, archived bundle paths and the last
+failure's linked bugs) join `LISTS` in `src/main.rs`, so `fit` can drop their entries when the
 view exceeds 16384 bytes and set `truncated`; totals are computed before cutting. All
-orderings come from recorded fields or names: decisions by checkpoint order,
+orderings come from recorded fields or names: decisions and modules by checkpoint order,
 observations by recorded time then ID, bugs by ID, bundles by directory name. The
 directory reader sorts names, so output does not depend on file system order. The view
 keeps `schema_version` 1; the fields are additive and existing consumers
@@ -167,11 +189,15 @@ skill update`.
 fixture is the same whichever binary later reads it; the binary under test installs
 the skill with `chough init --host openai` (Kimi reads `.agents/skills`) or the host's
 mapping for Codex. `rubric.md` lists the pass items and the disqualifiers from the
-acceptance criteria. Both are hashed into one observation before implementation; the
+acceptance criteria. Both are hashed into one observation before implementation; 0xLeif reads
+the frozen rubric before the baseline (his statement, not an approval); the
 baseline uses the main binary and skill at fb6e487. Transcripts and command logs are
 observation artifacts; 0xLeif's grade is his statement recorded as a checkpoint
 decision with his words, not an approval record. A single run is a sample of one; the
-write-up says so.
+write-up says so. Each run's observation records the exact commit SHA of the binary
+and skill it used; a change to `src/` or `skills/chough-workflow/` after the change
+run or the real-repository run voids that run, which is rerun at the new tip before
+grading.
 
 ## Deferred
 

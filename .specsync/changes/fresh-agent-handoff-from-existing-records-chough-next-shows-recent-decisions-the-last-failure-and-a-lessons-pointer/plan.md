@@ -54,7 +54,8 @@ to SpecSync-written archives.
 2. Confirm the chosen host starts (Kimi Code CLI 0.41.0 at
    /Users/leif/.kimi-code/bin/kimi, else Codex CLI 0.153.4); build the main binary at
    fb6e487; seed, install the skill from that binary, run the fixed prompt; keep the
-   transcript and command log as observation artifacts. 0xLeif grades the baseline.
+   transcript and command log as observation artifacts. 0xLeif reads the frozen rubric
+   before this run and grades the baseline after it.
 3. Tests first in `tests/next.rs` for archived-not-done, decisions, last failure,
    lessons pointer, cap and determinism; record their failing run.
 4. Implement in `src/stage.rs` (shared step constants, new rule 6) and `src/main.rs`
@@ -68,7 +69,8 @@ to SpecSync-written archives.
 7. docs/cli.md, CHANGELOG.md, docs/ROADMAP.md (only to list the slice),
    specs/cli/context.md (lessons from this change, labelled, through the closeout pass).
 8. Change run on the same host and model with the implementation binary; one run on
-   this repository at the implementation tip; 0xLeif grades both.
+   this repository at the implementation tip; each run records its commit SHA and is
+   void if `src/` or `skills/chough-workflow/` change after it; 0xLeif grades both.
 9. `fledge lanes run verify`; then the accept order in references/accept.md.
 
 ## Risks
