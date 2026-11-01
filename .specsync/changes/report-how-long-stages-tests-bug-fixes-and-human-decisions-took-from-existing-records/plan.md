@@ -37,19 +37,26 @@ Single owner (one agent); no parallel file ownership needed.
 ## Open choices for the human
 
 1. Native gate times: `change status --json` exposes only created and updated.
-   Recommendation: read `approvals.json`, `verification.json`, `review.json` and
-   `finalization.json` read-only, bounded, shape-checked, falling back to unknown,
-   and ask SpecSync upstream to expose them in status. Alternative: status only,
-   other native times unknown.
+   Recommendation: read `approvals.json` (gate, timestamp and reopening timestamps
+   only; never actor or note), `verification.json`, `review.json` and
+   `finalization.json` (timestamp only) read-only, bounded, shape-checked, falling
+   back to unknown, with validity taken only from `change status`; history reads the
+   10 most recent archived changes, one bounded status read each; and ask SpecSync
+   upstream to expose these times in status. Alternative: status only, other native
+   times unknown.
 2. Per-test run time: case observations hold no duration. Recommendation: add an
    optional `duration_seconds` to case-run observations (additive, absent on old
-   records, which stay unknown). Alternative: leave single-run time unknown.
+   records, which stay unknown; touches `src/cases.rs` and the `evidence.rs`
+   observation schema). Alternative: leave single-run time unknown, and drop
+   `src/cases.rs` from the affected paths.
 3. Gate records in `.chough/transitions.jsonl` (recommended: no new store; released
    binaries still parse them) versus a separate `.chough/gates.jsonl`.
 
 ## Risks
 
-Misreading wall-clock time as effort (mitigated by labels); thin history producing
+Misreading wall-clock time as effort (mitigated by labels); idle time in `done`
+counted as work (reported separately, excluded from estimates); a stale native
+approval shown as current (validity from status only); thin history producing
 false confidence (minimum sample rule); SpecSync record shapes changing (shape checks,
 unknown); gate records written after `change check` staling verification (written
 only by checkpoint calls that already write the session, and the accept-order

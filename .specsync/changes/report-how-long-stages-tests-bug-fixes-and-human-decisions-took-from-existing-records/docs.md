@@ -6,7 +6,10 @@ artifact: docs
 # Docs
 
 - docs/cli.md: `chough timing` options, sections and labels; the `gate-opened` and
-  `gate-closed` transition kinds; bounds and unknown reasons.
+  `gate-closed` transition kinds; bounds and unknown reasons; validation elapsed is
+  total run wall-clock including intervals. Gate records also take slots in the
+  recent-transition windows of `chough context` (20) and `stage show` (10), so those
+  windows can show fewer stage moves than before.
 - docs/architecture.md: records table notes that transitions now include gate records
   and that timing is derived, not stored.
 - README.md: command list.

@@ -32,4 +32,18 @@ artifact: research
   reproduction time.
 - Chough's own `.chough/transitions.jsonl` on main: 18 records (14 advance, 3
   reset, 1 skip), with several pairs at the same second, so same-second segments
-  must be labelled as recorded together, not as instant work.
+  must be labelled as recorded together, not as instant work. The log starts with
+  build -> test (a migrated session): init and migrate write no transition, since only
+  `stage.rs` calls `log_transition`, so the first segment's start is unrecorded. The
+  resets go accept -> intent, done -> plan and done -> build, so a cycle rule keyed on
+  "reset or back to intent" would merge objectives and count idle `done` time; every
+  reset starting a cycle gives one cycle per objective.
+- `approvals.json` also holds `actor`, `note` (for example an approval note naming the
+  human) and a `reopenings` array; validity is reported by `change status`
+  (`summary.approval_valid`), not by the file.
+- `validate.rs` accumulates `elapsed_seconds` across interval waits and resumes and
+  stores no per-attempt time.
+- `bugs.rs` `present_observations` skips pruned and unavailable observations; the
+  retention ledger `.chough/pruned.jsonl` keeps each pruned observation's
+  `observed_at_unix_seconds` and outcome. `bug update` notes are the `; `-joined
+  `field: old -> new` changes, then `. ` and the free note.
