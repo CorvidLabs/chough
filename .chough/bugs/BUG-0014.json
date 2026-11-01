@@ -23,13 +23,19 @@
   "observations": [],
   "impact": "A bug can read as verified on stale evidence",
   "classification": "product-defect",
-  "scope": "out-of-scope",
+  "scope": "in-scope",
   "status": "open",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Release-candidate retention demonstration verifier, 2026-10-31",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793495829,
+      "text": "scope: out-of-scope -> in-scope. Moved in scope for draft change keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after (grouping agreed by the human; scope approval still pending).",
+      "observations": []
+    }
+  ],
   "created_at_unix_seconds": 1793489621,
-  "updated_at_unix_seconds": 1793489621
+  "updated_at_unix_seconds": 1793495829
 }
