@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0019",
+  "title": "Bug and case validation errors do not say how to fix them",
+  "symptom": "A bug add with classification blocking fails without saying blocking is a scope value; a requirement from another module fails without naming the searched companions",
+  "trigger": "chough bug add with a scope value as classification; a case linking another module's requirement",
+  "expected": "Errors name the right flag or the searched contract",
+  "actual": "Bare validation errors",
+  "criteria": [
+    "LIFE-5",
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-012",
+    "REQ-cli-009"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "57d331ea1ee33d5626271305b18b9ecdfec7b546",
+  "steps": [
+    "chough bug add --classification blocking (other fields valid)"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Avoidable trial and error",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "CorvidLabs/chough#14 items 4 and 5 (Raven run); reproduced on main 2756dc2",
+  "notes": [],
+  "created_at_unix_seconds": 1793494682,
+  "updated_at_unix_seconds": 1793494682
+}

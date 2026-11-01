@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0015",
+  "title": "Committing Chough evidence makes that evidence stale",
+  "symptom": "After cases run and committing .chough/, next reports the observation stale-revision-or-inputs; an empty commit does too",
+  "trigger": "Any commit after recording an observation",
+  "expected": "Only a change to fingerprinted content stales an observation",
+  "actual": "snapshot() in src/evidence.rs hashes the HEAD revision into the fingerprint",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "2756dc24a821bbb92021455c704ef7a177123ffa",
+  "steps": [
+    "chough cases run <case>",
+    "git add .chough && git commit",
+    "chough next: stale-revision-or-inputs"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Committed evidence can never read as current",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "CorvidLabs/chough#10 (Raven run, CorvidLabs/raven#644); reproduced on main 2756dc2",
+  "notes": [],
+  "created_at_unix_seconds": 1793494673,
+  "updated_at_unix_seconds": 1793494673
+}

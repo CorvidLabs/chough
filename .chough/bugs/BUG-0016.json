@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0016",
+  "title": "Chough records and SpecSync verification make each other stale",
+  "symptom": "Uncommitted .chough/ stales SpecSync verification; committing .chough/ forces another change check; lifecycle commits stale Chough observations",
+  "trigger": "Normal cases run, commit, change check, review, finalize sequence",
+  "expected": "Each tool ignores the other's bookkeeping, and the documented order needs one verification",
+  "actual": "Three re-verifications and a stash were needed in the Raven run",
+  "criteria": [
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "2756dc24a821bbb92021455c704ef7a177123ffa",
+  "steps": [
+    "chough cases run; specsync change review",
+    "commit .chough/; specsync change status"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Repeated verification and review rebinding",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "CorvidLabs/chough#12 (Raven run); reproduced on main 2756dc2",
+  "notes": [
+    {
+      "at_unix_seconds": 1793494673,
+      "text": "Added despite similar reports: SpecSync bookkeeping and .chough interplay, beyond the revision salt in #10",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1793494673,
+  "updated_at_unix_seconds": 1793494673
+}
