@@ -63,6 +63,8 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
 Chough runs in the current agent; no provider API or runtime is required. `chough init
 --host <openai|claude|codex|cursor|gemini|grok>` copies this bundle into that host's
 project skill directory, and `chough skill status` shows whether a copy is current,
-edited or outdated. Confirm that the host actually lists the skill; otherwise give
-it this file directly. Subagents are optional: [roles.md](references/roles.md) also
-works as sequential passes.
+edited or outdated. Gemini CLI and Antigravity discover skills in `.agents/skills` or
+`.gemini/skills`. `chough init --host gemini` targets `.gemini/skills`, while
+`.agents/skills` provides universal multi-agent discovery. Confirm that the host
+actually lists the skill; otherwise give it this file directly. Subagents are optional:
+[roles.md](references/roles.md) also works as sequential passes.

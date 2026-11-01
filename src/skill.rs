@@ -114,6 +114,15 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
     ),
+    // Main 5af3f78 (PR #19); superseded by Gemini host cold start and guidance updates.
+    (
+        "SKILL.md",
+        "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
+    ),
+    (
+        "references/checkpoint.md",
+        "20daaaa0cec972169abcedd508cd9ad18ff93ef7ec9d1f4e7330fcd18ca80ac0",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

@@ -73,3 +73,24 @@ Reset stage to plan: chough stage reset --to plan --reason "Gemini host cold sta
 Reserved case TC-cli-0105 in .chough/cases/cli.cases.toml.
 Checkpoint saved: chough checkpoint --objective ... --awaiting-human "Scope approval of gemini-host-cold-start-and-roadmap-refresh"
 Stopped at scope gate: awaiting human decision from 0xLeif.
+
+## Scope approval and stage advance
+
+Presented scope summary to 0xLeif on PR #20.
+Human response: "I approve".
+SpecSync delta resolution: Because canonical spec cli was listed as affected but its requirements were unmodified, change was configured with no_spec_change: true and rationale "Guidance, evidence, and roadmap currency only; canonical contract and requirements in specs/cli/ are unchanged."
+Audit passed: specsync change audit passed (1 active).
+Recorded approval: specsync change approve gemini-host-cold-start-and-roadmap-refresh --actor 0xLeif (state: approved).
+Cleared gate: chough checkpoint --clear-awaiting-human.
+Advanced stage: chough stage advance (plan -> build, gate native:approved).
+
+## Implementation
+
+1. Updated skills/chough-workflow/SKILL.md to document Gemini discovery via .agents/skills and .gemini/skills.
+2. Updated skills/chough-workflow/references/checkpoint.md with cold resume guidance for starting a new change cycle when stage is done.
+3. Synchronized bundle files byte-for-byte to .agents/skills/chough-workflow/ and .claude/skills/chough-workflow/ (verified with cmp).
+4. Added previous digests for SKILL.md and references/checkpoint.md to KNOWN_PREVIOUS in src/skill.rs.
+5. Rebuilt binary (cargo build --locked) and verified bundle status: chough skill status reported all 24 files current across openai and claude.
+6. Refreshed docs/ROADMAP.md: marked PR #8 and #9 delivered/merged, added rows for merged PR #15, #16, and #17, and updated More hosts row with Gemini cold-start run.
+7. Added dated Gemini host cold start section to docs/exercises/cold-start.md.
+8. Enforced zero em or en dashes across all touched files.

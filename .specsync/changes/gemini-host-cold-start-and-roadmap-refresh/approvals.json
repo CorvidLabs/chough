@@ -1,4 +1,47 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793546483,
+      "digest": "fabfb9b526169431a5eac9b4ba0765fce12dccc9d9e82ada4045cb253ba3ed94",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "gemini-host-cold-start-and-roadmap-refresh",
+        "title": "Gemini host cold start and roadmap refresh",
+        "description": "Gemini host cold start and roadmap refresh",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/SKILL.md",
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          ".claude/skills/chough-workflow/SKILL.md",
+          ".claude/skills/chough-workflow/references/checkpoint.md",
+          "docs/ROADMAP.md",
+          "docs/exercises/cold-start.md",
+          "skills/chough-workflow/SKILL.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "src/skill.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Guidance, evidence, and roadmap currency only; canonical contract and requirements in specs/cli/ are unchanged.",
+        "acceptance_criteria": [
+          "Gemini host cold start: an independent Gemini host session on macOS arm64 discovers and resumes the Chough workflow from project files alone, records tool versions and friction honestly, and honors human gates (FLOW-1, FLOW-13, LIFE-4, REQ-cli-007, REQ-cli-016). Roadmap refresh: docs/ROADMAP.md records PR #8 and #9 as merged, adds merged rows for PR #15, #16 and #17, and updates More hosts with the Gemini run. Cold-start documentation: docs/exercises/cold-start.md adds a dated Gemini run section with commands, limits and assessment. Skill guidance: skills/chough-workflow/SKILL.md and references/checkpoint.md document Gemini discovery and cold resume from stage done, keeping .agents/ and .claude/ copies byte-identical without dashes. Bundle tracking: earlier digests are added to KNOWN_PREVIOUS in src/skill.rs, skill status reports copies current, and TC-cli-0105 passes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Current-agent-first v1; keep Rust helper small; no em or en dash in bundle or docs; never fabricate human decisions; keep bundle copies byte-identical; preserve tool versions matching CI.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
   "reopenings": []
 }

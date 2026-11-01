@@ -1,6 +1,6 @@
 ---
 id: gemini-host-cold-start-and-roadmap-refresh
-state: draft
+state: implementing
 type: feature
 base_commit: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
 ---
@@ -21,4 +21,4 @@ Gemini host cold start and roadmap refresh
 
 ## No-spec Rationale
 
-Not applicable
+Guidance, evidence, and roadmap currency only; canonical contract and requirements in specs/cli/ are unchanged.

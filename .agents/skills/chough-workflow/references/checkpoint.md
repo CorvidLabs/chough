@@ -55,7 +55,10 @@ A fresh agent with none of the earlier conversation:
    `unavailable` (missing, not in the ledger); only a current one counts, so rerun the
    others rather than treat them as passed.
 4. Continues with `next_valid_action` under the same scope, preferences and gates. It
-   never records a pending human decision itself.
+   never records a pending human decision itself. If stage is `done` and the previous
+   change is archived, start a new change cycle: run `chough stage reset --to plan` (or
+   `--to intent`), initialize the native change with `specsync change new`, and update
+   the checkpoint with `chough checkpoint --objective "<goal>" --native-change <id>`.
 
 ## Schema and concurrency
 

@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -79,7 +79,8 @@
     "plan step 7 documented-order exercise passed",
     "TC-cli-0100 and TC-cli-0104 added and passing",
     "PR #9 merged earlier; stale awaiting-human entry cleared",
-    "Completed cold start exercise as Gemini host on macOS arm64; drafted native change definition with 7 complete artifacts; reserved TC-cli-0105; stopped at scope gate"
+    "Completed cold start exercise as Gemini host on macOS arm64; drafted native change definition with 7 complete artifacts; reserved TC-cli-0105; stopped at scope gate",
+    "Implemented guidance updates in SKILL.md and checkpoint.md with byte parity in .agents and .claude; added prior digests to KNOWN_PREVIOUS in src/skill.rs; refreshed roadmap rows in docs/ROADMAP.md and added Gemini host cold start in docs/exercises/cold-start.md; recorded TC-cli-0105 observation"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -88,7 +89,8 @@
     "bug-0004-repro-1",
     "tc-cli-0038-1793475511",
     "tc-cli-0039-1793475513",
-    "bug-0004-fixed-1"
+    "bug-0004-fixed-1",
+    "tc-cli-0105-1793546844"
   ],
   "bugs": [
     "BUG-0001",
@@ -99,8 +101,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of gemini-host-cold-start-and-roadmap-refresh"
+    "Implementation review of gemini-host-cold-start-and-roadmap-refresh"
   ],
   "run_consents": [],
-  "next_action": "Obtain human scope approval of gemini-host-cold-start-and-roadmap-refresh from 0xLeif"
+  "next_action": "Obtain human implementation review of gemini-host-cold-start-and-roadmap-refresh from 0xLeif"
 }

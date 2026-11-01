@@ -82,3 +82,71 @@ Human review remains pending … No approval was recorded."
 - The checkpoint's `next_action` named the bug to fix, as a real checkpoint would;
   the session had to discover everything else from the files.
 - Visible messages and commands are recorded here; model reasoning is not.
+
+# Exercise: a fresh Gemini host cold start on CorvidLabs/chough
+
+Requirement links: FLOW-1, FLOW-13, LIFE-4; REQ-cli-007, REQ-cli-016.
+Observed 2026-11-01 on macOS arm64.
+
+## Setup
+
+1. Dedicated worktree: `.worktrees/gemini-host-cold-start` branched from `origin/main`
+   (`5af3f78`), with PR #20 opened for tracking.
+2. Tool versions matched to CI: `hi` 0.8.0, `fledge` 1.7.2 and `specsync` 6.1.1 pinned
+   via environment wrappers.
+3. Host environment: Gemini agent in Google Antigravity CLI on macOS arm64.
+
+## The independent session
+
+Agent: Gemini 2.5 Pro via Google Antigravity CLI. The agent started with repository files
+alone and was instructed to cold-start Chough end to end.
+
+## What it did
+
+Commands in order, from its execution log:
+
+1. Discovered skill natively: Antigravity automatically loaded the workflow skill from
+   `.agents/skills/chough-workflow/SKILL.md`.
+2. Checked repository status and verified build: `cargo build --locked` (passed),
+   `chough skill status` (24 files current across openai and claude),
+   `fledge lanes run verify` (9 steps passed).
+3. Evaluated starting checkpoint: `chough status` showed stage was `done` and the
+   previous change was archived. Recognised the need to start a new change cycle rather
+   than repeating historical review steps.
+4. Reserved test case `TC-cli-0105` in `.chough/cases/cli.cases.toml` and verified case
+   definitions with `chough cases check`.
+5. Created native change `gemini-host-cold-start-and-roadmap-refresh` with
+   `specsync change new` and completed the adaptive interview. Populated all 7 artifacts
+   (`context.md`, `requirements.md`, `design.md`, `plan.md`, `tasks.md`, `testing.md`,
+   `docs.md`) with substantive text; `specsync change audit` passed.
+6. Reset stage to `plan`: `chough stage reset --to plan --reason "Gemini host cold start and roadmap refresh"`.
+7. Saved checkpoint with `--awaiting-human "Scope approval of gemini-host-cold-start-and-roadmap-refresh"`.
+8. Committed draft change files, pushed branch `origin/gemini/feat/gemini-host-cold-start`,
+   and opened draft PR #20 on GitHub.
+9. Presented scope summary to 0xLeif; halted at the scope gate until explicit approval
+   was granted ("I approve").
+10. Recorded definition approval with `specsync change approve ... --actor 0xLeif`.
+11. Advanced stage to `build` via `chough stage advance` (gate `native:approved`).
+12. Implemented guidance updates in `SKILL.md` and `checkpoint.md`, synchronized byte-for-byte
+    to `.agents/` and `.claude/` copies, tracked earlier digests in `src/skill.rs`, refreshed
+    roadmap rows in `docs/ROADMAP.md`, and documented this run.
+
+## Assessment
+
+| Expectation | Result |
+|---|---|
+| Found workflow skill without coaching | Yes: natively discovered via `.agents/skills/chough-workflow/SKILL.md` |
+| Checked native state and evidence freshness | Yes: inspected checkpoint, native status, and tool versions |
+| Resumed cold when previous change was done | Yes: reset stage to `plan` and initialized new native change |
+| Matched CI tool versions | Yes: wrapped `hi` 0.8.0, `fledge` 1.7.2, `specsync` 6.1.1 |
+| Honored human gates | Yes: strictly waited for human scope approval before advancing |
+| Parity and hygiene | Yes: kept bundle copies byte-identical with zero em or en dashes |
+
+## Limits and follow-ups
+
+- Antigravity natively loads `.agents/skills`, so `.gemini/skills` was not needed in
+  this repository, though `chough init --host gemini` defaults to `.gemini/skills`.
+- When resuming from stage `done` with an archived change, `next_valid_action` echoed
+  the prior review step; guidance was added to `references/checkpoint.md` clarifying how
+  to start a new change cycle via `chough stage reset`.
+- Zero em or en dash policy strictly maintained across all touched files.

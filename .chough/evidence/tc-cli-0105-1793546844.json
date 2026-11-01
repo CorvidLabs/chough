@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0105-1793546844",
+  "criteria": [
+    "FLOW-13",
+    "FLOW-1",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-007",
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass. Gemini host cold start succeeded: skill discovered natively in .agents/skills, checkpoint resumed from stage done, tool versions matched CI, human gates strictly honored.",
+  "artifacts": [
+    ".chough/artifacts/gemini-cold-start.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/gemini-cold-start.log": "39429000a7e2cc36105fc3718671003134ead221af6802b0ce169c72c3102c87"
+  },
+  "observed_at_unix_seconds": 1793546844,
+  "snapshot": {
+    "revision": "9cf1427e87a28175dc535a632998afa0de73d7c1",
+    "dirty": true,
+    "fingerprint": "0eb73117a24f47a35f58d471af5195248f62f4ba3980a63bdb7eb074980186ec",
+    "content": "53651e4379120c472eed08d19f2048564f0e8cbd3eea3d89f7f40ff9cdbaa35b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0105",
+      "digest": "cd5a3bb3d0ca7c3c6a10844ca7854909e9c2b49b336ecb748661aa8140fee775"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional"
+}
