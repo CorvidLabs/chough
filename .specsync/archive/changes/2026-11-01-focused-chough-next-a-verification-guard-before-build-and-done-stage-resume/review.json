@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "focused-chough-next-a-verification-guard-before-build-and-done-stage-resume",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "2058870c298d6ff8be582c7cd182ac1479a63028",
+  "contract_digest": "283ef1b5ff573265fe33e81768b6440187b238b416322e9aa17d563803ecf5d2",
+  "execution_digest": "7f0540026f6830c5d3e218d39ab2e12be722806a366b3a242e1f926768d77709",
+  "workspace_digest": "3f85d5bb4ed3e006b132969ce7c2c6a3f099cc7bdcaad5aa9b5d3c12cc5b5fa2",
+  "timestamp": 1793553501
+}

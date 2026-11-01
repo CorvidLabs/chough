@@ -7,11 +7,11 @@
   "title": "Focused chough next, a verification guard before build, and done-stage resume",
   "description": "Focused chough next, a verification guard before build, and done-stage resume",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "ee6e3d2fd69e1fb979873676b7b02d8d86a9074d",
   "created_at": 1793550122,
-  "updated_at": 1793553300,
+  "updated_at": 1793553534,
   "affected_specs": [
     "cli"
   ],
