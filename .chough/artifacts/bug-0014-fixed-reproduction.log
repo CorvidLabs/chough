@@ -1,0 +1,12 @@
+# BUG-0014 rerun after the fix: chough at e806f78 (0xleif/fix/evidence-stays-current, fix in 4bf46da); macOS 26.5.2 arm64, rustc 1.95.0 (59807616e 2026-04-14); 2026-11-01T01:40:20Z
+$ cargo test --test bugs -- --exact a_pass_observed_before_the_latest_failure_does_not_verify_a_bug a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug a_bug_without_a_linked_failure_cannot_be_verified a_pass_observed_after_the_latest_failure_verifies_a_bug
+
+running 4 tests
+test a_bug_without_a_linked_failure_cannot_be_verified ... ok
+test a_pass_observed_after_the_latest_failure_verifies_a_bug ... ok
+test a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug ... ok
+test a_pass_observed_before_the_latest_failure_does_not_verify_a_bug ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1.94s
+
+exit=0

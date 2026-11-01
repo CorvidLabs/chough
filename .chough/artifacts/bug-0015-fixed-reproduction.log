@@ -1,0 +1,10 @@
+# BUG-0015 rerun after the fix: chough at e806f78 (0xleif/fix/evidence-stays-current, fix in 4bf46da); macOS 26.5.2 arm64, rustc 1.95.0 (59807616e 2026-04-14); 2026-11-01T01:40:16Z
+$ cargo test --test cli -- --exact committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current committing_edits_already_present_when_observed_keeps_an_observation_current
+
+running 2 tests
+test committing_edits_already_present_when_observed_keeps_an_observation_current ... ok
+test committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 1.66s
+
+exit=0

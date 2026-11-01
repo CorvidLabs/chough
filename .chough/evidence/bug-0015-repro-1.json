@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "bug-0015-repro-1",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Before the fix, a new observation reads stale-revision-or-inputs after committing only .chough/, after an empty commit, and after committing edits that were already present when it ran",
+  "artifacts": [
+    ".chough/artifacts/bug-0015-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0015-reproduction.log": "efd75aec7aa2df60fef447246b9f4809b44ebde0d5c47d9c82f60ff29b319150"
+  },
+  "observed_at_unix_seconds": 1793496693,
+  "snapshot": {
+    "revision": "a386c132598916c6572a633da455b169b825d3e9",
+    "dirty": true,
+    "fingerprint": "e8e51f9908f7a73dbfdcbe6439f7a24bbc5c18802847a0e07dd72e4f32423a84"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Run in temporary Git repositories by tests/cli.rs at a386c13 with the new tests and unchanged src/"
+  ]
+}

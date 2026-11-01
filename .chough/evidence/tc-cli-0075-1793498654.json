@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0075-1793498654",
+  "criteria": [
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated for TC-cli-0075: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0075-1793498654.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0075-1793498654.log": "2ccca5ba2abbfb6a559f7469b5f6f709ca0829be26a88a1a412d8c25b97aa81b"
+  },
+  "observed_at_unix_seconds": 1793498655,
+  "snapshot": {
+    "revision": "7c4278b49181a7c71c2487364b6bce5c8622dc9a",
+    "dirty": false,
+    "fingerprint": "e3c11c2b5631aa8fba19ab3fa5cd5d60aa7597bd758eca703ce6bec290fa8d7e",
+    "content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0075",
+      "digest": "14a11794895e1bed29ae5e763171812f24230398372554df04ec223cc2cfce4c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated"
+  ],
+  "exit_code": 0,
+  "tests_run": 1
+}

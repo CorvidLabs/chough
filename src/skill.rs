@@ -77,6 +77,19 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "26029a2ee652ddc55b2ef6a68ed3edfa6a699f3a61a8fffa8d4d485f1180f4fb",
     ),
+    // Main 2756dc2 (PR #9); superseded by the evidence freshness change.
+    (
+        "references/accept.md",
+        "3dea3612392c3f02757bbe53d4e329f054dea587d931c437246e7c83083f3252",
+    ),
+    (
+        "references/lifecycle.md",
+        "c751bb4d8f624ca6c9d1b8f01247feb44a4d380c81c0bcf0362113818816547f",
+    ),
+    (
+        "references/bugs.md",
+        "a5497e45df7d2f7593f85101e47062d6bc605bfd1389ac27084d9f6ab1479b32",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

@@ -9,9 +9,16 @@ Match the SpecSync version used by lifecycle writers and CI.
 
 ```text
 new → interview → artifacts and delta → one human scope approval → implement →
+check (when requirements change) → cases run → gate → commit with .chough/ →
 check --commit → push, CI → human implementation review → review → ship/finalize →
-push archive, CI → merge
+clear gate, stage advance → push archive, CI → merge
 ```
+
+Between `check --commit` and finalize, nothing writes to `.chough/` and nothing is
+committed: SpecSync's verification digest covers `.chough/`, and until SpecSync offers
+an opt-in verification exclusion (the proposed upstream `verification_ignored_paths`)
+any Chough write in that window forces another `change check`. See
+[accept.md](accept.md) for the full order.
 
 | Native state | Chough stage | Gate |
 |---|---|---|
@@ -33,11 +40,13 @@ not approval of a new definition. Actor text is a portable claim, not identity.
 
 ## Verification
 
-`specsync change check <id> --commit` materializes the approved delta and records
-targeted structural verification. Stage new source files first. It does not run the
-project's tests; product checks are separate observations. It refuses an edited
-delta and incomplete tasks. Fix real failures; if evidence is stale, follow the exact
-recovery action status names.
+`specsync change check <id>` materializes the approved delta; run it before cases
+that link requirements the delta adds or modifies. `specsync change check <id>
+--commit` also records targeted structural verification; run it after committing the
+source with `.chough/`. Stage new source files first. It does not run the project's
+tests; product checks are separate observations. It refuses an edited delta and
+incomplete tasks. Fix real failures; if evidence is stale, follow the exact recovery
+action status names.
 
 ## Review, archive, merge
 
@@ -59,7 +68,17 @@ observations; see [release.md](release.md).
 
 ## Evidence records
 
-`chough cases run` and `chough evidence add` bind an observation to the Git revision,
-working-tree fingerprint, environment, artifacts and, for cases, the definition
-digest. They do not authenticate a witness or verify a remote artifact. A changed
+`chough cases run` and `chough evidence add` record with an observation the Git
+revision, a working content identity, the environment, artifacts and, for cases, the
+definition digest. Freshness compares the content identity, not the revision: it
+covers every tracked or untracked non-ignored file except `.chough/`, `target/` and
+SpecSync lifecycle bookkeeping (a change's `state.json`, `approvals.json`,
+`verification.json`, `verification-attempts.json`, `review.json`,
+`review-attempts.json`, `finalization.json`, `accepted-state.json`,
+`lesson-bundle.md` and the front-matter `state:` value of `change.md`). So committing
+only Chough records, an empty commit, `change check --commit` and finalize keep an
+observation current, while a change to source, specs, configuration or a change's
+deltas and other artifacts makes it stale. A record without a content identity, from
+an earlier Chough, keeps the revision-bound comparison and is stale after any commit.
+The records do not authenticate a witness or verify a remote artifact. A changed
 input, artifact, case definition or environment makes the observation stale.

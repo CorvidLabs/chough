@@ -21,11 +21,17 @@
     "commit .chough/; specsync change status"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "bug-0016-repro-1",
+    "bug-0016-fixed-1",
+    "tc-cli-0070-1793498638",
+    "tc-cli-0071-1793498642",
+    "tc-cli-0072-1793498646"
+  ],
   "impact": "Repeated verification and review rebinding",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -35,8 +41,31 @@
       "at_unix_seconds": 1793494673,
       "text": "Added despite similar reports: SpecSync bookkeeping and .chough interplay, beyond the revision salt in #10",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793496694,
+      "text": "Reproduced before the fix by the new tests; see .chough/artifacts/bug-0016-reproduction.log.",
+      "observations": [
+        "bug-0016-repro-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793497233,
+      "text": "status: open -> verified. Fixed in 4bf46da; the reproduction tests pass at e806f78 (.chough/artifacts/bug-0016-fixed-reproduction.log).",
+      "observations": [
+        "bug-0016-fixed-1"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793498706,
+      "text": "The reproduction was a test-log observation recorded with evidence add before the fix, not a case-run observation: the regression case definitions TC-cli-0070 to TC-cli-0072 arrived with the fix commit 4bf46da, so they could not run at the unfixed tip. This note links their current passing case-run observations at the review-fix head.",
+      "observations": [
+        "tc-cli-0070-1793498638",
+        "tc-cli-0071-1793498642",
+        "tc-cli-0072-1793498646"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1793494673
+  "updated_at_unix_seconds": 1793498706
 }

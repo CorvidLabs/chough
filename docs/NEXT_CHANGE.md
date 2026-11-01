@@ -1,6 +1,14 @@
 # Deferred proposal: reusable observations after metadata commits
 
-**Status: unapproved and deferred in favor of lifecycle work.** The human redirected the
+**Status (2026-11-01): addressed for content-identical commits** by native change
+`keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after`
+(D-018, superseding D-016). Freshness now compares a working content identity, and
+the revision is recorded but not compared, so committing only `.chough/` records, an
+empty commit or SpecSync lifecycle bookkeeping keeps an observation current. That
+change adds no ancestry check and no separate reuse label; those ideas below remain
+unapproved history.
+
+**Earlier status: unapproved and deferred in favor of lifecycle work.** The human redirected the
 next implementation discussion to the [agreed lifecycle evolution](lifecycle.md).
 This proposal remains design history; it was neither approved nor rejected. No
 scope approval, implementation review or native archive has been recorded for it.

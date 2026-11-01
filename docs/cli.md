@@ -89,12 +89,39 @@ configuration, status reports `not-configured` and transitions are not natively 
 | Freshness | Meaning |
 |---|---|
 | `current-observation` | Inputs, artifacts, case definition and environment match now |
-| `stale-revision-or-inputs` | The revision or any fingerprinted file changed |
+| `stale-revision-or-inputs` | A fingerprinted file changed; for a record without a content identity, also any new revision |
 | `stale-artifact` | A bound artifact changed or disappeared |
 | `stale-case-definition` | What the case asserts changed since the run |
 | `stale-environment` | A different environment was requested |
 | `environment-unchecked` | No environment was supplied |
 | `unknown-revision` | No Git snapshot could be established |
+
+The label keeps its name for JSON compatibility, but the revision alone no longer
+stales an observation. Each record still stores the HEAD revision, shown in status,
+next and the library index and used for regression-baseline ancestry; freshness
+compares a working content identity (`snapshot.content`, a SHA-256 digest). It covers
+every tracked or untracked non-ignored file except `.chough/`, `target/` and SpecSync
+lifecycle bookkeeping: the top-level `state.json`, `approvals.json`,
+`verification.json`, `verification-attempts.json`, `review.json`,
+`review-attempts.json`, `finalization.json`, `accepted-state.json` and
+`lesson-bundle.md` of each `.specsync/changes/<id>/` and
+`.specsync/archive/changes/<date>-<id>/`, and the value of the front-matter `state:`
+line of its `change.md`. Change artifacts are keyed by change ID and their path in the
+change, so finalize moving a change into the archive keeps observations current. A
+deleted tracked file counts as absent. So committing only Chough records, an empty
+commit, committing edits that were already present, `specsync change check --commit`
+and finalize keep observations current; a change to source, tests, docs, `specs/`,
+`.specsync/` configuration or a change's deltas and other artifacts makes them stale.
+A record written without a content identity, by an earlier Chough, keeps the
+revision-bound comparison and stays stale after any new commit, and so does a schema 1
+record, whose schema has no content identity, even if one was added to it by hand; a
+malformed one is refused. Older Chough binaries refuse records with a content identity as invalid.
+
+A bug reads `reproduced-and-later-passed`, and accepts `bug update --status verified`,
+only when a present linked passed observation was observed strictly after its most
+recent present linked failed observation (by `observed_at_unix_seconds`). An older
+pass, or one in the same second, leaves it `reproduced`; with no linked failure it
+reads `unverified` and `verified` is refused.
 
 Environment comparison uses the label you supply; it does not detect changes in the
 real environment. A native status response that decodes as JSON is usable output, not
