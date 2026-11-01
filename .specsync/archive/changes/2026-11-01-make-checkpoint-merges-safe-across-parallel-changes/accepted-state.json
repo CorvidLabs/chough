@@ -7,11 +7,11 @@
   "title": "Make checkpoint merges safe across parallel changes",
   "description": "Make checkpoint merges safe across parallel changes",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "b35acaf0804f84a2c56fcee4b3ca1504cf74c95e",
   "created_at": 1793574498,
-  "updated_at": 1793576898,
+  "updated_at": 1793577364,
   "affected_specs": [
     "cli"
   ],
