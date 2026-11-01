@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Land PR #16: bundle hygiene, case binding environment, colour-safe matching, actionable errors",
+  "objective": "Prepare the 0.1.0 release: pinned toolchain with one install command, checked MSRV, accurate skill guidance and contract wording, change log",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "intent",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
+  "native_change": "prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -20,12 +20,17 @@
       "FLOW-13",
       "LIFE-2",
       "LIFE-7",
-      "FLOW-10"
+      "FLOW-10",
+      "LIFE-4",
+      "LIFE-6",
+      "LIFE-9"
     ],
     "requirements": [
       "REQ-cli-007",
       "REQ-cli-008",
-      "REQ-cli-011"
+      "REQ-cli-011",
+      "REQ-cli-016",
+      "REQ-cli-019"
     ],
     "cases": [
       "TC-cli-0101",
@@ -94,7 +99,9 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Intent and scope approval of prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill"
+  ],
   "run_consents": [],
   "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
 }
