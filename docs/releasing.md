@@ -9,16 +9,22 @@ toolchain from [Install the toolchain](../README.md#install-the-toolchain).
 2. Check the package contents: `cargo package --list --locked` lists only `src/`,
    `skills/chough-workflow/`, `Cargo.toml`, `Cargo.lock`, `README.md` and `LICENSE`
    (plus the files cargo generates).
-3. Dry run: `cargo publish --dry-run --locked`.
+3. Dry run: `cargo publish --dry-run --locked`. Also check that the `chough` name on
+   crates.io is still unclaimed or owned by CorvidLabs (`cargo search chough`, or
+   `https://crates.io/api/v1/crates/chough`); the README's first install command
+   depends on it. If someone else holds it, stop and decide the name before going on.
 4. Date the change log: replace `Unreleased` in the `0.1.0` heading of
-   [CHANGELOG.md](../CHANGELOG.md) with the release date, in a small docs pull
-   request, and merge it.
+   [CHANGELOG.md](../CHANGELOG.md) with the release date and point its `[0.1.0]`
+   link at `https://github.com/CorvidLabs/chough/releases/tag/v0.1.0`, in a small
+   docs pull request, and merge it.
 5. Tag that commit `v0.1.0` and push the tag.
 6. Publish: `cargo publish --locked`. crates.io keeps the README as published, so
    check it reads correctly first.
 7. Create the GitHub release for `v0.1.0` from the change log section.
 8. In a clean environment run `cargo install chough --locked` and
    `chough --version`, and record what you saw as an installation observation.
+9. In a small docs pull request, mark the `0.1.0 release` row of
+   [docs/ROADMAP.md](ROADMAP.md) published, with the date.
 
 A merge, a tag, a publish, a GitHub release and a clean install are separate
 observations; one does not imply another.

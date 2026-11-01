@@ -1894,10 +1894,10 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-9", "LIFE-6"]
 requirements = ["REQ-cli-019"]
-paths = ["README.md", "AGENTS.md", ".github/workflows/ci.yml", "Cargo.toml", "tests/package.rs"]
+paths = ["README.md", "AGENTS.md", ".github/workflows/ci.yml", "Cargo.toml", "docs/ci.md", "docs/integrations.md", "tests/package.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/package.rs::tool_and_rust_version_pins_agree passes: every pin is present and equal, and a copy with one pin changed or removed fails naming that file and tool"]
+expected = ["tests/package.rs::tool_and_rust_version_pins_agree passes: every pin is present and equal, and a copy with one pin changed, removed or stated twice fails naming that file and tool; README's toolchain command split, chained or naming another crate fails, and an MSRV job without needs: archive-gate or cargo test --locked fails"]
 
 [case.bind]
 adapter = "cargo-test"

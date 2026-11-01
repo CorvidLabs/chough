@@ -16,10 +16,11 @@ are in [docs/releasing.md](docs/releasing.md).
   checkpoint schema 2 in `.chough/session.json`, focused cases (`chough-testing/1`),
   local bugs, preferences and run consents, and per-host skill installation
   ([#2](https://github.com/CorvidLabs/chough/pull/2)).
-- Native archive CI gate: a pull request cannot merge while a native SpecSync change
-  is active or an archive fails to authenticate
-  ([#3](https://github.com/CorvidLabs/chough/pull/3)); the archive gate now runs
-  before every other CI job ([#18](https://github.com/CorvidLabs/chough/pull/18)).
+- Native archive CI checks: CI fails while a native SpecSync change is active or an
+  archive fails to authenticate ([#3](https://github.com/CorvidLabs/chough/pull/3)),
+  and the archive gate now runs before every other CI job
+  ([#18](https://github.com/CorvidLabs/chough/pull/18)). No check is required to
+  merge yet; see [docs/ci.md](docs/ci.md).
 - Fail-closed stage gates on native approval validity, archive integrity and the SDD
   policy ([#7](https://github.com/CorvidLabs/chough/pull/7)).
 - Bounded external commands: time and output limits for case bindings and native
@@ -49,6 +50,8 @@ are in [docs/releasing.md](docs/releasing.md).
 - The skill bundle holds no em or en dashes
   ([#16](https://github.com/CorvidLabs/chough/pull/16)); the README says how to
   pronounce the name ([#19](https://github.com/CorvidLabs/chough/pull/19)).
+- Documentation checked against the helper: stage gates, CLI reference, CI, roadmap
+  and diagrams ([#21](https://github.com/CorvidLabs/chough/pull/21)).
 
 ### Known limitations
 

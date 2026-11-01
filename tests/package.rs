@@ -789,20 +789,44 @@ struct PinSources<'a> {
     agents: &'a str,
     ci: &'a str,
     cargo: &'a str,
+    ci_doc: &'a str,
+    integrations: &'a str,
 }
 
 fn version_token(word: &str) -> Option<String> {
-    let word = word.trim_end_matches(['.', ',', ';', ')', '`']);
+    let word = word
+        .trim_start_matches('*')
+        .trim_end_matches(['.', ',', ';', ')', '`', '*']);
     let starts_with_digit = word.chars().next().is_some_and(|c| c.is_ascii_digit());
     (starts_with_digit && word.chars().all(|c| c.is_ascii_digit() || c == '.'))
         .then(|| word.to_string())
 }
 
+/// The `cargo install` lines in the code blocks of README's `Install the toolchain`
+/// section.
+fn readme_toolchain_commands(readme: &str) -> Vec<&str> {
+    let mut in_block = false;
+    readme
+        .lines()
+        .skip_while(|line| line.trim() != "## Install the toolchain")
+        .skip(1)
+        .take_while(|line| !line.starts_with("## "))
+        .filter(|line| {
+            if line.trim_start().starts_with("```") {
+                in_block = !in_block;
+                return false;
+            }
+            in_block
+        })
+        .map(str::trim)
+        .filter(|line| line.starts_with("cargo install"))
+        .collect()
+}
+
 /// The `<crate>@<version>` tokens of README's toolchain install command.
 fn readme_tool_pins(readme: &str) -> Vec<(String, String)> {
-    let Some(line) = readme
-        .lines()
-        .map(str::trim)
+    let Some(line) = readme_toolchain_commands(readme)
+        .into_iter()
         .find(|line| line.starts_with("cargo install --locked") && line.contains('@'))
     else {
         return vec![];
@@ -864,6 +888,68 @@ fn ci_job<'a>(ci: &'a str, job: &str) -> Vec<&'a str> {
         .collect()
 }
 
+/// Every distinct version written within two words after a mention of `tool`, so a
+/// stale second mention shows up as `<one> and <other>`.
+fn doc_versions(text: &str, tool: &str) -> Option<String> {
+    let words: Vec<&str> = text.split_whitespace().collect();
+    let mut versions: Vec<String> = vec![];
+    for (index, word) in words.iter().enumerate() {
+        let word = word.trim_start_matches(['[', '`', '*', '(']);
+        let Some(rest) = word.strip_prefix(tool) else {
+            continue;
+        };
+        if rest.chars().next().is_some_and(|c| c.is_alphanumeric()) {
+            continue;
+        }
+        for next in words.iter().skip(index + 1).take(2) {
+            let next = next.trim_start_matches(['`', '*']);
+            match version_token(next.strip_prefix('v').unwrap_or(next)) {
+                Some(version) if !versions.contains(&version) => versions.push(version),
+                _ => {}
+            }
+        }
+    }
+    (!versions.is_empty()).then(|| versions.join(" and "))
+}
+
+/// Shape problems that a version comparison alone would miss: README's toolchain
+/// command must stay one command naming all three tools, and the MSRV job must need
+/// the Archive job and run the full suite.
+fn pin_shape_problems(sources: &PinSources) -> Vec<String> {
+    let mut problems = vec![];
+    let commands = readme_toolchain_commands(sources.readme);
+    let one_command = match commands.as_slice() {
+        [command] => {
+            let crates: BTreeSet<&str> = command
+                .split_whitespace()
+                .filter_map(|token| token.split_once('@').map(|(name, _)| name))
+                .collect();
+            !command.contains("&&")
+                && !command.contains(';')
+                && !command.ends_with('\\')
+                && crates == BTreeSet::from(["fledge", "human-intent", "specsync"])
+        }
+        _ => false,
+    };
+    if !one_command {
+        problems.push(format!(
+            "README.md: Install the toolchain is not one cargo install command naming \
+             human-intent, fledge and specsync: {commands:?}"
+        ));
+    }
+    let msrv = ci_job(sources.ci, "msrv");
+    if !msrv.iter().any(|line| line.trim() == "needs: archive-gate") {
+        problems.push(".github/workflows/ci.yml MSRV job: does not need archive-gate".into());
+    }
+    if !msrv
+        .iter()
+        .any(|line| line.trim() == "- run: cargo test --locked")
+    {
+        problems.push(".github/workflows/ci.yml MSRV job: does not run cargo test --locked".into());
+    }
+    problems
+}
+
 fn major_minor(version: &str) -> String {
     version.split('.').take(2).collect::<Vec<_>>().join(".")
 }
@@ -911,6 +997,11 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                 ("README.md", find(&readme, "human-intent")),
                 ("AGENTS.md", find(&agents, "hi")),
                 (".github/workflows/ci.yml", hi_in_ci),
+                ("docs/ci.md", doc_versions(sources.ci_doc, "HI")),
+                (
+                    "docs/integrations.md",
+                    doc_versions(sources.integrations, "HI"),
+                ),
             ],
         ),
         (
@@ -919,6 +1010,11 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                 ("README.md", find(&readme, "specsync")),
                 ("AGENTS.md", find(&agents, "specsync")),
                 (".github/workflows/ci.yml", specsync_in_ci),
+                ("docs/ci.md", doc_versions(sources.ci_doc, "SpecSync")),
+                (
+                    "docs/integrations.md",
+                    doc_versions(sources.integrations, "SpecSync"),
+                ),
             ],
         ),
         (
@@ -927,6 +1023,11 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                 ("README.md", find(&readme, "fledge")),
                 ("AGENTS.md", find(&agents, "fledge")),
                 (".github/workflows/ci.yml", fledge_in_ci),
+                ("docs/ci.md", doc_versions(sources.ci_doc, "Fledge")),
+                (
+                    "docs/integrations.md",
+                    doc_versions(sources.integrations, "Fledge"),
+                ),
             ],
         ),
     ];
@@ -954,7 +1055,7 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
             .map(|value| major_minor(value.trim().trim_matches(['\'', '"'])))
     });
 
-    let mut problems = vec![];
+    let mut problems = pin_shape_problems(sources);
     let mut compare = |tool: &str, places: &[(&str, Option<String>)]| {
         let mut counts: Vec<(String, usize)> = vec![];
         for (_, found) in places {
@@ -999,17 +1100,21 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
 #[test]
 fn tool_and_rust_version_pins_agree() {
     let read = |file: &str| fs::read_to_string(manifest_dir().join(file)).unwrap();
-    let (readme, agents, ci, cargo) = (
+    let (readme, agents, ci, cargo, ci_doc, integrations) = (
         read("README.md"),
         read("AGENTS.md"),
         read(".github/workflows/ci.yml"),
         read("Cargo.toml"),
+        read("docs/ci.md"),
+        read("docs/integrations.md"),
     );
     let sources = PinSources {
         readme: &readme,
         agents: &agents,
         ci: &ci,
         cargo: &cargo,
+        ci_doc: &ci_doc,
+        integrations: &integrations,
     };
     let problems = pin_disagreements(&sources);
     assert!(problems.is_empty(), "{}", problems.join("\n"));
@@ -1063,23 +1168,77 @@ fn tool_and_rust_version_pins_agree() {
             "rust-version = \"1.88\"",
             "rust-version = \"9.9\"",
         ),
+        (
+            "docs/ci.md",
+            "HI (human-intent)",
+            "is 0.8.0, installed",
+            "is 9.9.9, installed",
+        ),
+        (
+            "docs/ci.md",
+            "SpecSync",
+            "SpecSync **6.1.1**",
+            "SpecSync **9.9.9**",
+        ),
+        ("docs/ci.md", "Fledge", "Fledge is 1.8.0", "Fledge is 9.9.9"),
+        (
+            "docs/ci.md",
+            "Fledge",
+            "Fledge is 1.8.0",
+            "Fledge is 1.8.0 (Fledge remains v1.7.2)",
+        ),
+        (
+            "docs/integrations.md",
+            "HI (human-intent)",
+            "CorvidLabs/hi) 0.8.0",
+            "CorvidLabs/hi) 9.9.9",
+        ),
+        (
+            "docs/integrations.md",
+            "SpecSync",
+            "CorvidLabs/spec-sync) 6.1.1",
+            "CorvidLabs/spec-sync) 9.9.9",
+        ),
+        (
+            "docs/integrations.md",
+            "Fledge",
+            "CorvidLabs/fledge) 1.8.0",
+            "CorvidLabs/fledge) 9.9.9",
+        ),
     ];
-    for (file, tool, from, to) in cases {
-        let mut changed = [readme.clone(), agents.clone(), ci.clone(), cargo.clone()];
-        let slot = match file {
-            "README.md" => 0,
-            "AGENTS.md" => 1,
-            "Cargo.toml" => 3,
-            _ => 2,
-        };
-        assert!(changed[slot].contains(from), "{file} lacks {from}");
+    let changed_sources = |slot: usize, from: &str, to: &str| {
+        let mut changed = [
+            readme.clone(),
+            agents.clone(),
+            ci.clone(),
+            cargo.clone(),
+            ci_doc.clone(),
+            integrations.clone(),
+        ];
+        assert!(changed[slot].contains(from), "slot {slot} lacks {from}");
         changed[slot] = changed[slot].replacen(from, to, 1);
-        let problems = pin_disagreements(&PinSources {
+        changed
+    };
+    let problems_in = |changed: &[String; 6]| {
+        pin_disagreements(&PinSources {
             readme: &changed[0],
             agents: &changed[1],
             ci: &changed[2],
             cargo: &changed[3],
-        });
+            ci_doc: &changed[4],
+            integrations: &changed[5],
+        })
+    };
+    for (file, tool, from, to) in cases {
+        let slot = match file {
+            "README.md" => 0,
+            "AGENTS.md" => 1,
+            "Cargo.toml" => 3,
+            "docs/ci.md" => 4,
+            "docs/integrations.md" => 5,
+            _ => 2,
+        };
+        let problems = problems_in(&changed_sources(slot, from, to));
         assert!(
             problems
                 .iter()
@@ -1089,17 +1248,58 @@ fn tool_and_rust_version_pins_agree() {
     }
 
     // A pin removed from a file is reported as not found there.
-    let without = agents.replace("Match tool versions to CI", "Tool versions");
-    let problems = pin_disagreements(&PinSources {
-        readme: &readme,
-        agents: &without,
-        ci: &ci,
-        cargo: &cargo,
-    });
+    let problems = problems_in(&changed_sources(
+        1,
+        "Match tool versions to CI",
+        "Tool versions",
+    ));
     for tool in ["HI (human-intent)", "SpecSync", "Fledge"] {
         assert!(
             problems.contains(&format!("AGENTS.md: {tool} not found")),
             "{problems:?}"
+        );
+    }
+
+    // The shape around the pins: README's toolchain command stays one command naming
+    // all three tools, and the MSRV job needs the Archive job and runs the suite.
+    let toolchain = "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1";
+    let shapes = [
+        (
+            0,
+            toolchain,
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0\ncargo install --locked specsync@6.1.1",
+            "README.md: Install the toolchain is not one cargo install command",
+        ),
+        (
+            0,
+            toolchain,
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1 && hi --version",
+            "README.md: Install the toolchain is not one cargo install command",
+        ),
+        (
+            0,
+            toolchain,
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1 cargo-nextest@0.9.0",
+            "README.md: Install the toolchain is not one cargo install command",
+        ),
+        (
+            2,
+            "    needs: archive-gate\n    runs-on: ubuntu-latest\n    timeout-minutes: 20\n    steps:\n      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2\n        with:\n          persist-credentials: false\n      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable\n        with:\n          toolchain: 1.88.0",
+            "    runs-on: ubuntu-latest\n    timeout-minutes: 20\n    steps:\n      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2\n        with:\n          persist-credentials: false\n      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable\n        with:\n          toolchain: 1.88.0",
+            ".github/workflows/ci.yml MSRV job: does not need archive-gate",
+        ),
+        (
+            2,
+            "          toolchain: 1.88.0\n      - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1\n      - run: cargo test --locked",
+            "          toolchain: 1.88.0\n      - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1\n      - run: cargo build --locked",
+            ".github/workflows/ci.yml MSRV job: does not run cargo test --locked",
+        ),
+    ];
+    for (slot, from, to, expected) in shapes {
+        let problems = problems_in(&changed_sources(slot, from, to));
+        assert!(
+            problems.iter().any(|problem| problem.starts_with(expected)),
+            "changing {from:?}: {problems:?}"
         );
     }
 }
