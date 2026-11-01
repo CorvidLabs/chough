@@ -72,9 +72,9 @@
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
     "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
     "0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json",
-    "decided: cold-start proof is a frozen seeded fixture repo plus a written pass/fail rubric, hashed as an observation before implementation; a fresh agent on a different host (Kimi Code CLI 0.41.0 or Codex CLI 0.153.4) runs on main as a mandatory baseline and then on the change, 0xLeif grades, plus one run on this real repo, because a fresh command process or the author grading cannot show a cold handoff works (0xLeif, 2026-11-01)",
-    "decided: lessons live in the existing specs/<module>/context.md Lessons section, which SpecSync already briefs; Chough only points at them, with no .3md and no library/ store, because a second lesson store would compete with SpecSync (0xLeif, 2026-11-01)",
-    "decided: assumption, to state in design: checkpoint decisions stay Vec<String>; a prefix convention (rejected: <approach> because <reason>, failed: <experiment> because <reason>, decided: ...) is read best-effort with a latest-N fallback, because a structured decision schema would need a checkpoint migration (REQ-cli-007) and conflict with PR #26"
+    "decided: cold-start proof: freeze a seeded fixture repo and a written pass/fail rubric before implementation and hash them as an observation; run a fresh agent on a different host (Kimi Code CLI 0.41.0 or Codex CLI 0.153.4) on main as a mandatory baseline, then on the change; 0xLeif grades; plus one run on this real repo (0xLeif, 2026-11-01)",
+    "decided: lessons live in the existing specs/<module>/context.md Lessons section (SpecSync briefs it); Chough only points at them; no .3md, no library/ store (0xLeif, 2026-11-01)",
+    "assumption (agent, stated in design.md, not a human decision): checkpoint decisions stay Vec<String>; a decided:, rejected: or failed: prefix with a reason clause is read best-effort with a latest-N fallback; no checkpoint schema change"
   ],
   "open_questions": [],
   "completed": [
@@ -95,7 +95,8 @@
     "PR #9 merged earlier; stale awaiting-human entry cleared",
     "0.1.0 release prep implemented: pins, MSRV job and rust-version, nine skill corrections with KNOWN_PREVIOUS and host refresh, context history, README, CHANGELOG, docs/releasing.md, D-019",
     "TC-cli-0110 and 0112 failed before the fix and passed at f6416a5 with TC-cli-0111, 0113, 0114, 0064 and 0065",
-    "Drafted native change fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer (MODIFIED REQ-cli-021 and REQ-cli-002; cases TC-cli-0126 to TC-cli-0133 reserved in testing.md); specsync change status names change approve next and change audit passes"
+    "Drafted native change fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer (MODIFIED REQ-cli-021 and REQ-cli-002; cases TC-cli-0126 to TC-cli-0133 reserved in testing.md); specsync change status names change approve next and change audit passes",
+    "2026-11-01: corrected the three decision entries of this cycle after review: removed agent rationale that had been attributed to 0xLeif and the decided: prefix on the agent assumption (removed by hand, since the CLI has no remove flag, then re-added with chough checkpoint --decision)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
