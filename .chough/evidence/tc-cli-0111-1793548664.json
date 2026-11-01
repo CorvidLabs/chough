@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0111-1793548664",
+  "criteria": [
+    "LIFE-9"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo +1.88.0 test --locked for TC-cli-0111: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0111-1793548664.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0111-1793548664.log": "c9b8fdad0f6a66f9117ebf9c2515078499e56840a4ed601a601d1965119fe2eb"
+  },
+  "observed_at_unix_seconds": 1793548762,
+  "snapshot": {
+    "revision": "f6416a5938889833fedb68d7fb951c263e9982f1",
+    "dirty": false,
+    "fingerprint": "3dec102a1b508ebdc49708c0534f52118202403efc34f627f394441ccdbcc74f",
+    "content": "93b76b70c7c68d40d648604f0b69bccfcd632d6a0e028dcebd2ddc87e889aa22"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0111",
+      "digest": "e5a30d962f907cc1b763f9a5b65e444e24165b36f38ca6a15256845a99ddbd19"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "+1.88.0",
+    "test",
+    "--locked"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 97
+}

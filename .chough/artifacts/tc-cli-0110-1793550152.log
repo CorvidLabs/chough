@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test tool_and_rust_version_pins_agree ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.06s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/package.rs (target/debug/deps/package-1becac6ef9d733f9)

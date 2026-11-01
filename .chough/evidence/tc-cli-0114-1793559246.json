@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0114-1793559246",
+  "criteria": [
+    "LIFE-9",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass. README toolchain command rerun at b7483e0 after merging main (#23): exit 0 in 219 s; hi 0.8.0, fledge 1.8.0, specsync 6.1.1",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0114-toolchain-install-b7483e0.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0114-toolchain-install-b7483e0.log": "3a5aba7ac335ab377c20bb0755bf0fbc908c22259e8767fcac37da92a9f175fa"
+  },
+  "observed_at_unix_seconds": 1793559246,
+  "snapshot": {
+    "revision": "b7483e0641bb42d0d24751b8ce1f92d4986edcdb",
+    "dirty": false,
+    "fingerprint": "156f9fcc5a7695505c674aa4643a13e5a2c21d561b6834eb20a0e822b0cd56b8",
+    "content": "2b6b933957b1e272e19763c2ea522ddc52a4d317767912bf002a26f667e78fea"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0114",
+      "digest": "4ff62af0d19b152050d1208904f2aff873c0d1993cfcf93bf63a0e31cd30a4c9"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional"
+}

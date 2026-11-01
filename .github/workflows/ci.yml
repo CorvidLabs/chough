@@ -24,9 +24,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      # The archive gate inputs are newer than v6.1.1, which ignores them.
-      - uses: CorvidLabs/spec-sync@106aaa43d0bcf049f19b173ddb63815a25c3f931 # main, archive gate (#832)
+      # v6.1.2 is the first release with the archive gate inputs (#832).
+      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
         with:
+          version: '6.1.2'
           archive-gate-only: 'true'
 
   product:
@@ -46,6 +47,22 @@ jobs:
       - run: cargo test --locked
       - run: cargo build --locked --release
 
+  # Cargo.toml declares rust-version; this keeps the claim true.
+  msrv:
+    name: MSRV / 1.88.0
+    needs: archive-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          toolchain: 1.88.0
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+      - run: cargo test --locked
+
   native-gates:
     name: Fledge / HI / SpecSync
     needs: archive-gate
@@ -64,14 +81,15 @@ jobs:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
       # Fledge's documented @v1 ref is absent; this reviewed commit contains action.yml.
+      # The binary is the v1.8.0 GitHub release, the version published to crates.io.
       - uses: CorvidLabs/fledge@b648ea2a622221d4f2ffbc7ba7aa829e6cf13a51
         with:
-          version: v1.7.2
-      # Lifecycle writers and CI use SpecSync 6.1.1. The v6.1.1 Action tag keeps a
-      # 6.1.0 omitted-input default, so the binary version is passed explicitly.
-      - uses: CorvidLabs/spec-sync@e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa # v6.1.1
+          version: v1.8.0
+      # Lifecycle writers and CI use SpecSync 6.1.2. The v6.1.2 Action tag keeps a
+      # 6.1.1 omitted-input default, so the binary version is passed explicitly.
+      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
         with:
-          version: '6.1.1'
+          version: '6.1.2'
           strict: 'true'
           require-coverage: '100'
       - run: cargo install human-intent --version 0.8.0 --locked
@@ -88,9 +106,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: CorvidLabs/spec-sync@e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa # v6.1.1
+      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
         with:
-          version: '6.1.1'
+          version: '6.1.2'
           strict: 'true'
           require-coverage: '100'
       # Independent of product checks and draft/path/stage classification.
@@ -110,9 +128,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: CorvidLabs/spec-sync@e8fd149d4d9e7b8df9ea1d40d446df67da13f2fa # v6.1.1
+      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
         with:
-          version: '6.1.1'
+          version: '6.1.2'
           strict: 'true'
           require-coverage: '100'
       - run: python3 .github/scripts/test-specsync-archive.py

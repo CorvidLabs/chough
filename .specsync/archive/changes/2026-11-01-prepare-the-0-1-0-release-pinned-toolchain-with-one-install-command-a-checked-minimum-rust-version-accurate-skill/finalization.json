@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill",
+  "implementation_commit": "25ca8164549a9b35545bd27cf55799bacdeb1fab",
+  "implementation_tree": "3538cfb93fb2c9399f44e49c84c0a5ad1710f983",
+  "contract_digest": "8be301d95473e6117c1ca6aaabf1313ae6df12e306b5e70b971ba4f4b5996add",
+  "workspace_digest": "663e132a203f2ba9c956c331d0cfc5786908f61856e8677634c144dfb8b1feec",
+  "closing_digest": "d830fa8b41c4e95be6f65caad33dccfad013d8599f5fffe77c861621f10caf6d",
+  "review_digest": "ed0267c1bebd88470e817cea9b8a178a11f3398bb6168a0f48bd2c23bc9f0fd6",
+  "finalization_digest": "cea53f54c42993f5fe105640c8b8f49a6929904213f2608c1d285a69f78905d4",
+  "timestamp": 1793567557
+}

@@ -10,13 +10,17 @@ scope, including archived history, is authenticated before merge. Expect a draft
 with an open change to show Archive red and every other job skipped.
 
 The `SpecSync Archive`, `Fledge / HI / SpecSync` and `CI gate fixtures` jobs use
-published SpecSync **6.1.1**, its pinned action commit, and the upstream action's
+published SpecSync **6.1.2**, its pinned action commit, and the upstream action's
 release archive/checksum verification. The action version input is explicit: the
-v6.1.1 wrapper's default binary is 6.1.0. The `Archive` job pins the
-CorvidLabs/spec-sync main commit 106aaa4 (the #832 merge) with `archive-gate-only:
-'true'`, because v6.1.1 ignores that input; move it to a release tag once one ships
-the gate. Fledge remains v1.7.2
-and HI remains 0.8.0. Workflow actions are pinned to verified commit SHAs.
+v6.1.2 wrapper's default binary is 6.1.1. The `Archive` job pins the same v6.1.2
+commit with `archive-gate-only: 'true'`; 6.1.2 is the first release with that input
+(#832). Fledge is 1.8.0, installed by the Fledge Action at its reviewed commit with
+`version: v1.8.0` (the GitHub release of the version published to crates.io), and HI
+is 0.8.0, installed with `cargo install human-intent --version 0.8.0 --locked`. These
+pins match README.md and AGENTS.md; `tests/package.rs::tool_and_rust_version_pins_agree`
+fails when they disagree. The `MSRV / 1.88.0` job runs `cargo test --locked` with
+Rust 1.88.0, the `rust-version` in Cargo.toml. Workflow actions are pinned to
+verified commit SHAs.
 
 ## What the archive jobs check
 
@@ -56,7 +60,7 @@ merging; CI never performs those decisions.
 
 ## Local verification
 
-Use Python 3.11 or later and the published SpecSync 6.1.1 executable:
+Use Python 3.11 or later and the published SpecSync 6.1.2 executable:
 
 ```sh
 fledge run ci-archive-fixtures
@@ -79,6 +83,7 @@ requiring these exact contexts:
 - `Product / ubuntu-latest`
 - `Product / macos-latest`
 - `Product / windows-latest`
+- `MSRV / 1.88.0`
 - `Fledge / HI / SpecSync`
 - `CI gate fixtures`
 - `SpecSync Archive`

@@ -49,8 +49,8 @@ def native_hash(root):
 class ArchiveFixtures(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        if command(Path.cwd(), "specsync", "--version") != "specsync 6.1.1":
-            raise AssertionError("Fixtures require real published SpecSync 6.1.1")
+        if command(Path.cwd(), "specsync", "--version") != "specsync 6.1.2":
+            raise AssertionError("Fixtures require real published SpecSync 6.1.2")
         cls.temporary = tempfile.TemporaryDirectory(prefix="chough-ci-archive-fixtures-")
         cls.directory = Path(cls.temporary.name)
         cls.clean = cls.directory / "clean"
@@ -283,7 +283,7 @@ class ArchiveFixtures(unittest.TestCase):
                 (binary_dir / "git").symlink_to(shutil.which("git"))
                 if output is not None:
                     script = binary_dir / "specsync"
-                    version = "specsync 0.0.0" if output == "wrong-version" else "specsync 6.1.1"
+                    version = "specsync 0.0.0" if output == "wrong-version" else "specsync 6.1.2"
                     script.write_text(
                         "#!/bin/sh\n"
                         f"if [ \"$1\" = --version ]; then printf '%s\\n' '{version}'; exit 0; fi\n"

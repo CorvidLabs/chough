@@ -1,0 +1,29 @@
+--- stdout ---
+
+running 1 test
+test tool_and_rust_version_pins_agree ... FAILED
+
+failures:
+
+---- tool_and_rust_version_pins_agree stdout ----
+
+thread 'tool_and_rust_version_pins_agree' (240286428) panicked at tests/package.rs:1015:5:
+README.md: HI (human-intent) not found
+README.md: SpecSync not found
+README.md: Fledge not found
+Cargo.toml: minimum Rust version not found
+README.md: minimum Rust version not found
+.github/workflows/ci.yml MSRV job: minimum Rust version not found
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    tool_and_rust_version_pins_agree
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/package.rs (target/debug/deps/package-1becac6ef9d733f9)
+error: test failed, to rerun pass `--test package`

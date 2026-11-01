@@ -7,7 +7,7 @@ sequencing; it is not human acceptance or proof of delivery.
 |---|---|---|
 | First foundation | Skill, focused context, native status, bound observations | Delivered at d38aa19 (bootstrap, no native lifecycle); [hosted CI run](https://github.com/CorvidLabs/chough/actions/runs/41218954725) at that revision only |
 | Resumable stage workflow | Stages and gates, checkpoint schema 2, focused cases, local bugs, optional validation, release routing and librarian, per-host skills | Delivered: human implementation review, native archive and merge in PR #2 (4008346, 2026-10-31); BUG-0004 and BUG-0005 fixed in PR #4 (2d782c4) and recorded in PR #6 |
-| Native archive CI gate | A pull request cannot merge while any native change is active or an archive fails to authenticate from history | Delivered in PR #3 (c408390, 2026-10-31) |
+| Native archive CI gate | CI fails while any native change is active or an archive fails to authenticate from history (no check is required to merge yet; see [ci.md](ci.md)) | Delivered in PR #3 (c408390, 2026-10-31) |
 | Fail-closed stage gates | Refuse moves when native approval validity, archive integrity or the SDD policy does not hold | Delivered in PR #7 (9cb1c35, 2026-10-31) |
 | Bounded external commands | Time and output limits for case bindings and native reads; validation honors a stop after waiting | Delivered: archived natively and merged in PR #8 (090460d, 2026-10-31) |
 | First release candidate | Reference-aware evidence retention, current guidance, an installable package without Chough's own records | Delivered: archived natively and merged in PR #9 (2756dc2, 2026-10-31); no tag or release was made |

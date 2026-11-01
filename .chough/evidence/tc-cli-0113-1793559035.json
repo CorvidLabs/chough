@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0113-1793559035",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass. Recheck after merging main (#23): the corrections still match the cited code at b7483e0 and both host copies are byte-identical and current; same-workflow agent, not an independent review",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0113-recheck-b7483e0.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0113-recheck-b7483e0.md": "6f0de7e0de4b07b64ce35a1c5d26759d53ccea1249e3d4e44360bb9e9e1048ce"
+  },
+  "observed_at_unix_seconds": 1793559035,
+  "snapshot": {
+    "revision": "b7483e0641bb42d0d24751b8ce1f92d4986edcdb",
+    "dirty": false,
+    "fingerprint": "156f9fcc5a7695505c674aa4643a13e5a2c21d561b6834eb20a0e822b0cd56b8",
+    "content": "2b6b933957b1e272e19763c2ea522ddc52a4d317767912bf002a26f667e78fea"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0113",
+      "digest": "907673c3652c2c7981f1ce0a550cb34982496545acea99f4029fcd5664d61e46"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "copy-localization",
+  "limitations": [
+    "Agent-assisted by the same workflow as the builder; not an independent review"
+  ]
+}

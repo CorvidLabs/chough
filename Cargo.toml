@@ -2,6 +2,7 @@
 name = "chough"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.88"
 description = "Focused context and honest evidence for an agent-driven development lifecycle"
 license = "MIT"
 repository = "https://github.com/CorvidLabs/chough"

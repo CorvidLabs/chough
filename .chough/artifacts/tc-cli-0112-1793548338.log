@@ -1,0 +1,26 @@
+--- stdout ---
+
+running 1 test
+test a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated ... FAILED
+
+failures:
+
+---- a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated stdout ----
+
+thread 'a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated' (240288530) panicked at tests/package.rs:1161:9:
+assertion `left == right` failed: SKILL.md
+  left: String("current")
+ right: "known-outdated"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.47s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/package.rs (target/debug/deps/package-1becac6ef9d733f9)
+error: test failed, to rerun pass `--test package`

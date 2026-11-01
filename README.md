@@ -14,20 +14,23 @@ Chough records what stage work is in, what was decided, what was actually checke
 
 ![Chough and the tools that own its records](docs/diagrams/ownership.svg)
 
-Chough is a public CorvidLabs repository. **No release exists yet**: nothing is
-published to crates.io, tagged, hosted or deployed. The first release candidate
-([PR #9](https://github.com/CorvidLabs/chough/pull/9)) is merged, and version 0.1.0
-is being prepared from `main`; until it is tagged, install from the repository as
-shown below.
+Chough is a public CorvidLabs repository. Release history is in
+[CHANGELOG.md](CHANGELOG.md). Nothing is hosted or deployed.
 
 ## Install
 
-Chough needs Rust 1.88 or later. Once 0.1.0 is on crates.io, install it with `cargo
-install chough --locked`. Until then, install the helper from the repository:
+Chough needs Rust 1.88 or later. Install a released version from crates.io (the
+releases are listed in [CHANGELOG.md](CHANGELOG.md)):
+
+```sh
+cargo install chough --locked
+chough --help
+```
+
+To run unreleased work from main, install from the repository:
 
 ```sh
 cargo install --git https://github.com/CorvidLabs/chough --locked
-chough --help
 ```
 
 or from a clone:
@@ -40,6 +43,20 @@ cargo install --path . --locked
 
 The skill bundle is embedded in the binary; `chough init` copies it into your
 project.
+
+## Install the toolchain
+
+Chough works with HI, SpecSync and Fledge. One command installs the versions CI
+uses:
+
+```sh
+cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.2
+```
+
+This command needs Rust 1.89 or later, because SpecSync 6.1.2 declares it. Cargo
+skips a tool already installed from crates.io at that version and replaces a
+different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
+`specsync`. Install Chough itself as shown in [Install](#install).
 
 ## Start here
 
@@ -114,6 +131,7 @@ behavioral proof or human acceptance.
 | Where | What runs |
 |---|---|
 | Hosted CI: Ubuntu, macOS, Windows | `cargo test` and a release build |
+| Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
 | Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
@@ -133,10 +151,10 @@ post-fix Kimi rerun. Other platforms may work but have not been exercised.
 - On Windows, a bounded command's descendants whose parent has already exited cannot
   be stopped; the run returns on time with an incomplete capture, never `passed`.
 - Calls to Git (fingerprints and revisions) are not yet bounded in time or output.
-- SpecSync 6.1.1's change status does not flag an approved delta edited after
-  approval; the fix is merged on SpecSync main
-  ([CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823)) but
-  not yet released.
+- SpecSync 6.1.1 and earlier do not flag an approved delta edited after approval;
+  SpecSync 6.1.2 does
+  ([CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823)), and
+  Chough's own guard still refuses such a delta with older versions.
 - In a repository with no commits yet, `chough next` reports the raw `git rev-parse
   HEAD` error as the snapshot; make a first commit before relying on freshness.
 - Cursor, Gemini and Grok have not had real discovery or cold-start exercises. Kimi
@@ -172,5 +190,6 @@ files.
 - [Evidence-reuse proposal](docs/NEXT_CHANGE.md): addressed for content-identical
   commits by D-018; its ancestry check and reuse label remain unapproved
 - [Diagram rendering and visual verification](docs/verification.md)
+- [Release steps](docs/releasing.md) and the [change log](CHANGELOG.md)
 
 MIT licensed. This repository's visibility and its software license are separate facts.

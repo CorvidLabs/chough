@@ -73,6 +73,7 @@ Stage routing bounded by native gates. The helper SHALL route the stages intent,
 Acceptance Criteria
 - Every transition kind is exercised in an isolated fixture; history survives back and reset; skip without a reason is refused.
 - Entering build is refused for draft, unavailable and approval-invalid states and allowed for a valid approved state.
+- Reaching test or accept is refused for draft, unavailable and approval-invalid states and allowed for a valid approved state or an archive with authenticated terminal evidence.
 - Leaving accept, reset to done and release to done are refused unless the change is archived with authenticated terminal evidence.
 - A malformed or ill-typed SDD policy refuses gated moves; a valid disabled policy leaves them ungated.
 - Entering a side stage records its caller, and return restores that caller.
@@ -154,7 +155,7 @@ Host skill installation. The helper SHALL install the complete skill bundle for 
 
 Acceptance Criteria
 - Installing for the claude host creates `.claude/skills/chough-workflow/` with the complete bundle, and repeating the install preserves edits.
-- An unmodified 0.1.0 bundle file is updated, while an edited file is reported and left unchanged.
+- A bundle file byte-identical to one from a known earlier build is updated, while an edited file is reported and left unchanged.
 
 ### REQ-cli-017
 
@@ -176,12 +177,14 @@ Acceptance Criteria
 
 ### REQ-cli-019
 
-Installable package. The crate package SHALL contain the helper source, the canonical skill bundle, Cargo files, README and LICENSE, and SHALL NOT contain Chough's own development records; initializing a new project SHALL install the helper's skills and an empty checkpoint only, and skill status SHALL recognize copies installed from earlier builds. The canonical skill bundle SHALL contain no em dash or en dash. Trace: LIFE-9, LIFE-4.
+Installable package. The crate package SHALL contain the helper source, the canonical skill bundle, Cargo files, README and LICENSE, and SHALL NOT contain Chough's own development records; initializing a new project SHALL install the helper's skills and an empty checkpoint only, and skill status SHALL recognize copies installed from earlier builds. The canonical skill bundle SHALL contain no em dash or en dash. The package SHALL declare its minimum supported Rust version, and that version SHALL be built and tested in CI. The README SHALL give one command that installs the HI, SpecSync and Fledge versions CI uses, and the versions named in the README, the agent instructions and CI SHALL agree. Trace: LIFE-9, LIFE-4, LIFE-6.
 
 Acceptance Criteria
 - The package list contains no `.chough/`, `.specsync/`, examples, tests or host copies.
 - A new project initialized from the installed binary has no bugs, evidence or artifacts.
 - No bundle file contains U+2013 or U+2014, and unedited copies of the earlier dashed files are reported known-outdated and updated.
+- Cargo.toml declares a rust-version, and a CI job builds and tests with that Rust version.
+- The README, AGENTS.md and the CI workflow name the same HI, SpecSync and Fledge versions; Cargo.toml, the README and the CI job for the minimum version name the same Rust version; a test fails naming the file when one is missing or disagrees.
 
 ### REQ-cli-020
 
