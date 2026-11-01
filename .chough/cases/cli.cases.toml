@@ -1435,3 +1435,39 @@ expected = ["tests/timing.rs::native_times_come_only_from_status_and_native_reco
 adapter = "cargo-test"
 test_target = "timing"
 test = "native_times_come_only_from_status_and_native_records_read_read_only"
+
+[[case]]
+id = "TC-cli-0100"
+title = "A timed-out or unconfigured native read leaves native times unknown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-003", "REQ-cli-006"]
+paths = ["src/records.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown"
+
+[[case]]
+id = "TC-cli-0104"
+title = "A case run records its run time and the timing report shows it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-004"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::a_case_run_records_its_run_time_and_the_report_shows_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "a_case_run_records_its_run_time_and_the_report_shows_it"
