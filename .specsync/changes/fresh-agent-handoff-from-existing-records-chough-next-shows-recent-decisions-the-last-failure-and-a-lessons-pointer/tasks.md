@@ -20,15 +20,15 @@ frozen rubric.
 
 Implementation:
 
-- [ ] Add failing tests in tests/next.rs for archived-not-done at plan, test and accept; the decisions block; the last failure block; the lessons pointer; the cap fixture; byte-identical output across runs and after modification-time changes; record the failing run.
-- [ ] Factor done_action's new-cycle steps into shared constants and add the archived-not-done rule in src/stage.rs.
-- [ ] Add the decisions, last_failure and lessons fields and text lines to the next view in src/main.rs, and add the new lists to LISTS.
-- [ ] Add any bounded reader needed in src/records.rs, src/evidence.rs or src/bugs.rs as pub(super).
-- [ ] Update references/accept.md, checkpoint.md, bugs.md, librarian.md and lifecycle.md (and SKILL.md only if needed) as the design says.
-- [ ] Add the fb6e487 digests of every edited bundle file to KNOWN_PREVIOUS, add tests/fixtures/skill-fb6e487/ and the known-outdated test in tests/package.rs.
-- [ ] Refresh .agents/ and .claude/ copies with chough skill update and confirm byte identity.
-- [ ] Normalize the canonical REQ-cli-002 heading to exactly `### REQ-cli-002` after approval, as requirements.md shows.
-- [ ] Update docs/cli.md, CHANGELOG.md (Unreleased) and docs/ROADMAP.md (only to list this slice).
+- [x] Add failing tests in tests/next.rs for archived-not-done at plan, test and accept; the decisions block; the last failure block; the lessons pointer; the cap fixture; byte-identical output across runs and after modification-time changes; record the failing run.
+- [x] Factor done_action's new-cycle steps into shared constants and add the archived-not-done rule in src/stage.rs.
+- [x] Add the decisions, last_failure and lessons fields and text lines to the next view in src/main.rs, and add the new lists to LISTS.
+- [x] Add any bounded reader needed in src/records.rs, src/evidence.rs or src/bugs.rs as pub(super).
+- [x] Update references/accept.md, checkpoint.md, bugs.md, librarian.md and lifecycle.md (and SKILL.md only if needed) as the design says.
+- [x] Add the fb6e487 digests of every edited bundle file to KNOWN_PREVIOUS, add tests/fixtures/skill-fb6e487/ and the known-outdated test in tests/package.rs.
+- [x] Refresh .agents/ and .claude/ copies with chough skill update and confirm byte identity.
+- [x] Normalize the canonical REQ-cli-002 heading to exactly `### REQ-cli-002` after approval, as requirements.md shows.
+- [x] Update docs/cli.md, CHANGELOG.md (Unreleased) and docs/ROADMAP.md (only to list this slice).
 - [ ] Run the closeout pass inside this change: labelled lessons into specs/cli/context.md, one completed checkpoint entry, one summary of at most 12 lines.
 
 Human gates and steps (not tasks), in order: 0xLeif's scope approval of this change,
