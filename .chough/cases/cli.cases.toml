@@ -1257,6 +1257,222 @@ test_target = "stages"
 test = "native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes"
 
 [[case]]
+id = "TC-cli-0080"
+title = "Every transition kind yields the expected stage segments and cycles"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-008"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::every_transition_kind_yields_the_expected_segments_and_cycles passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "every_transition_kind_yields_the_expected_segments_and_cycles"
+
+[[case]]
+id = "TC-cli-0081"
+title = "Gate records start or end no segment and give waiting-on-human time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::gate_records_start_or_end_no_segment_and_give_waiting_time passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "gate_records_start_or_end_no_segment_and_give_waiting_time"
+
+[[case]]
+id = "TC-cli-0082"
+title = "Checkpoint gates append one record when opened and one when cleared"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-007", "REQ-cli-008"]
+paths = ["src/checkpoint.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::checkpoint_gates_append_one_record_when_opened_and_one_when_cleared passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "checkpoint_gates_append_one_record_when_opened_and_one_when_cleared"
+
+[[case]]
+id = "TC-cli-0083"
+title = "Gate records are reconciled with the awaiting-human list"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::gate_records_are_reconciled_with_the_awaiting_human_list passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "gate_records_are_reconciled_with_the_awaiting_human_list"
+
+[[case]]
+id = "TC-cli-0084"
+title = "Missing and out-of-order times are unknown, never zero"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::missing_and_out_of_order_times_are_unknown_never_zero passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "missing_and_out_of_order_times_are_unknown_never_zero"
+
+[[case]]
+id = "TC-cli-0085"
+title = "History ranges need three samples and exclude idle time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::history_ranges_need_three_samples_and_exclude_idle_time passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "history_ranges_need_three_samples_and_exclude_idle_time"
+
+[[case]]
+id = "TC-cli-0086"
+title = "Bug fix times come from observations, notes and the retention ledger"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020"]
+paths = ["src/bugs.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::bug_fix_times_come_from_observations_notes_and_the_retention_ledger passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "bug_fix_times_come_from_observations_notes_and_the_retention_ledger"
+
+[[case]]
+id = "TC-cli-0087"
+title = "Observations group per case and validation elapsed is total run wall-clock"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020"]
+paths = ["src/timing.rs", "src/validate.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock"
+
+[[case]]
+id = "TC-cli-0088"
+title = "Transitions beyond the bound are partial and every record stays byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-006"]
+paths = ["src/records.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical"
+
+[[case]]
+id = "TC-cli-0089"
+title = "Native times come only from status and native records read read-only"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-003"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::native_times_come_only_from_status_and_native_records_read_read_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "native_times_come_only_from_status_and_native_records_read_read_only"
+
+[[case]]
+id = "TC-cli-0100"
+title = "A timed-out or unconfigured native read leaves native times unknown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-003", "REQ-cli-006"]
+paths = ["src/records.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown"
+
+[[case]]
+id = "TC-cli-0104"
+title = "A case run records its run time and the timing report shows it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-cli-020", "REQ-cli-004"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::a_case_run_records_its_run_time_and_the_report_shows_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "a_case_run_records_its_run_time_and_the_report_shows_it"
+
+[[case]]
 id = "TC-cli-0067"
 title = "Committing only Chough records or an empty commit keeps an observation current"
 status = "active"

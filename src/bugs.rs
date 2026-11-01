@@ -276,6 +276,34 @@ fn validate(bug: &Bug) -> Result<()> {
     Ok(())
 }
 
+/// The recorded times of one bug, for the timing report.
+pub(super) struct BugTimes {
+    pub(super) id: String,
+    pub(super) status: String,
+    pub(super) created_at_unix_seconds: u64,
+    pub(super) observations: Vec<String>,
+    /// Each note's time and text, in record order.
+    pub(super) notes: Vec<(u64, String)>,
+}
+
+/// Every bug's recorded times, through the bounded, validated loader.
+pub(super) fn bug_times(root: &Path) -> Result<Vec<BugTimes>> {
+    Ok(load_all(root)?
+        .into_iter()
+        .map(|bug| BugTimes {
+            id: bug.id,
+            status: bug.status,
+            created_at_unix_seconds: bug.created_at_unix_seconds,
+            observations: bug.observations,
+            notes: bug
+                .notes
+                .into_iter()
+                .map(|note| (note.at_unix_seconds, note.text))
+                .collect(),
+        })
+        .collect())
+}
+
 /// Linked observations that are present; pruned or unavailable ones never count.
 fn present_observations(root: &Path, ids: &[String]) -> Result<Vec<evidence::Evidence>> {
     let mut present = vec![];

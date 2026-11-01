@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_case_run_records_its_run_time_and_the_report_shows_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 3.51s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running tests/timing.rs (target/debug/deps/timing-db023144b5896392)

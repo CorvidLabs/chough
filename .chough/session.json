@@ -53,7 +53,9 @@
     "2026-10-31: 0xLeif approved the scopes of PRs #3, #7 and #8 (\"I approve\"); recorded with specsync change approve --actor 0xLeif (digests 8ee404db, d2f17060, d358e8b1)",
     "2026-10-31: 0xLeif reviewed and accepted the implementations of PRs #3, #7 and #8; reviews recorded with specsync change review --reviewer 0xLeif (#3 and #7 now; #8 after its rebase)",
     "2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion",
-    "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo"
+    "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
+    "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
+    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -70,7 +72,9 @@
     "PR #7 change archived at ef9de16 after review; Chough reached done through gate native:archived",
     "Retention, packaging and docs implemented in three reviewed streams and merged into PR #9; BUG-0012 reproduced at d761ff2 and verified at 30b74f8; BUG-0013 found, fixed at 3b0b2f7 and verified; TC-cli-0050 to TC-cli-0066 passed",
     "PR #9 change archived after 0xLeif's review; Chough reached done through native:archived",
-    "refused env names in the approved definition amended to match the code; re-approved by 0xLeif"
+    "refused env names in the approved definition amended to match the code; re-approved by 0xLeif",
+    "plan step 7 documented-order exercise passed",
+    "TC-cli-0100 and TC-cli-0104 added and passing"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -93,5 +97,5 @@
     "Merge of PR #9 (the human's action); nothing is released"
   ],
   "run_consents": [],
-  "next_action": "after #17 merges: rebase on main, change check, then specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif and ship"
+  "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
 }

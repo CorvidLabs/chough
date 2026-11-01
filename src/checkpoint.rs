@@ -459,10 +459,13 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         session.blockers.clear();
         changed = true;
     }
-    if args.clear_awaiting_human {
-        session.awaiting_human.clear();
+    let cleared = if args.clear_awaiting_human {
         changed = true;
-    }
+        std::mem::take(&mut session.awaiting_human)
+    } else {
+        vec![]
+    };
+    let open_before_additions = session.awaiting_human.clone();
     for resolved in &args.resolved {
         let before = session.open_questions.len();
         session
@@ -505,6 +508,17 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     }
     if changed {
         save_checkpoint(root, &session)?;
+        // Gate records follow a successful save, so a failed save writes none: closed
+        // first (clears run before additions), then each gate that was not open.
+        let stage = session.stage.current.as_str();
+        for gate in &cleared {
+            stage::log_gate(root, stage::GATE_CLOSED, stage, gate)?;
+        }
+        for gate in &session.awaiting_human {
+            if !open_before_additions.contains(gate) {
+                stage::log_gate(root, stage::GATE_OPENED, stage, gate)?;
+            }
+        }
     }
     print_json(&json!({"schema_version": 1, "saved": changed, "checkpoint": session}))
 }

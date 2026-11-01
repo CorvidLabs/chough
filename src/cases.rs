@@ -14,7 +14,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, File};
 use std::io::Read;
 use std::path::{Component, Path};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 pub(super) const CASES_DIR: &str = ".chough/cases";
 pub(super) const ARTIFACTS_DIR: &str = ".chough/artifacts";
@@ -826,7 +826,9 @@ pub(super) fn run_case(
         .iter()
         .map(|(name, value)| (name.clone(), value.clone()))
         .collect();
+    let started = Instant::now();
     let execution = execute(root, &argv, &env, timeout)?;
+    let duration_seconds = started.elapsed().as_secs();
     let (output, text, escapes_removed) = artifact(&execution);
     let artifact = format!("{ARTIFACTS_DIR}/{observation}.log");
     ensure!(
@@ -964,6 +966,7 @@ pub(super) fn run_case(
         exit_code: execution.exit_code,
         tests_run,
         limitations,
+        duration_seconds: Some(duration_seconds),
     };
     evidence::record(root, &record)?;
     Ok(RunResult {
@@ -1061,6 +1064,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         exit_code: None,
         tests_run: None,
         limitations,
+        duration_seconds: None,
     };
     let name = evidence::record(root, &record)?;
     Ok(json!({"schema_version": 1, "recorded": name, "outcome": outcome, "provenance": PROVENANCE}))

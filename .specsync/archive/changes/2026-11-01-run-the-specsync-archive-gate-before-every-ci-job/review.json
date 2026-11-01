@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "run-the-specsync-archive-gate-before-every-ci-job",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "1fd26f3dd7c7c9fc8db35fb13f6eddd3237643b4",
+  "contract_digest": "956f9c85094f55b290e9d4bacc5febbd1ec1746d67a98400c86a419967f2ede6",
+  "execution_digest": "10a341b91ee60c48b9a07047021c9fd74e2566232ca43c10fa598d33f61641b6",
+  "workspace_digest": "6a28af566827f54b25894099819f22789b8159fb445eb76412e1441880f5d98f",
+  "timestamp": 1793510921
+}

@@ -13,7 +13,11 @@ new` prints the lessons of the modules you declare.
    out of scope, steps, risks, constraints consulted), tasks, testing, docs, and a
    semantic delta per affected module.
 4. Estimate meaningful increments with relative size and the main uncertainty. Do not
-   invent precise hours.
+   invent precise hours. Run `chough timing` and use its history ranges (per stage, bug
+   fix and human gate) as the basis: they are elapsed wall-clock time, not effort, and
+   estimates from recorded history, not targets. When it reports too few samples, say
+   that history is too thin and estimate by relative size alone; never present a range
+   as a deadline.
 5. If several agents will build, assign file or module ownership in the plan.
 6. Record the change: `chough checkpoint --native-change <id>`.
 

@@ -36,7 +36,7 @@ flowchart TB
 | `fledge.toml` | Fledge tasks and lanes |
 | `.chough/session.json` | Chough: the single writable checkpoint (schema 2) |
 | `.chough/session.v1.json` | The original schema 1 bytes kept by `chough migrate` |
-| `.chough/transitions.jsonl` | Append-only stage history |
+| `.chough/transitions.jsonl` | Append-only stage history, including `gate-opened` and `gate-closed` records written when an awaiting-human gate opens or is cleared; `chough timing` derives durations from it and stores none |
 | `.chough/preferences.json` | Standing project preferences, each with its source |
 | `.chough/cases/*.cases.toml` | Test definitions (`chough-testing/1`) |
 | `.chough/evidence/*.json`, `.chough/artifacts/` | Observations and captured output |
@@ -94,6 +94,22 @@ checkpoint and the others report back; there is no distributed lock. APS was
 evaluated as a backend and deferred (D-010). The checkpoint stores decision summaries
 and references, never reasoning transcripts, and it never stores native lifecycle
 state: it stores the change ID and reads status when a gate matters.
+
+## Timing is derived, not stored
+
+`chough timing` reports how long stages, tests, bug fixes and human gates took from
+the records above; it writes nothing and keeps no timing store. The one record added
+for it is a pair of transition kinds: `chough checkpoint` appends `gate-opened` when an
+awaiting-human gate opens and `gate-closed` when it is cleared, in the call that
+already writes the checkpoint, so waiting time survives `--clear-awaiting-human`. They
+record when, never who decided or what, and they start or end no stage segment.
+Native times are read from `specsync change status` and, read-only, the gate and
+timestamp fields of a change's native record files; validity comes only from status,
+and nothing native is copied into Chough's records. Every duration is labelled elapsed
+wall-clock time, not effort; same-second segments are `recorded together`; missing or
+out-of-order times are `unknown` with a reason, never zero; history ranges are
+estimates with their sample count, not targets, and fewer than 3 samples are too few
+to estimate. See [the CLI reference](cli.md#timing).
 
 ## A focused packet
 

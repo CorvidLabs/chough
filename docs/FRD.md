@@ -115,6 +115,7 @@ cross-module view and its traceability without restating it.
 | REQ-cli-015 | Optional librarian with source-linked snapshots and index | FLOW-12 | tests/optional.rs |
 | REQ-cli-016 | Per-host skill install; updates never replace edits | FLOW-1, LIFE-4 | tests/optional.rs; host discovery checks |
 | REQ-cli-017 | Observation schema 2; schema 1 still read | LIFE-2, LIFE-7, FLOW-7 | tests/cases.rs |
+| REQ-cli-020 | Read-only timing report from existing records, with timestamped awaiting-human gate records; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 
 Skill-led behavior with no helper requirement, verified by exercises rather than
 helper tests: intent interviewing and role synthesis (FLOW-3,
