@@ -734,6 +734,35 @@ pub(super) struct Action {
 }
 
 const NEW_CYCLE_RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+/// The new-cycle steps, shared by the done stage and an archive left behind at an
+/// earlier main stage, so the wording cannot drift.
+const NEW_CYCLE_STEPS: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work)";
+const NEW_CYCLE_CHANGE: &str = "specsync change new \"<outcome>\" --spec <module> --path <path>";
+const NEW_CYCLE_RECORD: &str =
+    "chough checkpoint --native-change <id> --next-action \"<next step>\"";
+
+/// The full new cycle after a native change: reset, a new native change, record it.
+fn new_cycle() -> String {
+    format!("{NEW_CYCLE_STEPS}, then {NEW_CYCLE_CHANGE}, then {NEW_CYCLE_RECORD}.")
+}
+
+/// The terminal evidence validity a native status response reports.
+fn terminal_validity(state: &NativeState) -> &str {
+    match state {
+        NativeState::State(_, value) => value
+            .pointer("/summary/terminal_evidence/validity")
+            .and_then(Value::as_str)
+            .unwrap_or("not reported"),
+        _ => "not reported",
+    }
+}
+
+/// Whether the recorded native change is archived with terminal evidence that the done
+/// gate accepts, the same test `done_action` uses.
+fn archived_and_authenticated(root: &Path, session: &Checkpoint, state: &NativeState) -> bool {
+    matches!(state, NativeState::State(name, _) if name == "archived")
+        && gate_for_state(root, session, "done", state.clone()).is_some_and(|gate| gate.allowed)
+}
 
 /// The gate for the next main stage and the next valid action, both evaluated on one
 /// native state, so `next` and `status` report the same decision (REQ-cli-021).
@@ -782,6 +811,8 @@ pub(super) fn assess(
         }
     } else if current == "done" {
         done_action(root, session, state, native_next)
+    } else if is_main(current) && archived_and_authenticated(root, session, state) {
+        archived_action(session, state, native_next)
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
         Action {
             action: format!("Gate not open ({}): {}", gate.label, gate.detail),
@@ -806,9 +837,6 @@ fn done_action(
     state: &NativeState,
     native_next: Option<&str>,
 ) -> Action {
-    let steps = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work)";
-    let record = "chough checkpoint --native-change <id> --next-action \"<next step>\"";
-    let new_change = "specsync change new \"<outcome>\" --spec <module> --path <path>";
     let check_first = native_next
         .map(|text| format!(" Native next action, check it first: {text}."))
         .unwrap_or_default();
@@ -820,28 +848,22 @@ fn done_action(
     let done = gate_for_state(root, session, "done", state.clone());
     match (state, done) {
         (NativeState::NotConfigured | NativeState::Disabled, _) => closed(
-            format!("{steps}, then chough checkpoint --next-action \"<next step>\"."),
+            format!("{NEW_CYCLE_STEPS}, then chough checkpoint --next-action \"<next step>\"."),
             "The cycle is closed; no native lifecycle gates it.".into(),
         ),
         (NativeState::NoChange, _) => closed(
-            format!("{steps}, then {new_change}, then {record}."),
+            new_cycle(),
             "No native change is recorded for this cycle, so it is closed.".into(),
         ),
         (NativeState::State(..), Some(gate)) if gate.allowed => closed(
-            format!("{steps}, then {new_change}, then {record}."),
+            new_cycle(),
             format!(
                 "The cycle for {} is closed: native state archived, terminal evidence {}.",
                 session
                     .native_change
                     .as_deref()
                     .unwrap_or("the native change"),
-                match state {
-                    NativeState::State(_, value) => value
-                        .pointer("/summary/terminal_evidence/validity")
-                        .and_then(Value::as_str)
-                        .unwrap_or("not reported"),
-                    _ => "not reported",
-                }
+                terminal_validity(state)
             ),
         ),
         (_, Some(gate)) => Action {
@@ -855,6 +877,41 @@ fn done_action(
             reason: "Stage done has no native prerequisite here.".into(),
             command: None,
         },
+    }
+}
+
+/// At intent to accept, a recorded native change that is archived with authenticated
+/// terminal evidence closes this cycle's work: name the archive and the new cycle, after
+/// recording done first at accept (accept.md's documented close after finalize).
+fn archived_action(session: &Checkpoint, state: &NativeState, native_next: Option<&str>) -> Action {
+    let current = session.stage.current.as_str();
+    let change = session
+        .native_change
+        .as_deref()
+        .unwrap_or("the native change");
+    let at_accept = current == "accept";
+    let record_done = if at_accept {
+        "Record done first: chough stage advance (accept to done is allowed). Then: "
+    } else {
+        ""
+    };
+    let check_first = native_next
+        .map(|text| format!(" Native next action, check it first: {text}."))
+        .unwrap_or_default();
+    Action {
+        action: format!(
+            "Native change {change} is archived while the checkpoint is at {current}, so this cycle's work is closed. {record_done}{}",
+            new_cycle()
+        ),
+        reason: format!(
+            "The archive's terminal evidence is {}; continuing {current} would work on a closed change.{check_first}",
+            terminal_validity(state)
+        ),
+        command: Some(if at_accept {
+            "chough stage advance".into()
+        } else {
+            NEW_CYCLE_RESET.into()
+        }),
     }
 }
 

@@ -375,12 +375,26 @@ const NEXT_LIMIT: usize = records::LIMIT;
 const LIST_LIMIT: usize = 10;
 const STRING_LIMIT: usize = 512;
 const CUT: &str = " [cut]";
-/// The lists the next view may shorten, each with its total kept.
-const LISTS: [&str; 4] = [
-    "awaiting_human",
-    "blockers",
-    "blocking_bugs",
-    "observations",
+/// Entries shown of the newest decisions, of a failure's linked bugs and of archived
+/// lesson bundles.
+const DECISION_LIMIT: usize = 5;
+const LINKED_BUG_LIMIT: usize = 3;
+const BUNDLE_LIMIT: usize = 5;
+/// Decision prefixes read best-effort; any other entry is shown whole.
+const DECISION_KINDS: [&str; 3] = ["decided", "rejected", "failed"];
+/// Largest module context file searched for its Lessons heading.
+const LESSON_SOURCE_LIMIT: u64 = records::NATIVE_RECORD_LIMIT;
+const ARCHIVED_CHANGES: &str = ".specsync/archive/changes";
+/// The lists the next view may shorten, each with its total kept, as JSON pointers.
+const LISTS: [&str; 8] = [
+    "/awaiting_human/items",
+    "/blockers/items",
+    "/blocking_bugs/items",
+    "/observations/items",
+    "/decisions/items",
+    "/last_failure/bugs/items",
+    "/lessons/sources/items",
+    "/lessons/archived_bundles/items",
 ];
 
 /// The bytes `character` takes inside a JSON string, as serde_json escapes it.
@@ -414,6 +428,138 @@ fn cut(text: &str) -> String {
 fn listed<'a>(items: impl ExactSizeIterator<Item = &'a String>) -> Value {
     let total = items.len();
     json!({"total": total, "items": items.take(LIST_LIMIT).map(|item| cut(item)).collect::<Vec<_>>()})
+}
+
+/// One checkpoint decision split by the `decided:`, `rejected:` or `failed:` convention:
+/// a prefixed entry's reason is the text after its last ` because `; any other entry is
+/// shown whole with no kind and no reason.
+fn decision(entry: &str) -> Value {
+    let prefixed = DECISION_KINDS.iter().find_map(|kind| {
+        entry
+            .strip_prefix(kind)
+            .and_then(|rest| rest.strip_prefix(':'))
+            .map(|rest| (*kind, rest.trim_start()))
+    });
+    match prefixed {
+        Some((kind, rest)) => match rest.rsplit_once(" because ") {
+            Some((text, reason)) => json!({"kind": kind, "text": cut(text), "reason": cut(reason)}),
+            None => json!({"kind": kind, "text": cut(rest), "reason": null}),
+        },
+        None => json!({"kind": null, "text": cut(entry), "reason": null}),
+    }
+}
+
+/// The most recent decisions, newest first, with their total.
+fn decisions(entries: &[String]) -> Value {
+    json!({
+        "total": entries.len(),
+        "items": entries.iter().rev().take(DECISION_LIMIT).map(|entry| decision(entry)).collect::<Vec<_>>(),
+    })
+}
+
+/// The failed observation with the greatest recorded time, ties to the greater ID, and
+/// every bug that links it, by bug ID. Recorded fields only: never file times or order.
+fn last_failure(root: &Path) -> Result<Value> {
+    let latest = evidence::load_all(root)?
+        .into_iter()
+        .filter(|record| record.outcome == evidence::Outcome::Failed)
+        .max_by(|left, right| {
+            (left.observed_at_unix_seconds, &left.id)
+                .cmp(&(right.observed_at_unix_seconds, &right.id))
+        });
+    let Some(latest) = latest else {
+        return Ok(Value::Null);
+    };
+    let mut linked: Vec<(String, String)> = bugs::observation_references(root)?
+        .into_iter()
+        .filter(|(_, ids)| ids.contains(&latest.id))
+        .filter_map(|(label, _)| {
+            let (id, status) = label.split_once(' ')?;
+            Some((id.to_string(), status.to_string()))
+        })
+        .collect();
+    linked.sort();
+    Ok(json!({
+        "id": latest.id,
+        "observed_at_unix_seconds": latest.observed_at_unix_seconds,
+        "summary": cut(&latest.summary),
+        "bugs": {
+            "total": linked.len(),
+            "items": linked.iter().take(LINKED_BUG_LIMIT).map(|(id, status)| json!({"id": id, "status": status})).collect::<Vec<_>>(),
+        },
+    }))
+}
+
+/// The 1-based line of the first line that is exactly `## Lessons`, read within a bound;
+/// Ok(None) for a missing file, Err with a note when it cannot be searched.
+fn lessons_heading(path: &Path) -> std::result::Result<Option<Option<usize>>, String> {
+    match records::read_native_record(path, LESSON_SOURCE_LIMIT) {
+        Ok(Some(bytes)) => Ok(Some(
+            String::from_utf8_lossy(&bytes)
+                .lines()
+                .position(|line| line.trim_end_matches('\r') == "## Lessons")
+                .map(|index| index + 1),
+        )),
+        Ok(None) => Err(format!(
+            "larger than {LESSON_SOURCE_LIMIT} bytes, not searched"
+        )),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(error) => Err(format!("cannot be read: {error}")),
+    }
+}
+
+/// Where each module's lessons live, as SpecSync briefs them: `<module>.3md` when
+/// present, otherwise the Lessons section of `context.md`. No lesson text is read out.
+fn lesson_source(root: &Path, module: &str) -> Result<Value> {
+    let native = format!("specs/{module}/{module}.3md");
+    if local_path(root, &native)?.is_file() {
+        return Ok(json!({"module": module, "path": native, "section_line": null, "note": null}));
+    }
+    let context = format!("specs/{module}/context.md");
+    let (line, note) = match lessons_heading(&local_path(root, &context)?) {
+        Ok(Some(Some(line))) => (Some(line), None),
+        Ok(Some(None)) => (None, Some("no Lessons section".to_string())),
+        Ok(None) => (None, Some("missing".to_string())),
+        Err(note) => (None, Some(note)),
+    };
+    Ok(json!({"module": module, "path": context, "section_line": line, "note": note}))
+}
+
+/// Archived SpecSync lesson bundles, newest first by archive directory name. Nothing
+/// records which were folded.
+fn archived_bundles(root: &Path) -> Result<Value> {
+    let directory = local_path(root, ARCHIVED_CHANGES)?;
+    let mut names = vec![];
+    if directory.is_dir() {
+        for entry in std::fs::read_dir(&directory)? {
+            let entry = entry?;
+            let Some(name) = entry.file_name().to_str().map(str::to_string) else {
+                continue;
+            };
+            if entry.path().join("lesson-bundle.md").is_file() {
+                names.push(name);
+            }
+        }
+    }
+    names.sort();
+    names.reverse();
+    Ok(json!({
+        "total": names.len(),
+        "items": names.iter().take(BUNDLE_LIMIT).map(|name| cut(&format!("{ARCHIVED_CHANGES}/{name}/lesson-bundle.md"))).collect::<Vec<_>>(),
+    }))
+}
+
+/// The lesson pointer: each module's native lesson source and the archived bundles.
+fn lessons(root: &Path, modules: &[String]) -> Result<Value> {
+    let sources = modules
+        .iter()
+        .take(LIST_LIMIT)
+        .map(|module| lesson_source(root, module))
+        .collect::<Result<Vec<_>>>()?;
+    Ok(json!({
+        "sources": {"total": modules.len(), "items": sources},
+        "archived_bundles": archived_bundles(root)?,
+    }))
 }
 
 /// The focused next view (REQ-cli-021): text by default, compact JSON with `--json`.
@@ -471,6 +617,10 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .collect();
 
     let empty = vec![];
+    let modules = match session {
+        Session::V2(checkpoint) => &checkpoint.modules,
+        Session::V1(session) => &session.modules,
+    };
     let view = json!({
         "schema_version": 1,
         "view": "next",
@@ -498,6 +648,9 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "referenced_current": references.len() - attention.len(),
             "unreferenced": unreferenced,
         },
+        "decisions": decisions(checkpoint.map_or(&empty, |checkpoint| &checkpoint.decisions)),
+        "last_failure": last_failure(root)?,
+        "lessons": lessons(root, modules)?,
         "environment": environment.map(cut),
         "full_view": "chough status",
         "truncated": false,
@@ -518,15 +671,16 @@ fn fit(mut view: Value, render: impl Fn(&Value) -> String) -> String {
         }
         let longest = LISTS
             .iter()
-            .filter_map(|key| {
-                let items = view[*key]["items"].as_array()?;
-                (!items.is_empty()).then(|| (Value::from(items.clone()).to_string().len(), *key))
+            .filter_map(|pointer| {
+                let items = view.pointer(pointer)?.as_array()?;
+                (!items.is_empty())
+                    .then(|| (Value::from(items.clone()).to_string().len(), *pointer))
             })
             .max();
-        let Some((_, key)) = longest else {
+        let Some((_, pointer)) = longest else {
             return output;
         };
-        if let Some(items) = view[key]["items"].as_array_mut() {
+        if let Some(items) = view.pointer_mut(pointer).and_then(Value::as_array_mut) {
             items.pop();
         }
         view["truncated"] = Value::Bool(true);
@@ -686,6 +840,7 @@ fn next_text(view: &Value) -> String {
         text(&observations["referenced_current"]),
         text(&observations["unreferenced"])
     ));
+    lines.extend(handoff_lines(view, &text));
     if view["environment"].is_string() {
         lines.push(format!("Environment: {}", text(&view["environment"])));
     }
@@ -696,6 +851,105 @@ fn next_text(view: &Value) -> String {
         ));
     }
     lines.join("\n") + "\n"
+}
+
+/// The handoff blocks as text lines: decisions, the last failure and the lesson pointer.
+fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
+    let items = |value: &Value| value["items"].as_array().cloned().unwrap_or_default();
+    let total = |value: &Value| value["total"].as_u64().unwrap_or(0);
+    let mut lines = vec![];
+
+    let block = &view["decisions"];
+    let shown = items(block);
+    if total(block) == 0 {
+        lines.push("Decisions: none".into());
+    } else {
+        lines.push(format!(
+            "Decisions ({} of {}, newest first):",
+            shown.len(),
+            total(block)
+        ));
+        for item in &shown {
+            let kind = if item["kind"].is_string() {
+                format!("{}: ", text(&item["kind"]))
+            } else {
+                String::new()
+            };
+            let reason = if item["reason"].is_string() {
+                format!(" (because {})", text(&item["reason"]))
+            } else {
+                String::new()
+            };
+            lines.push(format!("  {kind}{}{reason}", text(&item["text"])));
+        }
+    }
+
+    let failure = &view["last_failure"];
+    if failure.is_null() {
+        lines.push("Last failure: none".into());
+    } else {
+        lines.push(format!(
+            "Last failure: {} at {}: {}",
+            text(&failure["id"]),
+            text(&failure["observed_at_unix_seconds"]),
+            text(&failure["summary"])
+        ));
+        let bugs = &failure["bugs"];
+        let shown = items(bugs);
+        lines.push(if total(bugs) == 0 {
+            "  Linked bugs: none".into()
+        } else {
+            let listed: Vec<String> = shown
+                .iter()
+                .map(|bug| format!("{} {}", text(&bug["id"]), text(&bug["status"])))
+                .collect();
+            format!(
+                "  Linked bugs: {} ({} of {})",
+                listed.join(", "),
+                shown.len(),
+                total(bugs)
+            )
+        });
+    }
+
+    let sources = &view["lessons"]["sources"];
+    let shown = items(sources);
+    if total(sources) == 0 {
+        lines.push("Lesson sources: none (no modules in the checkpoint)".into());
+    } else {
+        lines.push(format!(
+            "Lesson sources ({} of {} modules):",
+            shown.len(),
+            total(sources)
+        ));
+        for source in &shown {
+            let detail = if source["section_line"].is_u64() {
+                format!(" (## Lessons at line {})", text(&source["section_line"]))
+            } else if source["note"].is_string() {
+                format!(" ({})", text(&source["note"]))
+            } else {
+                String::new()
+            };
+            lines.push(format!(
+                "  {}: {}{detail}",
+                text(&source["module"]),
+                text(&source["path"])
+            ));
+        }
+    }
+    let bundles = &view["lessons"]["archived_bundles"];
+    let shown = items(bundles);
+    if total(bundles) == 0 {
+        lines.push("Archived lesson bundles: none".into());
+    } else {
+        lines.push(format!(
+            "Archived lesson bundles ({} of {}, newest first):",
+            shown.len(),
+            total(bundles)
+        ));
+        lines.extend(shown.iter().map(|path| format!("  {}", text(path))));
+    }
+    lines
 }
 
 #[cfg(test)]

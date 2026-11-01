@@ -1029,20 +1029,24 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
             "# Context\n\n## Lessons\n\nA lesson.\n",
         );
     }
-    // The session record is bounded at 64 KiB, so of 50 decisions, 40 gates and 40
-    // blockers the shown ones are 4 KiB long, as many as fit beside the rest.
-    let long = |prefix: &str, index: usize| {
+    // The session record is bounded at 64 KiB, so 50 decisions, 40 gates and 40
+    // blockers of 4 KiB each cannot all be stored. The 5 decisions shown and the first
+    // 2 gates and blockers are 4 KiB long; the other shown gates and blockers are 700
+    // bytes, longer than the 512-byte cut, so every shown entry fills its cut.
+    let sized = |prefix: &str, index: usize, size: usize| {
         let mut text = format!("{prefix} {index:02} ");
-        text.push_str(&"w".repeat(3_000));
+        text.push_str(&"w".repeat(size * 3 / 4));
         text.push_str(" because ");
-        text.push_str(&"r".repeat(4_096 - text.len()));
+        text.push_str(&"r".repeat(size - text.len()));
         text
     };
-    let list = |prefix: &str, count: usize, long_from: usize, long_to: usize| -> Vec<String> {
+    let list = |prefix: &str, count: usize, long: std::ops::Range<usize>| -> Vec<String> {
         (0..count)
             .map(|index| {
-                if (long_from..long_to).contains(&index) {
-                    long(prefix, index)
+                if long.contains(&index) {
+                    sized(prefix, index, 4_096)
+                } else if prefix != "decided:" && index < 10 {
+                    sized(prefix, index, 700)
                 } else {
                     format!("{prefix} {index:02}")
                 }
@@ -1051,9 +1055,9 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     };
     let mut session = fixture.session();
     session["modules"] = json!(modules);
-    session["decisions"] = json!(list("decided:", 50, 45, 50));
-    session["awaiting_human"] = json!(list("Gate", 40, 0, 4));
-    session["blockers"] = json!(list("Blocker", 40, 0, 4));
+    session["decisions"] = json!(list("decided:", 50, 45..50));
+    session["awaiting_human"] = json!(list("Gate", 40, 0..2));
+    session["blockers"] = json!(list("Blocker", 40, 0..2));
     session["observations"] = json!(["stale-000"]);
     let session_text = serde_json::to_string(&session).unwrap();
     assert!(session_text.len() < 65_536, "{}", session_text.len());
@@ -1082,7 +1086,8 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(next["last_failure"]["bugs"]["total"], 40);
     assert_eq!(next["lessons"]["sources"]["total"], 16);
     assert_eq!(next["lessons"]["archived_bundles"]["total"], 40);
-    assert_eq!(next["observations"]["needs_attention_total"], 500);
+    // The 500 stale ones and the latest failure, which 40 bugs reference.
+    assert_eq!(next["observations"]["needs_attention_total"], 501);
     assert_eq!(next["awaiting_human"]["total"], 40);
     assert_eq!(next["blockers"]["total"], 40);
     for (list, bound) in [
