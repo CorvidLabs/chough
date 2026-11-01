@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Land PR #16: bundle hygiene, case binding environment, colour-safe matching, actionable errors",
+  "objective": "Exercise a Kimi host cold start, carry observed fixes through one native change, and refresh the roadmap",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
+  "native_change": "correct-archived-resume-guidance-and-record-the-kimi-cold-start",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -20,19 +20,25 @@
       "FLOW-13",
       "LIFE-2",
       "LIFE-7",
-      "FLOW-10"
+      "FLOW-10",
+      "LIFE-3",
+      "LIFE-4"
     ],
     "requirements": [
       "REQ-cli-007",
       "REQ-cli-008",
-      "REQ-cli-011"
+      "REQ-cli-011",
+      "REQ-cli-003",
+      "REQ-cli-016"
     ],
     "cases": [
       "TC-cli-0101",
       "TC-cli-0102",
       "TC-cli-0103",
       "TC-cli-0038",
-      "TC-cli-0039"
+      "TC-cli-0039",
+      "TC-cli-0105",
+      "TC-cli-0106"
     ],
     "design": [],
     "files": []
@@ -55,11 +61,12 @@
     "2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion",
     "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
-    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed"
+    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
+    "The human task supplies the intent and requested deliverables; no native scope approval is inferred",
+    "Limit this change to BUG-0020 and BUG-0021 plus honest exercise and roadmap records, because the output-size and global-tool issues do not need the same scoped fix",
+    "Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007"
   ],
-  "open_questions": [
-    "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
-  ],
+  "open_questions": [],
   "completed": [
     "Increments 1-6: records, checkpoint v2, stages, cases, evidence v2, bugs, preferences, validation, librarian, skill hosts and bundle (commits f6f1096, 115f7be); 37 integration tests pass locally on macOS arm64.",
     "Increment 7: full-lifecycle policy, CI audit, Chough's own migrated checkpoint and 40 case definitions, docs and four inspected diagrams.",
@@ -75,7 +82,9 @@
     "refused env names in the approved definition amended to match the code; re-approved by 0xLeif",
     "plan step 7 documented-order exercise passed",
     "TC-cli-0100 and TC-cli-0104 added and passing",
-    "PR #9 merged earlier; stale awaiting-human entry cleared"
+    "PR #9 merged earlier; stale awaiting-human entry cleared",
+    "Kimi Code CLI 0.41.0 cold start on macOS arm64: discovery, build, native checks and baseline verify observed; four friction items classified as BUG-0020 to BUG-0023",
+    "Preserved the concise Kimi cold-start log and recorded failed observation kimi-cold-start-5af3f78 with discovery successes, cold-resume failure and tool and coaching limits"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -84,17 +93,25 @@
     "bug-0004-repro-1",
     "tc-cli-0038-1793475511",
     "tc-cli-0039-1793475513",
-    "bug-0004-fixed-1"
+    "bug-0004-fixed-1",
+    "kimi-cold-start-5af3f78",
+    "kimi-cold-start-5af3f78-scope"
   ],
   "bugs": [
     "BUG-0001",
     "BUG-0002",
     "BUG-0003",
     "BUG-0004",
-    "BUG-0005"
+    "BUG-0005",
+    "BUG-0020",
+    "BUG-0021",
+    "BUG-0022",
+    "BUG-0023"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of correct-archived-resume-guidance-and-record-the-kimi-cold-start"
+  ],
   "run_consents": [],
-  "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+  "next_action": "Wait for 0xLeif to decide the native scope; do not build before valid native approval"
 }

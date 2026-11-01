@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0021",
+  "title": "Guidance gap: Kimi discovery mapping is undocumented",
+  "symptom": "A Kimi user is not told which installer host mapping installs the discovered skill",
+  "trigger": "Read the Host use section and walkthrough as a Kimi Code CLI user",
+  "expected": "Guidance states that Kimi Code CLI discovers the .agents skill installed by the openai mapping",
+  "actual": "Kimi discovered .agents automatically, but the docs list other host values and never explain that mapping",
+  "criteria": [
+    "FLOW-1",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
+  "steps": [
+    "Inspect skills/chough-workflow/SKILL.md, docs/walkthrough.md and docs/integrations.md"
+  ],
+  "fixture": null,
+  "observations": [
+    "kimi-cold-start-5af3f78",
+    "kimi-cold-start-5af3f78-scope"
+  ],
+  "impact": "Cold discovery works, but a Kimi user cannot reproduce the installation from the docs without guessing",
+  "classification": "requirement-gap",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793550322,
+      "text": "The original Kimi cold-start observation supplies failed evidence for this finding; its recorded scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793550646,
+      "text": "The retrospective scope-gate observation preserves the same original failure on the completed draft content; scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78-scope"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793546202,
+  "updated_at_unix_seconds": 1793550646
+}

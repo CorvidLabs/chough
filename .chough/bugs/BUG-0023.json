@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0023",
+  "title": "Cold-start next and status output is difficult to scan",
+  "symptom": "The next action is buried in very large JSON output",
+  "trigger": "Run chough next and chough status --json on the repository checkpoint with its existing evidence history",
+  "expected": "A fresh agent can identify the native and session actions without manually inspecting thousands of lines",
+  "actual": "next emitted 11567 JSON lines in 16 seconds and status emitted 11568 JSON lines in 36 seconds, including full native content and observation records",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-007"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
+  "steps": [
+    "Capture command output and count the lines"
+  ],
+  "fixture": null,
+  "observations": [
+    "kimi-cold-start-5af3f78",
+    "kimi-cold-start-5af3f78-scope"
+  ],
+  "impact": "Cold resume is slow and the important contradiction is easy to miss",
+  "classification": "requirement-gap",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793549187,
+      "text": "The read-only chough timing command also took about 233 seconds and emitted 51507 bytes; plan, test and human-gate histories had too few samples. This is additional output-size and performance friction, not work included in this change",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793550280,
+      "text": "Correction to the original actual field: both next and status emitted 11567 JSON lines, not 11568 for status. The reviewer counted the JSON payload boundaries in the preserved scratch capture; the timing-output note is unchanged",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793550322,
+      "text": "The original Kimi cold-start observation supplies failed evidence for this finding; its recorded scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793550646,
+      "text": "The retrospective scope-gate observation preserves the same original failure on the completed draft content; scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78-scope"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793546202,
+  "updated_at_unix_seconds": 1793550646
+}

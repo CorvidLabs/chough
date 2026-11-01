@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0022",
+  "title": "Initial host tools do not match CI versions",
+  "symptom": "The global HI and Fledge versions differ from the required CI versions",
+  "trigger": "Run hi --version and fledge --version at the start of the exercise",
+  "expected": "HI 0.8.0 and Fledge 1.7.2 match CI",
+  "actual": "The initial PATH provides HI 0.5.0 and Fledge 1.8.0; SpecSync 6.1.1 matches",
+  "criteria": [
+    "LIFE-6"
+  ],
+  "requirements": [],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
+  "steps": [
+    "Check tool versions before building"
+  ],
+  "fixture": null,
+  "observations": [
+    "kimi-cold-start-5af3f78",
+    "kimi-cold-start-5af3f78-scope"
+  ],
+  "impact": "The first verify lane is not evidence from the exact CI toolchain",
+  "classification": "environment",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793547180,
+      "text": "Downloaded release-verified HI 0.8.0 and Fledge 1.7.2 into target/tmp/ci-tools for later commands; the global PATH still has the initial mismatch, and the baseline verify used the initial versions",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793550322,
+      "text": "The original Kimi cold-start observation supplies failed evidence for this finding; its recorded scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793550646,
+      "text": "The retrospective scope-gate observation preserves the same original failure on the completed draft content; scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78-scope"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793546202,
+  "updated_at_unix_seconds": 1793550646
+}
