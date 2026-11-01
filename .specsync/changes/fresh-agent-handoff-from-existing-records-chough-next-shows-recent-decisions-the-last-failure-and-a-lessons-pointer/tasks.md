@@ -7,11 +7,11 @@ artifact: tasks
 
 Before implementation:
 
-- [ ] Write docs/exercises/handoff-cold-start/seed.sh (static files, local Git identity) and rubric.md (pass items and disqualifiers from the acceptance criteria).
-- [ ] Run the seed once into a scratch directory and confirm the repository it builds matches the rubric's setup.
-- [ ] Record one observation with seed.sh and rubric.md as artifacts so their SHA-256 digests are bound; commit before any implementation commit.
-- [ ] Confirm the external host starts (Kimi Code CLI 0.41.0, else Codex CLI 0.153.4) and record its version.
-- [ ] Build the main binary at fb6e487, seed a fresh repository, install its skill, run the fixed prompt `Resume this project.` once, and record the transcript and command log as observation artifacts (the mandatory baseline).
+- [x] Write docs/exercises/handoff-cold-start/seed.sh (static files, local Git identity) and rubric.md (pass items and disqualifiers from the acceptance criteria).
+- [x] Run the seed once into a scratch directory and confirm the repository it builds matches the rubric's setup.
+- [x] Record one observation with seed.sh and rubric.md as artifacts so their SHA-256 digests are bound; commit before any implementation commit.
+- [x] Confirm the external host starts (Kimi Code CLI 0.41.0, else Codex CLI 0.153.4) and record its version.
+- [x] Build the main binary at fb6e487, seed a fresh repository, install its skill, run the fixed prompt `Resume this project.` once, and record the transcript and command log as observation artifacts (the mandatory baseline).
 
 Human gates before implementation (not tasks), in order: after the hash observation
 and before the baseline run, 0xLeif reads the frozen rubric (recorded as his
