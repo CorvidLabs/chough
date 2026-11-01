@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0106-kimi-integration",
+  "criteria": [
+    "FLOW-13",
+    "FLOW-1",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-007",
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass. Later retrospective integration documentation review: the original coached run and failed safe cold-resume verdict are preserved, Kimi mapping and corrected documents are consistent, and no fresh Kimi run or human decision is claimed",
+  "artifacts": [
+    ".chough/artifacts/kimi-cold-start.log",
+    ".chough/artifacts/kimi-cold-start-review-integration.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/kimi-cold-start-review-integration.md": "4e96820bd2b1c348a43c1a171fd537a35974ca44434af0f99a5c8c03b68a4726",
+    ".chough/artifacts/kimi-cold-start.log": "0b8ff5f5c2767f13708e5430c8691fd3d60be2ca7ba87956afbb81c2fab7fd34"
+  },
+  "observed_at_unix_seconds": 1793562493,
+  "snapshot": {
+    "revision": "f38e70f58a6dbb65e3be21d066ffa243e2bde234",
+    "dirty": true,
+    "fingerprint": "7e166c089a166821b623fe36494fa96331a0f86b468f8b2a0c56f2bf3670b749",
+    "content": "17d19136b4b35095b064198ecd6bf618901c1cad12eeef0dfa34317f05ef5c39"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0106",
+      "digest": "9306885ac0365a73944302c527dae2935465f1f55c932f4de386eb243eb9554f"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "One coached original Kimi run on macOS arm64; this pass reviews repository text only and is not another host execution or human acceptance",
+    "The original baseline verify used HI 0.5.0 and Fledge 1.8.0; no fresh post-fix Kimi rerun occurred"
+  ]
+}

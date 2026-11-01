@@ -1,0 +1,140 @@
+# Kimi cold-start reviewer log
+
+Date: 2026-11-01
+Host: Kimi Code CLI 0.41.0, observed later with kimi --version
+OS and architecture: macOS, Darwin arm64
+Environment: local-macos-arm64
+Worktree: .worktrees/kimi-host-cold-start
+Branch: kimi/feat/kimi-host-cold-start
+Base: origin/main at 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+Native draft: correct-archived-resume-guidance-and-record-the-kimi-cold-start
+
+This is a concise durable record of the original local pre-fix cold start. Large JSON outputs are summarized here, not reproduced in full. The original scratch capture had 28,454 lines and 996,198 bytes. This reviewer log is the durable artifact, not a new evidence record.
+
+## Explicit coaching and discovery
+
+The task supplied explicit coaching: it identified the repository and objective, named AGENTS.md, and named the canonical skill path skills/chough-workflow/SKILL.md. This was not an unaided repository-selection exercise or a fresh installation.
+
+Before reading repository guidance in depth, Kimi listed chough-workflow as a Project skill at .agents/skills/chough-workflow/SKILL.md. Invoking the host skill mechanism loaded that file successfully. Thus native discovery of the .agents copy worked, while the canonical path was both discovered through repository guidance and explicitly supplied by the task.
+
+Command: ls -la .agents/skills .claude/skills skills/chough-workflow
+Time: 2026-11-01T14:55:54Z
+Exact scratch output summary: both .agents/skills/chough-workflow and .claude/skills/chough-workflow exist, as does skills/chough-workflow with SKILL.md, references, agents, and templates.
+Exit code: not recorded in the scratch log
+Elapsed seconds: not recorded in the scratch log
+
+Initial friction: the canonical skill Host use section listed openai, claude, codex, cursor, gemini, and grok as init host values, but not kimi. The generic instruction to confirm host discovery worked, but the docs did not explain that Kimi discovers the .agents skill installed by the openai mapping.
+
+## Tool versions
+
+Command: hi --version; fledge --version; specsync --version; gh --version; cargo --version; uname -s; uname -m
+Salient exact output:
+hi 0.5.0
+fledge 1.8.0
+specsync 6.1.1
+gh version 2.102.0 (2026-09-30)
+cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+Darwin
+arm64
+
+The initial global HI 0.5.0 and Fledge 1.8.0 did not match the CI versions HI 0.8.0 and Fledge 1.7.2. SpecSync 6.1.1 did match. Later checksum-verified release tools HI 0.8.0 and Fledge 1.7.2 were placed under target/tmp/ci-tools; together with SpecSync 6.1.1 they match the CI tool versions. The global PATH retained the initial mismatch, and the baseline verify below used the initial global HI and Fledge, not the later matching tools.
+
+## Build
+
+Command: cargo build --locked
+Salient exact output: Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.13s
+Exit code: 0
+Elapsed seconds: 10
+
+## Next action
+
+Command: ./target/debug/chough next --environment local-macos-arm64
+Output size: 11567 JSON lines
+Salient exact output fields:
+"current": "done"
+"state": "archived"
+"next_action": "merge the PR on GitHub if it is still open"
+"next_valid_action": "Continue done: specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+Exit code: 0
+Elapsed seconds: 16
+
+The checkpoint stage was done and the native change was archived, but next_valid_action repeated stale review and ship guidance instead of following the native next action.
+
+## Cold resume native status
+
+Command: specsync change status bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --json
+Salient exact output fields:
+"readiness": "safe"
+"reason": "the change is archived; nothing this session knows is still needed"
+"next_action": "merge the PR on GitHub if it is still open"
+"state": "archived"
+Exit code: 0
+Elapsed seconds: 28
+
+Native SpecSync independently confirmed the archived state and a safe native handoff. This contradicted Chough's stale next_valid_action.
+
+## Skill status
+
+Command: ./target/debug/chough skill status
+Salient exact output: "bundle_files": 24
+Result: every listed skill file in the .agents and .claude host directories had "state": "current" and "action": "none".
+Exit code: 0
+Elapsed seconds: 0
+
+## Chough status
+
+Command: ./target/debug/chough status --json
+Output size: about 11567 JSON lines
+Salient exact output fields:
+"current": "done"
+"state": "archived"
+"next_action": "merge the PR on GitHub if it is still open"
+"next_valid_action": "Continue done: specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+Exit code: 0
+Elapsed seconds: 36
+
+Status reproduced the same contradiction: done and archived native state alongside stale review and ship guidance.
+
+## Case definitions check
+
+Command: ./target/debug/chough cases check
+Salient exact output fields:
+"profile": "chough-testing/1"
+"schema_version": 1
+"valid": true
+Exit code: 0
+Elapsed seconds: 2
+
+## Baseline verify lane
+
+Command: fledge lanes run verify
+Salient exact output: Lane verify completed (9 steps in 1m 54.418s)
+Result: all 9 steps passed locally, including format, lint, tests, native checks, case-definition checks, exercise, and build.
+Exit code: 0
+Elapsed seconds: 114
+
+This was a baseline local verify using global HI 0.5.0 and Fledge 1.8.0, which do not match CI. It was not hosted CI and does not prove the cold-resume guidance correct.
+
+## Comparison with recorded host runs
+
+The existing independent-session record is a Codex CLI 0.153.4 run in a prepared shipping sample. It found the skill, checked native state and freshness, resumed the same approved task, and reached a valid human-review gate. Its sandbox blocked commits. The Kimi run used this repository rather than that sample, received a new objective, and inherited an archived done checkpoint. Both runs found their installed skill and checked native state without recording human decisions. Kimi could not identify a safe valid action from Chough because of BUG-0024; Codex could in its different fixture.
+
+The repository separately records Claude Code 2.1.316 discovering .claude/skills but not .agents/skills. Kimi Code CLI 0.41.0 discovered .agents/skills. This is one Kimi run on one OS, not a repeat of the Codex sample or a general host-matrix result.
+
+## Findings and scope
+
+BUG-0024: product-defect, in-scope. A done checkpoint with an archived native change repeats stale review and ship next_valid_action guidance. This can make a cold agent repeat completed human lifecycle steps instead of following native SpecSync guidance.
+
+BUG-0021: requirement-gap, in-scope. Kimi discovery mapping is undocumented. Kimi discovered .agents automatically, but the docs did not explain that the openai installer mapping installs the skill Kimi discovers.
+
+BUG-0022: environment, out-of-scope. Initial global HI and Fledge versions did not match CI. The later matching local tools do not change the toolchain used by the baseline verify.
+
+BUG-0023: requirement-gap, out-of-scope. The 11567-line next output and approximately 11567-line status output made the important action and contradiction difficult to find. A later read-only chough timing command also took about 233 seconds and emitted 51,507 bytes, which is additional output-size and performance friction outside this change.
+
+## Mixed verdict
+
+Discovery: yes. Kimi Code CLI 0.41.0 auto-discovered and loaded .agents/skills/chough-workflow/SKILL.md, with the explicit task coaching noted above.
+
+Safe cold resume: no at the original base. Although native SpecSync reported archived state and a safe native handoff, Chough next and status repeated stale review and ship guidance. BUG-0024 prevents calling the overall cold resume safe. Successful build, current skill files, valid cases, and the baseline verify do not remove that defect.
+
+Human scope approval for the proposed correction remains pending. This log does not claim a fresh installation, a fresh post-fix Kimi run, hosted CI, human approval or review, merge, release, or deployment.

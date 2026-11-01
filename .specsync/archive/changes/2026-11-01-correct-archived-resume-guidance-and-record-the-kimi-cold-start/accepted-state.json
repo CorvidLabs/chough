@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "correct-archived-resume-guidance-and-record-the-kimi-cold-start",
+  "slug": "correct-archived-resume-guidance-and-record-the-kimi-cold-start",
+  "title": "Correct archived resume guidance and record the Kimi cold start",
+  "description": "Correct archived resume guidance and record the Kimi cold start",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
+  "created_at": 1793547244,
+  "updated_at": 1793557571,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/skill.rs",
+    "tests/stages.rs",
+    "tests/optional.rs",
+    "skills/chough-workflow/SKILL.md",
+    ".agents/skills/chough-workflow/SKILL.md",
+    ".claude/skills/chough-workflow/SKILL.md",
+    "docs/exercises/cold-start.md",
+    "docs/ROADMAP.md",
+    "docs/integrations.md",
+    "docs/walkthrough.md",
+    "README.md",
+    "specs/cli/testing.md",
+    "specs/cli/tasks.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-cli-003 and REQ-cli-007 already require native-guided resumption, and REQ-cli-016 already covers host skill installation and safe updates; this change fixes their observed behavior and records evidence without changing the canonical contract",
+  "acceptance_criteria": [
+    "For a done checkpoint bound to an archived native change, chough next and status derive next_valid_action from native summary.next_action rather than stale checkpoint review or ship text; paused and awaiting-human handling keeps precedence, missing native guidance gets a safe status fallback, and session_next_action remains unchanged. TC-cli-0105 fails before the fix and passes afterward, with both observations linked to BUG-0020 (FLOW-13, LIFE-3, REQ-cli-003, REQ-cli-007).",
+    "Kimi Code CLI guidance explains the existing openai to .agents skill mapping without adding a kimi host value. The canonical and two installed SKILL.md copies stay byte-identical, the previous digest is recognized for safe updates, edited copies remain protected, and chough skill status reports current. TC-cli-0106 records the original guidance failure and a later retrospective documentation pass linked to BUG-0021, without claiming a fresh post-fix Kimi run (FLOW-1, LIFE-4, REQ-cli-016).",
+    "A concise .chough/artifacts/kimi-cold-start.log and its evidence record capture Kimi Code CLI 0.41.0 on macOS arm64, the supplied task guidance, base revision, commands, salient output, timings, successful discovery and checks, BUG-0020 through BUG-0023, initial tool drift, later CI-matching tools, and the absence of agent-recorded human decisions. The record states one-run and no-fresh-rerun limits.",
+    "The roadmap marks PRs 8, 9, 15, 16 and 17 merged with their observed dates, adds the missing timing, bundle and errors, and evidence-freshness rows, corrects content-identical observation reuse, and describes one Kimi run with its discovery pass and cold-resume defect. README, integrations, walkthrough, cold-start exercise and CLI testing and tasks notes no longer say Kimi is unexercised; no release or deployment is claimed.",
+    "Focused Rust tests, TC-cli-0105 and TC-cli-0106 evidence, bundle checks and fledge lanes run verify pass on the final content using HI 0.8.0, Fledge 1.7.2 and SpecSync 6.1.1. BUG-0022 global tool drift and BUG-0023 output size stay open and out of scope. No new integration, runtime, service, HI criterion, requirement ID or canonical contract delta is introduced.",
+    "At the scope gate the branch contains the completed draft definition and cold-start records, is pushed, and has a draft PR titled Draft: Kimi host cold start and roadmap refresh. At implementation review its description names changes, cold-start findings, evidence, deviations, and limits. The agent never marks it ready and records no native review, archive, merge, release or deployment."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "specs/cli/context.md lessons: do not list .chough as an affected path; human gates are plain text in tasks because unchecked boxes block change check; new native writes follow SpecSync 6.1.1; bug verification needs a pass after its failure; bundle files contain no em or en dashes; skill updates require known previous digests and preserve edited copies. Contract invariants 1, 2, 4, 6 and 8 apply: safe updates, no agent-recorded human decisions, honest evidence freshness, unknown native state stays visible, and one canonical checkpoint. Use CI versions HI 0.8.0, Fledge 1.7.2 and SpecSync 6.1.1. No new host enum, integration, runtime, service or duplicate lifecycle state",
+    "public_contract": "no"
+  }
+}

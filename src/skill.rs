@@ -115,11 +115,12 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
     ),
     // Main 5af3f78 (PR #19) and main ee6e3d2 (0.1.0 docs sweep); superseded by the 0.1.0
-    // release prep and the focused next change.
+    // release prep, the focused next change and Kimi host guidance (BUG-0021).
     (
         "SKILL.md",
         "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
     ),
+    // Main ee6e3d2; superseded by the focused next change's done-stage resume steps.
     (
         "references/stages.md",
         "5127182e148521e9c9df2490eb45055d0c5edb3302f245bc4f7aab114b591a24",
@@ -152,6 +153,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "references/checkpoint.md",
         "33f4266b10dea45b674164c73ed0dc556857541f790c1db5c56390e7138f2c14",
+    ),
+    // Main 7357d41 (Kimi host cold start, #24); superseded by the 0.1.0 release prep.
+    (
+        "SKILL.md",
+        "f479854d764ce83917a15889c16b9bf447c3c2e8e208224515f784ca1c57ad40",
     ),
 ];
 

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0037-1793553673",
+  "criteria": [
+    "FLOW-1"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test optional -- --exact skills_install_per_host_and_update_only_unmodified_files for TC-cli-0037: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0037-1793553673.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0037-1793553673.log": "04909105c24575fbcdb93c65717960e85f647db17d7b4254ae138b82170b987f"
+  },
+  "observed_at_unix_seconds": 1793553673,
+  "snapshot": {
+    "revision": "1d9264f71168f9f9cf2a50d45ab118e517b5a3ee",
+    "dirty": true,
+    "fingerprint": "46fb24eb8330284a948a0b647552b08c9c140e418bd87388c88be963ece2fbe9",
+    "content": "5b05fcd19483f75a103491b5bb875250e916191adc423a4c18ae033de6a61365"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0037",
+      "digest": "bc4a585cc7f16f841b4b86815e785e3b9ac99c9a5ce4b698d34b708278b0d94f"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "skills_install_per_host_and_update_only_unmodified_files"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

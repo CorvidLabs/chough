@@ -1,0 +1,27 @@
+--- stdout ---
+
+running 1 test
+test done_archived_change_recommends_new_cycle_and_preserves_precedence ... FAILED
+
+failures:
+
+---- done_archived_change_recommends_new_cycle_and_preserves_precedence stdout ----
+
+thread 'done_archived_change_recommends_new_cycle_and_preserves_precedence' (285430862) panicked at tests/stages.rs:405:9:
+assertion `left == right` failed: next
+  left: String("Continue done: stub next action for archived")
+ right: "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\"."
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    done_archived_change_recommends_new_cycle_and_preserves_precedence
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.82s
+
+
+--- stderr ---
+   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/chough/.worktrees/kimi-host-cold-start)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.45s
+     Running tests/stages.rs (target/debug/deps/stages-b5c96188316f0637)
+error: test failed, to rerun pass `--test stages`

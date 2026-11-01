@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0105-1793551352",
+  "criteria": [
+    "FLOW-13",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-003",
+    "REQ-cli-007"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact done_archived_native_guidance_drives_next_and_status for TC-cli-0105: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0105-1793551352.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0105-1793551352.log": "bb218c6054596cbe4a2148d696f813d419195aba2b03838f3923908adf1a79f1"
+  },
+  "observed_at_unix_seconds": 1793551353,
+  "snapshot": {
+    "revision": "1d9264f71168f9f9cf2a50d45ab118e517b5a3ee",
+    "dirty": true,
+    "fingerprint": "cf4fa65fa8a92481c1d36676dfcd29fea8fb88a741f7fc37ac34365edcbcc7a3",
+    "content": "7e03f73492d75b516a35048fce831115d2b1785a8651d0cb12a89d4f7b094702"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0105",
+      "digest": "09794b3e7e55214990356af668130d699189e0169836ed573562ab296344edea"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "done_archived_native_guidance_drives_next_and_status"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

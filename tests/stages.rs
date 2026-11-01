@@ -368,6 +368,218 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
 
 #[cfg(unix)]
 #[test]
+fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
+    const NEW_CYCLE: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
+    const RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("archived");
+    fixture.init();
+    let stale = "specsync change review archived-change, then ship";
+    fixture.ok(&["checkpoint", "--native-change", "archived-change"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "done",
+        "--reason",
+        "Archived native closeout",
+    ]);
+    fixture.ok(&["checkpoint", "--next-action", stale]);
+    assert_eq!(stage(&fixture), "done");
+
+    let assert_action = |command: &str, expected: &str, session_bytes: &str| {
+        let mut report = fixture.ok(&[command, "--json"]);
+        if command == "next" {
+            report["native_summary"] = json!({
+                "state": report["native"]["state"],
+                "next_action": report["native"]["next_action"],
+            });
+            report["next_valid_reason"] = report["next_valid_action"]["reason"].clone();
+            report["next_valid_command"] = report["next_valid_action"]["command"].clone();
+            report["next_valid_action"] = report["next_valid_action"]["action"].clone();
+        } else {
+            assert_eq!(report["session_next_action"], stale, "{command}");
+        }
+        assert_eq!(report["next_valid_action"], expected, "{command}");
+        assert_eq!(
+            fixture.read(".chough/session.json"),
+            session_bytes,
+            "{command} rewrote the session"
+        );
+        report
+    };
+
+    fixture.write(".stub-count", "");
+    let session_bytes = fixture.read(".chough/session.json");
+    for command in ["next", "status"] {
+        let report = assert_action(command, NEW_CYCLE, &session_bytes);
+        assert_eq!(fixture.native_calls(), 1, "{command} native reads");
+        assert_eq!(report["native_summary"]["state"], "archived");
+        assert_eq!(
+            report["native_summary"]["next_action"],
+            "stub next action for archived"
+        );
+        let action = report["next_valid_action"].as_str().unwrap();
+        assert!(!action.contains(stale), "{command}: {action}");
+        if command == "next" {
+            assert_eq!(report["next_valid_command"], RESET);
+            let reason = report["next_valid_reason"].as_str().unwrap();
+            assert!(
+                reason.contains("The cycle for archived-change is closed: native state archived, terminal evidence authenticated-history."),
+                "{reason}"
+            );
+            assert!(
+                reason
+                    .contains("Native next action, check it first: stub next action for archived."),
+                "{reason}"
+            );
+        }
+    }
+
+    fixture.ok(&["stage", "pause", "--reason", "Waiting for a person"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
+    let session_bytes = fixture.read(".chough/session.json");
+    for command in ["next", "status"] {
+        assert_action(
+            command,
+            "The done stage is paused. Check native state and freshness, then `chough stage resume`.",
+            &session_bytes,
+        );
+    }
+
+    fixture.ok(&["stage", "resume"]);
+    let session_bytes = fixture.read(".chough/session.json");
+    for command in ["next", "status"] {
+        assert_action(
+            command,
+            "Waiting for a human decision: Human scope decision. Do not record it on their behalf; continue only independent work within scope.",
+            &session_bytes,
+        );
+    }
+
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nprintf '%s\\n' '{\"summary\":{\"state\":\"archived\",\"terminal_evidence\":{\"validity\":\"authenticated-history\"}}}'\n",
+    );
+    let session_bytes = fixture.read(".chough/session.json");
+    for command in ["next", "status"] {
+        let report = assert_action(command, NEW_CYCLE, &session_bytes);
+        assert_eq!(report["native_summary"]["state"], "archived");
+        assert!(report["native_summary"]["next_action"].is_null());
+    }
+
+    for (label, next_action) in [
+        ("null", Value::Null),
+        ("whitespace-only", json!(" \t\n ")),
+        ("non-string number", json!(42)),
+        ("non-string boolean", json!(false)),
+        ("non-string object", json!({"action": "nested"})),
+        ("non-string array", json!(["nested"])),
+    ] {
+        let response = json!({
+            "summary": {
+                "state": "archived",
+                "next_action": next_action.clone(),
+                "terminal_evidence": {"validity": "authenticated-history"},
+            }
+        });
+        fixture.write(
+            "bin/specsync",
+            &format!("#!/bin/sh\nprintf '%s\\n' '{response}'\n"),
+        );
+        for command in ["next", "status"] {
+            let report = assert_action(command, NEW_CYCLE, &session_bytes);
+            assert_eq!(report["native_summary"]["state"], "archived");
+            let shown_action = if command == "next" && !next_action.is_string() {
+                Value::Null
+            } else {
+                next_action.clone()
+            };
+            assert_eq!(
+                report["native_summary"]["next_action"], shown_action,
+                "{command}: {label}"
+            );
+        }
+    }
+
+    let native_action = " \tstub next action for archived \t";
+    let response = json!({
+        "summary": {
+            "state": "archived",
+            "next_action": native_action,
+            "terminal_evidence": {"validity": "authenticated-history"},
+        }
+    });
+    fixture.write(
+        "bin/specsync",
+        &format!("#!/bin/sh\nprintf '%s\\n' '{response}'\n"),
+    );
+    for command in ["next", "status"] {
+        let report = assert_action(command, NEW_CYCLE, &session_bytes);
+        assert_eq!(report["native_summary"]["state"], "archived");
+        assert_eq!(report["native_summary"]["next_action"], native_action);
+    }
+
+    fixture.stubs();
+    fixture.write(".stub-fail", "");
+    for command in ["next", "status"] {
+        let report = fixture.ok(&[command, "--json"]);
+        let action = if command == "next" {
+            report["next_valid_action"]["action"].clone()
+        } else {
+            assert_eq!(report["session_next_action"], stale, "{command}");
+            report["next_valid_action"].clone()
+        };
+        let action = action.as_str().unwrap();
+        assert!(
+            action.starts_with("Gate not open (refused:native-unknown):"),
+            "{command}: {action}"
+        );
+        assert_eq!(
+            fixture.read(".chough/session.json"),
+            session_bytes,
+            "{command} rewrote the session"
+        );
+        if command == "next" {
+            assert_eq!(report["native"]["read"], "failed");
+            assert!(report["native"]["state"].is_null());
+        } else {
+            assert_eq!(report["native_specsync"]["state"], "failed");
+            assert!(
+                report["native_specsync"]["content"]
+                    .as_str()
+                    .unwrap()
+                    .contains("status failed"),
+                "{command}: {}",
+                report["native_specsync"]["content"]
+            );
+            assert!(report["native_summary"].is_null());
+        }
+    }
+
+    fs::remove_file(fixture.root().join(".stub-fail")).unwrap();
+    let next = fixture.ok(&["next", "--json"]);
+    let command = next["next_valid_action"]["command"].as_str().unwrap();
+    assert_eq!(command, RESET);
+    let arguments = words(&command.replace("<why>", "Start approved follow-up"));
+    assert_eq!(arguments[0], "chough");
+    let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
+    fixture.ok(&arguments);
+    assert_eq!(
+        fixture.session()["next_action"],
+        "New cycle from done after reset: Start approved follow-up. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+    );
+    assert_eq!(
+        transitions(&fixture).pop().unwrap()["reason"],
+        "Start approved follow-up"
+    );
+}
+
+#[cfg(unix)]
+#[test]
 fn large_native_status_still_gates_by_its_summary_state() {
     let fixture = Fixture::new();
     fixture.stubs();
@@ -853,6 +1065,10 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
     );
     let status = fixture.ok(&["status", "--json"]);
     assert_eq!(status["next_valid_action"], action["action"]);
+    assert_eq!(
+        status["session_next_action"],
+        "specsync change review old-change --reviewer 0xLeif, then ship"
+    );
     let shown = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
     assert!(shown.contains("Next: Start a new cycle"), "{shown}");
     assert!(

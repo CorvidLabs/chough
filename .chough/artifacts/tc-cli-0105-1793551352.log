@@ -1,0 +1,26 @@
+--- stdout ---
+
+running 1 test
+test done_archived_native_guidance_drives_next_and_status ... FAILED
+
+failures:
+
+---- done_archived_native_guidance_drives_next_and_status stdout ----
+
+thread 'done_archived_native_guidance_drives_next_and_status' (254043065) panicked at tests/stages.rs:393:9:
+assertion `left == right` failed: next
+  left: String("Continue done: specsync change review archived-change, then ship")
+ right: "Continue done: stub next action for archived"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    done_archived_native_guidance_drives_next_and_status
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 15 filtered out; finished in 1.26s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.37s
+     Running tests/stages.rs (target/debug/deps/stages-b5c96188316f0637)
+error: test failed, to rerun pass `--test stages`
