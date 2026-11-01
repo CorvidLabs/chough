@@ -9,7 +9,7 @@ and read [the workflow skill](skills/chough-workflow/SKILL.md). The checkpoint i
 Before changing behavior, read [INTENT.md](INTENT.md), the relevant `hi/` criteria,
 [docs/FRD.md](docs/FRD.md) and the affected contract and companions under `specs/`.
 Use Fledge first: `fledge run fmt`, `fledge run test`, `fledge run lint`, `fledge
-lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.1.1.
+lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.1.2.
 One command installs all three; see "Install the toolchain" in [README.md](README.md).
 
 HI owns human wording and criterion IDs. SpecSync owns contracts, companions,

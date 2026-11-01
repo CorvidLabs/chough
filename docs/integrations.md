@@ -23,7 +23,7 @@ whether an installed copy is current, edited or outdated.
 | Tool | Native ownership | Chough boundary |
 |---|---|---|
 | [HI](https://github.com/CorvidLabs/hi) 0.8.0 | Human sentences, permanent IDs, scoped export, structure | Reads `hi export`; FRD is derived downstream; HI does not track achievement |
-| [SpecSync](https://github.com/CorvidLabs/spec-sync) 6.1.1 | Requirements, contracts, changes, approval, verification, review, archive, lessons | Reads `change status --json` `summary.state`, `approval_valid`, `correction_valid`, `terminal_evidence.validity` and `change.affected_specs` for gates, and the approval ledger and deltas read-only to confirm approved deltas are unchanged; never runs approve, check, review or finalize |
+| [SpecSync](https://github.com/CorvidLabs/spec-sync) 6.1.2 | Requirements, contracts, changes, approval, verification, review, archive, lessons | Reads `change status --json` `summary.state`, `approval_valid`, `correction_valid`, `terminal_evidence.validity` and `change.affected_specs` for gates, and the approval ledger and deltas read-only to confirm approved deltas are unchanged; never runs approve, check, review or finalize |
 | [Fledge](https://github.com/CorvidLabs/fledge) 1.8.0 | Tasks, lanes, work and release mechanics | Case binding `fledge-task`; Chough's own lanes |
 | [CorvidLabs skills](https://github.com/CorvidLabs/skills) | Product-authoritative skills and the host directory mapping | Linked, not copied |
 | [Design system](https://github.com/CorvidLabs/design-system) | Tokens and assets | The visual sample pins `tokens.css` at c698ed4; Figma is optional |

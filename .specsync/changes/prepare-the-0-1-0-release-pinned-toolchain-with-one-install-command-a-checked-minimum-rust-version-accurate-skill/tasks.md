@@ -9,7 +9,10 @@ artifact: tasks
 - [x] Set the Fledge Action in ci.yml to `version: v1.8.0`.
 - [x] Add the `MSRV / 1.88.0` CI job needing the Archive job.
 - [x] Add `rust-version = "1.88"` to Cargo.toml.
-- [x] Update the AGENTS.md tool version line to hi 0.8.0, fledge 1.8.0, specsync 6.1.1.
+- [x] Update the AGENTS.md tool version line to hi 0.8.0, fledge 1.8.0, specsync 6.1.2.
+- [x] Move the SpecSync Action steps and the Archive gate step in ci.yml to the v6.1.2 commit with version '6.1.2'.
+- [x] Update .github/scripts/check-specsync-archive.py and test-specsync-archive.py to expect specsync 6.1.2.
+- [x] Update the README toolchain command and the tests/package.rs pins to specsync 6.1.2.
 - [x] Apply the nine skill bundle corrections.
 - [x] Add the 5af3f78 digests of the seven edited bundle files to KNOWN_PREVIOUS.
 - [x] Refresh the .agents/ and .claude/ copies with `chough skill update` and confirm byte identity.

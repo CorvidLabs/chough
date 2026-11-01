@@ -40,7 +40,7 @@ are in [docs/releasing.md](docs/releasing.md).
   approval digest, since SpecSync 6.1.1 status does not report it (BUG-0002); and done-stage resume that recommends a new
   cycle once the native change is archived
   ([#23](https://github.com/CorvidLabs/chough/pull/23)).
-- Release preparation: pinned HI 0.8.0, SpecSync 6.1.1 and Fledge 1.8.0 with one
+- Release preparation: pinned HI 0.8.0, SpecSync 6.1.2 and Fledge 1.8.0 with one
   install command and a test that keeps the pins in agreement, a minimum Rust
   version of 1.88 checked in CI, skill guidance corrected against the helper, and
   this change log.

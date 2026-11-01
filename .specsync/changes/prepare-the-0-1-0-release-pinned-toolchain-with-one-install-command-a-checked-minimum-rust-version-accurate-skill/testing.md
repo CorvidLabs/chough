@@ -23,17 +23,19 @@ artifact: testing
   skills/chough-workflow (`chough skill status` reports current for both hosts).
 - TC-cli-0114 (new, agent-assisted): the README `Install the toolchain` command, copied
   from README.md at the implementation tip, run with `--root` set to an empty scratch
-  directory, installs `hi 0.8.0`, `fledge 1.8.0` and `specsync 6.1.1`
+  directory, installs `hi 0.8.0`, `fledge 1.8.0` and `specsync 6.1.2`
   (`--version` of each). The same command was already run before approval with cargo
-  1.95.0 and passed (about six minutes cold).
+  1.95.0 and passed (about six minutes cold); with specsync 6.1.2 it passed again
+  before re-approval (cargo 1.95.0, 3m39s).
 - Package: the existing package test
   `the_crate_package_holds_only_the_helper_source_and_canonical_skill` still passes;
   CHANGELOG.md and docs are not packaged.
 
 ## Regression
 
-Full `cargo test --locked`, `fledge lanes run verify` with Fledge 1.8.0, HI 0.8.0 and
-SpecSync 6.1.1 locally, and CI on Ubuntu, macOS and Windows plus MSRV. In CI, the
+`python3 .github/scripts/test-specsync-archive.py` with SpecSync 6.1.2 installed. Full
+`cargo test --locked`, `fledge lanes run verify` with Fledge 1.8.0, HI 0.8.0 and
+SpecSync 6.1.2 locally, and CI on Ubuntu, macOS and Windows plus MSRV. In CI, the
 `native-gates` job installs Fledge with cargo and runs the verify lane: that run is the
 evidence that the Action replacement works.
 

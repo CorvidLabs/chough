@@ -49,3 +49,17 @@ later rebases. Case IDs from TC-cli-0110 are free on main, #20 (up to TC-cli-010
 
 - Update (2026-11-01, later): fledge v1.8.0 was then tagged on GitHub at the commit
   published to crates.io, and 0xLeif chose the Fledge Action at v1.8.0 for CI.
+- Update (2026-11-01, later still): SpecSync 6.1.2 is being released with #823, #824,
+  #828, #829, #830, #832 and #834 (at this writing crates.io has 6.1.1 and only the
+  v6.1.2-rc.1 tag exists). 0xLeif decided that 6.1.2 blocks Chough 0.1.0 and chose
+  to pin it instead of 6.1.1 (README, AGENTS.md, CI and the SpecSync Action commit).
+  SpecSync 6.1.2 still declares rust-version 1.89 (Cargo.toml on origin/main of
+  CorvidLabs/spec-sync). The 6.1.1 observations above are history.
+- Update (2026-11-01, publish): SpecSync 6.1.2 is published (GitHub release v6.1.2 at
+  d08d2746f635bc26900601376d7392395d07faa9, Latest; crates.io serves 6.1.2). Before
+  re-approval the README command `cargo install --locked human-intent@0.8.0
+  fledge@1.8.0 specsync@6.1.2` was run with cargo 1.95.0 into an empty scratch root:
+  exit 0 in 3m39s, printing `hi 0.8.0`, `fledge 1.8.0` and `specsync 6.1.2`. The v6.1.2
+  action.yml carries the archive-gate-only input, so the Archive gate step can move
+  to the same commit. 0xLeif chose to add `.github/scripts/` to scope, because both
+  archive scripts hard-code `specsync 6.1.1`.

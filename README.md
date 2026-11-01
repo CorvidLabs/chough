@@ -50,10 +50,10 @@ Chough works with HI, SpecSync and Fledge. One command installs the versions CI
 uses:
 
 ```sh
-cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1
+cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.2
 ```
 
-This command needs Rust 1.89 or later, because SpecSync 6.1.1 declares it. Cargo
+This command needs Rust 1.89 or later, because SpecSync 6.1.2 declares it. Cargo
 skips a tool already installed from crates.io at that version and replaces a
 different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
 `specsync`. Install Chough itself as shown in [Install](#install).
@@ -140,10 +140,10 @@ Other platforms and hosts may work but have not been exercised.
 - On Windows, a bounded command's descendants whose parent has already exited cannot
   be stopped; the run returns on time with an incomplete capture, never `passed`.
 - Calls to Git (fingerprints and revisions) are not yet bounded in time or output.
-- SpecSync 6.1.1's change status does not flag an approved delta edited after
-  approval; the fix is merged on SpecSync main
-  ([CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823)) but
-  not yet released.
+- SpecSync 6.1.1 and earlier do not flag an approved delta edited after approval;
+  SpecSync 6.1.2 does
+  ([CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823)), and
+  Chough's own guard still refuses such a delta with older versions.
 - In a repository with no commits yet, `chough next` reports the raw `git rev-parse
   HEAD` error as the snapshot; make a first commit before relying on freshness.
 - Hosts other than Claude Code and Codex have not had real discovery or cold-start

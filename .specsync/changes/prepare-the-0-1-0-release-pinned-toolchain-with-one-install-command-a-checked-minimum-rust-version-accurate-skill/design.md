@@ -7,7 +7,7 @@ artifact: design
 
 ## 1. Tool pins and one install command (REQ-cli-019, LIFE-6, LIFE-9)
 
-Pins: HI 0.8.0 (crate `human-intent`, binary `hi`), SpecSync 6.1.1 (crate and binary
+Pins: HI 0.8.0 (crate `human-intent`, binary `hi`), SpecSync 6.1.2 (crate and binary
 `specsync`), Fledge 1.8.0 (crate and binary `fledge`). Each place that states a pin
 keeps its own wording; the test in section 3 keeps them in agreement, so there is no
 generated file or new config to read.
@@ -18,18 +18,24 @@ generated file or new config to read.
   cargo install after `Swatinem/rust-cache`. rust-cache v2.8
   caches `~/.cargo/bin`, so a warm cache makes both installs no-ops; a cold run
   compiles them (minutes; measured about six minutes for all three tools locally).
-  The SpecSync Action steps stay at commit `e8fd149` (v6.1.1) with `version: '6.1.1'`
-  because they also run its checks; the archive gate step keeps its #832 commit.
-- `AGENTS.md`: "Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.1.1." and
+  The SpecSync Action steps move to the v6.1.2 release commit (d08d2746) with
+  `version: '6.1.2'` because they also run its checks. The Archive gate step moves from
+  the #832 main commit to the same v6.1.2 commit, which carries the archive gate inputs,
+  and its comment says so.
+- `.github/scripts/check-specsync-archive.py` (`VERSION`) and
+  `.github/scripts/test-specsync-archive.py` (the version guard, its message and the
+  fake version output) expect `specsync 6.1.2`, so the archive check and its fixture
+  test agree with the pinned SpecSync.
+- `AGENTS.md`: "Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.1.2." and
   a pointer to the README toolchain section.
 - `README.md`, new section `Install the toolchain` after `Install`:
 
   ```sh
-  cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1
+  cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.2
   ```
 
   with: these are the versions CI uses; the command needs Rust 1.89 or later because
-  SpecSync 6.1.1 declares it; cargo skips a tool already installed at that version from
+  SpecSync 6.1.2 declares it; cargo skips a tool already installed at that version from
   crates.io and replaces a different version (`--force` reinstalls). Verified with
   cargo 1.95.0 into a scratch `--root`.
 - `docs/ci.md` and `docs/integrations.md`: Fledge 1.8.0 (CI uses the Fledge Action at v1.8.0).
@@ -167,6 +173,5 @@ stage, references/release.md).
 ## Out of the design
 
 Tagging, publishing, a GitHub release, a version bump, new commands or adapters,
-cargo-binstall or other install integrations, a `fledge run tools` task, edits to
-recorded exercises, and changes to `.github/scripts/` (their `specsync 6.1.1` strings
-already agree).
+cargo-binstall or other install integrations, a `fledge run tools` task, and edits to
+recorded exercises.
