@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0113-1793548805",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Verdicts 1=pass, 2=pass. Each of the nine skill corrections states what the cited source does at f6416a5; .agents and .claude copies are byte-identical to the bundle and every file reads current for both hosts",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0113-reviewer-note.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0113-reviewer-note.md": "5130abfa5517a8cd74b9fcf9260cc5a7dd9da9b376856aac24422dfb0bca100b"
+  },
+  "observed_at_unix_seconds": 1793548805,
+  "snapshot": {
+    "revision": "f6416a5938889833fedb68d7fb951c263e9982f1",
+    "dirty": false,
+    "fingerprint": "3dec102a1b508ebdc49708c0534f52118202403efc34f627f394441ccdbcc74f",
+    "content": "93b76b70c7c68d40d648604f0b69bccfcd632d6a0e028dcebd2ddc87e889aa22"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0113",
+      "digest": "907673c3652c2c7981f1ce0a550cb34982496545acea99f4029fcd5664d61e46"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "copy-localization",
+  "limitations": [
+    "Read by the implementing agent (Claude Code), not an independent reviewer"
+  ]
+}

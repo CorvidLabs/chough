@@ -23,3 +23,4 @@
 {"schema_version":1,"at_unix_seconds":1793548633,"kind":"advance","from":"intent","to":"design","reason":null,"gate":null,"revision":"71dab734a03cf3664e092c61bc713e65d947e5c0","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793548638,"kind":"skip","from":"design","to":"plan","reason":"No visual or interaction change: CI, docs, skill text and a package test","gate":null,"revision":"71dab734a03cf3664e092c61bc713e65d947e5c0","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793548641,"kind":"advance","from":"plan","to":"build","reason":null,"gate":"native:verifying","revision":"71dab734a03cf3664e092c61bc713e65d947e5c0","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793549257,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"f6416a5938889833fedb68d7fb951c263e9982f1","refresh":[]}
