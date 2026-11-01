@@ -57,7 +57,10 @@ case (Windows would merge them). For the `cargo-test` adapter it also refuses, i
 ASCII case, the names that choose what cargo builds or runs: PATH, CARGO, CARGO_HOME
 (its config.toml can set a runner), RUSTC, RUSTDOC, RUSTC_WRAPPER,
 RUSTC_WORKSPACE_WRAPPER, RUSTFLAGS and CARGO_ENCODED_RUSTFLAGS (a linker flag),
-`CARGO_BUILD_*` and `CARGO_TARGET_*_RUNNER`. This keeps the adapter's claim that
+RUSTDOCFLAGS, CARGO_ENCODED_RUSTDOCFLAGS, RUSTC_BOOTSTRAP, and any name starting
+with `RUSTUP_` (the toolchain), `CARGO_BUILD_`, `CARGO_TARGET_` (a per-target
+runner, linker or flags), `CARGO_HOST_`, `CARGO_PROFILE_` or `CARGO_UNSTABLE_`;
+`CARGO_TARGET_DIR` only chooses where cargo writes and stays allowed. This keeps the adapter's claim that
 `cargo test` ran the named test from being redirected by the case file. The command
 and fledge-task adapters name their program in argv; docs/cli.md says a declared PATH
 can change what that name resolves to. `records::run_bounded` takes an extra `env:

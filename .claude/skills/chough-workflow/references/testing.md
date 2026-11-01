@@ -43,9 +43,14 @@ changes identity, while editing what it asserts makes earlier observations
 - A binding may declare `env`, variables set on top of the inherited environment,
   for example `env = { NO_COLOR = "1" }` when a tool should print plain text. Chough
   sets none by default. `env` is committed with the case, so never put secrets in
-  it; a `cargo-test` binding cannot set names that choose what cargo builds or runs,
-  such as `PATH`, `RUSTFLAGS`, `RUSTUP_TOOLCHAIN` or a `CARGO_TARGET_*` linker. Observations name the declared variables, not their
-  values, and always state that inherited variables were not recorded.
+  it. A `cargo-test` binding cannot set, in any ASCII case, names that choose what
+  cargo builds or runs: `PATH`, `CARGO`, `CARGO_HOME`, `RUSTC`, `RUSTDOC`,
+  `RUSTC_WRAPPER`, `RUSTC_WORKSPACE_WRAPPER`, `RUSTFLAGS`, `CARGO_ENCODED_RUSTFLAGS`,
+  `RUSTDOCFLAGS`, `CARGO_ENCODED_RUSTDOCFLAGS`, `RUSTC_BOOTSTRAP`, or any name
+  starting with `RUSTUP_`, `CARGO_BUILD_`, `CARGO_TARGET_` (`CARGO_TARGET_DIR` stays
+  allowed), `CARGO_HOST_`, `CARGO_PROFILE_` or `CARGO_UNSTABLE_`. Observations name
+  the declared variables, not their values, and always state that inherited
+  variables were not recorded.
 - `expect_output` and the `cargo-test` count read the output with complete terminal
   escape sequences (colours, hyperlinks) removed, while the artifact keeps the raw
   bytes. Write fragments as the visible text; a fragment containing ESC is refused.
