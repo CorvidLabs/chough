@@ -446,6 +446,25 @@ fn log_transition(
     append_line(root, TRANSITIONS, &serde_json::to_string(&transition)?)
 }
 
+/// Transition kinds that end the open stage segment and start the next one.
+pub(super) const STAGE_KINDS: [&str; 9] = [
+    "advance", "iterate", "back", "reset", "skip", "pause", "resume", "enter", "return",
+];
+/// A human gate was added to `awaiting_human`; it starts or ends no stage segment.
+pub(super) const GATE_OPENED: &str = "gate-opened";
+/// A human gate was cleared from `awaiting_human`.
+pub(super) const GATE_CLOSED: &str = "gate-closed";
+
+/// Append a gate record: when a gate opened or was cleared, in the current stage, with
+/// the gate text as its reason. It never records who decided or what was decided.
+pub(super) fn log_gate(root: &Path, kind: &str, stage: &str, gate: &str) -> Result<()> {
+    ensure!(
+        kind == GATE_OPENED || kind == GATE_CLOSED,
+        "not a gate record kind: {kind}"
+    );
+    log_transition(root, kind, stage, stage, Some(gate), None, vec![])
+}
+
 pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value>, bool)> {
     let (lines, partial) = read_log_tail(&local_path(root, TRANSITIONS)?, count)?;
     let mut values = vec![];

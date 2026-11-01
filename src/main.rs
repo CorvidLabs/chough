@@ -8,6 +8,7 @@ mod prefs;
 mod records;
 mod skill;
 mod stage;
+mod timing;
 mod validate;
 
 use anyhow::{Context, Result, ensure};
@@ -112,6 +113,9 @@ enum Commands {
         #[command(subcommand)]
         command: library::LibraryCommand,
     },
+    /// Report how long stages, tests, bug fixes and human gates took, from existing
+    /// records; read-only, and every duration is elapsed wall-clock time, not effort.
+    Timing(Box<timing::TimingArgs>),
     /// Inspect or update installed copies of the workflow skill.
     Skill {
         #[command(subcommand)]
@@ -183,6 +187,7 @@ fn main() -> Result<()> {
         Commands::Consent { command } => prefs::consent(&root, command)?,
         Commands::Validate { command } => validate::run(&root, command)?,
         Commands::Library { command } => library::run(&root, command)?,
+        Commands::Timing(args) => timing::run(&root, *args)?,
         Commands::Skill { command } => skill::run(&root, command)?,
     }
     Ok(())

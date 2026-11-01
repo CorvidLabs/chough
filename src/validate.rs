@@ -207,6 +207,42 @@ pub(super) fn run_references(root: &Path) -> Result<Vec<(String, Vec<String>)>> 
     Ok(runs)
 }
 
+/// The recorded times and counts of one stored run, for the timing report.
+pub(super) struct RunTimes {
+    pub(super) id: String,
+    pub(super) case: String,
+    pub(super) environment: String,
+    pub(super) state: String,
+    pub(super) started_at_unix_seconds: u64,
+    pub(super) completed: u32,
+    pub(super) failures: u32,
+    pub(super) not_run: u32,
+    pub(super) attempts: usize,
+    /// Accumulated across interval waits and resumes; never a per-attempt time.
+    pub(super) elapsed_seconds: u64,
+}
+
+/// Every stored run's times and counts, in ID order.
+pub(super) fn run_times(root: &Path) -> Result<Vec<RunTimes>> {
+    let mut runs = vec![];
+    for name in crate::records::record_names(root, RUNS_DIR)? {
+        let run = load(root, name.trim_end_matches(".json"))?;
+        runs.push(RunTimes {
+            attempts: run.observations.len(),
+            id: run.id,
+            case: run.case,
+            environment: run.environment,
+            state: run.state,
+            started_at_unix_seconds: run.started_at_unix_seconds,
+            completed: run.completed,
+            failures: run.failures,
+            not_run: run.not_run,
+            elapsed_seconds: run.elapsed_seconds,
+        });
+    }
+    Ok(runs)
+}
+
 pub(super) fn run(root: &Path, command: ValidateCommand) -> Result<()> {
     match command {
         ValidateCommand::Run {

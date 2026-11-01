@@ -12,7 +12,8 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
-const T: u64 = 1_800_000_000;
+/// A fixed time in the past, so ongoing segments end now, after it.
+const T: u64 = 1_700_000_000;
 const ZERO: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 
 fn transition(at: Option<u64>, kind: &str, from: &str, to: &str, reason: &str) -> String {
@@ -209,7 +210,10 @@ fn every_transition_kind_yields_the_expected_segments_and_cycles() {
     assert_eq!(seconds(&build["paused"]), Some(300));
     assert_eq!(seconds(&build["waiting"]), Some(0));
     assert_eq!(stage_total(&report, 0, "plan")["visits"], 2);
-    assert_eq!(seconds(&stage_total(&report, 0, "plan")["stage_time"]), Some(250));
+    assert_eq!(
+        seconds(&stage_total(&report, 0, "plan")["stage_time"]),
+        Some(250)
+    );
     assert_eq!(stage_total(&report, 0, "bugs")["side"], true);
     assert_eq!(cycles[0]["side_visits"], 1);
     assert_eq!(cycles[0]["iterations"], 1);
@@ -243,7 +247,10 @@ fn every_transition_kind_yields_the_expected_segments_and_cycles() {
     assert_eq!(segments(&plan, 0).len(), 2);
 
     let rendered = text(&fixture, &[]);
-    assert!(rendered.contains("elapsed wall-clock time, not effort"), "{rendered}");
+    assert!(
+        rendered.contains("elapsed wall-clock time, not effort"),
+        "{rendered}"
+    );
     assert!(rendered.contains("idle between cycles"), "{rendered}");
     assert!(rendered.contains("unknown (no transition before the first record)"));
 }
@@ -332,7 +339,8 @@ fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
             "reason",
             "refresh",
             "revision",
-            "schema_version"
+            "schema_version",
+            "to"
         ]
     );
 
@@ -386,7 +394,11 @@ fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
     let gates = report["gates"].as_array().unwrap();
     assert_eq!(gates.len(), 4, "{report:#}");
     assert!(gates[..3].iter().all(|gate| gate["state"] == "closed"));
-    assert!(gates[..3].iter().all(|gate| gate["waiting"]["label"] != "unknown"));
+    assert!(
+        gates[..3]
+            .iter()
+            .all(|gate| gate["waiting"]["label"] != "unknown")
+    );
     assert_eq!(gates[3]["gate"], "Review");
     assert_eq!(gates[3]["state"], "open");
     assert_eq!(gates[3]["waiting"]["label"], "ongoing");
@@ -396,16 +408,34 @@ fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
     assert!(context["sections"].to_string().contains("gate-opened"));
     fixture.ok(&["next", "--json"]);
     let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["recent_transitions"].as_array().unwrap().len(), 6);
+    assert_eq!(shown["recent_transitions"].as_array().unwrap().len(), 7);
 }
 
 #[test]
 fn gate_records_are_reconciled_with_the_awaiting_human_list() {
     let fixture = fixture_with(&[
         transition(Some(T), "advance", "intent", "design", "go"),
-        transition(Some(T + 10), "gate-opened", "design", "design", "Edited away"),
-        transition(Some(T + 20), "gate-opened", "design", "design", "Still waiting"),
-        transition(Some(T + 30), "gate-closed", "design", "design", "Closed only"),
+        transition(
+            Some(T + 10),
+            "gate-opened",
+            "design",
+            "design",
+            "Edited away",
+        ),
+        transition(
+            Some(T + 20),
+            "gate-opened",
+            "design",
+            "design",
+            "Still waiting",
+        ),
+        transition(
+            Some(T + 30),
+            "gate-closed",
+            "design",
+            "design",
+            "Closed only",
+        ),
         transition(Some(T + 100), "advance", "design", "plan", "go"),
     ]);
     // "Edited away" was removed from session.json by hand; "Legacy" predates gate records.
@@ -439,7 +469,11 @@ fn gate_records_are_reconciled_with_the_awaiting_human_list() {
 
     for name in ["Legacy", "Closed only"] {
         let unknown = gate(name);
-        assert_eq!(unknown["opened"]["unix_seconds"], Value::Null, "{unknown:#}");
+        assert_eq!(
+            unknown["opened"]["unix_seconds"],
+            Value::Null,
+            "{unknown:#}"
+        );
         assert_eq!(
             unknown["opened"]["unknown"],
             "opened before gate records or record missing"
@@ -491,8 +525,14 @@ fn missing_and_out_of_order_times_are_unknown_never_zero() {
     assert_eq!(seconds(&first[3]["elapsed"]), Some(0));
     assert_eq!(first[3]["elapsed"]["label"], "recorded together");
     // Stage totals that include an unknown segment are unknown, never zero.
-    assert_eq!(stage_total(&report, 0, "design")["stage_time"]["label"], "unknown");
-    assert_eq!(stage_total(&report, 0, "build")["stage_time"]["label"], "unknown");
+    assert_eq!(
+        stage_total(&report, 0, "design")["stage_time"]["label"],
+        "unknown"
+    );
+    assert_eq!(
+        stage_total(&report, 0, "build")["stage_time"]["label"],
+        "unknown"
+    );
     // The unreadable line is skipped and reported.
     assert_eq!(report["transitions"]["unreadable_lines"], 1);
     assert!(report["partial"].to_string().contains("unreadable"));
@@ -513,7 +553,10 @@ fn missing_and_out_of_order_times_are_unknown_never_zero() {
             .starts_with("too few to estimate")
     );
     let rendered = text(&fixture, &[]);
-    assert!(rendered.contains("unknown (end before start)"), "{rendered}");
+    assert!(
+        rendered.contains("unknown (end before start)"),
+        "{rendered}"
+    );
     assert!(rendered.contains("recorded together"));
     assert!(rendered.contains("too few to estimate"));
 }
@@ -634,9 +677,33 @@ fn write_bug(fixture: &Fixture, id: &str, status: &str, observations: &[&str], n
 fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
     let fixture = Fixture::new();
     fixture.init();
-    write_observation(&fixture, "fail-late", Some("TC-a"), "local", "failed", T + 300, None);
-    write_observation(&fixture, "fail-early", Some("TC-a"), "local", "failed", T + 200, None);
-    write_observation(&fixture, "pass", Some("TC-a"), "local", "passed", T + 900, None);
+    write_observation(
+        &fixture,
+        "fail-late",
+        Some("TC-a"),
+        "local",
+        "failed",
+        T + 300,
+        None,
+    );
+    write_observation(
+        &fixture,
+        "fail-early",
+        Some("TC-a"),
+        "local",
+        "failed",
+        T + 200,
+        None,
+    );
+    write_observation(
+        &fixture,
+        "pass",
+        Some("TC-a"),
+        "local",
+        "passed",
+        T + 900,
+        None,
+    );
     // A pruned failure, earlier than both present ones, is known from the ledger.
     fixture.write(
         ".chough/pruned.jsonl",
@@ -653,9 +720,27 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
             {"at_unix_seconds": at + 50, "text": "status: reopened -> verified"},
         ])
     };
-    write_bug(&fixture, "BUG-0001", "verified", &["fail-late", "fail-early", "pass"], verified(T + 1_000));
-    write_bug(&fixture, "BUG-0002", "verified", &["fail-late", "fail-pruned", "pass"], verified(T + 1_000));
-    write_bug(&fixture, "BUG-0003", "verified", &["fail-late", "gone", "pass"], verified(T + 1_000));
+    write_bug(
+        &fixture,
+        "BUG-0001",
+        "verified",
+        &["fail-late", "fail-early", "pass"],
+        verified(T + 1_000),
+    );
+    write_bug(
+        &fixture,
+        "BUG-0002",
+        "verified",
+        &["fail-late", "fail-pruned", "pass"],
+        verified(T + 1_000),
+    );
+    write_bug(
+        &fixture,
+        "BUG-0003",
+        "verified",
+        &["fail-late", "gone", "pass"],
+        verified(T + 1_000),
+    );
     write_bug(&fixture, "BUG-0004", "open", &[], json!([]));
     let report = timing(&fixture, &[]);
     let bug = |id: &str| -> Value {
@@ -691,8 +776,14 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
     assert_eq!(three["fix_time"]["label"], "unknown");
 
     let four = bug("BUG-0004");
-    assert_eq!(four["reproduced"]["unknown"], "no linked failed observation");
-    assert_eq!(four["verified"]["unknown"], "no note records status -> verified");
+    assert_eq!(
+        four["reproduced"]["unknown"],
+        "no linked failed observation"
+    );
+    assert_eq!(
+        four["verified"]["unknown"],
+        "no note records status -> verified"
+    );
     assert_eq!(four["fix_time"]["seconds"], Value::Null);
 
     // Two fix times are too few to estimate.
@@ -711,10 +802,34 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
 fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() {
     let fixture = Fixture::new();
     fixture.init();
-    write_observation(&fixture, "a-1", Some("TC-a"), "local", "failed", T + 10, None);
-    write_observation(&fixture, "a-2", Some("TC-a"), "local", "passed", T + 20, Some(7));
+    write_observation(
+        &fixture,
+        "a-1",
+        Some("TC-a"),
+        "local",
+        "failed",
+        T + 10,
+        None,
+    );
+    write_observation(
+        &fixture,
+        "a-2",
+        Some("TC-a"),
+        "local",
+        "passed",
+        T + 20,
+        Some(7),
+    );
     write_observation(&fixture, "a-ci", Some("TC-a"), "ci", "passed", T + 30, None);
-    write_observation(&fixture, "b-1", Some("TC-b"), "local", "not-run", T + 40, None);
+    write_observation(
+        &fixture,
+        "b-1",
+        Some("TC-b"),
+        "local",
+        "not-run",
+        T + 40,
+        None,
+    );
     write_observation(&fixture, "loose", None, "local", "passed", T + 50, None);
     fixture.write(
         ".chough/validation/val-1.json",
@@ -755,11 +870,17 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
     assert_eq!(at(&observations[0]["observed"]), Some(T + 10));
     // Old records hold no run time: unknown, never zero.
     assert_eq!(observations[0]["run_time"]["seconds"], Value::Null);
-    assert_eq!(observations[0]["run_time"]["reason"], "no run time recorded");
+    assert_eq!(
+        observations[0]["run_time"]["reason"],
+        "no run time recorded"
+    );
     assert_eq!(seconds(&observations[1]["run_time"]), Some(7));
     assert_eq!(observations[1]["run_time"]["label"], "elapsed wall-clock");
     assert_eq!(group(json!("TC-a"), "ci")["count"], 1);
-    assert_eq!(group(json!("TC-b"), "local")["observations"][0]["outcome"], "not-run");
+    assert_eq!(
+        group(json!("TC-b"), "local")["observations"][0]["outcome"],
+        "not-run"
+    );
     assert_eq!(group(Value::Null, "local")["count"], 1);
 
     let run = &report["validation_runs"][0];
@@ -901,7 +1022,10 @@ fn native_times_come_only_from_status_and_native_records_read_read_only() {
     let rendered = text(&fixture, &[]);
     assert_eq!(before, record_digests(fixture.root()));
     for output in [report.to_string(), rendered.clone()] {
-        assert!(!output.contains("Secret"), "actor, note or reason leaked: {output}");
+        assert!(
+            !output.contains("Secret"),
+            "actor, note or reason leaked: {output}"
+        );
     }
     let native = &report["native"];
     assert_eq!(native["state"], "observed", "{native:#}");
@@ -915,10 +1039,17 @@ fn native_times_come_only_from_status_and_native_records_read_read_only() {
     assert_eq!(at(&approvals[1]["at"]), Some(T + 200));
     assert_eq!(approvals[1]["standing"], "not current");
     assert_eq!(approvals[0]["standing"], "not current");
-    assert!(approvals.iter().all(|approval| approval["standing"] != "current"));
+    assert!(
+        approvals
+            .iter()
+            .all(|approval| approval["standing"] != "current")
+    );
     // An unrecognised record shape is unknown with its reason.
     assert_eq!(current["verification"]["unix_seconds"], Value::Null);
-    assert_eq!(current["verification"]["unknown"], "unrecognised record shape");
+    assert_eq!(
+        current["verification"]["unknown"],
+        "unrecognised record shape"
+    );
     assert_eq!(current["review"]["unknown"], "no native record");
 
     // History reads the 10 most recent archived changes and reports the rest skipped.
@@ -973,16 +1104,18 @@ fn a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown() {
         .env("CHOUGH_NATIVE_TIMEOUT_SECONDS", "1")
         .env(
             "PATH",
-            std::env::join_paths(
-                std::iter::once(fixture.root().join("bin")).chain(std::env::split_paths(
-                    &std::env::var_os("PATH").unwrap_or_default(),
-                )),
-            )
+            std::env::join_paths(std::iter::once(fixture.root().join("bin")).chain(
+                std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()),
+            ))
             .unwrap(),
         )
         .output()
         .unwrap();
-    assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
     let report: Value = serde_json::from_slice(&output.stdout).unwrap();
     let current = &report["native"]["current"];
     assert_eq!(current["created"]["unix_seconds"], Value::Null);

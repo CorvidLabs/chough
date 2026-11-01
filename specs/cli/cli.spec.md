@@ -14,12 +14,14 @@ files:
   - src/records.rs
   - src/skill.rs
   - src/stage.rs
+  - src/timing.rs
   - src/validate.rs
   - tests/cli.rs
   - tests/bugs.rs
   - tests/cases.rs
   - tests/optional.rs
   - tests/stages.rs
+  - tests/timing.rs
   - tests/common/mod.rs
 
 db_tables: []
@@ -44,7 +46,7 @@ requirements.md and docs/FRD.md.
 The binary exposes CLI commands; it does not export a Rust library API. The
 observable command contract is `chough --help`, docs/cli.md and README.md. The
 command groups are init, context, status, next, migrate, checkpoint, stage, cases,
-evidence, bug, pref, consent, validate, library and skill.
+evidence, bug, pref, consent, validate, library, skill and timing.
 
 Internal modules under src/ make their entry points visible to the crate root only.
 They are implementation details of the binary, not exports or library promises, and

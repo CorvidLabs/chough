@@ -409,6 +409,35 @@ fn bundle_files_from_the_latest_main_build_are_never_reported_as_edited() {
     }
 }
 
+#[test]
+fn checkpoint_and_plan_references_from_main_2756dc2_are_known_outdated() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow");
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/skill-2756dc2");
+    for file in ["references/checkpoint.md", "references/plan.md"] {
+        // The known digests are of LF bytes; a Windows checkout may have converted them.
+        let old = fs::read_to_string(fixtures.join(file))
+            .unwrap()
+            .replace("\r\n", "\n");
+        fs::write(installed.join(file), old).unwrap();
+    }
+    let status = chough(root, &["skill", "status"]);
+    for file in ["references/checkpoint.md", "references/plan.md"] {
+        assert_eq!(
+            skill_state(&status, file)["state"],
+            "known-outdated",
+            "{file}"
+        );
+    }
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    for file in bundle_files() {
+        assert_eq!(skill_state(&status, &file)["state"], "current", "{file}");
+    }
+}
+
 /// `skills/chough-workflow/references/checkpoint.md` as shipped by main at 9cb1c35.
 const CHECKPOINT_AT_9CB1C35: &str = r##"# Checkpoint and cold resume
 

@@ -32,6 +32,13 @@ chough checkpoint --completed "<what was done>" --observation <id> \
   --decision "<decision, because reason>" --next-action "<next step>"
 ```
 
+Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` record to
+`.chough/transitions.jsonl` (only when that gate is not already open), and
+`--clear-awaiting-human` appends one `gate-closed` record per gate it clears. They
+record when a gate waited, never who decided or what, and `chough timing` reads them
+to show waiting-on-human time. Open and clear gates through these flags rather than by
+editing `session.json`, or the waiting time is lost.
+
 Write decision summaries and observations, not private reasoning transcripts.
 SpecSync's `Handoff:` line says whether its own records are safe to clear; follow it
 too.

@@ -87,6 +87,7 @@ state, never by a saved label.
 | `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
 | `library init/snapshot/index` | Optional project-local librarian |
+| `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
 Chough does not authenticate people, record approvals or reviews, publish anything,
 or deploy. A structural pass, an exit code or an actor label is never treated as

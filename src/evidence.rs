@@ -91,6 +91,10 @@ pub(super) struct Evidence {
     pub(super) tests_run: Option<u64>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub(super) limitations: Vec<String>,
+    /// Wall-clock seconds an explicit case run took; absent on manual records and on
+    /// records written before it was kept, whose run time stays unknown.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) duration_seconds: Option<u64>,
 }
 
 #[derive(clap::Args)]
@@ -399,6 +403,7 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         exit_code: None,
         tests_run: None,
         limitations: args.limitations,
+        duration_seconds: None,
     };
     let name = record(root, &evidence)?;
     print_json(&json!({"schema_version": 1, "recorded": name, "provenance": evidence.provenance}))
@@ -439,7 +444,8 @@ fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
                 && evidence.argv.is_empty()
                 && evidence.exit_code.is_none()
                 && evidence.tests_run.is_none()
-                && evidence.limitations.is_empty(),
+                && evidence.limitations.is_empty()
+                && evidence.duration_seconds.is_none(),
             "schema 1 evidence uses only schema 1 fields: {name}"
         );
     }
@@ -585,6 +591,45 @@ fn read_ledger(root: &Path) -> Result<BTreeSet<String>> {
         );
     }
     Ok(ids)
+}
+
+/// What the retention ledger recorded about one pruned observation.
+pub(super) struct PrunedEntry {
+    pub(super) observed_at_unix_seconds: Option<u64>,
+    pub(super) outcome: Option<String>,
+}
+
+/// Each pruned observation's recorded time and outcome, by ID, read within the
+/// ledger's bound; an unreadable ledger is an error the caller reports.
+pub(super) fn ledger_entries(root: &Path) -> Result<BTreeMap<String, PrunedEntry>> {
+    let path = local_path(root, LEDGER)?;
+    if !path.exists() {
+        return Ok(BTreeMap::new());
+    }
+    ensure!(path.is_file(), "{LEDGER} must be a file");
+    ensure!(
+        fs::metadata(&path)?.len() <= LEDGER_LIMIT,
+        "{LEDGER} exceeds {LEDGER_LIMIT} bytes"
+    );
+    let mut entries = BTreeMap::new();
+    for line in fs::read_to_string(&path)?.lines() {
+        if line.trim().is_empty() {
+            continue;
+        }
+        let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
+        let id = entry["id"]
+            .as_str()
+            .context("retention ledger line without an id")?
+            .to_string();
+        entries.insert(
+            id,
+            PrunedEntry {
+                observed_at_unix_seconds: entry["observed_at_unix_seconds"].as_u64(),
+                outcome: entry["outcome"].as_str().map(str::to_string),
+            },
+        );
+    }
+    Ok(entries)
 }
 
 /// Labels observation references current, historical, pruned or unavailable.
