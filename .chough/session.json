@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -90,7 +90,8 @@
     "TC-cli-0105 and TC-cli-0106 failed at the unfixed tip for the approved archived-guidance and Kimi-guidance defects; failures linked before implementation",
     "Implemented archived native next-action routing, Kimi skill guidance with safe updates, and the approved roadmap and host documentation refresh",
     "Final TC-cli-0105, TC-cli-0037 and TC-cli-0106 observations passed on the completed content; BUG-0020 and BUG-0021 verified from later passes",
-    "Native materialization passed, and the final CI-matching fledge verify lane completed all 9 steps in 82.220 seconds"
+    "Native materialization passed, and the final CI-matching fledge verify lane completed all 9 steps in 82.220 seconds",
+    "Native change archived at 2189038 after 0xLeif authorized finalization; Chough advanced from accept to done"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -120,9 +121,7 @@
     "BUG-0023"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of correct-archived-resume-guidance-and-record-the-kimi-cold-start"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for 0xLeif to review the implementation; do not record native review or archive without explicit instruction"
+  "next_action": "0xLeif to resolve PR #24 conflicts and decide whether to merge; no agent merge, release or deployment"
 }
