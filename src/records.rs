@@ -269,6 +269,18 @@ pub(super) fn read_record(path: &Path) -> Result<String> {
     Ok(content)
 }
 
+/// Largest native record file read, SpecSync 6.1.1's own change-artifact bound
+/// (MAX_CHANGE_ARTIFACT_BYTES); native approval ledgers outgrow the 64 KiB record bound.
+pub(super) const NATIVE_RECORD_LIMIT: u64 = 4 * 1_048_576;
+
+/// Read a native record file read-only within `limit` bytes; `Ok(None)` when it is
+/// larger. A missing file is an `io::ErrorKind::NotFound` error.
+pub(super) fn read_native_record(path: &Path, limit: u64) -> io::Result<Option<Vec<u8>>> {
+    let mut bytes = vec![];
+    File::open(path)?.take(limit + 1).read_to_end(&mut bytes)?;
+    Ok((bytes.len() as u64 <= limit).then_some(bytes))
+}
+
 pub(super) fn bounded(value: &[u8]) -> String {
     bounded_capture(value, value.len() as u64)
 }

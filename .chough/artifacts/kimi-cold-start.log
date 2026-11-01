@@ -117,13 +117,13 @@ This was a baseline local verify using global HI 0.5.0 and Fledge 1.8.0, which d
 
 ## Comparison with recorded host runs
 
-The existing independent-session record is a Codex CLI 0.153.4 run in a prepared shipping sample. It found the skill, checked native state and freshness, resumed the same approved task, and reached a valid human-review gate. Its sandbox blocked commits. The Kimi run used this repository rather than that sample, received a new objective, and inherited an archived done checkpoint. Both runs found their installed skill and checked native state without recording human decisions. Kimi could not identify a safe valid action from Chough because of BUG-0020; Codex could in its different fixture.
+The existing independent-session record is a Codex CLI 0.153.4 run in a prepared shipping sample. It found the skill, checked native state and freshness, resumed the same approved task, and reached a valid human-review gate. Its sandbox blocked commits. The Kimi run used this repository rather than that sample, received a new objective, and inherited an archived done checkpoint. Both runs found their installed skill and checked native state without recording human decisions. Kimi could not identify a safe valid action from Chough because of BUG-0024; Codex could in its different fixture.
 
 The repository separately records Claude Code 2.1.316 discovering .claude/skills but not .agents/skills. Kimi Code CLI 0.41.0 discovered .agents/skills. This is one Kimi run on one OS, not a repeat of the Codex sample or a general host-matrix result.
 
 ## Findings and scope
 
-BUG-0020: product-defect, in-scope. A done checkpoint with an archived native change repeats stale review and ship next_valid_action guidance. This can make a cold agent repeat completed human lifecycle steps instead of following native SpecSync guidance.
+BUG-0024: product-defect, in-scope. A done checkpoint with an archived native change repeats stale review and ship next_valid_action guidance. This can make a cold agent repeat completed human lifecycle steps instead of following native SpecSync guidance.
 
 BUG-0021: requirement-gap, in-scope. Kimi discovery mapping is undocumented. Kimi discovered .agents automatically, but the docs did not explain that the openai installer mapping installs the skill Kimi discovers.
 
@@ -135,6 +135,6 @@ BUG-0023: requirement-gap, out-of-scope. The 11567-line next output and approxim
 
 Discovery: yes. Kimi Code CLI 0.41.0 auto-discovered and loaded .agents/skills/chough-workflow/SKILL.md, with the explicit task coaching noted above.
 
-Safe cold resume: no at the original base. Although native SpecSync reported archived state and a safe native handoff, Chough next and status repeated stale review and ship guidance. BUG-0020 prevents calling the overall cold resume safe. Successful build, current skill files, valid cases, and the baseline verify do not remove that defect.
+Safe cold resume: no at the original base. Although native SpecSync reported archived state and a safe native handoff, Chough next and status repeated stale review and ship guidance. BUG-0024 prevents calling the overall cold resume safe. Successful build, current skill files, valid cases, and the baseline verify do not remove that defect.
 
 Human scope approval for the proposed correction remains pending. This log does not claim a fresh installation, a fresh post-fix Kimi run, hosted CI, human approval or review, merge, release, or deployment.

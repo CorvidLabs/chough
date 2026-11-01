@@ -7,7 +7,7 @@ sample through `fledge run exercise`. Structural success cannot prove the behavi
 below. Stable case definitions are in `.chough/cases/cli.cases.toml`. TC-cli-0001 to
 TC-cli-0037 bind the original integration tests one to one, with later automated
 cases extending that coverage. TC-cli-0101 to TC-cli-0104 cover the exercise, cold
-start, wording review and timing. TC-cli-0105 is the BUG-0020 archived-guidance
+start, wording review and timing. TC-cli-0105 is the BUG-0024 archived-guidance
 regression, and TC-cli-0106 is the BUG-0021 retrospective Kimi guidance review.
 
 | Requirement | Verification responsibility | Cases |
@@ -59,7 +59,7 @@ Project skill. Discovery passed in this one run, not as a general host-matrix re
   1.8.0 with SpecSync 6.1.1, so it is not final CI-toolchain or hosted CI evidence.
   Release-verified HI 0.8.0 and Fledge 1.7.2 were later placed under
   `target/tmp/ci-tools`; final checks require those versions with SpecSync 6.1.1.
-- Safe cold resume exposed BUG-0020, and absent mapping guidance exposed BUG-0021.
+- Safe cold resume exposed BUG-0024, and absent mapping guidance exposed BUG-0021.
   BUG-0022 records the initial tool drift and BUG-0023 the output size; both remain
   open and out of scope.
 - Original TC-cli-0106 observation `tc-cli-0106-kimi-original` failed in

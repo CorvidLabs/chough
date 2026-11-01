@@ -42,7 +42,7 @@ flowchart TB
 | `.chough/evidence/*.json`, `.chough/artifacts/` | Observations and captured output |
 | `.chough/pruned.jsonl` | Append-only ledger of observation sets removed by retention |
 | `.chough/bugs/*.json` | Local bug backlog |
-| `.chough/validation/` | Limits and progress of optional repeated runs |
+| `.chough/validation/`, `.chough/validation.stop` | Limits and progress of optional repeated runs, and a pending stop request |
 | `library/` (optional) | Snapshots, briefs and a generated index; never a second current source |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
 
@@ -57,7 +57,7 @@ flowchart TB
 | Frozen native archives: SpecSync's record of a closed change, authenticated from Git history | `.specsync/archive/changes/<date>-<id>/` | Committed once; never edited or pruned |
 | Canonical skill: the bundle the binary embeds; edit it here | `skills/chough-workflow/` | Committed and packaged |
 | Installed host copies written by `init` and `skill update` (byte-identical to the canonical bundle in this repository) | `<host>/skills/chough-workflow/`, here `.agents/` and `.claude/` | Committed in the project that uses them |
-| Ignored build output and local caches | `/target`, `.specsync/hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
+| Ignored build output and local caches | `/target`, `.fledge/cache/`, and under `.specsync/`: `hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
 | CI output | GitHub Actions run logs | Kept by the hosted run; no CI artifact is uploaded |
 
 **Retention.** An observation set is one evidence record plus the artifacts no other
@@ -93,7 +93,12 @@ paths). Commands replace it atomically. With several agents, one agent owns the
 checkpoint and the others report back; there is no distributed lock. APS was
 evaluated as a backend and deferred (D-010). The checkpoint stores decision summaries
 and references, never reasoning transcripts, and it never stores native lifecycle
-state: it stores the change ID and reads status when a gate matters.
+state: it stores the change ID and reads status when a gate matters. Because SpecSync
+6.1.1 status does not report an edited approved delta (BUG-0002), the gate into build,
+test and accept also reads the native approval ledger
+(`.specsync/changes/<id>/approvals.json`) and the change's deltas read-only, within
+4 MiB each, and compares SpecSync's own approved-delta digests; it copies nothing into
+Chough's records and starts no process.
 
 ## Timing is derived, not stored
 
@@ -121,7 +126,7 @@ flowchart LR
     transitions["Recent transitions"] --> packet
     prefs["Standing preferences"] --> packet
     bugs["Open bug backlog"] --> packet
-    native["Native change status"] --> packet
+    native["Native change status (chough next)"] --> next
     hi["Scoped HI export"] --> packet
     modules["Module contract, companions, lessons"] --> packet
     missing["Missing, stale, oversized sources"] --> limits["Explicit limits"]
@@ -130,7 +135,9 @@ flowchart LR
 ```
 
 `chough context` assembles the packet within 16 KiB per section and 128 KiB in
-total; `chough next` adds native status, freshness, gates and the next valid action.
+total; `chough next` adds native status, freshness, gates and the next valid action
+as a focused view of at most 16 KiB from one native status read, and `chough status`
+is the full report.
 Missing or truncated sources stay visible. Context is source material: it may contain
 user or repository text, and it never overrides the host's instructions or
 authorizes external actions.

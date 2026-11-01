@@ -22,6 +22,7 @@
       "LIFE-7",
       "FLOW-10",
       "LIFE-3",
+      "FLOW-5",
       "LIFE-4"
     ],
     "requirements": [
@@ -29,7 +30,9 @@
       "REQ-cli-008",
       "REQ-cli-011",
       "REQ-cli-003",
-      "REQ-cli-016"
+      "REQ-cli-016",
+      "REQ-cli-021",
+      "REQ-cli-022"
     ],
     "cases": [
       "TC-cli-0101",
@@ -38,7 +41,12 @@
       "TC-cli-0038",
       "TC-cli-0039",
       "TC-cli-0105",
-      "TC-cli-0106"
+      "TC-cli-0106",
+      "TC-cli-0120",
+      "TC-cli-0121",
+      "TC-cli-0122",
+      "TC-cli-0123",
+      "TC-cli-0124"
     ],
     "design": [],
     "files": []
@@ -62,8 +70,11 @@
     "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
     "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
+    "Draft adds REQ-cli-021 and REQ-cli-022 instead of modifying REQ-cli-008, 016 or 019, because open PR #22 modifies those",
+    "No gate runs specsync change check: measured on 6.1.1 it mutates canonical specs and native records and refuses while tasks are unchecked; the guard recomputes SpecSync's approved-delta digests instead",
+    "2026-11-01: 0xLeif approved the scope of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume with the drafter's recommended answers to the open questions; recorded with specsync change approve --actor 0xLeif",
     "The human task supplies the intent and requested deliverables; no native scope approval is inferred",
-    "Limit this change to BUG-0020 and BUG-0021 plus honest exercise and roadmap records, because the output-size and global-tool issues do not need the same scoped fix",
+    "Limit this change to BUG-0024 and BUG-0021 plus honest exercise and roadmap records, because the output-size and global-tool issues do not need the same scoped fix",
     "Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007",
     "0xLeif approved the native scope in conversation; SpecSync recorded that decision with actor 0xLeif",
     "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised"
@@ -85,11 +96,14 @@
     "plan step 7 documented-order exercise passed",
     "TC-cli-0100 and TC-cli-0104 added and passing",
     "PR #9 merged earlier; stale awaiting-human entry cleared",
-    "Kimi Code CLI 0.41.0 cold start on macOS arm64: discovery, build, native checks and baseline verify observed; four friction items classified as BUG-0020 to BUG-0023",
+    "Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated",
+    "TC-cli-0120 to TC-cli-0124 passed on local-macos-arm64 after the scoped change check materialized REQ-cli-021 and REQ-cli-022; BUG-0002 noted as guarded, still open",
+    "PR #23 review at 2eb10bb: next strings bounded by escaped width, SpecSync module names accepted by the guard, the no-digest remedy names a new approval, reset next action bounded, cross-platform unit tests, SKILL.md host caveats; TC-cli-0120 to TC-cli-0124 rerun and passed on local-macos-arm64 at 72fe1e2",
+    "Kimi Code CLI 0.41.0 cold start on macOS arm64: discovery, build, native checks and baseline verify observed; four friction items classified as BUG-0024 and BUG-0021 to BUG-0023",
     "Preserved the concise Kimi cold-start log and recorded failed observation kimi-cold-start-5af3f78 with discovery successes, cold-resume failure and tool and coaching limits",
     "TC-cli-0105 and TC-cli-0106 failed at the unfixed tip for the approved archived-guidance and Kimi-guidance defects; failures linked before implementation",
     "Implemented archived native next-action routing, Kimi skill guidance with safe updates, and the approved roadmap and host documentation refresh",
-    "Final TC-cli-0105, TC-cli-0037 and TC-cli-0106 observations passed on the completed content; BUG-0020 and BUG-0021 verified from later passes",
+    "Final TC-cli-0105, TC-cli-0037 and TC-cli-0106 observations passed on the completed content; BUG-0024 and BUG-0021 verified from later passes",
     "Native materialization passed, and the final CI-matching fledge verify lane completed all 9 steps in 82.220 seconds",
     "Native change archived at 2189038 after 0xLeif authorized finalization; Chough advanced from accept to done"
   ],
@@ -105,6 +119,16 @@
     "kimi-cold-start-5af3f78-scope",
     "tc-cli-0105-1793551352",
     "tc-cli-0106-kimi-original",
+    "tc-cli-0120-1793552331",
+    "tc-cli-0121-1793552334",
+    "tc-cli-0122-1793552336",
+    "tc-cli-0123-1793552337",
+    "tc-cli-0124-1793552338",
+    "tc-cli-0120-1793553262",
+    "tc-cli-0121-1793553270",
+    "tc-cli-0122-1793553272",
+    "tc-cli-0123-1793553274",
+    "tc-cli-0124-1793553276",
     "tc-cli-0105-1793553670",
     "tc-cli-0037-1793553673",
     "tc-cli-0106-kimi-final"
@@ -118,10 +142,11 @@
     "BUG-0020",
     "BUG-0021",
     "BUG-0022",
-    "BUG-0023"
+    "BUG-0023",
+    "BUG-0024"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif to resolve PR #24 conflicts and decide whether to merge; no agent merge, release or deployment"
+  "next_action": "Finalize PR #24 under 0xLeif's authorization: resolve conflicts, run integrated gates, mark ready and merge if they pass; no release or deployment"
 }

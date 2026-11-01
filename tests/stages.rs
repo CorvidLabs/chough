@@ -127,7 +127,7 @@ fn checkpoint_round_trips_across_processes_and_rejects_unknown_fields() {
     assert_eq!(resumed["next_action"], "Wait for approval");
     let next = fixture.ok(&["next", "--json"]);
     assert!(
-        next["next_valid_action"]
+        next["next_valid_action"]["action"]
             .as_str()
             .unwrap()
             .contains("Waiting for a human decision")
@@ -312,13 +312,16 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
             .contains("refused:no-native-change")
     );
     fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    fixture.no_spec_approval("add-thing");
     let refused = fixture.fails(&["stage", "advance"]);
     assert!(refused.contains("refused:native-draft"), "{refused}");
     assert!(refused.contains("specsync change status add-thing"));
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["checkpoint"]["gate"]["allowed"], false);
     let next = fixture.ok(&["next", "--json"]);
-    assert_eq!(next["checkpoint"]["gate"]["allowed"], false);
+    assert_eq!(next["gate"]["allowed"], false);
     assert!(
-        next["next_valid_action"]
+        next["next_valid_action"]["action"]
             .as_str()
             .unwrap()
             .contains("Gate not open")
@@ -371,13 +374,7 @@ fn done_archived_native_guidance_drives_next_and_status() {
     fixture.native("archived");
     fixture.init();
     let stale = "specsync change review archived-change, then ship";
-    fixture.ok(&[
-        "checkpoint",
-        "--native-change",
-        "archived-change",
-        "--next-action",
-        stale,
-    ]);
+    fixture.ok(&["checkpoint", "--native-change", "archived-change"]);
     fixture.ok(&[
         "stage",
         "reset",
@@ -386,12 +383,21 @@ fn done_archived_native_guidance_drives_next_and_status() {
         "--reason",
         "Archived native closeout",
     ]);
+    fixture.ok(&["checkpoint", "--next-action", stale]);
     assert_eq!(stage(&fixture), "done");
 
     let assert_action = |command: &str, expected: &str, session_bytes: &str| {
-        let report = fixture.ok(&[command, "--json"]);
+        let mut report = fixture.ok(&[command, "--json"]);
+        if command == "next" {
+            report["native_summary"] = json!({
+                "state": report["native"]["state"],
+                "next_action": report["native"]["next_action"],
+            });
+            report["next_valid_action"] = report["next_valid_action"]["action"].clone();
+        } else {
+            assert_eq!(report["session_next_action"], stale, "{command}");
+        }
         assert_eq!(report["next_valid_action"], expected, "{command}");
-        assert_eq!(report["session_next_action"], stale, "{command}");
         assert_eq!(
             fixture.read(".chough/session.json"),
             session_bytes,
@@ -438,7 +444,7 @@ fn done_archived_native_guidance_drives_next_and_status() {
     fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
     fixture.write(
         "bin/specsync",
-        "#!/bin/sh\nprintf '%s\\n' '{\"summary\":{\"state\":\"archived\"}}'\n",
+        "#!/bin/sh\nprintf '%s\\n' '{\"summary\":{\"state\":\"archived\",\"terminal_evidence\":{\"validity\":\"authenticated-history\"}}}'\n",
     );
     let session_bytes = fixture.read(".chough/session.json");
     let fallback = "Done checkpoint has no archived native next action; inspect native SpecSync status before further lifecycle action.";
@@ -457,7 +463,11 @@ fn done_archived_native_guidance_drives_next_and_status() {
         ("non-string array", json!(["nested"])),
     ] {
         let response = json!({
-            "summary": {"state": "archived", "next_action": next_action.clone()}
+            "summary": {
+                "state": "archived",
+                "next_action": next_action.clone(),
+                "terminal_evidence": {"validity": "authenticated-history"},
+            }
         });
         fixture.write(
             "bin/specsync",
@@ -466,8 +476,13 @@ fn done_archived_native_guidance_drives_next_and_status() {
         for command in ["next", "status"] {
             let report = assert_action(command, fallback, &session_bytes);
             assert_eq!(report["native_summary"]["state"], "archived");
+            let shown_action = if command == "next" && !next_action.is_string() {
+                Value::Null
+            } else {
+                next_action.clone()
+            };
             assert_eq!(
-                report["native_summary"]["next_action"], next_action,
+                report["native_summary"]["next_action"], shown_action,
                 "{command}: {label}"
             );
         }
@@ -475,7 +490,11 @@ fn done_archived_native_guidance_drives_next_and_status() {
 
     let native_action = " \tstub next action for archived \t";
     let response = json!({
-        "summary": {"state": "archived", "next_action": native_action}
+        "summary": {
+            "state": "archived",
+            "next_action": native_action,
+            "terminal_evidence": {"validity": "authenticated-history"},
+        }
     });
     fixture.write(
         "bin/specsync",
@@ -491,17 +510,38 @@ fn done_archived_native_guidance_drives_next_and_status() {
     fixture.stubs();
     fixture.write(".stub-fail", "");
     for command in ["next", "status"] {
-        let report = assert_action(command, fallback, &session_bytes);
-        assert_eq!(report["native_specsync"]["state"], "failed");
+        let report = fixture.ok(&[command, "--json"]);
+        let action = if command == "next" {
+            report["next_valid_action"]["action"].clone()
+        } else {
+            assert_eq!(report["session_next_action"], stale, "{command}");
+            report["next_valid_action"].clone()
+        };
+        let action = action.as_str().unwrap();
         assert!(
-            report["native_specsync"]["content"]
-                .as_str()
-                .unwrap()
-                .contains("status failed"),
-            "{command}: {}",
-            report["native_specsync"]["content"]
+            action.starts_with("Gate not open (refused:native-unknown):"),
+            "{command}: {action}"
         );
-        assert!(report["native_summary"].is_null());
+        assert_eq!(
+            fixture.read(".chough/session.json"),
+            session_bytes,
+            "{command} rewrote the session"
+        );
+        if command == "next" {
+            assert_eq!(report["native"]["read"], "failed");
+            assert!(report["native"]["state"].is_null());
+        } else {
+            assert_eq!(report["native_specsync"]["state"], "failed");
+            assert!(
+                report["native_specsync"]["content"]
+                    .as_str()
+                    .unwrap()
+                    .contains("status failed"),
+                "{command}: {}",
+                report["native_specsync"]["content"]
+            );
+            assert!(report["native_summary"].is_null());
+        }
     }
 }
 
@@ -514,12 +554,13 @@ fn large_native_status_still_gates_by_its_summary_state() {
     // exceeds the 16 KiB display bound; over 4 MiB it is refused as oversized.
     fixture.write(
         "bin/specsync",
-        "#!/bin/sh\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nsize=20000\n[ -f .stub-huge ] && size=4200000\npad=$(head -c $size /dev/zero | tr '\\0' x)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action\",\"approval_valid\":true,\"terminal_evidence\":{\"validity\":\"authenticated-history\"}},\"acceptance_entries\":\"%s\"}\\n' \"$state\" \"$pad\"\n",
+        "#!/bin/sh\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nsize=20000\n[ -f .stub-huge ] && size=4200000\npad=$(head -c $size /dev/zero | tr '\\0' x)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action\",\"approval_valid\":true,\"terminal_evidence\":{\"validity\":\"authenticated-history\"}},\"change\":{\"affected_specs\":[],\"no_spec_change\":true},\"acceptance_entries\":\"%s\"}\\n' \"$state\" \"$pad\"\n",
     );
     fixture.executable("bin/specsync");
     fixture.native("approved");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "large-change"]);
+    fixture.no_spec_approval("large-change");
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
     fixture.write(".stub-huge", "");
@@ -582,6 +623,7 @@ fn invalid_native_approval_refuses_every_route_into_build_and_later_stages() {
     fixture.native("approved");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "edited-scope"]);
+    fixture.no_spec_approval("edited-scope");
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
     fixture.write(".stub-approval", "false\n");
@@ -712,16 +754,22 @@ fn return_from_a_side_stage_meets_the_caller_prerequisite() {
     fixture.native("approved");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "side-trip"]);
+    fixture.no_spec_approval("side-trip");
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "enter", "bugs", "--reason", "A failing case"]);
     fixture.write(".stub-approval", "false\n");
+    let refused = fixture.fails(&["stage", "return"]);
     assert!(
-        fixture
-            .fails(&["stage", "return"])
-            .contains("refused:native-approval-invalid")
+        refused.contains("refused:native-approval-invalid"),
+        "{refused}"
+    );
+    // Every reset Chough suggests carries the reason clap requires.
+    assert!(
+        refused.contains("chough stage reset --to <stage> --reason"),
+        "{refused}"
     );
     assert_eq!(stage(&fixture), "bugs");
     fixture.write(".stub-approval", "true\n");
@@ -902,4 +950,562 @@ fn native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes() {
         );
     }
     assert_eq!(fixture.session()["native_change"], ceiling);
+}
+
+#[cfg(unix)]
+/// Split a suggested command line into arguments, keeping double-quoted words whole.
+fn words(command: &str) -> Vec<String> {
+    let mut words = vec![];
+    let mut word = String::new();
+    let mut quoted = false;
+    for character in command.chars() {
+        match character {
+            '"' => quoted = !quoted,
+            ' ' if !quoted => {
+                if !word.is_empty() {
+                    words.push(std::mem::take(&mut word));
+                }
+            }
+            _ => word.push(character),
+        }
+    }
+    if !word.is_empty() {
+        words.push(word);
+    }
+    words
+}
+
+/// A fixture in stage done whose recorded native change is archived.
+#[cfg(unix)]
+fn done_fixture(id: &str) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("archived");
+    fixture.write(".stub-validity", "exact\n");
+    fixture.write(".stub-next", "merge the PR on GitHub if it is still open\n");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", id]);
+    fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Closeout"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--next-action",
+        "specsync change review old-change --reviewer 0xLeif, then ship",
+    ]);
+    fixture
+}
+
+#[cfg(unix)]
+#[test]
+fn done_with_an_archived_change_uses_native_guidance_and_resets_with_a_reason() {
+    let fixture = done_fixture("closed-change");
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert_eq!(
+        text,
+        "Continue done: merge the PR on GitHub if it is still open"
+    );
+    assert!(!text.contains("specsync change review"), "{text}");
+    let reason = action["reason"].as_str().unwrap();
+    assert!(reason.contains("Native summary.next_action"), "{reason}");
+    assert_eq!(action["command"], Value::Null);
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], action["action"]);
+    assert_eq!(
+        status["session_next_action"],
+        "specsync change review old-change --reviewer 0xLeif, then ship"
+    );
+    let shown = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
+    assert!(shown.contains("Next: Continue done"), "{shown}");
+    assert!(
+        shown.contains("Native next action: merge the PR on GitHub"),
+        "{shown}"
+    );
+
+    // A reset with a reason still succeeds and replaces the stale next action; the
+    // transition keeps the reason.
+    let command = "chough stage reset --to intent --reason \"<why>\""
+        .replace("<why>", "New work: a focused view");
+    let arguments = words(&command);
+    assert_eq!(arguments[0], "chough");
+    let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
+    let reset = fixture.ok(&arguments);
+    assert_eq!(reset["applied"]["to"], "intent");
+    assert_eq!(
+        fixture.session()["next_action"],
+        "New cycle from done after reset: New work: a focused view. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+    );
+    let last = transitions(&fixture).pop().unwrap();
+    assert_eq!(last["kind"], "reset");
+    assert_eq!(last["reason"], "New work: a focused view");
+
+    // Back continues the same cycle and keeps the next action.
+    fixture.ok(&["checkpoint", "--next-action", "Keep this step"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "back", "--to", "intent", "--reason", "Refine"]);
+    assert_eq!(fixture.session()["next_action"], "Keep this step");
+}
+
+#[test]
+fn reset_replaces_the_next_action_and_back_keeps_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["checkpoint", "--next-action", "Finish the old plan"]);
+    fixture.ok(&["stage", "back", "--to", "design", "--reason", "Revisit"]);
+    assert_eq!(fixture.session()["next_action"], "Finish the old plan");
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "plan",
+        "--reason",
+        "Different work",
+    ]);
+    assert_eq!(
+        fixture.session()["next_action"],
+        "New cycle from design after reset: Different work. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+    );
+    let last = transitions(&fixture).pop().unwrap();
+    assert_eq!(last["kind"], "reset");
+    assert_eq!(last["reason"], "Different work");
+
+    // The next action keeps the checkpoint's own 4096-byte bound and stays one line,
+    // while the transition keeps the reason whole.
+    let reason = format!("Line one\nline two {}", "r".repeat(4_096 - 18));
+    assert_eq!(reason.len(), 4_096);
+    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", &reason]);
+    let next_action = fixture.session()["next_action"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(next_action.len() <= 4_096, "{} bytes", next_action.len());
+    assert!(
+        next_action.starts_with("New cycle from plan after reset: Line one line two rrr"),
+        "{next_action:.80}"
+    );
+    assert!(!next_action.contains('\n'));
+    assert!(next_action.ends_with("and set the next action."));
+    assert_eq!(transitions(&fixture).pop().unwrap()["reason"], reason);
+    fixture.ok(&["checkpoint", "--next-action", &next_action]);
+}
+
+#[cfg(unix)]
+#[test]
+fn done_keeps_the_gate_refusal_for_an_archive_that_does_not_authenticate() {
+    let fixture = done_fixture("unproven-archive");
+    fixture.write(".stub-validity", "corrupt-history\n");
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        action.contains("refused:native-archive-corrupt-history"),
+        "{action}"
+    );
+    assert!(!action.contains("Start a new cycle"), "{action}");
+}
+
+#[cfg(unix)]
+#[test]
+fn done_without_a_native_change_or_with_sdd_disabled_recommends_the_reset() {
+    let fixture = done_fixture("forgotten");
+    let mut session = fixture.session();
+    session["native_change"] = Value::Null;
+    fixture.write(".chough/session.json", &session.to_string());
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    assert!(
+        action["action"]
+            .as_str()
+            .unwrap()
+            .contains("specsync change new"),
+        "{action}"
+    );
+    assert!(
+        action["reason"]
+            .as_str()
+            .unwrap()
+            .contains("No native change is recorded"),
+        "{action}"
+    );
+    assert_eq!(
+        action["command"],
+        "chough stage reset --to intent --reason \"<why>\""
+    );
+
+    fixture.write(".specsync/sdd.json", "{\"enabled\": false}\n");
+    let next = fixture.ok(&["next", "--json"]);
+    let text = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Start a new cycle: chough stage reset --to intent --reason"),
+        "{text}"
+    );
+    assert!(!text.contains("specsync change new"), "{text}");
+}
+
+// ---------------------------------------------------------------------------
+// The approved-delta guard (REQ-cli-022, BUG-0002).
+
+/// SpecSync 6.1.1's approved-delta digest: SHA-256 over the length-framed domain,
+/// module name and delta body, with CRLF normalized to LF.
+fn delta_digest(module: &str, body: &[u8]) -> String {
+    use sha2::{Digest, Sha256};
+    let body = String::from_utf8_lossy(body).replace("\r\n", "\n");
+    let mut hash = Sha256::new();
+    for (tag, value) in [
+        ("domain", "specsync.approved-delta.v1".as_bytes()),
+        ("module", module.as_bytes()),
+        ("body", body.as_bytes()),
+    ] {
+        hash.update((tag.len() as u64).to_be_bytes());
+        hash.update(tag.as_bytes());
+        hash.update((value.len() as u64).to_be_bytes());
+        hash.update(value);
+    }
+    format!("{:x}", hash.finalize())
+}
+
+#[cfg(unix)]
+const DELTA: &str = "## ADDED\n\n### REQUIREMENT REQ-cli-090\n\nThe helper SHALL do the thing.\n";
+
+/// A fixture at plan whose native change `id` is approved with a `cli` delta.
+#[cfg(unix)]
+fn approved_delta(id: &str) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("approved");
+    fixture.write(".stub-affected", "\"cli\"\n");
+    fixture.write(".stub-no-spec", "false\n");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", id]);
+    fixture.write(&format!(".specsync/changes/{id}/deltas/cli.md"), DELTA);
+    fixture.write(
+        &format!(".specsync/changes/{id}/approvals.json"),
+        &json!({
+            "approvals": [
+                {"gate": "definition", "actor": "SYNTHETIC", "approved_delta_digests": {"cli": "0".repeat(64)}},
+                {"gate": "review", "actor": "SYNTHETIC"},
+                {"gate": "definition", "actor": "SYNTHETIC", "approved_delta_digests": {"cli": delta_digest("cli", DELTA.as_bytes())}},
+            ],
+            "reopenings": [],
+        })
+        .to_string(),
+    );
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture
+}
+
+#[cfg(unix)]
+/// The session and transition bytes, which a refused move must leave unchanged.
+fn records(fixture: &Fixture) -> (Vec<u8>, Vec<u8>) {
+    (
+        fs::read(fixture.root().join(".chough/session.json")).unwrap(),
+        fs::read(fixture.root().join(".chough/transitions.jsonl")).unwrap(),
+    )
+}
+
+/// Assert that `route` is refused with `label`, naming `expected`, and changes nothing.
+#[cfg(unix)]
+fn refused_unchanged(fixture: &Fixture, route: &[&str], label: &str, expected: &str) {
+    let before = records(fixture);
+    let refused = fixture.fails(route);
+    assert!(refused.contains(label), "{route:?}: {refused}");
+    assert!(refused.contains(expected), "{route:?}: {refused}");
+    assert!(records(fixture) == before, "{route:?} changed the records");
+}
+
+#[test]
+fn recomputed_digests_match_every_archived_approval_in_this_repository() {
+    let archive =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(".specsync/archive/changes");
+    let mut compared = 0;
+    for entry in fs::read_dir(&archive).unwrap() {
+        let directory = entry.unwrap().path();
+        let ledger: Value =
+            serde_json::from_str(&fs::read_to_string(directory.join("approvals.json")).unwrap())
+                .unwrap();
+        let approval = ledger["approvals"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .rev()
+            .find(|approval| approval["gate"] == "definition")
+            .unwrap();
+        for (module, digest) in approval["approved_delta_digests"].as_object().unwrap() {
+            let body = fs::read(directory.join(format!("deltas/{module}.md"))).unwrap();
+            assert_eq!(
+                delta_digest(module, &body),
+                digest.as_str().unwrap(),
+                "{}",
+                directory.display()
+            );
+            compared += 1;
+        }
+    }
+    assert!(compared >= 7, "only {compared} archived digests compared");
+}
+
+#[cfg(unix)]
+#[test]
+fn the_guard_accepts_every_archived_approval_in_this_repository() {
+    // Each archived ledger and its deltas, presented as an approved change, pass the
+    // guard: Chough's digests match the ones SpecSync recorded.
+    let archive =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(".specsync/archive/changes");
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("approved");
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    let mut checked = 0;
+    for entry in fs::read_dir(&archive).unwrap() {
+        let directory = entry.unwrap().path();
+        let finalization: Value =
+            serde_json::from_str(&fs::read_to_string(directory.join("finalization.json")).unwrap())
+                .unwrap();
+        let id = finalization["change_id"].as_str().unwrap().to_string();
+        let target = format!(".specsync/changes/{id}");
+        let ledger = fs::read_to_string(directory.join("approvals.json")).unwrap();
+        fixture.write(&format!("{target}/approvals.json"), &ledger);
+        if let Ok(deltas) = fs::read_dir(directory.join("deltas")) {
+            for delta in deltas {
+                let delta = delta.unwrap().path();
+                let name = delta.file_name().unwrap().to_str().unwrap().to_string();
+                fixture.write(
+                    &format!("{target}/deltas/{name}"),
+                    &fs::read_to_string(&delta).unwrap(),
+                );
+            }
+        }
+        let ledger: Value = serde_json::from_str(&ledger).unwrap();
+        let scope = &ledger["approvals"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .rev()
+            .find(|approval| approval["gate"] == "definition")
+            .unwrap()["approved_scope"];
+        let affected: Vec<String> = scope["affected_specs"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|module| format!("\"{}\"", module.as_str().unwrap()))
+            .collect();
+        fixture.write(".stub-affected", &affected.join(","));
+        fixture.write(".stub-no-spec", &scope["no_spec_change"].to_string());
+        fixture.ok(&["checkpoint", "--native-change", &id]);
+        let next = fixture.ok(&["next", "--json"]);
+        assert_eq!(next["gate"]["label"], "native:approved", "{id}: {next}");
+        let deltas = next["native"]["approved_deltas"].as_str().unwrap();
+        assert!(
+            deltas.starts_with("unchanged: cli") || deltas.starts_with("no semantic deltas"),
+            "{id}: {deltas}"
+        );
+        checked += 1;
+    }
+    assert!(checked >= 10, "only {checked} archived changes checked");
+}
+
+#[cfg(unix)]
+#[test]
+fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_changed() {
+    let id = "guarded-change";
+    let fixture = approved_delta(id);
+    let delta = format!(".specsync/changes/{id}/deltas/cli.md");
+    let changed = "refused:native-delta-changed";
+    // An approved delta edited after the approval, while status still reports
+    // approval_valid true (BUG-0002).
+    fixture.write(
+        &delta,
+        &format!("{DELTA}\n### REQUIREMENT REQ-cli-091\n\nMore.\n"),
+    );
+    let routes: [&[&str]; 5] = [
+        &["stage", "advance"],
+        &["stage", "skip", "--reason", "Skip ahead"],
+        &["stage", "reset", "--to", "build", "--reason", "Restart"],
+        &["stage", "reset", "--to", "test", "--reason", "Retest"],
+        &["stage", "reset", "--to", "accept", "--reason", "Accept"],
+    ];
+    for route in routes {
+        refused_unchanged(&fixture, route, changed, "cli");
+    }
+    let refused = fixture.fails(&["stage", "advance"]);
+    for part in [
+        "specsync change approve guarded-change --actor \"<their name>\"",
+        "specsync change check guarded-change",
+        "specsync.approved-delta.v1",
+    ] {
+        assert!(refused.contains(part), "missing {part:?}: {refused}");
+    }
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["gate"]["label"], changed);
+    assert!(
+        next["native"]["approved_deltas"]
+            .as_str()
+            .unwrap()
+            .starts_with("changed: cli"),
+        "{next}"
+    );
+    assert_eq!(
+        fixture.ok(&["status", "--json"])["checkpoint"]["gate"]["label"],
+        changed
+    );
+
+    // A line-ending-only edit and the restored delta pass.
+    fixture.write(&delta, &DELTA.replace('\n', "\r\n"));
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "native:approved"
+    );
+    fixture.write(&delta, DELTA);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "test");
+
+    // A module added after the approval.
+    fixture.write(".stub-affected", "\"cli\",\"docs\"\n");
+    fixture.write(&format!(".specsync/changes/{id}/deltas/docs.md"), DELTA);
+    refused_unchanged(&fixture, &["stage", "advance"], changed, "docs");
+    refused_unchanged(
+        &fixture,
+        &["stage", "back", "--to", "build", "--reason", "Fix"],
+        changed,
+        "docs",
+    );
+    fixture.write(".stub-affected", "\"cli\"\n");
+    fs::remove_file(
+        fixture
+            .root()
+            .join(format!(".specsync/changes/{id}/deltas/docs.md")),
+    )
+    .unwrap();
+
+    // A deleted delta.
+    fs::remove_file(fixture.root().join(&delta)).unwrap();
+    refused_unchanged(&fixture, &["stage", "advance"], changed, "cli");
+    fixture.write(&delta, DELTA);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+
+    // Module names SpecSync 6.1.1 accepts, such as `a.b` and `Módulo`, are compared
+    // like any other: approved deltas pass and an edited one refuses.
+    let modules = ["a.b", "Módulo"];
+    fixture.write(".stub-affected", "\"cli\",\"a.b\",\"Módulo\"\n");
+    let mut digests = serde_json::Map::new();
+    digests.insert("cli".into(), json!(delta_digest("cli", DELTA.as_bytes())));
+    for module in modules {
+        fixture.write(&format!(".specsync/changes/{id}/deltas/{module}.md"), DELTA);
+        digests.insert(module.into(), json!(delta_digest(module, DELTA.as_bytes())));
+    }
+    fixture.write(
+        &format!(".specsync/changes/{id}/approvals.json"),
+        &json!({"approvals": [{"gate": "definition", "approved_delta_digests": digests}], "reopenings": []})
+            .to_string(),
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["native"]["approved_deltas"], "unchanged: Módulo, a.b, cli",
+        "{next}"
+    );
+    fixture.write(
+        &format!(".specsync/changes/{id}/deltas/a.b.md"),
+        &format!("{DELTA}\nMore.\n"),
+    );
+    refused_unchanged(
+        &fixture,
+        &["stage", "reset", "--to", "build", "--reason", "Restart"],
+        changed,
+        "a.b (edited)",
+    );
+    fixture.write(&format!(".specsync/changes/{id}/deltas/a.b.md"), DELTA);
+    fixture.ok(&["stage", "reset", "--to", "build", "--reason", "Restart"]);
+    assert_eq!(stage(&fixture), "build");
+}
+
+#[cfg(unix)]
+#[test]
+fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
+    let id = "unverifiable-change";
+    let fixture = approved_delta(id);
+    let ledger = format!(".specsync/changes/{id}/approvals.json");
+    let approved = fixture.read(&ledger);
+    let unverifiable = "refused:native-delta-unverifiable";
+    let status = format!("specsync change status {id}");
+    let digest = delta_digest("cli", DELTA.as_bytes());
+    // An approval without digests can only be cleared by a new approval, so its
+    // refusal names that rather than a status read.
+    let approve = format!("specsync change approve {id} --actor \"<their name>\"");
+    let cases: Vec<(&str, String, &str)> = vec![
+        ("malformed", "{\"approvals\": [".into(), &status),
+        ("malformed", "{\"approvals\": \"none\"}".into(), &status),
+        (
+            "no definition approval",
+            json!({"approvals": [{"gate": "review"}]}).to_string(),
+            &status,
+        ),
+        (
+            "approved_delta_digests",
+            json!({"approvals": [{"gate": "definition"}]}).to_string(),
+            &approve,
+        ),
+        (
+            "malformed",
+            json!({"approvals": [{"gate": "definition", "approved_delta_digests": {"cli": "short"}}]})
+                .to_string(),
+            &status,
+        ),
+        (
+            "malformed",
+            json!({"approvals": [{"gate": "definition", "approved_delta_digests": {"../cli": digest}}]})
+                .to_string(),
+            &status,
+        ),
+        (
+            "4194304",
+            format!(
+                "{{\"approvals\":[{{\"gate\":\"definition\",\"approved_delta_digests\":{{\"cli\":\"{digest}\"}}}}],\"padding\":\"{}\"}}",
+                "x".repeat(4 * 1_048_576)
+            ),
+            &status,
+        ),
+    ];
+    for (why, content, remedy) in cases {
+        fixture.write(&ledger, &content);
+        refused_unchanged(&fixture, &["stage", "advance"], unverifiable, why);
+        refused_unchanged(&fixture, &["stage", "advance"], unverifiable, remedy);
+    }
+    fs::remove_file(fixture.root().join(&ledger)).unwrap();
+    refused_unchanged(&fixture, &["stage", "advance"], unverifiable, "missing");
+    fixture.write(&ledger, &approved);
+    // A module name that is not one plain path segment is never read as a path.
+    for module in ["../cli", "a/b", "nested\\cli", ".", "trailing."] {
+        fixture.write(".stub-affected", &format!("{}\n", json!(module)));
+        refused_unchanged(
+            &fixture,
+            &["stage", "reset", "--to", "build", "--reason", "Restart"],
+            unverifiable,
+            "invalid module name",
+        );
+    }
+    fixture.write(".stub-affected", "none\n");
+    refused_unchanged(
+        &fixture,
+        &["stage", "reset", "--to", "build", "--reason", "Restart"],
+        unverifiable,
+        "affected_specs",
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        next["native"]["approved_deltas"]
+            .as_str()
+            .unwrap()
+            .starts_with("unverifiable:"),
+        "{next}"
+    );
+    fixture.write(".stub-affected", "\"cli\"\n");
+    assert_eq!(
+        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        "native:approved"
+    );
 }

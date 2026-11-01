@@ -13,7 +13,7 @@ native change package until it is archived.
   [cold-start exercise](../../docs/exercises/cold-start.md) and
   [concise log](../../.chough/artifacts/kimi-cold-start.log), with
   [TC-cli-0106](testing.md) review. Discovery passed, while safe cold resume
-  exposed BUG-0020 and missing mapping guidance BUG-0021. Any later TC-cli-0106
+  exposed BUG-0024 and missing mapping guidance BUG-0021. Any later TC-cli-0106
   pass is a retrospective documentation review, not another Kimi run.
 
 Open follow-ups, not part of the approved change:

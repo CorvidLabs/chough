@@ -104,17 +104,18 @@ Commands and results:
    repeated stale review and ship guidance. Native SpecSync status confirmed the
    archived state and advised merging the PR if it was still open.
 3. `chough status --json` emitted about 11,567 JSON lines in 36 seconds and repeated
-   the same contradiction.
+   the same contradiction. The original run therefore could not safely cold-resume
+   the archived work.
 4. `chough skill status` reported every installed bundle file current, and
    `chough cases check` reported valid definitions.
 5. The local baseline verify lane passed 9 steps in 114 seconds.
 
-Findings and scope: BUG-0020 records the stale archived action, and BUG-0021 records
-the absent Kimi mapping guidance; both are in this change. BUG-0022 records initial
-tool drift, and BUG-0023 records oversized `next` and `status` output; both remain
-open and out of scope. The baseline used HI 0.5.0 and Fledge 1.8.0 with SpecSync
-6.1.1, so it was neither final CI-toolchain verification nor hosted CI. Later
-release-verified HI 0.8.0 and Fledge 1.7.2 tools were placed under
+Findings and scope: the Kimi change recorded BUG-0024 for the stale archived action
+and BUG-0021 for the absent Kimi mapping guidance. BUG-0022 records initial tool
+drift, and BUG-0023 records oversized `next` and `status` output; both were open and
+out of scope for the Kimi change. The baseline used HI 0.5.0 and Fledge 1.8.0 with
+SpecSync 6.1.1, so it was neither final CI-toolchain verification nor hosted CI.
+Later release-verified HI 0.8.0 and Fledge 1.7.2 tools were placed under
 `target/tmp/ci-tools`; SpecSync 6.1.1 is required with them for final checks.
 
 Evidence and limits: see the [concise Kimi log](../../.chough/artifacts/kimi-cold-start.log)
@@ -123,3 +124,26 @@ and [TC-cli-0106](../../specs/cli/testing.md). The original observation
 corrected documents were absent at base. Any later TC-cli-0106 pass is a
 retrospective documentation review, not another Kimi execution. No fresh post-fix
 Kimi run, agent-recorded human decision, release or deployment is claimed.
+
+## Google Antigravity on CorvidLabs/chough (unverified, narrative only)
+
+Requirement links: FLOW-13, LIFE-4. Reported 2026-11-01 on macOS arm64.
+
+Source: closed PR #20, `.chough/artifacts/gemini-cold-start.log` at commit 53b60aa on
+branch gemini/feat/gemini-host-cold-start. This is the only source. The agent wrote
+the log itself; no event log or transcript was kept, so nothing below was observed
+independently. The model is named two ways: Gemini 3.8 Flash High in the log, Gemini
+2.5 Pro in the PR's own cold-start document. The change was recorded as
+no_spec_change and the PR was closed unmerged.
+
+| Expectation | Reported result | Status |
+|---|---|---|
+| Found the workflow skill without coaching | Listed from `.agents/skills/chough-workflow/` (the openai mapping, a shared directory) | Reported, unverified |
+| Read the checkpoint | `chough next` from stage done echoed the archived change's review step as `Continue done: specsync change review ... then ship` | Reported; reproduced on main ee6e3d2; the done-stage friction this record cites, fixed by the focused next change |
+| Started a new cycle correctly | Its write-up suggested `chough stage reset --to intent or plan` without the `--reason` that clap requires; the reset it ran carried one | Reported; Chough's guidance now gives every reset with `--reason` |
+| Honored human gates | Stopped for scope approval before build | Reported, unverified |
+| Outcome | Change archived as no_spec_change; PR closed unmerged | From the PR record |
+
+What the source cannot show: which skill directories the host actually scanned, what
+it was told beyond the repository, the exact model, and whether any step happened as
+written. The earlier Codex record above is unchanged.

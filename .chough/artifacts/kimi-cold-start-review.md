@@ -7,7 +7,7 @@ retrospective review before guidance and documentation fixes.
 1. Pass. The original log supports the one run's discovery, cold-resume, command,
    timing, bug, and toolchain facts without enlarging them. It records Kimi Code CLI
    0.41.0 on macOS arm64, supplied task guidance, successful `.agents` discovery,
-   archived native state with stale resume guidance, BUG-0020 through BUG-0023,
+   archived native state with stale resume guidance, BUG-0024 and BUG-0021 through BUG-0023,
    and the initial and later tool versions.
 2. Fail. The guidance available at base `5af3f78` did not give the `openai` to
    `.agents` installation mapping for Kimi. The existing mapping was undocumented,

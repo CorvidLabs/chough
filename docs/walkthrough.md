@@ -86,9 +86,14 @@ chough stage advance        # refused: refused:native-verifying
 chough next --environment local
 ```
 
-The agent pushes the branch, observes CI and presents the evidence. Your
-implementation review is the decision; only after it does the agent run `specsync
-change review` and `ship` on the same pull request. Release is a separate, optional
+Before presenting, the agent records the gate (`chough checkpoint --awaiting-human
+"Implementation review of free-shipping-at-the-threshold"`), commits the source
+together with `.chough/`, runs `specsync change check free-shipping-at-the-threshold
+--commit`, pushes the branch and observes CI. Your implementation review is the
+decision; only after it does the agent run `specsync change review` and then `ship` or
+`finalize` on the same pull request, writing nothing to `.chough/` in between, and
+only then clears the gate and runs `chough stage advance`. See [the closeout
+order](lifecycle.md#acceptance-and-native-closeout). Release is a separate, optional
 request.
 
 ## Resume cold
@@ -99,14 +104,16 @@ A new agent, possibly a different host, with none of this conversation:
 chough next --environment local
 ```
 
-It reports the stage, the gate for the current stage, freshness of the referenced
-observations, open and blocking bugs, standing preferences, pending human decisions
-and the next valid action. The [cold-start exercise](exercises/cold-start.md) records
-an independent Codex session doing exactly this on the sample. Separately, it records
-one Kimi cold start in this repository, not that sample. Kimi discovered the skill
-and reached the archived native state, but `next` and `status` gave stale review and
-ship guidance, recorded as BUG-0020. TC-cli-0105 covers the correction as an
-automated regression; Kimi did not return to validate the corrected build. See the
+It prints a focused view of at most 16 KiB: the stage, the native change and the gate
+for the next stage, the referenced observations that are not current, blocking bugs
+and a count of the others, pending human decisions and the next valid action with
+the command to run. `chough status` is the full JSON report. The
+[cold-start exercise](exercises/cold-start.md) records an independent Codex session
+doing exactly this on the sample. Separately, it records one Kimi cold start in this
+repository, not that sample. Kimi discovered the skill and reached the archived
+native state, but could not safely cold-resume because `next` and `status` gave stale
+review and ship guidance, recorded as BUG-0024. TC-cli-0105 covers the correction as
+an automated regression; Kimi did not return to validate the corrected build. See the
 exercise for the full observation and limits.
 
 ## Read freshness precisely
