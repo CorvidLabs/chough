@@ -22,12 +22,14 @@
   "fixture": null,
   "observations": [
     "tc-cli-0090-1793500284",
-    "bug-0018-repro-1"
+    "bug-0018-repro-1",
+    "tc-cli-0090-1793500893",
+    "bug-0018-fixed-1"
   ],
   "impact": "Host copies cannot be committed or linted cleanly",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -40,8 +42,16 @@
         "tc-cli-0090-1793500284",
         "bug-0018-repro-1"
       ]
+    },
+    {
+      "at_unix_seconds": 1793500931,
+      "text": "status: open -> verified. Fixed by the bundle hygiene change: the unchanged case TC-cli-0090 and the init reproduction pass at 282c5bd, after the linked failures.",
+      "observations": [
+        "tc-cli-0090-1793500893",
+        "bug-0018-fixed-1"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494674,
-  "updated_at_unix_seconds": 1793500333
+  "updated_at_unix_seconds": 1793500931
 }

@@ -24,12 +24,15 @@
   "observations": [
     "tc-cli-0092-1793500284",
     "tc-cli-0093-1793500285",
-    "bug-0019-repro-1"
+    "bug-0019-repro-1",
+    "tc-cli-0092-1793500895",
+    "tc-cli-0093-1793500897",
+    "bug-0019-fixed-1"
   ],
   "impact": "Avoidable trial and error",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -48,8 +51,17 @@
         "tc-cli-0093-1793500285",
         "bug-0019-repro-1"
       ]
+    },
+    {
+      "at_unix_seconds": 1793500931,
+      "text": "status: open -> verified. Fixed by the bundle hygiene change: the unchanged cases TC-cli-0092 and TC-cli-0093 and the reproduction pass at 282c5bd, after the linked failures.",
+      "observations": [
+        "tc-cli-0092-1793500895",
+        "tc-cli-0093-1793500897",
+        "bug-0019-fixed-1"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494682,
-  "updated_at_unix_seconds": 1793500333
+  "updated_at_unix_seconds": 1793500931
 }

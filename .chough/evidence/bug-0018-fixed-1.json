@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "bug-0018-fixed-1",
+  "criteria": [
+    "LIFE-4",
+    "LIFE-9"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "At 282c5bd (fixed), the same init reproduction found no U+2013 or U+2014 in either host directory; case run tc-cli-0090-1793500893 passed.",
+  "artifacts": [
+    ".chough/artifacts/bug-0018-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0018-fixed-reproduction.log": "dc2af88327c5461d5608ec47a7de4b5235598ca15c25fb8fdae647fcc0b7544d"
+  },
+  "observed_at_unix_seconds": 1793500929,
+  "snapshot": {
+    "revision": "282c5bdfeb7bae5cc84f3ac8236652a4536080af",
+    "dirty": false,
+    "fingerprint": "dea19cfdf6cc52ecd21e942c4862ea68260b93cc38ed8f8d18f694ca2a6f0803",
+    "content": "e9daf2396e35880630ab04c9ea0f4ccc9d1acd8a9b7b4b1f08954372cd329155"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0090",
+      "digest": "1f872622615fe10f0fa6922e02bbdc38c50f21b4ae4ba80857e5cd266daaf82d"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Reproduced in a disposable project on macOS only"
+  ]
+}

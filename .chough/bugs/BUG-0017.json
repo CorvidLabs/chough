@@ -22,7 +22,9 @@
   "fixture": null,
   "observations": [
     "tc-cli-0094-1793500286",
-    "bug-0017-repro-1"
+    "bug-0017-repro-1",
+    "tc-cli-0094-1793500898",
+    "bug-0017-fixed-1"
   ],
   "impact": "Cases run twice",
   "classification": "product-defect",
@@ -40,8 +42,16 @@
         "tc-cli-0094-1793500286",
         "bug-0017-repro-1"
       ]
+    },
+    {
+      "at_unix_seconds": 1793500931,
+      "text": "Error half fixed by the bundle hygiene change: the unchanged case TC-cli-0094 and the reproduction pass at 282c5bd. The bug stays open: its documented-order half (no double runs) belongs to the evidence-freshness change.",
+      "observations": [
+        "tc-cli-0094-1793500898",
+        "bug-0017-fixed-1"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1793500334
+  "updated_at_unix_seconds": 1793500931
 }
