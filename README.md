@@ -55,12 +55,14 @@ chough next --environment local
 `.chough/session.json` and copies the skill bundle into each requested host's
 project skill directory (`openai`, the default, → `.agents/skills`, a shared skills
 directory; `claude` → `.claude/skills`; `gemini` → `.gemini/skills`, which no run has
-exercised; also `codex`, `cursor`, `grok`). Google Antigravity read the skill from
-`.agents/skills` in one run reported narratively in closed PR #20 and not
-independently verified. `chough next` prints the focused next action as text (`--json`
-for compact JSON); `chough status` is the full JSON report. Then ask your agent in plain language,
-for example "Use the Chough workflow to add free shipping at fifty dollars", or give
-it [the skill](skills/chough-workflow/SKILL.md) directly.
+exercised; also `codex`, `cursor`, `grok`). Kimi Code CLI uses the existing `openai`
+installer value and discovered `.agents/skills/chough-workflow/SKILL.md` in one
+observed run. Google Antigravity read the skill from `.agents/skills` in one run
+reported narratively in closed PR #20 and not independently verified. `chough next`
+prints the focused next action as text (`--json` for compact JSON); `chough status`
+is the full JSON report. Then ask your agent in plain language, for example "Use the
+Chough workflow to add free shipping at fifty dollars", or give it
+[the skill](skills/chough-workflow/SKILL.md) directly.
 
 ## The loop
 
@@ -115,7 +117,16 @@ behavioral proof or human acceptance.
 | Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
-Other platforms and hosts may work but have not been exercised.
+One 2026-11-01 Kimi Code CLI 0.41.0 run on macOS arm64 auto-discovered the `.agents`
+skill, built successfully and attempted a cold resume. It could not safely resume the
+archived work because `next` and `status` repeated stale review and ship guidance,
+recorded as BUG-0024; it also exposed BUG-0021's missing mapping guidance. The earlier
+native-routing fix for BUG-0024 was superseded during merge by main's newer REQ-cli-021
+new-cycle behavior. BUG-0025 records the distinct integration defect and is verified by
+the later linked TC-cli-0105 pass under the approved alignment change. TC-cli-0105
+covers the new-cycle regression and TC-cli-0106 retrospectively reviews the
+documentation. Their evidence is not a fresh
+post-fix Kimi rerun. Other platforms may work but have not been exercised.
 
 ## Known limitations
 
@@ -128,8 +139,9 @@ Other platforms and hosts may work but have not been exercised.
   not yet released.
 - In a repository with no commits yet, `chough next` reports the raw `git rev-parse
   HEAD` error as the snapshot; make a first commit before relying on freshness.
-- Hosts other than Claude Code and Codex have not had real discovery or cold-start
-  exercises.
+- Cursor, Gemini and Grok have not had real discovery or cold-start exercises. Kimi
+  remains limited to the single run above, with no fresh post-fix run. Google
+  Antigravity has only the unverified narrative report linked below.
 
 See [integrations and limits](docs/integrations.md) for the rest.
 

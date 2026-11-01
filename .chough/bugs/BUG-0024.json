@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0024",
+  "title": "Archived done checkpoint repeats stale review and ship action",
+  "symptom": "next_valid_action contradicts archived native state",
+  "trigger": "Run chough next with a done checkpoint whose archived native change has an old review and ship next_action",
+  "expected": "next_valid_action follows native SpecSync guidance and never recommends repeating completed lifecycle steps",
+  "actual": "It prints Continue done with specsync change review and ship while native_summary.state is archived and native guidance is different",
+  "criteria": [
+    "FLOW-13",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-003",
+    "REQ-cli-007"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
+  "steps": [
+    "Start from origin/main with its existing done checkpoint",
+    "Run ./target/debug/chough next --environment local-macos-arm64"
+  ],
+  "fixture": "The existing checkpoint and its archived bundle hygiene change",
+  "observations": [
+    "kimi-cold-start-5af3f78",
+    "kimi-cold-start-5af3f78-scope",
+    "tc-cli-0105-1793551352",
+    "tc-cli-0106-kimi-original",
+    "tc-cli-0105-1793553670"
+  ],
+  "impact": "A cold agent can repeat a human lifecycle command or fail to identify the real next action",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793550322,
+      "text": "The original Kimi cold-start observation supplies failed evidence for this finding; its recorded scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793550646,
+      "text": "The retrospective scope-gate observation preserves the same original failure on the completed draft content; scope and open status are unchanged",
+      "observations": [
+        "kimi-cold-start-5af3f78-scope"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793551384,
+      "text": "TC-cli-0105 failed at the unfixed tip with one test run: next_valid_action repeated stale review and ship text instead of archived native guidance",
+      "observations": [
+        "tc-cli-0105-1793551352"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793551402,
+      "text": "The original TC-cli-0106 retrospective observation preserves evidence for this finding before the approved fixes; scope and open status are unchanged",
+      "observations": [
+        "tc-cli-0106-kimi-original"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793553709,
+      "text": "The final unchanged TC-cli-0105 case passed after all content edits, later than every linked failure",
+      "observations": [
+        "tc-cli-0105-1793553670"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793553709,
+      "text": "status: open -> verified. Verified only from the later TC-cli-0105 pass after the retained unfixed failure",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1793546201,
+  "updated_at_unix_seconds": 1793553709
+}

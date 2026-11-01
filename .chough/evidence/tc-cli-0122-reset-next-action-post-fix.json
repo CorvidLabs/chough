@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0122-reset-next-action-post-fix",
+  "criteria": [
+    "FLOW-2",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact reset_replaces_the_next_action_and_back_keeps_it for TC-cli-0122: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0122-reset-next-action-post-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0122-reset-next-action-post-fix.log": "8d2a26d0cf382e91b956b4f467b8d68d3d03cd168c9c4f358a419b87cdb8a3c5"
+  },
+  "observed_at_unix_seconds": 1793561995,
+  "snapshot": {
+    "revision": "f38e70f58a6dbb65e3be21d066ffa243e2bde234",
+    "dirty": true,
+    "fingerprint": "a05241b10250e4fdf243da3e57437fe649d13e672a1f5a0af35a434a26ec4c46",
+    "content": "71723223eb386b945ffeec41e1d9056ed5c2224ac7f916d3eb56819f38d91234"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0122",
+      "digest": "c855735af1d47da3ddc176b1e066b2115ee32d85b622446f56610ca73d177135"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "reset_replaces_the_next_action_and_back_keeps_it"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

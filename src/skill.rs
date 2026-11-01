@@ -114,12 +114,13 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
     ),
-    // Main ee6e3d2 (0.1.0 docs sweep); superseded by the focused next change: the host
-    // paragraph and the done-stage resume steps.
+    // Base 5af3f78 and main ee6e3d2 (0.1.0 docs sweep); superseded by the focused
+    // next change and Kimi host guidance (BUG-0021).
     (
         "SKILL.md",
         "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
     ),
+    // Main ee6e3d2; superseded by the focused next change's done-stage resume steps.
     (
         "references/checkpoint.md",
         "20daaaa0cec972169abcedd508cd9ad18ff93ef7ec9d1f4e7330fcd18ca80ac0",

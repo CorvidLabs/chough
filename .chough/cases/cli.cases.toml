@@ -1887,6 +1887,50 @@ test_target = "cases"
 test = "an_unterminated_escape_never_hides_a_second_test_result"
 
 [[case]]
+id = "TC-cli-0105"
+title = "Archived done recommends a new cycle and preserves report precedence"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-021", "REQ-cli-003", "REQ-cli-007"]
+paths = ["src/main.rs", "src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::done_archived_change_recommends_new_cycle_and_preserves_precedence passes"]
+notes = "BUG-0024 scenarios retained; BUG-0025 integration regression coverage."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "done_archived_change_recommends_new_cycle_and_preserves_precedence"
+
+[[case]]
+id = "TC-cli-0106"
+title = "Kimi cold-start record and guidance stay accurate"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["FLOW-13", "FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-007", "REQ-cli-016"]
+paths = ["skills/chough-workflow/SKILL.md", ".agents/skills/chough-workflow/SKILL.md", ".claude/skills/chough-workflow/SKILL.md", "README.md", "docs/integrations.md", "docs/walkthrough.md", "docs/exercises/cold-start.md", "docs/ROADMAP.md", "specs/cli/testing.md", "specs/cli/tasks.md", ".chough/artifacts/kimi-cold-start.log"]
+environments = ["local-macos-arm64", "repository-text"]
+artifacts = ["test-log", "reviewer-note"]
+setup = ["The durable concise log .chough/artifacts/kimi-cold-start.log, base 5af3f78, and the documentation under review"]
+steps = [
+  "Extract the original host, discovery, cold-resume, command, timing, bug, and toolchain facts from the concise log",
+  "Inspect the guidance available to the original run at base 5af3f78",
+  "Compare the corrected canonical and installed guidance and affected documents",
+  "State the one-run, supplied-path, initial-tool, and no-post-fix-rerun review limits",
+]
+expected = [
+  "The original log supports the one run's discovery, cold-resume, command, timing, bug, and toolchain facts without enlarging them",
+  "Current guidance gives the openai to .agents installation mapping for Kimi and does not invent a kimi host",
+  "The canonical and installed guidance and the affected documents are consistent, including their roadmap and observation-reuse statements",
+  "The evidence distinguishes the original run from a later documentation review and records no human decision on anyone's behalf",
+]
+
+[[case]]
 id = "TC-cli-0120"
 title = "The next view keeps both forms within 16384 bytes with list totals for large records"
 status = "active"

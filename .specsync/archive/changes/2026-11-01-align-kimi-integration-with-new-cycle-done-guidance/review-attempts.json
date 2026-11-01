@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "align-kimi-integration-with-new-cycle-done-guidance",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "08f0d08029084a3b4a2568d90468cbec0608c1cc",
+      "contract_digest": "305a79f2eefdb81dd4c004410d4ca128613ed37c2f7f986c373bdfb5a9f4e923",
+      "execution_digest": "55d4b5a6dc97aee6b010c927768e6dd3faa7b1d133c71575d24f46ece55f728a",
+      "workspace_digest": "76b8aba94c00829d45303bac84223c4e9f735ca9183c4a46c1731b8cc754e0e7",
+      "timestamp": 1793564384
+    }
+  ]
+}

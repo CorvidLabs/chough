@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "id": "kimi-cold-start-5af3f78-scope",
+  "criteria": [
+    "FLOW-13",
+    "FLOW-1",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-003",
+    "REQ-cli-007",
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Retrospective review of the original Kimi Code CLI 0.41.0 cold start on the completed scope definition: discovery and local checks succeeded, but safe cold resume failed on stale archived guidance and missing Kimi mapping",
+  "artifacts": [
+    ".chough/artifacts/kimi-cold-start.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/kimi-cold-start.log": "66de8ea91e3c1f7a8c35f6958f2a4d134782b806b2ff77876ade31a8305b2c97"
+  },
+  "observed_at_unix_seconds": 1793550645,
+  "snapshot": {
+    "revision": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
+    "dirty": true,
+    "fingerprint": "c52a1a12595e57f9ffbce7a22e17e2cb983f68ffc668c541bcb0cb99390d13d6",
+    "content": "0c308b91d4f20f4c9840bf918118bc459b38882bac949998052aab238cc35744"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "One original run on macOS arm64 with the repository, objective, AGENTS.md and canonical skill path supplied by the task; this is a retrospective record on the scope-gate content, not a second run",
+    "The baseline verify used HI 0.5.0 and Fledge 1.8.0, not the CI versions; later pre-push used HI 0.8.0, Fledge 1.7.2 and SpecSync 6.1.1",
+    "No fresh installation, post-fix Kimi run, hosted CI, human approval, human review, merge, release or deployment is claimed"
+  ]
+}
