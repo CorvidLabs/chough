@@ -57,3 +57,6 @@
 {"schema_version":1,"at_unix_seconds":1793571959,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"041531cdeecc3447523ddf459f46258070e29247","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793571982,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"041531cdeecc3447523ddf459f46258070e29247","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793571982,"kind":"gate-opened","from":"accept","to":"accept","reason":"Implementation review of use-collision-resistant-slug-identities-for-new-bugs","gate":null,"revision":"041531cdeecc3447523ddf459f46258070e29247","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793572533,"kind":"gate-closed","from":"accept","to":"accept","reason":"Implementation review of use-collision-resistant-slug-identities-for-new-bugs","gate":null,"revision":"aee2af3851e5470daeb6340b8d81fee956615ced","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793572550,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"aee2af3851e5470daeb6340b8d81fee956615ced","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793572550,"kind":"gate-opened","from":"done","to":"done","reason":"Merge of PR #26 after hosted CI","gate":null,"revision":"aee2af3851e5470daeb6340b8d81fee956615ced","refresh":[]}

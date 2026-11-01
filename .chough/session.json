@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -117,7 +117,8 @@
     "Native integration change archived at a91e066 after 0xLeif authorized finalization; Chough advanced from accept to done",
     "Recorded the independent-root collision before implementation, implemented dual-form collision-resistant bug IDs, and passed focused tests and Clippy after the race-diagnostic fix",
     "Materialized REQ-cli-012, recorded tc-cli-0125-collision-post-fix after the retained failure, and verified BUG-0026",
-    "The full verify lane passed all 9 steps in 79.865 seconds and the exercise created and verified a real slug-based bug ID; final TC-cli-0125 also passed"
+    "The full verify lane passed all 9 steps in 79.865 seconds and the exercise created and verified a real slug-based bug ID; final TC-cli-0125 also passed",
+    "Native bug identity change archived at aee2af3 after 0xLeif authorized finalization; Chough advanced from accept to done"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -173,8 +174,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Implementation review of use-collision-resistant-slug-identities-for-new-bugs"
+    "Merge of PR #26 after hosted CI"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to review the bug identity implementation and evidence; no native review or finalization before that decision"
+  "next_action": "0xLeif to decide whether to merge PR #26 after the complete hosted checks pass"
 }
