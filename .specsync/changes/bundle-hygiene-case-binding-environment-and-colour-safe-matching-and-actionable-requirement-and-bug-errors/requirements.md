@@ -9,11 +9,13 @@ Modified in `deltas/cli.md`; no requirement is added or removed:
 
 - REQ-cli-005 (validate traceability): a refusal names the companions searched and
   a likely cause and fix.
-- REQ-cli-009 (validated test definitions): optional bounded `env`; fragments with
-  ESC refused; an empty `env` leaves the digest unchanged.
+- REQ-cli-009 (validated test definitions): optional bounded `env`, with the names
+  that choose what cargo builds or runs refused for cargo-test; fragments with ESC
+  refused; an empty `env` leaves the digest unchanged.
 - REQ-cli-011 (honest case execution): declared variables are set for the command;
-  assertions match the text with terminal escape sequences removed, and the artifact
-  keeps the raw bytes.
+  every executed case states that inherited variables were not recorded; assertions
+  match the text with complete terminal escape sequences removed, never removing a
+  line break, and the artifact keeps the raw bytes.
 - REQ-cli-012 (local bug backlog): a scope given as classification, or the reverse,
   is refused with the right flag named.
 - REQ-cli-019 (installable package): the bundle holds no em or en dash, and copies

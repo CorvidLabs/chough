@@ -14,9 +14,8 @@ and the verifier corrections).
   archive headings); a repository-wide rule is out of scope. Digests on main:
   frd.md `5647b56e21f6667d1ed97381bcbd67a7baf2f60dd8332abcb269e72d4759fd23`,
   cases.toml `6c7ebaa10b099829bc0db4529e28286ded721b0dfa9b5635a3ae0f37d9d91d4a`,
-  references/testing.md `eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9`,
-  references/build.md `e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a`,
-  references/plan.md `8ecec7edffa34daa0082a026d6e07d4acc1245d6fc3dcba9e87d7296c226b8ab`. Without KNOWN_PREVIOUS entries, existing installs would
+  references/testing.md `eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9`
+  (the three bundle files this change edits). Without KNOWN_PREVIOUS entries, existing installs would
   read `edited` and never update. Raven's lint checks only `*.md` and excludes
   `.claude/`, so only the `.agents/` frd.md copy fails there; the bundle rule still
   covers every file.
@@ -37,8 +36,19 @@ and the verifier corrections).
 - Colour: `cases::artifact` builds `text` with `from_utf8_lossy` of the raw bytes, and
   both `expect_output` and `cargo_counts` use it. Vitest-style output failed on
   `Test Files  1 passed (1)`. No case in this repository or examples/ has ESC in a
-  fragment.
+  fragment. `cargo_counts` sums every line that starts with `test result:` and the
+  adapter passes only when exactly one test ran, so a cleaner that joins lines or
+  swallows the rest of the output could turn a 2-test match into a pass; the design
+  never removes a line break.
 - Artifacts: absolute, `..` and symlinked paths are refused by design. An artifact
   ignored by Git records its fingerprint, reads current-observation on the recording
   machine and stale-artifact once missing. SpecSync's project-input digest honours
   Git ignore rules but not its own exclude settings (upstream, shared with #12).
+  Git LFS was not tested here; open CorvidLabs/spec-sync#789 reports that `change
+  check` refuses tracked LFS files ('Git `filter` attribute is not supported for
+  canonical evidence') even under ignored_paths, so LFS is not recommended.
+- Bugs: BUG-0017 to BUG-0019 have no linked observations yet, so under
+  references/bugs.md they are unverified reports, and open BUG-0014 means Chough does
+  not check that a pass came after the failure. BUG-0019's recorded revision was
+  57d331e, an amended-away commit (same source as 2756dc2 plus bug records); it is
+  corrected to 2756dc2 with a note.

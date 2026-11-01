@@ -18,7 +18,9 @@ bug errors. It covers:
   them.
 - #11, error half (BUG-0017): a case linking a requirement that an approved delta
   adds fails with the same bare `requirement not found in contract companions` as a
-  typo, and the skill never says to run cases for new IDs only after `change check`.
+  typo. Its other half, a documented order without double runs, is the
+  evidence-freshness change's: it documents the accept order, and the repeat runs left
+  after that depend on #10 and #12. BUG-0017 therefore stays open after this change.
 - #14 item 1: a `command` binding has no environment; NO_COLOR or a port had to go
   through `/usr/bin/env` in argv.
 - #14 item 2: `expect_output` matches raw output, so colour codes split fragments
@@ -38,6 +40,23 @@ Ruled out during triage:
 - Rewriting em dashes in SpecSync-generated archives: native records stay untouched;
   the lesson-bundle heading is an upstream spec-sync report.
 
-The staleness issues #10 and #12 (BUG-0015, BUG-0016) are package 1, a separate
-change. Both packages edit `skills/chough-workflow/references/testing.md` and
-`src/evidence.rs`, so the second to merge needs a rebase.
+The staleness issues #10 and #12 (BUG-0015, BUG-0016), BUG-0014 and the documented
+accept order are package 1, the evidence-freshness change. In the grouping the human
+agreed, this package owns only #11's error hint, so it does not edit references/
+build.md, plan.md, accept.md or lifecycle.md. Both packages edit `src/evidence.rs`,
+`src/bugs.rs`, `src/skill.rs` (each adds `KNOWN_PREVIOUS` digests for different
+files), `tests/bugs.rs`, `tests/cli.rs`, docs/cli.md and docs/architecture.md, so the
+second to merge rebases; no bundle file is edited by both.
+
+`.chough/cases/cli.cases.toml` gains the case definitions for BUG-0017 to BUG-0019,
+but `.chough/` is not listed in the affected paths: it is Chough's own record
+directory, it is not one of the SDD meaningful paths in .specsync/sdd.json, so listing
+it adds no coverage, and this workflow's lesson is that listing it stales verification.
+The cases are declared in tasks.md and testing.md instead.
+
+The native Intent repeats the title. SpecSync 6.1.1 derives the title, the Intent and
+the change ID from the one `change new` description, and no `change answer` question
+sets the Intent alone (an `intent` answer is stored as an unrelated key); every
+archived change in this repository has the same shape. The intent is this context:
+fix the reported usability problems in #11 (error half), #13 and #14 without weakening
+any fail-closed rule.

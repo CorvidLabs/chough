@@ -16,7 +16,7 @@
   ],
   "cases": [],
   "environment": "local-macos-arm64",
-  "revision": "57d331ea1ee33d5626271305b18b9ecdfec7b546",
+  "revision": "2756dc24a821bbb92021455c704ef7a177123ffa",
   "steps": [
     "chough bug add --classification blocking (other fields valid)"
   ],
@@ -30,7 +30,13 @@
   "duplicate_of": null,
   "related": [],
   "source": "CorvidLabs/chough#14 items 4 and 5 (Raven run); reproduced on main 2756dc2",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793495659,
+      "text": "Revision corrected from 57d331e to 2756dc2: 57d331e was the amended-away first version of the bug-record commit (same source as 2756dc2 plus bug records, not an ancestor of 85650d9); the reproduction ran on main 2756dc2.",
+      "observations": []
+    }
+  ],
   "created_at_unix_seconds": 1793494682,
-  "updated_at_unix_seconds": 1793494682
+  "updated_at_unix_seconds": 1793495659
 }
