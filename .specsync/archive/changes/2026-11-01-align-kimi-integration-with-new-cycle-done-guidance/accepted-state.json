@@ -7,11 +7,11 @@
   "title": "Align Kimi integration with new-cycle done guidance",
   "description": "Align Kimi integration with new-cycle done guidance",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "b2e2f19d904aec2a5acd73569c8439f5583c01f9",
   "created_at": 1793560449,
-  "updated_at": 1793563935,
+  "updated_at": 1793564455,
   "affected_specs": [
     "cli"
   ],

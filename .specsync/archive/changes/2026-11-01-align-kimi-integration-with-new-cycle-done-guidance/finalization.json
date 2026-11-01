@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "align-kimi-integration-with-new-cycle-done-guidance",
+  "implementation_commit": "08f0d08029084a3b4a2568d90468cbec0608c1cc",
+  "implementation_tree": "e8cf5146efed08668d822d839b97d4b7f19095c0",
+  "contract_digest": "305a79f2eefdb81dd4c004410d4ca128613ed37c2f7f986c373bdfb5a9f4e923",
+  "workspace_digest": "76b8aba94c00829d45303bac84223c4e9f735ca9183c4a46c1731b8cc754e0e7",
+  "closing_digest": "07477f1786dc3c6a3f093158d4499ae137f6d7b642f9f710fa618e886a5e2ae7",
+  "review_digest": "3af6551a8ae6a26bd28556544b1ef38cd58215dcd78b5e103b3a3c24af8fb77c",
+  "finalization_digest": "61fd25365dd1ac300f4e65c961ce751fd3bf130d21ce9963b18c1cda5d9f628c",
+  "timestamp": 1793564455
+}

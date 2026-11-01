@@ -1,6 +1,6 @@
 ---
 id: align-kimi-integration-with-new-cycle-done-guidance
-state: implementing
+state: archived
 type: bug_fix
 base_commit: b2e2f19d904aec2a5acd73569c8439f5583c01f9
 ---
