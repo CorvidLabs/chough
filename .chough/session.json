@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -98,7 +98,8 @@
     "Drafted native change fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer (MODIFIED REQ-cli-021 and REQ-cli-002; cases TC-cli-0126 to TC-cli-0133 reserved in testing.md); specsync change status names change approve next and change audit passes",
     "2026-11-01: corrected the three decision entries of this cycle after review: removed agent rationale that had been attributed to 0xLeif and the decided: prefix on the agent assumption (removed by hand, since the CLI has no remove flag, then re-added with chough checkpoint --decision)",
     "0xLeif approved the scope as drafted (AskUserQuestion, 2026-11-01); recorded with specsync change approve --actor 0xLeif",
-    "0xLeif stated he read the frozen rubric docs/exercises/handoff-cold-start/rubric.md (sha256 f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17) and chose the Kimi baseline (AskUserQuestion, 2026-11-01); recorded as his statement, not an approval"
+    "0xLeif stated he read the frozen rubric docs/exercises/handoff-cold-start/rubric.md (sha256 f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17) and chose the Kimi baseline (AskUserQuestion, 2026-11-01); recorded as his statement, not an approval",
+    "Baseline cold start on main graded by 0xLeif: Fail (P2, P3 not met); observation handoff-cold-start-baseline-kimi-1-grade"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -136,5 +137,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Freeze docs/exercises/handoff-cold-start/seed.sh and rubric.md, record their hashes as one observation, have 0xLeif read the rubric, then run the mandatory baseline on main (fb6e487) with Kimi Code CLI 0.41.0 or Codex CLI 0.153.4 for 0xLeif to grade. No implementation before the baseline."
+  "next_action": "Build: implement criteria 1 to 8 within the approved scope (rename the REQ-cli-002 heading first), then the change run on Kimi with the same model and prompt"
 }
