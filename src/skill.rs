@@ -114,6 +114,16 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
     ),
+    // Main ee6e3d2 (0.1.0 docs sweep); superseded by the focused next change: the host
+    // paragraph and the done-stage resume steps.
+    (
+        "SKILL.md",
+        "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
+    ),
+    (
+        "references/checkpoint.md",
+        "20daaaa0cec972169abcedd508cd9ad18ff93ef7ec9d1f4e7330fcd18ca80ac0",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

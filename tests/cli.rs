@@ -464,7 +464,7 @@ fn untracked_inputs_also_stale_observations() {
             .success()
     );
     fixture.write("src/untracked.txt", "new work not yet staged\n");
-    let report = fixture.ok(&["next", "--environment", "test-local", "--json"]);
+    let report = fixture.ok(&["status", "--environment", "test-local", "--json"]);
     assert_eq!(
         report["observations"][0]["freshness"],
         "stale-revision-or-inputs"
@@ -547,7 +547,11 @@ fn successful_native_process_with_invalid_json_does_not_establish_lifecycle_stat
     );
     fixture.write("bin/specsync", "#!/bin/sh\nprintf '%s\\n' 'true'\n");
     assert_eq!(
-        fixture.ok(&["next", "--json"])["native_specsync"]["state"],
+        fixture.ok(&["status", "--json"])["native_specsync"]["state"],
+        "invalid-output"
+    );
+    assert_eq!(
+        fixture.ok(&["next", "--json"])["native"]["read"],
         "invalid-output"
     );
 }
@@ -561,6 +565,10 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     fixture.evidence_fixture();
     fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
     fixture.ok(&["checkpoint", "--native-change", "bounded-change"]);
+    fixture.write(
+        ".specsync/changes/bounded-change/approvals.json",
+        "{\"approvals\":[{\"gate\":\"definition\",\"approved_delta_digests\":{}}]}\n",
+    );
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
     let stand_in = |script: &str| {
@@ -576,7 +584,7 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
         command
             .arg("--root")
             .arg(fixture.root())
-            .args(["next", "--json"]);
+            .args(["status", "--json"]);
         let mut paths = vec![fixture.root().join("bin")];
         paths.extend(std::env::split_paths(
             &std::env::var_os("PATH").unwrap_or_default(),
@@ -656,7 +664,7 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
 
     // A stderr flood is drained beside stdout and shown within the display bound.
     stand_in(
-        "yes e | head -c 5000000 >&2\nprintf '{\"summary\":{\"state\":\"approved\",\"next_action\":\"implement\",\"approval_valid\":true}}\\n'",
+        "yes e | head -c 5000000 >&2\nprintf '{\"summary\":{\"state\":\"approved\",\"next_action\":\"implement\",\"approval_valid\":true},\"change\":{\"affected_specs\":[],\"no_spec_change\":true}}\\n'",
     );
     let (report, _) = next(None);
     assert_eq!(report["native_specsync"]["state"], "observed");

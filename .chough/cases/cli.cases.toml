@@ -1885,3 +1885,93 @@ expected = ["tests/cases.rs::an_unterminated_escape_never_hides_a_second_test_re
 adapter = "cargo-test"
 test_target = "cases"
 test = "an_unterminated_escape_never_hides_a_second_test_result"
+
+[[case]]
+id = "TC-cli-0120"
+title = "The next view keeps both forms within 16384 bytes with list totals for large records"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7"]
+requirements = ["REQ-cli-021", "REQ-cli-003"]
+paths = ["src/main.rs", "src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::both_forms_stay_within_the_cap_with_totals_for_large_records passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "both_forms_stay_within_the_cap_with_totals_for_large_records"
+
+[[case]]
+id = "TC-cli-0121"
+title = "In stage done with an authenticated archive, next recommends a new cycle with a reset that carries a reason"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::done_with_an_archived_change_recommends_a_new_cycle_with_a_reason passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "done_with_an_archived_change_recommends_a_new_cycle_with_a_reason"
+
+[[case]]
+id = "TC-cli-0122"
+title = "A stage reset replaces the checkpoint's next action and back keeps it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::reset_replaces_the_next_action_and_back_keeps_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "reset_replaces_the_next_action_and_back_keeps_it"
+
+[[case]]
+id = "TC-cli-0123"
+title = "An edited, added or deleted approved delta refuses every route to build, test and accept as native-delta-changed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "LIFE-7"]
+requirements = ["REQ-cli-022"]
+paths = ["src/stage.rs", "src/records.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_changed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_changed"
+
+[[case]]
+id = "TC-cli-0124"
+title = "A comparison of approved deltas that cannot be made refuses as native-delta-unverifiable"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "LIFE-1"]
+requirements = ["REQ-cli-022"]
+paths = ["src/stage.rs", "src/records.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable"

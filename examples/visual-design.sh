@@ -54,7 +54,7 @@ printf 'TC-checkout-ui-0001: %s, observation %s\n' "$outcome" "$(printf '%s' "$r
 [ "$outcome" = passed ] || fail "rendered checks did not pass: $result"
 
 printf '\n== Design stage stays open until a human approves\n'
-$chough next --environment chromium-headless | jq -r .next_valid_action
+$chough next --environment chromium-headless --json | jq -r .next_valid_action.action
 printf '\nScreenshots: %s/.chough/artifacts/visual-review/\n' "$work"
 printf 'Next: inspect them, then record TC-checkout-ui-0002 with `chough cases record`.\n'
 printf 'VISUAL SETUP PASSED in %s\n' "$work"

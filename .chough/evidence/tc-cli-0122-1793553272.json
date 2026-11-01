@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0122-1793553272",
+  "criteria": [
+    "FLOW-2",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact reset_replaces_the_next_action_and_back_keeps_it for TC-cli-0122: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0122-1793553272.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0122-1793553272.log": "2aa7b1dd2b59cdd65d2b35d2e1f6ef7677c036f1cc76574c3e6a6922cea59448"
+  },
+  "observed_at_unix_seconds": 1793553273,
+  "snapshot": {
+    "revision": "72fe1e2691ed1089e74cbed86d2a26dc184d8daa",
+    "dirty": false,
+    "fingerprint": "9176891de6eba764618eda9adf1656232bf2f577f0722a33e0ab5fd98dbce627",
+    "content": "14611dc0ebfff7c0831ccdd568ac6e241d137e4a2fadac9036a6657628cb6fd5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0122",
+      "digest": "c855735af1d47da3ddc176b1e066b2115ee32d85b622446f56610ca73d177135"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "reset_replaces_the_next_action_and_back_keeps_it"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

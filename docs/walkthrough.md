@@ -102,9 +102,10 @@ A new agent, possibly a different host, with none of this conversation:
 chough next --environment local
 ```
 
-It reports the stage, the gate for the current stage, freshness of the referenced
-observations, open and blocking bugs, standing preferences, pending human decisions
-and the next valid action. The [cold-start exercise](exercises/cold-start.md) records
+It prints a focused view of at most 16 KiB: the stage, the native change and the gate
+for the next stage, the referenced observations that are not current, blocking bugs
+and a count of the others, pending human decisions and the next valid action with
+the command to run. `chough status` is the full JSON report. The [cold-start exercise](exercises/cold-start.md) records
 an independent Codex session doing exactly this on the sample.
 
 ## Read freshness precisely

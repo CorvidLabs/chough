@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Land PR #16: bundle hygiene, case binding environment, colour-safe matching, actionable errors",
+  "objective": "Focused chough next, a verification guard before build, and done-stage resume (0.1.0 blocking decisions from 0xLeif)",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors",
+  "native_change": "focused-chough-next-a-verification-guard-before-build-and-done-stage-resume",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -20,19 +20,29 @@
       "FLOW-13",
       "LIFE-2",
       "LIFE-7",
-      "FLOW-10"
+      "FLOW-10",
+      "LIFE-3",
+      "FLOW-5",
+      "LIFE-4"
     ],
     "requirements": [
       "REQ-cli-007",
       "REQ-cli-008",
-      "REQ-cli-011"
+      "REQ-cli-011",
+      "REQ-cli-021",
+      "REQ-cli-022"
     ],
     "cases": [
       "TC-cli-0101",
       "TC-cli-0102",
       "TC-cli-0103",
       "TC-cli-0038",
-      "TC-cli-0039"
+      "TC-cli-0039",
+      "TC-cli-0120",
+      "TC-cli-0121",
+      "TC-cli-0122",
+      "TC-cli-0123",
+      "TC-cli-0124"
     ],
     "design": [],
     "files": []
@@ -55,7 +65,10 @@
     "2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion",
     "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
-    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed"
+    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
+    "Draft adds REQ-cli-021 and REQ-cli-022 instead of modifying REQ-cli-008, 016 or 019, because open PR #22 modifies those",
+    "No gate runs specsync change check: measured on 6.1.1 it mutates canonical specs and native records and refuses while tasks are unchecked; the guard recomputes SpecSync's approved-delta digests instead",
+    "2026-11-01: 0xLeif approved the scope of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume with the drafter's recommended answers to the open questions; recorded with specsync change approve --actor 0xLeif"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -75,7 +88,10 @@
     "refused env names in the approved definition amended to match the code; re-approved by 0xLeif",
     "plan step 7 documented-order exercise passed",
     "TC-cli-0100 and TC-cli-0104 added and passing",
-    "PR #9 merged earlier; stale awaiting-human entry cleared"
+    "PR #9 merged earlier; stale awaiting-human entry cleared",
+    "Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated",
+    "TC-cli-0120 to TC-cli-0124 passed on local-macos-arm64 after the scoped change check materialized REQ-cli-021 and REQ-cli-022; BUG-0002 noted as guarded, still open",
+    "PR #23 review at 2eb10bb: next strings bounded by escaped width, SpecSync module names accepted by the guard, the no-digest remedy names a new approval, reset next action bounded, cross-platform unit tests, SKILL.md host caveats; TC-cli-0120 to TC-cli-0124 rerun and passed on local-macos-arm64 at 72fe1e2"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -84,7 +100,17 @@
     "bug-0004-repro-1",
     "tc-cli-0038-1793475511",
     "tc-cli-0039-1793475513",
-    "bug-0004-fixed-1"
+    "bug-0004-fixed-1",
+    "tc-cli-0120-1793552331",
+    "tc-cli-0121-1793552334",
+    "tc-cli-0122-1793552336",
+    "tc-cli-0123-1793552337",
+    "tc-cli-0124-1793552338",
+    "tc-cli-0120-1793553262",
+    "tc-cli-0121-1793553270",
+    "tc-cli-0122-1793553272",
+    "tc-cli-0123-1793553274",
+    "tc-cli-0124-1793553276"
   ],
   "bugs": [
     "BUG-0001",
@@ -94,7 +120,9 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume on PR #23 by 0xLeif"
+  ],
   "run_consents": [],
-  "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+  "next_action": "Wait for 0xLeif's implementation review on PR #23; only then specsync change review and ship, on the same PR"
 }

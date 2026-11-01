@@ -53,8 +53,12 @@ chough next --environment local
 
 `init` never overwrites existing files. It writes the checkpoint
 `.chough/session.json` and copies the skill bundle into each requested host's
-project skill directory (`openai` → `.agents/skills`, `claude` → `.claude/skills`,
-also `codex`, `cursor`, `gemini`, `grok`). Then ask your agent in plain language,
+project skill directory (`openai`, the default, → `.agents/skills`, a shared skills
+directory; `claude` → `.claude/skills`; `gemini` → `.gemini/skills`, which no run has
+exercised; also `codex`, `cursor`, `grok`). Google Antigravity read the skill from
+`.agents/skills` in one run reported narratively in closed PR #20 and not
+independently verified. `chough next` prints the focused next action as text (`--json`
+for compact JSON); `chough status` is the full JSON report. Then ask your agent in plain language,
 for example "Use the Chough workflow to add free shipping at fifty dollars", or give
 it [the skill](skills/chough-workflow/SKILL.md) directly.
 

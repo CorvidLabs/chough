@@ -215,10 +215,17 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
             .fails(&["stage", "advance"])
             .contains("refused:blocking-bugs")
     );
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["blocking_bugs"], json!(["BUG-0001"]));
     let next = fixture.ok(&["next", "--json"]);
-    assert_eq!(next["blocking_bugs"], json!(["BUG-0001"]));
+    assert_eq!(next["blocking_bugs"]["items"], json!(["BUG-0001"]));
+    assert_eq!(next["blocking_bugs"]["total"], 1);
+    assert_eq!(
+        next["next_valid_action"]["action"],
+        status["next_valid_action"]
+    );
     assert!(
-        next["next_valid_action"]
+        next["next_valid_action"]["action"]
             .as_str()
             .unwrap()
             .contains("go back to build")
@@ -254,12 +261,20 @@ fn ordered_bug(observations: &[(&str, &str, u64)]) -> Fixture {
     fixture
 }
 
-/// The verification label on every surface that shows one.
+/// The verification label on every surface that shows one. The focused `next` view
+/// counts open bugs and names blocking ones, but shows no verification label.
 fn labels(fixture: &Fixture) -> Vec<String> {
     let show = fixture.ok(&["bug", "show", "BUG-0001"]);
     let list = fixture.ok(&["bug", "list"]);
     let status = fixture.ok(&["status", "--json"]);
     let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["other_open_bugs"].as_u64().unwrap()
+            + next["blocking_bugs"]["total"].as_u64().unwrap(),
+        status["open_bugs"].as_array().unwrap().len() as u64,
+        "{next}"
+    );
+    assert!(next.get("open_bugs").is_none(), "{next}");
     let report = String::from_utf8(fixture.run(&["bug", "report", "BUG-0001"]).stdout).unwrap();
     let reported = report
         .lines()
@@ -276,10 +291,6 @@ fn labels(fixture: &Fixture) -> Vec<String> {
             .as_str()
             .unwrap()
             .to_string(),
-        next["open_bugs"][0]["verification"]
-            .as_str()
-            .unwrap()
-            .to_string(),
         reported,
     ]
 }
@@ -290,7 +301,7 @@ fn a_pass_observed_before_the_latest_failure_does_not_verify_a_bug() {
         ("old-pass", "passed", 1_793_000_000),
         ("new-failure", "failed", 1_793_000_100),
     ]);
-    assert_eq!(labels(&fixture), vec!["reproduced"; 5]);
+    assert_eq!(labels(&fixture), vec!["reproduced"; 4]);
     let error = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
     assert!(
         error.contains("new-failure") && error.contains("passed observation"),
@@ -310,7 +321,7 @@ fn a_pass_observed_after_the_latest_failure_verifies_a_bug() {
         ("second-failure", "failed", 1_793_000_100),
     ]);
     // A pass between two failures is older than the latest failure.
-    assert_eq!(labels(&fixture), vec!["reproduced"; 5]);
+    assert_eq!(labels(&fixture), vec!["reproduced"; 4]);
     observe(&fixture, "later-pass", "passed");
     fixture.observed_at("later-pass", 1_793_000_101);
     let verified = fixture.ok(&[
@@ -338,7 +349,7 @@ fn a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug() {
         ("repro-same-second", "failed", 1_793_000_000),
         ("fix-same-second", "passed", 1_793_000_000),
     ]);
-    assert_eq!(labels(&fixture), vec!["reproduced"; 5]);
+    assert_eq!(labels(&fixture), vec!["reproduced"; 4]);
     let error = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
     assert!(
         error.contains("repro-same-second") && error.contains("passed observation"),
@@ -349,7 +360,7 @@ fn a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug() {
 #[test]
 fn a_bug_without_a_linked_failure_cannot_be_verified() {
     let fixture = ordered_bug(&[("only-pass", "passed", 1_793_000_000)]);
-    assert_eq!(labels(&fixture), vec!["unverified"; 5]);
+    assert_eq!(labels(&fixture), vec!["unverified"; 4]);
     let error = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
     assert!(error.contains("failed observation"), "{error}");
     assert_eq!(

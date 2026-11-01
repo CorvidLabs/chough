@@ -526,7 +526,25 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
         1,
     );
 
-    for command in ["status", "next"] {
+    // The focused next view lists only the referenced observations that need attention.
+    let next = fixture.ok(&["next", "--environment", "local", "--json"]);
+    let listed: BTreeMap<String, String> = next["observations"]["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| {
+            (
+                entry["id"].as_str().unwrap().to_string(),
+                entry["label"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    assert_eq!(listed["old-pass"], "pruned", "{next}");
+    assert_eq!(listed["old-fail"], "pruned", "{next}");
+    assert_eq!(listed["never-recorded"], "unavailable", "{next}");
+    assert_eq!(listed["n1"], "historical", "{next}");
+    assert!(listed.values().all(|label| label != "current"), "{next}");
+    for command in ["status"] {
         let report = fixture.ok(&[command, "--environment", "local"]);
         let references = report["observation_references"].as_array().unwrap();
         let label = |id: &str| {
