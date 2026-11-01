@@ -504,22 +504,29 @@ fn run_suggested(fixture: &Fixture, command: &str) -> Value {
 /// terminal evidence.
 #[cfg(unix)]
 fn archived_at(stage: &str) -> Fixture {
+    archived_change_at(stage, "old-change")
+}
+
+/// The same with a named change, reached by advancing (not by a reset, which starts the
+/// new cycle) while the change was approved, then archived.
+#[cfg(unix)]
+fn archived_change_at(stage: &str, change: &str) -> Fixture {
     let fixture = Fixture::new();
     fixture.stubs();
-    fixture.native("archived");
+    fixture.native("approved");
     fixture.write(".stub-next", "merge the PR on GitHub if it is still open\n");
     fixture.init();
-    fixture.ok(&["checkpoint", "--native-change", "old-change"]);
-    if stage != "intent" {
+    fixture.ok(&["checkpoint", "--native-change", change]);
+    fixture.no_spec_approval(change);
+    while fixture.session()["stage"]["current"] != stage {
         fixture.ok(&[
             "stage",
-            "reset",
-            "--to",
-            stage,
-            "--reason",
-            "Left behind an archive",
+            "advance",
+            "--note",
+            "Reached with the change approved",
         ]);
     }
+    fixture.write(".stub-state", "archived\n");
     fixture.ok(&[
         "checkpoint",
         "--next-action",
@@ -583,6 +590,35 @@ fn set_mtime(path: &std::path::Path, seconds: u64) {
         .unwrap();
 }
 
+/// After the suggested reset the archived rule does not suggest another reset, although
+/// the checkpoint still names the archived change until a new one is recorded: at intent
+/// the reset's new-cycle next action shows; at plan the build gate refusal shows, as it
+/// does after a reset from done.
+#[cfg(unix)]
+fn assert_after_reset(fixture: &Fixture, from: &str) {
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    let current = fixture.session()["stage"]["current"].clone();
+    let current = current.as_str().unwrap();
+    if current == "intent" {
+        assert!(
+            action.starts_with(&format!(
+                "Continue intent: New cycle from {from} after reset: "
+            )),
+            "{action}"
+        );
+    } else {
+        assert!(
+            action.starts_with("Gate not open (refused:native-archived)"),
+            "{action}"
+        );
+    }
+    assert!(!action.contains("is archived while"), "{action}");
+    assert_ne!(next["next_valid_action"]["command"], RESET, "{next}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], action);
+}
+
 #[cfg(unix)]
 #[test]
 fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
@@ -596,7 +632,7 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
         let action = &next["next_valid_action"];
         let full = status["next_valid_action"].as_str().unwrap();
         let opening = format!(
-            "Native change old-change is archived while the checkpoint is at {stage}, so this cycle's work is closed. "
+            "The recorded native change is archived while the checkpoint is at {stage}, so this cycle's work is closed. "
         );
         let expected = if stage == "accept" {
             format!(
@@ -613,7 +649,7 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
         let reason = action["reason"].as_str().unwrap();
         assert!(
             reason.contains(&format!(
-                "The archive's terminal evidence is authenticated-history; continuing {stage} would work on a closed change."
+                "Native change old-change is archived while the checkpoint is at {stage}, with terminal evidence authenticated-history; continuing {stage} would work on a closed change."
             )),
             "{reason}"
         );
@@ -648,17 +684,54 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
             assert_eq!(done["next_valid_action"]["command"], RESET);
             let reset = run_suggested(&fixture, RESET);
             assert_eq!(reset["applied"]["to"], "intent");
+            assert_after_reset(&fixture, "done");
         } else {
             let reset = run_suggested(&fixture, command);
             assert_eq!(reset["applied"]["to"], "intent", "{reset}");
             assert_eq!(fixture.session()["stage"]["current"], "intent", "{stage}");
+            assert_after_reset(&fixture, stage);
         }
+        // The `--to plan` route starts the new cycle the same way.
+        let fixture = archived_at(stage);
+        let reset = run_suggested(&fixture, &RESET.replace("--to intent", "--to plan"));
+        assert_eq!(reset["applied"]["to"], "plan", "{reset}");
+        assert_after_reset(&fixture, stage);
     }
+
+    // A real change ID of 150 characters: the action is not cut, so `next` keeps every
+    // new-cycle step and agrees with `status`; the reason names the change.
+    let long = format!("fresh-agent-handoff-{}", "x".repeat(130));
+    assert_eq!(long.len(), 150);
+    for stage in ["plan", "accept"] {
+        let fixture = archived_change_at(stage, &long);
+        let next = fixture.ok(&["next", "--json"]);
+        let action = next["next_valid_action"]["action"].as_str().unwrap();
+        assert!(!action.contains(" [cut]"), "{stage}: {action}");
+        assert!(
+            action.ends_with("--next-action \"<next step>\"."),
+            "{stage}: {action}"
+        );
+        let status = fixture.ok(&["status", "--json"]);
+        assert_eq!(status["next_valid_action"], action, "{stage}");
+        let reason = next["next_valid_action"]["reason"].as_str().unwrap();
+        assert!(
+            reason.starts_with(&format!(
+                "Native change {long} is archived while the checkpoint is at {stage}"
+            )),
+            "{reason}"
+        );
+        let shown = text(&fixture, &["next"]);
+        assert!(shown.contains(&format!("Next: {action}")), "{shown}");
+    }
+
+    keeps_todays_action_when_something_else_applies();
 }
 
+/// Paused stages, awaiting-human gates, blocking bugs at test, an archive whose terminal
+/// evidence does not authenticate and side stages keep today's action (part of
+/// TC-cli-0126).
 #[cfg(unix)]
-#[test]
-fn an_archived_change_keeps_todays_action_when_something_else_applies() {
+fn keeps_todays_action_when_something_else_applies() {
     let archived = "is archived while the checkpoint";
     // Paused.
     let fixture = archived_at("plan");
@@ -961,6 +1034,39 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
     assert!(!shown.contains("SECRET-LESSON-TEXT"), "{shown}");
     // Nothing is written: no fold state, ledger or index.
     assert!(!fixture.exists(".chough/lessons"));
+
+    // A symlinked module directory or archive is not a source: the module gets a note
+    // and the archive no bundles, and `next` still answers.
+    #[cfg(unix)]
+    {
+        let elsewhere = tempfile::tempdir().unwrap();
+        std::fs::write(elsewhere.path().join("context.md"), "## Lessons\n").unwrap();
+        std::os::unix::fs::symlink(elsewhere.path(), fixture.root().join("specs/ghost")).unwrap();
+        std::fs::rename(
+            fixture.root().join(".specsync/archive/changes"),
+            fixture.root().join(".specsync/archive/real"),
+        )
+        .unwrap();
+        std::os::unix::fs::symlink(
+            fixture.root().join(".specsync/archive/real"),
+            fixture.root().join(".specsync/archive/changes"),
+        )
+        .unwrap();
+        let next = fixture.ok(&["next", "--json"]);
+        let ghost = &next["lessons"]["sources"]["items"][2];
+        assert_eq!(ghost["path"], "specs/ghost/context.md", "{ghost}");
+        assert_eq!(ghost["section_line"], Value::Null, "{ghost}");
+        let note = ghost["note"].as_str().unwrap();
+        assert!(note.starts_with("cannot be read: symlink"), "{note}");
+        assert_eq!(
+            next["lessons"]["archived_bundles"],
+            json!({"total": 0, "items": []})
+        );
+        assert!(
+            text(&fixture, &["next"])
+                .contains("  ghost: specs/ghost/context.md (cannot be read: symlink")
+        );
+    }
 }
 
 #[cfg(unix)]

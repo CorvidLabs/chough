@@ -510,34 +510,45 @@ fn lessons_heading(path: &Path) -> std::result::Result<Option<Option<usize>>, St
 
 /// Where each module's lessons live, as SpecSync briefs them: `<module>.3md` when
 /// present, otherwise the Lessons section of `context.md`. No lesson text is read out.
-fn lesson_source(root: &Path, module: &str) -> Result<Value> {
+/// A path that `local_path` refuses (a symlink, for one) gets a note instead of failing
+/// the view.
+fn lesson_source(root: &Path, module: &str) -> Value {
     let native = format!("specs/{module}/{module}.3md");
-    if local_path(root, &native)?.is_file() {
-        return Ok(json!({"module": module, "path": native, "section_line": null, "note": null}));
-    }
     let context = format!("specs/{module}/context.md");
-    let (line, note) = match lessons_heading(&local_path(root, &context)?) {
+    let unreadable = |error: anyhow::Error| json!({"module": module, "path": context, "section_line": null, "note": format!("cannot be read: {error}")});
+    match local_path(root, &native) {
+        Ok(path) if path.is_file() => {
+            return json!({"module": module, "path": native, "section_line": null, "note": null});
+        }
+        Ok(_) => {}
+        Err(error) => return unreadable(error),
+    }
+    let path = match local_path(root, &context) {
+        Ok(path) => path,
+        Err(error) => return unreadable(error),
+    };
+    let (line, note) = match lessons_heading(&path) {
         Ok(Some(Some(line))) => (Some(line), None),
         Ok(Some(None)) => (None, Some("no Lessons section".to_string())),
         Ok(None) => (None, Some("missing".to_string())),
         Err(note) => (None, Some(note)),
     };
-    Ok(json!({"module": module, "path": context, "section_line": line, "note": note}))
+    json!({"module": module, "path": context, "section_line": line, "note": note})
 }
 
 /// Archived SpecSync lesson bundles, newest first by archive directory name. Nothing
 /// records which were folded.
+/// An archive directory that `local_path` refuses (a symlink, for one) has no bundles;
+/// a name that is not UTF-8 is counted and shown lossily.
 fn archived_bundles(root: &Path) -> Result<Value> {
-    let directory = local_path(root, ARCHIVED_CHANGES)?;
     let mut names = vec![];
-    if directory.is_dir() {
+    if let Ok(directory) = local_path(root, ARCHIVED_CHANGES)
+        && directory.is_dir()
+    {
         for entry in std::fs::read_dir(&directory)? {
             let entry = entry?;
-            let Some(name) = entry.file_name().to_str().map(str::to_string) else {
-                continue;
-            };
             if entry.path().join("lesson-bundle.md").is_file() {
-                names.push(name);
+                names.push(entry.file_name().to_string_lossy().into_owned());
             }
         }
     }
@@ -555,7 +566,7 @@ fn lessons(root: &Path, modules: &[String]) -> Result<Value> {
         .iter()
         .take(LIST_LIMIT)
         .map(|module| lesson_source(root, module))
-        .collect::<Result<Vec<_>>>()?;
+        .collect::<Vec<_>>();
     Ok(json!({
         "sources": {"total": modules.len(), "items": sources},
         "archived_bundles": archived_bundles(root)?,

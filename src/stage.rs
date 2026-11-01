@@ -764,6 +764,31 @@ fn archived_and_authenticated(root: &Path, session: &Checkpoint, state: &NativeS
         && gate_for_state(root, session, "done", state.clone()).is_some_and(|gate| gate.allowed)
 }
 
+/// Whether the latest stage transition is a reset, which starts the new cycle: the
+/// checkpoint still names the archived change until a new one is recorded, and the
+/// reset's own next action applies. Gate records start no stage segment and are
+/// skipped; an unreadable log reads as no reset.
+fn reached_by_reset(root: &Path) -> bool {
+    let Ok(path) = local_path(root, TRANSITIONS) else {
+        return false;
+    };
+    let Ok((lines, _)) = read_log_tail(&path, usize::MAX) else {
+        return false;
+    };
+    lines
+        .iter()
+        .rev()
+        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+        .filter_map(|record| {
+            record
+                .get("kind")
+                .and_then(Value::as_str)
+                .map(str::to_string)
+        })
+        .find(|kind| STAGE_KINDS.contains(&kind.as_str()))
+        .is_some_and(|kind| kind == "reset")
+}
+
 /// The gate for the next main stage and the next valid action, both evaluated on one
 /// native state, so `next` and `status` report the same decision (REQ-cli-021).
 pub(super) fn assess(
@@ -811,7 +836,10 @@ pub(super) fn assess(
         }
     } else if current == "done" {
         done_action(root, session, state, native_next)
-    } else if is_main(current) && archived_and_authenticated(root, session, state) {
+    } else if is_main(current)
+        && archived_and_authenticated(root, session, state)
+        && !reached_by_reset(root)
+    {
         archived_action(session, state, native_next)
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
         Action {
@@ -898,13 +926,15 @@ fn archived_action(session: &Checkpoint, state: &NativeState, native_next: Optio
     let check_first = native_next
         .map(|text| format!(" Native next action, check it first: {text}."))
         .unwrap_or_default();
+    // The action has fixed text, so it stays within the 512-byte cut of `chough next`
+    // whatever the change ID; the ID goes in the reason.
     Action {
         action: format!(
-            "Native change {change} is archived while the checkpoint is at {current}, so this cycle's work is closed. {record_done}{}",
+            "The recorded native change is archived while the checkpoint is at {current}, so this cycle's work is closed. {record_done}{}",
             new_cycle()
         ),
         reason: format!(
-            "The archive's terminal evidence is {}; continuing {current} would work on a closed change.{check_first}",
+            "Native change {change} is archived while the checkpoint is at {current}, with terminal evidence {}; continuing {current} would work on a closed change.{check_first}",
             terminal_validity(state)
         ),
         command: Some(if at_accept {
