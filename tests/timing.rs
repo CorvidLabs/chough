@@ -1031,6 +1031,21 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
     let rendered = text(&fixture, &[]);
     assert!(rendered.contains("total run wall-clock, including intervals and resumes"));
     assert!(!rendered.to_lowercase().contains("effort:"));
+
+    // Compatibility decision: `duration_seconds` is an optional schema 2 field, read
+    // here, while observation fields stay closed. A reader refuses a field it does not
+    // know, so builds before this field refuse records that carry it (docs/cli.md says
+    // so), exactly as this build refuses a field it does not know.
+    assert!(fixture.run(&["status"]).status.success());
+    let mut record: Value =
+        serde_json::from_str(&fixture.read(".chough/evidence/a-2.json")).unwrap();
+    record["field_from_a_later_build"] = json!(1);
+    fixture.write(
+        ".chough/evidence/a-2.json",
+        &serde_json::to_string_pretty(&record).unwrap(),
+    );
+    let error = fixture.fails(&["status"]);
+    assert!(error.contains("unknown field"), "{error}");
 }
 
 #[test]

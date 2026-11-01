@@ -368,15 +368,17 @@ fn gates(records: &[Record], awaiting: &[String]) -> Vec<Gate> {
             continue;
         };
         if record.kind == stage::GATE_OPENED {
-            if !open.contains_key(&text) {
-                open.insert(text.clone(), gates.len());
-                gates.push(Gate {
-                    text,
-                    opened: record.at.clone(),
-                    closed: None,
-                    open_now: false,
-                });
-            }
+            // The checkpoint writes gate-opened only for a gate not already listed, so a
+            // second one for an open gate means it was cleared in between without a
+            // record: the earlier opening keeps an unknown close (`closed` None) and a
+            // new gate starts here.
+            open.insert(text.clone(), gates.len());
+            gates.push(Gate {
+                text,
+                opened: record.at.clone(),
+                closed: None,
+                open_now: false,
+            });
         } else if record.kind == stage::GATE_CLOSED {
             match open.remove(&text) {
                 Some(index) => gates[index].closed = Some(record.at.clone()),
@@ -413,6 +415,20 @@ fn waiting_in(start: u64, end: u64, gates: &[Gate], at: u64) -> Span {
     let mut overlaps = vec![];
     for gate in gates {
         match gate.interval(at) {
+            // An end before its start means one of the two times is wrong. If the open
+            // time is wrong the gate lies before `closed`; if the close time is, after
+            // `opened`. A segment that could overlap under either reading is unknown;
+            // an open gate opened after now may have opened at any earlier time. A
+            // segment strictly between the two times fits neither reading and gets no
+            // overlap from the arm below.
+            (Some(opened), Some(closed))
+                if closed < opened && (gate.open_now || start < closed || end > opened) =>
+            {
+                return Span::Unknown(format!(
+                    "gate \"{}\" may overlap and its end is before its start",
+                    gate.text
+                ));
+            }
             (Some(opened), Some(closed)) => {
                 let (from, to) = (opened.max(start), closed.min(end));
                 if from < to {
@@ -763,7 +779,8 @@ fn tests_section(root: &Path, case: Option<&str>, partial: &mut Vec<Value>) -> V
                 .map(|record| {
                     let run_time = record.duration_seconds.map_or_else(
                         || Span::Unknown("no run time recorded".into()),
-                        |seconds| Span::Known(seconds, ELAPSED),
+                        // Whole seconds: a run under one second is recorded together.
+                        |seconds| Span::Known(seconds, if seconds == 0 { TOGETHER } else { ELAPSED }),
                     );
                     json!({
                         "id": record.id,
@@ -852,12 +869,19 @@ fn bug_rows(root: &Path, only: Option<&str>, partial: &mut Vec<Value>) -> Vec<Bu
                     ledger
                         .as_ref()
                         .and_then(|ledger| ledger.get(id))
-                        .map(|entry| {
-                            (
-                                entry.outcome.as_deref() == Some("failed"),
+                        .and_then(|entry| {
+                            // An entry without a recognised outcome could be the earlier
+                            // failure, so it is unavailable like a missing one.
+                            let failed = match entry.outcome.as_deref()? {
+                                "failed" => true,
+                                "passed" | "not-run" => false,
+                                _ => return None,
+                            };
+                            Some((
+                                failed,
                                 entry.observed_at_unix_seconds,
                                 format!("retention ledger (pruned observation {id})"),
-                            )
+                            ))
                         })
                 };
                 match seen {
@@ -1012,7 +1036,10 @@ fn native_change(root: &Path, id: &str, directory: Option<&str>) -> Value {
             let superseded = approvals[index + 1..]
                 .iter()
                 .any(|(later, at)| later == gate && at >= timestamp);
-            let (standing, reason) = if reopenings.iter().any(|at| at > timestamp) {
+            // A native reopening supersedes the latest terminal approval (acceptance or
+            // finalization); a definition approval keeps the validity status reports.
+            let terminal = matches!(gate.as_str(), "acceptance" | "finalization");
+            let (standing, reason) = if terminal && reopenings.iter().any(|at| at > timestamp) {
                 ("reopened", "a later native reopening supersedes it".to_string())
             } else if superseded {
                 ("not current", "a later approval of the same gate supersedes it".to_string())
@@ -1053,7 +1080,9 @@ fn plain_id(id: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
 }
 
-/// Archive directory names, most recent date first, without links.
+/// Archive directory names, without links: most recent archive date first, and on the
+/// same date most recent finalization first (an unknown finalization time after known
+/// ones, then by name), so the history bound keeps the most recent changes.
 fn archived(root: &Path) -> Result<Vec<String>, String> {
     let path = local_path(root, ARCHIVE_DIR).map_err(|error| error.to_string())?;
     if !path.exists() {
@@ -1072,8 +1101,23 @@ fn archived(root: &Path) -> Result<Vec<String>, String> {
             names.push(name.to_string());
         }
     }
-    names.sort_unstable_by(|a, b| b.cmp(a));
-    Ok(names)
+    // Descending: date, then finalization time (Some before None), then name.
+    let mut keyed: Vec<(String, Option<u64>, String)> = names
+        .into_iter()
+        .map(|name| {
+            let dated = archived_id(&name).len() < name.len();
+            let date = if dated {
+                name[..10].to_string()
+            } else {
+                String::new()
+            };
+            let finalized =
+                record_time(root, &format!("{ARCHIVE_DIR}/{name}"), "finalization.json").known();
+            (date, finalized, name)
+        })
+        .collect();
+    keyed.sort_unstable_by(|a, b| b.cmp(a));
+    Ok(keyed.into_iter().map(|(_, _, name)| name).collect())
 }
 
 /// The change ID of an archive directory named `<YYYY-MM-DD>-<id>`.
@@ -1510,7 +1554,9 @@ fn render(
         .as_array()
         .is_some_and(|list| !list.is_empty())
     {
-        out.push_str("Archived changes, most recent first:\n");
+        out.push_str(
+            "Archived changes, most recent first (archive date, then finalization time):\n",
+        );
         for change in native["history"].as_array().into_iter().flatten() {
             for line in native_text(change) {
                 out.push_str(&format!("{line}\n"));
