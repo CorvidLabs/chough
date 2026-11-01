@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "id": "step7-documented-order-exercise",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-6",
+    "LIFE-7",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-004",
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Plan step 7 in a disposable clone of d918bbb: specsync change check, chough cases run TC-cli-0067..0079 (13 passed), checkpoint --awaiting-human, commit, change check --commit, change review with the SIMULATED label SIMULATED-step7-not-a-human, change finalize (archive move); all 13 observations stayed current-observation after every step, content identity fc88d131 unchanged; a README.md edit staled them (negative control). No SpecSync write outside the bookkeeping set.",
+  "artifacts": [
+    ".chough/artifacts/step7-documented-order-exercise.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/step7-documented-order-exercise.log": "4553803cc3fc7ab2d8c07aab609f6e40dbe64f93aa8a8d7978884c12e3e8c3bf"
+  },
+  "observed_at_unix_seconds": 1793504887,
+  "snapshot": {
+    "revision": "d918bbb3f76fc52396638e66e2756ea8d82776ac",
+    "dirty": false,
+    "fingerprint": "33611ed81bafe1ef6462d2e2e908cdc63219ad31d0ef61ce7be30ff1827b70bd",
+    "content": "fc88d131a5f7e1925f59db06927bbc602dcdff663f96904cc2246edf5cf702f5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Disposable copy only: no push, no hosted CI, no GitHub; the review label is simulated and is not a human review",
+    "chough stage advance not exercised: the copy's checkpoint named PR #9's change at stage done",
+    "macOS arm64 only; not run on Linux or Windows"
+  ]
+}
