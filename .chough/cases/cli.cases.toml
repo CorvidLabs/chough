@@ -1885,3 +1885,29 @@ expected = ["tests/cases.rs::an_unterminated_escape_never_hides_a_second_test_re
 adapter = "cargo-test"
 test_target = "cases"
 test = "an_unterminated_escape_never_hides_a_second_test_result"
+
+[[case]]
+id = "TC-cli-0105"
+title = "A fresh Gemini host discovers the workflow and resumes from project files alone"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["FLOW-13", "FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-007", "REQ-cli-016"]
+paths = ["skills/chough-workflow/", "docs/"]
+environments = ["gemini-3.8-flash-high-macos-arm64", "local-macos-arm64"]
+artifacts = ["test-log", "reviewer-note"]
+setup = ["Clone or worktree of CorvidLabs/chough on macOS arm64 without conversation context"]
+steps = [
+  "Verify skill discovery via .agents/skills/chough-workflow/SKILL.md",
+  "Run cargo build --locked and chough next --environment local-macos-arm64",
+  "Verify skill status, cases check, and fledge lanes run verify",
+  "Verify that no human approval or review decision is recorded without human action",
+]
+expected = [
+  "Skill is discovered natively without prior context",
+  "Native state, evidence freshness and next valid action are reported honestly",
+  "Verification lane passes cleanly with tool versions matching CI",
+  "Human gates and standing preferences are strictly honored",
+]
+

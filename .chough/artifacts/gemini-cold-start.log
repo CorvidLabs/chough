@@ -1,0 +1,75 @@
+# Gemini cold start log
+
+Date: 2026-11-01
+Host: Google Antigravity (Gemini 3.8 Flash High)
+OS and architecture: Darwin arm64
+Environment: local-macos-arm64
+Worktree: .worktrees/gemini-host-cold-start
+Branch: gemini/feat/gemini-host-cold-start
+Base: origin/main at 5af3f78
+
+## Tool versions
+
+Command: hi --version; fledge --version; specsync --version; gh --version; cargo --version; uname -s; uname -m
+Output:
+hi 0.8.0
+fledge 1.7.2
+specsync 6.1.1
+gh version 2.102.0 (2026-09-30)
+cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+Darwin
+arm64
+Result: Tool versions matched CI exactly via PATH configuration (/opt/homebrew/bin/hi 0.8.0, /opt/homebrew/bin/fledge 1.7.2, ~/.cargo/bin/specsync 6.1.1).
+
+## Discovery
+
+Observed before reading repository guidance in depth:
+Google Antigravity CLI natively discovered the chough-workflow skill from .agents/skills/chough-workflow/SKILL.md upon workspace initialization. The skill was listed in active skills without requiring explicit coaching or manual configuration.
+Repository instructions in AGENTS.md also pointed to chough next --environment <env> and skills/chough-workflow/SKILL.md.
+
+Discovery friction noted:
+In skills/chough-workflow/SKILL.md, the Host use section listed openai, claude, codex, cursor, gemini, and grok as chough init host options. However, chough init --host gemini defaults to .gemini/skills, whereas Antigravity CLI discovers skills in .agents/skills by convention. In this repository, only .agents/skills and .claude/skills were present. As a result, chough skill status reported openai and claude as installed hosts, but did not report gemini.
+
+## Build
+
+Command: cargo build --locked
+Time: 10.10s
+Exit code: 0
+Result: Built cleanly without warnings or errors.
+
+## Next action
+
+Command: ./target/debug/chough next --environment local-macos-arm64
+Elapsed: ~16s
+Output:
+native_summary: { state: "archived", next_action: "merge the PR on GitHub if it is still open" }
+checkpoint.stage.current: "done"
+session_next_action: "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+next_valid_action: "Continue done: specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+
+Cold resume friction noted:
+The previous native change (PR #16) was already archived and merged into main. The checkpoint next_action had remained frozen at the pre-archive review step. For a cold-starting agent resuming at stage done, next_valid_action repeated this superseded step. To start new work, the agent must reset stage (chough stage reset --to intent or plan) and initialize a new native SpecSync change.
+
+## Verification of baseline
+
+Command: ./target/debug/chough skill status
+Output: 2 hosts (openai at .agents/skills, claude at .claude/skills), all 24 bundle files current.
+
+Command: ./target/debug/chough cases check
+Output: valid: true (104 active cases checked).
+
+Command: fledge lanes run verify
+Elapsed: 1m 55s
+Output: All 9 steps passed (fmt, test, clippy, hi validate, specsync strict, audit, cases, exercise, build).
+
+## Native change and human gate
+
+Command: specsync change new "Gemini host cold start and roadmap refresh" --kind feature --spec cli [paths...]
+Created draft change: gemini-host-cold-start-and-roadmap-refresh
+Answered interview questions (public_contract: no, architecture_risk: no, acceptance_criteria, constraints).
+Completed all 7 selected artifacts (context.md, requirements.md, design.md, plan.md, tasks.md, testing.md, docs.md) without stubs.
+Audited change: specsync change audit passed.
+Reset stage to plan: chough stage reset --to plan --reason "Gemini host cold start and roadmap refresh"
+Reserved case TC-cli-0105 in .chough/cases/cli.cases.toml.
+Checkpoint saved: chough checkpoint --objective ... --awaiting-human "Scope approval of gemini-host-cold-start-and-roadmap-refresh"
+Stopped at scope gate: awaiting human decision from 0xLeif.
