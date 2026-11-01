@@ -38,8 +38,7 @@ PR #20 and #21 content; any native SpecSync record edit.
    1.7.2), ci.yml (Fledge Action, no msrv job), Cargo.toml (no rust-version) and
    README (no toolchain section). Keep that failing run as the red observation of
    TC-cli-0110.
-2. ci.yml: replace the Fledge Action with `cargo install fledge --version 1.8.0
-   --locked`; add the `msrv` job needing `archive-gate`.
+2. ci.yml: set the Fledge Action's `version: v1.8.0`; add the `msrv` job needing `archive-gate`.
 3. Cargo.toml `rust-version = "1.88"`; AGENTS.md version line.
 4. Skill bundle corrections; KNOWN_PREVIOUS entries; `chough skill update` for the host
    copies; check byte identity.

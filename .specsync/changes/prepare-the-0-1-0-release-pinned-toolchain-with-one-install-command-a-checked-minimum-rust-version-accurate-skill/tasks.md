@@ -6,7 +6,7 @@ artifact: tasks
 # Tasks
 
 - [ ] Add the pin agreement test to tests/package.rs and record its failing run at the unfixed tip.
-- [ ] Replace the Fledge Action in ci.yml with `cargo install fledge --version 1.8.0 --locked`.
+- [ ] Set the Fledge Action in ci.yml to `version: v1.8.0`.
 - [ ] Add the `MSRV / 1.88.0` CI job needing the Archive job.
 - [ ] Add `rust-version = "1.88"` to Cargo.toml.
 - [ ] Update the AGENTS.md tool version line to hi 0.8.0, fledge 1.8.0, specsync 6.1.1.

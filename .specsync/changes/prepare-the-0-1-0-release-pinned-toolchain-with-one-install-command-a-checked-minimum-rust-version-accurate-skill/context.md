@@ -46,3 +46,6 @@ README.md, docs/ci.md, docs/integrations.md and docs/ROADMAP.md, and already add
 Rust 1.88 and `cargo install chough --locked` sentence to README. Whichever merges
 later rebases. Case IDs from TC-cli-0110 are free on main, #20 (up to TC-cli-0105) and
 #21.
+
+- Update (2026-11-01, later): fledge v1.8.0 was then tagged on GitHub at the commit
+  published to crates.io, and 0xLeif chose the Fledge Action at v1.8.0 for CI.

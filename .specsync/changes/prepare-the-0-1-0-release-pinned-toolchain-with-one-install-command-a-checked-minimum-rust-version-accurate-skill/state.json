@@ -7,10 +7,10 @@
   "title": "Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log",
   "description": "Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log",
   "kind": "operations",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
   "created_at": 1793547531,
-  "updated_at": 1793547954,
+  "updated_at": 1793548158,
   "affected_specs": [
     "cli"
   ],
@@ -31,7 +31,7 @@
   "no_spec_change": false,
   "no_spec_change_rationale": null,
   "acceptance_criteria": [
-    "Tool pins in one place each, kept in agreement: README.md, AGENTS.md and .github/workflows/ci.yml name the same versions, HI 0.8.0 (crate human-intent), SpecSync 6.1.1 and Fledge 1.8.0. CI installs Fledge with `cargo install fledge --version 1.8.0 --locked` instead of the Fledge GitHub Action (which needs a GitHub release that 1.8.0 does not have) and HI with `cargo install human-intent --version 0.8.0 --locked` as before; the SpecSync Action stays pinned to its v6.1.1 commit with version '6.1.1'. docs/ci.md and docs/integrations.md say Fledge 1.8.0, and docs/DECISIONS.md records the switch as D-019. Recorded exercises keep the versions they observed (LIFE-6, LIFE-9, REQ-cli-019).",
+    "Tool pins in one place each, kept in agreement: README.md, AGENTS.md and .github/workflows/ci.yml name the same versions, HI 0.8.0 (crate human-intent), SpecSync 6.1.1 and Fledge 1.8.0. CI installs Fledge with the Fledge GitHub Action at its v1.8.0 release (`version: v1.8.0`, the release tagged on 2026-11-01 at the commit published to crates.io) and HI with `cargo install human-intent --version 0.8.0 --locked` as before; the SpecSync Action stays pinned to its v6.1.1 commit with version '6.1.1'. docs/ci.md and docs/integrations.md say Fledge 1.8.0, and docs/DECISIONS.md records the switch as D-019. Recorded exercises keep the versions they observed (LIFE-6, LIFE-9, REQ-cli-019).",
     "One-command install: README.md has an `Install the toolchain` section whose single command is `cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1`, says it needs Rust 1.89 or later (SpecSync 6.1.1 declares 1.89), and says how to install chough itself. That exact command was run with the local cargo into a scratch root before approval and installed hi, specsync and fledge at those versions (LIFE-9).",
     "Pins are checked: a test in tests/package.rs fails, naming the file and the tool, when the HI, SpecSync or Fledge version is missing from README.md, AGENTS.md or .github/workflows/ci.yml or disagrees between them, or when the minimum Rust version is missing from Cargo.toml, README.md or the CI MSRV job or disagrees between them (REQ-cli-019).",
     "Minimum Rust version: Cargo.toml declares rust-version = \"1.88\", README.md says Rust 1.88 or later for chough, and a CI job `MSRV / 1.88.0`, which needs the Archive job like every other job, runs `cargo test --locked` with Rust 1.88.0 on Ubuntu, so the claim stays true (REQ-cli-019).",

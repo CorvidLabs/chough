@@ -14,7 +14,7 @@ artifact: docs
 - docs/releasing.md (new): the human release steps after merge; nothing in this change
   runs them.
 - docs/ci.md, docs/integrations.md: Fledge 1.8.0, installed with cargo in CI.
-- docs/DECISIONS.md: D-019, pinned toolchain, Fledge via cargo, one README command.
+- docs/DECISIONS.md: D-019, pinned toolchain, Fledge Action at v1.8.0 in CI and cargo locally, one README command.
 - specs/cli/context.md: history of PRs #3 to #18 and current working files.
 - skills/chough-workflow: the nine corrections; host copies refreshed.
 - Pull request description: lists the open questions and that tag, publish and GitHub

@@ -12,9 +12,10 @@ Pins: HI 0.8.0 (crate `human-intent`, binary `hi`), SpecSync 6.1.1 (crate and bi
 keeps its own wording; the test in section 3 keeps them in agreement, so there is no
 generated file or new config to read.
 
-- `.github/workflows/ci.yml`, job `native-gates`: remove the `CorvidLabs/fledge@b648ea2`
-  Action step and its comment; add `- run: cargo install fledge --version 1.8.0 --locked`
-  next to the existing HI install, both after `Swatinem/rust-cache`. rust-cache v2.8
+- `.github/workflows/ci.yml`, job `native-gates`: keep the `CorvidLabs/fledge` Action
+  step and set `version: v1.8.0` (the GitHub release tagged 2026-11-01 at the commit
+  published to crates.io; 0xLeif chose the Action over cargo for CI speed); keep the HI
+  cargo install after `Swatinem/rust-cache`. rust-cache v2.8
   caches `~/.cargo/bin`, so a warm cache makes both installs no-ops; a cold run
   compiles them (minutes; measured about six minutes for all three tools locally).
   The SpecSync Action steps stay at commit `e8fd149` (v6.1.1) with `version: '6.1.1'`
@@ -31,9 +32,9 @@ generated file or new config to read.
   SpecSync 6.1.1 declares it; cargo skips a tool already installed at that version from
   crates.io and replaces a different version (`--force` reinstalls). Verified with
   cargo 1.95.0 into a scratch `--root`.
-- `docs/ci.md` and `docs/integrations.md`: Fledge 1.8.0 installed with cargo.
-  `docs/DECISIONS.md` D-019: pin Fledge 1.8.0 and install it with cargo in CI because
-  1.8.0 has no GitHub release; one README command installs all three. Recorded
+- `docs/ci.md` and `docs/integrations.md`: Fledge 1.8.0 (CI uses the Fledge Action at v1.8.0).
+  `docs/DECISIONS.md` D-019: pin Fledge 1.8.0 (CI uses the Fledge Action at its v1.8.0
+  release, local installs use cargo); one README command installs all three. Recorded
   exercises (cold-start.md, specs/cli/testing.md environment lines) keep the versions
   they observed.
 - No `fledge run tools` task: Fledge must already be installed to run it, and the
@@ -75,9 +76,9 @@ with no new dependency:
   specsync. Also the phrase `Rust <rust-version> or later`.
 - AGENTS.md: `hi <v>`, `fledge <v>`, `specsync <v>` in the "Match tool versions to
   CI" sentence.
-- ci.yml: `cargo install human-intent --version <v> --locked`, `cargo install fledge
-  --version <v> --locked`, every `version: '<v>'` input of a `CorvidLabs/spec-sync` step
-  (all equal), no `CorvidLabs/fledge@` step, and the msrv job's `toolchain: <v>` whose
+- ci.yml: `cargo install human-intent --version <v> --locked`, the `CorvidLabs/fledge` step's
+  `version: v<v>`, every `version: '<v>'` input of a `CorvidLabs/spec-sync` step
+  (all equal), and the msrv job's `toolchain: <v>` whose
   major.minor equals Cargo.toml's `rust-version`.
 - Cargo.toml: `rust-version`.
 
