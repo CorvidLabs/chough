@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "use-collision-resistant-slug-identities-for-new-bugs",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "4fd09eb974e0b4df70fb75c6f47b5fccab0367f2",
+      "contract_digest": "10c16c2fe5e514cd15d1a00bfe01edb40b4040e6bde795676815faa2a55dd10b",
+      "execution_digest": "1fc509f209825c0da5e2d166099abf7eb37f53050e4df49c2fdf7da12b4f1db7",
+      "workspace_digest": "d368bca4508209ceb02f6dfce9fb441721182d6d21315f3d015c821d2651289d",
+      "timestamp": 1793572420
+    }
+  ]
+}
