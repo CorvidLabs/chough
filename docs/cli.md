@@ -113,8 +113,9 @@ commit, committing edits that were already present, `specsync change check --com
 and finalize keep observations current; a change to source, tests, docs, `specs/`,
 `.specsync/` configuration or a change's deltas and other artifacts makes them stale.
 A record written without a content identity, by an earlier Chough, keeps the
-revision-bound comparison and stays stale after any new commit; a malformed one is
-refused. Older Chough binaries refuse records with a content identity as invalid.
+revision-bound comparison and stays stale after any new commit, and so does a schema 1
+record, whose schema has no content identity, even if one was added to it by hand; a
+malformed one is refused. Older Chough binaries refuse records with a content identity as invalid.
 
 A bug reads `reproduced-and-later-passed`, and accepts `bug update --status verified`,
 only when a present linked passed observation was observed strictly after its most

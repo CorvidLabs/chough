@@ -1,3 +1,5 @@
+mod common;
+
 use serde_json::{Value, json};
 use std::fs;
 use std::path::Path;
@@ -68,7 +70,6 @@ impl Fixture {
         ]);
     }
 
-    #[cfg(unix)]
     fn git(&self, args: &[&str]) {
         let output = Command::new("git")
             .current_dir(self.root())
@@ -82,22 +83,21 @@ impl Fixture {
         );
     }
 
-    #[cfg(unix)]
     fn native_fixtures(&self) {
-        use std::os::unix::fs::PermissionsExt;
-        self.write("bin/hi", "#!/bin/sh\nprintf '%s\\n' '{\"hi\":1,\"export\":1,\"files\":[{\"criteria\":[{\"id\":\"LIFE-1\",\"text\":\"Preserve intent\"}],\"retired\":[{\"id\":\"LIFE-2\"}]}]}'\n");
-        self.write("bin/specsync", "#!/bin/sh\nprintf '%s\\n' '{\"next_action\":\"human_scope_decision\",\"state\":\"draft\"}'\n");
-        for name in ["hi", "specsync"] {
-            fs::set_permissions(
-                self.root().join("bin").join(name),
-                fs::Permissions::from_mode(0o755),
-            )
-            .unwrap();
-        }
+        let bin = self.root().join("bin");
+        common::stand_in(
+            &bin,
+            "hi",
+            r#"{"hi":1,"export":1,"files":[{"criteria":[{"id":"LIFE-1","text":"Preserve intent"}],"retired":[{"id":"LIFE-2"}]}]}"#,
+        );
+        common::stand_in(
+            &bin,
+            "specsync",
+            r#"{"next_action":"human_scope_decision","state":"draft"}"#,
+        );
         self.write(".specsync/config.toml", "source_dirs = [\"src\"]\n");
     }
 
-    #[cfg(unix)]
     fn evidence_fixture(&self) {
         self.native_fixtures();
         self.init();
@@ -116,7 +116,6 @@ impl Fixture {
         ]);
     }
 
-    #[cfg(unix)]
     fn add(&self, id: &str, kind: &str, outcome: &str) -> Output {
         self.run(&[
             "evidence",
@@ -672,7 +671,6 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     assert!(shown.len() < 17_000, "{}", shown.len());
 }
 
-#[cfg(unix)]
 impl Fixture {
     /// Stage everything and commit, as `git add -A && git commit` would.
     fn commit_all(&self, message: &str) {
@@ -741,11 +739,8 @@ impl Fixture {
     }
 }
 
-#[cfg(unix)]
 const CHANGE: &str = ".specsync/changes/demo-change";
-#[cfg(unix)]
 const ARCHIVE: &str = ".specsync/archive/changes/2026-10-31-demo-change";
-#[cfg(unix)]
 const BOOKKEEPING: [&str; 9] = [
     "state.json",
     "approvals.json",
@@ -758,7 +753,6 @@ const BOOKKEEPING: [&str; 9] = [
     "lesson-bundle.md",
 ];
 
-#[cfg(unix)]
 #[test]
 fn committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current() {
     let fixture = Fixture::new();
@@ -779,7 +773,6 @@ fn committing_only_chough_records_or_an_empty_commit_keeps_an_observation_curren
     assert_ne!(status["snapshot"]["revision"], revision.as_str());
 }
 
-#[cfg(unix)]
 #[test]
 fn committing_edits_already_present_when_observed_keeps_an_observation_current() {
     let fixture = Fixture::new();
@@ -795,7 +788,6 @@ fn committing_edits_already_present_when_observed_keeps_an_observation_current()
     assert_eq!(fixture.freshness("observed"), "stale-revision-or-inputs");
 }
 
-#[cfg(unix)]
 #[test]
 fn any_fingerprinted_content_change_stales_an_observation() {
     let fixture = Fixture::new();
@@ -817,7 +809,6 @@ fn any_fingerprinted_content_change_stales_an_observation() {
     }
 }
 
-#[cfg(unix)]
 #[test]
 fn specsync_bookkeeping_writes_keep_an_observation_current() {
     let fixture = Fixture::new();
@@ -843,9 +834,22 @@ fn specsync_bookkeeping_writes_keep_an_observation_current() {
     // What `specsync change check --commit` commits.
     fixture.commit_all("specsync verification");
     assert_eq!(fixture.freshness("observed"), "current-observation");
+    // A `change.md` with CRLF line endings, as a Windows checkout may write it, has only
+    // its front-matter `state:` value blanked too.
+    let crlf = |state: &str, body: &str| {
+        format!(
+            "---\r\nid: demo-change\r\nstate: {state}\r\ntype: bug_fix\r\n---\r\n\r\n# Demo change\r\n\r\nstate: {body}\r\n"
+        )
+    };
+    let change_md = format!("{CHANGE}/change.md");
+    fixture.write(&change_md, &crlf("implementing", "as noted in the body"));
+    fixture.observe("crlf");
+    fixture.write(&change_md, &crlf("verifying", "as noted in the body"));
+    assert_eq!(fixture.freshness("crlf"), "current-observation");
+    fixture.write(&change_md, &crlf("verifying", "rewritten in the body"));
+    assert_eq!(fixture.freshness("crlf"), "stale-revision-or-inputs");
 }
 
-#[cfg(unix)]
 #[test]
 fn edits_to_a_native_change_scope_stale_an_observation() {
     let fixture = Fixture::new();
@@ -876,7 +880,6 @@ fn edits_to_a_native_change_scope_stale_an_observation() {
     }
 }
 
-#[cfg(unix)]
 #[test]
 fn archiving_a_change_keeps_an_observation_current_until_an_artifact_changes() {
     let fixture = Fixture::new();
@@ -913,7 +916,6 @@ fn archiving_a_change_keeps_an_observation_current_until_an_artifact_changes() {
     assert_eq!(fixture.freshness("after-edit"), "stale-revision-or-inputs");
 }
 
-#[cfg(unix)]
 #[test]
 fn observations_without_a_content_identity_stay_stale_after_a_commit() {
     let fixture = Fixture::new();
@@ -927,11 +929,31 @@ fn observations_without_a_content_identity_stay_stale_after_a_commit() {
         .remove("content");
     fs::write(&name, serde_json::to_string_pretty(&record).unwrap() + "\n").unwrap();
     assert_eq!(fixture.freshness("legacy"), "current-observation");
+    // A schema 1 record has no content identity in its schema; one that carries a
+    // `content` field anyway keeps the schema 1 revision-bound freshness.
+    fixture.observe("schema-one");
+    let name = fixture.root().join(".chough/evidence/schema-one.json");
+    let mut record: Value = serde_json::from_str(&fs::read_to_string(&name).unwrap()).unwrap();
+    record["schema_version"] = json!(1);
+    for field in [
+        "cases",
+        "method",
+        "track",
+        "argv",
+        "exit_code",
+        "tests_run",
+        "limitations",
+    ] {
+        record.as_object_mut().unwrap().remove(field);
+    }
+    assert!(record["snapshot"]["content"].is_string());
+    fs::write(&name, serde_json::to_string_pretty(&record).unwrap() + "\n").unwrap();
+    assert_eq!(fixture.freshness("schema-one"), "current-observation");
     fixture.commit_all("an empty commit");
     assert_eq!(fixture.freshness("legacy"), "stale-revision-or-inputs");
+    assert_eq!(fixture.freshness("schema-one"), "stale-revision-or-inputs");
 }
 
-#[cfg(unix)]
 #[test]
 fn a_malformed_content_identity_is_refused() {
     let fixture = Fixture::new();

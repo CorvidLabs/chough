@@ -140,12 +140,17 @@ impl Fixture {
         self.git(&["commit", "--allow-empty", "-m", message]);
     }
 
+    /// A `hi` stand-in that reports the criteria `stubs` reports, on every platform.
+    pub(super) fn hi_stand_in(&self) {
+        stand_in(&self.root().join("bin"), "hi", HI_EXPORT);
+    }
+
     /// Stub `hi` and `specsync`; the native summary is read from `.stub-*` files.
     #[cfg(unix)]
     pub(super) fn stubs(&self) {
         self.write(
             "bin/hi",
-            "#!/bin/sh\nprintf '%s\\n' '{\"hi\":1,\"export\":1,\"files\":[{\"criteria\":[{\"id\":\"LIFE-1\"},{\"id\":\"LIFE-3\"},{\"id\":\"FLOW-6\"},{\"id\":\"FLOW-7\"},{\"id\":\"FLOW-8\"}],\"retired\":[{\"id\":\"LIFE-2\"}]}]}'\n",
+            &format!("#!/bin/sh\nprintf '%s\\n' '{HI_EXPORT}'\n"),
         );
         self.write(
             "bin/specsync",
@@ -181,5 +186,64 @@ printf '{"summary":{"state":"%s","next_action":"stub next action for %s"%s}}\n' 
         self.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
         self.write(".specsync/sdd.json", "{\"enabled\": true}\n");
         self.write(".stub-state", &format!("{state}\n"));
+    }
+}
+
+/// The `hi export` response the stand-ins report.
+const HI_EXPORT: &str = r#"{"hi":1,"export":1,"files":[{"criteria":[{"id":"LIFE-1"},{"id":"LIFE-3"},{"id":"FLOW-6"},{"id":"FLOW-7"},{"id":"FLOW-8"}],"retired":[{"id":"LIFE-2"}]}]}"#;
+
+/// Put a `name` stand-in in `bin` that prints `stdout` and a newline and exits 0. Unix
+/// gets a shell script; Windows, which has no shell stand-ins on PATH, gets a program
+/// compiled once per test process and copied in.
+pub(super) fn stand_in(bin: &Path, name: &str, stdout: &str) {
+    fs::create_dir_all(bin).unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        assert!(
+            !stdout.contains('\''),
+            "stand-in output must not contain a quote"
+        );
+        let path = bin.join(name);
+        fs::write(&path, format!("#!/bin/sh\nprintf '%s\\n' '{stdout}'\n")).unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o755)).unwrap();
+    }
+    #[cfg(windows)]
+    {
+        use std::collections::HashMap;
+        use std::path::PathBuf;
+        use std::sync::{Mutex, OnceLock};
+        static BUILT: OnceLock<Mutex<(TempDir, HashMap<String, PathBuf>)>> = OnceLock::new();
+        let built =
+            BUILT.get_or_init(|| Mutex::new((tempfile::tempdir().unwrap(), HashMap::new())));
+        let mut built = built.lock().unwrap();
+        let count = built.1.len();
+        let program = match built.1.get(stdout) {
+            Some(program) => program.clone(),
+            None => {
+                assert!(
+                    !stdout.contains("\"#"),
+                    "stand-in output must not contain \"#"
+                );
+                let directory = built.0.path().join(count.to_string());
+                fs::create_dir_all(&directory).unwrap();
+                fs::write(
+                    directory.join("stand_in.rs"),
+                    format!("fn main() {{ println!(\"{{}}\", r#\"{stdout}\"#); }}\n"),
+                )
+                .unwrap();
+                let rustc = std::env::var_os("RUSTC").unwrap_or_else(|| "rustc".into());
+                let status = Command::new(rustc)
+                    .current_dir(&directory)
+                    .args(["--edition", "2021", "-o", "stand_in.exe", "stand_in.rs"])
+                    .status()
+                    .unwrap();
+                assert!(status.success(), "could not build a stand-in");
+                let program = directory.join("stand_in.exe");
+                built.1.insert(stdout.to_string(), program.clone());
+                program
+            }
+        };
+        fs::copy(program, bin.join(format!("{name}.exe"))).unwrap();
     }
 }

@@ -30,7 +30,11 @@ the exercise, the cold start and the wording review).
 
 Unix-only tests are gated with `cfg(unix)` because they use shell stubs for native
 tools; their cases list only macOS and Linux environments. Windows runs the portable
-tests and the build.
+tests and the build. The content-identity freshness tests (TC-cli-0067 to 0074, with
+a CRLF `change.md` in TC-cli-0070) and the bug-ordering tests (TC-cli-0076 to 0079)
+are portable: their `hi` and `specsync` stand-ins are compiled programs on Windows, so
+Windows CI exercises the `/`-separated path and change keys and CRLF front matter; the
+exec-bit test stays Unix-only.
 
 No physical deployment, live monitoring, authenticated human acceptance, APS,
 Magpie or other unbuilt integration is covered by this test contract.

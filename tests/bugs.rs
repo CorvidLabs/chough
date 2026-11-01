@@ -239,10 +239,9 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
 }
 
 /// A committed fixture with the given observations at the given times, linked to one bug.
-#[cfg(unix)]
 fn ordered_bug(observations: &[(&str, &str, u64)]) -> Fixture {
     let fixture = Fixture::new();
-    fixture.stubs();
+    fixture.hi_stand_in();
     fixture.init();
     fixture.commit("fixture");
     let mut extra = vec!["--classification", "product-defect"];
@@ -256,7 +255,6 @@ fn ordered_bug(observations: &[(&str, &str, u64)]) -> Fixture {
 }
 
 /// The verification label on every surface that shows one.
-#[cfg(unix)]
 fn labels(fixture: &Fixture) -> Vec<String> {
     let show = fixture.ok(&["bug", "show", "BUG-0001"]);
     let list = fixture.ok(&["bug", "list"]);
@@ -286,7 +284,6 @@ fn labels(fixture: &Fixture) -> Vec<String> {
     ]
 }
 
-#[cfg(unix)]
 #[test]
 fn a_pass_observed_before_the_latest_failure_does_not_verify_a_bug() {
     let fixture = ordered_bug(&[
@@ -305,7 +302,6 @@ fn a_pass_observed_before_the_latest_failure_does_not_verify_a_bug() {
     );
 }
 
-#[cfg(unix)]
 #[test]
 fn a_pass_observed_after_the_latest_failure_verifies_a_bug() {
     let fixture = ordered_bug(&[
@@ -336,7 +332,6 @@ fn a_pass_observed_after_the_latest_failure_verifies_a_bug() {
     );
 }
 
-#[cfg(unix)]
 #[test]
 fn a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug() {
     let fixture = ordered_bug(&[
@@ -351,7 +346,6 @@ fn a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug() {
     );
 }
 
-#[cfg(unix)]
 #[test]
 fn a_bug_without_a_linked_failure_cannot_be_verified() {
     let fixture = ordered_bug(&[("only-pass", "passed", 1_793_000_000)]);

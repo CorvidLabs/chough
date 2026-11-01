@@ -625,12 +625,13 @@ pub(super) fn load(root: &Path, id: &str) -> Result<Evidence> {
     Ok(evidence)
 }
 
-/// Content identities are compared when the record has one; a record without one keeps
-/// the revision-bound legacy comparison, so it goes stale after any new commit.
-fn same_inputs(current: &Snapshot, recorded: &Snapshot) -> bool {
-    match &recorded.content {
-        Some(content) => current.content.as_ref() == Some(content),
-        None => current.fingerprint == recorded.fingerprint,
+/// Content identities are compared when a schema 2 record has one. A schema 1 record,
+/// whose schema has no content identity, and a record without one keep the
+/// revision-bound legacy comparison, so they go stale after any new commit.
+fn same_inputs(current: &Snapshot, recorded: &Evidence) -> bool {
+    match &recorded.snapshot.content {
+        Some(content) if recorded.schema_version >= 2 => current.content.as_ref() == Some(content),
+        _ => current.fingerprint == recorded.snapshot.fingerprint,
     }
 }
 
@@ -660,7 +661,7 @@ pub(super) fn freshness(
     }
     Ok(match current {
         Err(_) => "unknown-revision",
-        Ok(snapshot) if !same_inputs(snapshot, &evidence.snapshot) => "stale-revision-or-inputs",
+        Ok(snapshot) if !same_inputs(snapshot, evidence) => "stale-revision-or-inputs",
         Ok(_) if !artifacts_current => "stale-artifact",
         Ok(_) if !cases_current => "stale-case-definition",
         Ok(_) if environment.is_none() => "environment-unchecked",

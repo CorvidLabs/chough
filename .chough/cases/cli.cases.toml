@@ -1366,7 +1366,7 @@ test = "archiving_a_change_keeps_an_observation_current_until_an_artifact_change
 
 [[case]]
 id = "TC-cli-0073"
-title = "Observations without a content identity stay stale after a commit"
+title = "Observations without a content identity, or in schema 1, stay stale after a commit"
 status = "active"
 track = "functional"
 method = "automated"
