@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -89,7 +89,8 @@
     "plan step 7 documented-order exercise passed",
     "TC-cli-0100 and TC-cli-0104 added and passing",
     "PR #9 merged earlier; stale awaiting-human entry cleared",
-    "Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated"
+    "Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated",
+    "TC-cli-0120 to TC-cli-0124 passed on local-macos-arm64 after the scoped change check materialized REQ-cli-021 and REQ-cli-022; BUG-0002 noted as guarded, still open"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -98,7 +99,12 @@
     "bug-0004-repro-1",
     "tc-cli-0038-1793475511",
     "tc-cli-0039-1793475513",
-    "bug-0004-fixed-1"
+    "bug-0004-fixed-1",
+    "tc-cli-0120-1793552331",
+    "tc-cli-0121-1793552334",
+    "tc-cli-0122-1793552336",
+    "tc-cli-0123-1793552337",
+    "tc-cli-0124-1793552338"
   ],
   "bugs": [
     "BUG-0001",
@@ -108,7 +114,9 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume on PR #23 by 0xLeif"
+  ],
   "run_consents": [],
-  "next_action": "Run TC-cli-0120 to TC-cli-0124, commit the records, then specsync change check --commit"
+  "next_action": "Wait for 0xLeif's implementation review on PR #23; only then specsync change review and ship, on the same PR"
 }

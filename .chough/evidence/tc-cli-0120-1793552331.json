@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0120-1793552331",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-021",
+    "REQ-cli-003"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact both_forms_stay_within_the_cap_with_totals_for_large_records for TC-cli-0120: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0120-1793552331.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0120-1793552331.log": "dda4951727fe730679b00462b7895c46e4545bfab235f14739c9882a066b2bf6"
+  },
+  "observed_at_unix_seconds": 1793552334,
+  "snapshot": {
+    "revision": "95f7f1a79accfe846903cf1c9a74788267517fe2",
+    "dirty": false,
+    "fingerprint": "b02fd1a38a49c2029454cd7bbb61cbef3480c9510a4d69b0e03e1b16abac9ec2",
+    "content": "3b84cf1a66be1552ca40dbf5f537f1a9e475af83c1b066059eacef30a776cfcb"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0120",
+      "digest": "9f386b129c8042c3c14877daf78a5d365c2396d8eabd1b43993a15f724707a89"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "both_forms_stay_within_the_cap_with_totals_for_large_records"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}
