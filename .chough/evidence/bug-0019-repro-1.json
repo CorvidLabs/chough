@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "id": "bug-0019-repro-1",
+  "criteria": [
+    "LIFE-5",
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-012",
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "At fce3d98 (unfixed), bug add --classification blocking and --scope product-defect gave bare value lists, --help listed no values, and a cli case linking REQ-checkout-ui-004 gave a bare not-found error; case runs tc-cli-0092-1793500284 and tc-cli-0093-1793500285 also failed.",
+  "artifacts": [
+    ".chough/artifacts/bug-0019-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0019-reproduction.log": "35dd5007d2b496764f952a2bf44de10bf978f0861d9687083719d81aee1e8e8e"
+  },
+  "observed_at_unix_seconds": 1793500326,
+  "snapshot": {
+    "revision": "fce3d98d9b4d093c77513c09bb23f97706f11fbe",
+    "dirty": false,
+    "fingerprint": "16a8159b576eb90e3b819aec970993843fedfd8f5a972a79d793394b5a932bca",
+    "content": "2576e5f2f6b87c584c38e7fc14434299f7863a6f516aeadd71f8ad9ca7a194e7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0092",
+      "digest": "e7077db93b58fdb69da20a59f0186755f46ec1c82a31734bb8261767279211f3"
+    },
+    {
+      "id": "TC-cli-0093",
+      "digest": "0209056257b64c5ffd5778f62a8a66c247a21980718d72503fac20729151086f"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Reproduced in a disposable project on macOS only"
+  ]
+}

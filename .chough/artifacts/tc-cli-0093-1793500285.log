@@ -1,0 +1,28 @@
+--- stdout ---
+
+running 1 test
+test a_requirement_of_another_module_names_the_cases_file_that_binds_it ... FAILED
+
+failures:
+
+---- a_requirement_of_another_module_names_the_cases_file_that_binds_it stdout ----
+
+thread 'a_requirement_of_another_module_names_the_cases_file_that_binds_it' (145546406) panicked at tests/cases.rs:704:9:
+expected "requirement REQ-checkout-ui-004 not found in specs/cli/requirements.md" in Error: .chough/cases/cli.cases.toml: case TC-cli-0001
+
+Caused by:
+    requirement not found in contract companions: REQ-checkout-ui-004
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_requirement_of_another_module_names_the_cases_file_that_binds_it
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 16 filtered out; finished in 0.57s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/cases.rs (target/debug/deps/cases-aebdf6374da16d6b)
+error: test failed, to rerun pass `--test cases`

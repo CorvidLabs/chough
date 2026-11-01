@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0094-1793500286",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-005",
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cases -- --exact an_unresolved_requirement_is_refused_with_the_check_first_hint for TC-cli-0094: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0094-1793500286.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0094-1793500286.log": "8c9c8ef5a5e07d5a7928ef8591594a4952533b4762f0d755395f6598a4031c95"
+  },
+  "observed_at_unix_seconds": 1793500287,
+  "snapshot": {
+    "revision": "fce3d98d9b4d093c77513c09bb23f97706f11fbe",
+    "dirty": false,
+    "fingerprint": "16a8159b576eb90e3b819aec970993843fedfd8f5a972a79d793394b5a932bca",
+    "content": "2576e5f2f6b87c584c38e7fc14434299f7863a6f516aeadd71f8ad9ca7a194e7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0094",
+      "digest": "058cef64fdff2d9ed0f88b66cc5503eaf63caaf73b195df6fc6485238ef273b2"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cases",
+    "--",
+    "--exact",
+    "an_unresolved_requirement_is_refused_with_the_check_first_hint"
+  ],
+  "exit_code": 101,
+  "tests_run": 1
+}

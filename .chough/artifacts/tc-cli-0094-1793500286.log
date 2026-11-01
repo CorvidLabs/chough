@@ -1,0 +1,28 @@
+--- stdout ---
+
+running 1 test
+test an_unresolved_requirement_is_refused_with_the_check_first_hint ... FAILED
+
+failures:
+
+---- an_unresolved_requirement_is_refused_with_the_check_first_hint stdout ----
+
+thread 'an_unresolved_requirement_is_refused_with_the_check_first_hint' (145548386) panicked at tests/cases.rs:704:9:
+expected "requirement REQ-cli-999 not found in specs/cli/requirements.md" in Error: .chough/cases/cli.cases.toml: case TC-cli-0001
+
+Caused by:
+    requirement not found in contract companions: REQ-cli-999
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    an_unresolved_requirement_is_refused_with_the_check_first_hint
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 16 filtered out; finished in 0.57s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/cases.rs (target/debug/deps/cases-aebdf6374da16d6b)
+error: test failed, to rerun pass `--test cases`
