@@ -410,6 +410,67 @@ fn bundle_files_from_the_latest_main_build_are_never_reported_as_edited() {
 }
 
 #[test]
+fn skill_and_checkpoint_copies_from_main_ee6e3d2_are_known_outdated_and_edited_copies_stay() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow");
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/skill-ee6e3d2");
+    let files = [
+        (
+            "SKILL.md",
+            "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
+        ),
+        (
+            "references/checkpoint.md",
+            "20daaaa0cec972169abcedd508cd9ad18ff93ef7ec9d1f4e7330fcd18ca80ac0",
+        ),
+    ];
+    for (file, digest) in files {
+        // The known digests are of LF bytes; a Windows checkout may have converted them.
+        let old = fs::read_to_string(fixtures.join(file))
+            .unwrap()
+            .replace("\r\n", "\n");
+        assert_eq!(
+            format!("{:x}", Sha256::digest(old.as_bytes())),
+            digest,
+            "{file}"
+        );
+        fs::write(installed.join(file), old).unwrap();
+    }
+    let status = chough(root, &["skill", "status"]);
+    for (file, _) in files {
+        assert_eq!(
+            skill_state(&status, file)["state"],
+            "known-outdated",
+            "{file}"
+        );
+    }
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    for file in bundle_files() {
+        assert_eq!(skill_state(&status, &file)["state"], "current", "{file}");
+    }
+
+    // A copy edited from the ee6e3d2 version is edited, and update keeps it.
+    for (file, _) in files {
+        let mut edited = fs::read_to_string(fixtures.join(file))
+            .unwrap()
+            .replace("\r\n", "\n");
+        edited.push_str("\nA local note.\n");
+        fs::write(installed.join(file), &edited).unwrap();
+        let status = chough(root, &["skill", "status"]);
+        assert_eq!(skill_state(&status, file)["state"], "edited", "{file}");
+        chough(root, &["skill", "update"]);
+        assert_eq!(
+            fs::read_to_string(installed.join(file)).unwrap(),
+            edited,
+            "{file}"
+        );
+    }
+}
+
+#[test]
 fn checkpoint_and_plan_references_from_main_2756dc2_are_known_outdated() {
     let project = empty_project();
     let root = project.path();
