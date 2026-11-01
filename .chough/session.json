@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "intent",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -37,7 +37,12 @@
       "TC-cli-0102",
       "TC-cli-0103",
       "TC-cli-0038",
-      "TC-cli-0039"
+      "TC-cli-0039",
+      "TC-cli-0110",
+      "TC-cli-0111",
+      "TC-cli-0112",
+      "TC-cli-0113",
+      "TC-cli-0114"
     ],
     "design": [],
     "files": []
@@ -60,7 +65,8 @@
     "2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion",
     "0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo",
     "0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end",
-    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed"
+    "0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed",
+    "0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json"
   ],
   "open_questions": [
     "Merge order of PR #2 and PR #3 (0xLeif's native archive CI gate): both edit .github/workflows/ci.yml, fledge.toml and .specsync/config.toml, so the second to merge needs a conflict resolution; PR #4 is stacked on #2 and retargets to main after #2 merges."
@@ -80,7 +86,8 @@
     "refused env names in the approved definition amended to match the code; re-approved by 0xLeif",
     "plan step 7 documented-order exercise passed",
     "TC-cli-0100 and TC-cli-0104 added and passing",
-    "PR #9 merged earlier; stale awaiting-human entry cleared"
+    "PR #9 merged earlier; stale awaiting-human entry cleared",
+    "0.1.0 release prep implemented: pins, MSRV job and rust-version, nine skill corrections with KNOWN_PREVIOUS and host refresh, context history, README, CHANGELOG, docs/releasing.md, D-019"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -99,9 +106,7 @@
     "BUG-0005"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Intent and scope approval of prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "specsync change review bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --reviewer 0xLeif, then ship"
+  "next_action": "Run TC-cli-0110 to TC-cli-0114 at the implementation tip, then specsync change check --commit"
 }

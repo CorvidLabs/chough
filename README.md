@@ -14,17 +14,23 @@ Chough records what stage work is in, what was decided, what was actually checke
 
 ![Chough and the tools that own its records](docs/diagrams/ownership.svg)
 
-Chough is a public CorvidLabs repository. **No release exists yet**: nothing is
-published to crates.io, tagged, hosted or deployed. A first release candidate is in
-progress ([PR #9](https://github.com/CorvidLabs/chough/pull/9)).
+Chough is a public CorvidLabs repository. Release history is in
+[CHANGELOG.md](CHANGELOG.md). Nothing is hosted or deployed.
 
 ## Install
 
-Chough needs a Rust toolchain. Install the helper from the repository:
+Chough needs Rust 1.88 or later. Install a released version from crates.io (the
+releases are listed in [CHANGELOG.md](CHANGELOG.md)):
+
+```sh
+cargo install chough --locked
+chough --help
+```
+
+To run unreleased work from main, install from the repository:
 
 ```sh
 cargo install --git https://github.com/CorvidLabs/chough --locked
-chough --help
 ```
 
 or from a clone:
@@ -37,6 +43,20 @@ cargo install --path . --locked
 
 The skill bundle is embedded in the binary; `chough init` copies it into your
 project.
+
+## Install the toolchain
+
+Chough works with HI, SpecSync and Fledge. One command installs the versions CI
+uses:
+
+```sh
+cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.1.1
+```
+
+This command needs Rust 1.89 or later, because SpecSync 6.1.1 declares it. Cargo
+skips a tool already installed from crates.io at that version and replaces a
+different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
+`specsync`. Install Chough itself as shown in [Install](#install).
 
 ## Start here
 
@@ -99,6 +119,7 @@ behavioral proof or human acceptance.
 | Where | What runs |
 |---|---|
 | Hosted CI: Ubuntu, macOS, Windows | `cargo test` and a release build |
+| Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
 | Hosted CI: Ubuntu | Fledge `verify` lane (format, lint, tests), HI and SpecSync checks, the native archive gate and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
@@ -143,5 +164,6 @@ files.
 - [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
 - [Deferred, unapproved evidence-reuse proposal](docs/NEXT_CHANGE.md)
 - [Diagram rendering and visual verification](docs/verification.md)
+- [Release steps](docs/releasing.md) and the [change log](CHANGELOG.md)
 
 MIT licensed. This repository's visibility and its software license are separate facts.

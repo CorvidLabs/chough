@@ -114,6 +114,35 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "eac153b213914bf71a84cb08cda5f0810730a324b112e3caf96ee3be2672b3e9",
     ),
+    // Main 5af3f78 (PR #19); superseded by the 0.1.0 release prep.
+    (
+        "SKILL.md",
+        "d350cc91271e6d942bef516a2b2ea8a6009697a2e0d034b9ff48c8591be2ee5c",
+    ),
+    (
+        "references/stages.md",
+        "5127182e148521e9c9df2490eb45055d0c5edb3302f245bc4f7aab114b591a24",
+    ),
+    (
+        "references/validate.md",
+        "5b7ea4ec1a12c745e7d5a14625f4f98ab2731bf13b588986e4f0a6b7686b4aed",
+    ),
+    (
+        "references/testing.md",
+        "a056931078182d3bd887cfa96c6bc4bd68a83b955e479bca95266bf1d1c1ee7c",
+    ),
+    (
+        "references/checkpoint.md",
+        "20daaaa0cec972169abcedd508cd9ad18ff93ef7ec9d1f4e7330fcd18ca80ac0",
+    ),
+    (
+        "references/lifecycle.md",
+        "a776c2f85d8803d78d24bd124773b73be1b09dd190c5cc9b6dd5a11fe4cc09c3",
+    ),
+    (
+        "templates/cases.toml",
+        "8a07e72f5f72668f6b440a14d457a8352850a94413ba7e1b5962abc5cdae234a",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

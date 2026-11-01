@@ -39,7 +39,9 @@ changes identity, while editing what it asserts makes earlier observations
   shell and records the observation with the captured log. `cargo-test` passes only
   when exactly one test ran and passed; a filter matching nothing is `not-run`.
   `fledge-task` and `command` pass only with exit 0 and every `expect_output`
-  fragment present. The command exits 3 when the outcome is not passed.
+  fragment present, so each needs at least one fragment. `timeout_seconds` bounds a
+  run from 1 to 3600 (default 600); a run that times out is recorded failed. The
+  command exits 3 when the outcome is not passed.
 - A binding may declare `env`, variables set on top of the inherited environment,
   for example `env = { NO_COLOR = "1" }` when a tool should print plain text. Chough
   sets none by default. `env` is committed with the case, so never put secrets in
@@ -56,7 +58,8 @@ changes identity, while editing what it asserts makes earlier observations
   bytes. Write fragments as the visible text; a fragment containing ESC is refused.
 - Manual or agent-assisted: `chough cases record <ID> --method manual --verdict 1=pass
   --verdict 2=fail … --summary "…" --artifact <screenshot>` gives a verdict for every
-  expected outcome; any fail makes the observation failed.
+  expected outcome; any fail makes the observation failed. Like `cases run`, it
+  exits 3 when the outcome is not passed.
 
 A failing case stays failed even when every other case passes. Do not rerun until
 it passes and report only the pass. Capture the failure with

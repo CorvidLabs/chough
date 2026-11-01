@@ -17,7 +17,27 @@ evolve-chough-into-a-resumable-stage-workflow (FLOW-1 to FLOW-13, REQ-cli-007 to
 REQ-cli-017), adopting the full lifecycle with SpecSync 6.1.1, the TOML
 `chough-testing/1` profile, deferred APS, explicit case execution and capture-only
 monitoring. See docs/DECISIONS.md D-008 to D-016. The bootstrap paragraph above is
-history.
+history. It merged as the squash commit 4008346 (PR #2).
+
+Later native changes, each approved by 0xLeif and archived under
+`.specsync/archive/changes/` on its own pull request:
+
+- PR #4: parse native status beyond the display bound and apply checkpoint clears
+  first; PR #6 recorded the #2 and #4 merges and cleared their gates.
+- PR #3: require native lifecycle closure before Chough pull requests merge (CI).
+- PR #7: refuse stage moves whose native approval validity, archive integrity or SDD
+  policy does not hold.
+- PR #8: bound external commands in time and memory; honor validation stop requests
+  after waiting.
+- PR #9: first release candidate with reference-aware evidence retention (D-017),
+  current guidance and an installable package.
+- PR #17: keep evidence current across commits and SpecSync bookkeeping; verify bugs
+  only by a pass observed after the failure (D-018).
+- PR #15: report how long stages, tests, bug fixes and human decisions took
+  (`chough timing`, REQ-cli-020).
+- PR #18: run the SpecSync archive gate before every CI job.
+- PR #16: bundle hygiene, case binding environment, colour-safe matching and
+  actionable requirement and bug errors.
 
 ## Working files
 
@@ -25,11 +45,15 @@ history.
 - tests/: isolated integration fixtures.
 - skills/chough-workflow/: canonical portable skill bundle embedded in the binary.
 - src/records.rs, checkpoint.rs, stage.rs, cases.rs, evidence.rs, bugs.rs, prefs.rs,
-  validate.rs, library.rs, skill.rs, context.rs: modules behind the commands.
+  validate.rs, library.rs, skill.rs, context.rs, timing.rs: modules behind the
+  commands.
 - .chough/session.json: the single checkpoint (schema 2); session.v1.json keeps the
   migrated schema 1 bytes.
-- .chough/cases/, evidence/, bugs/, transitions.jsonl, preferences.json: case
-  definitions, observations, local bugs, history and standing preferences.
+- .chough/cases/, evidence/, artifacts/, bugs/, transitions.jsonl, preferences.json:
+  case definitions, observations, captured logs and other artifacts, local bugs,
+  history and standing preferences.
+- .chough/validation/ and validation.stop: repeated validation runs and a pending
+  stop request; .chough/pruned.jsonl: the retention removal ledger.
 - examples/ and docs/exercises/: disposable samples and recorded exercises.
 
 ## Lessons

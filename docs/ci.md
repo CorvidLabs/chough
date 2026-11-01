@@ -8,8 +8,14 @@ merge. It runs on draft PRs and can be expected red during work.
 
 The gate uses published SpecSync **6.1.1**, its pinned action commit, and the
 upstream action's release archive/checksum verification. The action version input
-is explicit: the v6.1.1 wrapper's default binary is 6.1.0. Fledge remains v1.7.2
-and HI remains 0.8.0. Workflow actions are pinned to verified commit SHAs.
+is explicit: the v6.1.1 wrapper's default binary is 6.1.0. Fledge is 1.8.0,
+installed by the Fledge Action at its reviewed commit with `version: v1.8.0` (the
+GitHub release of the version published to crates.io), and HI is 0.8.0, installed
+with `cargo install human-intent --version 0.8.0 --locked`. These pins match
+README.md and AGENTS.md; `tests/package.rs::tool_and_rust_version_pins_agree` fails
+when they disagree. The `MSRV / 1.88.0` job runs `cargo test --locked` with Rust
+1.88.0, the `rust-version` in Cargo.toml. Workflow actions are pinned to verified
+commit SHAs.
 
 ## What Archive checks
 
@@ -61,6 +67,7 @@ requiring these exact contexts:
 - `Product / ubuntu-latest`
 - `Product / macos-latest`
 - `Product / windows-latest`
+- `MSRV / 1.88.0`
 - `Fledge / HI / SpecSync`
 - `CI gate fixtures`
 - `SpecSync Archive`

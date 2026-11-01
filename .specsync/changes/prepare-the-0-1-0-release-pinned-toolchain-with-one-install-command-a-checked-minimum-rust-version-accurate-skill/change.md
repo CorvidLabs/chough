@@ -1,6 +1,6 @@
 ---
 id: prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill
-state: approved
+state: implementing
 type: operations
 base_commit: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
 ---

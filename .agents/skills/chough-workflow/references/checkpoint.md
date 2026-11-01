@@ -39,6 +39,10 @@ record when a gate waited, never who decided or what, and `chough timing` reads 
 to show waiting-on-human time. Open and clear gates through these flags rather than by
 editing `session.json`, or the waiting time is lost.
 
+`--clear-awaiting-human` clears every open gate, not just one. To close some gates
+and keep the others, pass the gates still waiting with `--awaiting-human` in the same
+call; they are logged closed and opened again, so their waiting time restarts there.
+
 Write decision summaries and observations, not private reasoning transcripts.
 SpecSync's `Handoff:` line says whether its own records are safe to clear; follow it
 too.

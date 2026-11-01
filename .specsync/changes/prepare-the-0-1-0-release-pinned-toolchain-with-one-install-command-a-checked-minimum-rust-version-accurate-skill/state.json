@@ -7,10 +7,11 @@
   "title": "Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log",
   "description": "Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log",
   "kind": "operations",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "5af3f78d66b40a5af42607eafd5649c9b957d2ad",
   "created_at": 1793547531,
-  "updated_at": 1793548158,
+  "updated_at": 1793548593,
   "affected_specs": [
     "cli"
   ],

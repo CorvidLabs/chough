@@ -22,6 +22,12 @@ expected = ["<explicit observable outcome>"]
 adapter = "cargo-test"             # cargo-test | fledge-task | command
 test_target = "<integration test file stem>"
 test = "<exact test name>"         # exactly one test must run for a pass
+# timeout_seconds = 600            # optional, 1 to 3600 (default 600); a timeout is recorded failed
+# env = { NO_COLOR = "1" }         # optional variables on top of the inherited environment; never secrets
+# A fledge-task binding instead: adapter = "fledge-task", task = "<fledge task>",
+#   expect_output = ["<visible text>"] (at least one fragment).
+# A command binding instead: adapter = "command", argv = ["<program>", "<arg>"],
+#   expect_output = ["<visible text>"] (at least one fragment; run without a shell).
 
 [[case]]
 id = "TC-<module>-0002"

@@ -18,7 +18,7 @@ questions; what to checkpoint; and transitions.
 | Another pass | `chough stage iterate --note "<what changed>"` | |
 | Go back | `chough stage back --to <stage> --reason "<why>"` | Lists what to refresh; history is kept |
 | Start over | `chough stage reset [--to <stage>] --reason "<why>"` | History is kept; intent, design and plan are always reachable |
-| Pause, resume | `chough stage pause --reason "<why>"`, `chough stage resume` | Resume re-checks native state and freshness |
+| Pause, resume | `chough stage pause --reason "<why>"`, `chough stage resume` | Resume only marks the stage active and checks nothing itself; then run `chough next --environment <env>` to re-check native state and freshness |
 | Side stage | `chough stage enter <side> --reason "<why>"`, then `chough stage return` | Sides: bugs, validate, librarian; the caller is restored |
 
 Going back to intent or plan after native approval means native reapproval if

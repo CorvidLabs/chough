@@ -30,7 +30,13 @@ Chough reads `summary.state`, `summary.approval_valid`, `summary.correction_vali
 for archived changes, `summary.terminal_evidence.validity`. The same prerequisite
 applies whichever command moves the stage (advance, skip, back, reset, return or
 release → done). It refuses when status is missing, cannot be decoded or reports an
-invalid approval, and when `.specsync/sdd.json` is not a valid SpecSync policy. It never runs `approve`, `review` or `finalize` for you.
+invalid approval or a correction reported invalid (`correction_valid` false), when no
+native change is recorded in the checkpoint (`refused:no-native-change`; record one
+with `chough checkpoint --native-change <id>`), and when `.specsync/sdd.json` is not a
+valid SpecSync policy. Two cases are not gated at all: with no SpecSync configuration
+the gate reads `ungated:not-configured`, and with no `.specsync/sdd.json` or one with
+`"enabled": false` it reads `ungated:sdd-disabled`. It never runs `approve`, `review`
+or `finalize` for you.
 
 ## Approval
 
