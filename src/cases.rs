@@ -21,6 +21,26 @@ pub(super) const ARTIFACTS_DIR: &str = ".chough/artifacts";
 const PROFILE: &str = "chough-testing/1";
 const FILE_LIMIT: u64 = 262_144;
 const OUTPUT_LIMIT: usize = 1_048_576;
+const ENV_ENTRIES: usize = 32;
+const ENV_NAME_LIMIT: usize = 128;
+const ENV_VALUE_LIMIT: usize = 4_096;
+/// Variables that choose what `cargo test` builds or runs, refused for cargo-test in
+/// any ASCII case, besides any `CARGO_BUILD_*` and `CARGO_TARGET_*_RUNNER` name.
+const CARGO_REFUSED: [&str; 9] = [
+    "PATH",
+    "CARGO",
+    "CARGO_HOME",
+    "RUSTC",
+    "RUSTDOC",
+    "RUSTC_WRAPPER",
+    "RUSTC_WORKSPACE_WRAPPER",
+    "RUSTFLAGS",
+    "CARGO_ENCODED_RUSTFLAGS",
+];
+const INHERITED_ENVIRONMENT: &str = "inherited environment variables were not recorded";
+const ESCAPES_REMOVED: &str =
+    "terminal escape sequences were removed before matching; the artifact keeps the raw output";
+const ESC: u8 = 0x1b;
 const TRACKS: [&str; 3] = ["functional", "copy-localization", "design-qa"];
 const METHODS: [&str; 3] = ["automated", "manual", "agent-assisted"];
 const ARTIFACT_TYPES: [&str; 6] = [
@@ -84,6 +104,10 @@ pub(super) struct Binding {
     pub(super) expect_output: Vec<String>,
     #[serde(default)]
     pub(super) timeout_seconds: Option<u64>,
+    /// Variables set for the executed command on top of the inherited environment.
+    /// Omitted when empty, so definitions without it keep their digests.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub(super) env: BTreeMap<String, String>,
 }
 
 /// A parsed case with where it came from.
@@ -288,6 +312,58 @@ fn validate_shape(module: &str, case: &Case) -> Result<()> {
     Ok(())
 }
 
+/// Whether `name` matches `[A-Za-z_][A-Za-z0-9_]*`.
+fn valid_env_name(name: &str) -> bool {
+    let mut bytes = name.bytes();
+    bytes
+        .next()
+        .is_some_and(|first| first.is_ascii_alphabetic() || first == b'_')
+        && bytes.all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
+}
+
+/// Whether a cargo-test binding may not declare `name`, because it chooses what cargo
+/// builds or runs.
+fn chooses_what_cargo_runs(name: &str) -> bool {
+    let upper = name.to_ascii_uppercase();
+    CARGO_REFUSED.contains(&upper.as_str())
+        || upper.starts_with("CARGO_BUILD_")
+        || (upper.starts_with("CARGO_TARGET_") && upper.ends_with("_RUNNER"))
+}
+
+fn validate_env(binding: &Binding) -> Result<()> {
+    ensure!(
+        binding.env.len() <= ENV_ENTRIES,
+        "env holds at most {ENV_ENTRIES} entries; {} are declared",
+        binding.env.len()
+    );
+    let mut folded = BTreeMap::new();
+    for (name, value) in &binding.env {
+        ensure!(
+            valid_env_name(name),
+            "env name {name} must match [A-Za-z_][A-Za-z0-9_]*"
+        );
+        ensure!(
+            name.len() <= ENV_NAME_LIMIT,
+            "env name {name} exceeds {ENV_NAME_LIMIT} bytes"
+        );
+        ensure!(!value.contains('\0'), "env value of {name} contains NUL");
+        ensure!(
+            value.len() <= ENV_VALUE_LIMIT,
+            "env value of {name} exceeds {ENV_VALUE_LIMIT} bytes"
+        );
+        if let Some(other) = folded.insert(name.to_ascii_uppercase(), name) {
+            bail!(
+                "env names {other} and {name} are equal ignoring ASCII case, and Windows treats them as one variable"
+            );
+        }
+        ensure!(
+            binding.adapter != "cargo-test" || !chooses_what_cargo_runs(name),
+            "env name {name} chooses what cargo builds or runs, so a cargo-test binding cannot declare it"
+        );
+    }
+    Ok(())
+}
+
 fn validate_binding(binding: &Binding) -> Result<()> {
     if let Some(timeout) = binding.timeout_seconds {
         ensure!(
@@ -302,6 +378,16 @@ fn validate_binding(binding: &Binding) -> Result<()> {
             .all(|fragment| !fragment.is_empty()),
         "expect_output fragments must not be empty"
     );
+    if let Some(fragment) = binding
+        .expect_output
+        .iter()
+        .find(|fragment| fragment.contains('\u{1b}'))
+    {
+        bail!(
+            "expect_output fragment {fragment:?} contains ESC (U+001B); output is matched with terminal escape sequences removed, so it could never match"
+        );
+    }
+    validate_env(binding)?;
     match binding.adapter.as_str() {
         "cargo-test" => {
             ensure!(
@@ -317,7 +403,7 @@ fn validate_binding(binding: &Binding) -> Result<()> {
             );
             ensure!(
                 binding.task.is_none() && binding.argv.is_empty(),
-                "cargo-test uses only test_target, test, expect_output and timeout_seconds"
+                "cargo-test uses only test_target, test, expect_output, env and timeout_seconds"
             );
         }
         "fledge-task" => {
@@ -327,7 +413,7 @@ fn validate_binding(binding: &Binding) -> Result<()> {
             );
             ensure!(
                 binding.test_target.is_none() && binding.test.is_none() && binding.argv.is_empty(),
-                "fledge-task uses only task, expect_output and timeout_seconds"
+                "fledge-task uses only task, expect_output, env and timeout_seconds"
             );
             ensure!(
                 !binding.expect_output.is_empty(),
@@ -338,7 +424,7 @@ fn validate_binding(binding: &Binding) -> Result<()> {
             non_blank("argv", &binding.argv)?;
             ensure!(
                 binding.test_target.is_none() && binding.test.is_none() && binding.task.is_none(),
-                "command uses only argv, expect_output and timeout_seconds"
+                "command uses only argv, expect_output, env and timeout_seconds"
             );
             ensure!(
                 !binding.expect_output.is_empty(),
@@ -392,6 +478,8 @@ fn check_links(root: &Path, located: &Located, tasks: &BTreeSet<String>) -> Resu
     }
     evidence::validate_criteria(root, &case.criteria).with_context(context)?;
     evidence::validate_requirements(root, &[located.contract()], &case.requirements)
+        .with_context(context)?
+        .map_err(|miss| miss.for_cases())
         .with_context(context)
 }
 
@@ -490,21 +578,93 @@ fn select(
     }))
 }
 
-/// Run a binding without a shell through the bounded runner, each stream capped at
-/// the artifact bound while reading.
-fn execute(root: &Path, argv: &[String], timeout: Duration) -> Result<Captured> {
+/// Run a binding without a shell through the bounded runner, with its declared
+/// variables set on top of the inherited environment and each stream capped at the
+/// artifact bound while reading.
+fn execute(
+    root: &Path,
+    argv: &[String],
+    env: &[(String, String)],
+    timeout: Duration,
+) -> Result<Captured> {
     let limits = Limits {
         stdout_cap: OUTPUT_LIMIT,
         stderr_cap: OUTPUT_LIMIT,
         deadline: timeout,
     };
-    run_bounded(root, argv, &limits).with_context(|| format!("cannot start {}", argv[0]))
+    run_bounded(root, argv, env, &limits).with_context(|| format!("cannot start {}", argv[0]))
+}
+
+/// Remove complete terminal escape sequences, copying everything else unchanged: CSI
+/// (`ESC [`, parameter bytes 0x30 to 0x3F, intermediate bytes 0x20 to 0x2F, one final
+/// byte 0x40 to 0x7E), OSC (`ESC ]` up to BEL or `ESC \`, before any line break) and
+/// `ESC` with one byte from 0x40 to 0x5F. A sequence that does not complete, before a
+/// line break or the end of the input, is kept. No removed byte is a line break, so
+/// every line keeps its start and the text before its first ESC. Linear: an OSC that
+/// fails to complete fails at the next line break or the end, and so does every OSC
+/// that starts before that point. Returns whether anything was removed.
+fn strip_escapes(input: &[u8]) -> (Vec<u8>, bool) {
+    let mut output = Vec::with_capacity(input.len());
+    let mut removed = false;
+    let mut unterminated_until = 0;
+    let mut index = 0;
+    while index < input.len() {
+        if input[index] == ESC {
+            let length = match input.get(index + 1) {
+                Some(b'[') => csi_length(&input[index..]),
+                Some(b']') if index >= unterminated_until => {
+                    let found = osc_length(&input[index..]);
+                    if let Err(stopped) = found {
+                        unterminated_until = index + stopped;
+                    }
+                    found.ok()
+                }
+                Some(0x40..=0x5f) if !matches!(input[index + 1], b'[' | b']') => Some(2),
+                _ => None,
+            };
+            if let Some(length) = length {
+                index += length;
+                removed = true;
+                continue;
+            }
+        }
+        output.push(input[index]);
+        index += 1;
+    }
+    (output, removed)
+}
+
+/// The length of a complete CSI sequence at the start of `bytes`.
+fn csi_length(bytes: &[u8]) -> Option<usize> {
+    let mut index = 2;
+    while matches!(bytes.get(index)?, 0x30..=0x3f) {
+        index += 1;
+    }
+    while matches!(bytes.get(index)?, 0x20..=0x2f) {
+        index += 1;
+    }
+    matches!(bytes.get(index)?, 0x40..=0x7e).then_some(index + 1)
+}
+
+/// The length of a complete OSC sequence at the start of `bytes`, or the offset of the
+/// line break or end of input that stopped it.
+fn osc_length(bytes: &[u8]) -> std::result::Result<usize, usize> {
+    let mut index = 2;
+    loop {
+        match bytes.get(index) {
+            None | Some(b'\n' | b'\r') => return Err(index),
+            Some(0x07) => return Ok(index + 1),
+            Some(&ESC) if bytes.get(index + 1) == Some(&b'\\') => return Ok(index + 2),
+            Some(_) => index += 1,
+        }
+    }
 }
 
 /// The artifact: both streams within the 1 MiB total, then a note for each stream
 /// whose bytes are not all present. Also returns the text the assertions read, which
-/// excludes those notes.
-fn artifact(execution: &Captured) -> (Vec<u8>, String) {
+/// excludes those notes and has complete terminal escape sequences removed, and
+/// whether any were.
+fn artifact(execution: &Captured) -> (Vec<u8>, String, bool) {
     const STDOUT_HEADER: &[u8] = b"--- stdout ---\n";
     const STDERR_HEADER: &[u8] = b"\n--- stderr ---\n";
     let mut output = STDOUT_HEADER.to_vec();
@@ -519,7 +679,8 @@ fn artifact(execution: &Captured) -> (Vec<u8>, String) {
         output.truncate(OUTPUT_LIMIT);
         output.extend(b"\n[truncated: captured output is limited to 1048576 bytes]\n");
     }
-    let text = String::from_utf8_lossy(&output).into_owned();
+    let (visible, escapes_removed) = strip_escapes(&output);
+    let text = String::from_utf8_lossy(&visible).into_owned();
     for (name, total, present) in [
         ("stdout", execution.stdout_total, present[0] as u64),
         ("stderr", execution.stderr_total, present[1] as u64),
@@ -537,7 +698,7 @@ fn artifact(execution: &Captured) -> (Vec<u8>, String) {
             );
         }
     }
-    (output, text)
+    (output, text, escapes_removed)
 }
 
 /// Sum "N passed" and "N failed" across cargo's "test result:" lines.
@@ -634,8 +795,13 @@ pub(super) fn run_case(
     let argv = argv_for(binding);
     let timeout = Duration::from_secs(binding.timeout_seconds.unwrap_or(600));
     let observation = observation_id(root, id, requested_id)?;
-    let execution = execute(root, &argv, timeout)?;
-    let (output, text) = artifact(&execution);
+    let env: Vec<(String, String)> = binding
+        .env
+        .iter()
+        .map(|(name, value)| (name.clone(), value.clone()))
+        .collect();
+    let execution = execute(root, &argv, &env, timeout)?;
+    let (output, text, escapes_removed) = artifact(&execution);
     let artifact = format!("{ARTIFACTS_DIR}/{observation}.log");
     ensure!(
         write_new_bytes(root, &artifact, &output)?,
@@ -722,6 +888,17 @@ pub(super) fn run_case(
             "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected"
                 .into(),
         );
+    }
+    if escapes_removed {
+        limitations.push(ESCAPES_REMOVED.into());
+    }
+    limitations.push(INHERITED_ENVIRONMENT.into());
+    if !binding.env.is_empty() {
+        // Names only: values are bound through the case digest and the committed file.
+        limitations.push(format!(
+            "declared environment set: {}",
+            binding.env.keys().cloned().collect::<Vec<_>>().join(", ")
+        ));
     }
     let outcome_word = match outcome {
         Outcome::Passed => "passed",
@@ -912,5 +1089,137 @@ pub(super) fn run(root: &Path, command: CasesCommand) -> Result<Option<i32>> {
             print_json(&value)?;
             Ok((!passed).then_some(NOT_PASSED_EXIT))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{cargo_counts, strip_escapes};
+
+    fn clean(input: &[u8]) -> (String, bool) {
+        let (bytes, removed) = strip_escapes(input);
+        (String::from_utf8(bytes).unwrap(), removed)
+    }
+
+    #[test]
+    fn complete_sequences_are_removed() {
+        for (input, expected) in [
+            (&b"\x1b[1;32mok\x1b[0m"[..], "ok"),
+            (b"\x1b[?25l\x1b[2K\x1b[1G done", " done"),
+            (b"a\x1b[ qb", "ab"),
+            (b"\x1b]0;title\x07text", "text"),
+            (b"\x1b]8;;file:///x\x1b\\link\x1b]8;;\x1b\\", "link"),
+            (b"a\x1bMb\x1b\\c\x1b_d", "abcd"),
+        ] {
+            assert_eq!(clean(input), (expected.to_string(), true), "{input:?}");
+        }
+    }
+
+    #[test]
+    fn incomplete_or_unknown_sequences_are_kept() {
+        for input in [
+            &b"plain text\n"[..],
+            b"two-byte limit \x1b7 and \x1b` stay",
+            b"esc before a break \x1b\nnext",
+            b"csi cut by a break \x1b[31\nnext",
+            b"csi with a bad byte \x1b[31\x01m",
+            b"osc cut by a break \x1b]0;title\nnext\x07",
+            b"osc cut by a return \x1b]0;title\rnext\x07",
+            b"osc cut by the end \x1b]0;title",
+            b"csi cut by the end \x1b[",
+            b"lone trailing escape \x1b",
+        ] {
+            assert_eq!(
+                clean(input),
+                (String::from_utf8(input.to_vec()).unwrap(), false),
+                "{input:?}"
+            );
+        }
+    }
+
+    /// A small deterministic generator, so the property runs the same everywhere.
+    struct Generator(u64);
+
+    impl Generator {
+        fn next(&mut self) -> u64 {
+            self.0 = self
+                .0
+                .wrapping_mul(6_364_136_223_846_793_005)
+                .wrapping_add(1_442_695_040_888_963_407);
+            self.0 >> 33
+        }
+
+        fn byte(&mut self) -> u8 {
+            // Bias towards the bytes that start, continue or end sequences.
+            const INTERESTING: &[u8] = b"\x1b\x1b\x1b[]\\\x07\n\r;0m ?@~_";
+            if self.next().is_multiple_of(2) {
+                INTERESTING[(self.next() % INTERESTING.len() as u64) as usize]
+            } else {
+                self.next() as u8
+            }
+        }
+    }
+
+    fn line_breaks(bytes: &[u8]) -> usize {
+        bytes
+            .iter()
+            .filter(|byte| matches!(byte, b'\n' | b'\r'))
+            .count()
+    }
+
+    fn result_lines(bytes: &[u8]) -> usize {
+        String::from_utf8_lossy(bytes)
+            .lines()
+            .filter(|line| line.starts_with("test result:"))
+            .count()
+    }
+
+    #[test]
+    fn cleaning_keeps_every_line_break_and_never_hides_a_test_result_line() {
+        let mut generator = Generator(0x0275_6dc2);
+        let result = b"test result: ok. 1 passed; 0 failed; 0 ignored\n";
+        let mut inputs: Vec<Vec<u8>> = (0..=255_u8).map(|byte| vec![0x1b, byte]).collect();
+        for prefix in [&b"\x1b]0;open"[..], b"\x1b[31", b"\x1b", b"\x1b]8;;x\x1b"] {
+            let mut input = prefix.to_vec();
+            input.push(b'\n');
+            input.extend(result);
+            input.extend(b"\x07");
+            input.extend(result);
+            inputs.push(input);
+        }
+        for _ in 0..2_000 {
+            let mut input = vec![];
+            for _ in 0..(generator.next() % 12) {
+                for _ in 0..(generator.next() % 24) {
+                    input.push(generator.byte());
+                }
+                if generator.next().is_multiple_of(3) {
+                    input.push(b'\n');
+                    input.extend(result);
+                }
+            }
+            inputs.push(input);
+        }
+        for input in inputs {
+            let (cleaned, _) = strip_escapes(&input);
+            assert_eq!(line_breaks(&cleaned), line_breaks(&input), "{input:?}");
+            assert!(
+                result_lines(&cleaned) >= result_lines(&input),
+                "{input:?} -> {cleaned:?}"
+            );
+            let before = cargo_counts(&String::from_utf8_lossy(&input));
+            let after = cargo_counts(&String::from_utf8_lossy(&cleaned));
+            assert!(after.0 >= before.0 && after.1 >= before.1, "{input:?}");
+        }
+    }
+
+    #[test]
+    fn cleaning_a_long_unterminated_line_is_linear() {
+        let input = b"\x1b]".repeat(500_000);
+        let started = std::time::Instant::now();
+        let (cleaned, removed) = strip_escapes(&input);
+        assert!(!removed);
+        assert_eq!(cleaned, input);
+        assert!(started.elapsed().as_secs() < 5, "{:?}", started.elapsed());
     }
 }

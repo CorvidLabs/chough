@@ -176,7 +176,7 @@ fn check_validates_links_against_native_records() {
     assert!(
         fixture
             .fails(&["cases", "check"])
-            .contains("requirement not found")
+            .contains("requirement REQ-cli-999 not found in specs/cli/requirements.md")
     );
     fixture.write(
         ".chough/cases/cli.cases.toml",

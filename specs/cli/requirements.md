@@ -39,7 +39,7 @@ Acceptance Criteria
 - Recording another observation, editing the session, committing only Chough records, an empty commit, SpecSync lifecycle bookkeeping writes and archiving a change do not self-invalidate the content identity.
 - An observation without a content identity remains stale after any new commit.
 
-### REQ-cli-005 — Validate traceability
+### REQ-cli-005
 
 The helper SHALL validate observation criterion IDs, requirement IDs and contract
 paths against their native records before recording. Trace: LIFE-1, LIFE-2, LIFE-5.

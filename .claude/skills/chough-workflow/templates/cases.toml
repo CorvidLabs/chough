@@ -1,4 +1,4 @@
-# .chough/cases/<module>.cases.toml — test-case definitions only.
+# .chough/cases/<module>.cases.toml: test-case definitions only.
 # Observations live in .chough/evidence/. Unknown fields are rejected.
 profile = "chough-testing/1"
 module = "<module>"

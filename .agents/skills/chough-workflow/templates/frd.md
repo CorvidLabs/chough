@@ -20,7 +20,7 @@ below; not human wording.
 
 ## Consequential assumptions
 
-- <Assumption> — why it matters, and what changes if it is wrong.
+- <Assumption>: why it matters, and what changes if it is wrong.
 
 ## Dependencies
 

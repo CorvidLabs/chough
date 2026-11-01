@@ -419,13 +419,80 @@ pub(super) fn validate_criteria(root: &Path, criteria: &[String]) -> Result<()> 
     Ok(())
 }
 
+/// Whether `text` holds `id` as a whole token of ID characters.
+fn holds_token(text: &str, id: &str) -> bool {
+    text.split(|c: char| !(c.is_ascii_alphanumeric() || c == '-'))
+        .any(|part| part == id)
+}
+
+/// A requirement link that none of the searched companions holds. Callers render it,
+/// because the fix for a requirement of another module differs between a cases file
+/// and `evidence add`.
+pub(super) struct RequirementMiss {
+    id: String,
+    searched: Vec<String>,
+    /// The other module whose companion holds the ID, when one does.
+    owner: Option<String>,
+}
+
+const UNRESOLVED_HINT: &str = "it may be a typo, or a requirement an approved native change adds that is not yet materialized: run specsync change check <change> before running or recording cases that link it";
+
+impl RequirementMiss {
+    fn render(&self, fix: impl Fn(&str) -> String) -> anyhow::Error {
+        let found = format!(
+            "requirement {} not found in {}",
+            self.id,
+            self.searched.join(", ")
+        );
+        match &self.owner {
+            Some(module) => anyhow::anyhow!(
+                "{found}; {} belongs to module {module} (specs/{module}/requirements.md): {}",
+                self.id,
+                fix(module)
+            ),
+            None => anyhow::anyhow!("{found}; {UNRESOLVED_HINT}"),
+        }
+    }
+
+    /// The refusal for a case definition, which binds its file's one module.
+    pub(super) fn for_cases(&self) -> anyhow::Error {
+        self.render(|module| {
+            format!(
+                "a cases file binds one module's contract, so move the case to .chough/cases/{module}.cases.toml"
+            )
+        })
+    }
+
+    /// The refusal for `evidence add`, which names its contracts.
+    fn for_evidence(&self) -> anyhow::Error {
+        self.render(|module| format!("add --contract specs/{module}/{module}.spec.md"))
+    }
+}
+
+/// The module another companion would hold `id` for: `REQ-<module>-<part>`, a valid
+/// module name whose bounded `requirements.md` is not among those searched and holds
+/// the ID as a token. Reads neither the checkpoint nor native deltas.
+fn owning_module(root: &Path, id: &str, searched: &[String]) -> Option<String> {
+    let (module, _) = id.strip_prefix("REQ-")?.rsplit_once('-')?;
+    let companion = format!("specs/{module}/requirements.md");
+    if !valid_name(module) || searched.contains(&companion) {
+        return None;
+    }
+    let path = local_path(root, &companion).ok()?;
+    let text = read_record(&path).ok()?;
+    holds_token(&text, id).then(|| module.to_string())
+}
+
 /// Confirm each requirement ID appears in the contracts' native requirements companions.
+/// The outer error is a contract that cannot be read; the inner one is the first link
+/// that no searched companion holds, which is always a refusal.
 pub(super) fn validate_requirements(
     root: &Path,
     contracts: &[String],
     requirements: &[String],
-) -> Result<()> {
+) -> Result<std::result::Result<(), RequirementMiss>> {
     let mut text = String::new();
+    let mut searched = vec![];
     for contract in contracts {
         ensure!(
             contract.starts_with("specs/") && contract.ends_with(".spec.md"),
@@ -437,26 +504,28 @@ pub(super) fn validate_requirements(
             .parent()
             .context("contract parent missing")?
             .join("requirements.md");
-        let companion = local_path(
-            root,
-            companion.to_str().context("non-UTF-8 contract companion")?,
-        )?;
+        let companion = companion.to_str().context("non-UTF-8 contract companion")?;
         text.push_str(
-            &read_record(&companion)
+            &read_record(&local_path(root, companion)?)
                 .context("contract requires its native requirements.md companion")?,
         );
         text.push('\n');
+        // Named with `/` on every platform, as contracts and messages spell paths.
+        #[cfg(windows)]
+        searched.push(companion.replace('\\', "/"));
+        #[cfg(not(windows))]
+        searched.push(companion.to_string());
     }
     for requirement in requirements {
-        ensure!(
-            requirement.starts_with("REQ-")
-                && text
-                    .split(|c: char| !(c.is_ascii_alphanumeric() || c == '-'))
-                    .any(|part| part == requirement),
-            "requirement not found in contract companions: {requirement}"
-        );
+        if !(requirement.starts_with("REQ-") && holds_token(&text, requirement)) {
+            return Ok(Err(RequirementMiss {
+                id: requirement.clone(),
+                owner: owning_module(root, requirement, &searched),
+                searched,
+            }));
+        }
     }
-    Ok(())
+    Ok(Ok(()))
 }
 
 /// Record a new observation; never replaces an existing ID.
@@ -511,7 +580,8 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         );
     }
     validate_criteria(root, &args.criteria)?;
-    validate_requirements(root, &args.contracts, &args.requirements)?;
+    validate_requirements(root, &args.contracts, &args.requirements)?
+        .map_err(|miss| miss.for_evidence())?;
     let mut case_refs = vec![];
     for id in &args.cases {
         let digest = cases::current_digest(root, id)?

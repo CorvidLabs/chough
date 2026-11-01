@@ -40,6 +40,15 @@ changes identity, while editing what it asserts makes earlier observations
   when exactly one test ran and passed; a filter matching nothing is `not-run`.
   `fledge-task` and `command` pass only with exit 0 and every `expect_output`
   fragment present. The command exits 3 when the outcome is not passed.
+- A binding may declare `env`, variables set on top of the inherited environment,
+  for example `env = { NO_COLOR = "1" }` when a tool should print plain text. Chough
+  sets none by default. `env` is committed with the case, so never put secrets in
+  it; a `cargo-test` binding cannot set names that choose what cargo builds or runs,
+  such as `PATH` or `RUSTFLAGS`. Observations name the declared variables, not their
+  values, and always state that inherited variables were not recorded.
+- `expect_output` and the `cargo-test` count read the output with complete terminal
+  escape sequences (colours, hyperlinks) removed, while the artifact keeps the raw
+  bytes. Write fragments as the visible text; a fragment containing ESC is refused.
 - Manual or agent-assisted: `chough cases record <ID> --method manual --verdict 1=pass
   --verdict 2=fail … --summary "…" --artifact <screenshot>` gives a verdict for every
   expected outcome; any fail makes the observation failed.
@@ -53,6 +62,14 @@ can decide. Keep rendered, copy and human judgments as observations with method 
 limits. Magpie can run real commands, but its generic mode judges exit codes and
 records skipped steps as passes; bind a Magpie run only through `command` with an
 `expect_output` assertion, and only where it is installed.
+
+## Artifacts
+
+Artifacts stay inside the project; there are no external artifact paths. Keep
+screenshots and other large files small. One may be ignored by Git: the observation
+keeps its fingerprint, and a clone without the file reads `stale-artifact`, never
+passed. Do not use Git LFS for them while SpecSync `change check` refuses tracked LFS
+files (CorvidLabs/spec-sync#789).
 
 ## Retention
 
