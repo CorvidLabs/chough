@@ -1,0 +1,29 @@
+---
+id: make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound
+state: draft
+type: feature
+base_commit: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
+---
+
+# Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace
+
+## Intent
+
+Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace
+
+## Affected Canonical Specs
+
+- `cli`
+
+## Acceptance Criteria
+
+- For one timing report each distinct native change ID is passed to `specsync change status` at most once: with the checkpoint change also present in the archive, a counting stub records exactly one read for it and at most ten archived reads in total.
+- Archived native history is read only when the report shows it (`--cycle all` with no `--stage`, `--case` or `--bug` filter). This is a deliberate change of output semantics: today `native` always carries history regardless of filters. Filtered reports emit `native.history` null with `native.history_selection` state `skipped-by-filter` naming the filters, and the text says so; unfiltered reports emit `selected` with read, reused, skipped and budget counts. Stage estimates come only from transitions and are identical either way.
+- One whole-report native budget, CHOUGH_TIMING_NATIVE_BUDGET_SECONDS (default 120, whole seconds 1 to 3600, invalid values refused before any native read), caps total native wait in `chough timing` only. A read in flight gets at most the remaining budget; reads not started are reported not-read with reason budget-exhausted and unknown times. Slow, hung, failing and malformed stub responses stay timed-out, failed or invalid-output, and no descendant process outlives the command.
+- With CHOUGH_TRACE=1 every bounded native read writes one stderr line with program, arguments, elapsed milliseconds and final state, and timing writes per-phase durations. Without it stdout and stderr are byte-identical to the untraced output, and the trace never changes a report, record or exit code.
+- Stage moves, `chough next` and `chough status` keep their single authoritative native read under the existing per-read deadline, with no budget, filtering or reuse. Missing, timed-out, failed or invalid native evidence still refuses gated moves. This change does not make that single read faster: next and status stay bound by SpecSync's archived-status latency (one read measured at 49.954 s).
+- Coverage extends the existing TC-cli-0089 and TC-cli-0100 (adding REQ-cli-023) plus named Rust regressions in tests/timing.rs; no new case number is allocated. Failure-first and post-fix observations use explicit IDs that carry the case, the purpose and the base revision. Before and after release-build measurements on the same inputs (cold and warm) cover focused next, full status, filtered and unfiltered timing and prune preview, with native call counts and completion or timeout state. cargo fmt, Clippy with warnings denied, full cargo test and `fledge lanes run verify` pass with CI-matching tools.
+
+## No-spec Rationale
+
+Not applicable
