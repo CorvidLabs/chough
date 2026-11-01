@@ -9,6 +9,26 @@ use sha2::{Digest, Sha256};
 use std::fs;
 use std::path::Path;
 
+fn assert_new_bug_id(id: &str) {
+    assert!(id.len() <= 100, "bug ID exceeds 100 bytes: {id}");
+    let rest = id.strip_prefix("BUG-").expect("new bug ID prefix");
+    let (slug, digest) = rest.rsplit_once('-').expect("new bug ID separator");
+    assert!(!slug.is_empty() && slug.len() <= 71, "invalid slug: {id}");
+    assert!(
+        slug.bytes()
+            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-'),
+        "slug is not lowercase ASCII: {id}"
+    );
+    assert!(!slug.starts_with('-') && !slug.ends_with('-') && !slug.contains("--"));
+    assert_eq!(digest.len(), 24, "digest length is not 24: {id}");
+    assert!(
+        digest
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
+        "digest is not lowercase hex: {id}"
+    );
+}
+
 #[test]
 fn standing_preferences_need_a_source_and_stay_separate_from_consent() {
     let fixture = Fixture::new();
@@ -126,11 +146,13 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
             .starts_with("Proposed only, not run: specsync change new")
     );
     assert_eq!(run["captured_locally"].as_array().unwrap().len(), 1);
+    let bug_id = run["captured_locally"][0].as_str().unwrap().to_string();
+    assert_new_bug_id(&bug_id);
 
     // A fresh process still finds the finding with every failing observation.
     let bugs = fixture.ok(&["bug", "list"]);
     assert_eq!(bugs["bugs"].as_array().unwrap().len(), 1);
-    let bug = fixture.ok(&["bug", "show", "BUG-0001"]);
+    let bug = fixture.ok(&["bug", "show", &bug_id]);
     assert_eq!(bug["bug"]["observations"].as_array().unwrap().len(), 3);
     assert_eq!(bug["verification"], "reproduced");
 
@@ -151,6 +173,11 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
     assert_eq!(resumed["run"]["state"], "complete");
     assert_eq!(resumed["run"]["times"], 2);
     assert_eq!(resumed["run"]["completed"], 2);
+    assert_eq!(resumed["captured_locally"][0], bug_id);
+    let appended = fixture.ok(&["bug", "show", &bug_id]);
+    assert_eq!(appended["bug"]["id"], bug_id);
+    assert_eq!(appended["bug"]["observations"].as_array().unwrap().len(), 5);
+    assert!(fixture.exists(&format!(".chough/bugs/{bug_id}.json")));
     assert!(!fixture.exists(".chough/validation.stop"));
 
     // A new objective ends the run consent, so repetition is refused again.
@@ -351,7 +378,7 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
         );
     }
 
-    fixture.ok(&[
+    let added = fixture.ok(&[
         "bug",
         "add",
         "--title",
@@ -369,9 +396,11 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
         "--scope",
         "out-of-scope",
     ]);
+    let id = added["id"].as_str().unwrap();
+    assert_new_bug_id(id);
     fixture.ok(&["library", "index"]);
     let index = fixture.read("library/INDEX.md");
-    assert!(index.contains("BUG-0001 Prototype focus ring missing"));
+    assert!(index.contains(&format!("{id} Prototype focus ring missing")));
     assert!(index.contains("[design/prototype/](../design/prototype/) with COMPANION.md"));
     assert!(index.contains("Approved version 1"));
     assert!(

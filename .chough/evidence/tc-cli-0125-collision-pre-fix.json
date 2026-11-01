@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0125-collision-pre-fix",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links for TC-cli-0125: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0125-collision-pre-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0125-collision-pre-fix.log": "89f6de1a01637efc42def296dac4cd7d370cd42c8cf622e055bc49965aec7cda"
+  },
+  "observed_at_unix_seconds": 1793569221,
+  "snapshot": {
+    "revision": "041531cdeecc3447523ddf459f46258070e29247",
+    "dirty": true,
+    "fingerprint": "83ed3e0a62bc0d6f623074a2d6390912b5c6480545aac644c8e400d506d02d36",
+    "content": "617c5be40538bf7444d95cdff219387e5557e8676bd0cd910223be72d6b0752f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0125",
+      "digest": "8f19cd1848d96598121e3c64b3a420404956a7fd42ee5ac7117aedc1462c083a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

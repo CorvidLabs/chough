@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "BUG-0026",
+  "title": "Independent roots collide at the same legacy bug high-water mark",
+  "symptom": "Distinct manual and automatic reports receive identical IDs in independent roots",
+  "trigger": "Seed independent roots at BUG-0019, then create distinct manual reports in one pair and distinct automatic validation-capture reports in another pair",
+  "expected": "Each distinct report receives a collision-resistant identity without changing legacy BUG-0019",
+  "actual": "At reproduction revision 041531cdeecc3447523ddf459f46258070e29247, manual IDs were BUG-0020 and BUG-0020, and automatic IDs were BUG-0020 and BUG-0020, at equal legacy high-water marks",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "cases": [
+    "TC-cli-0125"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "041531cdeecc3447523ddf459f46258070e29247",
+  "steps": [
+    "cargo test --locked --test bugs -- --exact independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links",
+    "cargo run --locked -- cases run TC-cli-0125 --environment local-macos-arm64 --observation-id tc-cli-0125-collision-pre-fix"
+  ],
+  "fixture": null,
+  "observations": [
+    "tc-cli-0125-collision-pre-fix",
+    "tc-cli-0125-collision-post-fix",
+    "tc-cli-0125-collision-final"
+  ],
+  "impact": "Independent branches can allocate the same bug ID for different records, causing merge conflicts and ambiguous durable references",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "TC-cli-0125 pre-fix reproduction",
+  "notes": [
+    {
+      "at_unix_seconds": 1793571790,
+      "text": "status: open -> verified. Post-fix TC-cli-0125 passed after the retained independent-root collision; distinct manual and automatic reports received new-form IDs, legacy behavior and cross-form links passed",
+      "observations": [
+        "tc-cli-0125-collision-post-fix"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793571963,
+      "text": "Final-content TC-cli-0125 passed with the same independent-root collision coverage after all source, documentation and native task edits",
+      "observations": [
+        "tc-cli-0125-collision-final"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793569260,
+  "updated_at_unix_seconds": 1793571963
+}

@@ -2019,3 +2019,21 @@ expected = ["tests/stages.rs::a_comparison_that_cannot_be_made_refuses_with_nati
 adapter = "cargo-test"
 test_target = "stages"
 test = "a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable"
+
+[[case]]
+id = "TC-cli-0125"
+title = "Independent roots allocate distinct bug IDs and retain legacy compatibility"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links"

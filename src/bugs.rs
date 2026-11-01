@@ -9,6 +9,7 @@ use anyhow::{Context, Result, bail, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
 use std::path::Path;
 
@@ -33,6 +34,8 @@ const CLASSES: [&str; 6] = [
     "evidence-gap",
 ];
 const DUPLICATE_THRESHOLD: f64 = 0.5;
+const BUG_ID_DOMAIN: &[u8] = b"chough/bug-id/v1";
+const BUG_SLUG_LIMIT: usize = 71;
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -89,6 +92,108 @@ impl Bug {
     pub(super) fn is_open(&self) -> bool {
         !CLOSED.contains(&self.status.as_str())
     }
+}
+
+#[derive(Serialize)]
+struct CreationPayload<'a> {
+    schema_version: u32,
+    title: &'a str,
+    symptom: &'a str,
+    trigger: &'a str,
+    expected: &'a str,
+    actual: &'a str,
+    criteria: &'a [String],
+    requirements: &'a [String],
+    cases: &'a [String],
+    environment: &'a str,
+    revision: &'a Option<String>,
+    steps: &'a [String],
+    fixture: &'a Option<String>,
+    observations: &'a [String],
+    impact: &'a str,
+    classification: &'a str,
+    scope: &'a str,
+    status: &'a str,
+    regression_baseline: &'a Option<String>,
+    duplicate_of: &'a Option<String>,
+    related: &'a [String],
+    source: &'a str,
+    notes: &'a [Note],
+    created_at_unix_seconds: u64,
+}
+
+impl<'a> From<&'a Bug> for CreationPayload<'a> {
+    fn from(bug: &'a Bug) -> Self {
+        Self {
+            schema_version: bug.schema_version,
+            title: &bug.title,
+            symptom: &bug.symptom,
+            trigger: &bug.trigger,
+            expected: &bug.expected,
+            actual: &bug.actual,
+            criteria: &bug.criteria,
+            requirements: &bug.requirements,
+            cases: &bug.cases,
+            environment: &bug.environment,
+            revision: &bug.revision,
+            steps: &bug.steps,
+            fixture: &bug.fixture,
+            observations: &bug.observations,
+            impact: &bug.impact,
+            classification: &bug.classification,
+            scope: &bug.scope,
+            status: &bug.status,
+            regression_baseline: &bug.regression_baseline,
+            duplicate_of: &bug.duplicate_of,
+            related: &bug.related,
+            source: &bug.source,
+            notes: &bug.notes,
+            created_at_unix_seconds: bug.created_at_unix_seconds,
+        }
+    }
+}
+
+fn canonical_creation_payload(bug: &Bug) -> Result<Vec<u8>> {
+    Ok(serde_json::to_vec(&CreationPayload::from(bug))?)
+}
+
+fn title_slug(title: &str) -> String {
+    let mut slug = String::new();
+    let mut separated = false;
+    for byte in title.bytes() {
+        let byte = byte.to_ascii_lowercase();
+        if byte.is_ascii_lowercase() || byte.is_ascii_digit() {
+            if separated && !slug.is_empty() {
+                slug.push('-');
+            }
+            separated = false;
+            slug.push(char::from(byte));
+        } else {
+            separated = true;
+        }
+    }
+    if slug.is_empty() {
+        slug.push_str("bug");
+    }
+    slug.truncate(BUG_SLUG_LIMIT);
+    while slug.ends_with('-') {
+        slug.pop();
+    }
+    slug
+}
+
+fn generate_bug_id(bug: &Bug) -> Result<String> {
+    let payload = canonical_creation_payload(bug)?;
+    let mut hasher = Sha256::new();
+    hasher.update(BUG_ID_DOMAIN);
+    hasher.update([0]);
+    hasher.update(payload);
+    let digest = hasher.finalize();
+    let suffix = digest[..12]
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    Ok(format!("BUG-{}-{suffix}", title_slug(&bug.title)))
 }
 
 #[derive(clap::Args)]
@@ -207,7 +312,10 @@ pub(super) fn load_all(root: &Path) -> Result<Vec<Bug>> {
 }
 
 fn load(root: &Path, id: &str) -> Result<Bug> {
-    ensure!(valid_bug_id(id), "bug IDs look like BUG-0001");
+    ensure!(
+        valid_bug_id(id),
+        "bug IDs look like BUG-0001 or BUG-title-0123456789abcdef01234567"
+    );
     load_all(root)?
         .into_iter()
         .find(|bug| bug.id == id)
@@ -215,8 +323,30 @@ fn load(root: &Path, id: &str) -> Result<Bug> {
 }
 
 fn valid_bug_id(id: &str) -> bool {
-    id.strip_prefix("BUG-")
-        .is_some_and(|number| number.len() == 4 && number.bytes().all(|byte| byte.is_ascii_digit()))
+    let Some(rest) = id.strip_prefix("BUG-") else {
+        return false;
+    };
+    if rest.len() == 4 && rest.bytes().all(|byte| byte.is_ascii_digit()) {
+        return true;
+    }
+    if id.len() > 100 {
+        return false;
+    }
+    let Some((slug, digest)) = rest.rsplit_once('-') else {
+        return false;
+    };
+    !slug.is_empty()
+        && slug.len() <= BUG_SLUG_LIMIT
+        && !slug.starts_with('-')
+        && !slug.ends_with('-')
+        && !slug.contains("--")
+        && slug
+            .bytes()
+            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
+        && digest.len() == 24
+        && digest
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
 /// A hint for a value that belongs to the other of `--scope` and `--classification`.
@@ -435,14 +565,17 @@ fn search(
     Ok(matches.into_iter().map(|(_, value)| value).collect())
 }
 
-fn next_id(root: &Path) -> Result<String> {
-    let highest = load_all(root)?
-        .iter()
-        .filter_map(|bug| bug.id[4..].parse::<u32>().ok())
-        .max()
-        .unwrap_or(0);
-    ensure!(highest < 9_999, "bug ID space exhausted");
-    Ok(format!("BUG-{:04}", highest + 1))
+fn create(root: &Path, mut bug: Bug) -> Result<Bug> {
+    bug.id = generate_bug_id(&bug)?;
+    save(root, &bug, true)?;
+    Ok(bug)
+}
+
+#[cfg(test)]
+fn create_with_id(root: &Path, mut bug: Bug, id: &str) -> Result<Bug> {
+    bug.id = id.into();
+    save(root, &bug, true)?;
+    Ok(bug)
 }
 
 fn save(root: &Path, bug: &Bug, new: bool) -> Result<()> {
@@ -450,12 +583,26 @@ fn save(root: &Path, bug: &Bug, new: bool) -> Result<()> {
     let name = format!("{BUGS_DIR}/{}.json", bug.id);
     let content = serde_json::to_string_pretty(bug)? + "\n";
     if new {
-        ensure!(
-            write_new(root, &name, &content)?,
-            "bug {} already exists",
+        let created = match write_new(root, &name, &content) {
+            Ok(created) => created,
+            Err(error)
+                if error
+                    .downcast_ref::<std::io::Error>()
+                    .is_some_and(|error| error.kind() == std::io::ErrorKind::AlreadyExists) =>
+            {
+                false
+            }
+            Err(error) => return Err(error),
+        };
+        if created {
+            return Ok(());
+        }
+        let existing = read_record(&local_path(root, &name)?)?;
+        ensure!(existing != content, "bug {} already exists", bug.id);
+        bail!(
+            "bug ID collision: {} already exists with different content; refusing to overwrite or use numeric fallback",
             bug.id
         );
-        Ok(())
     } else {
         write_replace(root, &name, &content)
     }
@@ -491,7 +638,7 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
     }
     let bug = Bug {
         schema_version: 1,
-        id: next_id(root)?,
+        id: String::new(),
         title: format!("{} failed during {}", finding.case, finding.source),
         symptom: finding.summary.into(),
         trigger: format!("Running case {}", finding.case),
@@ -520,7 +667,7 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
         created_at_unix_seconds: at,
         updated_at_unix_seconds: at,
     };
-    save(root, &bug, true)?;
+    let bug = create(root, bug)?;
     Ok(bug.id)
 }
 
@@ -559,7 +706,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
     }
     let bug = Bug {
         schema_version: 1,
-        id: next_id(root)?,
+        id: String::new(),
         title: args.title,
         symptom: args.symptom,
         trigger: args.trigger,
@@ -585,9 +732,8 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         created_at_unix_seconds: at,
         updated_at_unix_seconds: at,
     };
-    validate(&bug)?;
     check_regression(root, &bug)?;
-    save(root, &bug, true)?;
+    let bug = create(root, bug)?;
     Ok(json!({
         "schema_version": 1,
         "recorded": format!("{BUGS_DIR}/{}.json", bug.id),
@@ -759,7 +905,7 @@ pub(super) fn open_backlog(root: &Path) -> Result<Vec<Value>> {
         .collect()
 }
 
-/// Every observation each bug links, whatever its status, labeled `BUG-NNNN <status>`:
+/// Every observation each bug links, whatever its status, labeled `<bug-id> <status>`:
 /// its observations, note observations and regression baseline.
 pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<String>)>> {
     Ok(load_all(root)?
@@ -781,7 +927,7 @@ pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<Str
         .collect())
 }
 
-/// Each bug's fixture path, whatever its status, labeled `BUG-NNNN <status>`.
+/// Each bug's fixture path, whatever its status, labeled `<bug-id> <status>`.
 pub(super) fn fixture_references(root: &Path) -> Result<Vec<(String, String)>> {
     Ok(load_all(root)?
         .into_iter()
@@ -880,5 +1026,294 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
             print!("{}", report(root, &bug)?);
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use std::sync::{Arc, Barrier};
+
+    fn bug(title: &str) -> Bug {
+        Bug {
+            schema_version: 1,
+            id: String::new(),
+            title: title.into(),
+            symptom: "symptom".into(),
+            trigger: "trigger".into(),
+            expected: "expected".into(),
+            actual: "actual".into(),
+            criteria: vec!["FLOW-8".into()],
+            requirements: vec!["REQ-cli-012".into()],
+            cases: vec!["TC-cli-0125".into()],
+            environment: "test-local".into(),
+            revision: Some("revision".into()),
+            steps: vec!["step".into()],
+            fixture: None,
+            observations: vec![],
+            impact: "impact".into(),
+            classification: "product-defect".into(),
+            scope: "in-scope".into(),
+            status: "open".into(),
+            regression_baseline: None,
+            duplicate_of: None,
+            related: vec![],
+            source: "unit test".into(),
+            notes: vec![],
+            created_at_unix_seconds: 1_793_000_000,
+            updated_at_unix_seconds: 1_793_000_001,
+        }
+    }
+
+    fn known_answer_bug() -> Bug {
+        let mut bug = bug("  Fix   LOGIN... now!  ");
+        bug.symptom = "Quote \" and newline\n".into();
+        bug.trigger = "Backslash \\ and tab\t".into();
+        bug.expected = "Expected café".into();
+        bug.actual = "Actual \u{1}".into();
+        bug.criteria = vec!["FLOW-8".into(), "LIFE-5".into()];
+        bug.environment = "local-macos-arm64".into();
+        bug.revision = Some("abc123".into());
+        bug.steps = vec!["first".into(), "second".into()];
+        bug.fixture = Some("tests/fixtures/legacy.json".into());
+        bug.observations = vec!["observation-1".into()];
+        bug.impact = "High".into();
+        bug.regression_baseline = Some("baseline-1".into());
+        bug.related = vec!["BUG-0001".into()];
+        bug.source = "known answer".into();
+        bug.notes = vec![Note {
+            at_unix_seconds: 42,
+            text: "note \"quoted\"\n".into(),
+            observations: vec!["note-observation".into()],
+        }];
+        bug
+    }
+
+    #[test]
+    fn slug_normalization_is_ascii_bounded_and_nonempty() {
+        for (title, expected) in [
+            ("  Fix   LOGIN... now!  ", "fix-login-now"),
+            ("already--hyphenated", "already-hyphenated"),
+            ("ASCII_ separators!!!", "ascii-separators"),
+            ("café", "caf"),
+            ("猫", "bug"),
+            ("!!!", "bug"),
+            ("", "bug"),
+        ] {
+            assert_eq!(title_slug(title), expected, "title: {title:?}");
+        }
+
+        let seventy_one = "a".repeat(71);
+        let id = generate_bug_id(&bug(&seventy_one)).unwrap();
+        assert_eq!(id.len(), 100);
+        assert_eq!(&id[4..75], seventy_one);
+        assert_eq!(id.as_bytes()[75], b'-');
+        assert_eq!(id.len() - 76, 24);
+        assert!(valid_bug_id(&id));
+
+        let longer = generate_bug_id(&bug(&"a".repeat(72))).unwrap();
+        assert_eq!(&longer[4..75], seventy_one);
+        assert_eq!(longer.len(), 100);
+
+        let trimmed = title_slug(&format!("{}-b", "a".repeat(70)));
+        assert_eq!(trimmed, "a".repeat(70));
+        assert!(!trimmed.ends_with('-'));
+    }
+
+    #[test]
+    fn canonical_payload_and_digest_match_fixed_known_answer() {
+        const PAYLOAD: &str = r#"{"schema_version":1,"title":"  Fix   LOGIN... now!  ","symptom":"Quote \" and newline\n","trigger":"Backslash \\ and tab\t","expected":"Expected café","actual":"Actual \u0001","criteria":["FLOW-8","LIFE-5"],"requirements":["REQ-cli-012"],"cases":["TC-cli-0125"],"environment":"local-macos-arm64","revision":"abc123","steps":["first","second"],"fixture":"tests/fixtures/legacy.json","observations":["observation-1"],"impact":"High","classification":"product-defect","scope":"in-scope","status":"open","regression_baseline":"baseline-1","duplicate_of":null,"related":["BUG-0001"],"source":"known answer","notes":[{"at_unix_seconds":42,"text":"note \"quoted\"\n","observations":["note-observation"]}],"created_at_unix_seconds":1793000000}"#;
+        const SUFFIX: &str = "051630f784909bd78369ee90";
+
+        let bug = known_answer_bug();
+        assert_eq!(
+            canonical_creation_payload(&bug).unwrap(),
+            PAYLOAD.as_bytes()
+        );
+        let mut input = BUG_ID_DOMAIN.to_vec();
+        input.push(0);
+        input.extend(PAYLOAD.as_bytes());
+        let digest = Sha256::digest(input);
+        let suffix = digest[..12]
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        assert_eq!(suffix, SUFFIX);
+        assert_eq!(
+            generate_bug_id(&bug).unwrap(),
+            "BUG-fix-login-now-051630f784909bd78369ee90"
+        );
+    }
+
+    #[test]
+    fn canonical_payload_frames_adjacent_fields_and_creation_is_deterministic() {
+        let left = bug("Same title");
+        let mut right = left.clone();
+        right.id = "excluded-from-the-payload".into();
+        right.updated_at_unix_seconds += 100;
+        assert_eq!(
+            generate_bug_id(&left).unwrap(),
+            generate_bug_id(&right).unwrap()
+        );
+
+        let mut left = bug("Same title");
+        left.symptom = "ab".into();
+        left.trigger = "c".into();
+        let mut right = left.clone();
+        right.symptom = "a".into();
+        right.trigger = "bc".into();
+        assert_ne!(
+            canonical_creation_payload(&left).unwrap(),
+            canonical_creation_payload(&right).unwrap()
+        );
+        assert_ne!(
+            generate_bug_id(&left).unwrap(),
+            generate_bug_id(&right).unwrap()
+        );
+
+        let original_slug = title_slug(&left.title);
+        right = left.clone();
+        right.actual = "different creation content".into();
+        let left_id = generate_bug_id(&left).unwrap();
+        let right_id = generate_bug_id(&right).unwrap();
+        assert_ne!(left_id, right_id);
+        assert!(left_id.starts_with(&format!("BUG-{original_slug}-")));
+        assert!(right_id.starts_with(&format!("BUG-{original_slug}-")));
+    }
+
+    #[test]
+    fn bug_id_validation_accepts_legacy_and_generated_forms_only() {
+        for id in [
+            "BUG-0000",
+            "BUG-0019",
+            "BUG-9999",
+            "BUG-bug-0123456789abcdef01234567",
+            "BUG-title-with-runs-0123456789abcdef01234567",
+        ] {
+            assert!(valid_bug_id(id), "accepted ID: {id}");
+        }
+        assert!(valid_bug_id(
+            &generate_bug_id(&bug("A valid title")).unwrap()
+        ));
+
+        let overlong = format!("BUG-{}-{}", "a".repeat(72), "0".repeat(24));
+        for id in [
+            "BUG-000",
+            "BUG-00000",
+            "bug-0001",
+            "BUG--0123456789abcdef01234567",
+            "BUG-bug-0123456789abcdef0123456",
+            "BUG-bug-0123456789abcdef012345678",
+            "BUG-bug-0123456789abcdef0123456A",
+            "BUG-Title-0123456789abcdef01234567",
+            "BUG-title--run-0123456789abcdef01234567",
+            "BUG--title-0123456789abcdef01234567",
+            "BUG-title--0123456789abcdef01234567",
+            &overlong,
+        ] {
+            assert!(!valid_bug_id(id), "refused ID: {id}");
+        }
+    }
+
+    #[test]
+    fn same_id_different_content_is_refused_without_overwrite_or_numeric_fallback() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        let original = bug("Collision");
+        let id = "BUG-collision-000000000000000000000000";
+        create_with_id(root, original.clone(), id).unwrap();
+        let path = root.join(format!("{BUGS_DIR}/{id}.json"));
+        let before = fs::read(&path).unwrap();
+
+        let mut different = original.clone();
+        different.actual = "different content at the selected path".into();
+        let error = create_with_id(root, different, id)
+            .err()
+            .unwrap()
+            .to_string();
+        assert!(error.contains("bug ID collision"), "{error}");
+        assert!(error.contains("different content"), "{error}");
+        assert!(error.contains("numeric fallback"), "{error}");
+        assert_eq!(fs::read(&path).unwrap(), before);
+        assert_eq!(
+            record_names(root, BUGS_DIR).unwrap(),
+            vec![format!("{id}.json")]
+        );
+
+        let error = create_with_id(root, original, id)
+            .err()
+            .unwrap()
+            .to_string();
+        assert!(error.contains("already exists"), "{error}");
+        assert!(!error.contains("bug ID collision:"), "{error}");
+        assert_eq!(fs::read(&path).unwrap(), before);
+    }
+
+    #[test]
+    fn concurrent_create_new_has_one_winner_and_never_replaces_it() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path().to_path_buf();
+        let id = "BUG-race-000000000000000000000000";
+        let first = bug("Race");
+        let mut second = first.clone();
+        second.actual = "a different racing report".into();
+        let expected = [first.clone(), second.clone()].map(|mut bug| {
+            bug.id = id.into();
+            serde_json::to_string_pretty(&bug).unwrap() + "\n"
+        });
+        let barrier = Arc::new(Barrier::new(2));
+        let handles = [first, second].map(|bug| {
+            let root = root.clone();
+            let barrier = Arc::clone(&barrier);
+            std::thread::spawn(move || {
+                barrier.wait();
+                create_with_id(&root, bug, id)
+            })
+        });
+        let results = handles.map(|handle| handle.join().unwrap());
+        assert_eq!(results.iter().filter(|result| result.is_ok()).count(), 1);
+        let error = results
+            .iter()
+            .find_map(|result| result.as_ref().err())
+            .unwrap()
+            .to_string();
+        assert!(error.contains("bug ID collision"), "{error}");
+        assert!(error.contains("different content"), "{error}");
+        let stored = fs::read_to_string(root.join(format!("{BUGS_DIR}/{id}.json"))).unwrap();
+        assert!(expected.contains(&stored));
+        assert_eq!(
+            record_names(&root, BUGS_DIR).unwrap(),
+            vec![format!("{id}.json")]
+        );
+    }
+
+    #[test]
+    fn updates_keep_the_generated_id_and_filename_after_creation_content_changes() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        let created = create(root, bug("Original title")).unwrap();
+        let id = created.id.clone();
+        let suffix = id.rsplit_once('-').unwrap().1.to_string();
+        let mut changed = created;
+        changed.title = "Changed title".into();
+        changed.actual = "Changed actual behavior".into();
+        changed.status = "investigating".into();
+        changed.notes.push(Note {
+            at_unix_seconds: 1_793_000_100,
+            text: "Updated without identity recomputation".into(),
+            observations: vec!["observation-2".into()],
+        });
+        save(root, &changed, false).unwrap();
+        let loaded = load(root, &id).unwrap();
+        assert_eq!(loaded.id, id);
+        assert_eq!(loaded.title, "Changed title");
+        assert_eq!(loaded.id.rsplit_once('-').unwrap().1, suffix);
+        assert!(root.join(format!("{BUGS_DIR}/{id}.json")).is_file());
+        assert!(
+            !root
+                .join(".chough/bugs/BUG-changed-title-000000000000000000000000.json")
+                .exists()
+        );
     }
 }

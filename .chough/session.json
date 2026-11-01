@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -114,7 +114,10 @@
     "Integrated main's REQ-cli-021 new-cycle behavior, retained the BUG-0025 failure-first evidence, corrected the Kimi docs and recorded focused passes",
     "Final-content TC-cli-0105, TC-cli-0106, TC-cli-0121 and TC-cli-0122 passed; BUG-0025 has a retained failure followed by later passes",
     "The final full verify lane passed all 9 steps in 74.258 seconds with CI-matching tools after the final-content case passes",
-    "Native integration change archived at a91e066 after 0xLeif authorized finalization; Chough advanced from accept to done"
+    "Native integration change archived at a91e066 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "Recorded the independent-root collision before implementation, implemented dual-form collision-resistant bug IDs, and passed focused tests and Clippy after the race-diagnostic fix",
+    "Materialized REQ-cli-012, recorded tc-cli-0125-collision-post-fix after the retained failure, and verified BUG-0026",
+    "The full verify lane passed all 9 steps in 79.865 seconds and the exercise created and verified a real slug-based bug ID; final TC-cli-0125 also passed"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -149,7 +152,10 @@
     "tc-cli-0105-integration-final",
     "tc-cli-0106-integration-final",
     "tc-cli-0121-integration-final",
-    "tc-cli-0122-integration-final"
+    "tc-cli-0122-integration-final",
+    "tc-cli-0125-collision-pre-fix",
+    "tc-cli-0125-collision-post-fix",
+    "tc-cli-0125-collision-final"
   ],
   "bugs": [
     "BUG-0001",
@@ -162,12 +168,13 @@
     "BUG-0022",
     "BUG-0023",
     "BUG-0024",
-    "BUG-0025"
+    "BUG-0025",
+    "BUG-0026"
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of use-collision-resistant-slug-identities-for-new-bugs"
+    "Implementation review of use-collision-resistant-slug-identities-for-new-bugs"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to approve the bug identity scope; do not change the allocator before native approval"
+  "next_action": "0xLeif to review the bug identity implementation and evidence; no native review or finalization before that decision"
 }

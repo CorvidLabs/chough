@@ -20,6 +20,12 @@ native change package until it is archived.
   TC-cli-0121, TC-cli-0122, focused Rust tests and the local verify and pre-push
   lanes passed. BUG-0025 is verified from the later pass. Original observations
   remain retained, and no fresh Kimi run or hosted check is claimed.
+- [x] Complete `use-collision-resistant-slug-identities-for-new-bugs`: implement the
+  shared creation generator and immutable new-form IDs, retain schema 1 legacy
+  records and cross-form links, refuse same-ID different-content creation without
+  overwrite or numeric fallback, and finish the public documentation. TC-cli-0125
+  retains the failed `tc-cli-0125-collision-pre-fix` and strictly later passed
+  `tc-cli-0125-collision-post-fix` on `local-macos-arm64`; BUG-0026 is verified.
 
 Open follow-ups, not part of the approved change:
 

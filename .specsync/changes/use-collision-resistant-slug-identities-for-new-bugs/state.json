@@ -7,10 +7,11 @@
   "title": "Use collision-resistant slug identities for new bugs",
   "description": "Use collision-resistant slug identities for new bugs",
   "kind": "feature",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "7357d41ab92e737fea1ad1e733c38f5447226fb9",
   "created_at": 1793567525,
-  "updated_at": 1793567578,
+  "updated_at": 1793571967,
   "affected_specs": [
     "cli"
   ],

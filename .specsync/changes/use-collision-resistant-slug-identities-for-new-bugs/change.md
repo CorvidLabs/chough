@@ -1,6 +1,6 @@
 ---
 id: use-collision-resistant-slug-identities-for-new-bugs
-state: draft
+state: implementing
 type: feature
 base_commit: 7357d41ab92e737fea1ad1e733c38f5447226fb9
 ---
