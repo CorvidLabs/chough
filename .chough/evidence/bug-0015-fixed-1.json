@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "id": "bug-0015-fixed-1",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "After the fix, a new observation stays current-observation after committing only .chough/, after an empty commit and after committing edits already present when it ran; restoring a deleted file stales it",
+  "artifacts": [
+    ".chough/artifacts/bug-0015-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0015-fixed-reproduction.log": "2a5503e27555231221af92c2b4c286ecc4e6ed3c983586a2891232d45a3979bb"
+  },
+  "observed_at_unix_seconds": 1793497232,
+  "snapshot": {
+    "revision": "e806f783b34792c76961edfb24d42aa73764e6fa",
+    "dirty": false,
+    "fingerprint": "d66a35cb52a1c68205aa77f49cff92943c51c8ae43863ee6ffdd6452f35184da",
+    "content": "7eb66be2577f9e78895e0a93951cf202ab0bfe83611034719cfce6dfd4190e27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0067",
+      "digest": "ae0a214ac7ea18f81c98ced40f22340666a1b039f1532c3a539fdcaef2e9c7ac"
+    },
+    {
+      "id": "TC-cli-0068",
+      "digest": "5f73ff87c94ac173fe495b26f673966d6a350f24b5ba74d7fac9a86ac6ae8075"
+    }
+  ],
+  "method": "manual",
+  "limitations": [
+    "Rerun of the reproduction tests at e806f78; the regression cases are TC-cli-0067 and TC-cli-0068"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "id": "bug-0014-fixed-1",
+  "criteria": [
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "After the fix, an older or same-second pass leaves the bug reproduced on every surface and verified is refused naming the failure; a later pass verifies; with no linked failure verified is refused",
+  "artifacts": [
+    ".chough/artifacts/bug-0014-fixed-reproduction.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0014-fixed-reproduction.log": "e7a72878f9241ac363bc16d9f22d895dde40b34f0b329d6bb71ff95c8fb1a443"
+  },
+  "observed_at_unix_seconds": 1793497233,
+  "snapshot": {
+    "revision": "e806f783b34792c76961edfb24d42aa73764e6fa",
+    "dirty": false,
+    "fingerprint": "d66a35cb52a1c68205aa77f49cff92943c51c8ae43863ee6ffdd6452f35184da",
+    "content": "7eb66be2577f9e78895e0a93951cf202ab0bfe83611034719cfce6dfd4190e27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0076",
+      "digest": "5e0b685158277684219c9dfd3502b338659e6090ed8209006d48f7a5eb272546"
+    },
+    {
+      "id": "TC-cli-0077",
+      "digest": "5c39b812f2e7776b2bb2c5f78ee4421cd0340bdd2b7280d1fc9cda1908798cb9"
+    },
+    {
+      "id": "TC-cli-0078",
+      "digest": "ef231f853a0ff684cd29c91bf8a98371fad92c9e01b7b3c13519309ffa1be516"
+    },
+    {
+      "id": "TC-cli-0079",
+      "digest": "1a2705054f562dfed2ed941e734c627144dd5010aff4f5a7606aa32cdced39a3"
+    }
+  ],
+  "method": "manual",
+  "limitations": [
+    "Observation times written directly by tests/bugs.rs; rerun at e806f78"
+  ]
+}
