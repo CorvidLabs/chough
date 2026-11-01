@@ -1,6 +1,6 @@
 ---
 id: report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records
-state: implementing
+state: archived
 type: feature
 base_commit: 85650d93ad9a811c2c54e08256620d351754da8d
 ---

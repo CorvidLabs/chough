@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "b5038b45f0d0d1cbd33b9e060bcda929e3b0bc80",
+      "contract_digest": "afb6631826392afb9642706d3c4ff5ab893b0a3ffd3e83fe7c3d007af9fcd247",
+      "execution_digest": "a5144c611c4d74831139c2e0fd4de7fee333ea366b874164cd0749091ff16fc7",
+      "workspace_digest": "b16235a29525f2966b137f8e3fb8d81c9c7cc51959ed7f08ac21069765c2b75f",
+      "timestamp": 1793507502
+    }
+  ]
+}
