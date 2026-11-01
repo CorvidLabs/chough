@@ -7,11 +7,11 @@
   "title": "Keep evidence current across commits and SpecSync lifecycle bookkeeping, and verify bugs only by a pass observed after the failure",
   "description": "Keep evidence current across commits and SpecSync lifecycle bookkeeping, and verify bugs only by a pass observed after the failure",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "85650d93ad9a811c2c54e08256620d351754da8d",
   "created_at": 1793494899,
-  "updated_at": 1793505023,
+  "updated_at": 1793505635,
   "affected_specs": [
     "cli"
   ],

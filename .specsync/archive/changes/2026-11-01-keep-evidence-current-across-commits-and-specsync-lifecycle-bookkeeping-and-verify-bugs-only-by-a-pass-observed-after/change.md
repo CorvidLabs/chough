@@ -1,6 +1,6 @@
 ---
 id: keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 85650d93ad9a811c2c54e08256620d351754da8d
 ---
