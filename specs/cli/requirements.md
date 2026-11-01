@@ -12,11 +12,11 @@ without replacing existing files. Trace: LIFE-4, LIFE-6.
 Acceptance: repeated init preserves edited session and skill bytes; missing bundle
 files can be added without overwriting neighbors.
 
-### REQ-cli-002 — Focus context for resumption
+### REQ-cli-002
 
-The helper SHALL assemble applicable instructions, scoped HI export, selected
-module contracts/companions, objective, decisions, open questions and next action.
-Trace: LIFE-3, LIFE-6.
+Focus context for resumption. The helper SHALL assemble applicable instructions,
+scoped HI export, selected module contracts/companions, objective, decisions, open
+questions and next action. Trace: LIFE-3, LIFE-6.
 
 Acceptance: the same inputs yield the same ordered context; missing sources and
 truncation remain explicit. Native module .3md is the lesson source where present.
