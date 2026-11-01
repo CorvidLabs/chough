@@ -890,7 +890,7 @@ fn binding_env_is_bounded_and_refused_with_its_location() {
     for (binding, extra) in [
         (
             cargo,
-            "env = { RUST_BACKTRACE = \"1\", CARGO_TARGET_DIR = \"target\", Cargo_Target_Dir_Note = \"x\", CARGO_BUILD = \"x\", CARGO_TERM_COLOR = \"never\" }",
+            "env = { RUST_BACKTRACE = \"1\", CARGO_TARGET_DIR = \"target\", CARGO_BUILD = \"x\", CARGO_TERM_COLOR = \"never\" }",
         ),
         (
             command,

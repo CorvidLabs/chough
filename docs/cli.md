@@ -222,8 +222,12 @@ case (Windows treats them as one variable); a value containing NUL or longer tha
 4 KiB; and more than 32 entries. A `cargo-test` binding also cannot declare, in any
 ASCII case, a name that chooses what cargo builds or runs: `PATH`, `CARGO`,
 `CARGO_HOME`, `RUSTC`, `RUSTDOC`, `RUSTC_WRAPPER`, `RUSTC_WORKSPACE_WRAPPER`,
-`RUSTFLAGS`, `CARGO_ENCODED_RUSTFLAGS`, any `CARGO_BUILD_*` name and any
-`CARGO_TARGET_<triple>_RUNNER`. For `command` and `fledge-task`, which name their
+`RUSTFLAGS`, `CARGO_ENCODED_RUSTFLAGS`, `RUSTDOCFLAGS`,
+`CARGO_ENCODED_RUSTDOCFLAGS`, `RUSTC_BOOTSTRAP`, and any name starting with
+`RUSTUP_` (the toolchain), `CARGO_BUILD_`, `CARGO_TARGET_` (a per-target runner,
+linker or flags, which can carry `-C linker=...`), `CARGO_HOST_`, `CARGO_PROFILE_`
+or `CARGO_UNSTABLE_`. `CARGO_TARGET_DIR`, which only chooses where cargo writes, is
+allowed. For `command` and `fledge-task`, which name their
 program in argv, a declared `PATH` can change which program that name resolves to.
 
 `env` lives in the committed case file, so it is not a place for secrets. Its names

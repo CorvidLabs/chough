@@ -25,8 +25,8 @@ const ENV_ENTRIES: usize = 32;
 const ENV_NAME_LIMIT: usize = 128;
 const ENV_VALUE_LIMIT: usize = 4_096;
 /// Variables that choose what `cargo test` builds or runs, refused for cargo-test in
-/// any ASCII case, besides any `CARGO_BUILD_*` and `CARGO_TARGET_*_RUNNER` name.
-const CARGO_REFUSED: [&str; 9] = [
+/// any ASCII case, besides the names under `CARGO_REFUSED_PREFIXES`.
+const CARGO_REFUSED: [&str; 12] = [
     "PATH",
     "CARGO",
     "CARGO_HOME",
@@ -36,6 +36,20 @@ const CARGO_REFUSED: [&str; 9] = [
     "RUSTC_WORKSPACE_WRAPPER",
     "RUSTFLAGS",
     "CARGO_ENCODED_RUSTFLAGS",
+    "RUSTDOCFLAGS",
+    "CARGO_ENCODED_RUSTDOCFLAGS",
+    "RUSTC_BOOTSTRAP",
+];
+/// Prefixes of names that choose the toolchain, build settings, per-target runner,
+/// linker or flags (which can carry `-C linker=...`), or unstable cargo behavior.
+/// `CARGO_TARGET_DIR` only chooses where cargo writes and stays allowed.
+const CARGO_REFUSED_PREFIXES: [&str; 6] = [
+    "RUSTUP_",
+    "CARGO_BUILD_",
+    "CARGO_TARGET_",
+    "CARGO_HOST_",
+    "CARGO_PROFILE_",
+    "CARGO_UNSTABLE_",
 ];
 const INHERITED_ENVIRONMENT: &str = "inherited environment variables were not recorded";
 const ESCAPES_REMOVED: &str =
@@ -326,8 +340,10 @@ fn valid_env_name(name: &str) -> bool {
 fn chooses_what_cargo_runs(name: &str) -> bool {
     let upper = name.to_ascii_uppercase();
     CARGO_REFUSED.contains(&upper.as_str())
-        || upper.starts_with("CARGO_BUILD_")
-        || (upper.starts_with("CARGO_TARGET_") && upper.ends_with("_RUNNER"))
+        || (upper != "CARGO_TARGET_DIR"
+            && CARGO_REFUSED_PREFIXES
+                .iter()
+                .any(|prefix| upper.starts_with(prefix)))
 }
 
 fn validate_env(binding: &Binding) -> Result<()> {
@@ -726,9 +742,14 @@ fn cargo_counts(output: &str) -> (u64, u64) {
     (passed, failed)
 }
 
-/// The counts the cargo-test adapter judges a run by.
-fn matched_counts(_raw: &str, cleaned: &str) -> (u64, u64) {
-    cargo_counts(cleaned)
+/// The counts the cargo-test adapter judges a run by: the larger of the raw and the
+/// cleaned count, for passed and for failed. Cleaning reveals counts that colour
+/// splits, but a CSI sequence's parameter and intermediate bytes can also swallow a
+/// count the raw text shows, so neither text alone can lower a count.
+fn matched_counts(raw: &str, cleaned: &str) -> (u64, u64) {
+    let raw = cargo_counts(raw);
+    let cleaned = cargo_counts(cleaned);
+    (raw.0.max(cleaned.0), raw.1.max(cleaned.1))
 }
 
 fn argv_for(binding: &Binding) -> Vec<String> {
@@ -1192,6 +1213,10 @@ mod tests {
             input.extend(result);
             inputs.push(input);
         }
+        inputs.push(
+            b"test result: ok. 1 passed; 0 failed\ntest result: ok. 0 passed;\x1b[0;1 passed\n"
+                .to_vec(),
+        );
         for _ in 0..2_000 {
             let mut input = vec![];
             for _ in 0..(generator.next() % 12) {
