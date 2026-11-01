@@ -59,8 +59,11 @@ than presented as Rust API symbols to the structural checker.
    implementation review, release or deployment.
 3. HI owns criterion IDs; SpecSync owns its lifecycle, approvals, reviews and
    archives. The checkpoint references native records and never duplicates their state.
-4. Observations bind revision, working content, environment and, for cases, the
-   definition digest; current evidence is not equivalent to proven criterion achievement.
+4. Observations record revision, working content, environment and, for cases, the
+   definition digest. Freshness compares the working content, which leaves out
+   Chough records, build output and SpecSync lifecycle bookkeeping; the revision is
+   recorded but not compared, except for records without a content identity. Current
+   evidence is not equivalent to proven criterion achievement.
 5. Managed and selected paths stay inside the project and symlinks are rejected.
    Context, records and captured output are bounded and deterministic for the same
    inputs and native tool responses.

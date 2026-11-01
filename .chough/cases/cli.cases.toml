@@ -1255,3 +1255,237 @@ expected = ["tests/stages.rs::native_change_ids_up_to_the_specsync_ceiling_are_k
 adapter = "cargo-test"
 test_target = "stages"
 test = "native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes"
+
+[[case]]
+id = "TC-cli-0067"
+title = "Committing only Chough records or an empty commit keeps an observation current"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current"
+
+[[case]]
+id = "TC-cli-0068"
+title = "Committing edits already present when observed keeps an observation current"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::committing_edits_already_present_when_observed_keeps_an_observation_current passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "committing_edits_already_present_when_observed_keeps_an_observation_current"
+
+[[case]]
+id = "TC-cli-0069"
+title = "Any fingerprinted content change stales an observation"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::any_fingerprinted_content_change_stales_an_observation passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "any_fingerprinted_content_change_stales_an_observation"
+
+[[case]]
+id = "TC-cli-0070"
+title = "SpecSync bookkeeping writes keep an observation current"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::specsync_bookkeeping_writes_keep_an_observation_current passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "specsync_bookkeeping_writes_keep_an_observation_current"
+
+[[case]]
+id = "TC-cli-0071"
+title = "Edits to a native change's scope stale an observation"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::edits_to_a_native_change_scope_stale_an_observation passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "edits_to_a_native_change_scope_stale_an_observation"
+
+[[case]]
+id = "TC-cli-0072"
+title = "Archiving a change keeps an observation current until an artifact changes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::archiving_a_change_keeps_an_observation_current_until_an_artifact_changes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "archiving_a_change_keeps_an_observation_current_until_an_artifact_changes"
+
+[[case]]
+id = "TC-cli-0073"
+title = "Observations without a content identity stay stale after a commit"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7"]
+requirements = ["REQ-cli-004", "REQ-cli-017"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::observations_without_a_content_identity_stay_stale_after_a_commit passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "observations_without_a_content_identity_stay_stale_after_a_commit"
+
+[[case]]
+id = "TC-cli-0074"
+title = "A malformed content identity is refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7"]
+requirements = ["REQ-cli-017"]
+paths = ["src/evidence.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::a_malformed_content_identity_is_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "a_malformed_content_identity_is_refused"
+
+[[case]]
+id = "TC-cli-0075"
+title = "Accept, lifecycle and bugs references from main 2756dc2 are known outdated"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/bugs.md", "skills/chough-workflow/references/lifecycle.md", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated"
+
+[[case]]
+id = "TC-cli-0076"
+title = "A pass observed before the latest failure does not verify a bug"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/evidence.rs", "tests/bugs.rs", "tests/common/mod.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_pass_observed_before_the_latest_failure_does_not_verify_a_bug passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_pass_observed_before_the_latest_failure_does_not_verify_a_bug"
+
+[[case]]
+id = "TC-cli-0077"
+title = "A pass observed after the latest failure verifies a bug"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/evidence.rs", "tests/bugs.rs", "tests/common/mod.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_pass_observed_after_the_latest_failure_verifies_a_bug passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_pass_observed_after_the_latest_failure_verifies_a_bug"
+
+[[case]]
+id = "TC-cli-0078"
+title = "A pass in the same second as the failure does not verify a bug"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/evidence.rs", "tests/bugs.rs", "tests/common/mod.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug"
+
+[[case]]
+id = "TC-cli-0079"
+title = "A bug without a linked failure cannot be verified"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/evidence.rs", "tests/bugs.rs", "tests/common/mod.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_bug_without_a_linked_failure_cannot_be_verified passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_bug_without_a_linked_failure_cannot_be_verified"

@@ -72,6 +72,13 @@ Human review remains pending … No approval was recorded."
   observations now read `stale-revision-or-inputs`, because it then edited the tracked
   `change.md` and SpecSync rewrote its records. That is Chough's conservative
   freshness rule working as designed, not a pass at the final state.
+  Note added 2026-11-01: that stale reading came from the earlier rule, under which
+  SpecSync's record writes, as well as any new revision, staled observations. Since
+  native change
+  `keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after`
+  freshness compares content without SpecSync's lifecycle bookkeeping, while an edit
+  to `change.md` other than its front-matter `state:` still makes observations stale.
+  The exercise record above is not rewritten.
 - The checkpoint's `next_action` named the bug to fix, as a real checkpoint would;
   the session had to discover everything else from the files.
 - Visible messages and commands are recorded here; model reasoning is not.

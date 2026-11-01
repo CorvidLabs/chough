@@ -30,10 +30,11 @@ Acceptance Criteria
 - A native command that never exits is reported as timed-out by its deadline, and gated moves refuse it.
 - Output beyond the bounds is counted and reported, not retained.
 
-### REQ-cli-004 — Bind observations to content and environment
+### REQ-cli-004
 
-The helper SHALL bind each observation to Git revision, working content identity,
-and an explicit environment, and report freshness limitations. Trace: LIFE-2, LIFE-7.
+Bind observations to content and environment. The helper SHALL bind each observation
+to Git revision, working content identity, and an explicit environment, and report
+freshness limitations. Trace: LIFE-2, LIFE-7.
 
 Acceptance: changing observed content makes prior observations stale; another
 environment is mismatched; no chosen environment is unchecked. Recording another

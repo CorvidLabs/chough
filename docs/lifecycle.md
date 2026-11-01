@@ -66,6 +66,22 @@ flowchart TB
     merge -. "only if authorized" .-> release["Optional release with real commands"]
 ```
 
+The order before the review is: when the delta adds or modifies requirements, run
+`specsync change check <id>` first to materialize them; `chough cases run`; record the
+gate with `chough checkpoint --awaiting-human`; commit the source together with
+`.chough/`; `specsync change check <id> --commit`; push and observe hosted CI; present
+the work. After the human decision come `specsync change review`, then `ship` or
+`finalize`, and only then clearing the gate and `chough stage advance`. Between the
+check and finalize, nothing writes to `.chough/` and nothing is committed.
+
+This order is an interim measure. Chough's observations stay current across
+commits of its own records and SpecSync's bookkeeping, because freshness compares
+content and leaves those records out. SpecSync's verification digest, however, covers
+every non-ignored file, including `.chough/`, and has no exclusion setting; until
+SpecSync offers an opt-in verification exclusion (the proposed upstream
+`verification_ignored_paths`), any Chough write in that window forces another
+`change check`.
+
 `specsync change check <id> --commit` materializes the approved delta and records
 targeted structural verification; it does not run product tests and refuses while
 tasks are unchecked. The human implementation review happens after verification and

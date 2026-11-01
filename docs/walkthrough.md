@@ -104,8 +104,11 @@ an independent Codex session doing exactly this on the sample.
 
 ## Read freshness precisely
 
-A changed revision, any changed fingerprinted file, a changed artifact, a changed
-case definition or a different environment makes an observation stale; rerun the
-case instead of reusing the result. Committing after a run, even only metadata, makes
-earlier observations stale by design. See the [CLI reference](cli.md) for every
-outcome and freshness label.
+Any changed fingerprinted file, a changed artifact, a changed case definition or a
+different environment makes an observation stale; rerun the case instead of reusing
+the result. The revision is recorded with each observation but not compared:
+committing only `.chough/` records, an empty commit, committing edits that were
+already present when the case ran, and SpecSync's lifecycle bookkeeping (`change
+check --commit`, finalize) keep it current. A record from an earlier Chough without a
+content identity stays stale after any commit. See the [CLI reference](cli.md) for
+every outcome and freshness label.
