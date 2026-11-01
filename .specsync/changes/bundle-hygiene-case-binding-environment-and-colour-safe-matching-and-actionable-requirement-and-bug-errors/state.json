@@ -7,10 +7,10 @@
   "title": "Bundle hygiene, case binding environment and colour-safe matching, and actionable requirement and bug errors",
   "description": "Bundle hygiene, case binding environment and colour-safe matching, and actionable requirement and bug errors",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "85650d93ad9a811c2c54e08256620d351754da8d",
   "created_at": 1793494827,
-  "updated_at": 1793495565,
+  "updated_at": 1793496372,
   "affected_specs": [
     "cli"
   ],
