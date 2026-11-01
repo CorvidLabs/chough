@@ -24,8 +24,8 @@ edge through its own wrapped gate label: with SVG text labels, Mermaid 11.12.0
 left-aligns a wrapped edge label beside the edge instead of centring it on the edge.
 `stages.mmd` now sets `htmlLabels: true` in its front matter, so its labels are HTML
 inside `foreignObject` and are centred, with an opaque background. The other three
-diagrams keep the SVG text labels set in `render.mjs`, and their SVGs were
-byte-identical after the re-render on 2026-11-01. A viewer that does not render
+diagrams keep the SVG text labels set in `render.mjs`; this `htmlLabels` change left
+their SVGs byte-identical to the earlier 2026-11-01 render. A viewer that does not render
 `foreignObject` shows the `stages` boxes and edges without their text; browsers and
 GitHub do render it.
 

@@ -118,9 +118,10 @@ Other platforms and hosts may work but have not been exercised.
 - On Windows, a bounded command's descendants whose parent has already exited cannot
   be stopped; the run returns on time with an incomplete capture, never `passed`.
 - Calls to Git (fingerprints and revisions) are not yet bounded in time or output.
-- SpecSync's change status does not yet flag an approved delta edited after approval;
-  the fix is scoped, not yet implemented or released, in
-  [CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823).
+- SpecSync 6.1.1's change status does not flag an approved delta edited after
+  approval; the fix is merged on SpecSync main
+  ([CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823)) but
+  not yet released.
 - In a repository with no commits yet, `chough next` reports the raw `git rev-parse
   HEAD` error as the snapshot; make a first commit before relying on freshness.
 - Hosts other than Claude Code and Codex have not had real discovery or cold-start
