@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test every_transition_kind_yields_the_expected_segments_and_cycles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.46s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.17s
+     Running tests/timing.rs (target/debug/deps/timing-db023144b5896392)

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records",
+  "implementation_commit": "b5038b45f0d0d1cbd33b9e060bcda929e3b0bc80",
+  "implementation_tree": "d5494f2c5eb2c62eb7318a53f3a94353e5dfac16",
+  "contract_digest": "afb6631826392afb9642706d3c4ff5ab893b0a3ffd3e83fe7c3d007af9fcd247",
+  "workspace_digest": "b16235a29525f2966b137f8e3fb8d81c9c7cc51959ed7f08ac21069765c2b75f",
+  "closing_digest": "48c3b64c006b75359fc0cc4080bd39dbec789021e6e0488e90a91fcd0287849a",
+  "review_digest": "5a2ad8a16dc1e245ea613a9cc34b09ad1641f40a7f2153b6bf270a95f68f80a1",
+  "finalization_digest": "ec6127f64fb6206197d1bd6f0f935f37f177c402e8599c26ea55dbcf14dab51d",
+  "timestamp": 1793507590
+}

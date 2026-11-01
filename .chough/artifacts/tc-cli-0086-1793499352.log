@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test bug_fix_times_come_from_observations_notes_and_the_retention_ledger ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.43s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/timing.rs (target/debug/deps/timing-db023144b5896392)

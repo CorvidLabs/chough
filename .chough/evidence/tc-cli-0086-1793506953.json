@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0086-1793506953",
+  "criteria": [
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-020"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test timing -- --exact bug_fix_times_come_from_observations_notes_and_the_retention_ledger for TC-cli-0086: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0086-1793506953.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0086-1793506953.log": "8d6c5998bd27cf3651cb58316248147f020dd9a88292e32a0b8fa182654da0a2"
+  },
+  "observed_at_unix_seconds": 1793506954,
+  "snapshot": {
+    "revision": "ec678c64a6056f67fa14a5b0a4891624bb0d06b3",
+    "dirty": false,
+    "fingerprint": "9f2621890972b3c2db56f53eee5e3ab0988535073f55d8292a229711b9860b2f",
+    "content": "d2dd94e8c6b5f236c0b0465638bc5a90f8b31096eb54f19565158052c4728ce6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0086",
+      "digest": "6d995954e19ca0e29dfc9db8d3eb5fa1c3b62503f3c138feeea15a4a5edac822"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "bug_fix_times_come_from_observations_notes_and_the_retention_ledger"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "duration_seconds": 1
+}

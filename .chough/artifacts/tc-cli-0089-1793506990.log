@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test native_times_come_only_from_status_and_native_records_read_read_only ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1.45s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.36s
+     Running tests/timing.rs (target/debug/deps/timing-db023144b5896392)

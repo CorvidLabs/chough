@@ -207,6 +207,56 @@ pub(super) fn read_log_tail(path: &Path, lines: usize) -> Result<(Vec<String>, b
     ))
 }
 
+/// A log read in full up to a bound: its non-empty lines and how many leading bytes
+/// were skipped to stay within the bound.
+pub(super) struct FullLog {
+    pub(super) lines: Vec<String>,
+    pub(super) skipped_bytes: u64,
+}
+
+/// Read every complete line of a log, bounded to `limit` bytes. Beyond the bound the
+/// earliest bytes are skipped up to the first line boundary, and counted.
+pub(super) fn read_log_full(path: &Path, limit: u64) -> Result<FullLog> {
+    let mut file = match File::open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            return Ok(FullLog {
+                lines: vec![],
+                skipped_bytes: 0,
+            });
+        }
+        Err(error) => return Err(error.into()),
+    };
+    let length = file.metadata()?.len();
+    let mut skipped_bytes = length.saturating_sub(limit);
+    let mut cut_inside_line = false;
+    if skipped_bytes > 0 {
+        let mut previous = [0_u8; 1];
+        file.seek(SeekFrom::Start(skipped_bytes - 1))?;
+        file.read_exact(&mut previous)?;
+        cut_inside_line = previous[0] != b'\n';
+    }
+    let mut bytes = vec![];
+    (&mut file).take(limit).read_to_end(&mut bytes)?;
+    let mut start = 0;
+    if cut_inside_line {
+        start = bytes
+            .iter()
+            .position(|byte| *byte == b'\n')
+            .map_or(bytes.len(), |index| index + 1);
+        skipped_bytes += start as u64;
+    }
+    let text = String::from_utf8_lossy(&bytes[start..]);
+    Ok(FullLog {
+        lines: text
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .map(str::to_string)
+            .collect(),
+        skipped_bytes,
+    })
+}
+
 pub(super) fn read_record(path: &Path) -> Result<String> {
     let file = File::open(path)?;
     let mut content = String::new();
@@ -883,6 +933,25 @@ mod tests {
         let output = run_bounded(root.path(), &argv, &limits(64, 20)).unwrap();
         assert_eq!(output.exit_code, Some(4));
         assert!(!output.timed_out && !output.held_open && !output.capture_incomplete);
+    }
+
+    #[test]
+    fn a_full_log_read_keeps_whole_lines_within_its_bound() {
+        let root = tempfile::tempdir().unwrap();
+        let path = root.path().join("log.jsonl");
+        assert_eq!(read_log_full(&path, 10).unwrap().lines.len(), 0);
+        fs::write(&path, "aaaa\nbbbb\n\ncccc\n").unwrap();
+        let all = read_log_full(&path, 1_000).unwrap();
+        assert_eq!(all.lines, vec!["aaaa", "bbbb", "cccc"]);
+        assert_eq!(all.skipped_bytes, 0);
+        // A cut inside "bbbb" drops the rest of that line and counts it as skipped.
+        let cut = read_log_full(&path, 9).unwrap();
+        assert_eq!(cut.lines, vec!["cccc"]);
+        assert_eq!(cut.skipped_bytes, 10);
+        // A cut on a line boundary keeps the next line whole.
+        let boundary = read_log_full(&path, 11).unwrap();
+        assert_eq!(boundary.lines, vec!["bbbb", "cccc"]);
+        assert_eq!(boundary.skipped_bytes, 5);
     }
 
     #[test]

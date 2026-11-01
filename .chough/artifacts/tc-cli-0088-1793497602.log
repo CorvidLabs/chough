@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 6.35s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/timing.rs (target/debug/deps/timing-db023144b5896392)

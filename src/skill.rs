@@ -77,6 +77,15 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "26029a2ee652ddc55b2ef6a68ed3edfa6a699f3a61a8fffa8d4d485f1180f4fb",
     ),
+    // Main 2756dc2 (PR #9); superseded by the timing report (REQ-cli-020).
+    (
+        "references/checkpoint.md",
+        "943d2b5dd1cf092b618c154a20f11ad30ea5a5ecbada1b0f1bb2ab480f047fa2",
+    ),
+    (
+        "references/plan.md",
+        "8ecec7edffa34daa0082a026d6e07d4acc1245d6fc3dcba9e87d7296c226b8ab",
+    ),
     // Main 2756dc2 (PR #9); superseded by the evidence freshness change.
     (
         "references/accept.md",
