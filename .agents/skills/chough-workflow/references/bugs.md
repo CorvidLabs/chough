@@ -58,11 +58,12 @@ what you searched and its limits.
 
 After a fix, link the passing observation and set `--status verified`, which needs a
 linked failed observation and a linked passed observation observed after the latest
-linked failure; an older pass, or one in the same second, leaves the bug
-`reproduced`. A failing check that is fixed in the same pull request still gets a bug
-record with its failed and passed observations, or a lesson entry in the module's
-lesson source; a fix that leaves no record teaches the next agent nothing. Bugs found after closure normally become new native
-changes; use native recovery only when the original recorded evidence needs repair.
+linked failure; an older pass, or one in the same second, leaves the bug `reproduced`.
+A failing check that is fixed in the same pull request still gets a bug record with
+its failed and passed observations, or a lesson entry in the module's lesson source; a
+fix that leaves no record teaches the next agent nothing. Bugs found after closure
+normally become new native changes; use native recovery only when the original
+recorded evidence needs repair.
 
 ## Report candidates
 
