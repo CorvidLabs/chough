@@ -13,8 +13,25 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  # Runs first. Every other job needs it, so a pull request with any open SpecSync
+  # change under .specsync/changes/ runs nothing else until the change is archived.
+  archive-gate:
+    name: Archive
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      # The archive gate inputs are newer than v6.1.1, which ignores them.
+      - uses: CorvidLabs/spec-sync@106aaa43d0bcf049f19b173ddb63815a25c3f931 # main, archive gate (#832)
+        with:
+          archive-gate-only: 'true'
+
   product:
     name: Product / ${{ matrix.os }}
+    needs: archive-gate
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
@@ -31,6 +48,7 @@ jobs:
 
   native-gates:
     name: Fledge / HI / SpecSync
+    needs: archive-gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -61,6 +79,7 @@ jobs:
 
   archive:
     name: SpecSync Archive
+    needs: archive-gate
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -83,6 +102,7 @@ jobs:
 
   ci-fixtures:
     name: CI gate fixtures
+    needs: archive-gate
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

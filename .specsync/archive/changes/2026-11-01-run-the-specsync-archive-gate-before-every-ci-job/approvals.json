@@ -1,0 +1,42 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793510910,
+      "digest": "956f9c85094f55b290e9d4bacc5febbd1ec1746d67a98400c86a419967f2ede6",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "run-the-specsync-archive-gate-before-every-ci-job",
+        "title": "Run the SpecSync archive gate before every CI job",
+        "description": "Run the SpecSync archive gate before every CI job",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          ".github/workflows/ci.yml"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "CI workflow ordering only; no canonical spec owns .github/workflows",
+        "acceptance_criteria": [
+          "CI's Archive job runs first via CorvidLabs/spec-sync archive-gate-only at the #832 merge commit; product, native-gates, the existing SpecSync Archive job and ci-fixtures all need it, so a pull request with an open change under .specsync/changes/ runs nothing else."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793510924,
+      "digest": "8ea5ffcf4cf87ae0f7e38b1e86561e993fb576b3cc3990098af8759516b64dc8",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
