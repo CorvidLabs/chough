@@ -90,7 +90,8 @@
     "TC-cli-0100 and TC-cli-0104 added and passing",
     "PR #9 merged earlier; stale awaiting-human entry cleared",
     "Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated",
-    "TC-cli-0120 to TC-cli-0124 passed on local-macos-arm64 after the scoped change check materialized REQ-cli-021 and REQ-cli-022; BUG-0002 noted as guarded, still open"
+    "TC-cli-0120 to TC-cli-0124 passed on local-macos-arm64 after the scoped change check materialized REQ-cli-021 and REQ-cli-022; BUG-0002 noted as guarded, still open",
+    "PR #23 review at 2eb10bb: next strings bounded by escaped width, SpecSync module names accepted by the guard, the no-digest remedy names a new approval, reset next action bounded, cross-platform unit tests, SKILL.md host caveats; TC-cli-0120 to TC-cli-0124 rerun and passed on local-macos-arm64 at 72fe1e2"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -104,7 +105,12 @@
     "tc-cli-0121-1793552334",
     "tc-cli-0122-1793552336",
     "tc-cli-0123-1793552337",
-    "tc-cli-0124-1793552338"
+    "tc-cli-0124-1793552338",
+    "tc-cli-0120-1793553262",
+    "tc-cli-0121-1793553270",
+    "tc-cli-0122-1793553272",
+    "tc-cli-0123-1793553274",
+    "tc-cli-0124-1793553276"
   ],
   "bugs": [
     "BUG-0001",
