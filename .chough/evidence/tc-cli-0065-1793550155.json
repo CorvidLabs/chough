@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0065-1793550155",
+  "criteria": [
+    "LIFE-9"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test package -- --exact bundle_files_from_the_latest_main_build_are_never_reported_as_edited for TC-cli-0065: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0065-1793550155.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0065-1793550155.log": "190628836f592a888438658f7cd653dab8df2cffc75151ed6cee616ad7a60b97"
+  },
+  "observed_at_unix_seconds": 1793550156,
+  "snapshot": {
+    "revision": "25ced79d0a47a295ce9bc3df02819fa740804b56",
+    "dirty": false,
+    "fingerprint": "e736656a4600cdd23f89082f6247e2aee447b111d50b64ca68729ce5caaeebe8",
+    "content": "07ce6de08d0f1c1e32606ca4488ca97fd64c4ddf0d0390755c66decd46256c3e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0065",
+      "digest": "cd5aa50ca1f1923544a6bb426e66eaf45730ba7e7fc1c3ba1d0b75f6e3afe1d0"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "package",
+    "--",
+    "--exact",
+    "bundle_files_from_the_latest_main_build_are_never_reported_as_edited"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
