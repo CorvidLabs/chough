@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "6a6f0bd1f2dd720f3b51a80b4bef63eceaca2d09",
+      "contract_digest": "5b8a3dc2a75b9df55cfcbc6eaaeab045cbbe522666956eefadc291836ac9cee7",
+      "execution_digest": "decafce2d8fc2b9df34c4ee9cd9587c09320e082ceea1758751791035856dee5",
+      "workspace_digest": "39ff7fac0dcb361450e315a4e1658f736c399e03128701c45d9067575ced0470",
+      "timestamp": 1793640231
+    }
+  ]
+}

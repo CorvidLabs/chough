@@ -7,11 +7,11 @@
   "title": "New-project setup path and SDD-off hint: document HI, specsync init/scaffold and specsync change adopt for a new project, and have chough next say to run specsync change adopt when SpecSync is configured but SDD is off (issue 40)",
   "description": "New-project setup path and SDD-off hint: document HI, specsync init/scaffold and specsync change adopt for a new project, and have chough next say to run specsync change adopt when SpecSync is configured but SDD is off (issue 40)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
   "created_at": 1793638830,
-  "updated_at": 1793640221,
+  "updated_at": 1793640235,
   "affected_specs": [
     "cli"
   ],

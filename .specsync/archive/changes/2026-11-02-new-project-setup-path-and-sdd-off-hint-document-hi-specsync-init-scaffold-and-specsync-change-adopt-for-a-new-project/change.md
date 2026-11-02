@@ -1,6 +1,6 @@
 ---
 id: new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project
-state: implementing
+state: archived
 type: feature
 base_commit: 825a3805530456005e361dfa6d96d93eee52cd09
 ---
