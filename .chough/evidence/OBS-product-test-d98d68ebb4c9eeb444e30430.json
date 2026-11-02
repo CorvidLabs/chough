@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-d98d68ebb4c9eeb444e30430",
+  "criteria": [
+    "FLOW-6"
+  ],
+  "requirements": [
+    "REQ-cli-023"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Identity takeover scoped verification: Rust 1.99.1 and MSRV 1.88.0 each passed 181 tests with one named compact-next fixture excluded; latest all-target warnings-denied Clippy passed. The original full-suite failure is retained.",
+  "artifacts": [
+    ".chough/artifacts/identity-takeover/rust-1-99-tests-except-known-fixture.log",
+    ".chough/artifacts/identity-takeover/msrv-tests-except-known-fixture.log",
+    ".chough/artifacts/identity-takeover/rust-1-99-lint.log",
+    ".chough/artifacts/identity-takeover/initial-tests.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/identity-takeover/initial-tests.log": "31efa21046f6aa9b0e5e62ecb7f3ba4461159c71298b13abc7f7f14e041bc632",
+    ".chough/artifacts/identity-takeover/msrv-tests-except-known-fixture.log": "82a6df3b3e77d88cb65dff2ad186ff493976f4d6685334155faeda2b475570ad",
+    ".chough/artifacts/identity-takeover/rust-1-99-lint.log": "7c8289a210e77b45fe942128c88e5de2c632f404b7fa0cd55fc27ff2a934450a",
+    ".chough/artifacts/identity-takeover/rust-1-99-tests-except-known-fixture.log": "4224c0cd3f27b0dbb1f276e05010e4c104b912a2151bc594c8c96cf5e6faf515"
+  },
+  "observed_at_unix_seconds": 1793582554,
+  "snapshot": {
+    "revision": "f4613ebf1673491877802fa2ac879a9cf482b267",
+    "dirty": false,
+    "fingerprint": "458c2896dd2976740042d773a6b17d57bff56a4455ff5ee7f6a4d23ee7c0ebde",
+    "content": "0ffb17fee420351200fd5342f0be04f0984e8ec05a67cc608bcbc16b4bed9864"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "These tests ran before the companion verification notes and commit, with the same production source bytes. Exactly both_forms_stay_within_the_cap_with_totals_for_large_records was excluded from the two passing test commands; TC-cli-0120 separately recorded its failure. This is not full-suite, full verify, hosted CI, acceptance, native review or merge proof."
+  ]
+}

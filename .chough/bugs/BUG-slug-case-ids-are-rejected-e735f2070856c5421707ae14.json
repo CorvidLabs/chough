@@ -25,7 +25,8 @@
   "observations": [
     "OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674",
     "OBS-tc-cli-slug-case-compatibility-649b7f61182d9e2cbf4c4c38",
-    "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637"
+    "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637",
+    "OBS-tc-cli-slug-case-compatibility-a5f05dbb3b838dedd3c3b422"
   ],
   "impact": "Approved slug case definitions cannot be loaded or executed.",
   "classification": "product-defect",
@@ -49,8 +50,15 @@
       "observations": [
         "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637"
       ]
+    },
+    {
+      "at_unix_seconds": 1793582554,
+      "text": "Final focused rerun after companion and fixture-definition updates at f4613ebf1673491877802fa2ac879a9cf482b267 passed. No full-suite or acceptance claim.",
+      "observations": [
+        "OBS-tc-cli-slug-case-compatibility-a5f05dbb3b838dedd3c3b422"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793579580,
-  "updated_at_unix_seconds": 1793582437
+  "updated_at_unix_seconds": 1793582554
 }

@@ -22,7 +22,8 @@
   "observations": [
     "OBS-slug-snapshot-allocation-b731a60c294f8de0175c34a2",
     "OBS-tc-cli-slug-snapshot-allocation-ea1999d3c7388098074a17e6",
-    "OBS-tc-cli-slug-snapshot-allocation-6e6f67c6b9c8a661f088ecd3"
+    "OBS-tc-cli-slug-snapshot-allocation-6e6f67c6b9c8a661f088ecd3",
+    "OBS-tc-cli-slug-snapshot-allocation-1070e1a735b6a22ba273ea76"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
@@ -51,8 +52,15 @@
       "observations": [
         "OBS-tc-cli-slug-snapshot-allocation-6e6f67c6b9c8a661f088ecd3"
       ]
+    },
+    {
+      "at_unix_seconds": 1793582553,
+      "text": "Final focused rerun after companion and fixture-definition updates at f4613ebf1673491877802fa2ac879a9cf482b267 passed. No full-suite or acceptance claim.",
+      "observations": [
+        "OBS-tc-cli-slug-snapshot-allocation-1070e1a735b6a22ba273ea76"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793579577,
-  "updated_at_unix_seconds": 1793582436
+  "updated_at_unix_seconds": 1793582553
 }

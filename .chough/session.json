@@ -196,7 +196,12 @@
     "OBS-tc-cli-slug-observation-allocation-f02d9d7cc4d216e577cfce37",
     "OBS-tc-cli-slug-validation-allocation-71fe2212baa0de8c7e2caab1",
     "OBS-tc-cli-slug-snapshot-allocation-6e6f67c6b9c8a661f088ecd3",
-    "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637"
+    "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637",
+    "OBS-product-test-d98d68ebb4c9eeb444e30430",
+    "OBS-tc-cli-slug-observation-allocation-fbba5df6257bc8b5dde6e504",
+    "OBS-tc-cli-slug-validation-allocation-f467e013bacf0b99eddafc60",
+    "OBS-tc-cli-slug-snapshot-allocation-1070e1a735b6a22ba273ea76",
+    "OBS-tc-cli-slug-case-compatibility-a5f05dbb3b838dedd3c3b422"
   ],
   "bugs": [
     "BUG-0001",
@@ -219,5 +224,5 @@
     "Scope approval of update-compact-next-fixture-for-slug-observations"
   ],
   "run_consents": [],
-  "next_action": "Approve the one-file compact-next fixture definition, apply its prepared automatic-ID fixture update, then require the unfiltered full suite and verify/pre-push lanes. Keep learning PR 35 unaccepted pending a valid graded cold-start run."
+  "next_action": "Human scope approval is pending for the one-file compact-next fixture definition. Then apply its prepared patch, require the full suite and configured verify/pre-push lanes, and return the consolidated identity implementation for human acceptance. Learning PR 35 still needs valid cold-start proof."
 }

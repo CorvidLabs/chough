@@ -26,7 +26,8 @@
   "observations": [
     "OBS-slug-observation-allocation-6f0a2f94c38b11d27e45a901",
     "OBS-tc-cli-slug-observation-allocation-fb841732389861bd071a5f13",
-    "OBS-tc-cli-slug-observation-allocation-f02d9d7cc4d216e577cfce37"
+    "OBS-tc-cli-slug-observation-allocation-f02d9d7cc4d216e577cfce37",
+    "OBS-tc-cli-slug-observation-allocation-fbba5df6257bc8b5dde6e504"
   ],
   "impact": "Independent roots and identical repeated runs do not receive the approved collision-resistant observation identities.",
   "classification": "product-defect",
@@ -55,8 +56,15 @@
       "observations": [
         "OBS-tc-cli-slug-observation-allocation-f02d9d7cc4d216e577cfce37"
       ]
+    },
+    {
+      "at_unix_seconds": 1793582550,
+      "text": "Final focused rerun after companion and fixture-definition updates at f4613ebf1673491877802fa2ac879a9cf482b267 passed. No full-suite or acceptance claim.",
+      "observations": [
+        "OBS-tc-cli-slug-observation-allocation-fbba5df6257bc8b5dde6e504"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793579587,
-  "updated_at_unix_seconds": 1793582433
+  "updated_at_unix_seconds": 1793582550
 }
