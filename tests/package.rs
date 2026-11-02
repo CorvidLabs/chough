@@ -579,11 +579,7 @@ fn a_checkpoint_reference_from_main_with_merge_guidance_is_known_outdated_and_up
     chough(root, &["init", "--objective", "Try Chough"]);
     let installed = root.join(".agents/skills/chough-workflow/references/checkpoint.md");
     // The known digest is of LF bytes; a Windows checkout may have converted them.
-    let old = fs::read_to_string(
-        manifest_dir().join("tests/fixtures/skill-66bef80/references/checkpoint.md"),
-    )
-    .unwrap()
-    .replace("\r\n", "\n");
+    let old = CHECKPOINT_AT_66BEF80.replace("\r\n", "\n");
     assert_eq!(
         format!("{:x}", Sha256::digest(old.as_bytes())),
         "70ec5dee386c4ef178abe76a45236072bea7342aa265192fd0210536fe2639e8"
@@ -2217,4 +2213,114 @@ expected = [
   "Layout and spacing match the prototype at each viewport",
   "Focus order and visible focus match the companion notes",
 ]
+"##;
+
+/// `references/checkpoint.md` as shipped by main 66bef80 (safe checkpoint merges, #29).
+const CHECKPOINT_AT_66BEF80: &str = r##"# Checkpoint and cold resume
+
+Essential state must never live only in model context. `.chough/session.json` is the
+single writable checkpoint. It works without the librarian and without any other
+storage adapter.
+
+## What it holds
+
+| Field | Content |
+|---|---|
+| `objective`, `stage` | Current outcome, stage, status, side-stage callers and iteration |
+| `native_change` | The SpecSync change ID; native status decides its state |
+| `references` | Criteria, requirements, cases, design sources and files in scope |
+| `decisions`, `open_questions` | Decisions with their reason in the sentence; questions that matter |
+| `completed`, `observations`, `bugs`, `blockers` | Work done and the records that show it |
+| `awaiting_human` | Real gates still waiting for a person |
+| `run_consents` | Consent for this objective only |
+| `next_action` | Suggested next step; never overrides native state |
+
+Standing preferences are in `.chough/preferences.json`, transitions in
+`.chough/transitions.jsonl`, observations in `.chough/evidence/`, bugs in
+`.chough/bugs/`, case definitions in `.chough/cases/` and retention removals in
+`.chough/pruned.jsonl`.
+
+## When to save
+
+Save after each meaningful increment, before handing off, before context is cleared,
+and whenever a human gate opens or closes:
+
+```sh
+chough checkpoint --completed "<what was done>" --observation <id> \
+  --decision "<decision, because reason>" --next-action "<next step>"
+```
+
+Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` record to
+`.chough/transitions.jsonl` (only when that gate is not already open), and
+`--clear-awaiting-human` appends one `gate-closed` record per gate it clears. They
+record when a gate waited, never who decided or what, and `chough timing` reads them
+to show waiting-on-human time. Open and clear gates through these flags rather than by
+editing `session.json`, or the waiting time is lost.
+
+`--clear-awaiting-human` clears every open gate, not just one. To close some gates
+and keep the others, pass the gates still waiting with `--awaiting-human` in the same
+call; they are logged closed and opened again, so their waiting time restarts there.
+
+Write decision summaries and observations, not private reasoning transcripts.
+SpecSync's `Handoff:` line says whether its own records are safe to clear; follow it
+too.
+
+## Resume cold
+
+A fresh agent with none of the earlier conversation:
+
+1. Reads `AGENTS.md`, then this skill.
+2. Runs `chough next --environment <env>` (or reads the files above directly); it is
+   the focused view, and `chough status` is the full one.
+3. Checks native status for `native_change`, freshness of the referenced observations,
+   open blocking bugs and `awaiting_human`. A referenced observation is `current`,
+   `historical` (present but stale), `pruned` (removed by retention, in the ledger) or
+   `unavailable` (missing, not in the ledger); only a current one counts, so rerun the
+   others rather than treat them as passed.
+4. Continues with `next_valid_action` under the same scope, preferences and gates. It
+   never records a pending human decision itself. In stage done with the native
+   change archived, the cycle is closed: `chough next` recommends `chough stage reset
+   --to intent --reason "<why>"` (or `--to plan` when the approved intent already
+   covers the new work), then `specsync change new "<outcome>" --spec <module> --path
+   <path>` and `chough checkpoint --native-change <id> --next-action "<next step>"`.
+   A reset replaces the checkpoint's next action.
+
+## Schema and concurrency
+
+A schema 1 session keeps working for `context` and `status`. `chough migrate`
+converts it after saving the original bytes to `.chough/session.v1.json`. Hand edits
+are allowed and validated on every read. With several agents, one agent owns live
+checkpoint writes; others report to it. APS was evaluated as a backend and deferred:
+it lost concurrent read-modify-write updates without error and accepts unknown fields.
+
+For committed parallel schema 2 edits, the repository declares:
+
+```gitattributes
+.chough/session.json merge=chough-session
+```
+
+Each clone that wants automatic merging configures the driver locally:
+
+```sh
+git config --local merge.chough-session.name "Chough schema 2 checkpoint"
+git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
+```
+
+Git supplies base, ours and theirs as `%O`, `%A` and `%B`. `chough init` never sets
+these values. Without a driver, use the explicit fallback:
+
+```sh
+chough checkpoint --merge <base> <ours> <theirs>
+```
+
+The merge preserves ordered exact-string history and reference changes. It treats
+objective, intent scope, modules, stage, native change, next action, run consents,
+blockers and awaiting-human gates as one current-cycle group. If both sides change
+that group differently, leave the conflict unresolved and ask the checkpoint owner
+or human to select a coherent cycle. Never hand-resolve it by combining fields. A
+merge is not approval, consent, gate closure or a lifecycle transition.
+
+Success replaces only ours. Every refusal preserves all three inputs and writes no
+Chough record. The merge adds no second checkpoint store and does not change the
+one-owner rule for live writes.
 "##;
