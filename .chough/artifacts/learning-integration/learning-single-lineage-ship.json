@@ -1,0 +1,3 @@
+{
+  "error": "archive target historical-integrity preflight failed: accepted change `fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer` requires exactly one trusted transition matching its state, verification, and closing evidence; found 0"
+}

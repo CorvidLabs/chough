@@ -80,7 +80,8 @@
       "src/timing.rs",
       "src/records.rs",
       "tests/timing.rs",
-      "docs/cli.md"
+      "docs/cli.md",
+      ".chough/artifacts/learning-integration/single-lineage-repair.json"
     ]
   },
   "decisions": [
@@ -131,7 +132,8 @@
     "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending",
     "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33.",
     "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it",
-    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks."
+    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks.",
+    "human: 0xLeif accepted the implementation as is (2026-11-01, in chat: \"accept\"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change."
   ],
   "open_questions": [],
   "completed": [
@@ -207,7 +209,8 @@
     "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts.",
     "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate.",
     "Final combined identity, timing and learning source passed 194 unfiltered tests on Rust 1.99.1 and MSRV 1.88.0, the full nine-step verify lane and five-step pre-push lane. Frozen cold-start records and every referenced artifact remain byte-identical.",
-    "Learning implementation natively reviewed and archived under 0xLeif approval with original cold-start Fail/void and real-repository not-run proof unchanged. Final combined local qualification passed 194 tests on Rust 1.99.1 and 1.88.0, nine verify steps and five pre-push steps."
+    "Learning implementation natively reviewed and archived under 0xLeif approval with original cold-start Fail/void and real-repository not-run proof unchanged. Final combined local qualification passed 194 tests on Rust 1.99.1 and 1.88.0, nine verify steps and five pre-push steps.",
+    "Parallel native reviews at the first shared head could not authenticate. Both original closeouts are preserved in a backup ref; this branch keeps the already-finalized combined archive with one review lineage and retains the author acceptance note and transition events. A separate native reopen attempt was refused and is preserved as failed diagnostic evidence."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -333,5 +336,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Push this completed cycle on PR #35 and merge only after all hosted checks succeed at the final archive/checkpoint head. Cold-start proof remains a disclosed failed/void/not-run follow-up; no release is requested."
+  "next_action": "Run the unchanged archive gate locally, then update PR #35 with an exact lease preserving a backup. Mark ready and merge only after every hosted check succeeds. Cold-start Fail/void and not-run proof remains unchanged."
 }

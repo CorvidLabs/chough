@@ -1,0 +1,40 @@
+{
+  "author_head": "f7a9a652f6dd1bab0572e24b313c19001b139540",
+  "combined_closeout_head": "45dbbbc18db3ad1f47c90f361e9db6200f9d4268",
+  "common_source_head": "a1920f7f0ade695b718273a0ebfa7138e1805821",
+  "author_changed_paths": [
+    ".chough/session.json",
+    ".chough/transitions.jsonl",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/accepted-state.json",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/approvals.json",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/change.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/context.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/deltas/cli.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/design.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/docs.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/finalization.json",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/lesson-bundle.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/plan.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/requirements.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/review-attempts.json",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/review.json",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/state.json",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/tasks.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/testing.md",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/verification-attempts.json",
+    ".specsync/archive/changes/2026-11-02-fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/verification.json",
+    ".specsync/changes/fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/verification-attempts.json",
+    ".specsync/changes/fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer/verification.json"
+  ],
+  "source_behavior_changed": false,
+  "canonical_archive": "The complete archive produced from combined source and native review at 9a23091 is retained without mixing native fields. The separate author archive remains intact in the second Git parent.",
+  "retained_checkpoint_additions": {
+    "decisions": [
+      "human: 0xLeif accepted the implementation as is (2026-11-01, in chat: \"accept\"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change."
+    ]
+  },
+  "retained_author_transition_count": 2,
+  "limits": [
+    "Concurrent closeouts are two observed branch events, not two sequential product cycles or a new cold-start grade."
+  ]
+}
