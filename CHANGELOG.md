@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Reports lazily share one structural case-definition read per request, preserving
+  case digests, freshness checks and native gate reads. No lookup loads no suite;
+  later requests start fresh. `CHOUGH_TRACE=1` adds bounded stderr local phases and
+  exact suite-load/lookup counts without changing stdout or record schemas.
+
 ### Added
 
 - Skill resume step: before its first edit, an agent states the recorded handoff in

@@ -1,0 +1,438 @@
+[
+  {
+    "kind": "first-process",
+    "command": "next",
+    "version": "before",
+    "seconds": 4.2814361250493675,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1029"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 5703
+  },
+  {
+    "kind": "first-process",
+    "command": "next",
+    "version": "after",
+    "seconds": 2.9367727919016033,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1034"
+      ]
+    ],
+    "case_counters": [
+      [
+        "1",
+        "138",
+        "57"
+      ]
+    ],
+    "stdout_bytes": 5703
+  },
+  {
+    "kind": "first-process",
+    "command": "status",
+    "version": "before",
+    "seconds": 7.90900666709058,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1025"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 684672
+  },
+  {
+    "kind": "first-process",
+    "command": "status",
+    "version": "after",
+    "seconds": 2.9286621250212193,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1034"
+      ]
+    ],
+    "case_counters": [
+      [
+        "1",
+        "432",
+        "130"
+      ]
+    ],
+    "stdout_bytes": 684672
+  },
+  {
+    "kind": "first-process",
+    "command": "timing-filtered",
+    "version": "before",
+    "seconds": 1.1593309580348432,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1033"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 189295
+  },
+  {
+    "kind": "first-process",
+    "command": "timing-filtered",
+    "version": "after",
+    "seconds": 1.112291625002399,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1015"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 189295
+  },
+  {
+    "kind": "first-process",
+    "command": "timing-all",
+    "version": "before",
+    "seconds": 3.1617825001012534,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 3,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1011"
+      ],
+      [
+        "timed-out",
+        "1035"
+      ],
+      [
+        "timed-out",
+        "959"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 358252
+  },
+  {
+    "kind": "first-process",
+    "command": "timing-all",
+    "version": "after",
+    "seconds": 3.2309815839398652,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 3,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1031"
+      ],
+      [
+        "timed-out",
+        "1004"
+      ],
+      [
+        "timed-out",
+        "967"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 358252
+  },
+  {
+    "kind": "first-process",
+    "command": "retention-preview",
+    "version": "before",
+    "seconds": 1.113633207976818,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1007"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 99851
+  },
+  {
+    "kind": "first-process",
+    "command": "retention-preview",
+    "version": "after",
+    "seconds": 1.1729742919560522,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1014"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 99851
+  },
+  {
+    "kind": "repeated",
+    "command": "next",
+    "version": "after",
+    "seconds": 2.0185012919828296,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1024"
+      ]
+    ],
+    "case_counters": [
+      [
+        "1",
+        "138",
+        "57"
+      ]
+    ],
+    "stdout_bytes": 5703
+  },
+  {
+    "kind": "repeated",
+    "command": "next",
+    "version": "before",
+    "seconds": 3.4867642919998616,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1023"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 5703
+  },
+  {
+    "kind": "repeated",
+    "command": "status",
+    "version": "after",
+    "seconds": 2.6206166248302907,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1035"
+      ]
+    ],
+    "case_counters": [
+      [
+        "1",
+        "432",
+        "130"
+      ]
+    ],
+    "stdout_bytes": 684672
+  },
+  {
+    "kind": "repeated",
+    "command": "status",
+    "version": "before",
+    "seconds": 6.344540124991909,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1016"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 684672
+  },
+  {
+    "kind": "repeated",
+    "command": "timing-filtered",
+    "version": "after",
+    "seconds": 1.2227923329919577,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1002"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 189295
+  },
+  {
+    "kind": "repeated",
+    "command": "timing-filtered",
+    "version": "before",
+    "seconds": 1.120997792109847,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1014"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 189295
+  },
+  {
+    "kind": "repeated",
+    "command": "timing-all",
+    "version": "after",
+    "seconds": 3.1909272908233106,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 3,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1042"
+      ],
+      [
+        "timed-out",
+        "1014"
+      ],
+      [
+        "timed-out",
+        "951"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 358252
+  },
+  {
+    "kind": "repeated",
+    "command": "timing-all",
+    "version": "before",
+    "seconds": 3.1777202079538256,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 3,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1020"
+      ],
+      [
+        "timed-out",
+        "1012"
+      ],
+      [
+        "timed-out",
+        "976"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 358252
+  },
+  {
+    "kind": "repeated",
+    "command": "retention-preview",
+    "version": "after",
+    "seconds": 1.132929916959256,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1008"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 99851
+  },
+  {
+    "kind": "repeated",
+    "command": "retention-preview",
+    "version": "before",
+    "seconds": 1.1792770421598107,
+    "returncode": 0,
+    "command_timed_out": false,
+    "native_started": 1,
+    "native_completed": 0,
+    "completed_native_seconds": null,
+    "native_trace": [
+      [
+        "timed-out",
+        "1034"
+      ]
+    ],
+    "case_counters": [],
+    "stdout_bytes": 99851
+  }
+]

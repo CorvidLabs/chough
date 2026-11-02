@@ -1,0 +1,32 @@
+{
+  "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "binary_sha256": "b93d3d0060c0986a99c0f177cf0b5b9b5e49277d0d3fdc91fd2fe95f61ff6680",
+  "profile": "fresh debug build, cargo build --locked",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "utc": "2026-11-02T15:44:16.123585+00:00",
+  "cold_definition": "first process invocation; OS filesystem cache was not evicted",
+  "source_checkout": "/tmp/chough-tickets-20261102-JAIhPp",
+  "binary": "/tmp/chough-ticket-profile-target/debug/chough",
+  "native_timeout_seconds": 10,
+  "timing_budget_seconds": 30,
+  "command_timeout_seconds": 45,
+  "input_groups": {
+    ".chough/evidence": {
+      "files": 323,
+      "bytes": 520187
+    },
+    ".chough/artifacts": {
+      "files": 424,
+      "bytes": 7275362
+    },
+    ".chough/cases": {
+      "files": 1,
+      "bytes": 81220
+    },
+    ".specsync/archive/changes": {
+      "files": 368,
+      "bytes": 2883146
+    }
+  }
+}

@@ -2380,3 +2380,60 @@ expected = [
   "The step is at most 8 lines, has no em or en dash, and SKILL.md is under 6144 bytes",
   "chough skill status reports both host copies current",
 ]
+
+
+[[case]]
+id = "TC-cli-report-case-read-budget"
+title = "Report requests share one case suite across observation and reference checks"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7", "LIFE-10", "FLOW-13"]
+requirements = ["REQ-cli-028"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::report_case_reads_are_shared_across_observations_and_references passes; the full verify lane also covers lazy and malformed/missing/retired/duplicate definitions and native gate regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "report_case_reads_are_shared_across_observations_and_references"
+
+
+[[case]]
+id = "TC-cli-report-read-invalidation"
+title = "New report requests revalidate case source artifact environment and native inputs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7", "LIFE-10", "FLOW-13"]
+requirements = ["REQ-cli-028"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::report_read_context_does_not_survive_the_next_request passes; the full verify lane also covers lazy and malformed/missing/retired/duplicate definitions and native gate regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "report_read_context_does_not_survive_the_next_request"
+
+
+[[case]]
+id = "TC-cli-report-trace-parity"
+title = "Report traces preserve stdout errors records and exit results"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7", "LIFE-10", "FLOW-13"]
+requirements = ["REQ-cli-028"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::report_traces_preserve_stdout_exit_results_and_managed_records passes with original loader cause diagnostics preserved byte-for-byte; the full verify lane also covers lazy and malformed/missing/retired/duplicate definitions and native gate regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "report_traces_preserve_stdout_exit_results_and_managed_records"

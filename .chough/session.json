@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Criterion 9 follow-up: the skill asks a resuming agent to state the recorded handoff (goal, binding decisions with reasons, last failure with bug status, lessons, next task) before its first edit, proven by rerunning the frozen Kimi cold start",
+  "objective": "Reduce repeated local work in next/status with request-local case reads and honest phase diagnostics for issue #32",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal",
+  "native_change": "read-report-case-definitions-once-per-request-and-expose-local-phase-costs",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -73,7 +73,10 @@
       "TC-cli-0129",
       "TC-cli-0130",
       "TC-cli-0131",
-      "TC-cli-0132"
+      "TC-cli-0132",
+      "TC-cli-report-case-read-budget",
+      "TC-cli-report-read-invalidation",
+      "TC-cli-report-trace-parity"
     ],
     "design": [],
     "files": [
@@ -137,7 +140,8 @@
     "Agent's design choice, not a human decision: skill-only (SKILL.md resume step), no next-view change, so the proof tests one cause; a next-view hint is the fallback if the change run still fails",
     "decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, \"Approve as drafted\"); recorded with specsync change approve --actor 0xLeif",
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
-    "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction"
+    "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
+    "human: 0xLeif authorized the ticket changes through PRs in chat on 2026-11-02: \"And I already gave it some approval and told it can do any changes. It just needs a PR.\" This completed #32 definition is covered by that standing scope/implementation authorization. Native implementation acceptance, review/ship and merge remain separate."
   ],
   "open_questions": [],
   "completed": [
@@ -217,7 +221,8 @@
     "Parallel native reviews at the first shared head could not authenticate. Both original closeouts are preserved in a backup ref; this branch keeps the already-finalized combined archive with one review lineage and retains the author acceptance note and transition events. A separate native reopen attempt was refused and is preserved as failed diagnostic evidence.",
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
-    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)"
+    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
+    "Implemented #32 request-local case reads with typed error preservation. All3boundcases, all201tests on current Rust and Rust1.88, and the9-step Fledge lane passed. Final paired debug diagnostics show reduced local next/statuswork with identical output and1160unchanged managedfiles; capped native attempts remain timedout. The reproduced cache error-chain defect is verified fixed."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -320,7 +325,16 @@
     "OBS-tc-cli-0129-396ac9ba0ef98d906553b910",
     "OBS-tc-cli-0130-e3f217a14172b85e4df24bff",
     "OBS-tc-cli-0131-77a1de3784d43a441c697247",
-    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9"
+    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9",
+    "OBS-product-test-553ec9b0ffe80fd46a96145d",
+    "OBS-product-test-9560e4e56ee93fe64a183f9f",
+    "OBS-product-test-ee1f256b0f5ed2fc19c4eddc",
+    "OBS-dry-run-7ac82f435d8abd2fc884c028",
+    "OBS-tc-cli-report-case-read-budget-29364ae83848a0c4007edd4c",
+    "OBS-tc-cli-report-read-invalidation-7c861b6b62838f86648705b9",
+    "OBS-tc-cli-report-trace-parity-6630eef271b7a6e9c714a565",
+    "OBS-product-test-4e2d19e426e48d18085f0b50",
+    "OBS-dry-run-0e4dd668cbac148ce76e0974"
   ],
   "bugs": [
     "BUG-0001",
@@ -338,10 +352,13 @@
     "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee",
     "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca",
-    "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838"
+    "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838",
+    "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "0xLeif implementation acceptance of the request-local report reads PR; scope approval is already recorded under the standing instruction and native review/ship and merge remain pending"
+  ],
   "run_consents": [],
-  "next_action": "0xLeif merges PR #36 once hosted checks pass"
+  "next_action": "Review the request-local report reads PR on branch0xleif/feat/request-local-report-reads, integrate any agent findings, then obtain human implementation acceptance before native closeout"
 }

@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-4e2d19e426e48d18085f0b50",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-028"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "The strengthened error-chain regression failed before the fix, then all5focusedreportregressions passed after the cache preserved the typed error and original source chain. Independent direct loader/status reproduction now has byte-identical error output and matching exit1; trace on/off and managed records remain unchanged.",
+  "artifacts": [
+    ".chough/artifacts/report-reads-error-chain-test-before.log",
+    ".chough/artifacts/report-reads-error-chain-tests-after.log",
+    ".chough/artifacts/report-reads-error-chain-after.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/report-reads-error-chain-after.json": "d521d9aa84580f12cd5ae91c3c2be6ba25ed0d93858036a8c5d075b70ab4bcd5",
+    ".chough/artifacts/report-reads-error-chain-test-before.log": "0260981d99cf93143feed236e999bda485a365c19293402048d39d4657e647cd",
+    ".chough/artifacts/report-reads-error-chain-tests-after.log": "68d9ef7f386799f02e1abc4e9d1af0509bc496d5b0f3200cce4a465540f09bbf"
+  },
+  "observed_at_unix_seconds": 1793637996,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "e24ad963720b8eb3f97513ddcaf2d0bede42ac13a7748a26d105d258d85fa3ec",
+    "content": "0ccbbb014958bc7f9c70afdddf4f7f7b0f1f63e573b2ede9ca9c0b521ea22da9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated"
+}

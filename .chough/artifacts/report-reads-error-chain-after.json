@@ -1,0 +1,13 @@
+{
+  "loader": {
+    "exit": 1,
+    "stderr": "Error: .chough/cases/cli.cases.toml: invalid chough-testing definition\n\nCaused by:\n    TOML parse error at line 1, column 8\n      |\n    1 | broken case file\n      |        ^\n    key with no value, expected `=`\n    \n",
+    "stdout": ""
+  },
+  "report": {
+    "exit": 1,
+    "stderr": "Error: .chough/cases/cli.cases.toml: invalid chough-testing definition\n\nCaused by:\n    TOML parse error at line 1, column 8\n      |\n    1 | broken case file\n      |        ^\n    key with no value, expected `=`\n    \n",
+    "stdout": ""
+  },
+  "same_error": true
+}

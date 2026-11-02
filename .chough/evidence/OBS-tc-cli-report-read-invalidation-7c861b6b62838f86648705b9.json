@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-report-read-invalidation-7c861b6b62838f86648705b9",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7",
+    "LIFE-10",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-028"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact report_read_context_does_not_survive_the_next_request for TC-cli-report-read-invalidation: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-report-read-invalidation-7c861b6b62838f86648705b9.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-report-read-invalidation-7c861b6b62838f86648705b9.log": "c1bf16ad37486099d6b24121f1d91f77cefea28c6b7fc7e44b7c0bcdb76f04f1"
+  },
+  "observed_at_unix_seconds": 1793638018,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "c52816cd408a7979d42d366563ad92edcea58a8face3823fea096ba1c5efa117",
+    "content": "874bc41e485fa21177f556478ee2a7d4ab5642cc96a8a95abe0f6b28ad907124"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-report-read-invalidation",
+      "digest": "8d5bf4ed3ccf2d7c70dbb6c0ec89ca43a7778cf446cb958065c2ae4d8f688825"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "report_read_context_does_not_survive_the_next_request"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 5
+}

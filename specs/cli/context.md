@@ -192,3 +192,15 @@ future use and revision or retirement guidance. A future native cli.3md would be
 the lesson source in place of this section.
 
 verified: When another approved branch edits a bundled skill file during a learning change, register that integrated main predecessor as well as the original baseline. The exact identity-main librarian bytes were otherwise classified as edited and skipped. Sources: BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838, OBS-product-test-bfc159865a39075249fb6e40 and OBS-product-test-b0ea9516761a4e7adcf61406; the named package regression checks both safe update and edited-copy preservation. Limits: observed on macOS with Rust 1.99.1; this is bundle-upgrade evidence, not a fresh-agent cold-start grade.
+
+2026-11-02, exact diagnostic parity (verified): the first new report trace-parity
+regression joined error lines and removed a final newline before comparison. A
+split-inclusive trace-line filter preserves the exact remaining diagnostic bytes;
+all five focused report-read regressions pass. Sources:
+OBS-product-test-72b596ad74a5bf0901e6aa92 and
+.chough/artifacts/report-reads-focused-after.log. Limits: this is test-harness parity
+on local macOS arm64, not human acceptance or native authentication. Future use:
+remove diagnostic trace lines without normalizing the underlying output, and keep
+capped native timing separate from completed native qualification.
+
+2026-11-02, request-local error reuse (verified): storing a failed structural case load as a formatted string changed its original multiline cause diagnostics. The strengthened loader/report parity regression failed before typed shared error ownership restored identical diagnostics, and all five focused read-context regressions then passed. Sources: BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b, OBS-product-test-553ec9b0ffe80fd46a96145d and OBS-product-test-4e2d19e426e48d18085f0b50. Limits: local macOS arm64; final platform and product qualification is separate. Future use: preserve typed source chains when sharing fallible reads and compare the cached path against its original loader, rather than only comparing trace on/off within the new path.
