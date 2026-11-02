@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "read-report-case-definitions-once-per-request-and-expose-local-phase-costs",
+  "native_change": "integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -45,7 +45,9 @@
       "REQ-cli-023",
       "REQ-cli-002",
       "REQ-cli-020",
-      "REQ-cli-024"
+      "REQ-cli-024",
+      "REQ-cli-009",
+      "REQ-cli-005"
     ],
     "cases": [
       "TC-cli-0101",
@@ -76,7 +78,13 @@
       "TC-cli-0132",
       "TC-cli-report-case-read-budget",
       "TC-cli-report-read-invalidation",
-      "TC-cli-report-trace-parity"
+      "TC-cli-report-trace-parity",
+      "TC-cli-0094",
+      "TC-cli-skill-orders-the-change-check-before-new-requirement-cases",
+      "TC-cli-leaving-test-refuses-an-unlinked-failed-case",
+      "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal",
+      "TC-cli-0032",
+      "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
     ],
     "design": [],
     "files": [
@@ -84,7 +92,12 @@
       "src/records.rs",
       "tests/timing.rs",
       "docs/cli.md",
-      ".chough/artifacts/learning-integration/single-lineage-repair.json"
+      ".chough/artifacts/learning-integration/single-lineage-repair.json",
+      "skills/chough-workflow/references/plan.md",
+      "skills/chough-workflow/references/testing.md",
+      "skills/chough-workflow/references/accept.md",
+      "src/skill.rs",
+      "tests/package.rs"
     ]
   },
   "decisions": [
@@ -142,7 +155,16 @@
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
     "human: 0xLeif authorized the ticket changes through PRs in chat on 2026-11-02: \"And I already gave it some approval and told it can do any changes. It just needs a PR.\" This completed #32 definition is covered by that standing scope/implementation authorization. Native implementation acceptance, review/ship and merge remain separate.",
-    "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the PR closeout status was presented. This authorizes this session to finish native closeout for PR #46 under the existing through-PR authorization; acting native account is corvid-agent. Merge, release, deployment and live cleanup remain separate."
+    "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the PR closeout status was presented. This authorizes this session to finish native closeout for PR #46 under the existing through-PR authorization; acting native account is corvid-agent. Merge, release, deployment and live cleanup remain separate.",
+    "decided: 0xLeif in chat (2026-11-02 8:43 AM MT, relayed: \"I approve all\") gave the go-ahead on #11 with the options proposed there (because the smallest fix keeps REQ-cli-005 unchanged): ordering and skill text only, no delta-aware link resolution, no SpecSync change, trace to existing HI LIFE-6 and FLOW-7. Not a native scope approval of this definition",
+    "rejected: resolving case links against approved deltas (because REQ-cli-005 says the hint SHALL NOT read native deltas)",
+    "Scope approval recorded natively with actor 0xLeif from his explicit chat approval at 8:56 AM MT 2026-11-02, relayed by corvid-agent.",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; the native definition approval recorded earlier with actor 0xLeif was removed and re-recorded with actor corvid-agent (same scope digest b98afa26); review and finalize recorded as corvid-agent; merge stays with 0xLeif",
+    "Proposed (on #39, pending scope approval): refuse, not warn, with refused:unlinked-failure; a linking bug of any status satisfies it; stale observations do not trigger it; next and status name it via assess; REQ-cli-008 modified, no new ID",
+    "corvid-agent records no approval for a human; scope approval is 0xLeif's",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction",
+    "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif",
+    "routine integration choice: the checkpoint owner selected PR 46's complete current-cycle group over incoming main; Chough merged additive collections and every transition occurrence from both parents was preserved; native integration owns only reconciliation of previously approved behavior"
   ],
   "open_questions": [],
   "completed": [
@@ -225,7 +247,16 @@
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
     "Implemented #32 request-local case reads with typed error preservation. All3boundcases, all201tests on current Rust and Rust1.88, and the9-step Fledge lane passed. Final paired debug diagnostics show reduced local next/statuswork with identical output and1160unchanged managedfiles; capped native attempts remain timedout. The reproduced cache error-chain defect is verified fixed.",
     "Clarified definition actor/source provenance: corvid-agent records the project operation and cites0xLeif standing chat authorization as SOURCE. The same approved scope and original ledger record are preserved; implementation acceptance and native review/ship remain pending.",
-    "PR #46 native scoped review and ship completed under the human finish-all instruction; original approval history, failed proof and cold-start not-run boundary remain intact."
+    "PR #46 native scoped review and ship completed under the human finish-all instruction; original approval history, failed proof and cold-start not-run boundary remain intact.",
+    "Recorded the BUG-0017 ordering reproduction on Linux (OBS-product-test-11dfd04637cfc41549d8bec2) before the skill fix",
+    "Implemented the case recording order skill text (plan, testing, accept), 825a380 digests in KNOWN_PREVIOUS, host copies refreshed, CHANGELOG and ROADMAP; package tests failed first (OBS-product-test-61a4a912f4e142a100dd919e) and pass now",
+    "Closeout: one labelled observation lesson (case recording order) in specs/cli/context.md; new decisions carry reasons",
+    "Scoped change check materialized REQ-cli-009; TC-cli-skill-orders-the-change-check-before-new-requirement-cases passed (agent-assisted) and TC-cli-0094 passed; BUG-0017 verified (reproduced, later passed)",
+    "fledge lanes run verify passed all 9 steps (198 tests, 0 failed) on Linux with fledge 1.8.0, specsync 6.1.2, hi 0.8.0 after the scoped change check",
+    "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated",
+    "Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)",
+    "Change archived (approve/review/finalize recorded as corvid-agent per 0xLeif's 9:14 AM MT instruction)",
+    "Integrated main 3d00e44 with PR 46 report reads: preserved 1261 immutable files from both parents with zero mismatches; retained all additive checkpoint collections and all 30 appended transition occurrences; three report cases passed on integrated source"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -337,7 +368,15 @@
     "OBS-tc-cli-report-read-invalidation-7c861b6b62838f86648705b9",
     "OBS-tc-cli-report-trace-parity-6630eef271b7a6e9c714a565",
     "OBS-product-test-4e2d19e426e48d18085f0b50",
-    "OBS-dry-run-0e4dd668cbac148ce76e0974"
+    "OBS-dry-run-0e4dd668cbac148ce76e0974",
+    "OBS-product-test-11dfd04637cfc41549d8bec2",
+    "OBS-product-test-61a4a912f4e142a100dd919e",
+    "OBS-product-test-694fad65ec7621ab2e3e2b32",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-f2fe3e74105b6b50775d28cd",
+    "OBS-tc-cli-0094-b36b0ba7e05a14833ddbe65f",
+    "OBS-tc-cli-report-case-read-budget-fbb511b1569aa7d4613f9da3",
+    "OBS-tc-cli-report-read-invalidation-1804738b444d14141f0e6856",
+    "OBS-tc-cli-report-trace-parity-ab2c3c3517422d5227b92cb0"
   ],
   "bugs": [
     "BUG-0001",
@@ -356,10 +395,11 @@
     "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca",
     "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838",
-    "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b"
+    "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b",
+    "BUG-0017"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif merges PR #46 once hosted checks and review are clear; integrate main and requalify after an earlier PR merges"
+  "next_action": "Run the mandatory verify lane and Rust 1.88 tests; root alone records native integration review and ship"
 }

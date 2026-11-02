@@ -7,10 +7,11 @@
   "title": "Integrate merged main into PR 46 while preserving report reads and lifecycle guidance",
   "description": "Integrate merged main into PR 46 while preserving report reads and lifecycle guidance",
   "kind": "operations",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "7b3d4fcab3b64088a1268eb11c5823cf06ac98f3",
   "created_at": 1793660930,
-  "updated_at": 1793661065,
+  "updated_at": 1793661273,
   "affected_specs": [
     "cli"
   ],

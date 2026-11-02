@@ -1,0 +1,14 @@
+# Issue #39 gate tests before the fix
+revision: 825a3805530456005e361dfa6d96d93eee52cd09 + working tree (tests only)
+platform: Linux 6.12.94+ x86_64
+date: 2026-11-02T16:16:24Z
+command: cargo test --test stages unlinked
+test leaving_test_refuses_an_unlinked_failed_case_until_it_passes ... FAILED
+test a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged ... FAILED
+thread 'leaving_test_refuses_an_unlinked_failed_case_until_it_passes' (3445768) panicked at tests/common/mod.rs:69:9:
+["stage", "advance"] unexpectedly succeeded: {
+thread 'a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged' (3445767) panicked at tests/common/mod.rs:69:9:
+["stage", "advance"] unexpectedly succeeded: {
+    a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged
+    leaving_test_refuses_an_unlinked_failed_case_until_it_passes
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.33s
