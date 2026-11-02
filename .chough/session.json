@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -206,7 +206,8 @@
     "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read",
     "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts.",
     "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate.",
-    "Final combined identity, timing and learning source passed 194 unfiltered tests on Rust 1.99.1 and MSRV 1.88.0, the full nine-step verify lane and five-step pre-push lane. Frozen cold-start records and every referenced artifact remain byte-identical."
+    "Final combined identity, timing and learning source passed 194 unfiltered tests on Rust 1.99.1 and MSRV 1.88.0, the full nine-step verify lane and five-step pre-push lane. Frozen cold-start records and every referenced artifact remain byte-identical.",
+    "Learning implementation natively reviewed and archived under 0xLeif approval with original cold-start Fail/void and real-repository not-run proof unchanged. Final combined local qualification passed 194 tests on Rust 1.99.1 and 1.88.0, nine verify steps and five pre-push steps."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -332,5 +333,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Complete native review and ship under the explicit human approval without an intervening commit, then advance the checkpoint to done, push this PR, and mark ready and merge only after all hosted checks succeed. Cold-start Fail/void and not-run limitations remain disclosed."
+  "next_action": "Push this completed cycle on PR #35 and merge only after all hosted checks succeed at the final archive/checkpoint head. Cold-start proof remains a disclosed failed/void/not-run follow-up; no release is requested."
 }
