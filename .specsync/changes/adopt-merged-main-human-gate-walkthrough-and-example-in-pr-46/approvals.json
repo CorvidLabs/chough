@@ -1,0 +1,39 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793661680,
+      "digest": "2289091653b41e65863ec989b5c0536d44854ccec623f51b7d7d87f44ecd6eba",
+      "note": "Authorized by 0xLeif standing ticket changes through PRs and 2026-11-02 \"Can you finish up all these?\"; bounded adoption of already merged main walkthrough/example only. Actor is not authenticated human identity; no new as-is acceptance or merge is asserted.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "adopt-merged-main-human-gate-walkthrough-and-example-in-pr-46",
+        "title": "Adopt merged main human-gate walkthrough and example in PR 46",
+        "description": "Adopt merged main human-gate walkthrough and example in PR 46",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/walkthrough.md",
+          "examples/feature-bug-loop.sh"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Import the already approved main 9d02 human-gate walkthrough and disposable example without adding semantic behavior; companion code and canonical reconciliation remain owned by the first PR 46 integration change.",
+        "acceptance_criteria": [
+          "The main 9d02 walkthrough and feature-bug example remain byte-identical after integration; the full mandatory lane and Rust 1.88 tests pass with both preserved main gates and report reads"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Preserve existing archive and evidence bytes; retain the main awaiting-human guard and examples; no new runtime or policy; actor corvid-agent uses actual 0xLeif through-PR and finish-all authorization; root alone records review and ship",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
