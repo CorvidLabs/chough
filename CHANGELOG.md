@@ -54,6 +54,20 @@ All notable changes to Chough are recorded here. The format follows
 - History retention normalizes directory aliases in frozen plaintext artifacts as
   well as structured references, preserving cycles named with Windows separators,
   case differences, repeated separators and dot components.
+- Leaving test for accept, by `stage advance` or `stage skip`, is refused with
+  `refused:unlinked-failure` while the latest executed (passed or failed) observation
+  of a case referenced in the checkpoint failed and no local bug links it; a later
+  `not-run` observation does not clear it. `next` and `status` at test name the same
+  refusal. A later pass, or a bug of any status linking the failure, lifts it
+  (issue #39).
+
+- Skill guidance for case recording order (#11, BUG-0017): the plan, testing and
+  accept references say that a requirement an approved change adds is linkable only
+  after the scoped `specsync change check` materializes it, so that check runs before
+  adding, running or recording cases that link it, and running or recording cases is
+  never a `tasks.md` checkbox, because the check refuses while one is unchecked.
+  Copies of those three references from main 825a380 are known-outdated, so
+  `chough skill update` replaces them.
 - `chough next` and `chough status` no longer say `Continue <stage>`, or give the
   build gate refusal, at intent to accept once the recorded native change is
   archived with authenticated terminal evidence; they name the archive and the new

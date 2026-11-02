@@ -216,6 +216,21 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "SKILL.md",
         "367a9873293e79ca40c9634e2b2a12c3223074aaec161c7444690c2d02e12199",
     ),
+    // Main 825a380; superseded by the case recording order change (#11, BUG-0017): the
+    // scoped change check runs before cases that link a new requirement, and running or
+    // recording cases is never a tasks.md checkbox.
+    (
+        "references/plan.md",
+        "1022db57d0c114effc8669ede9ebb453f932109f608f883712725e57ba53551d",
+    ),
+    (
+        "references/testing.md",
+        "426c2df68e8d25bfbdee4bf81b4deaa06eac4525b6dfad3c771311e0d6a4ac99",
+    ),
+    (
+        "references/accept.md",
+        "80f71366ad81e1720bdc5f91d51c5428cd6a60729c9d1675977e284f7b08e398",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

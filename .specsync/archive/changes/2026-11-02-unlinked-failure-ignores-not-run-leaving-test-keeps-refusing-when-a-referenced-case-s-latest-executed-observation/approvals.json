@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793639001,
+      "digest": "ce7367cea1dca9f70384e41a019985363d9ae54d666a391050e6ea865a19407c",
+      "note": "Recorded as corvid-agent on 0xLeif's explicit chat instruction of 2026-11-02 9:14 AM MT: 'Use corvid-agent for all approvals for all things!! You are corvid-agent'; Leif also said 'I approve all'. Covers this PR 43 review follow-up scope only; implementation acceptance and merge stay with 0xLeif.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
+        "title": "Unlinked failure ignores not-run: leaving test keeps refusing when a referenced case's latest executed observation failed and a later observation is only not-run (PR 43 review)",
+        "description": "Unlinked failure ignores not-run: leaving test keeps refusing when a referenced case's latest executed observation failed and a later observation is only not-run (PR 43 review)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/cli/",
+          "src/stage.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A later passed observation still lifts the refusal even when a not-run follows it; a case with only not-run observations does not refuse",
+          "The regression test fails before the fix and passes after it; fledge lanes run verify passes; hosted CI is reported only as observed",
+          "With a referenced case failed at time 100 and only not-run at time 200, stage advance and stage skip at test are refused with refused:unlinked-failure naming the failed observation, and next and status name the same refusal"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/context.md lessons: tasks.md checkboxes block change check, so cases and human gates stay out of tasks.md; keep the src/stage.rs diff minimal (PR 45 also edits it)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "66364d9f686ce96677b75d8062825cc9cdb17711f996e84f5d37133f6b88bfe8"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793639188,
+      "digest": "293fcb244d0c169f2bedfd468864b2b747e937f99b61d6145cd868496a9ffe41",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

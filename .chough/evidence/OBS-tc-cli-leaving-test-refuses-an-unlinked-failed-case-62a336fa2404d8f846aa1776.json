@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-leaving-test-refuses-an-unlinked-failed-case-62a336fa2404d8f846aa1776",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-5",
+    "FLOW-2"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test stages -- --exact leaving_test_refuses_an_unlinked_failed_case_until_it_passes for TC-cli-leaving-test-refuses-an-unlinked-failed-case: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-leaving-test-refuses-an-unlinked-failed-case-62a336fa2404d8f846aa1776.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-leaving-test-refuses-an-unlinked-failed-case-62a336fa2404d8f846aa1776.log": "6346d918e2b945c6f9dd0da3947cfa05d451f410f8fa4f1b888115c0ec8cdfae"
+  },
+  "observed_at_unix_seconds": 1793636336,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "97aa5fb810d425586668e55097a9ec3428560b47a45ad9f26a3c5f022a274a31",
+    "content": "d3f32d8ba73a05904339432e53b8a98204b078b679517d1ca0163fbeb6071bd5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-leaving-test-refuses-an-unlinked-failed-case",
+      "digest": "45485a67f795068bf65ab228dc74f092bd0a794a3bdc3a3bf589be0365d73397"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "leaving_test_refuses_an_unlinked_failed_case_until_it_passes"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

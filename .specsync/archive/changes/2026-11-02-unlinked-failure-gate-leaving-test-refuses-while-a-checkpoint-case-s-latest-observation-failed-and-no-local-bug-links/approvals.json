@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793636107,
+      "digest": "e4b4816d60705627b3b313f521fd39db69b113043b7e854b093a1766fe8ab1a5",
+      "note": "Scope approval recorded by corvid-agent under 0xLeif's explicit chat instruction of 2026-11-02 9:14 AM MT: \"Use corvid-agent for all approvals for all things!! You are corvid-agent\" (overriding AGENTS.md's no agent-label approvals rule for this repository)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links",
+        "title": "Unlinked failure gate: leaving test refuses while a checkpoint case's latest observation failed and no local bug links it (issue 39)",
+        "description": "Unlinked failure gate: leaving test refuses while a checkpoint case's latest observation failed and no local bug links it (issue 39)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/cli/",
+          "src/stage.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A Linux reproduction of issue 39 fails before the fix and passes after, with new tests in tests/stages.rs failing first; the verify lane passes locally and CI is reported only as observed",
+          "At test, chough next and chough status name the same refusal as the next action from the same rule, within the existing next bounds",
+          "Leaving test for accept, by advance or skip, is refused with refused:unlinked-failure while the latest observation of a case referenced in the checkpoint failed and no local bug links that observation; the refusal names the case, the observation and both remedies",
+          "Observations that are stale but not failed, failed observations of cases not referenced in the checkpoint, and other stage moves are not affected",
+          "The same move is allowed once a later observation of that case passed or any local bug links the failed observation; open blocking bugs keep refused:blocking-bugs"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/context.md lessons: tasks.md checkboxes block change check (2026-10-31); new requirement IDs materialize only at change check (2026-10-31); do not list .chough/ as an affected path and MODIFIED needs an exact REQ heading (2026-11-01); closeout is the last checkbox, done before the scoped check (2026-11-01); case recording is never a tasks.md checkbox (PR #41)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "7b17385c333e4c3bad631141aec26c49ea8613a20bee76797842ab7192d58594"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793636440,
+      "digest": "48926b8ec0cff80d51bd88f9eed6456e16b24ee6418f72537af474c71878400f",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

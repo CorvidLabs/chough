@@ -1,0 +1,19 @@
+# Issue #39 after the fix
+revision: 825a3805530456005e361dfa6d96d93eee52cd09 + working tree
+platform: Linux 6.12.94+ x86_64
+date: 2026-11-02T16:17:26Z
+## cargo test --test stages unlinked
+test leaving_test_refuses_an_unlinked_failed_case_until_it_passes ... ok
+test a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged ... ok
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.31s
+## cargo test (all)
+passed 198, failed 0
+## reproduction script (tail)
+  Native SDD is disabled or not adopted; this transition is not gated by a native lifecycle.
+Human gates: none
+Blockers: none
+Blocking bugs: none (0 other open; chough bug list)
+== stage advance from test
+Error: advance refused (refused:unlinked-failure): case TC-shipping-0002 latest observation OBS-tc-shipping-0002-96eacd0d36eb088772523bb4 failed and no bug links it; rerun the case until it passes, or link the failure with `chough bug add ... --observation OBS-tc-shipping-0002-96eacd0d36eb088772523bb4` or `chough bug update <bug> --observation OBS-tc-shipping-0002-96eacd0d36eb088772523bb4`
+exit 1
+test

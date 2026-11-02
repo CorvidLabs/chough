@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
+  "implementation_commit": "9d2e377f9ccef1edf136cddefbfc016d396e3b08",
+  "implementation_tree": "d06ff5e87ae15d4ebd1e6854a52340c6bae92a51",
+  "contract_digest": "ce7367cea1dca9f70384e41a019985363d9ae54d666a391050e6ea865a19407c",
+  "workspace_digest": "b1cd75c97258bc428aae49d7791e54c4648d17ea0d8e9a66722bbc3f7b13065b",
+  "closing_digest": "293fcb244d0c169f2bedfd468864b2b747e937f99b61d6145cd868496a9ffe41",
+  "review_digest": "c1359a995cbd7c768e89e676bcdf6c3e00ccdcf48b7fe637891a96b365f08610",
+  "finalization_digest": "846027b7d65814453da4563de48fb912055cd595894dacc288232d029b808ceb",
+  "timestamp": 1793639188
+}

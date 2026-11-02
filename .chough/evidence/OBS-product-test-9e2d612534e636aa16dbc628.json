@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-9e2d612534e636aa16dbc628",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-linux-x86_64",
+  "summary": "Issue #39 reproduced at 825a380: in a shipping sample, stage advance left test for accept (exit 0) while the referenced case TC-shipping-0002's latest observation had failed and no bug linked it; chough next showed no warning",
+  "artifacts": [
+    ".chough/artifacts/bug39-repro.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug39-repro.log": "a618351863654efc379735ac3117d0193c690900f9c9832bdd094d4344af4c52"
+  },
+  "observed_at_unix_seconds": 1793636044,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "c332ec3ff6d0a21ec183846df1a66a952152415968860cba7eb5d5ebc32af922",
+    "content": "156e42275d28bb7f94c835fef2af188ad6e6eeb795a01b79b08226c003e89865"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Sample project with SDD off; the gate under test is not a native one"
+  ]
+}
