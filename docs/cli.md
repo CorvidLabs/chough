@@ -59,6 +59,9 @@ Existing evidence auto-retention does not invoke history pruning.
 | Immutable removal receipt | 1 MiB |
 
 A reasoned stage reset can start a fresh bounded cycle without deleting old proof.
+Git can combine independently written event sets above a cycle's local append
+capacity. Imported proof stays; further ordinary appends refuse, and a reasoned
+reset starts a new cycle. The limit does not discard merged events.
 There is no global disk-size guarantee when proof must stay. Current state remains
 in the checkpoint; immutable events are history, and native SpecSync still gates
 lifecycle moves. Divergent checkpoint cursors require one coherent current-cycle

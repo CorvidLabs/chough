@@ -1,0 +1,39 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793661110,
+      "digest": "4bd906d0c6f936df4eaa4d837e0a1cc9eb3cbbf5edfe88496b509a7e86f7ee35",
+      "note": "Authority source: 0xLeif standing chat permission for changes delivered through PRs and 2026-11-02 request \"Can you finish up all these?\" after reviewed closeout status. Scope: integrate already approved main guidance with PR37, preserve all proof, qualify and close natively; merge and live adoption/cleanup remain separate. Acting account corvid-agent is not the human source.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-merged-case-ordering-guidance-with-bounded-history",
+        "title": "Integrate merged case ordering guidance with bounded history",
+        "description": "Integrate merged case ordering guidance with bounded history",
+        "kind": "documentation",
+        "affected_specs": [],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/",
+          ".claude/skills/chough-workflow/",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/testing.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Reconcile already approved and archived main case-order guidance with this active bounded-history branch. No new requirement or product policy is introduced; canonical contract reconciliation stays in the primary cli change. Preserve all proof and one coherent current-cycle checkpoint.",
+        "acceptance_criteria": [
+          "Preserve already approved case-order guidance and bounded-history guidance together, keep canonical and installed copies consistent without overwriting edits, preserve all archived proof and transition occurrences with one coherent PR37 checkpoint cycle, and pass fresh native audit plus the mandatory Fledge lane, Rust1.88 suite and affected history cases after integration."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

@@ -25,7 +25,7 @@ A stage reset starts a new cycle and head. Changes of next_action or native-chan
 
 - One event: at most 65,536 bytes, including its envelope.
 - Recent guidance: follow at most 128 parent events and read at most 512 KiB; retain existing output caps. No directory-wide event scan for next/status/context/stage show.
-- One new cycle: at most 4,096 event files and 16 MiB of event bytes. Check before mutation. At capacity, ordinary writes refuse without changing checkpoint state; a reasoned reset can start a new cycle without deleting the old one.
+- One new cycle: at most 4,096 event files and 16 MiB of event bytes. Check before mutation. At capacity, ordinary writes refuse without changing checkpoint state; a reasoned reset can start a new cycle without deleting the old one. These are local append limits. Git may combine independently written immutable sets above the capacity; retain every imported event, refuse further ordinary appends, and use a reasoned reset for new work. This is not a hard bound on a merged directory.
 - A timing request: at most 4,096 events and 16 MiB of transition bytes across selected lineages; reaching a bound is explicit partial history with unknown affected spans.
 - Maintenance enumeration: at most 16,384 source files and 64 MiB of metadata per invocation. Exceeding a bound yields an incomplete preview and refuses apply; protection sources are never silently truncated.
 
