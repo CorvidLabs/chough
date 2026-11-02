@@ -7,11 +7,11 @@
   "title": "Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change",
   "description": "Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "fb6e4871a802c55ba273cd9f5a6207f6e42be884",
   "created_at": 1793571890,
-  "updated_at": 1793591353,
+  "updated_at": 1793591443,
   "affected_specs": [
     "cli"
   ],
