@@ -1,6 +1,6 @@
 ---
 id: human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 825a3805530456005e361dfa6d96d93eee52cd09
 ---
