@@ -1,0 +1,71 @@
+{
+  "source_commit": "c955752081bfac5dd6335949749640371726aab6",
+  "source_tree": "aed08a44282ddb6acdc2f3b159406bf0c2873e36",
+  "commands": [
+    {
+      "name": "learning-final-combined-verify",
+      "command": [
+        "/Users/leif/.cargo/bin/fledge",
+        "lanes",
+        "run",
+        "verify"
+      ],
+      "rust_toolchain": "1.99.1",
+      "exit": 0,
+      "seconds": 104.104,
+      "log": ".chough/artifacts/learning-integration/learning-final-combined-verify.log",
+      "log_sha256": "4e27a007366dfcdc2e6931ecaf923971c40523823be5ee1789d0a512ac4c1513",
+      "test_totals": {
+        "passed": 194,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "test_suites": 10
+    },
+    {
+      "name": "learning-final-combined-msrv",
+      "command": [
+        "/Users/leif/.cargo/bin/fledge",
+        "run",
+        "test",
+        "--",
+        "--locked",
+        "--target-dir",
+        "target/msrv"
+      ],
+      "rust_toolchain": "1.88.0",
+      "exit": 0,
+      "seconds": 72.407,
+      "log": ".chough/artifacts/learning-integration/learning-final-combined-msrv.log",
+      "log_sha256": "a6844675c7f45201f21dea49edf8851eed61a99926e9d7065ae6fa6b80acedde",
+      "test_totals": {
+        "passed": 194,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "test_suites": 10
+    },
+    {
+      "name": "learning-final-combined-pre-push",
+      "command": [
+        "/Users/leif/.cargo/bin/fledge",
+        "lanes",
+        "run",
+        "pre-push"
+      ],
+      "rust_toolchain": "1.99.1",
+      "exit": 0,
+      "seconds": 5.398,
+      "log": ".chough/artifacts/learning-integration/learning-final-combined-pre-push.log",
+      "log_sha256": "87e2688f4f3ba82987f88dcf1bd03aed3885db1c7891b0f17dc871f802e1e9d1"
+    }
+  ],
+  "limits": [
+    "Local macOS arm64; hosted cross-platform CI is pending.",
+    "Frozen cold-start grades remain Fail and void for this final source; the real-repository attempt remains not-run. No replacement Pass grade is implied."
+  ]
+}

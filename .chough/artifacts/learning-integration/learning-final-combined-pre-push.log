@@ -1,0 +1,38 @@
+▶️ Lane: pre-push — Fast local gate before pushing
+  ▶️ Running task: fmt
+  ✔ Step 1 done (274ms)
+  ▶️ Running task: check
+    Checking chough v0.1.0 (/Users/leif/.codex/visualizations/2026/11/01/01a198dd-39f8-7e93-af29-fee466711cd0/learning-completion/repo)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.14s
+  ✔ Step 2 done (2.187s)
+  ▶️ Running task: intent
+{
+  "notes": [],
+  "files": 2,
+  "criteria": 23,
+  "retired": 0,
+  "families": [
+    "FLOW",
+    "LIFE"
+  ],
+  "problems": []
+}
+  ✔ Step 3 done (9ms)
+  ▶️ Running task: spec
+
+specs/cli/cli.spec.md
+  ✓ Frontmatter valid
+  ✓ All source files exist
+  ✓ All required sections present
+  ✓ 14/14 exports documented
+  ✓ All dependency specs exist
+
+1 specs checked: 1 passed, 0 warning(s), 0 failed
+File coverage: 14/14 (100%)
+LOC coverage:  12340/12340 (100%)
+  ✔ Step 4 done (61ms)
+  ▶️ Running task: audit
+Auditing active changes (1)…
+✓ audit passed (1 active)
+  ✔ Step 5 done (2.856s)
+✅ Lane pre-push completed (5 steps in 5.389s)

@@ -66,7 +66,14 @@
       "TC-cli-0113",
       "TC-cli-0114",
       "TC-cli-0089",
-      "TC-cli-0100"
+      "TC-cli-0100",
+      "TC-cli-0126",
+      "TC-cli-0127",
+      "TC-cli-0128",
+      "TC-cli-0129",
+      "TC-cli-0130",
+      "TC-cli-0131",
+      "TC-cli-0132"
     ],
     "design": [],
     "files": [
@@ -198,7 +205,8 @@
     "End-to-end trace regression for a 255-byte change ID fails on the pre-review records.rs and passes now",
     "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read",
     "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts.",
-    "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate."
+    "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate.",
+    "Final combined identity, timing and learning source passed 194 unfiltered tests on Rust 1.99.1 and MSRV 1.88.0, the full nine-step verify lane and five-step pre-push lane. Frozen cold-start records and every referenced artifact remain byte-identical."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -293,7 +301,15 @@
     "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37",
     "OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e",
     "OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52",
-    "OBS-structural-2cb53c21d6c98144f9e9ee17"
+    "OBS-structural-2cb53c21d6c98144f9e9ee17",
+    "OBS-product-test-691b9012d1892af5c103d51d",
+    "OBS-tc-cli-0126-3a69c555999c2b38e7836107",
+    "OBS-tc-cli-0127-dad78ccab3753c1ba84dd059",
+    "OBS-tc-cli-0128-dfdc72848b35f76f8600d036",
+    "OBS-tc-cli-0129-396ac9ba0ef98d906553b910",
+    "OBS-tc-cli-0130-e3f217a14172b85e4df24bff",
+    "OBS-tc-cli-0131-77a1de3784d43a441c697247",
+    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9"
   ],
   "bugs": [
     "BUG-0001",
@@ -316,5 +332,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Complete integration with the now-merged main, refresh native materialization, run full qualification and MSRV, preserve cold-start Fail/void and not-run evidence, then close natively under the explicit approval. Mark ready and merge only after every CI check is green."
+  "next_action": "Complete native review and ship under the explicit human approval without an intervening commit, then advance the checkpoint to done, push this PR, and mark ready and merge only after all hosted checks succeed. Cold-start Fail/void and not-run limitations remain disclosed."
 }

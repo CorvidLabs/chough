@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-691b9012d1892af5c103d51d",
+  "criteria": [
+    "LIFE-4",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019",
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Final combined identity, timing and learning tree: 194 unfiltered tests passed on Rust 1.99.1 and MSRV 1.88.0; all nine verify steps and all five pre-push steps passed.",
+  "artifacts": [
+    ".chough/artifacts/learning-integration/learning-final-combined-verify.log",
+    ".chough/artifacts/learning-integration/learning-final-combined-msrv.log",
+    ".chough/artifacts/learning-integration/learning-final-combined-pre-push.log",
+    ".chough/artifacts/learning-integration/final-qualification.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/learning-integration/final-qualification.json": "3975181a823d673121af5f61519c081e911726f9a5e4035ff54af2c5ba08d9d8",
+    ".chough/artifacts/learning-integration/learning-final-combined-msrv.log": "a6844675c7f45201f21dea49edf8851eed61a99926e9d7065ae6fa6b80acedde",
+    ".chough/artifacts/learning-integration/learning-final-combined-pre-push.log": "87e2688f4f3ba82987f88dcf1bd03aed3885db1c7891b0f17dc871f802e1e9d1",
+    ".chough/artifacts/learning-integration/learning-final-combined-verify.log": "4e27a007366dfcdc2e6931ecaf923971c40523823be5ee1789d0a512ac4c1513"
+  },
+  "observed_at_unix_seconds": 1793591313,
+  "snapshot": {
+    "revision": "c955752081bfac5dd6335949749640371726aab6",
+    "dirty": false,
+    "fingerprint": "3214bde7e2ecec49ebd9091c552f14559e264ea201fd47946def6aeb626f9b95",
+    "content": "f8d6dedc12f3ca184d4a7fb6f4d4fc28bbcf536211fc103cec8deac05920879c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Local qualification; hosted CI is pending. Frozen cold-start Fail/void and real-repository not-run records remain unchanged; this is no new cold-start grade."
+  ]
+}

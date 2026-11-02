@@ -22,7 +22,8 @@
   "fixture": null,
   "observations": [
     "OBS-product-test-bfc159865a39075249fb6e40",
-    "OBS-product-test-b0ea9516761a4e7adcf61406"
+    "OBS-product-test-b0ea9516761a4e7adcf61406",
+    "OBS-product-test-691b9012d1892af5c103d51d"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
@@ -44,8 +45,15 @@
       "observations": [
         "OBS-product-test-b0ea9516761a4e7adcf61406"
       ]
+    },
+    {
+      "at_unix_seconds": 1793591313,
+      "text": "The final combined tree also passes all 194 tests on Rust 1.99.1 and 1.88.0, including the predecessor upgrade and edit-preservation regression.",
+      "observations": [
+        "OBS-product-test-691b9012d1892af5c103d51d"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793586631,
-  "updated_at_unix_seconds": 1793586880
+  "updated_at_unix_seconds": 1793591313
 }
