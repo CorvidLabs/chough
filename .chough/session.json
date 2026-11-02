@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -143,7 +143,8 @@
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
     "Proposed (on #39, pending scope approval): refuse, not warn, with refused:unlinked-failure; a linking bug of any status satisfies it; stale observations do not trigger it; next and status name it via assess; REQ-cli-008 modified, no new ID",
     "corvid-agent records no approval for a human; scope approval is 0xLeif's",
-    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction"
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction",
+    "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif"
   ],
   "open_questions": [],
   "completed": [
@@ -350,5 +351,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit, specsync change check --commit, push, open the PR, then native review and finalize as corvid-agent (0xLeif's 9:14 AM MT instruction)"
+  "next_action": "0xLeif reviews and merges PR #43 after hosted CI is green"
 }
