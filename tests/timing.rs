@@ -1656,6 +1656,40 @@ fn timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit(
 
 #[cfg(unix)]
 #[test]
+fn a_maximal_change_id_trace_keeps_state_and_elapsed_before_the_command() {
+    // The longest change ID the CLI accepts (255 bytes) is the longest real native
+    // command; its trace line keeps the outcome first and the whole command intact.
+    let fixture = native_fixture();
+    let id = format!("long-{}", "x".repeat(250));
+    assert_eq!(id.len(), 255);
+    fixture.ok(&["checkpoint", "--native-change", &id]);
+    let output = run_env(
+        &fixture,
+        &["timing", "--json", "--cycle", "current"],
+        &[("CHOUGH_TRACE", "1")],
+    );
+    let report = json_ok(&output);
+    assert_eq!(report["native"]["current"]["status_read"], "observed");
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    let native: Vec<&str> = stderr
+        .lines()
+        .filter(|line| line.starts_with("chough-trace: native "))
+        .collect();
+    assert_eq!(native.len(), 1, "{stderr}");
+    let line = native[0];
+    assert!(line.len() <= 1024, "{} bytes", line.len());
+    assert!(
+        line.starts_with("chough-trace: native state=observed elapsed_ms="),
+        "{line}"
+    );
+    assert!(
+        line.ends_with(&format!(" command=specsync change status {id} --json")),
+        "{line}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
 fn next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_report_budget() {
     let fixture = Fixture::new();
     fixture.stubs();
