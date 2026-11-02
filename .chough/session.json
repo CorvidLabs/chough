@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -136,7 +136,8 @@
     "human: 0xLeif accepted the implementation as is (2026-11-01, in chat: \"accept\"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change.",
     "Agent's design choice, not a human decision: skill-only (SKILL.md resume step), no next-view change, so the proof tests one cause; a next-view hint is the fallback if the change run still fails",
     "decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, \"Approve as drafted\"); recorded with specsync change approve --actor 0xLeif",
-    "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent"
+    "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
+    "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction"
   ],
   "open_questions": [],
   "completed": [
@@ -340,9 +341,7 @@
     "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "0xLeif's implementation review and acceptance of the resume handoff step; the cold-start criterion was not run by his decision (\"Just go without Kimi\")"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif decides acceptance of PR #36: the skill step is implemented and tested, but its cold-start proof was not run by his decision; then specsync change review --reviewer 0xLeif and ship, by one session only"
+  "next_action": "0xLeif merges PR #36 once hosted checks pass"
 }
