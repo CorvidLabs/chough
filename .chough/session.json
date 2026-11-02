@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Make checkpoint merges safe across parallel changes while preserving one canonical checkpoint",
+  "objective": "Use readable collision-resistant slug IDs for all new .chough records while preserving legacy identities",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "make-checkpoint-merges-safe-across-parallel-changes",
+  "native_change": "use-slug-identities-for-all-new-chough-records",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -38,7 +38,8 @@
       "REQ-cli-021",
       "REQ-cli-022",
       "REQ-cli-012",
-      "REQ-cli-019"
+      "REQ-cli-019",
+      "REQ-cli-023"
     ],
     "cases": [
       "TC-cli-0101",
@@ -135,7 +136,8 @@
     "Retained the real Git checkpoint conflict, implemented bounded three-way merging, and passed focused tests and Clippy after consent-bound and closed-stdout review fixes",
     "Materialized REQ-cli-007, recorded the strictly later real Git pass, and verified the merge bug",
     "Full verify, Rust 1.88 tests and pre-push passed; the final current-content real Git observation passed",
-    "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done"
+    "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "PR #29 merged as 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec, observed on GitHub"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -206,8 +208,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Merge of PR #29 after hosted CI"
+    "Scope approval of use-slug-identities-for-all-new-chough-records"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to decide whether to merge PR #29 after the complete hosted checks pass"
+  "next_action": "0xLeif to approve the .chough record identity scope; do not implement before native approval"
 }
