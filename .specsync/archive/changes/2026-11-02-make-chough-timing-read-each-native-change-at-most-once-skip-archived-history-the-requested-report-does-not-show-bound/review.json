@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "039e9c05c5a08e5b1b0d9e0f2e0ae5272c5c039c",
+  "contract_digest": "d21f811c1890ed376f56faf6e95d1f09dd62010e53a1caf34ca64041d181524b",
+  "execution_digest": "fdf7377d7471636b7f72062a10781ff69c110f424924647e0c10cd91088a8471",
+  "workspace_digest": "72d8128a7b63b240ccbd8d9dd02b974ce28366a9f171a528d59a4655ebd08d9d",
+  "timestamp": 1793589435
+}

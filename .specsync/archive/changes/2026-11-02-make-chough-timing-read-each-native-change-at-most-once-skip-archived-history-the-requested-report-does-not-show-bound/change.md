@@ -1,6 +1,6 @@
 ---
 id: make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound
-state: implementing
+state: archived
 type: feature
 base_commit: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
 ---
