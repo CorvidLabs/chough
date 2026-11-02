@@ -2115,3 +2115,155 @@ expected = ["tests/stages.rs::a_comparison_that_cannot_be_made_refuses_with_nati
 adapter = "cargo-test"
 test_target = "stages"
 test = "a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable"
+
+[[case]]
+id = "TC-cli-0126"
+title = "An archived native change before done names a new cycle, not Continue <stage>, and keeps today's action when something else applies"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::an_archived_change_before_done_names_a_new_cycle_not_continue passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "an_archived_change_before_done_names_a_new_cycle_not_continue"
+
+[[case]]
+id = "TC-cli-0127"
+title = "The next view shows the five newest decisions with kind and reason"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "FLOW-13"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_shows_the_five_newest_decisions_with_kind_and_reason passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_shows_the_five_newest_decisions_with_kind_and_reason"
+
+[[case]]
+id = "TC-cli-0128"
+title = "The next view names the latest failed observation by recorded time with the bugs that link it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "FLOW-13"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/evidence.rs", "src/bugs.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs"
+
+[[case]]
+id = "TC-cli-0129"
+title = "The next view points to each module's lesson source and counts archived lesson bundles without lesson text"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1", "FLOW-12"]
+requirements = ["REQ-cli-021", "REQ-cli-002"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_points_to_the_lesson_source_and_counts_archived_bundles passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_points_to_the_lesson_source_and_counts_archived_bundles"
+
+[[case]]
+id = "TC-cli-0130"
+title = "The handoff blocks stay within the cap with correct totals and give byte-identical output"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::handoff_blocks_stay_within_the_cap_and_are_byte_identical passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "handoff_blocks_stay_within_the_cap_and_are_byte_identical"
+
+[[case]]
+id = "TC-cli-0131"
+title = "A skill copy from main before the learning handoff is known outdated and updated, and an edited copy stays"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-016", "REQ-cli-019"]
+paths = ["src/skill.rs", "skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/bugs.md", "skills/chough-workflow/references/checkpoint.md", "skills/chough-workflow/references/librarian.md", "skills/chough-workflow/references/lifecycle.md", "tests/package.rs", "tests/fixtures/skill-fb6e487/"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated"
+
+[[case]]
+id = "TC-cli-0132"
+title = "The skill states lesson certainty labels, decision precedence, same-PR failure records and closeout inside the open change"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["FLOW-12", "LIFE-1"]
+requirements = ["REQ-cli-002", "REQ-cli-015"]
+paths = ["skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/checkpoint.md", "skills/chough-workflow/references/bugs.md", "skills/chough-workflow/references/librarian.md", "skills/chough-workflow/references/lifecycle.md", ".agents/skills/chough-workflow/", ".claude/skills/chough-workflow/"]
+environments = ["repository-text"]
+artifacts = ["reviewer-note"]
+setup = ["The canonical skill bundle and both host copies at the implementation tip"]
+steps = [
+  "Read references/accept.md Compounding, checkpoint.md, bugs.md, librarian.md Closeout and lifecycle.md",
+  "Run chough skill status for both host copies",
+]
+expected = [
+  "accept.md gives the observation, hypothesis and verified labels, each lesson's source and limits, and that a project decision always outranks a lesson, which never changes it",
+  "checkpoint.md documents the decided:, rejected: and failed: prefixes with a because reason as a best-effort convention and what the next blocks show",
+  "bugs.md says a failing check fixed in the same pull request still gets a bug record or a lesson entry",
+  "librarian.md describes closeout inside the open native change before specsync change check --commit, with at most 12 summary lines, no spec edits after archive, working with the librarian off and a brief only when it is on",
+  "lifecycle.md and accept.md say SpecSync 6.1.2 ships verification_ignored_paths, that this repository has not adopted it, and why",
+  "chough skill status reports both host copies current",
+]
+
+[[case]]
+id = "TC-cli-0133"
+title = "A fresh agent on another host resumes the seeded handoff repository and passes the frozen rubric"
+status = "active"
+track = "functional"
+method = "manual"
+criteria = ["FLOW-13", "LIFE-3", "LIFE-1"]
+requirements = ["REQ-cli-021"]
+paths = ["src/", "skills/chough-workflow/", "docs/exercises/handoff-cold-start/"]
+environments = ["local-macos-arm64"]
+artifacts = ["transcript", "reviewer-note"]
+setup = ["docs/exercises/handoff-cold-start/seed.sh <dir>, frozen with rubric.md and hashed in one observation before implementation; the binary and skill from the commit under test"]
+steps = ["Start a fresh agent process on a host other than the author's, given only the repository, the installed skill and the prompt: Resume this project."]
+expected = [
+  "Before its first edit, the transcript states the goal, cites both decisions and the reason for the rejection, names the failure, its bug status and the lesson, and starts the correct next task",
+  "The command log shows it neither repeats the failed experiment nor proposes the rejected approach",
+  "0xLeif grades the run against the frozen rubric; his grade is recorded as his statement, not as an approval",
+]
