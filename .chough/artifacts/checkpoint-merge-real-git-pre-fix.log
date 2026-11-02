@@ -1,0 +1,144 @@
+command: cargo test --locked --test stages real_git_without_driver_conflict -- --exact --nocapture
+   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/chough/.worktrees/kimi-host-cold-start)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.09s
+     Running tests/stages.rs (target/debug/deps/stages-b5c96188316f0637)
+
+running 1 test
+command: git merge --no-edit theirs
+exit status: exit status: 1
+stdout:
+Auto-merging .chough/session.json
+CONFLICT (content): Merge conflict in .chough/session.json
+Automatic merge failed; fix conflicts and then commit the result.
+
+stderr:
+
+resulting .chough/session.json bytes:
+{
+  "awaiting_human": [],
+  "blockers": [],
+  "bugs": [],
+  "completed": [],
+  "decisions": [
+    "base keep",
+<<<<<<< HEAD
+    "remove theirs",
+    "ours addition",
+=======
+    "remove ours",
+    "theirs addition",
+>>>>>>> theirs
+    "shared addition"
+  ],
+  "intent_scope": "FLOW-13",
+  "modules": [
+    "cli"
+  ],
+  "native_change": "merge-checkpoints",
+  "next_action": "Merge compatible edits",
+  "objective": "Merge parallel checkpoint edits",
+  "observations": [],
+  "open_questions": [],
+  "references": {
+    "cases": [],
+    "criteria": [
+      "FLOW-13"
+    ],
+    "design": [],
+    "files": [],
+    "requirements": [
+      "REQ-cli-007"
+    ]
+  },
+  "run_consents": [],
+  "schema_version": 2,
+  "stage": {
+    "callers": [],
+    "current": "build",
+    "iteration": 1,
+    "status": "active"
+  }
+}
+
+test real_git_without_driver_conflict ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 31 filtered out; finished in 4.75s
+
+command exit status: 0
+
+command: cargo test --locked --test stages real_git_driver_merges_compatible_checkpoint_changes -- --exact --nocapture
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.35s
+     Running tests/stages.rs (target/debug/deps/stages-b5c96188316f0637)
+
+running 1 test
+command: git merge --no-edit theirs
+exit status: exit status: 1
+stdout:
+Auto-merging .chough/session.json
+CONFLICT (content): Merge conflict in .chough/session.json
+Automatic merge failed; fix conflicts and then commit the result.
+
+stderr:
+error: unexpected argument '--merge' found
+
+Usage: chough checkpoint [OPTIONS]
+
+For more information, try '--help'.
+
+resulting .chough/session.json bytes:
+{
+  "awaiting_human": [],
+  "blockers": [],
+  "bugs": [],
+  "completed": [],
+  "decisions": [
+    "base keep",
+    "remove theirs",
+    "ours addition",
+    "shared addition"
+  ],
+  "intent_scope": "FLOW-13",
+  "modules": [
+    "cli"
+  ],
+  "native_change": "merge-checkpoints",
+  "next_action": "Merge compatible edits",
+  "objective": "Merge parallel checkpoint edits",
+  "observations": [],
+  "open_questions": [],
+  "references": {
+    "cases": [],
+    "criteria": [
+      "FLOW-13"
+    ],
+    "design": [],
+    "files": [],
+    "requirements": [
+      "REQ-cli-007"
+    ]
+  },
+  "run_consents": [],
+  "schema_version": 2,
+  "stage": {
+    "callers": [],
+    "current": "build",
+    "iteration": 1,
+    "status": "active"
+  }
+}
+
+
+thread 'real_git_driver_merges_compatible_checkpoint_changes' (303528409) panicked at tests/stages.rs:1969:5:
+configured driver did not merge
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test real_git_driver_merges_compatible_checkpoint_changes ... FAILED
+
+failures:
+
+failures:
+    real_git_driver_merges_compatible_checkpoint_changes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 31 filtered out; finished in 3.17s
+
+error: test failed, to rerun pass `--test stages`
+command exit status: 101

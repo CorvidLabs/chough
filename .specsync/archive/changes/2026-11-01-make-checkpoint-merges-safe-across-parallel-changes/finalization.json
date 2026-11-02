@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-checkpoint-merges-safe-across-parallel-changes",
+  "implementation_commit": "c93de0eb5ce7789559cf71df8a3273be4681824e",
+  "implementation_tree": "bbb2391904dde987810e568a714afc55355ef0a0",
+  "contract_digest": "2944df08e2d2c903b313f3bdd00f825dc4dfe42fa4351bf287170331f5e855b0",
+  "workspace_digest": "69ff1e37db8a15c38e6d658f96ead19f40432a38514a1ef75ed42748512fa2fa",
+  "closing_digest": "f16154657b5a3b7a55a692d871aa72d1ce7fb91ff5125a1c626d5b57cbdebf55",
+  "review_digest": "11bdc17f1b170139b00fd979b6799c5ea03a511d0108e6f218884016f03ea7d4",
+  "finalization_digest": "55b538fee3a0c53ffe0e75327ecfc491c150220a4259ca44f066f556daf2a880",
+  "timestamp": 1793577364
+}

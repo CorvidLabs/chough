@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "id": "checkpoint-merge-real-git-pre-fix",
+  "criteria": [
+    "FLOW-13",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-007"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Real Git cannot yet merge compatible parallel schema 2 checkpoint changes",
+  "artifacts": [
+    ".chough/artifacts/checkpoint-merge-real-git-pre-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/checkpoint-merge-real-git-pre-fix.log": "322890afc0f9ea2a374a5a21df22b9150b26194596c4cb91beef6d456cc8fe6f"
+  },
+  "observed_at_unix_seconds": 1793575357,
+  "snapshot": {
+    "revision": "5bab395af745e328e918a5f358c5149d673e47ca",
+    "dirty": true,
+    "fingerprint": "dd177da92f62d4f24ae4abb6e92c35a1884a1a7b301de341b83c60c03cc9d99a",
+    "content": "00172e42eed0b28fec247932c8fe1cc2532740bbcc47d6fb7f351258e0320bf3"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional"
+}

@@ -71,6 +71,37 @@ A fresh agent with none of the earlier conversation:
 
 A schema 1 session keeps working for `context` and `status`. `chough migrate`
 converts it after saving the original bytes to `.chough/session.v1.json`. Hand edits
-are allowed and validated on every read. With several agents, one agent owns the
-checkpoint; others report to it. APS was evaluated as a backend and deferred: it lost
-concurrent read-modify-write updates without error and accepts unknown fields.
+are allowed and validated on every read. With several agents, one agent owns live
+checkpoint writes; others report to it. APS was evaluated as a backend and deferred:
+it lost concurrent read-modify-write updates without error and accepts unknown fields.
+
+For committed parallel schema 2 edits, the repository declares:
+
+```gitattributes
+.chough/session.json merge=chough-session
+```
+
+Each clone that wants automatic merging configures the driver locally:
+
+```sh
+git config --local merge.chough-session.name "Chough schema 2 checkpoint"
+git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
+```
+
+Git supplies base, ours and theirs as `%O`, `%A` and `%B`. `chough init` never sets
+these values. Without a driver, use the explicit fallback:
+
+```sh
+chough checkpoint --merge <base> <ours> <theirs>
+```
+
+The merge preserves ordered exact-string history and reference changes. It treats
+objective, intent scope, modules, stage, native change, next action, run consents,
+blockers and awaiting-human gates as one current-cycle group. If both sides change
+that group differently, leave the conflict unresolved and ask the checkpoint owner
+or human to select a coherent cycle. Never hand-resolve it by combining fields. A
+merge is not approval, consent, gate closure or a lifecycle transition.
+
+Success replaces only ours. Every refusal preserves all three inputs and writes no
+Chough record. The merge adds no second checkpoint store and does not change the
+one-owner rule for live writes.

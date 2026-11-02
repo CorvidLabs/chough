@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "id": "checkpoint-merge-real-git-final",
+  "criteria": [
+    "FLOW-13",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-007"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Final content: the configured driver merges compatible parallel schema 2 checkpoint changes in real Git",
+  "artifacts": [
+    ".chough/artifacts/checkpoint-merge-real-git-final.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/checkpoint-merge-real-git-final.log": "db56046f0210099579195c28c5ade97f3f1571c98e06710e2f8002a3903bd8e6"
+  },
+  "observed_at_unix_seconds": 1793576841,
+  "snapshot": {
+    "revision": "5bab395af745e328e918a5f358c5149d673e47ca",
+    "dirty": true,
+    "fingerprint": "7f549d7bf3036510140761a298b4bc95180d578dd08f0edd469a4e63ebbfab11",
+    "content": "35e9d09ae01fbff12602015e317d7f2f3b067f34b8229c792e7520b64f2ad0f3"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional"
+}
