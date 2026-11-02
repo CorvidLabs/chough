@@ -230,3 +230,13 @@ Future use: measure closure from its causal successor event, and inspect merged
 references against removal receipts. Do not infer that a clean Git merge restores
 proof or that old event activity establishes an old closure. Limits: disposable
 local fixtures; no live proof was removed and no automatic restoration is implied.
+
+2026-11-02, directory reference classification (observation): incremental review
+reproduced bare and single-quoted cycle-directory references being protected but
+omitted from missing-reference diagnostics after a clean Git integration. Source:
+OBS-tc-cli-history-post-prune-reference-23f4f23b82735a0a21fc1aab and the exact
+clean-tip inputs under .chough/artifacts/history-cycle-directory-references-before/.
+Future use: reuse normalized token boundaries and one whole-cycle classification
+for both protection and availability; retain a separate exact-file restoration
+case alongside all four directory quote forms. Limits: disposable local fixtures;
+no live proof was removed and this does not define every external path grammar.

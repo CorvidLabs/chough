@@ -997,12 +997,14 @@ fn normalize_reference_paths(value: &mut Value) {
     }
 }
 
+fn reference_boundary(character: char) -> bool {
+    character.is_whitespace() || matches!(character, '`' | '"' | '\'')
+}
+
 fn normalize_plaintext_references(text: &str) -> String {
-    let boundary =
-        |character: char| character.is_whitespace() || matches!(character, '`' | '"' | '\'');
-    text.split_inclusive(boundary)
+    text.split_inclusive(reference_boundary)
         .map(|part| {
-            let token = part.trim_end_matches(boundary);
+            let token = part.trim_end_matches(reference_boundary);
             if token.to_lowercase().starts_with(".chough") {
                 format!(
                     "{}{}",
@@ -1057,15 +1059,9 @@ fn note_missing_references(
     }
 }
 
-fn quoted_directory_reference(text: &str, path: &str) -> bool {
-    [
-        format!("\"{path}\""),
-        format!("\"{path}/\""),
-        format!("`{path}`"),
-        format!("`{path}/`"),
-    ]
-    .iter()
-    .any(|quoted| text.contains(quoted))
+fn directory_reference(text: &str, path: &str) -> bool {
+    text.split(reference_boundary)
+        .any(|token| token.trim_end_matches('/') == path)
 }
 
 fn bare_cycle_reference(text: &str, cycle: &str) -> bool {
@@ -1294,10 +1290,15 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
         }
         let cycle_key = cycle.id.to_lowercase();
         for (source, text) in &texts {
-            let directory_reference = [ROOT.to_string(), format!("{ROOT}/cycles")]
-                .iter()
-                .any(|prefix| quoted_directory_reference(text, &prefix.to_lowercase()));
-            if directory_reference
+            let whole_cycle = [
+                ROOT.to_string(),
+                format!("{ROOT}/cycles"),
+                format!("{ROOT}/cycles/{cycle_key}"),
+            ]
+            .iter()
+            .any(|prefix| directory_reference(text, &prefix.to_lowercase()))
+                || bare_cycle_reference(text, &cycle_key);
+            if whole_cycle
                 || text.contains(&cycle_key)
                 || cycle
                     .files
@@ -1305,9 +1306,6 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
                     .any(|file| text.contains(&file.path.to_lowercase()))
             {
                 cycle.reasons.insert(format!("referenced by {source}"));
-                let whole_cycle = directory_reference
-                    || quoted_directory_reference(text, &format!("{ROOT}/cycles/{cycle_key}"))
-                    || bare_cycle_reference(text, &cycle_key);
                 note_missing_references(cycle, source, |file| {
                     whole_cycle || text.contains(&file.path.to_lowercase())
                 });

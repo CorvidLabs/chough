@@ -1,0 +1,21 @@
+   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.53s
+     Running tests/history.rs (target/debug/deps/history-8d338b86ffd9a43a)
+
+running 1 test
+
+thread 'real_git_post_prune_references_report_unavailable_until_exact_restoration' (327811458) panicked at tests/history.rs:1084:13:
+assertion `left == right` failed: {"authority":"checkpoint cursor selects current lineage; unselected events are not completed transitions","complete":true,"cursor":{"cycle":"CYC-055539c1a0771d55105178e2","head":"EVT-1590d0403acdee74aa21ec94","legacy":null},"cycles":[{"bytes":847,"events":2,"id":"CYC-055539c1a0771d55105178e2","interrupted":false,"planned_bytes":847,"protected":["active checkpoint cycle","referenced by .chough/session.json","unselected orphan or unresolved cycle closure"],"tips":["EVT-1590d0403acdee74aa21ec94"],"unselected_tips":[]},{"bytes":847,"events":2,"id":"CYC-3058d3509ba82cdb52e0e91b","interrupted":false,"planned_bytes":847,"protected":["newest three closed cycles, including timestamp ties"],"tips":["EVT-7b06f255440d25749b4e6f73"],"unselected_tips":["EVT-7b06f255440d25749b4e6f73"]},{"bytes":0,"events":0,"id":"CYC-5ec2b29feef3076dd3524038","interrupted":false,"planned_bytes":847,"protected":["already pruned","referenced by .chough/artifacts/post-prune-cycle-directory.log","unselected orphan or unresolved cycle closure"],"tips":["EVT-55439f696668221c91637962"],"unselected_tips":["EVT-55439f696668221c91637962"]},{"bytes":847,"events":2,"id":"CYC-7dbd39a66e4401cdcadb2ae3","interrupted":false,"planned_bytes":847,"protected":["newest three closed cycles, including timestamp ties"],"tips":["EVT-8d08b3cc0b7c758e8597fa9a"],"unselected_tips":["EVT-8d08b3cc0b7c758e8597fa9a"]},{"bytes":0,"events":0,"id":"CYC-a01790f81d15992e7146b048","interrupted":false,"planned_bytes":674,"protected":["already pruned","unselected orphan or unresolved cycle closure"],"tips":["EVT-a343090e6c9ae968b15f24a7"],"unselected_tips":["EVT-a343090e6c9ae968b15f24a7"]},{"bytes":0,"events":0,"id":"CYC-e453c386f170416d0525cce2","interrupted":false,"planned_bytes":847,"protected":["already pruned"],"tips":["EVT-433d56f8f255f2f5d56acef2"],"unselected_tips":["EVT-433d56f8f255f2f5d56acef2"]},{"bytes":847,"events":2,"id":"CYC-f038cda08b13c615a9cc3d2b","interrupted":false,"planned_bytes":847,"protected":["newest three closed cycles, including timestamp ties"],"tips":["EVT-e71ff1f10f85a63b823aa1b5"],"unselected_tips":["EVT-e71ff1f10f85a63b823aa1b5"]}],"limits":{"cycle_bytes":16777216,"cycle_events":4096,"event_bytes":65536,"recent_bytes":524288,"recent_events":128},"partial":[],"schema_version":1}
+  left: Bool(true)
+ right: false
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test real_git_post_prune_references_report_unavailable_until_exact_restoration ... FAILED
+
+failures:
+
+failures:
+    real_git_post_prune_references_report_unavailable_until_exact_restoration
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 21 filtered out; finished in 2.25s
+
+error: test failed, to rerun pass `--test history`

@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -242,7 +242,8 @@
     "Implemented the approved PR #37 scope and qualified the final source: all five bound cases passed, the mandatory Fledge verify lane passed all nine steps with 219 tests, and all 219 tests passed on Rust 1.88.0. Three reproduced in-scope bugs have later passing evidence and are verified. No live adoption or cleanup ran.",
     "Independent branch and bounds reviews completed; the reproduced legacy timing overflow has failure-first tests and is verified fixed. All six affected cases, the nine-step Fledge lane and all 221 tests on Rust 1.88 passed. Grok is assigned independent retention/proof review when the human starts it; human implementation acceptance remains pending.",
     "PR37 protected-reference blocker is fixed: frozen plaintext aliases share normalization with structured paths, all7affectedcases and all222tests on currentRust/Rust1.88 passed, as did all9Fledgesteps. The independently reproduced deletion failure and strictly later passing evidence are preserved. No live cleanup occurred.",
-    "PR37 peer safety repairs qualified: actual closing reset age and explicit missing referenced history, all 225 tests on Rust1.95/Rust1.88, ten exact bound cases, nine Fledge steps and original reproductions. Initial filter-only binding recorded not-run and was corrected to exact names; no test assertion was relaxed."
+    "PR37 peer safety repairs qualified: actual closing reset age and explicit missing referenced history, all 225 tests on Rust1.95/Rust1.88, ten exact bound cases, nine Fledge steps and original reproductions. Initial filter-only binding recorded not-run and was corrected to exact names; no test assertion was relaxed.",
+    "Final directory reference repair passed 225 tests on Rust1.95/Rust1.88, ten exact cases and nine Fledge steps. This is pre-integration evidence; main8fb0ea7 has now merged and the integrated source needs fresh qualification."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -403,5 +404,5 @@
     "0xLeif's implementation review and acceptance of PR #37; scope approval is already recorded, and native review/ship and merge remain pending"
   ],
   "run_consents": [],
-  "next_action": "Push the qualified peer-review repairs, obtain corvid-agent re-review, and retain the actual implementation acceptance gate before native closeout"
+  "next_action": "Integrate main8fb0ea7 without losing records, qualify the combined source, then complete native closeout under the human finish-all instruction"
 }

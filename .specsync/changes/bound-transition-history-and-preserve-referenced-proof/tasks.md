@@ -26,3 +26,5 @@ After native materialization, execute TC-cli-history-adoption, TC-cli-history-br
 
 - [x] Measure retention age from the selected closing reset, preserve that timestamp in receipts and prevent older receipts from overriding a recent closure.
 - [x] Reproduce post-prune references through real Git integration; report missing referenced history explicitly and refuse cleanup until exact restoration.
+
+- [x] Share normalized reference boundaries and whole-cycle classification across bare and every quoted directory form, preserving exact-file restoration semantics in the real Git regression.

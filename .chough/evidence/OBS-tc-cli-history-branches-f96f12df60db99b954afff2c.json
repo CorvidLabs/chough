@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-branches-f96f12df60db99b954afff2c",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-025"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test history -- --exact real_git_branch_events_survive_while_checkpoint_selection_remains_explicit for TC-cli-history-branches: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-history-branches-f96f12df60db99b954afff2c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-history-branches-f96f12df60db99b954afff2c.log": "b6fef15419cfa03f624348c46ba364810464de100da51862bb49f65cb38df3fd"
+  },
+  "observed_at_unix_seconds": 1793660225,
+  "snapshot": {
+    "revision": "40d2d114d2a484b2ff84679cbee0847fbe9d7284",
+    "dirty": true,
+    "fingerprint": "58d2a09b369b267b3bc6cd7ec51496978e72deb22a6d0a8bc4a6b58ae5e07679",
+    "content": "b0ecdc1b868e0d3c88989aa01dec3d7b77c5587eab0c1e6a5a8e10f850d38a87"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-branches",
+      "digest": "ff026a031c9844283eda3e2ffe51b46797ae11a898f12fa638c68a27a13155d9"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "history",
+    "--",
+    "--exact",
+    "real_git_branch_events_survive_while_checkpoint_selection_remains_explicit"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

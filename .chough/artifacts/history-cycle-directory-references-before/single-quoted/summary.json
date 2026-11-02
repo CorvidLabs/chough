@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "repo": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate",
+    "before": {
+      "head": "40d2d114d2a484b2ff84679cbee0847fbe9d7284",
+      "history_source_sha256": "cb6c661475eaece3068f13673fe77eb12345eca2b17e090d4eeaa19afd014de1",
+      "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "binary_sha256": "1b84d7716da950b85a9849eab8bba70f0c6fcc499e6c066cc86d4bfdcb7e2d2e"
+    },
+    "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cycle-directory-before-single-kfy2aw16/fixture",
+    "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cycle-directory-before-single-kfy2aw16"
+  },
+  "after": {
+    "head": "40d2d114d2a484b2ff84679cbee0847fbe9d7284",
+    "history_source_sha256": "cb6c661475eaece3068f13673fe77eb12345eca2b17e090d4eeaa19afd014de1",
+    "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "1b84d7716da950b85a9849eab8bba70f0c6fcc499e6c066cc86d4bfdcb7e2d2e"
+  },
+  "target": ".chough/history/cycles/CYC-022222939c9743d497dd52c3/EVT-adf330ccc83419140ebf5217.json",
+  "target_sha256": "1084c3a9e90671858bf3a7268642fd96c6f7e47cf11a0743518fcb85703492f8",
+  "target_exists_after_merge": false,
+  "frozen_reference": "Retain '.chough/history/cycles/CYC-022222939c9743d497dd52c3'\n",
+  "apply_exit_code": 0,
+  "merge_exit_code": 0,
+  "history_show_complete": true,
+  "target_cycle_show": {
+    "bytes": 0,
+    "events": 0,
+    "id": "CYC-022222939c9743d497dd52c3",
+    "interrupted": false,
+    "planned_bytes": 522,
+    "protected": [
+      "already pruned",
+      "referenced by .chough/artifacts/post-prune-cycle-directory.log",
+      "unselected orphan or unresolved cycle closure"
+    ],
+    "tips": [
+      "EVT-adf330ccc83419140ebf5217"
+    ],
+    "unselected_tips": [
+      "EVT-adf330ccc83419140ebf5217"
+    ]
+  },
+  "timing_partial": [
+    {
+      "reason": "pruned or interrupted history EVT-ce42d8f29630e1da5cd7b1e2: unavailable .chough/history/cycles/CYC-a30857735c12786235b1dd2c/EVT-ce42d8f29630e1da5cd7b1e2.json",
+      "source": ".chough/history"
+    }
+  ]
+}

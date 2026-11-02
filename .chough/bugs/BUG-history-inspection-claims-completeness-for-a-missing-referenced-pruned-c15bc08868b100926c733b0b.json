@@ -19,7 +19,9 @@
   "fixture": ".chough/artifacts/history-post-prune-reference-before",
   "observations": [
     "OBS-product-test-f59a8fa906c43f699940f33c",
-    "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763"
+    "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763",
+    "OBS-tc-cli-history-post-prune-reference-23f4f23b82735a0a21fc1aab",
+    "OBS-tc-cli-history-adoption-7e242d1718d20b2678fe6af5"
   ],
   "impact": "Acceptance blocker for proof-preserving history and retention.",
   "classification": "product-defect",
@@ -36,8 +38,22 @@
       "observations": [
         "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763"
       ]
+    },
+    {
+      "at_unix_seconds": 1793659789,
+      "text": "status: verified -> open. Reopened from incremental PR37 review4446381376: exact-event restoration is fixed but bare and single-quoted cycle-directory references still bypass missing-reference diagnostics/refusal. Original passed and failed observations remain intact.",
+      "observations": [
+        "OBS-tc-cli-history-post-prune-reference-23f4f23b82735a0a21fc1aab"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793660742,
+      "text": "status: open -> verified. Bare and single-quoted directory gap now shares normalized whole-token classification with all other forms. All five real Git reference/restoration fixtures, all22historytests, all225tests on both Rust versions, ten cases and nine Fledge steps pass. Original failures remain intact.",
+      "observations": [
+        "OBS-tc-cli-history-adoption-7e242d1718d20b2678fe6af5"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793642243,
-  "updated_at_unix_seconds": 1793643308
+  "updated_at_unix_seconds": 1793660742
 }

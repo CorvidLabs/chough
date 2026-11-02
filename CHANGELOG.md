@@ -45,6 +45,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- Missing referenced history is reported consistently for bare, single-quoted,
+  backtick and double-quoted cycle directories after Git integration.
 - History retention measures a reset-closed cycle's age from the closing reset,
   preserving recently closed cycles even after long inactivity.
 - History inspection reports missing referenced pruned events after branch

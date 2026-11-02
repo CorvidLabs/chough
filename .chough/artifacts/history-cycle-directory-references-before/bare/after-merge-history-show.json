@@ -1,0 +1,135 @@
+{
+  "authority": "checkpoint cursor selects current lineage; unselected events are not completed transitions",
+  "complete": true,
+  "cursor": {
+    "cycle": "CYC-92c802c86fc224e70e2f7aca",
+    "head": "EVT-ce0d4d8ecc06d9ffc463afb7",
+    "legacy": null
+  },
+  "cycles": [
+    {
+      "bytes": 522,
+      "events": 1,
+      "id": "CYC-00be681286d6f19b781161e9",
+      "interrupted": false,
+      "planned_bytes": 522,
+      "protected": [
+        "newest three closed cycles, including timestamp ties"
+      ],
+      "tips": [
+        "EVT-cfbe09ea53b32ca9cff756a0"
+      ],
+      "unselected_tips": [
+        "EVT-cfbe09ea53b32ca9cff756a0"
+      ]
+    },
+    {
+      "bytes": 0,
+      "events": 0,
+      "id": "CYC-2ce6389dadb3c871f69b4006",
+      "interrupted": false,
+      "planned_bytes": 352,
+      "protected": [
+        "already pruned",
+        "referenced by .chough/artifacts/post-prune-cycle-directory.log",
+        "unselected orphan or unresolved cycle closure"
+      ],
+      "tips": [
+        "EVT-adedadb0287ac2187591eb83"
+      ],
+      "unselected_tips": [
+        "EVT-adedadb0287ac2187591eb83"
+      ]
+    },
+    {
+      "bytes": 522,
+      "events": 1,
+      "id": "CYC-5488533228db199c34cf80c0",
+      "interrupted": false,
+      "planned_bytes": 522,
+      "protected": [
+        "newest three closed cycles, including timestamp ties"
+      ],
+      "tips": [
+        "EVT-428526014c819f77880ebf74"
+      ],
+      "unselected_tips": [
+        "EVT-428526014c819f77880ebf74"
+      ]
+    },
+    {
+      "bytes": 0,
+      "events": 0,
+      "id": "CYC-7de622800d1b4d11cd2177d9",
+      "interrupted": false,
+      "planned_bytes": 522,
+      "protected": [
+        "already pruned"
+      ],
+      "tips": [
+        "EVT-74cb55d6f12937e56e520e20"
+      ],
+      "unselected_tips": [
+        "EVT-74cb55d6f12937e56e520e20"
+      ]
+    },
+    {
+      "bytes": 522,
+      "events": 1,
+      "id": "CYC-92c802c86fc224e70e2f7aca",
+      "interrupted": false,
+      "planned_bytes": 522,
+      "protected": [
+        "active checkpoint cycle",
+        "referenced by .chough/session.json",
+        "unselected orphan or unresolved cycle closure"
+      ],
+      "tips": [
+        "EVT-ce0d4d8ecc06d9ffc463afb7"
+      ],
+      "unselected_tips": []
+    },
+    {
+      "bytes": 0,
+      "events": 0,
+      "id": "CYC-cdb65a2f3867c2261b307ab3",
+      "interrupted": false,
+      "planned_bytes": 522,
+      "protected": [
+        "already pruned",
+        "unselected orphan or unresolved cycle closure"
+      ],
+      "tips": [
+        "EVT-8ad875dd3e4d9d75121bdb36"
+      ],
+      "unselected_tips": [
+        "EVT-8ad875dd3e4d9d75121bdb36"
+      ]
+    },
+    {
+      "bytes": 522,
+      "events": 1,
+      "id": "CYC-eb32717a267a581b38de533c",
+      "interrupted": false,
+      "planned_bytes": 522,
+      "protected": [
+        "newest three closed cycles, including timestamp ties"
+      ],
+      "tips": [
+        "EVT-44d26bee99c970d425ff702f"
+      ],
+      "unselected_tips": [
+        "EVT-44d26bee99c970d425ff702f"
+      ]
+    }
+  ],
+  "limits": {
+    "cycle_bytes": 16777216,
+    "cycle_events": 4096,
+    "event_bytes": 65536,
+    "recent_bytes": 524288,
+    "recent_events": 128
+  },
+  "partial": [],
+  "schema_version": 1
+}

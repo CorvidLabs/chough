@@ -1011,90 +1011,112 @@ fn stale_receipt_age_cannot_override_a_recent_selected_closure() {
 
 #[test]
 fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
-    let f = closed_cycles();
-    let preview = f.ok(&["history", "prune"]);
-    let target = preview["eligible"][0]["files"][0]["path"]
-        .as_str()
-        .unwrap()
-        .to_string();
-    let target_bytes = f.read(&target);
-    let cycle = target.split('/').nth(3).unwrap();
-    let receipt_path = format!(".chough/history/pruned/{cycle}.json");
-    f.write(
-        ".gitattributes",
-        ".chough/session.json merge=chough-session\n",
-    );
-    git_ok(&f, &["init"]);
-    let binary = env!("CARGO_BIN_EXE_chough")
-        .replace('\\', "/")
-        .replace('\'', "'\\''");
-    git_ok(
-        &f,
-        &[
-            "config",
-            "merge.chough-session.driver",
-            &format!("'{binary}' checkpoint --merge %O %A %B"),
-        ],
-    );
-    git_ok(&f, &["checkout", "-b", "baseline"]);
-    git_ok(&f, &["add", "."]);
-    git_ok(&f, &["commit", "-m", "shared pre-prune history"]);
-    git_ok(&f, &["checkout", "-b", "cleanup"]);
-    f.ok(&[
-        "consent",
-        "grant",
-        "retention",
-        "--source",
-        "fixture authorization",
-    ]);
-    let removal = f.ok(&["history", "prune", "--apply"]);
-    assert!(
-        removal["removed"]
-            .as_array()
+    for quote in [None, Some(""), Some("'"), Some("`"), Some("\"")] {
+        let f = closed_cycles();
+        let preview = f.ok(&["history", "prune"]);
+        let target = preview["eligible"][0]["files"][0]["path"]
+            .as_str()
             .unwrap()
-            .iter()
-            .any(|path| path == &target)
-    );
-    assert_eq!(f.ok(&["history", "show"])["complete"], true);
-    git_ok(&f, &["add", ".chough"]);
-    git_ok(&f, &["commit", "-m", "prune unreferenced old cycles"]);
-    git_ok(&f, &["checkout", "-b", "new-reference", "baseline"]);
-    assert_eq!(f.read(&target), target_bytes);
-    f.ok(&["checkpoint", "--file", &target]);
-    git_ok(&f, &["add", ".chough/session.json"]);
-    git_ok(
-        &f,
-        &["commit", "-m", "reference the retained baseline event"],
-    );
-    git_ok(&f, &["merge", "cleanup", "--no-edit"]);
-    assert!(!f.exists(&target));
-    let before = git(&f, &["status", "--porcelain"]).stdout;
-    let checkpoint = f.read(".chough/session.json");
-    let receipt = f.read(&receipt_path);
-    for report in [f.ok(&["history", "show"]), f.ok(&["history", "prune"])] {
-        assert_eq!(report["complete"], false, "{report}");
-        assert!(
-            report["partial"].as_array().unwrap().iter().any(|entry| {
-                entry["path"] == target
-                    && entry["sources"]
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .any(|source| source == ".chough/session.json")
-            }),
-            "{report}"
+            .to_string();
+        let target_bytes = f.read(&target);
+        let cycle = target.split('/').nth(3).unwrap();
+        let receipt_path = format!(".chough/history/pruned/{cycle}.json");
+        let cycle_directory = format!(".chough/history/cycles/{cycle}");
+        let artifact = ".chough/artifacts/post-prune-cycle-directory.log";
+        let reference_source = if quote.is_some() {
+            artifact
+        } else {
+            ".chough/session.json"
+        };
+        f.write(
+            ".gitattributes",
+            ".chough/session.json merge=chough-session\n",
         );
+        git_ok(&f, &["init"]);
+        let binary = env!("CARGO_BIN_EXE_chough")
+            .replace('\\', "/")
+            .replace('\'', "'\\''");
+        git_ok(
+            &f,
+            &[
+                "config",
+                "merge.chough-session.driver",
+                &format!("'{binary}' checkpoint --merge %O %A %B"),
+            ],
+        );
+        git_ok(&f, &["checkout", "-b", "baseline"]);
+        git_ok(&f, &["add", "."]);
+        git_ok(&f, &["commit", "-m", "shared pre-prune history"]);
+        git_ok(&f, &["checkout", "-b", "cleanup"]);
+        f.ok(&[
+            "consent",
+            "grant",
+            "retention",
+            "--source",
+            "fixture authorization",
+        ]);
+        let removal = f.ok(&["history", "prune", "--apply"]);
+        assert!(
+            removal["removed"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|path| path == &target)
+        );
+        assert_eq!(f.ok(&["history", "show"])["complete"], true);
+        git_ok(&f, &["add", ".chough"]);
+        git_ok(&f, &["commit", "-m", "prune unreferenced old cycles"]);
+        git_ok(&f, &["checkout", "-b", "new-reference", "baseline"]);
+        assert_eq!(f.read(&target), target_bytes);
+        if let Some(quote) = quote {
+            f.write(
+                artifact,
+                &format!("Retain {quote}{cycle_directory}{quote}\n"),
+            );
+            git_ok(&f, &["add", artifact]);
+        } else {
+            f.ok(&["checkpoint", "--file", &target]);
+            git_ok(&f, &["add", ".chough/session.json"]);
+        }
+        git_ok(
+            &f,
+            &["commit", "-m", "reference the retained baseline event"],
+        );
+        git_ok(&f, &["merge", "cleanup", "--no-edit"]);
+        assert!(!f.exists(&target));
+        let before = git(&f, &["status", "--porcelain"]).stdout;
+        let checkpoint = f.read(".chough/session.json");
+        let receipt = f.read(&receipt_path);
+        for report in [f.ok(&["history", "show"]), f.ok(&["history", "prune"])] {
+            assert_eq!(report["complete"], false, "{report}");
+            assert!(
+                report["partial"].as_array().unwrap().iter().any(|entry| {
+                    entry["path"] == target
+                        && entry["sources"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .any(|source| source == reference_source)
+                }),
+                "{report}"
+            );
+        }
+        assert!(
+            f.fails(&["history", "prune", "--apply"])
+                .contains("referenced history")
+        );
+        assert_eq!(f.read(".chough/session.json"), checkpoint);
+        assert_eq!(f.read(&receipt_path), receipt);
+        assert_eq!(git(&f, &["status", "--porcelain"]).stdout, before);
+        assert!(!f.exists(&target));
+        let restore_path = if quote.is_some() {
+            &cycle_directory
+        } else {
+            &target
+        };
+        git_ok(&f, &["restore", "--source", "baseline", "--", restore_path]);
+        assert_eq!(f.read(&target), target_bytes);
+        assert_eq!(f.ok(&["history", "show"])["complete"], true);
+        assert_eq!(f.ok(&["history", "prune"])["complete"], true);
     }
-    assert!(
-        f.fails(&["history", "prune", "--apply"])
-            .contains("referenced history")
-    );
-    assert_eq!(f.read(".chough/session.json"), checkpoint);
-    assert_eq!(f.read(&receipt_path), receipt);
-    assert_eq!(git(&f, &["status", "--porcelain"]).stdout, before);
-    assert!(!f.exists(&target));
-    git_ok(&f, &["restore", "--source", "baseline", "--", &target]);
-    assert_eq!(f.read(&target), target_bytes);
-    assert_eq!(f.ok(&["history", "show"])["complete"], true);
-    assert_eq!(f.ok(&["history", "prune"])["complete"], true);
 }
