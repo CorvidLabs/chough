@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "bound-transition-history-and-preserve-referenced-proof",
+  "slug": "bound-transition-history-and-preserve-referenced-proof",
+  "title": "Bound transition history and preserve referenced proof",
+  "description": "Bound transition history and preserve referenced proof",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "created_at": 1793598583,
+  "updated_at": 1793598757,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/history.rs",
+    "src/checkpoint.rs",
+    "src/stage.rs",
+    "src/records.rs",
+    "src/timing.rs",
+    "src/evidence.rs",
+    "tests/history.rs",
+    "tests/stages.rs",
+    "tests/timing.rs",
+    "tests/evidence.rs",
+    "tests/next.rs",
+    "tests/package.rs",
+    "tests/common/mod.rs",
+    "docs/architecture.md",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "docs/ROADMAP.md",
+    "CHANGELOG.md",
+    "skills/chough-workflow/references/checkpoint.md",
+    "src/skill.rs",
+    ".chough/cases/cli.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Legacy logs and recorded proof remain byte-identical; explicit adoption writes independent immutable transition events with a cursor in the sole checkpoint; compatible branch events integrate without loss and divergent current-cycle cursors refuse; normal reads and per-cycle storage have tested byte and event limits; timing keeps lineages separate and reports missing or pruned history as partial or unknown; retention previews exact protected and eligible sets and applies only with explicit authorization and fresh protection checks; crash, collision, unsafe-path and interruption fixtures preserve active state; roadmap and backlog mappings distinguish delivered work from open criteria"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Preserve the single schema-2 checkpoint and atomic current-cycle merge group from PR #29; preserve all legacy proof and frozen native archives; keep native gates authoritative and fail closed on unreadable protection sources; reuse existing evidence retention policy without automatic transition deletion; lessons in specs/cli/context.md require bounded fixtures and distinguish observed results from proposed tests; the Kimi cold-start proof remains not run by 0xLeif choice; no implementation, scope approval, review, release or merge is implied by this definition; no model client, runtime, service or duplicate lifecycle state",
+    "public_contract": "yes"
+  }
+}

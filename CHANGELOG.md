@@ -53,8 +53,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [0.1.0] - 2026-11-01
 
-First release. Nothing in this entry is tagged or published yet; the release steps
-are in [docs/releasing.md](docs/releasing.md).
+First release, published on 2026-11-01 as `v0.1.0` and crates.io `chough` 0.1.0.
+Release steps are in [docs/releasing.md](docs/releasing.md).
 
 ### Added
 
