@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37",
+  "criteria": [
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-020",
+    "REQ-cli-003",
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test timing -- --exact a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown for TC-cli-0100: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37.log": "3b12f013b4e492aa22074ce72edda39c068dac7fff790677ea840bfe29a9bc43"
+  },
+  "observed_at_unix_seconds": 1793585362,
+  "snapshot": {
+    "revision": "75c5453cd7d0dfa7fb2d12d9cf3953f29333642a",
+    "dirty": false,
+    "fingerprint": "09843bd76e2dc43a0381d70174fb90c8dde9d87c505a4457d5b62dc1c594a7ac",
+    "content": "e9dca84127f90341194d6c35cf8f21cc3cc7b8b818308a99e6c4ad08e61453cf"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0100",
+      "digest": "03c8d1a0a365f6b48068f6c4044e82f8c3fa3600019775fca86363982d33fa07"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 5
+}

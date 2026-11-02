@@ -1,0 +1,129 @@
+START 1793586603.017403 41874 specsync change status use-collision-resistant-slug-identities-for-new-bugs --json
+START 1793586603.1201952 41877 git rev-parse --is-inside-work-tree
+END 1793586603.233147 41877 git rc=0
+START 1793586603.3104498 41884 git rev-parse --verify HEAD
+END 1793586603.409497 41884 git rc=0
+START 1793586603.4777339 41888 git rev-parse --show-prefix
+END 1793586603.583801 41888 git rc=0
+START 1793586603.6612391 41892 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586603.770259 41892 git rc=0
+START 1793586603.845161 41898 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586603.946744 41898 git rc=0
+START 1793586604.031338 41904 specsync change status use-collision-resistant-slug-identities-for-new-bugs --json
+START 1793586604.124814 41907 git rev-parse --is-inside-work-tree
+END 1793586604.203295 41907 git rc=0
+START 1793586604.266158 41914 git rev-parse --verify HEAD
+END 1793586604.349526 41914 git rc=0
+START 1793586604.411028 41918 git rev-parse --show-prefix
+END 1793586604.50622 41918 git rc=0
+START 1793586604.589036 41923 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586604.689827 41923 git rc=0
+START 1793586604.757113 41927 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586604.855631 41927 git rc=0
+START 1793586604.92707 41933 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d
+START 1793586605.059031 41937 specsync change status prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill --json
+START 1793586605.1473348 41940 git rev-parse --is-inside-work-tree
+END 1793586605.244412 41940 git rc=0
+START 1793586605.31448 41946 git rev-parse --verify HEAD
+END 1793586605.403938 41946 git rc=0
+START 1793586605.478291 41950 git rev-parse --show-prefix
+END 1793586605.5778172 41950 git rc=0
+START 1793586605.65822 41954 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586605.7590551 41954 git rc=0
+START 1793586605.841186 41958 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586605.932109 41958 git rc=0
+START 1793586606.073025 41968 specsync change status align-kimi-integration-with-new-cycle-done-guidance --json
+START 1793586606.1684139 41971 git rev-parse --is-inside-work-tree
+END 1793586606.271491 41971 git rc=0
+START 1793586606.3498151 41975 git rev-parse --verify HEAD
+END 1793586606.441979 41975 git rc=0
+START 1793586606.518506 41979 git rev-parse --show-prefix
+END 1793586606.628767 41979 git rc=0
+START 1793586606.707405 41985 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586606.8092191 41985 git rc=0
+START 1793586606.884415 41989 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586606.964113 41989 git rc=0
+START 1793586607.073919 41995 specsync change status correct-archived-resume-guidance-and-record-the-kimi-cold-start --json
+START 1793586607.144665 41998 git rev-parse --is-inside-work-tree
+END 1793586607.2260811 41998 git rc=0
+START 1793586607.302262 42002 git rev-parse --verify HEAD
+END 1793586607.3974988 42002 git rc=0
+START 1793586607.469989 42007 git rev-parse --show-prefix
+END 1793586607.572268 42007 git rc=0
+START 1793586607.644926 42012 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586607.748617 42012 git rc=0
+START 1793586607.826308 42017 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586607.931036 42017 git rc=0
+START 1793586608.0057092 42021 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d
+START 1793586608.110741 42025 specsync change status focused-chough-next-a-verification-guard-before-build-and-done-stage-resume --json
+START 1793586608.209146 42030 git rev-parse --is-inside-work-tree
+END 1793586608.30918 42030 git rc=0
+START 1793586608.388157 42036 git rev-parse --verify HEAD
+END 1793586608.4923148 42036 git rc=0
+START 1793586608.566019 42042 git rev-parse --show-prefix
+END 1793586608.6669152 42042 git rc=0
+START 1793586608.7438028 42046 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586608.844059 42046 git rc=0
+START 1793586608.919426 42050 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586609.009111 42050 git rc=0
+START 1793586609.109793 42058 specsync change status bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors --json
+START 1793586609.206423 42061 git rev-parse --is-inside-work-tree
+END 1793586609.306858 42061 git rc=0
+START 1793586609.378251 42065 git rev-parse --verify HEAD
+END 1793586609.475662 42065 git rc=0
+START 1793586609.5460742 42070 git rev-parse --show-prefix
+END 1793586609.643144 42070 git rc=0
+START 1793586609.705278 42074 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586609.7908711 42074 git rc=0
+START 1793586609.850158 42078 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586609.938358 42078 git rc=0
+START 1793586609.9981499 42082 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d
+START 1793586610.119873 42086 specsync change status run-the-specsync-archive-gate-before-every-ci-job --json
+START 1793586610.207068 42089 git rev-parse --is-inside-work-tree
+END 1793586610.299746 42089 git rc=0
+START 1793586610.365047 42093 git rev-parse --verify HEAD
+END 1793586610.460917 42093 git rc=0
+START 1793586610.532483 42097 git rev-parse --show-prefix
+END 1793586610.630773 42097 git rc=0
+START 1793586610.706899 42102 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586610.802699 42102 git rc=0
+START 1793586610.868635 42106 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586610.9706728 42106 git rc=0
+START 1793586611.0385568 42110 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d
+START 1793586611.127501 42113 specsync change status report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records --json
+START 1793586611.211116 42116 git rev-parse --is-inside-work-tree
+END 1793586611.3076968 42116 git rc=0
+START 1793586611.378242 42120 git rev-parse --verify HEAD
+END 1793586611.468678 42120 git rc=0
+START 1793586611.539333 42125 git rev-parse --show-prefix
+END 1793586611.6312902 42125 git rc=0
+START 1793586611.706908 42129 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586611.809591 42129 git rc=0
+START 1793586611.88257 42133 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586611.984488 42133 git rc=0
+START 1793586612.060547 42137 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d
+START 1793586612.1620648 42140 specsync change status keep-evidence-current-across-commits-and-specsync-lifecycle-bookkeeping-and-verify-bugs-only-by-a-pass-observed-after --json
+START 1793586612.237359 42143 git rev-parse --is-inside-work-tree
+END 1793586612.31328 42143 git rc=0
+START 1793586612.3725271 42148 git rev-parse --verify HEAD
+END 1793586612.454547 42148 git rc=0
+START 1793586612.508014 42152 git rev-parse --show-prefix
+END 1793586612.5864441 42152 git rc=0
+START 1793586612.6483579 42157 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586612.736455 42157 git rc=0
+START 1793586612.806798 42161 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586612.898515 42161 git rc=0
+START 1793586612.969663 42165 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d
+END 1793586613.063395 42165 git rc=0
+START 1793586613.1899562 42171 specsync change status prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package --json
+START 1793586613.271038 42175 git rev-parse --is-inside-work-tree
+END 1793586613.368209 42175 git rc=0
+START 1793586613.430669 42179 git rev-parse --verify HEAD
+END 1793586613.520725 42179 git rc=0
+START 1793586613.5937028 42184 git rev-parse --show-prefix
+END 1793586613.6860769 42184 git rc=0
+START 1793586613.7573261 42188 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586613.857478 42188 git rc=0
+START 1793586613.925066 42192 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793586614.009778 42192 git rc=0
+START 1793586614.100717 42196 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d

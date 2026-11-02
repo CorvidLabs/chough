@@ -21,6 +21,13 @@ All notable changes to Chough are recorded here. The format follows
   failure fixed in the same pull request still gets a bug or lesson, and closeout is
   one quiet pass inside the open native change.
 
+
+- `CHOUGH_TIMING_NATIVE_BUDGET_SECONDS` (1 to 3600, default 120) bounds the total
+  native wait of one timing report; changes left unread are `not-read`
+  (`budget-exhausted`) with unknown times. Gates, `next` and `status` are unaffected.
+- `CHOUGH_TRACE=1` writes bounded stderr lines for each native read and each timing
+  phase, without changing output or exit codes.
+
 ### Fixed
 
 - `chough next` and `chough status` no longer say `Continue <stage>`, or give the
@@ -32,6 +39,12 @@ All notable changes to Chough are recorded here. The format follows
 
 - The skill now says SpecSync 6.1.2 ships `verification_ignored_paths` and why
   Chough's own repository has not adopted it.
+
+- `chough timing` reads each native change at most once per report, and reads
+  archived native history only for an unfiltered report (`--cycle all` with no
+  `--stage`, `--case` or `--bug`). Filtered reports now emit `native.history: null`
+  with `native.history_selection` naming the filters, instead of the archived list
+  ([#34](https://github.com/CorvidLabs/chough/pull/34), REQ-cli-024).
 
 ## [0.1.0] - 2026-11-01
 

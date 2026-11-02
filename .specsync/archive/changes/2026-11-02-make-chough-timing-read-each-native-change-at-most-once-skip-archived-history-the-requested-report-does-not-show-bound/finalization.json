@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound",
+  "implementation_commit": "039e9c05c5a08e5b1b0d9e0f2e0ae5272c5c039c",
+  "implementation_tree": "b3ea6e3edebdaa7b04dbe2605161e545f16b508e",
+  "contract_digest": "d21f811c1890ed376f56faf6e95d1f09dd62010e53a1caf34ca64041d181524b",
+  "workspace_digest": "72d8128a7b63b240ccbd8d9dd02b974ce28366a9f171a528d59a4655ebd08d9d",
+  "closing_digest": "3382868b5adac7e9c3d34fb4856a0772e4e5e2293251b0b2d584cfc92b995e9e",
+  "review_digest": "04a2d0cb5e73a3c8f76252905ef76f24418ffeaac12366b0a48227eb168d1476",
+  "finalization_digest": "2eb790d0c91f49449b9cf32865b47003184fbf0a5fb6fc6da80f3e2144059075",
+  "timestamp": 1793589459
+}
