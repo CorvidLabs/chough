@@ -1,6 +1,6 @@
 ---
 id: integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance
-state: implementing
+state: archived
 type: operations
 base_commit: 7b3d4fcab3b64088a1268eb11c5823cf06ac98f3
 ---
