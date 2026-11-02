@@ -131,7 +131,8 @@
     "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending",
     "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33.",
     "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it",
-    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks."
+    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks.",
+    "human: 0xLeif accepted the implementation as is (2026-11-01, in chat: \"accept\"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change."
   ],
   "open_questions": [],
   "completed": [
