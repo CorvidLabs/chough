@@ -114,7 +114,8 @@
     "Filtered timing reports would emit native.history null with a skipped-by-filter reason: an explicit output-semantics change; next, status and stage gates keep their single native read and get no faster from this slice",
     "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending",
     "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33.",
-    "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it"
+    "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it",
+    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks."
   ],
   "open_questions": [],
   "completed": [
@@ -174,7 +175,8 @@
     "Integrated origin/main 48cc9f6 (PR #33) by manual checkpoint resolution; full tests and cases check passed after integration",
     "Materialized REQ-cli-024 with specsync change check; bound it to TC-cli-0089 and TC-cli-0100; final observations OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e and OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52 passed",
     "End-to-end trace regression for a 255-byte change ID fails on the pre-review records.rs and passes now",
-    "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read"
+    "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read",
+    "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -250,7 +252,8 @@
     "OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21",
     "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37",
     "OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e",
-    "OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52"
+    "OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52",
+    "OBS-structural-2cb53c21d6c98144f9e9ee17"
   ],
   "bugs": [
     "BUG-0001",
@@ -270,9 +273,7 @@
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Root and 0xLeif: independent review and native implementation review of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound on PR #34; Claude does not record review, ship or merge"
+  "next_action": "Commit final proof records, refresh native check --commit, record the authorized native review and ship without an intervening commit, push archive, require all hosted checks green, then mark ready and merge."
 }

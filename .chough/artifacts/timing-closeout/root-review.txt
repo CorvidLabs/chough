@@ -1,0 +1,9 @@
+Agent review of timing implementation 3b3fafd, by Codex root.
+Request-local ID memoization and the monotonic remaining-duration budget preserve native read ownership.
+History filtering is explicit; skipped and budget-exhausted states do not masquerade as observed history.
+Skipped native reads now read no record files and every timestamp remains unknown.
+Trace outcome/elapsed fields precede bounded command text; long-source regressions cover truncation.
+Gates, next and status retain their authoritative per-read path.
+Observed logs: 186 unfiltered tests pass on Rust 1.99.1 and 1.88.0; verify passes 9 steps; pre-push passes 5.
+Benchmark limits remain explicit: capped timeouts are structural diagnostics; the 300 s baseline is censored; no real identity-main baseline was run.
+No critical unresolved implementation finding remains from this review; it is not a human cold-start grade or a deployment claim.
