@@ -7,7 +7,7 @@ artifact: tasks
 
 Before implementation:
 
-- [ ] Check the SHA-256 digests of docs/exercises/handoff-cold-start/seed.sh and rubric.md against observation handoff-cold-start-frozen-pair-1.
+- [x] Check the SHA-256 digests of docs/exercises/handoff-cold-start/seed.sh and rubric.md against observation handoff-cold-start-frozen-pair-1.
 - [ ] Confirm Kimi Code CLI 0.41.0 starts through rune and has quota; record the version.
 - [ ] Build the binary at main 118a895, seed a fresh repository, install its skill and prepare the baseline run script for 0xLeif; record the run as an observation of TC-cli-0133 with transcript and command log.
 
