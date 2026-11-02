@@ -77,3 +77,6 @@
 {"schema_version":1,"at_unix_seconds":1793576860,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"5bab395af745e328e918a5f358c5149d673e47ca","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793576862,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"5bab395af745e328e918a5f358c5149d673e47ca","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793576862,"kind":"gate-opened","from":"accept","to":"accept","reason":"Implementation review of make-checkpoint-merges-safe-across-parallel-changes","gate":null,"revision":"5bab395af745e328e918a5f358c5149d673e47ca","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793577665,"kind":"gate-closed","from":"accept","to":"accept","reason":"Implementation review of make-checkpoint-merges-safe-across-parallel-changes","gate":null,"revision":"2d9b49670a54ad5ac5fb423ae2d4e5d88c7da91c","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793577772,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"2d9b49670a54ad5ac5fb423ae2d4e5d88c7da91c","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793577772,"kind":"gate-opened","from":"done","to":"done","reason":"Merge of PR #29 after hosted CI","gate":null,"revision":"2d9b49670a54ad5ac5fb423ae2d4e5d88c7da91c","refresh":[]}

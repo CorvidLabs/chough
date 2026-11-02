@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -134,7 +134,8 @@
     "PR #26 was merged by 0xLeif as b35acaf0804f84a2c56fcee4b3ca1504cf74c95e, observed on GitHub",
     "Retained the real Git checkpoint conflict, implemented bounded three-way merging, and passed focused tests and Clippy after consent-bound and closed-stdout review fixes",
     "Materialized REQ-cli-007, recorded the strictly later real Git pass, and verified the merge bug",
-    "Full verify, Rust 1.88 tests and pre-push passed; the final current-content real Git observation passed"
+    "Full verify, Rust 1.88 tests and pre-push passed; the final current-content real Git observation passed",
+    "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -205,8 +206,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Implementation review of make-checkpoint-merges-safe-across-parallel-changes"
+    "Merge of PR #29 after hosted CI"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to review the checkpoint merge implementation and evidence; no native review or finalization before that decision"
+  "next_action": "0xLeif to decide whether to merge PR #29 after the complete hosted checks pass"
 }
