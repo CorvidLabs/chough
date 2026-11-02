@@ -2419,3 +2419,219 @@ fn real_git_current_cycle_conflict_and_direct_fallback_preserve_ours() {
     assert_eq!(fixture.read("merge-inputs/ours.json"), merge_json(&ours));
     assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
 }
+
+/// A fixture at stage test with SDD not configured whose checkpoint references
+/// TC-cli-0001 (issue #39).
+fn at_test_with_case() -> Fixture {
+    let fixture = Fixture::new();
+    fixture.init();
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    assert_eq!(stage(&fixture), "test");
+    fixture.ok(&["checkpoint", "--case", "TC-cli-0001"]);
+    fixture
+}
+
+fn case_observation(fixture: &Fixture, id: &str, case: &str, outcome: &str, observed: u64) {
+    let record = json!({
+        "schema_version": 2,
+        "id": id,
+        "criteria": ["LIFE-1"],
+        "requirements": ["REQ-cli-001"],
+        "contracts": ["specs/cli/cli.spec.md"],
+        "kind": "product-test",
+        "outcome": outcome,
+        "environment": "local",
+        "summary": format!("fixture observation {id}"),
+        "artifacts": [],
+        "artifact_fingerprints": {},
+        "observed_at_unix_seconds": observed,
+        "snapshot": {"revision": "0".repeat(40), "dirty": false, "fingerprint": "0".repeat(64)},
+        "provenance": "fixture",
+        "cases": [{"id": case, "digest": "0".repeat(64)}],
+    });
+    fixture.write(
+        &format!(".chough/evidence/{id}.json"),
+        &serde_json::to_string(&record).unwrap(),
+    );
+}
+
+fn linking_bug(fixture: &Fixture, id: &str, status: &str, scope: &str, observation: &str) {
+    let record = json!({
+        "schema_version": 1,
+        "id": id,
+        "title": format!("Fixture bug {id}"),
+        "symptom": "It breaks",
+        "trigger": "Running the probe",
+        "expected": "It works",
+        "actual": "It broke",
+        "environment": "local",
+        "observations": [observation],
+        "impact": "Not yet assessed.",
+        "classification": "product-defect",
+        "scope": scope,
+        "status": status,
+        "regression_baseline": null,
+        "source": "fixture",
+        "created_at_unix_seconds": 1,
+        "updated_at_unix_seconds": 1,
+    });
+    fixture.write(
+        &format!(".chough/bugs/{id}.json"),
+        &serde_json::to_string(&record).unwrap(),
+    );
+}
+
+const FAILED: &str = "OBS-fail-000000000000000000000001";
+
+/// Issue #39: leaving test is refused, by advance and by skip, while a referenced
+/// case's latest observation failed and no bug links it; next and status name the
+/// same refusal; a later pass lifts it.
+#[test]
+fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
+    let fixture = at_test_with_case();
+    case_observation(
+        &fixture,
+        "OBS-pass-000000000000000000000001",
+        "TC-cli-0001",
+        "passed",
+        100,
+    );
+    case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
+    for route in [
+        vec!["stage", "advance"],
+        vec!["stage", "skip", "--reason", "nothing to accept"],
+    ] {
+        let error = fixture.fails(&route);
+        for expected in [
+            "refused:unlinked-failure",
+            "TC-cli-0001",
+            FAILED,
+            "chough bug add",
+            "chough bug update",
+            &format!("--observation {FAILED}"),
+        ] {
+            assert!(
+                error.contains(expected),
+                "{route:?}: {expected} missing: {error}"
+            );
+        }
+        assert_eq!(stage(&fixture), "test");
+    }
+    let next = fixture.ok(&["next", "--json"]);
+    let status = fixture.ok(&["status", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(action.contains("refused:unlinked-failure"), "{action}");
+    assert!(action.contains(FAILED), "{action}");
+    assert_eq!(
+        next["next_valid_action"]["action"],
+        status["next_valid_action"]
+    );
+    // A later pass of the same case lifts the refusal.
+    case_observation(
+        &fixture,
+        "OBS-pass-000000000000000000000002",
+        "TC-cli-0001",
+        "passed",
+        300,
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        !next["next_valid_action"]["action"]
+            .as_str()
+            .unwrap()
+            .contains("refused:unlinked-failure")
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+}
+
+/// A bug of any status that links the failed observation lifts the refusal; an open
+/// blocking bug keeps its own refusal first; a failure of an unreferenced case and a
+/// failure followed by a pass do not refuse; equal times order by observation ID.
+#[test]
+fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged() {
+    for status in [
+        "open",
+        "investigating",
+        "fix-pending-verification",
+        "verified",
+        "deferred",
+        "duplicate",
+        "wont-fix",
+    ] {
+        let fixture = at_test_with_case();
+        case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
+        linking_bug(&fixture, "BUG-0001", status, "in-scope", FAILED);
+        fixture.ok(&["stage", "advance"]);
+        assert_eq!(stage(&fixture), "accept", "bug status {status}");
+    }
+
+    let fixture = at_test_with_case();
+    case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
+    linking_bug(
+        &fixture,
+        "BUG-0002",
+        "open",
+        "blocking",
+        "OBS-other-000000000000000000000001",
+    );
+    let error = fixture.fails(&["stage", "advance"]);
+    assert!(error.contains("refused:blocking-bugs"), "{error}");
+    assert!(!error.contains("refused:unlinked-failure"), "{error}");
+
+    let fixture = at_test_with_case();
+    case_observation(&fixture, FAILED, "TC-cli-0002", "failed", 200);
+    case_observation(
+        &fixture,
+        "OBS-pass-000000000000000000000001",
+        "TC-cli-0001",
+        "passed",
+        100,
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+
+    // Equal times: the greater ID is the latest.
+    let fixture = at_test_with_case();
+    case_observation(
+        &fixture,
+        "OBS-a-000000000000000000000001",
+        "TC-cli-0001",
+        "failed",
+        200,
+    );
+    case_observation(
+        &fixture,
+        "OBS-b-000000000000000000000001",
+        "TC-cli-0001",
+        "passed",
+        200,
+    );
+    fixture.ok(&["stage", "advance"]);
+    let fixture = at_test_with_case();
+    case_observation(
+        &fixture,
+        "OBS-a-000000000000000000000001",
+        "TC-cli-0001",
+        "passed",
+        200,
+    );
+    case_observation(
+        &fixture,
+        "OBS-b-000000000000000000000001",
+        "TC-cli-0001",
+        "failed",
+        200,
+    );
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("OBS-b-000000000000000000000001")
+    );
+
+    // Other moves out of test are not gated by it.
+    fixture.ok(&["stage", "back", "--to", "build", "--reason", "fix it"]);
+    assert_eq!(stage(&fixture), "build");
+}

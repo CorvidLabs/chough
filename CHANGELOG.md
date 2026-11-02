@@ -35,6 +35,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- Leaving test for accept, by `stage advance` or `stage skip`, is refused with
+  `refused:unlinked-failure` while the latest observation of a case referenced in the
+  checkpoint failed and no local bug links it; `next` and `status` at test name the
+  same refusal. A later pass, or a bug of any status linking the failure, lifts it
+  (issue #39).
+
 - `chough next` and `chough status` no longer say `Continue <stage>`, or give the
   build gate refusal, at intent to accept once the recorded native change is
   archived with authenticated terminal evidence; they name the archive and the new

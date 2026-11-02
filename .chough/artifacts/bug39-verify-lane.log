@@ -1,0 +1,24 @@
+# fledge lanes run verify (Linux x86_64, fledge 1.8.0, specsync 6.1.2, hi 0.8.0), 2026-11-02T16:19:45Z, exit 0
+▶️ Lane: verify — Product, structural, native lifecycle and case-definition verification
+  ✔ Step 1 done (274ms)
+  ✔ Step 2 done (99ms)
+test result: ok. 42 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.04s
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.09s
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.29s
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.09s
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.89s
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.14s
+  ✔ Step 3 done (14.624s)
+  ✔ Step 4 done (1ms)
+  ✔ Step 5 done (27ms)
+  ✔ Step 6 done (358ms)
+      "title": "An unterminated escape never hides a second test result",
+  ✔ Step 7 done (353ms)
+EXERCISE PASSED in <tmp>
+  ✔ Step 8 done (6.390s)
+  ✔ Step 9 done (41ms)
+✅ Lane verify completed (9 steps in 22.173s)

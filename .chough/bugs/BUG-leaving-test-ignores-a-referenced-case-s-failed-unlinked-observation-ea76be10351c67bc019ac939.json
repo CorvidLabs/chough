@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "BUG-leaving-test-ignores-a-referenced-case-s-failed-unlinked-observation-ea76be10351c67bc019ac939",
+  "title": "Leaving test ignores a referenced case's failed, unlinked observation",
+  "symptom": "stage advance moves test to accept while the latest observation of a referenced case failed and no bug links it; chough next shows no warning",
+  "trigger": "In stage test, record a failed observation for a checkpoint case without adding a bug, then chough stage advance",
+  "expected": "The move is refused until the case passes or a bug links the failed observation",
+  "actual": "Exit 0; the stage becomes accept",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "Linux x86_64, main 825a380, SpecSync 6.1.2, Fledge 1.8.0, hi 0.8.0, examples/shipping copy with SDD off",
+  "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-9e2d612534e636aa16dbc628",
+    "OBS-product-test-cb90047d10b04254e607a3a5",
+    "OBS-product-test-11f42ac98b4076b73c7dbb9d"
+  ],
+  "impact": "A known failure is left behind at test; FLOW-7 and LIFE-5 are not enforced",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "https://github.com/CorvidLabs/chough/issues/39",
+  "notes": [
+    {
+      "at_unix_seconds": 1793636345,
+      "text": "status: open -> fix-pending-verification. Failing-first gate tests recorded",
+      "observations": [
+        "OBS-product-test-cb90047d10b04254e607a3a5"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793636345,
+      "text": "status: fix-pending-verification -> verified. Fixed in src/stage.rs: refused:unlinked-failure; tests pass and the reproduction is refused",
+      "observations": [
+        "OBS-product-test-11f42ac98b4076b73c7dbb9d"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793636054,
+  "updated_at_unix_seconds": 1793636345
+}
