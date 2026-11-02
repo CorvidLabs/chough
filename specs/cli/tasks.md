@@ -35,10 +35,12 @@ Implemented approved work (human acceptance pending):
   The four identity bugs retain failed observations and strictly later passes.
 - [x] Apply the separately approved compact-next fixture follow-up: use automatic
   allocation and reference the returned ID, preserving every original assertion.
-  The focused next suite passed all 3 tests and the unfiltered Rust 1.88.0 suite
-  passed all 182 tests. Keep the original failed TC-cli-0120 observation and a later
-  passing case record. Full verification and pre-push results live in the Chough
-  evidence records; human implementation review and finalization remain gates.
+  The focused next suite passed all 3 tests; both Rust 1.99.1 and 1.88.0 passed all
+  182 tests without exclusions. Keep the original failed TC-cli-0120 observation
+  and a later passing case record. The full verify lane remains failed at native
+  audit because the accepted-first dependency blocks follow-up path coverage.
+  Cases, exercise and build passed separately. Resolve that ordering blocker
+  before claiming full verification; human review and finalization remain gates.
 
 Completed approved work:
 

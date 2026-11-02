@@ -183,10 +183,18 @@ PR branch; the original workspace was preserved.
 - After this fix, the unfiltered Rust 1.88.0 suite passed all 182 tests, with no
   ignored or filtered tests. The raw focused and full-suite logs are retained with
   the takeover's Chough observations.
-- Tool PATH selects HI 0.8.0, Fledge 1.8.0 and SpecSync 6.1.2. Full Rust 1.99.1
-  verification, the CLI exercise and pre-push remain mandatory before acceptance;
-  their actual results are recorded in `.chough/evidence/` and `.chough/artifacts/`.
-  A structural native check never substitutes for those product checks.
+- The unfiltered Rust 1.99.1 suite also passed all 182 tests, with no ignored or
+  filtered tests. Formatting, warnings-denied all-target Clippy, HI, strict spec
+  checks, case-definition validation, the real CLI exercise and build passed.
+- The full verify lane stopped at native audit, step 6: tests/next.rs was reported
+  uncovered because its approved follow-up depends on the identity change being
+  accepted first. A direct native follow-up check explicitly refused while that
+  parent is verifying. This accepted-first edge is unsuitable for co-reviewed
+  fixture work; it is a planning/ordering blocker, not another test failure.
+  The full lane is not passed and the fixture native change is not verified.
+- Tool PATH selects HI 0.8.0, Fledge 1.8.0 and SpecSync 6.1.2. Raw results and the
+  ordering refusal remain in `.chough/evidence/` and `.chough/artifacts/`.
+  A structural native check never substitutes for product checks or acceptance.
 
 Original failures and prior partial results remain retained. Hosted platform results,
 human implementation review, native archive and merge are separate evidence and gates.
