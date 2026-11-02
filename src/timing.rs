@@ -232,8 +232,17 @@ fn read_transitions(root: &Path, session: &Session, all: bool) -> Result<Transit
             read.lineages,
         )
     } else {
-        let log = read_log_full(&local_path(root, stage::TRANSITIONS)?, TRANSITIONS_LIMIT)?;
-        (log.lines, log.skipped_bytes, vec![], vec![])
+        let mut log = read_log_full(&local_path(root, stage::TRANSITIONS)?, TRANSITIONS_LIMIT)?;
+        let omitted = log.lines.len().saturating_sub(crate::history::CYCLE_EVENTS);
+        let mut partial = vec![];
+        if omitted > 0 {
+            log.lines.drain(..omitted);
+            partial.push(format!(
+                "earliest {omitted} lines skipped beyond the {}-event timing bound",
+                crate::history::CYCLE_EVENTS
+            ));
+        }
+        (log.lines, log.skipped_bytes, partial, vec![])
     };
     let mut records = vec![];
     let mut unreadable = 0;
@@ -1411,8 +1420,12 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     let at = now()?;
     let mut partial: Vec<Value> = vec![];
     let transitions = read_transitions(root, &session, args.cycle == "all")?;
+    let history_source = match &session {
+        Session::V2(checkpoint) if checkpoint.history_cursor.is_some() => crate::history::ROOT,
+        _ => stage::TRANSITIONS,
+    };
     for reason in &transitions.history_partial {
-        partial.push(json!({"source":crate::history::ROOT,"reason":reason}));
+        partial.push(json!({"source":history_source,"reason":reason}));
     }
     if transitions.skipped_bytes > 0 {
         partial.push(json!({"source": stage::TRANSITIONS, "reason": format!("earliest {} bytes skipped beyond the {TRANSITIONS_LIMIT}-byte bound", transitions.skipped_bytes)}));

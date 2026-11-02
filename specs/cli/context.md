@@ -194,3 +194,13 @@ the lesson source in place of this section.
 verified: When another approved branch edits a bundled skill file during a learning change, register that integrated main predecessor as well as the original baseline. The exact identity-main librarian bytes were otherwise classified as edited and skipped. Sources: BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838, OBS-product-test-bfc159865a39075249fb6e40 and OBS-product-test-b0ea9516761a4e7adcf61406; the named package regression checks both safe update and edited-copy preservation. Limits: observed on macOS with Rust 1.99.1; this is bundle-upgrade evidence, not a fresh-agent cold-start grade.
 
 2026-11-02, immutable-history cleanup ordering (observation): a development retention fixture caught newer-first deletion hiding the ancestry needed to revalidate older candidates. Source: .chough/artifacts/history-retention-ordering-development.log and tests/history.rs. Limits: the intermediate failed source identity was not retained; the log is not historical native qualification. Future use: remove eligible selected ancestors oldest first, retain immutable receipts, and keep independent/orphan tips out of current timing. Revisit this ordering if the history format changes.
+
+2026-11-02, legacy history request bounds (observation): an independent read-only
+bounds review reproduced 5,000 legacy transitions being processed by one timing
+request with no partial warning, despite the approved 4,096-event request limit.
+Source: OBS-product-test-557ba9d0d6f01009fa59fa6c and
+BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a,
+at 6fa45db on local macOS arm64. Limits: legacy checkpoints without a history cursor;
+the immutable-event traversal was already bounded. Future use: apply shared request
+limits to every compatible storage path and test the exact limit and one record
+beyond it, including malformed input counted against the read budget.

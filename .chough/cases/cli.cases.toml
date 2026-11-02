@@ -2470,3 +2470,22 @@ expected = ["tests/evidence.rs::retention_revalidation_keeps_changed_missing_and
 adapter = "cargo-test"
 test_target = "evidence"
 test = "retention_revalidation_keeps_changed_missing_and_newly_referenced_proof"
+
+
+[[case]]
+id = "TC-cli-history-legacy-timing-bounds"
+title = "Legacy timing retains at most 4096 input lines and reports omitted history"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8", "LIFE-10"]
+requirements = ["REQ-cli-026"]
+paths = ["src/history.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission passes at the exact event limit and one line beyond, preserving the chronological suffix and source bytes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission"
