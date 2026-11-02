@@ -163,6 +163,22 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/checkpoint.md",
         "28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf",
     ),
+    (
+        "templates/cases.toml",
+        "5f839a81742b9dc3df3b1278e340061a08e95e2a00e203f0f2554eab3aa3fed9",
+    ),
+    (
+        "references/testing.md",
+        "8ca2b70f36ee162638cafd63bcc97e8c9ed688b59c2b67b98d61ba3be1d28f37",
+    ),
+    (
+        "references/validate.md",
+        "51281ff6c9af4b939105cdf6ecf80d9dd11080dc8d682ecbba9d5b5c17d75c42",
+    ),
+    (
+        "references/librarian.md",
+        "df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

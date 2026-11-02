@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "update-compact-next-fixture-for-slug-observations",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "9e422fc1629d3b70b443054d17e0bb4c669bf86e",
+  "contract_digest": "df4428ff258decb10bd82a8048e1ff8ebe5d598dc7b61e5e11a7fd5f492ce49b",
+  "execution_digest": "95056d8c133c08789f89b02132a7bbca298b12e734ff8433c417c791e870d1bd",
+  "workspace_digest": "aac47d5feb2b0d16f5f8a11608ecc64fbc81a79ae508d715209c6d6bea4a026c",
+  "timestamp": 1793585249
+}

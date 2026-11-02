@@ -1,0 +1,3 @@
+{
+  "error": "dependency `use-slug-identities-for-all-new-chough-records` is verifying; it must be accepted before update-compact-next-fixture-for-slug-observations can start"
+}

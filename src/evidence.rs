@@ -3,6 +3,7 @@
 use crate::cases::{self, ARTIFACTS_DIR};
 use crate::checkpoint::{Session, read_session};
 use crate::context::hi_export;
+use crate::identity;
 use crate::records::{
     append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
     print_json, read_record, record_names, valid_name, write_new,
@@ -107,7 +108,7 @@ pub(super) struct Evidence {
 
 #[derive(clap::Args)]
 pub(super) struct EvidenceArgs {
-    id: String,
+    id: Option<String>,
     #[arg(long = "criterion", required = true)]
     criteria: Vec<String>,
     #[arg(long = "requirement", required = true)]
@@ -536,18 +537,29 @@ pub(super) fn validate_requirements(
 pub(super) fn record(root: &Path, evidence: &Evidence) -> Result<String> {
     validate_record(evidence, &format!("{}.json", evidence.id))?;
     let name = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
-    ensure!(
-        !local_path(root, &name)?.exists(),
-        "evidence ID already exists; record a new observation"
-    );
-    ensure!(
-        write_new(
-            root,
-            &name,
-            &(serde_json::to_string_pretty(evidence)? + "\n")
-        )?,
-        "evidence ID already exists; record a new observation"
-    );
+    let content = serde_json::to_string_pretty(evidence)? + "\n";
+    let created = match write_new(root, &name, &content) {
+        Ok(created) => created,
+        Err(error)
+            if error
+                .downcast_ref::<std::io::Error>()
+                .is_some_and(|error| error.kind() == std::io::ErrorKind::AlreadyExists) =>
+        {
+            false
+        }
+        Err(error) => return Err(error),
+    };
+    if !created {
+        let existing = read_record(&local_path(root, &name)?)?;
+        ensure!(
+            existing != content,
+            "evidence ID already exists; record a new observation"
+        );
+        bail!(
+            "observation identity collision: {} already exists with different content; refusing to overwrite or retry",
+            evidence.id
+        );
+    }
     Ok(name)
 }
 
@@ -572,7 +584,10 @@ pub(super) fn artifact_fingerprints(
 
 pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     read_session(root)?;
-    ensure!(valid_name(&args.id), "invalid evidence ID");
+    if let Some(id) = &args.id {
+        ensure!(valid_name(id), "invalid evidence ID");
+        identity::require_explicit_observation_id(id)?;
+    }
     ensure!(
         !args.environment.trim().is_empty() && !args.summary.trim().is_empty(),
         "environment and summary must not be blank"
@@ -596,9 +611,22 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         });
     }
     let artifact_fingerprints = artifact_fingerprints(root, &args.artifacts)?;
+    let id = match args.id {
+        Some(id) => id,
+        None => {
+            let source = args.cases.first().cloned().unwrap_or_else(|| {
+                args.kind
+                    .to_possible_value()
+                    .expect("evidence kind has a clap value")
+                    .get_name()
+                    .to_string()
+            });
+            identity::observation(&source)?
+        }
+    };
     let evidence = Evidence {
         schema_version: 2,
-        id: args.id.clone(),
+        id,
         criteria: args.criteria,
         requirements: args.requirements,
         contracts: args.contracts,
@@ -1536,4 +1564,80 @@ pub(super) fn auto_prune(root: &Path) -> Value {
     })();
     result
         .unwrap_or_else(|error| json!({"error": format!("automatic retention failed: {error:#}")}))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn observation(id: String) -> Evidence {
+        Evidence {
+            schema_version: 2,
+            id,
+            criteria: vec!["LIFE-1".into()],
+            requirements: vec!["REQ-cli-001".into()],
+            contracts: vec!["specs/cli/cli.spec.md".into()],
+            kind: Kind::ProductTest,
+            outcome: Outcome::Passed,
+            environment: "local".into(),
+            summary: "original".into(),
+            artifacts: vec![],
+            artifact_fingerprints: BTreeMap::new(),
+            observed_at_unix_seconds: 1,
+            snapshot: Snapshot {
+                revision: "0".repeat(40),
+                dirty: false,
+                fingerprint: "0".repeat(64),
+                content: Some("0".repeat(64)),
+            },
+            provenance: PROVENANCE.into(),
+            cases: vec![],
+            method: None,
+            track: None,
+            argv: vec![],
+            exit_code: None,
+            tests_run: None,
+            limitations: vec![],
+            duration_seconds: None,
+        }
+    }
+
+    #[test]
+    fn a_forced_observation_collision_preserves_bytes_without_another_random_draw() {
+        let root = tempfile::tempdir().unwrap();
+        identity::with_random_results(vec![Ok([7; 12])], || {
+            let id = identity::observation("TC-cli-0001").unwrap();
+            let mut evidence = observation(id.clone());
+            record(root.path(), &evidence).unwrap();
+            let name = format!(".chough/evidence/{id}.json");
+            let path = root.path().join(name);
+            let original = fs::read(&path).unwrap();
+            evidence.summary = "different content".into();
+            let error = record(root.path(), &evidence).unwrap_err();
+            assert!(
+                error.to_string().contains("identity collision"),
+                "{error:#}"
+            );
+            assert!(error.to_string().contains(&id), "{error:#}");
+            assert_eq!(fs::read(path).unwrap(), original);
+            assert_eq!(identity::random_draws(), 1);
+            assert_eq!(record_names(root.path(), EVIDENCE_DIR).unwrap().len(), 1);
+        });
+    }
+
+    #[test]
+    fn a_random_source_failure_preserves_the_existing_record_tree() {
+        let root = tempfile::tempdir().unwrap();
+        let directory = root.path().join(EVIDENCE_DIR);
+        fs::create_dir_all(&directory).unwrap();
+        let existing = directory.join("legacy.json");
+        fs::write(&existing, b"existing bytes\n").unwrap();
+        let error = identity::with_random_results(vec![Err("injected random failure")], || {
+            identity::observation("TC-cli-0001").unwrap_err()
+        });
+        assert!(error.to_string().contains("injected random failure"));
+        assert_eq!(identity::random_draws(), 1);
+        assert_eq!(fs::read(existing).unwrap(), b"existing bytes\n");
+        assert_eq!(fs::read_dir(directory).unwrap().count(), 1);
+    }
 }

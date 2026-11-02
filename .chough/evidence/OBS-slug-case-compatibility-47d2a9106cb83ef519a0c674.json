@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Direct regression exited 101: cases list rejected TC-cli-curated-login-check with id must look like TC-cli-0001.",
+  "artifacts": [
+    ".chough/artifacts/OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674.log": "90d6757bc3592cf59664ef206df7ff39265663d8df6c871d1747124a7160ce07"
+  },
+  "observed_at_unix_seconds": 1793579559,
+  "snapshot": {
+    "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+    "dirty": true,
+    "fingerprint": "1638de1f5913b376676f4593c4738deb547e5226c040ebea76473025adf18f71",
+    "content": "c269fe17329d96e67a5c532044ddc9a9d7c2e435e7e66f0923378c8fd383f5f6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "No case link because the pre-fix validator cannot load slug case IDs; the direct test was run instead of cases run."
+  ]
+}

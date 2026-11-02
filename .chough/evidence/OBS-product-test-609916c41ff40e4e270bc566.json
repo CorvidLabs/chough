@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-609916c41ff40e4e270bc566",
+  "criteria": [
+    "FLOW-6"
+  ],
+  "requirements": [
+    "REQ-cli-023"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Approved fixture and identity production tests: 182 passed with no ignored or filtered tests on both Rust 1.99.1 and 1.88.0; next suite passed 3 tests; cases, real CLI exercise and build passed.",
+  "artifacts": [
+    ".chough/artifacts/identity-takeover/approved-fixture-msrv-full.log",
+    ".chough/artifacts/identity-takeover/approved-fixture-full-verify.log",
+    ".chough/artifacts/identity-takeover/approved-fixture-focused.log",
+    ".chough/artifacts/identity-takeover/approved-fixture-exercise.log",
+    ".chough/artifacts/identity-takeover/approved-fixture-build.log",
+    ".chough/artifacts/identity-takeover/approved-fixture-cases-receipt.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/identity-takeover/approved-fixture-build.log": "59d97532a8d1dac68f7144568cea68170ecfd25a7b3281305842d0a67dec439a",
+    ".chough/artifacts/identity-takeover/approved-fixture-cases-receipt.json": "2fab585cc1d150b6f9f592e7ab8c1339e815115b30bc46e7a195e35bcef040dc",
+    ".chough/artifacts/identity-takeover/approved-fixture-exercise.log": "1a973e874cde18e02bc4d2e85f31232c1cee6f5f0a5c9d4b82219141c565360e",
+    ".chough/artifacts/identity-takeover/approved-fixture-focused.log": "629808464d5331bbcdb714fdb132501d64a0a515e4000743ef122e7ac561b8e8",
+    ".chough/artifacts/identity-takeover/approved-fixture-full-verify.log": "93220b6c130f6ed6e46db4a011031d544d6400f0ceb75d1950dd727279fe599d",
+    ".chough/artifacts/identity-takeover/approved-fixture-msrv-full.log": "7769a074d6551c930ff85dcae00794b9f037fc581178f37a67020b695bc5f3ee"
+  },
+  "observed_at_unix_seconds": 1793583803,
+  "snapshot": {
+    "revision": "b118422c826b29a41df2eea38c58120f6dbc77ae",
+    "dirty": false,
+    "fingerprint": "5a6b9bbd6d130eab93bb07d8a6156a70843b7218124d6214357fef5c7b973173",
+    "content": "1fcc70468c2694ed16f86958849b15503a9febf2c2c7b7b970d33878cb7fff47"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "limitations": [
+    "The full verify lane did not pass: native audit stopped at step 6 because the accepted-first fixture dependency prevents path coverage. The recorded latest test phase passed, not the whole lane. Only verification notes changed after the full test runs; fixture and production source bytes are unchanged. No hosted CI or acceptance is claimed."
+  ]
+}

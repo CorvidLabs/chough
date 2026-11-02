@@ -38,12 +38,13 @@ flowchart TB
 | `.chough/session.v1.json` | The original schema 1 bytes kept by `chough migrate` |
 | `.chough/transitions.jsonl` | Append-only stage history, including `gate-opened` and `gate-closed` records written when an awaiting-human gate opens or is cleared; `chough timing` derives durations from it and stores none |
 | `.chough/preferences.json` | Standing project preferences, each with its source |
-| `.chough/cases/*.cases.toml` | Test definitions (`chough-testing/1`) |
-| `.chough/evidence/*.json`, `.chough/artifacts/` | Observations and captured output |
-| `.chough/pruned.jsonl` | Append-only ledger of observation sets removed by retention |
-| `.chough/bugs/*.json` | Local bug backlog |
-| `.chough/validation/`, `.chough/validation.stop` | Limits and progress of optional repeated runs, and a pending stop request |
-| `library/` (optional) | Snapshots, briefs and a generated index; never a second current source |
+| `.chough/cases/<module>.cases.toml` | Test definitions (`chough-testing/1`) with curated `TC-<module>-<title-slug>` IDs for new cases and exact legacy numeric IDs retained |
+| `.chough/evidence/OBS-*.json`, `.chough/evidence/<legacy-id>.json` | Schema 1 and 2 observations with new or legacy IDs |
+| `.chough/artifacts/<observation-id>.log` | Automated output whose name inherits its observation ID exactly |
+| `.chough/pruned.jsonl` | Append-only ledger of observation sets removed by retention; entries gain no new ID field |
+| `.chough/bugs/*.json` | Local bug backlog; its deterministic identity generator is unchanged |
+| `.chough/validation/VAL-*.json`, `.chough/validation/<legacy-id>.json`, `.chough/validation.stop` | Limits and progress of optional repeated runs, and the unchanged pending stop request |
+| `library/snapshots/SNAP-*/`, `library/snapshots/<date>-<n>/` (optional) | New and legacy snapshots, briefs and a generated index; never a second current source |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
 
 `.chough/` is plain project data, and the helper uploads nothing. By kind:
@@ -59,6 +60,25 @@ flowchart TB
 | Installed host copies written by `init` and `skill update` (byte-identical to the canonical bundle in this repository) | `<host>/skills/chough-workflow/`, here `.agents/` and `.claude/` | Committed in the project that uses them |
 | Ignored build output and local caches | `/target`, `.fledge/cache/`, and under `.specsync/`: `hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
 | CI output | GitHub Actions run logs | Kept by the hosted run; no CI artifact is uploaded |
+
+**Identity allocation.** A small crate-internal boundary normalizes ASCII slugs and
+uses the existing getrandom 0.4.3 package directly to fill 12 random bytes for each
+new OBS, VAL or SNAP suffix. There is one candidate and one atomic no-replace attempt,
+with no runtime, service, central allocator, persistent random state, timestamp or
+numeric fallback, digest retry or second random draw. Observation, validation and
+artifact files use create-new writes. Snapshot final directories use atomic directory
+creation, create-new children and manifest-last publication; this is not a claim of a
+crash-proof multi-file transaction. A collision, random-source failure or write
+failure preserves every pre-existing record and artifact.
+
+Case IDs remain curated definitions, with exact legacy numeric cases and their
+digests unchanged. Legacy observation, validation and dated snapshot records load
+beside new forms without migration. Existing timestamp fields determine chronology;
+IDs and random suffixes do not. Exact observation IDs continue through checkpoint
+references, bug links, native manifests, retention and pruning, while legacy and new
+validation IDs both resume and mixed snapshots share deterministic indexes. The
+single checkpoint, optional librarian and unchanged stop marker, preferences,
+consents, transitions and pruning-ledger shapes retain their existing ownership.
 
 **Retention.** An observation set is one evidence record plus the artifacts no other
 record references. `chough evidence prune` previews by default and changes nothing:

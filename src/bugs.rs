@@ -1,6 +1,7 @@
 //! Local-first bug backlog. Nothing here publishes to an external service.
 
 use crate::evidence::{self, Outcome};
+use crate::identity;
 use crate::records::{
     Section, ensure_text, head_revision, local_path, now, print_json, read_record, record_names,
     valid_name, write_new, write_replace,
@@ -158,28 +159,7 @@ fn canonical_creation_payload(bug: &Bug) -> Result<Vec<u8>> {
 }
 
 fn title_slug(title: &str) -> String {
-    let mut slug = String::new();
-    let mut separated = false;
-    for byte in title.bytes() {
-        let byte = byte.to_ascii_lowercase();
-        if byte.is_ascii_lowercase() || byte.is_ascii_digit() {
-            if separated && !slug.is_empty() {
-                slug.push('-');
-            }
-            separated = false;
-            slug.push(char::from(byte));
-        } else {
-            separated = true;
-        }
-    }
-    if slug.is_empty() {
-        slug.push_str("bug");
-    }
-    slug.truncate(BUG_SLUG_LIMIT);
-    while slug.ends_with('-') {
-        slug.pop();
-    }
-    slug
+    identity::slug(title, "bug", BUG_SLUG_LIMIT)
 }
 
 fn generate_bug_id(bug: &Bug) -> Result<String> {

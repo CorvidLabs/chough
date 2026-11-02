@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
+  "title": "Compact next fixture writes an obsolete observation ID",
+  "symptom": "The compact-next output-bound fixture fails at evidence creation before its report assertions run.",
+  "trigger": "Run TC-cli-0120 after the approved slug observation identity implementation.",
+  "expected": "Create a new observation automatically and reference the returned ID while preserving every report assertion.",
+  "actual": "evidence add rejects current-one as an old-style ID on a new write.",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "cases": [
+    "TC-cli-0120"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+  "steps": [
+    "chough cases run TC-cli-0120 --environment local-macos-arm64"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-0120-76a960d09d62f9e548d773cf",
+    "OBS-tc-cli-0120-a8f83f0b745b921305211bfd"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Takeover regression test",
+  "notes": [
+    {
+      "at_unix_seconds": 1793582343,
+      "text": "Added despite similar reports: BUG-0025 covers archived done action wording; this is test fixture construction excluded from the identity change affected_paths.",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793583743,
+      "text": "status: open -> verified; scope: out-of-scope -> in-scope. After the explicitly approved fixture-only patch, this focused case passed with automatic observation allocation. All original assertions and failure artifacts remain intact. Full product suites each pass 182 tests; native ordering still blocks the full verify lane.",
+      "observations": [
+        "OBS-tc-cli-0120-a8f83f0b745b921305211bfd"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793582343,
+  "updated_at_unix_seconds": 1793583743
+}

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 12
+version: 13
 status: active
 files:
   - src/main.rs
@@ -9,6 +9,7 @@ files:
   - src/checkpoint.rs
   - src/context.rs
   - src/evidence.rs
+  - src/identity.rs
   - src/library.rs
   - src/prefs.rs
   - src/records.rs
@@ -20,6 +21,7 @@ files:
   - tests/bugs.rs
   - tests/cases.rs
   - tests/optional.rs
+  - tests/package.rs
   - tests/stages.rs
   - tests/timing.rs
   - tests/common/mod.rs
@@ -51,7 +53,25 @@ evidence, bug, pref, consent, validate, library, skill and timing.
 Internal modules under src/ make their entry points visible to the crate root only.
 They are implementation details of the binary, not exports or library promises, and
 command behavior is specified under Behavioral Examples and in docs/cli.md rather
-than presented as Rust API symbols to the structural checker.
+than presented as Rust API symbols to the structural checker. The following table
+covers the crate-internal identity boundary without creating a public Rust API.
+
+| Internal symbol | Structural behavior |
+|---|---|
+| `OBSERVATION_SLUG_LIMIT` | Limits an observation slug so the complete OBS ID fits 100 bytes. |
+| `VALIDATION_SLUG_LIMIT` | Limits a validation slug so the complete VAL ID fits 100 bytes. |
+| `SNAPSHOT_SLUG_LIMIT` | Limits a snapshot slug so the complete SNAP ID fits 100 bytes. |
+| `slug` | Normalizes bounded nonempty lowercase ASCII slugs with caller-selected fallbacks. |
+| `valid_case_id` | Accepts curated slug and exact legacy numeric case IDs with the module-aware bound. |
+| `valid_observation_id` | Accepts the exact new OBS form with a complete 24-digit lowercase hex suffix. |
+| `valid_validation_id` | Accepts the exact new VAL form with a complete 24-digit lowercase hex suffix. |
+| `valid_snapshot_id` | Accepts the exact new SNAP form with a complete 24-digit lowercase hex suffix. |
+| `observation` | Allocates one OBS candidate from one random 96-bit draw. |
+| `validation` | Allocates one VAL candidate from one random 96-bit draw. |
+| `snapshot` | Allocates one SNAP candidate from one random 96-bit draw. |
+| `require_explicit_observation_id` | Applies new-form explicit observation validation and the old-style omit-ID remedy. |
+| `with_random_results` | Test-only random-source seam; no production override. |
+| `random_draws` | Test-only draw-count seam used to prove there is no retry. |
 
 ## Invariants
 
@@ -83,7 +103,19 @@ than presented as Rust API symbols to the structural checker.
     for `BUG-<lowercase-title-slug>-<24-lowercase-hex>` IDs, whose creation-time
     digest, ID and filename never change during updates. Exact legacy `BUG-NNNN`
     records remain usable without migration or renumbering, and duplicate and related
-    links accept either ID form.
+    links accept either ID form. Bug generation and known answers do not change when
+    other record identities do.
+11. New cases use curated `TC-<module>-<title-slug>` IDs with lowercase ASCII slug
+    syntax, a module-aware 100-byte bound and global duplicate refusal. Exact legacy
+    `TC-<module>-NNNN` cases retain their IDs and definition digests without
+    renumbering or migration.
+12. Automatic observations, validation runs and snapshots use
+    `OBS-<slug>-<24-lowercase-hex>`, `VAL-<slug>-<24-lowercase-hex>` and
+    `SNAP-<slug>-<24-lowercase-hex>`. Each suffix encodes one random 96-bit draw.
+    Creation makes one candidate and one atomic no-replace attempt, preserving
+    existing bytes on collision or failure without fallback or retry. Timestamps
+    remain the chronology source, legacy IDs remain readable and resumable where
+    supported, and automated artifacts inherit the exact observation ID.
 
 ## Behavioral Examples
 
@@ -118,6 +150,19 @@ When distinct bug reports are created manually and by automatic failure capture
 Then each distinct report receives a different new-form ID
 And legacy schema 1 records and cross-form duplicate and related links remain usable
 
+Given equivalent independent roots and identical repeated operations in one root
+When observations, validation runs and snapshots are allocated
+Then each new record receives its required slug and random 96-bit suffix form
+And identical repeated operations remain distinct history
+
+Given a new observation write with an old-style explicit ID
+When the command is invoked
+Then it refuses before writing an observation or artifact and says to omit the ID
+
+Given mixed legacy and new case, observation, validation and snapshot records
+When links, status, timing, retention, resume and indexes read them
+Then both forms work without migration or schema rewrite and timestamps determine chronology
+
 Given schema 2 base, ours and theirs checkpoints with compatible collection edits and an unchanged current-cycle group
 When checkpoint merge runs directly or through the configured Git driver
 Then exact-string additions, removals and ordering are reconciled and only ours is replaced
@@ -134,6 +179,8 @@ Then it refuses with a current-cycle conflict and leaves all three inputs byte-i
 | Invalid path/schema | A record escapes the root or uses an unsupported version | Fail with an actionable error |
 | Missing native tool/source | Context or lifecycle information is unavailable | Report unavailable/unknown without inventing state |
 | Existing observation ID | An observation record already exists | Refuse replacement and retain the original |
+| Old-style explicit observation ID | A new write supplies an ID outside the new OBS form | Refuse before observation or artifact creation and give the omit-ID remedy |
+| Identity collision or allocation failure | A same-ID different-content create-new occurs, the random source fails, or a later write fails | Preserve pre-existing records and artifacts; do not overwrite, retry or allocate a timestamp, numeric or digest fallback |
 | Existing bug ID | A new bug candidate ID already exists, including a same-ID different-content result | Refuse creation and leave the original record byte-identical, with no overwrite, digest retry or numeric fallback |
 | Invalid traceability | A criterion, requirement or case cannot be established | Refuse to record the observation |
 | Native gate not satisfied | A stage transition needs a native state that is absent or unknown | Refuse the transition and name the native status command |
@@ -145,10 +192,11 @@ Then it refuses with a current-cycle conflict and leaves all three inputs byte-i
 ## Dependencies
 
 Rust dependencies are declared in Cargo.toml, including a TOML parser for test
-definitions. Git supplies revision and working content identity; HI supplies scoped
+definitions and direct use of the existing getrandom 0.4.3 package for random record
+suffixes. Git supplies revision and working content identity; HI supplies scoped
 intent; SpecSync supplies native lifecycle output. Cargo, Fledge or another bound
 command runs only when a case is explicitly executed. The helper invokes no model
-provider and no hosted service.
+provider, runtime or hosted service.
 
 ## Change Log
 
@@ -166,3 +214,4 @@ provider and no hosted service.
 | 10 | 2026-11-01 | prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill: Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log |
 | 11 | 2026-11-01 | use-collision-resistant-slug-identities-for-new-bugs: Use collision-resistant slug identities for new bugs |
 | 12 | 2026-11-01 | make-checkpoint-merges-safe-across-parallel-changes: Make checkpoint merges safe across parallel changes |
+| 13 | 2026-11-02 | use-slug-identities-for-all-new-chough-records: Use slug identities for all new Chough records |

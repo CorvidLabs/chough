@@ -2133,3 +2133,75 @@ expected = ["tests/bugs.rs::independent_roots_at_the_same_high_water_mark_get_di
 adapter = "cargo-test"
 test_target = "bugs"
 test = "independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links"
+
+[[case]]
+id = "TC-cli-slug-observation-allocation"
+title = "Independent roots and identical repeated runs allocate distinct observations"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-2"]
+requirements = ["REQ-cli-011", "REQ-cli-017", "REQ-cli-023"]
+paths = ["src/identity.rs", "src/cases.rs", "src/evidence.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::independent_roots_and_identical_repeated_runs_allocate_distinct_observations passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "independent_roots_and_identical_repeated_runs_allocate_distinct_observations"
+
+[[case]]
+id = "TC-cli-slug-validation-allocation"
+title = "Independent roots and identical repeated runs allocate distinct validation runs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-9", "LIFE-7"]
+requirements = ["REQ-cli-011", "REQ-cli-013", "REQ-cli-023"]
+paths = ["src/identity.rs", "src/validate.rs", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs"
+
+[[case]]
+id = "TC-cli-slug-snapshot-allocation"
+title = "Independent roots and identical repeated runs allocate distinct snapshots"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-12"]
+requirements = ["REQ-cli-015", "REQ-cli-023"]
+paths = ["src/identity.rs", "src/library.rs", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots"
+
+[[case]]
+id = "TC-cli-slug-case-compatibility"
+title = "Slug case IDs validate without changing legacy IDs digests or global uniqueness"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-2"]
+requirements = ["REQ-cli-009"]
+paths = ["src/identity.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness"

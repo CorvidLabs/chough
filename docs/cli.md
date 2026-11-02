@@ -20,13 +20,13 @@ their JSON.
 | `migrate [--stage S]` | Converts a schema 1 session after saving its bytes to `.chough/session.v1.json`; refuses if that backup exists. |
 | `checkpoint` | Show, update or merge: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`, `--merge <base> <ours> <theirs>`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved. |
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
-| `cases check\|list\|select\|run\|record` | Validate definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` exit 3 when the recorded outcome is not passed. |
-| `evidence add ID`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
+| `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` allocate an OBS ID when `--observation-id` is omitted and exit 3 when the recorded outcome is not passed. |
+| `evidence add [ID]`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID allocates the new OBS form; an explicit ID must use that form for a new write. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
 | `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` off, on; `library-dir` a path (default `library`); `required-lane` a name (default empty); `retention` off, auto. Only `always`, `standing` and `auto` authorize without a run consent. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
-| `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. `resume ID` continues a run; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
-| `library init\|snapshot PATH... --reason R\|index` | Optional librarian; requires `pref set librarian on --source ...`. `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/<date>-<n>/` with a manifest of source path, revision and SHA-256; `index` regenerates `INDEX.md`. |
+| `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. A new run receives a VAL ID and every attempt receives a new OBS ID. `resume ID` continues a new or legacy run under its original ID; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
+| `library init\|snapshot PATH... --reason R\|index` | Optional librarian; requires `pref set librarian on --source ...`. `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` with new and legacy dated snapshots. |
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
 
@@ -52,7 +52,66 @@ shell-evaluated text.
 | Checkpoint | 2 (schema 1 read-only until migrated) |
 | Observation | 2 (schema 1 still read). The optional `duration_seconds` that `cases run` adds is a schema 2 field; because unknown fields are rejected, Chough builds from before it (including the 2756dc2 release candidate) refuse a repository holding such records, so use this build or later there. |
 | Case file | `profile = "chough-testing/1"` |
-| Bug, preferences, transition (including `gate-opened` and `gate-closed`), validation run | 1 |
+| Bug, preferences, transition (including `gate-opened` and `gate-closed`), validation run, snapshot manifest | 1 |
+
+### Case, observation, validation and snapshot identities
+
+New case definitions use curated `TC-<module>-<title-slug>` IDs. The title slug is
+nonempty lowercase ASCII letters and digits in runs separated by single hyphens. The
+module is the exact case-file module, and the complete ID stays within 100 bytes,
+leaving `96 - module.len()` bytes for the title slug. IDs are globally unique across
+all case modules. Deriving an ID from a title uses the same ASCII normalization as
+other slugs, but later title edits do not rename a case. Exact legacy
+`TC-<module>-NNNN` definitions remain valid with unchanged IDs, positions, serialized
+fields and definition digests, without renumbering or migration.
+
+Automatic observations use `OBS-<slug>-<24-lowercase-hex>`, repeated validation runs
+use `VAL-<slug>-<24-lowercase-hex>`, and librarian snapshots use
+`SNAP-<slug>-<24-lowercase-hex>`. Observation and validation slugs come from the case
+ID; direct evidence without a case uses its observation kind, and snapshot slugs come
+from the snapshot reason. Normalization lowercases ASCII, replaces each maximal run
+of other bytes with one hyphen, trims edge hyphens and supplies a nonempty fallback.
+Slugs are bounded to 71 bytes for OBS and VAL and 70 for SNAP so complete IDs stay
+within 100 bytes without truncating the final separator or suffix.
+
+Each suffix is one direct getrandom 0.4.3 fill of 12 bytes, encoded as 24 lowercase
+hexadecimal digits. One allocation makes one candidate. Random suffixes let identical
+repeated runs and independent roots retain distinct history, but do not prove that a
+collision is impossible. Existing `observed_at_unix_seconds`,
+`started_at_unix_seconds`, `created_at_unix_seconds` and `duration_seconds` fields
+keep their meanings. Timestamps and stored durations, not lexical IDs or random
+suffixes, determine chronology and timing.
+
+`cases run --observation-id`, `cases record --observation-id` and the optional
+positional ID on `evidence add` accept an explicit new-form OBS ID. When omitted,
+they allocate one automatically. A legacy timestamp, numeric-suffix or other
+old-style ID supplied for a new write is refused before an observation or automated
+artifact is created, with a remedy to omit the ID for automatic allocation. No
+explicit-ID option is added for validation runs or snapshots.
+
+Every automated artifact remains exactly
+`.chough/artifacts/<observation-id>.log`, inheriting the allocated or explicit
+observation ID. Observation JSON, validation JSON and log files use atomic
+create-new; snapshots use atomic creation of their final directory, create-new
+children and a manifest written last. A same-ID different-content creation is
+refused and preserves existing bytes. There is no overwrite, timestamp or numeric
+fallback, digest retry, second random draw or other retry. Random-source and write
+failures preserve pre-existing records. Separate artifact and record writes are not
+a crash-proof multi-file transaction, and an interrupted new snapshot without its
+manifest is not valid completed history.
+
+Legacy case, observation, validation and snapshot IDs remain readable, linkable and
+resumable where supported. Mixed IDs work through bug links, checkpoint references,
+status and next, timing, retention and pruning, native manifests, validation status
+and resume, and librarian indexes. Reads do not rewrite records. Observation schemas
+1 and 2, validation schema 1, snapshot manifest schema 1 and bug schema 1 stay
+unchanged, with no bulk migration. Older Chough versions require an upgrade to use
+slug case IDs and the other new forms; downgrading is not a migration path.
+
+Bug identity generation and known-answer vectors are unchanged. Transition,
+preference, consent, stop-marker and pruning-ledger entry shapes gain no IDs, and HI,
+requirement and SpecSync identities stay with their native owners. No runtime,
+service, central allocator or persistent random state is added.
 
 ### Bug identities
 
@@ -87,8 +146,10 @@ Creation makes one candidate ID and one atomic create-new attempt. An existing
 candidate path is refused without overwrite. A same-ID different-content result
 reports a collision and leaves the existing record byte-identical; identical existing
 content also remains untouched. Creation never falls back to numeric allocation,
-retries the digest or makes a second candidate. Evidence, artifact, validation,
-snapshot, transition, case, HI, requirement and SpecSync ID schemes are unchanged.
+retries the digest or makes a second candidate. Case, observation, validation and
+snapshot allocation follows the preceding identity contract. Transition, preference,
+consent, stop-marker, pruning-ledger entry, HI, requirement and SpecSync shapes are
+unchanged.
 
 ## Checkpoint merges
 

@@ -83,7 +83,8 @@ fn save(root: &Path, run: &Run, new: bool) -> Result<()> {
     let content = serde_json::to_string_pretty(run)? + "\n";
     if new {
         ensure!(
-            write_new(root, &run_path(&run.id), &content)?,
+            write_new(root, &run_path(&run.id), &content)
+                .with_context(|| format!("creating validation run {}", run.id))?,
             "validation run {} already exists",
             run.id
         );
@@ -222,7 +223,7 @@ pub(super) struct RunTimes {
     pub(super) elapsed_seconds: u64,
 }
 
-/// Every stored run's times and counts, in ID order.
+/// Every stored run's times and counts, in timestamp order.
 pub(super) fn run_times(root: &Path) -> Result<Vec<RunTimes>> {
     let mut runs = vec![];
     for name in crate::records::record_names(root, RUNS_DIR)? {
@@ -240,7 +241,47 @@ pub(super) fn run_times(root: &Path) -> Result<Vec<RunTimes>> {
             elapsed_seconds: run.elapsed_seconds,
         });
     }
+    runs.sort_by(|left, right| {
+        left.started_at_unix_seconds
+            .cmp(&right.started_at_unix_seconds)
+            .then(left.id.cmp(&right.id))
+    });
     Ok(runs)
+}
+
+fn create_run(
+    root: &Path,
+    case: String,
+    times: u32,
+    interval_seconds: u64,
+    environment: String,
+    authority: String,
+    started_at_unix_seconds: u64,
+) -> Result<Run> {
+    let id = crate::identity::validation(&case)?;
+    ensure!(
+        crate::identity::valid_validation_id(&id),
+        "invalid allocated validation run ID"
+    );
+    let run = Run {
+        schema_version: 1,
+        id,
+        case,
+        times,
+        interval_seconds,
+        environment,
+        authority,
+        state: "running".into(),
+        completed: 0,
+        failures: 0,
+        not_run: 0,
+        observations: vec![],
+        bugs: vec![],
+        elapsed_seconds: 0,
+        started_at_unix_seconds,
+    };
+    save(root, &run, true)?;
+    Ok(run)
 }
 
 pub(super) fn run(root: &Path, command: ValidateCommand) -> Result<()> {
@@ -263,32 +304,7 @@ pub(super) fn run(root: &Path, command: ValidateCommand) -> Result<()> {
                 located.case.bind.is_some(),
                 "{case} has no binding to repeat"
             );
-            let started = now()?;
-            let base = format!("{}-{started}", case.to_ascii_lowercase());
-            let mut id = base.clone();
-            let mut suffix = 1;
-            while local_path(root, &run_path(&id))?.exists() {
-                id = format!("{base}-{suffix}");
-                suffix += 1;
-            }
-            let run = Run {
-                schema_version: 1,
-                id,
-                case,
-                times,
-                interval_seconds: interval,
-                environment,
-                authority,
-                state: "running".into(),
-                completed: 0,
-                failures: 0,
-                not_run: 0,
-                observations: vec![],
-                bugs: vec![],
-                elapsed_seconds: 0,
-                started_at_unix_seconds: started,
-            };
-            save(root, &run, true)?;
+            let run = create_run(root, case, times, interval, environment, authority, now()?)?;
             continue_run(root, run)
         }
         ValidateCommand::Stop => {
@@ -334,5 +350,87 @@ pub(super) fn run(root: &Path, command: ValidateCommand) -> Result<()> {
                 "runs": runs,
             }))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn create(root: &Path, times: u32) -> Result<Run> {
+        create_run(
+            root,
+            "TC-cli-0001".into(),
+            times,
+            0,
+            "local".into(),
+            "test".into(),
+            10,
+        )
+    }
+
+    #[test]
+    fn validation_collision_preserves_the_original_without_fallback() {
+        let root = tempfile::tempdir().unwrap();
+        let first = crate::identity::with_random_results(vec![Ok([0xab; 12])], || {
+            create(root.path(), 1).unwrap()
+        });
+        let path = root.path().join(run_path(&first.id));
+        let original = fs::read(&path).unwrap();
+
+        let error = crate::identity::with_random_results(vec![Ok([0xab; 12])], || {
+            create(root.path(), 2).err().unwrap()
+        });
+        assert!(error.to_string().contains(&first.id), "{error:#}");
+        assert_eq!(crate::identity::random_draws(), 1);
+        assert_eq!(fs::read(&path).unwrap(), original);
+        assert_eq!(
+            crate::records::record_names(root.path(), RUNS_DIR)
+                .unwrap()
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn timing_uses_timestamps_instead_of_random_id_order() {
+        let root = tempfile::tempdir().unwrap();
+        let mut later = crate::identity::with_random_results(vec![Ok([0; 12])], || {
+            create(root.path(), 1).unwrap()
+        });
+        later.started_at_unix_seconds = 20;
+        save(root.path(), &later, false).unwrap();
+        let earlier = crate::identity::with_random_results(vec![Ok([0xff; 12])], || {
+            create(root.path(), 1).unwrap()
+        });
+        assert!(later.id < earlier.id);
+
+        let times = run_times(root.path()).unwrap();
+        assert_eq!(times[0].id, earlier.id);
+        assert_eq!(times[1].id, later.id);
+    }
+
+    #[test]
+    fn validation_random_failure_preserves_existing_records() {
+        let root = tempfile::tempdir().unwrap();
+        let first = crate::identity::with_random_results(vec![Ok([0xab; 12])], || {
+            create(root.path(), 1).unwrap()
+        });
+        let path = root.path().join(run_path(&first.id));
+        let original = fs::read(&path).unwrap();
+
+        let error =
+            crate::identity::with_random_results(vec![Err("injected random failure")], || {
+                create(root.path(), 2).err().unwrap()
+            });
+        assert!(error.to_string().contains("injected random failure"));
+        assert_eq!(crate::identity::random_draws(), 1);
+        assert_eq!(fs::read(&path).unwrap(), original);
+        assert_eq!(
+            crate::records::record_names(root.path(), RUNS_DIR)
+                .unwrap()
+                .len(),
+            1
+        );
     }
 }

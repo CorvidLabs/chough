@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test both_forms_stay_within_the_cap_with_totals_for_large_records ... FAILED
+
+failures:
+
+---- both_forms_stay_within_the_cap_with_totals_for_large_records stdout ----
+
+thread 'both_forms_stay_within_the_cap_with_totals_for_large_records' (312821301) panicked at tests/next.rs:287:5:
+Error: old-style observation ID "current-one" cannot be used for a new write; omit the ID for automatic allocation
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    both_forms_stay_within_the_cap_with_totals_for_large_records
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.87s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests/next.rs (target/debug/deps/next-39a61b549593f01c)
+error: test failed, to rerun pass `--test next`
