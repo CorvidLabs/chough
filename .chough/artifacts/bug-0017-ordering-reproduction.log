@@ -1,0 +1,116 @@
+# Reproduction of BUG-0017, ordering half (issue #11)
+revision: 46790b408f8f418bdbaafef86119c5a642c55941
+platform: Linux 6.12.94+ x86_64
+date: 2026-11-02T15:57:53Z
+binary: target/debug/chough (chough 0.1.0)
+tools: specsync 6.1.2; fledge 1.8.0; hi 0.8.0
+script: examples/feature-bug-loop.sh up to build, plus one unchecked "Record Chough cases" task, then without it
+project: disposable temporary directory
+
+
+== Intent: sample criteria CHECKOUT-1 and CHECKOUT-2 (sample input, already in hi/)
+
+== Design: nothing visual changes, so the stage is skipped with a reason
+design -> plan (skip)
+
+== Plan: a native SpecSync change, and the scope gate before build
+refused as expected: entering build before scope approval (refused:native-draft)
+plan -> build, gate native:approved
+
+== Build: implement the feature with its boundary tests
+
+== BUG-0017 repro: open case-recording task, requirement only in the approved delta
+specs/shipping/context.md:0
+specs/shipping/requirements.md:0
+specs/shipping/shipping.spec.md:0
+specs/shipping/tasks.md:0
+specs/shipping/testing.md:0
+Error: .chough/cases/shipping.cases.toml: case TC-shipping-0001
+
+Caused by:
+    requirement REQ-shipping-002 not found in specs/shipping/requirements.md; it may be a typo, or a requirement an approved native change adds that is not yet materialized: run specsync change check <change> before running or recording cases that link it
+cases check exit 1
+Checking free-shipping-at-the-threshold…
+  Lesson: if this failure taught you something, record it in .specsync/changes/free-shipping-at-the-threshold/context.md while it is fresh — dead ends are what the next change to this module needs, and `finalize` folds them into the spec
+error: tasks.md contains incomplete tasks
+change check (open task) exit 1
+
+== Ordering fix: case recording is not a checkbox; check materializes first
+Checking free-shipping-at-the-threshold…
+✓ free-shipping-at-the-threshold verified
+  Next: run `specsync change check free-shipping-at-the-threshold --commit` if needed, then `specsync change ship-status free-shipping-at-the-threshold` (or `ship free-shipping-at-the-threshold`) — scoped review then finalize before merging; merging first orphans verification evidence and blocks earlier accepted changes sharing a delivery input from archiving
+  Handoff: safe — verification is current for this working tree; a fresh session here resumes at the independent review
+change check exit 0
+specs/shipping/context.md:0
+specs/shipping/requirements.md:1
+specs/shipping/shipping.spec.md:0
+specs/shipping/tasks.md:0
+specs/shipping/testing.md:0
+{
+  "cases": [
+    {
+      "criteria": [
+        "CHECKOUT-1"
+      ],
+      "digest": "a6807627112d2f2324069468c573a3a9a45be0efc7e095d6e38e5c03d7296bbe",
+      "file": ".chough/cases/shipping.cases.toml",
+      "id": "TC-shipping-0001",
+      "method": "automated",
+      "requirements": [
+        "REQ-shipping-002"
+      ],
+      "status": "active",
+      "title": "Free shipping at exactly the threshold",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "CHECKOUT-2"
+      ],
+      "digest": "1ec23c0789132737a059cc57bc9daf86544337099bd47b71859c40070ea2379e",
+      "file": ".chough/cases/shipping.cases.toml",
+      "id": "TC-shipping-0002",
+      "method": "automated",
+      "requirements": [
+        "REQ-shipping-001"
+      ],
+      "status": "active",
+      "title": "Standard fee just below the threshold",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "CHECKOUT-1"
+      ],
+      "digest": "e62dcb0177d32e0ff496ecdbf98629cd123c45a7fe3db258476870bd7bac542a",
+      "file": ".chough/cases/shipping.cases.toml",
+      "id": "TC-shipping-0003",
+      "method": "automated",
+      "requirements": [
+        "REQ-shipping-002"
+      ],
+      "status": "active",
+      "title": "Free shipping above the threshold",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "CHECKOUT-1"
+      ],
+      "digest": "205f670f3ca07831bf147fc1d5d5c448de3e8696aed2651e0051894d34e9946f",
+      "file": ".chough/cases/shipping.cases.toml",
+      "id": "TC-shipping-0004",
+      "method": "manual",
+      "requirements": [
+        "REQ-shipping-002"
+      ],
+      "status": "active",
+      "title": "Checkout wording names free shipping",
+      "track": "copy-localization"
+    }
+  ],
+  "profile": "chough-testing/1",
+  "schema_version": 1,
+  "valid": true
+}
+cases check exit 0

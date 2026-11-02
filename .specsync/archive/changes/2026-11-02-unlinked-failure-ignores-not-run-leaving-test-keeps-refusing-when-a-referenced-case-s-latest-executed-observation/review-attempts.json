@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "9d2e377f9ccef1edf136cddefbfc016d396e3b08",
+      "contract_digest": "ce7367cea1dca9f70384e41a019985363d9ae54d666a391050e6ea865a19407c",
+      "execution_digest": "fcd974e755bb14331e7e89fc94f89306344083819bd6207fe82fa69e4af58a0b",
+      "workspace_digest": "b1cd75c97258bc428aae49d7791e54c4648d17ea0d8e9a66722bbc3f7b13065b",
+      "timestamp": 1793639183
+    }
+  ]
+}

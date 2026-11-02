@@ -6,7 +6,7 @@ use crate::records::{
     NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
     local_path, native_json, now, print_json, read_log_tail, read_native_record, read_record,
 };
-use crate::{bugs, prefs};
+use crate::{bugs, evidence, prefs};
 use anyhow::{Result, bail, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
@@ -834,6 +834,15 @@ pub(super) fn assess(
             reason: "Acceptance waits for every blocking bug to be verified or rescoped.".into(),
             command: Some("chough stage back --to build --reason \"<why>\"".into()),
         }
+    } else if let Some(refusal) = (current == "test")
+        .then(|| unlinked_failure(root, session).ok().flatten())
+        .flatten()
+    {
+        Action {
+            action: format!("Leaving test is refused (refused:unlinked-failure): {refusal}"),
+            reason: "A failing case stays failed until it passes or a bug records the failure (FLOW-7, LIFE-5).".into(),
+            command: Some("chough bug add ... --observation <id>".into()),
+        }
     } else if current == "done" {
         done_action(root, session, state, native_next)
     } else if is_main(current)
@@ -1124,6 +1133,49 @@ fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
     )
 }
 
+/// Leaving test needs every case referenced in the checkpoint to have a latest
+/// observation, by recorded time and then ID, that did not fail, or one that a local
+/// bug of any status links (issue #39). Describes the first such failure by case ID.
+fn unlinked_failure(root: &Path, session: &Checkpoint) -> Result<Option<String>> {
+    if session.references.cases.is_empty() {
+        return Ok(None);
+    }
+    let observations = evidence::load_all(root)?;
+    let linked: BTreeSet<String> = bugs::observation_references(root)?
+        .into_iter()
+        .flat_map(|(_, ids)| ids)
+        .collect();
+    let referenced: BTreeSet<&String> = session.references.cases.iter().collect();
+    let failures: Vec<(&String, &String)> = referenced
+        .into_iter()
+        .filter_map(|case| {
+            observations
+                .iter()
+                .filter(|record| record.cases.iter().any(|link| &link.id == case))
+                // A not-run attempt executed nothing; the latest executed result decides.
+                .filter(|record| record.outcome != evidence::Outcome::NotRun)
+                .max_by(|a, b| {
+                    (a.observed_at_unix_seconds, &a.id).cmp(&(b.observed_at_unix_seconds, &b.id))
+                })
+                .filter(|latest| {
+                    latest.outcome == evidence::Outcome::Failed && !linked.contains(&latest.id)
+                })
+                .map(|latest| (case, &latest.id))
+        })
+        .collect();
+    let Some((case, observation)) = failures.first() else {
+        return Ok(None);
+    };
+    let others = match failures.len() - 1 {
+        0 => String::new(),
+        1 => " (and 1 more such case)".into(),
+        more => format!(" (and {more} more such cases)"),
+    };
+    Ok(Some(format!(
+        "case {case} latest observation {observation} failed and no bug links it{others}; rerun the case until it passes, or link the failure with `chough bug add ... --observation {observation}` or `chough bug update <bug> --observation {observation}`"
+    )))
+}
+
 /// Apply a move to the next stage, checking the gates that apply to it.
 fn move_forward(
     root: &Path,
@@ -1154,6 +1206,9 @@ fn move_forward(
             "{kind} refused (refused:blocking-bugs): open acceptance-blocking bugs {}; go back to build, fix and retest",
             blocking.join(", ")
         );
+        if let Some(refusal) = unlinked_failure(root, session)? {
+            bail!("{kind} refused (refused:unlinked-failure): {refusal}");
+        }
     }
     if let Some(gate) = destination_gate(root, session, &to)? {
         ensure!(

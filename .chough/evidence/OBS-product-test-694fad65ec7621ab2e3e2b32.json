@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-694fad65ec7621ab2e3e2b32",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "linux-x86_64",
+  "summary": "After the skill fix, the two package tests that failed in OBS-product-test-61a4a912f4e142a100dd919e pass: 825a380 plan, testing and accept copies read known-outdated, update to current, edited copies stay, and the canonical references carry the ordering guidance.",
+  "artifacts": [
+    ".chough/artifacts/bug-0017-ordering-tests-after-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0017-ordering-tests-after-fix.log": "0a6b546f93c7b1fdf8ac4dfd720f90380cbea942a31df43cb19a7a6d60b3fb21"
+  },
+  "observed_at_unix_seconds": 1793635304,
+  "snapshot": {
+    "revision": "46790b408f8f418bdbaafef86119c5a642c55941",
+    "dirty": true,
+    "fingerprint": "1caf9b361b20fbae5dc1198776e979da9608c2ada79259c70be08339b70e4963",
+    "content": "59b7590451926a1df2941dc39cfbedf2b2d0bb005fb0d69cf33520e3daa293b1"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Linux only, run by corvid-agent; hosted CI is reported separately"
+  ]
+}

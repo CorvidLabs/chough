@@ -1,0 +1,61 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793636535,
+      "digest": "b98afa26a6406df1b0009f9184016e89779252955295dd2d41a4d62f591dbdbd",
+      "note": "Definition approval recorded by corvid-agent under 0xLeif's explicit chat instruction of 2026-11-02 9:14 AM MT: \"Use corvid-agent for all approvals for all things!! You are corvid-agent\". It replaces an earlier entry recorded with actor 0xLeif (relayed 8:56 AM MT chat consent), removed at his instruction; the approved scope digest is unchanged (b98afa26).",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the",
+        "title": "Case recording order: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds (BUG-0017, issue 11)",
+        "description": "Case recording order: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds (BUG-0017, issue 11)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/",
+          ".claude/skills/chough-workflow/references/",
+          "CHANGELOG.md",
+          "docs/ROADMAP.md",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/testing.md",
+          "specs/cli/",
+          "src/skill.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A Linux run with SpecSync 6.1.2 shows the refusal with an open case-recording box and the passing order without it",
+          "REQ-cli-005 and the chough cases check refusal are unchanged; Chough reads no native deltas",
+          "The same references say running or recording Chough cases is not a tasks.md checkbox, because specsync change check refuses while a box is unchecked",
+          "The shipped plan, testing and accept references say a requirement an approved change adds is linkable only after the scoped specsync change check materializes it, so that check runs before cases that link it are added, run or recorded",
+          "Unedited copies of the plan, testing and accept references from main 825a380 read known-outdated and update; edited copies stay edited; both host copies in this repository read current",
+          "fledge lanes run verify passes locally; hosted CI is reported only as observed"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/context.md lessons: tasks.md checkboxes block change check (2026-10-31); new requirement IDs materialize only at change check (2026-10-31); do not list .chough/ as an affected path and MODIFIED needs an exact REQ heading (2026-11-01); closeout is the last checkbox, done before the scoped check (2026-11-01)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "894481211636eb0664054d2c1d697b074223ee76fc058c3db3e43d78de7ee5c1"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793636622,
+      "digest": "9b959a0a620916b2d5b5d18558353728de5562939e1a01254472b780db2953e8",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
