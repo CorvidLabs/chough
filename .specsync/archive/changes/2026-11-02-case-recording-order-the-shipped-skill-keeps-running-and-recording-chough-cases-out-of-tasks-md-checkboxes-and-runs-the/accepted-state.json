@@ -7,11 +7,11 @@
   "title": "Case recording order: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds (BUG-0017, issue 11)",
   "description": "Case recording order: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds (BUG-0017, issue 11)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
   "created_at": 1793634444,
-  "updated_at": 1793636600,
+  "updated_at": 1793636622,
   "affected_specs": [
     "cli"
   ],

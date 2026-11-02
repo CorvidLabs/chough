@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the",
+  "slug": "case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the",
+  "title": "Case recording order: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds (BUG-0017, issue 11)",
+  "description": "Case recording order: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds (BUG-0017, issue 11)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "created_at": 1793634444,
+  "updated_at": 1793636626,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "skills/chough-workflow/references/plan.md",
+    "skills/chough-workflow/references/testing.md",
+    "skills/chough-workflow/references/accept.md",
+    ".agents/skills/chough-workflow/references/",
+    ".claude/skills/chough-workflow/references/",
+    "src/skill.rs",
+    "tests/package.rs",
+    "CHANGELOG.md",
+    "docs/ROADMAP.md",
+    "specs/cli/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The shipped plan, testing and accept references say a requirement an approved change adds is linkable only after the scoped specsync change check materializes it, so that check runs before cases that link it are added, run or recorded",
+    "The same references say running or recording Chough cases is not a tasks.md checkbox, because specsync change check refuses while a box is unchecked",
+    "REQ-cli-005 and the chough cases check refusal are unchanged; Chough reads no native deltas",
+    "Unedited copies of the plan, testing and accept references from main 825a380 read known-outdated and update; edited copies stay edited; both host copies in this repository read current",
+    "A Linux run with SpecSync 6.1.2 shows the refusal with an open case-recording box and the passing order without it",
+    "fledge lanes run verify passes locally; hosted CI is reported only as observed"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "specs/cli/context.md lessons: tasks.md checkboxes block change check (2026-10-31); new requirement IDs materialize only at change check (2026-10-31); do not list .chough/ as an affected path and MODIFIED needs an exact REQ heading (2026-11-01); closeout is the last checkbox, done before the scoped check (2026-11-01)",
+    "public_contract": "yes"
+  }
+}
