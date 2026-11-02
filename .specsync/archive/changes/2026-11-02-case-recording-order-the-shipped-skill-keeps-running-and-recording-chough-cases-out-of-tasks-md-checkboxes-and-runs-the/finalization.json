@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the",
+  "implementation_commit": "4902615a3b19b4bfc8d95691555593c38b521ec1",
+  "implementation_tree": "2df6c4555d87f467c1e092b113a1e8d0f99a42ef",
+  "contract_digest": "b98afa26a6406df1b0009f9184016e89779252955295dd2d41a4d62f591dbdbd",
+  "workspace_digest": "ffc7c7a38678befe844e171c88da3caa05d7d2563044a98ddad34446c9a784e9",
+  "closing_digest": "9b959a0a620916b2d5b5d18558353728de5562939e1a01254472b780db2953e8",
+  "review_digest": "108b56d35d488f79201a142a59f2e73c0b14c5ee241f79cd5bb7428d68b13584",
+  "finalization_digest": "469145f6f1b7294135fe1b49ad88c906423b6611e3cac3faf97d0bc2a3c98475",
+  "timestamp": 1793636622
+}

@@ -43,6 +43,15 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Main 3d00e44 includes case ordering; the combined authority references differ.
+    (
+        "references/plan.md",
+        "5fd009510e2ef60d726417a11a2ac3f3a258826ad80d0be5d8b8001c035c0784",
+    ),
+    (
+        "references/accept.md",
+        "0d44a367560c8a342c288116e904ecd9d3dcc0a4c0fa702acfbe83ff3b5ceb40",
+    ),
     // Main 825a380 (PR #36); superseded by the agent-operated native workflow.
     (
         "SKILL.md",
@@ -227,6 +236,13 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "SKILL.md",
         "367a9873293e79ca40c9634e2b2a12c3223074aaec161c7444690c2d02e12199",
+    ),
+    // Main 825a380; superseded by the case recording order change (#11, BUG-0017): the
+    // scoped change check runs before cases that link a new requirement, and running or
+    // recording cases is never a tasks.md checkbox.
+    (
+        "references/testing.md",
+        "426c2df68e8d25bfbdee4bf81b4deaa06eac4525b6dfad3c771311e0d6a4ac99",
     ),
 ];
 

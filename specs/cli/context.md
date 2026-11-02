@@ -187,6 +187,17 @@ human to run the prepared script with `!` as the first character of the prompt.
 Source: this change's baseline attempt. Limits: this Claude Code permission setup.
 Future use: before planning a graded run, confirm who will start it and when.
 
+2026-11-02, case recording order (observation): on Linux with SpecSync 6.1.2, an
+unchecked "Record Chough cases" task made `specsync change check` refuse, while
+`chough cases check` refused the case until that check materialized its new
+requirement, so neither could go first; without the box, the check materialized the
+requirement and `cases check` passed. Source: OBS-product-test-11dfd04637cfc41549d8bec2
+and BUG-0017 (#11). Limits: a disposable shipping sample, one platform. Future use:
+keep running and recording cases out of `tasks.md` and run the scoped check before
+cases that link a new requirement, as the plan, testing and accept references now
+say. Revisit if SpecSync stops refusing unchecked boxes or Chough resolves links
+against approved deltas.
+
 Add further lessons only from observed work, with source, applicable scope, concrete
 future use and revision or retirement guidance. A future native cli.3md would become
 the lesson source in place of this section.

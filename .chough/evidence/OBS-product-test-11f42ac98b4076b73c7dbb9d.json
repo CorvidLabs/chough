@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-11f42ac98b4076b73c7dbb9d",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "After the fix: the 2 issue #39 gate tests pass, the full suite passes (198 passed, 0 failed), and the shipping reproduction is refused with refused:unlinked-failure naming the case and observation (exit 1, stage stays test)",
+  "artifacts": [
+    ".chough/artifacts/bug39-after-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug39-after-fix.log": "7ec04bbdec8803da96034a585dbed0d1e351da9e7d3f112e083814e31d0c50eb"
+  },
+  "observed_at_unix_seconds": 1793636268,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "3fd7dc713b72e7c187da09fb62a5e8a4a4348b1351d31cb1bc94425babee03c7",
+    "content": "82cdff22e5aa308438baaadfe1a43725c1e88cda9bdec1d93fc1930ce7cd7231"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional"
+}

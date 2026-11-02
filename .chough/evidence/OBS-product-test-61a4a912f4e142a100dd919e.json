@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-61a4a912f4e142a100dd919e",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "linux-x86_64",
+  "summary": "Before the skill fix, the two new package tests fail: the 825a380 plan reference reads current instead of known-outdated, and the canonical plan reference lacks the ordering guidance.",
+  "artifacts": [
+    ".chough/artifacts/bug-0017-ordering-tests-before-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug-0017-ordering-tests-before-fix.log": "fbb1a5b9b3f27642d18fc35147aa9d0c3c398912f8cd5610010721d195f4aed6"
+  },
+  "observed_at_unix_seconds": 1793635156,
+  "snapshot": {
+    "revision": "46790b408f8f418bdbaafef86119c5a642c55941",
+    "dirty": true,
+    "fingerprint": "09041fb3c50104f1f2d903ed1dc1dcc07b4e245e6827454259cfa01c238de83a",
+    "content": "59e31c0d521046fb10a67f35008e8db8175e1264266f6f23125a001414bbf26f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Run on Linux by corvid-agent; the tests were uncommitted at the time"
+  ]
+}

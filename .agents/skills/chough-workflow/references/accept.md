@@ -10,7 +10,8 @@ Follow this order, so that one verification covers both the code and Chough's
 records. Follow native status where it names a different next action.
 
 1. When the delta adds or modifies requirements, run `specsync change check <id>`
-   first, so the requirement text that cases link is materialized.
+   first, so the requirement text that cases link is materialized. It refuses while
+   `tasks.md` has an unchecked box, so the cases in step 2 are never a box there.
 2. Run the affected cases: `chough cases run <ID> --environment <env>`, plus the
    project lanes.
 3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.

@@ -37,6 +37,12 @@ links. The digest of a case ignores its position and title, so reordering never
 changes identity, while editing what it asserts makes earlier observations
 `stale-case-definition`.
 
+A requirement an approved native change adds is not in the companion until the
+scoped `specsync change check <id>` materializes it, so `cases check` refuses a case
+that links it before then. Finish the implementation tasks, run that check, then add,
+run and record those cases. Running or recording cases is never a `tasks.md`
+checkbox: `change check` refuses while any box is unchecked.
+
 ## Execute honestly
 
 - Automated: `chough cases run <ID> --environment <env>` runs the binding without a

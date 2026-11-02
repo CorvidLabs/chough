@@ -579,6 +579,60 @@ test_target = "bugs"
 test = "an_open_blocking_bug_sends_work_back_to_build"
 
 [[case]]
+id = "TC-cli-leaving-test-refuses-an-unlinked-failed-case"
+title = "Leaving test refuses an unlinked failed case until it passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::leaving_test_refuses_an_unlinked_failed_case_until_it_passes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "leaving_test_refuses_an_unlinked_failed_case_until_it_passes"
+
+[[case]]
+id = "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
+title = "A later not-run observation keeps an unlinked failure refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-5"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_later_not_run_keeps_an_unlinked_failure_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_later_not_run_keeps_an_unlinked_failure_refused"
+
+[[case]]
+id = "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal"
+title = "A linking bug lifts the unlinked-failure refusal; other moves are unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-8"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged"
+
+[[case]]
 id = "TC-cli-0033"
 title = "Standing preferences stay separate from consent"
 status = "active"
@@ -2418,3 +2472,26 @@ expected = ["Native approve/review examples in the canonical skill, README and t
 adapter = "cargo-test"
 test_target = "workflow_authority"
 test = "native_writer_examples_and_installed_workflows_are_consistent"
+[[case]]
+id = "TC-cli-skill-orders-the-change-check-before-new-requirement-cases"
+title = "The skill runs the scoped change check before cases that link a new requirement and keeps case recording out of tasks.md checkboxes"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["FLOW-7", "LIFE-6", "LIFE-2"]
+requirements = ["REQ-cli-009"]
+paths = ["skills/chough-workflow/references/plan.md", "skills/chough-workflow/references/testing.md", "skills/chough-workflow/references/accept.md", ".agents/skills/chough-workflow/", ".claude/skills/chough-workflow/"]
+environments = ["repository-text"]
+artifacts = ["reviewer-note"]
+setup = ["The canonical skill bundle and both host copies at the implementation tip"]
+steps = [
+  "Read references/plan.md (the SpecSync lessons paragraph), testing.md (Definitions are not observations) and accept.md (Prepare the review, step 1)",
+  "Run chough skill status for both host copies",
+]
+expected = [
+  "plan.md lists running or recording Chough cases with human gates as plain text rather than checkboxes, and says a requirement the delta adds reaches the companion only when change check materializes it",
+  "testing.md says to finish the implementation tasks, run the scoped specsync change check, then add, run and record cases that link a new requirement, and that running or recording cases is never a tasks.md checkbox",
+  "accept.md step 1 says the scoped check refuses while tasks.md has an unchecked box, so the cases in step 2 are never a box there",
+  "The new text has no em or en dash",
+  "chough skill status reports both host copies current",
+]

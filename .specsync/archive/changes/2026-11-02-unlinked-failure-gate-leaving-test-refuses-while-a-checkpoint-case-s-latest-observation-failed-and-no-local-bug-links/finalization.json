@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links",
+  "implementation_commit": "4c3db9a25c1003b491812eb5b1b1f6f51a07e625",
+  "implementation_tree": "394d545ea8f48577468fb33a3cc72e9a1a244527",
+  "contract_digest": "e4b4816d60705627b3b313f521fd39db69b113043b7e854b093a1766fe8ab1a5",
+  "workspace_digest": "7a4320c9a34614fc238e080e06e88ad42c7c274bfdb067041fddd5b8aca547db",
+  "closing_digest": "48926b8ec0cff80d51bd88f9eed6456e16b24ee6418f72537af474c71878400f",
+  "review_digest": "f401a38140f6809d08da8c1881cdf08a4e2b736617dae05eee2187733bcd0eb5",
+  "finalization_digest": "3a1d956fbd1ab3d5195d70c7763b6903f717b9f1bae2bb48ab4e1164822fc501",
+  "timestamp": 1793636440
+}

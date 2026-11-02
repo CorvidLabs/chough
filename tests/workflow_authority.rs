@@ -1,4 +1,4 @@
-//! Real upgrades of the exact workflow guidance shipped by main 825a380.
+//! Real upgrades of exact workflow guidance from the inspected main revisions.
 //! This checks installer safety, not fresh-agent behavior or human authorization.
 
 mod common;
@@ -163,6 +163,150 @@ const PRIOR_FILES: [PriorFile; 4] = [
     ),
 ];
 
+const PLAN_AT_3D00E44: &str = r###"# Technical design and plan
+
+SpecSync drives this stage with its own adaptive artifacts. Read source
+instructions, existing architecture and the native lessons first; `specsync change
+new` prints the lessons of the modules you declare.
+
+1. Create the change with installed help as the authority, for example
+   `specsync change new "<one outcome>" --spec <module> --path <path> --json`.
+   Declare every path you expect to touch: scope freezes at approval.
+2. Answer the deterministic interview with `specsync change answer <id> <question>
+   "<answer>"`.
+3. Complete the selected artifacts: requirements, research, design, plan (approach,
+   out of scope, steps, risks, constraints consulted), tasks, testing, docs, and a
+   semantic delta per affected module.
+4. Estimate meaningful increments with relative size and the main uncertainty. Do not
+   invent precise hours. Run `chough timing` and use its history ranges (per stage, bug
+   fix and human gate) as the basis: they are elapsed wall-clock time, not effort, and
+   estimates from recorded history, not targets. When it reports too few samples, say
+   that history is too thin and estimate by relative size alone; never present a range
+   as a deadline.
+5. If several agents will build, assign file or module ownership in the plan.
+6. Record the change: `chough checkpoint --native-change <id>`.
+
+## One approval
+
+Present one coherent package: what will change, the contract delta, the plan, the
+verification approach, and any consequential open choice with your recommendation.
+Ask one concise question. Record `chough checkpoint --awaiting-human "Scope approval
+of <id>"`, then keep doing independent preparation.
+
+Only after the human actually approves, run `specsync change approve <id> --actor
+"<their name>"` and clear the gate with `chough checkpoint --clear-awaiting-human`.
+The actor is a label, not authenticated identity.
+
+Lessons learned from rehearsing SpecSync 6.1: the delta is frozen once approved and
+`change check` refuses an edited delta; `change check` also refuses while `tasks.md`
+has unchecked boxes, so list human gates, and running or recording Chough cases, as
+plain text rather than checkboxes. A requirement the delta adds reaches the
+companion only when `change check` materializes it, and `chough cases check` refuses
+a case linking it until then, so a box for those cases would block the very check
+that unblocks them.
+
+## What needs reapproval
+
+A change to approved intent, contract, acceptance criteria or affected scope needs
+native reapproval. Routine implementation, tests, evidence, delta materialization
+and lifecycle metadata do not.
+"###;
+
+const ACCEPT_AT_3D00E44: &str = r###"# Acceptance and native closeout
+
+Acceptance is where the human decides whether the implementation is what they
+wanted. Agent review, a passing command, scope approval or an actor label never
+stands in for that decision.
+
+## Prepare the review
+
+Follow this order, so that one verification covers both the code and Chough's
+records. Follow native status where it names a different next action.
+
+1. When the delta adds or modifies requirements, run `specsync change check <id>`
+   first, so the requirement text that cases link is materialized. It refuses while
+   `tasks.md` has an unchecked box, so the cases in step 2 are never a box there.
+2. Run the affected cases: `chough cases run <ID> --environment <env>`, plus the
+   project lanes.
+3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
+4. Commit the source together with `.chough/`.
+5. Run `specsync change check <id> --commit` (stage new source files first).
+6. Push the branch, open or update the pull request, and observe hosted CI at the
+   real tip. Report product tests, structural checks, native lifecycle state,
+   provenance and platforms separately.
+7. Present to the human: what changed, the current verification, the relevant case
+   observations with freshness, open bugs and limits, and what was not checked.
+
+Between the check in step 5 and finalize, nothing writes to `.chough/` and nothing is
+committed. Committing Chough records or SpecSync bookkeeping does not make Chough
+observations stale, but SpecSync's verification digest covers every non-ignored file,
+including `.chough/`. SpecSync 6.1.2 ships an opt-in verification exclusion,
+`verification_ignored_paths`, but Chough's own repository has not adopted it: its
+entries are directory prefixes, so covering `.chough/session.json` would also hide
+`.chough/cases/`, whose case definitions must stay verified. Unless a project lists
+only directories that are safe to leave out, any Chough write in that window forces
+another `change check`.
+
+If native archive checks are red because review has not happened, say exactly that.
+Do not claim all checks are green and do not bypass the gate.
+
+## After the human decides
+
+Only after a real review decision, record it and close natively, following native
+status rather than a remembered sequence:
+
+```sh
+specsync change review <id> --reviewer "<the human>"
+specsync change ship <id>        # or: specsync change finalize <id>
+```
+
+Do not commit between review and finalize. Only then clear the gate with `chough
+checkpoint --clear-awaiting-human` and run `chough stage advance`, which moves accept
+to done; it is refused until native state is `archived`. Push the archive commit and
+the checkpoint on the same pull request, wait for required checks, then merge through
+the repository's normal process. If several changes share a pull request, review and
+finalize them one at a time. If evidence went stale, use the recovery action that
+`specsync change status` names. Finishing never enters release.
+
+## Compounding
+
+Lessons can be recorded at any stage. Put them in the module's native lesson source
+(`<module>.3md` later plane when present, otherwise the Lessons section of
+`context.md`) with the source, the scope where it applies and the future action it
+changes. `chough next` points to that source; Chough keeps no lesson store of its own.
+
+Each lesson carries a certainty label:
+
+- `observation`: something seen once, with what was run and where.
+- `hypothesis`: a likely explanation not yet tested. It is a prompt to check, not a
+  rule.
+- `verified`: supported by a test or a repeated observation.
+
+Each lesson names its source (an observation ID, a bug ID or a commit) and its limits
+(where it applies and where it was not checked). A project decision, meaning a
+checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, always
+outranks a lesson. A lesson never changes a decision; if a lesson argues against one,
+raise it with the human. A lesson that changes behavior or policy may need its own
+native change. Write lessons from a change during closeout, inside the open native
+change (see [librarian.md](librarian.md)). Archival does not mean no bug remains;
+open bugs stay in the backlog.
+"###;
+
+const INTEGRATED_MAIN_FILES: [PriorFile; 2] = [
+    (
+        "references/plan.md",
+        PLAN_AT_3D00E44.as_bytes(),
+        "5fd009510e2ef60d726417a11a2ac3f3a258826ad80d0be5d8b8001c035c0784",
+        include_bytes!("../skills/chough-workflow/references/plan.md"),
+    ),
+    (
+        "references/accept.md",
+        ACCEPT_AT_3D00E44.as_bytes(),
+        "0d44a367560c8a342c288116e904ecd9d3dcc0a4c0fa702acfbe83ff3b5ceb40",
+        include_bytes!("../skills/chough-workflow/references/accept.md"),
+    ),
+];
+
 fn file_state<'a>(report: &'a Value, name: &str) -> &'a Value {
     report["hosts"][0]["files"]
         .as_array()
@@ -174,73 +318,71 @@ fn file_state<'a>(report: &'a Value, name: &str) -> &'a Value {
 
 #[test]
 fn workflow_guidance_from_main_825a380_updates_and_preserves_edits() {
-    // Git may convert text fixtures on checkout. Reconstruct the exact Git blob's
-    // LF bytes before checking its independently recorded identity.
-    let previous_files: Vec<_> = PRIOR_FILES
-        .iter()
-        .map(|(name, previous, digest, current)| {
-            let previous = String::from_utf8(previous.to_vec())
-                .unwrap()
-                .replace("\r\n", "\n")
-                .into_bytes();
-            assert_eq!(format!("{:x}", Sha256::digest(&previous)), *digest);
-            assert_ne!(previous, *current, "{name} must exercise an older bundle");
-            (*name, previous, *current)
-        })
-        .collect();
+    for prior_files in [&PRIOR_FILES[..], &INTEGRATED_MAIN_FILES[..]] {
+        // Git may convert text fixtures on checkout. Reconstruct the exact Git blob's
+        // LF bytes before checking its independently recorded identity.
+        let previous_files: Vec<_> = prior_files
+            .iter()
+            .map(|(name, previous, digest, current)| {
+                let previous = String::from_utf8(previous.to_vec())
+                    .unwrap()
+                    .replace("\r\n", "\n")
+                    .into_bytes();
+                assert_eq!(format!("{:x}", Sha256::digest(&previous)), *digest);
+                assert_ne!(previous, *current, "{name} must exercise an older bundle");
+                (*name, previous, *current)
+            })
+            .collect();
 
-    for edited in [
-        None,
-        Some("SKILL.md"),
-        Some("references/lifecycle.md"),
-        Some("references/plan.md"),
-        Some("references/accept.md"),
-    ] {
-        let fixture = Fixture::new();
-        fixture.init();
-        let installed = fixture.root().join(".agents/skills/chough-workflow");
-        let checkpoint = fixture.read(".chough/session.json");
-        let mut edited_bytes = None;
-        for (name, previous, _) in &previous_files {
-            let name = *name;
-            let mut bytes = previous.to_vec();
-            if edited == Some(name) {
-                bytes.extend_from_slice(b"\nHuman project guidance must stay.\n");
-                edited_bytes = Some(bytes.clone());
-            }
-            fs::write(installed.join(name), bytes).unwrap();
-        }
-
-        let status = fixture.ok(&["skill", "status", "--host", "openai"]);
-        for (name, _, _) in &previous_files {
-            let name = *name;
-            assert_eq!(
-                file_state(&status, name)["state"],
+        for edited in
+            std::iter::once(None).chain(previous_files.iter().map(|(name, _, _)| Some(*name)))
+        {
+            let fixture = Fixture::new();
+            fixture.init();
+            let installed = fixture.root().join(".agents/skills/chough-workflow");
+            let checkpoint = fixture.read(".chough/session.json");
+            let mut edited_bytes = None;
+            for (name, previous, _) in &previous_files {
+                let name = *name;
+                let mut bytes = previous.to_vec();
                 if edited == Some(name) {
-                    "edited"
-                } else {
-                    "known-outdated"
-                },
-                "{name}: {status}"
-            );
-        }
-
-        let update = fixture.ok(&["skill", "update", "--host", "openai"]);
-        let after = fixture.ok(&["skill", "status", "--host", "openai"]);
-        for (name, _, current) in &previous_files {
-            let name = *name;
-            let bytes = fs::read(installed.join(name)).unwrap();
-            if edited == Some(name) {
-                assert_eq!(bytes, *edited_bytes.as_ref().unwrap(), "{name}");
-                assert_eq!(file_state(&update, name)["action"], "preserved-edit");
-                assert_eq!(file_state(&after, name)["state"], "edited");
-            } else {
-                assert_eq!(bytes, *current, "{name}");
-                assert_eq!(file_state(&update, name)["action"], "updated");
-                assert_eq!(file_state(&after, name)["state"], "current");
+                    bytes.extend_from_slice(b"\nHuman project guidance must stay.\n");
+                    edited_bytes = Some(bytes.clone());
+                }
+                fs::write(installed.join(name), bytes).unwrap();
             }
+
+            let status = fixture.ok(&["skill", "status", "--host", "openai"]);
+            for (name, _, _) in &previous_files {
+                let name = *name;
+                assert_eq!(
+                    file_state(&status, name)["state"],
+                    if edited == Some(name) {
+                        "edited"
+                    } else {
+                        "known-outdated"
+                    },
+                    "{name}: {status}"
+                );
+            }
+
+            let update = fixture.ok(&["skill", "update", "--host", "openai"]);
+            let after = fixture.ok(&["skill", "status", "--host", "openai"]);
+            for (name, _, current) in &previous_files {
+                let name = *name;
+                let bytes = fs::read(installed.join(name)).unwrap();
+                if edited == Some(name) {
+                    assert_eq!(bytes, *edited_bytes.as_ref().unwrap(), "{name}");
+                    assert_eq!(file_state(&update, name)["action"], "preserved-edit");
+                    assert_eq!(file_state(&after, name)["state"], "edited");
+                } else {
+                    assert_eq!(bytes, *current, "{name}");
+                    assert_eq!(file_state(&update, name)["action"], "updated");
+                    assert_eq!(file_state(&after, name)["state"], "current");
+                }
+            }
+            assert_eq!(fixture.read(".chough/session.json"), checkpoint);
         }
-        assert_eq!(fixture.read(".chough/session.json"), checkpoint);
     }
 }
 
