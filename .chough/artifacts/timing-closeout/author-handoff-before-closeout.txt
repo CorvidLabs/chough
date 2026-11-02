@@ -1,0 +1,226 @@
+Chough pickup by Claude: handoff report (updated 2026-11-01, implementation)
+
+Native SpecSync state and the Chough checkpoint are authoritative. To resume, run
+`chough next --environment local-macos-arm64`. This report is a handoff artifact,
+not a lifecycle ledger, and records no human review, ship or merge. The
+pre-implementation version is kept at claude-perf-raw/CLAUDE-REPORT.pre-implementation.txt.
+
+HEAD AND STATE
+- Branch claude/chough-followups.
+- Pushed head 3b3fafd2d48502c87a55bb6056becd8ea2a4eb8e is PR #34
+  (https://github.com/CorvidLabs/chough/pull/34). It is still a draft and was
+  pushed normally, never forced.
+- The branch contains origin/main 48cc9f6 (PR #33, merged). Working tree clean.
+- Native change make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound:
+  - Approved by root with `specsync change approve --actor 0xLeif` after 0xLeif's
+    approval. Claude did not record it; the approval files were committed as
+    SpecSync wrote them (ebe0fe2).
+  - Delta materialized (REQ-cli-024 is now in specs/cli). `specsync change check
+    --commit` verified and committed the evidence (f923c56, 3b3fafd); state is
+    verifying.
+  - No review, finalize, archive, ready-for-review or merge was recorded. Those
+    belong to root and the human.
+- Checkpoint: stage accept, awaiting_human "Implementation review of <change>",
+  next action naming root/0xLeif review. References keep all prior entries plus
+  REQ-cli-024.
+- Hosted CI for 3b3fafd: not observed by me.
+
+COMMITS SINCE THE PUBLISHED DRAFT (c21f66e..3b3fafd, 16 commits)
+- ebe0fe2  root's native approval files, unchanged
+- 3f3f968  merge main 66bef80 (PR #29)
+- d71bfe4  merge main 48cc9f6 (PR #33)
+  Both merges were resolved by hand, without `chough checkpoint --merge` (its
+  temp-file cleanup defect is unfixed):
+  - This branch's whole current-cycle group was kept, as the human selected.
+  - Every history collection is base + main's additions + this branch's additions,
+    with no entry dropped. There were no removals on either side.
+  - Transitions keep the shared base, then main's whole cycle, then this branch's
+    cycle, so the log ends in the selected cycle. Timestamps across the parallel
+    cycles are not monotonic; timing reports those as unknown, not zero.
+  - Main's "Merge of PR #29" gate-opened has no matching close, because #29 merged
+    and the selected group no longer awaits it.
+- 75c5453  implementation (src/timing.rs, src/records.rs, tests, docs/cli.md,
+  CHANGELOG.md)
+- 5cd1991  review fixes: trace outcome fields come before a shortened command;
+  budget-skipped changes read no record files
+- aa4aa49  end-to-end trace regression for a 255-byte change ID
+- c49c012, 58b842d, 9d29a8c  observations, transitions, checkpoint records
+- tasks ticked, d6695f7 materialization, bb05d0e case bindings, f923c56/3b3fafd
+  SpecSync lifecycle commits
+Paths changed by me: src/timing.rs, src/records.rs, tests/timing.rs, docs/cli.md,
+CHANGELOG.md, .chough/cases/cli.cases.toml (two existing entries), .chough records,
+and this change's .specsync directory. Specs were written by SpecSync. Not touched:
+src/checkpoint.rs, #33's or #35's paths and scopes.
+
+WHAT WAS IMPLEMENTED (REQ-cli-024, `chough timing` only)
+- Each change ID is read at most once per report, and the response is reused; no
+  persistent cache.
+- Archived history is read only for --cycle all with no --stage/--case/--bug.
+  Filtered reports emit:
+  - native.history null and native.skipped_archived null
+  - history_selection {skipped-by-filter, filters, reason}
+  - a partial entry and a text line
+  Unfiltered reports emit history_selection selected, with read, reused,
+  skipped_beyond_bound, not_read_budget and budget_seconds. Stage estimates are
+  unchanged (from transitions only).
+- CHOUGH_TIMING_NATIVE_BUDGET_SECONDS: whole seconds 1..3600, default 120. An
+  invalid value is refused before any read. Each read gets min(per-read deadline,
+  remaining budget). A read cut by the budget is timed-out and names the budget. A
+  change with no budget left is not-read with reason budget-exhausted, its record
+  files are not read, and every time is unknown with the budget reason.
+- CHOUGH_TRACE=1 traces every bounded native read, in all commands:
+    chough-trace: native state=<s> elapsed_ms=<n> command=<...>
+  State and elapsed come first; only the command is shortened, within 1024 bytes.
+  Timing also traces its phases (transitions, tests, validation, native, render).
+  Without the variable, output is unchanged.
+- Gates, next and status still use native_json with the per-read deadline. There is
+  no budget, filtering or reuse on that path, and no parallel queries, runtime or new
+  dependency.
+
+TESTS AND EVIDENCE (local-macos-arm64)
+- Regressions written first. Failing at the unfixed tip:
+  - extended TC-cli-0089 test: duplicate cur-change read
+  - extended TC-cli-0100 test: hung read ran past 30 s with no budget
+  - trace parity test and gate-separation test: no trace yet
+  Recorded failures, kept:
+    OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266   failed
+    OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777   failed
+  Post-fix passes on the same, unchanged definitions:
+    OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21  passed
+    OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37  passed
+  After materialization, both cases bind REQ-cli-024 (and 0089 adds the
+  src/records.rs path). Final passes on the bound definitions after integrating #33:
+    OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e     passed
+    OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52     passed
+  The case definitions changed between failure and final pass only by those
+  additions, because REQ-cli-024 could not resolve before materialization. No new
+  case number was allocated. All IDs are OBS-<slug>-<24 hex from openssl rand -hex
+  12>, at most 100 bytes.
+- What the regressions cover:
+  - exact call counts: 1 read for the duplicated change, 10 in total
+  - filtered reports read once, with null history and an explicit reason
+  - estimates identical between filtered and unfiltered
+  - budget 2 s with a hung stub whose child holds the pipes: bounded, every history
+    entry not-read with unknown times, no surviving descendants
+  - per-read 1 s inside budget 60: timed-out, failed, invalid-output and observed
+    states
+  - invalid budgets 0, 3601, abc, "", 1.5, -1 refused with zero stub calls; 1 and
+    3600 accepted
+  - trace on and off produce byte-identical stdout and the same exit codes
+  - next and status make exactly 1 read and stage moves are refused on a failed
+    read, even with the budget variable set to 0 or 1
+  - long-command trace: unit regression for a 4000-character command, plus an
+    end-to-end 255-byte change ID regression that fails against the pre-review
+    records.rs (claude-perf-raw/trace-regression-prereview-failure.log) and passes
+    now
+- Gates: Fledge fmt and warnings-denied lint passed. Full cargo test: 186 passed,
+  0 failed on Rust 1.99.1 and on 1.88.0 (MSRV). `fledge lanes run verify` passed all
+  9 steps in 2m35s, after one earlier run failed at step 6 (audit) on stale
+  verification evidence before the final `change check --commit` (log kept).
+  `fledge lanes run pre-push` passed 5 steps. `cases check` is valid.
+- Tools: PATH /Users/leif/.cargo/bin first; RUSTUP_TOOLCHAIN=1.99.1; HI 0.8.0,
+  Fledge 1.8.0, SpecSync 6.1.2.
+
+MEASUREMENTS (release builds, same b35acaf clone inputs)
+Binaries:
+- Baseline A = b35acaf, sha256 44e990d7…. Does NOT include identity main (#33);
+  `git merge-base --is-ancestor 48cc9f6 b35acaf` is false.
+- Baseline B = 48cc9f6 (main with #33), sha256 c882d684…. Added so the pair also
+  has an identity-inclusive baseline.
+- After = d71bfe4 (this branch, including 48cc9f6), sha256 e51a1c35…. The source of
+  the pushed head 3b3fafd is identical to d71bfe4's except the added trace
+  regression and the records.
+Inputs: one temporary full-history clone checked out at b35acaf, clean before and
+after every run (`git status --porcelain` empty). Its records use legacy IDs only,
+which all three binaries read.
+Old-ID compatibility check: under the capped protocol all three binaries exit 0
+with every native read `timed-out` (the 1 s cap) and none `failed` or
+`invalid-output`. Baselines A and B give byte-identical stdout sizes (163,129 B
+filtered, 251,931 B unfiltered) and the same 11 reads. No baseline result here comes
+from an identity incompatibility, so the before/after differences are the timing
+change.
+Capped protocol, baseline B (48cc9f6), 2 runs each:
+  filtered timing 11.28/11.25 s with 11 reads; unfiltered 11.32/11.45 s with 11;
+  next 2.41/1.93 s (1 read); status 2.17/2.13 s (1); prune 1.08/1.12 s (1).
+  This matches baseline A within noise.
+The real-native "before" row below used baseline A only. Its 300 s outer-bound
+result is censored. Attributing it to the 11 sequential archived reads is an
+inference from the capped call counts and the ~40-50 s single-read time, not a
+measurement.
+Load average was 18-30 throughout, and root was running the #35 qualification on
+the same host. Wall-clock times are load-limited and indicative only. Call counts
+and output states are the causal evidence. Raw data is in
+claude-perf-raw/final-d71bfe4/.
+- Native reads per command (shim counts, identical in both runs):
+    timing --cycle current --stage test   11 -> 1
+    timing (unfiltered)                   11 -> 10 (duplicate removed)
+    next, status, prune preview           1 -> 1 (unchanged, as intended)
+- Capped protocol (CHOUGH_NATIVE_TIMEOUT_SECONDS=1, 2 runs each):
+    filtered timing    11.22/11.28 s -> 1.08/1.06 s
+    unfiltered timing  11.31/11.27 s -> 10.27/10.23 s
+    next               2.23/2.06 s   -> 2.58/2.02 s
+    status             2.37/2.35 s   -> 2.41/2.37 s
+    prune              1.17/1.13 s   -> 1.08/1.13 s
+  A capped timeout is not a successful qualification. These runs only compare
+  structure.
+- Real native, default 120 s per read, default 120 s budget, one run each:
+  - after, filtered timing: completed in 42.64 s; current change observed (a
+    completed native read); history null with skipped-by-filter.
+  - before (baseline A, b35acaf), filtered timing: did not finish within the 300 s
+    outer bound. The run was killed with no lingering children and produced no
+    stdout; this is censored, not a measured time. No identity-inclusive
+    real-native baseline was run.
+  - after, unfiltered timing: 120.13 s, exactly the budget. read 2, reused 1,
+    skipped beyond the bound 5, and 7 not-read for the budget; one read was
+    timed-out by the remaining budget. This is a partial report by design, not a
+    complete history.
+  - after, next: 39.51 s, native read observed (archived, authenticated). next is
+    unchanged by this work; its time is SpecSync's single archived-status read.
+- "Cold" runs were first runs after copying binaries; filesystem caches were not
+  dropped.
+
+FINDINGS AND GAPS
+- SpecSync's archived-change status is still the dominant cost: one read took
+  about 40-50 s here, with about 100+ git subprocesses. This change bounds and
+  reduces how often timing pays that cost; it does not make the read faster, so
+  next and status are unchanged.
+- The upstream SpecSync reproduction is prepared (in the pre-implementation report)
+  but not filed.
+- Not measured: next/status local phase split (the trace can now provide it), CI,
+  Linux and Windows timings. The trace and budget tests are unix-gated like the
+  existing stub tests.
+- The checkpoint transition log mixes two parallel cycles with non-monotonic
+  timestamps after the manual integration. The selected current cycle is last;
+  fuller current-cycle resolution is #31 territory.
+- An accidental extra `stage advance` (build -> test) was recorded and reversed with
+  `stage back` and a reason; both are kept in history. A stray `git stash` in one
+  command was a no-op (nothing stashed, verified).
+
+NEXT ACTION
+Root and 0xLeif: independent review, then native implementation review on PR #34.
+Root owns hosted-check observation, ready-for-review, ship/archive and merge. I stop
+here. No review, ship, finalize or merge was recorded or performed by me.
+
+PUBLICATION UPDATE
+Leif explicitly authorized posting the blocking checkpoint review and publishing the
+proposal as a draft PR. Leif posted the reproduced #29 data-loss review
+(https://github.com/CorvidLabs/chough/pull/29#pullrequestreview-5731011409) and
+published PR #34 from claude/chough-followups at c21f66e. Because PR #33 already
+proposed REQ-cli-023, the unapproved draft was renumbered to REQ-cli-024; no
+canonical or approved ID was renumbered. Afterwards 0xLeif approved the scope
+("i approve.. get these prs out of draft and merged when all green"), and root
+recorded native scope approval. Implementation was then authorized, and I pushed the
+implementation to the same branch at 3b3fafd. The PR remains a draft; readiness and
+merge are root's.
+
+ORIGINAL DIAGNOSIS (pre-implementation, kept for context)
+- The baseline at b35acaf (fresh builds 50ae8210… debug and 44e990d7… release) was:
+  - a direct `specsync change status <archived change> --json` completed in
+    49.954 s; a shimmed run cut off at 25 s had logged 1 SpecSync and 104 Git
+    starts; a bare status call took 0.049 s
+  - timing made 11 reads with one duplicate; next, status and prune made 1
+  Raw data is in claude-perf-raw/ (native/, local1/, local2/, ckpt/).
+- Remaining order: #30 identity landed as #33; #31 retention (transitions, evidence
+  retention, checkpoint) is next; a later #32 slice, only with trace evidence, for
+  next/status local cost. Fix the #29 checkpoint-merge cleanup defect before relying
+  on the helper.

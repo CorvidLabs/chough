@@ -1,0 +1,22 @@
+START 1793588175.43347 90448 specsync change status use-collision-resistant-slug-identities-for-new-bugs --json
+START 1793588175.503138 90516 git rev-parse --is-inside-work-tree
+END 1793588175.578825 90516 git rc=0
+START 1793588175.644583 90609 git rev-parse --verify HEAD
+END 1793588175.723306 90609 git rc=0
+START 1793588175.782476 90701 git rev-parse --show-prefix
+END 1793588175.8577778 90701 git rc=0
+START 1793588175.920191 90794 git rev-list --reverse --full-history --max-count=1001 HEAD -- .specsync/workflow-v2-baseline.json
+END 1793588176.0010939 90794 git rc=0
+START 1793588176.058511 90842 git log --format=%H --diff-filter=A HEAD -- .specsync/workflow-v2-baseline.json
+END 1793588176.145517 90842 git rc=0
+START 1793588176.209478 90890 git rev-list --parents -n 1 81a3b2f001f77efd841f7de061e290ff45865a8d
+END 1793588176.286943 90890 git rc=0
+START 1793588176.343056 90982 git show 81a3b2f001f77efd841f7de061e290ff45865a8d:.specsync/workflow-v2-baseline.json
+START 1793588176.460004 91052 git rev-parse --show-toplevel
+END 1793588176.538858 91052 git rc=0
+START 1793588176.601273 91144 git rev-parse HEAD
+END 1793588176.6869462 91144 git rc=0
+START 1793588176.750189 91236 git ls-files --cached --others --exclude-standard -z
+END 1793588176.848997 91236 git rc=0
+START 1793588177.050109 91461 git status --porcelain --untracked-files=all
+END 1793588177.145288 91461 git rc=0

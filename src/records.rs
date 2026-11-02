@@ -10,7 +10,7 @@ use std::io::{self, Read, Seek, SeekFrom, Write};
 use std::path::{Component, Path, PathBuf};
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::sync::mpsc::{self, RecvTimeoutError};
-use std::sync::{Arc, Mutex, PoisonError};
+use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
@@ -29,12 +29,78 @@ const READER_WAIT: Duration = Duration::from_secs(1);
 /// Default deadline for native reads, and the variable that overrides it.
 const NATIVE_DEADLINE: Duration = Duration::from_secs(120);
 const NATIVE_TIMEOUT_VARIABLE: &str = "CHOUGH_NATIVE_TIMEOUT_SECONDS";
+/// The variable that names the timing report's whole-report native budget; a read
+/// capped by that budget names it when it times out (REQ-cli-024).
+pub(super) const TIMING_BUDGET_VARIABLE: &str = "CHOUGH_TIMING_NATIVE_BUDGET_SECONDS";
+/// `CHOUGH_TRACE=1` turns on the opt-in stderr trace (REQ-cli-024).
+const TRACE_VARIABLE: &str = "CHOUGH_TRACE";
+/// Longest trace line written, in bytes.
+const TRACE_LINE_LIMIT: usize = 1_024;
 
 #[derive(Serialize)]
 pub(super) struct Section {
     pub(super) source: String,
     pub(super) state: String,
     pub(super) content: String,
+}
+
+/// Whether `CHOUGH_TRACE=1` is set; read once per process.
+fn tracing() -> bool {
+    static ON: OnceLock<bool> = OnceLock::new();
+    *ON.get_or_init(|| std::env::var_os(TRACE_VARIABLE).is_some_and(|value| value == "1"))
+}
+
+/// Write one bounded trace line to stderr when tracing is on. A trace never changes
+/// standard output, a record or the exit code, so a failed write is ignored.
+pub(super) fn trace(line: &str) {
+    if !tracing() {
+        return;
+    }
+    let mut text = format!("chough-trace: {}", line.replace(['\n', '\r'], " "));
+    if text.len() > TRACE_LINE_LIMIT {
+        let mut cut = TRACE_LINE_LIMIT - 3;
+        while !text.is_char_boundary(cut) {
+            cut -= 1;
+        }
+        text.truncate(cut);
+        text.push_str("...");
+    }
+    let _ = writeln!(io::stderr().lock(), "{text}");
+}
+
+/// Trace one named phase of a command that started at `started`.
+pub(super) fn trace_phase(name: &str, started: Instant) {
+    trace(&format!(
+        "phase {name} elapsed_ms={}",
+        started.elapsed().as_millis()
+    ));
+}
+
+fn trace_native(section: &Section, started: Instant) {
+    trace(&native_trace_line(
+        &section.source,
+        &section.state,
+        started.elapsed().as_millis(),
+    ));
+}
+
+/// One native trace line: the mandatory state and elapsed fields come first, and only
+/// the command text after them is shortened, so the whole line (with its prefix) fits
+/// the trace bound and never loses its outcome.
+fn native_trace_line(source: &str, state: &str, elapsed_ms: u128) -> String {
+    let head = format!("native state={state} elapsed_ms={elapsed_ms} command=");
+    let room = TRACE_LINE_LIMIT
+        .saturating_sub("chough-trace: ".len() + head.len())
+        .saturating_sub(3);
+    let source = source.replace(['\n', '\r'], " ");
+    if source.len() <= room + 3 {
+        return format!("{head}{source}");
+    }
+    let mut cut = room;
+    while !source.is_char_boundary(cut) {
+        cut -= 1;
+    }
+    format!("{head}{}...", &source[..cut])
 }
 
 pub(super) fn print_json(value: &Value) -> Result<()> {
@@ -644,14 +710,18 @@ fn native_capture(
     source: &str,
     program: &str,
     arguments: &[&str],
+    cap: Option<Duration>,
 ) -> Result<Captured, Section> {
     let unknown = |state: &str, content: String| Section {
         source: source.into(),
         state: state.into(),
         content,
     };
-    let deadline = native_deadline(std::env::var_os(NATIVE_TIMEOUT_VARIABLE).as_deref())
+    let per_read = native_deadline(std::env::var_os(NATIVE_TIMEOUT_VARIABLE).as_deref())
         .map_err(|error| unknown("unavailable", format!("Unknown: {error}")))?;
+    // A caller's remaining whole-report budget can only shorten the per-read deadline.
+    let capped = cap.filter(|cap| *cap < per_read);
+    let deadline = capped.unwrap_or(per_read);
     let mut argv = vec![program];
     argv.extend_from_slice(arguments);
     let limits = Limits {
@@ -667,11 +737,17 @@ fn native_capture(
         } else {
             "the command was stopped, but stopping its descendants failed"
         };
+        let within = match capped {
+            Some(cap) => format!(
+                "the remaining timing native budget of {:.1} s ({TIMING_BUDGET_VARIABLE})",
+                cap.as_secs_f64()
+            ),
+            None => format!("{} s ({NATIVE_TIMEOUT_VARIABLE})", deadline.as_secs()),
+        };
         return Err(unknown(
             "timed-out",
             format!(
-                "Unknown: no response within {} s ({NATIVE_TIMEOUT_VARIABLE}); {stopped}.\n{}\n{}",
-                deadline.as_secs(),
+                "Unknown: no response within {within}; {stopped}.\n{}\n{}",
                 bounded_capture(&output.stdout, output.stdout_total),
                 bounded_capture(&output.stderr, output.stderr_total)
             ),
@@ -690,8 +766,15 @@ fn native_capture(
 }
 
 pub(super) fn native(root: &Path, program: &str, arguments: &[&str]) -> Section {
+    let started = Instant::now();
+    let section = native_section(root, program, arguments);
+    trace_native(&section, started);
+    section
+}
+
+fn native_section(root: &Path, program: &str, arguments: &[&str]) -> Section {
     let source = format!("{} {}", program, arguments.join(" "));
-    match native_capture(root, &source, program, arguments) {
+    match native_capture(root, &source, program, arguments, None) {
         Ok(output) if output.exit_code == Some(0) => Section {
             source,
             state: "observed".into(),
@@ -719,8 +802,32 @@ pub(super) struct NativeJson {
 /// Run a native command whose JSON output decides state. The value is parsed from the
 /// complete stdout (up to 4 MiB); the section shown to people stays within 16 KiB.
 pub(super) fn native_json(root: &Path, program: &str, arguments: &[&str]) -> NativeJson {
+    native_json_within(root, program, arguments, None)
+}
+
+/// `native_json` with the per-read deadline shortened to `cap` when that is smaller:
+/// the timing report passes its remaining whole-report budget (REQ-cli-024). Gated
+/// moves, `next` and `status` use `native_json` and never pass a cap.
+pub(super) fn native_json_within(
+    root: &Path,
+    program: &str,
+    arguments: &[&str],
+    cap: Option<Duration>,
+) -> NativeJson {
+    let started = Instant::now();
+    let response = native_json_read(root, program, arguments, cap);
+    trace_native(&response.section, started);
+    response
+}
+
+fn native_json_read(
+    root: &Path,
+    program: &str,
+    arguments: &[&str],
+    cap: Option<Duration>,
+) -> NativeJson {
     let source = format!("{} {}", program, arguments.join(" "));
-    let output = match native_capture(root, &source, program, arguments) {
+    let output = match native_capture(root, &source, program, arguments, cap) {
         Ok(output) => output,
         Err(section) => {
             return NativeJson {
@@ -822,6 +929,30 @@ pub(super) fn record_names(root: &Path, directory: &str) -> Result<Vec<String>> 
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_long_native_command_keeps_the_trace_state_and_elapsed_fields_within_the_bound() {
+        let source = format!("specsync change status {} --json", "é".repeat(4_000));
+        let line = format!(
+            "chough-trace: {}",
+            super::native_trace_line(&source, "timed-out", 120_000)
+        );
+        assert!(
+            line.len() <= super::TRACE_LINE_LIMIT,
+            "{} bytes",
+            line.len()
+        );
+        assert!(
+            line.starts_with("chough-trace: native state=timed-out elapsed_ms=120000 command=specsync change status "),
+            "{line}"
+        );
+        assert!(line.ends_with("..."), "a shortened command is marked");
+        let short = super::native_trace_line("hi export", "observed", 7);
+        assert_eq!(
+            short,
+            "native state=observed elapsed_ms=7 command=hi export"
+        );
+    }
+
     use super::*;
 
     fn limits(cap: usize, seconds: u64) -> Limits {

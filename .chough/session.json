@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Use readable collision-resistant slug IDs for all new .chough records while preserving legacy identities",
+  "objective": "Make chough timing responsive (issue #32 first slice): read each native change at most once, read archived history only when the report selects it, bound total timing native wait, and add an opt-in trace, without weakening native gates",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "update-compact-next-fixture-for-slug-observations",
+  "native_change": "make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -27,7 +27,8 @@
       "FLOW-8",
       "LIFE-5",
       "LIFE-6",
-      "LIFE-9"
+      "LIFE-9",
+      "LIFE-10"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -39,7 +40,9 @@
       "REQ-cli-022",
       "REQ-cli-012",
       "REQ-cli-019",
-      "REQ-cli-023"
+      "REQ-cli-023",
+      "REQ-cli-020",
+      "REQ-cli-024"
     ],
     "cases": [
       "TC-cli-0101",
@@ -58,10 +61,17 @@
       "TC-cli-0111",
       "TC-cli-0112",
       "TC-cli-0113",
-      "TC-cli-0114"
+      "TC-cli-0114",
+      "TC-cli-0089",
+      "TC-cli-0100"
     ],
     "design": [],
-    "files": []
+    "files": [
+      "src/timing.rs",
+      "src/records.rs",
+      "tests/timing.rs",
+      "docs/cli.md"
+    ]
   },
   "decisions": [
     "Current-agent-first v1 is a human decision; Rune coordination is deferred.",
@@ -97,7 +107,15 @@
     "Codex resumed Kimi's approved identity scope in a preserved takeover checkout; tests/next.rs is covered by a separate prepared fixture change, not by amending the frozen identity scope.",
     "2026-11-01: 0xLeif replied \"yes i approve\" to the prepared one-file tests/next.rs fixture scope; native update-compact-next-fixture-for-slug-observations records that definition approval. Implementation acceptance is still pending.",
     "failed: native co-review qualification because the accepted-first dependency chosen for the fixture prevents its approved path from counting until parent acceptance. Keep the approval and refusal evidence; do not fabricate acceptance or weaken audit.",
-    "2026-11-01: 0xLeif explicitly approved the PR packages and instructed \"i approve.. get these prs out of draft and merged when all green\". Parent identity native review and archive are now recorded. The fixture native ordering can proceed; merge remains conditional on green checks."
+    "2026-11-01: 0xLeif explicitly approved the PR packages and instructed \"i approve.. get these prs out of draft and merged when all green\". Parent identity native review and archive are now recorded. The fixture native ordering can proceed; merge remains conditional on green checks.",
+    "2026-11-01: Leif assigned Claude the #30/#31/#32 pickup starting with #32; Kimi keeps checkpoint merge (PR #29); this is backlog authorization, not native scope approval",
+    "Draft native change adds REQ-cli-023 (pending approval, not yet canonical) instead of modifying REQ-cli-020 or 003, so its delta stays disjoint from PR #29's",
+    "Coverage extends TC-cli-0089 and TC-cli-0100 with named Rust regressions and explicit observation IDs; no new case number, because #30 owns case allocation",
+    "Filtered timing reports would emit native.history null with a skipped-by-filter reason: an explicit output-semantics change; next, status and stage gates keep their single native read and get no faster from this slice",
+    "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending",
+    "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33.",
+    "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it",
+    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks."
   ],
   "open_questions": [],
   "completed": [
@@ -147,7 +165,19 @@
     "Applied the explicitly approved fixture-only update; all 182 tests pass on Rust 1.99.1 and 1.88.0 with no exclusions. Next suite, five focused cases, case definitions, real CLI exercise and build pass.",
     "Identity parent archived through native review and ship after actual human approval; dependent fixture verification is now unblocked.",
     "Full verify passes all 9 steps with 182 tests and zero exclusions after the approved identity parent archive unlocked the fixture. The native-ordering bug has a strictly later passed observation.",
-    "Both identity and fixture native changes are archived under 0xLeif implementation approval. Full verify passed all 9 steps and pre-push passed all 5; hosted CI and merge are still pending."
+    "Both identity and fixture native changes are archived under 0xLeif implementation approval. Full verify passed all 9 steps and pre-push passed all 5; hosted CI and merge are still pending.",
+    "Observed PR #26 merged to main as b35acaf on 2026-11-01; its stale merge gate was cleared during Claude's local checkpoint repair",
+    "Measured on b35acaf (fresh debug and release builds; load average about 60-70): one archived-change specsync status read completed in 49.954 s; timing makes 11 native reads with one duplicate; next, status and prune make 1; raw data in ../claude-perf-raw",
+    "Drafted native change make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound; artifacts complete; specsync change audit and hi check pass",
+    "Failure-first: TC-cli-0089 (OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266) and TC-cli-0100 (OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777) failed at the unfixed tip on the extended regressions (duplicate cur-change read; hung read ran past 30 s with no budget); the trace and gate regressions also failed on the missing trace",
+    "Implemented REQ-cli-024 at 75c5453 (dedupe, history selection, whole-report budget, trace); TC-cli-0089 (OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21) and TC-cli-0100 (OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37) passed on the unchanged case definitions after the retained failures",
+    "Review fixes at 5cd1991: trace outcome fields precede a shortened command (unit regression); budget-skipped changes read no record files; fmt, warnings-denied Clippy, full tests on 1.99.1 and 1.88.0 passed",
+    "Integrated origin/main 48cc9f6 (PR #33) by manual checkpoint resolution; full tests and cases check passed after integration",
+    "Materialized REQ-cli-024 with specsync change check; bound it to TC-cli-0089 and TC-cli-0100; final observations OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e and OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52 passed",
+    "End-to-end trace regression for a 255-byte change ID fails on the pre-review records.rs and passes now",
+    "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read",
+    "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts.",
+    "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -217,7 +247,14 @@
     "OBS-tc-cli-slug-validation-allocation-87329eb940db06d9d61aa0c8",
     "OBS-tc-cli-slug-snapshot-allocation-af22af889455b7ae173e7a35",
     "OBS-tc-cli-slug-case-compatibility-46e48b2d212fe44a838f3735",
-    "OBS-structural-c07c15026bd2fd81c2773bf3"
+    "OBS-structural-c07c15026bd2fd81c2773bf3",
+    "OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266",
+    "OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777",
+    "OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21",
+    "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37",
+    "OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e",
+    "OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52",
+    "OBS-structural-2cb53c21d6c98144f9e9ee17"
   ],
   "bugs": [
     "BUG-0001",
@@ -239,5 +276,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Push the archive and done checkpoint, observe all checks at the exact PR head, then mark ready and squash-merge only if every gate is green. No release or deployment is authorized."
+  "next_action": "Push the completed timing archive and checkpoint, wait for every hosted check at the exact head to pass, then mark ready and squash-merge."
 }

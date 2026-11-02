@@ -527,7 +527,7 @@ reads (above).
 | Tests | Observations per case and environment: time, outcome and run time. `cases run` records `duration_seconds` in whole seconds, and a run under one second is `recorded together`, not a measured zero; manual records and earlier runs have no run time, shown unknown. |
 | Validation runs | Started, completed, failures, not run, recorded attempts and `elapsed_seconds`, labelled total run wall-clock, including intervals and resumes: it is never a per-test time. |
 | Bugs | Created; reproduced is the earliest linked failed observation (a pruned one from its retention-ledger entry, and unknown with reason `unavailable` when any linked observation is neither present nor in the ledger); verified is the first note whose changes prefix records `status: <old> -> verified` (labelled `from note text`, since a free note can look the same); fix time is reproduced to verified. |
-| Native | The current change (one status read) and the 10 most recent archived changes, by archive directory date and, on the same date, by `finalization.json` timestamp (one read each; older ones are skipped and reported partial). Created and updated come from status. From the change's record files only `approvals[].gate`, `approvals[].timestamp`, `reopenings[].timestamp` and the `timestamp` of `verification.json`, `review.json` and `finalization.json` are read, through the 64 KiB record bound; actor, note, reviewer and every other field are never read. Validity comes only from status: a definition approval is `current` only when status reports `approval_valid` true; an acceptance or finalization approval that a later native reopening supersedes is `reopened` (a reopening never supersedes the definition approval), and one superseded by a later approval of its gate, or that status reports invalid, is `not current`. |
+| Native | The current change (one status read) and, only for an unfiltered report, the 10 most recent archived changes, by archive directory date and, on the same date, by `finalization.json` timestamp (one read each, reusing the current change's read when it is also archived; older ones are skipped and reported partial). See [Timing native reads](#timing-native-reads). Created and updated come from status. From the change's record files only `approvals[].gate`, `approvals[].timestamp`, `reopenings[].timestamp` and the `timestamp` of `verification.json`, `review.json` and `finalization.json` are read, through the 64 KiB record bound; actor, note, reviewer and every other field are never read. Validity comes only from status: a definition approval is `current` only when status reports `approval_valid` true; an acceptance or finalization approval that a later native reopening supersedes is `reopened` (a reopening never supersedes the definition approval), and one superseded by a later approval of its gate, or that status reports invalid, is `not current`. |
 | Estimates | Per stage (stage time per completed cycle), per bug fix and per closed gate: sample count with minimum, median and maximum, labelled `estimate from N recorded <items>; not a target`. Fewer than 3 samples are `too few to estimate`. Idle time, unknown and same-second values and a current cycle that has not reached `done` are never samples; a current cycle that has reached `done` is complete and is a sample. |
 
 Labels: `elapsed wall-clock`; `recorded together` when start and end share a second
@@ -540,6 +540,47 @@ are `null` in JSON and `unknown` in text, never 0. Times are UTC ISO 8601, with 
 Unix seconds in JSON. Anything beyond a bound is listed under `partial` with what was
 skipped. `--cycle current` shows only the current cycle; estimates always use every
 completed cycle.
+
+### Timing native reads
+
+These rules (REQ-cli-024) apply only to `chough timing`. Stage moves, `chough next`
+and `chough status` keep their one authoritative native read with the per-read
+deadline above, and gates still refuse every unknown native state.
+
+- **One read per change.** Each distinct change ID is passed to `specsync change
+  status` at most once per report. The response is reused wherever the report shows
+  that change, then discarded: nothing is cached between commands.
+- **History selection.** Archived history is read only for `--cycle all` with no
+  `--stage`, `--case` or `--bug` filter. This changes the output: in 0.1.0 a
+  filtered report still listed archived history. A filtered report now reads only
+  the checkpoint change and emits `native.history: null`, `native.skipped_archived:
+  null` and `native.history_selection: {"state": "skipped-by-filter", "filters":
+  [...], "reason": ...}`, with a `partial` entry and a text line saying archived
+  history was not read. An unfiltered report emits `history_selection.state`
+  `selected` with `read`, `reused`, `skipped_beyond_bound`, `not_read_budget` and
+  `budget_seconds`. Stage estimates come only from transitions and are the same
+  either way.
+- **Whole-report budget.** `CHOUGH_TIMING_NATIVE_BUDGET_SECONDS` (whole seconds,
+  1 to 3600, default 120) bounds the total time the report waits on native reads. An
+  invalid value is refused before any record or native read. Each read runs with the
+  smaller of the per-read deadline and the remaining budget; a read cut by the budget
+  is `timed-out` and names the budget. A change the budget leaves no time for has
+  `status_read` `not-read` and `not_read_reason` `budget-exhausted`. Its record files
+  are not read either, so every time (created, updated, approvals, reopenings,
+  verification, review, finalization) is unknown with the budget as the reason. It is
+  counted in `not_read_budget` and listed under `partial`.
+- **Trace.** `CHOUGH_TRACE=1` writes to stderr one `chough-trace: native
+  state=<state> elapsed_ms=<n> command=<program args>` line per bounded native read
+  (in every command; the state and time come first, and only a command too long for
+  the bound is shortened, ending `...`)
+  and, for timing, one `chough-trace: phase <name> elapsed_ms=<n>` line per phase
+  (`transitions`, `tests`, `validation`, `native`, `render`). Lines are at most
+  1024 bytes. Without it, stdout and stderr are unchanged; a trace never changes the
+  report, a record or the exit code.
+
+These rules do not make `next` or `status` faster: their one read of an archived
+change still takes as long as SpecSync takes, which measured about 50 s on this
+repository in one sample (see [issue #32](https://github.com/CorvidLabs/chough/issues/32)).
 
 Gate records also take slots in the recent-transition windows of `chough context`
 (20) and `stage show` (10), so those windows can show fewer stage moves than before.

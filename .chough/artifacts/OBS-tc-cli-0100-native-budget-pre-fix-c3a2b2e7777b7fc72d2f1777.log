@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown has been running for over 60 seconds
+test a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown ... FAILED
+
+failures:
+
+---- a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown stdout ----
+
+thread 'a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown' (313466829) panicked at tests/timing.rs:1468:5:
+bounded by the budget, not the per-read deadline: 60.452239708s
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 13 filtered out; finished in 62.45s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/timing.rs (target/debug/deps/timing-bda4ff42d6df82a0)
+error: test failed, to rerun pass `--test timing`
