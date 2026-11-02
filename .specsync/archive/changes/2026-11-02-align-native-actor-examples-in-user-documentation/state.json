@@ -7,11 +7,11 @@
   "title": "Align native actor examples in user documentation",
   "description": "Align native actor examples in user documentation",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "9c41e95949adcb1009c986f97db50faa593d81b2",
   "created_at": 1793642725,
-  "updated_at": 1793643479,
+  "updated_at": 1793659915,
   "affected_specs": [],
   "affected_paths": [
     "docs/cli.md",

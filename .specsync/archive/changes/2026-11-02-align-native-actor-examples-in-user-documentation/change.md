@@ -1,6 +1,6 @@
 ---
 id: align-native-actor-examples-in-user-documentation
-state: implementing
+state: archived
 type: documentation
 base_commit: 9c41e95949adcb1009c986f97db50faa593d81b2
 ---
