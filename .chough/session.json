@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -107,7 +107,8 @@
     "Coverage extends TC-cli-0089 and TC-cli-0100 with named Rust regressions and explicit observation IDs; no new case number, because #30 owns case allocation",
     "Filtered timing reports would emit native.history null with a skipped-by-filter reason: an explicit output-semantics change; next, status and stage gates keep their single native read and get no faster from this slice",
     "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending",
-    "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33."
+    "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33.",
+    "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it"
   ],
   "open_questions": [],
   "completed": [
@@ -153,7 +154,10 @@
     "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done",
     "Observed PR #26 merged to main as b35acaf on 2026-11-01; its stale merge gate was cleared during Claude's local checkpoint repair",
     "Measured on b35acaf (fresh debug and release builds; load average about 60-70): one archived-change specsync status read completed in 49.954 s; timing makes 11 native reads with one duplicate; next, status and prune make 1; raw data in ../claude-perf-raw",
-    "Drafted native change make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound; artifacts complete; specsync change audit and hi check pass"
+    "Drafted native change make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound; artifacts complete; specsync change audit and hi check pass",
+    "Failure-first: TC-cli-0089 (OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266) and TC-cli-0100 (OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777) failed at the unfixed tip on the extended regressions (duplicate cur-change read; hung read ran past 30 s with no budget); the trace and gate regressions also failed on the missing trace",
+    "Implemented REQ-cli-024 at 75c5453 (dedupe, history selection, whole-report budget, trace); TC-cli-0089 (OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21) and TC-cli-0100 (OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37) passed on the unchanged case definitions after the retained failures",
+    "Review fixes at 5cd1991: trace outcome fields precede a shortened command (unit regression); budget-skipped changes read no record files; fmt, warnings-denied Clippy, full tests on 1.99.1 and 1.88.0 passed"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -205,7 +209,11 @@
     "tc-cli-0114-1793549250",
     "checkpoint-merge-real-git-pre-fix",
     "checkpoint-merge-real-git-post-fix",
-    "checkpoint-merge-real-git-final"
+    "checkpoint-merge-real-git-final",
+    "OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266",
+    "OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777",
+    "OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21",
+    "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37"
   ],
   "bugs": [
     "BUG-0001",
@@ -223,9 +231,7 @@
     "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Scope approval of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for Leif's native scope approval of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound; only then record specsync change approve --actor <name>, clear the gate and start failure-first tests"
+  "next_action": "Integrate origin/main after PR #33 lands, then materialize REQ-cli-024, bind the cases, record final observations, run verify/pre-push and final measurements, and push the branch for root's review"
 }
