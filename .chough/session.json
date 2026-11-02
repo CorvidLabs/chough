@@ -149,7 +149,8 @@
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
     "decided: 0xLeif in chat (2026-11-02 8:43 AM MT, relayed: \"I approve all\") gave the go-ahead on #11 with the options proposed there (because the smallest fix keeps REQ-cli-005 unchanged): ordering and skill text only, no delta-aware link resolution, no SpecSync change, trace to existing HI LIFE-6 and FLOW-7. Not a native scope approval of this definition",
     "rejected: resolving case links against approved deltas (because REQ-cli-005 says the hint SHALL NOT read native deltas)",
-    "Scope approval recorded natively with actor 0xLeif from his explicit chat approval at 8:56 AM MT 2026-11-02, relayed by corvid-agent."
+    "Scope approval recorded natively with actor 0xLeif from his explicit chat approval at 8:56 AM MT 2026-11-02, relayed by corvid-agent.",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; the native definition approval recorded earlier with actor 0xLeif was removed and re-recorded with actor corvid-agent (same scope digest b98afa26); review and finalize recorded as corvid-agent; merge stays with 0xLeif"
   ],
   "open_questions": [],
   "completed": [
@@ -364,9 +365,7 @@
     "BUG-0017"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit with .chough/, specsync change check --commit, push, observe hosted CI; then 0xLeif's implementation review"
+  "next_action": "Verify, specsync change check --commit, push, native review and finalize as corvid-agent, then 0xLeif reviews and merges PR #41 after hosted CI is green"
 }

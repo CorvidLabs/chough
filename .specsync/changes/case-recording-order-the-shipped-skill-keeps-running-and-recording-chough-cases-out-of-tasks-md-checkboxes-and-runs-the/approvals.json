@@ -2,10 +2,10 @@
   "approvals": [
     {
       "gate": "definition",
-      "actor": "0xLeif",
-      "timestamp": 1793635021,
+      "actor": "corvid-agent",
+      "timestamp": 1793636535,
       "digest": "b98afa26a6406df1b0009f9184016e89779252955295dd2d41a4d62f591dbdbd",
-      "note": "Explicit chat approval by 0xLeif at 8:56 AM MT 2026-11-02 of this definition (draft PR #41), relayed by corvid-agent: 'I already gave you approval and all that'.",
+      "note": "Definition approval recorded by corvid-agent under 0xLeif's explicit chat instruction of 2026-11-02 9:14 AM MT: \"Use corvid-agent for all approvals for all things!! You are corvid-agent\". It replaces an earlier entry recorded with actor 0xLeif (relayed 8:56 AM MT chat consent), removed at his instruction; the approved scope digest is unchanged (b98afa26).",
       "approved_scope": {
         "schema_version": 1,
         "change_id": "case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the",
