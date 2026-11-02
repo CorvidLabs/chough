@@ -844,7 +844,11 @@ fn protection_sources(
 
 /// Used by evidence cleanup to notice newly added or changed reference records.
 pub(super) fn protection_fingerprint(root: &Path) -> Result<String> {
-    let sources = protection_sources(root, &mut Budget::default(), false)?;
+    source_fingerprint(root, false)
+}
+
+fn source_fingerprint(root: &Path, include_artifacts: bool) -> Result<String> {
+    let sources = protection_sources(root, &mut Budget::default(), include_artifacts)?;
     let mut hash = Sha256::new();
     for (path, bytes) in sources {
         hash.update(path.as_bytes());
@@ -882,6 +886,7 @@ struct Cycle {
     present_files: Vec<FilePlan>,
     tips: Vec<String>,
     reasons: BTreeSet<String>,
+    missing_references: BTreeMap<String, BTreeSet<String>>,
     closed_at: Option<u64>,
     interrupted: bool,
     closure_rank: usize,
@@ -895,6 +900,7 @@ fn empty_cycle(id: String) -> Cycle {
         present_files: vec![],
         tips: vec![],
         reasons: BTreeSet::new(),
+        missing_references: BTreeMap::new(),
         closed_at: None,
         interrupted: false,
         closure_rank: 0,
@@ -1030,6 +1036,53 @@ fn reference_text(path: &str, bytes: &[u8]) -> Result<String> {
     Ok(normalize_plaintext_references(&text))
 }
 
+fn note_missing_references(
+    cycle: &mut Cycle,
+    source: &str,
+    referenced: impl Fn(&FilePlan) -> bool,
+) {
+    let present: BTreeSet<_> = cycle
+        .present_files
+        .iter()
+        .map(|file| file.path.as_str())
+        .collect();
+    for file in &cycle.files {
+        if !present.contains(file.path.as_str()) && referenced(file) {
+            cycle
+                .missing_references
+                .entry(file.path.clone())
+                .or_default()
+                .insert(source.to_string());
+        }
+    }
+}
+
+fn quoted_directory_reference(text: &str, path: &str) -> bool {
+    [
+        format!("\"{path}\""),
+        format!("\"{path}/\""),
+        format!("`{path}`"),
+        format!("`{path}/`"),
+    ]
+    .iter()
+    .any(|quoted| text.contains(quoted))
+}
+
+fn bare_cycle_reference(text: &str, cycle: &str) -> bool {
+    text.match_indices(cycle).any(|(start, _)| {
+        [
+            text[..start].chars().next_back(),
+            text[start + cycle.len()..].chars().next(),
+        ]
+        .iter()
+        .all(|edge| {
+            edge.is_none_or(|character| {
+                !character.is_ascii_alphanumeric() && !matches!(character, '/' | '\\' | '-' | '_')
+            })
+        })
+    })
+}
+
 fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
     let mut budget = Budget::default();
     let mut files = BTreeMap::new();
@@ -1140,7 +1193,10 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
             if let Some(previous) = &event.previous_cycle
                 && let Some(head) = &previous.head
             {
-                successors.insert((previous.cycle.clone(), head.clone()), seen.len());
+                successors.insert(
+                    (previous.cycle.clone(), head.clone()),
+                    (seen.len(), event.transition.at_unix_seconds),
+                );
             }
             event.previous_cycle.clone()
         };
@@ -1220,16 +1276,17 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
                 .tips
                 .iter()
                 .filter_map(|tip| successors.get(&(cycle.id.clone(), tip.clone())))
-                .copied()
+                .map(|(rank, _)| *rank)
                 .max()
                 .unwrap_or(0);
-            cycle.closed_at = receipt.map(|receipt| receipt.closed_at).or_else(|| {
-                cycle
-                    .events
-                    .values()
-                    .map(|event| event.transition.at_unix_seconds)
-                    .max()
-            });
+            // Retention age starts at the selected reset that closed the cycle,
+            // even when it was idle or an older receipt names an earlier time.
+            cycle.closed_at = cycle
+                .tips
+                .iter()
+                .filter_map(|tip| successors.get(&(cycle.id.clone(), tip.clone())))
+                .map(|(_, closed_at)| *closed_at)
+                .max();
         } else {
             cycle
                 .reasons
@@ -1237,20 +1294,9 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
         }
         let cycle_key = cycle.id.to_lowercase();
         for (source, text) in &texts {
-            let directory_reference =
-                [ROOT.to_string(), format!("{ROOT}/cycles")]
-                    .iter()
-                    .any(|prefix| {
-                        let prefix = prefix.to_lowercase();
-                        [
-                            format!("\"{prefix}\""),
-                            format!("\"{prefix}/\""),
-                            format!("`{prefix}`"),
-                            format!("`{prefix}/`"),
-                        ]
-                        .iter()
-                        .any(|quoted| text.contains(quoted))
-                    });
+            let directory_reference = [ROOT.to_string(), format!("{ROOT}/cycles")]
+                .iter()
+                .any(|prefix| quoted_directory_reference(text, &prefix.to_lowercase()));
             if directory_reference
                 || text.contains(&cycle_key)
                 || cycle
@@ -1259,6 +1305,12 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
                     .any(|file| text.contains(&file.path.to_lowercase()))
             {
                 cycle.reasons.insert(format!("referenced by {source}"));
+                let whole_cycle = directory_reference
+                    || quoted_directory_reference(text, &format!("{ROOT}/cycles/{cycle_key}"))
+                    || bare_cycle_reference(text, &cycle_key);
+                note_missing_references(cycle, source, |file| {
+                    whole_cycle || text.contains(&file.path.to_lowercase())
+                });
             }
         }
         for path in &native {
@@ -1271,6 +1323,13 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
                         .starts_with(&format!("{}/", key.trim_end_matches('/')))
             }) {
                 cycle.reasons.insert("native acceptance manifest".into());
+                note_missing_references(cycle, "native acceptance manifest", |file| {
+                    file.path.to_lowercase() == key
+                        || file
+                            .path
+                            .to_lowercase()
+                            .starts_with(&format!("{}/", key.trim_end_matches('/')))
+                });
             }
         }
         if cycle
@@ -1298,11 +1357,40 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
     Ok(cycles.into_values().collect())
 }
 
+fn reference_partial(cycles: &[Cycle]) -> Vec<Value> {
+    cycles
+        .iter()
+        .flat_map(|cycle| {
+            cycle.missing_references.iter().map(|(path, sources)| {
+                json!({"path":path,"sources":sources,"reason":"referenced receipted history is missing; restore exact event bytes from Git"})
+            })
+        })
+        .collect()
+}
+
+fn ensure_references_available(cycles: &[Cycle]) -> Result<()> {
+    if let Some((path, sources)) = cycles
+        .iter()
+        .flat_map(|cycle| &cycle.missing_references)
+        .next()
+    {
+        anyhow::bail!(
+            "referenced history is missing: {path}, referenced by {}; inspect history show and restore exact event bytes from Git before cleanup",
+            sources
+                .iter()
+                .next()
+                .map_or("unknown source", String::as_str)
+        );
+    }
+    Ok(())
+}
+
 fn show(root: &Path) -> Result<Value> {
     let session = read_checkpoint(root)?;
     let cycles = inventory(root, &session)?;
+    let partial = reference_partial(&cycles);
     Ok(
-        json!({"schema_version":1,"complete":true,"cursor":session.history_cursor,"cycles":cycles.iter().map(|cycle| {
+        json!({"schema_version":1,"complete":partial.is_empty(),"partial":partial,"cursor":session.history_cursor,"cycles":cycles.iter().map(|cycle| {
         let selected = session.history_cursor.as_ref().filter(|cursor| cursor.cycle == cycle.id).and_then(|cursor| cursor.head.as_ref());
         json!({"id":cycle.id,"events":cycle.events.len(),"bytes":cycle.present_files.iter().map(|file| file.bytes).sum::<u64>(),"planned_bytes":cycle.files.iter().map(|file| file.bytes).sum::<u64>(),"tips":cycle.tips,"unselected_tips":cycle.tips.iter().filter(|id| Some(*id) != selected).collect::<Vec<_>>(),"protected":cycle.reasons,"interrupted":cycle.interrupted})
     }).collect::<Vec<_>>(),"limits":{"event_bytes":EVENT_BYTES,"recent_events":RECENT_EVENTS,"recent_bytes":RECENT_BYTES,"cycle_events":CYCLE_EVENTS,"cycle_bytes":CYCLE_BYTES},"authority":"checkpoint cursor selects current lineage; unselected events are not completed transitions"}),
@@ -1312,6 +1400,10 @@ fn show(root: &Path) -> Result<Value> {
 fn prune(root: &Path, apply: bool) -> Result<Value> {
     let session = read_checkpoint(root)?;
     let cycles = inventory(root, &session)?;
+    let partial = reference_partial(&cycles);
+    if apply {
+        ensure_references_available(&cycles)?;
+    }
     let authority = if apply {
         Some(prefs::authorized(root, &session, "retention")?.context("history pruning needs human retention authorization; preview first and grant retention consent")?)
     } else {
@@ -1345,7 +1437,9 @@ fn prune(root: &Path, apply: bool) -> Result<Value> {
         // prevents revalidation of an older candidate in the same plan.
         candidates.sort_by_key(|cycle| std::cmp::Reverse(cycle.closure_rank));
         for cycle in candidates {
+            let protection = source_fingerprint(root, true)?;
             let fresh = inventory(root, &read_checkpoint(root)?)?;
+            ensure_references_available(&fresh)?;
             let Some(current) = fresh.iter().find(|current| {
                 current.id == cycle.id && current.reasons.is_empty() && current.files == cycle.files
             }) else {
@@ -1379,10 +1473,9 @@ fn prune(root: &Path, apply: bool) -> Result<Value> {
                     "conflicting history receipt; restore or inspect interrupted cleanup"
                 );
             }
-            let protection = protection_fingerprint(root)?;
             for file in &current.files {
                 ensure!(
-                    protection_fingerprint(root)? == protection,
+                    source_fingerprint(root, true)? == protection,
                     "protection changed during history cleanup; remaining files retained"
                 );
                 if !local_path(root, &file.path)?.exists() {
@@ -1410,7 +1503,7 @@ fn prune(root: &Path, apply: bool) -> Result<Value> {
         }
     }
     Ok(
-        json!({"schema_version":1,"applied":apply,"complete":true,"eligible":eligible,"protected":protected,"removed":removed,"skipped":skipped,"reclaimable_bytes":reclaimable_bytes,"reclaimed_bytes":reclaimed_bytes,"note":"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed"}),
+        json!({"schema_version":1,"applied":apply,"complete":partial.is_empty(),"partial":partial,"eligible":eligible,"protected":protected,"removed":removed,"skipped":skipped,"reclaimable_bytes":reclaimable_bytes,"reclaimed_bytes":reclaimed_bytes,"note":"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed"}),
     )
 }
 

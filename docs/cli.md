@@ -45,7 +45,8 @@ and protection reasons. `history prune --apply` additionally requires human
 retention authorization and revalidates the plan. It never removes the legacy log,
 migration backup, cases, observations or native archives. Keep active/referenced
 cycles, unresolved tips/orphans, the newest three closed cycles including ties and
-cycles younger than 14 days. Protected-only storage produces an honest no-op.
+cycles younger than 14 days, measured from the reset that closed the selected
+lineage rather than its last activity. Protected-only storage produces an honest no-op.
 Existing evidence auto-retention does not invoke history pruning.
 
 | History limit | Bound |
@@ -73,6 +74,12 @@ content and missing unlisted files. A resumed apply must match its receipt and
 fresh protections; unsafe paths, malformed sources and changed candidates refuse
 or retain data. A maintenance budget exhausted during cleanup is an explicit
 partial failure. Arbitrary external filesystem writers are not serialized.
+
+If another branch adds a reference after a cycle was pruned, integration can leave
+the reference without its event. History inspection and prune preview report
+`complete: false` with the missing receipted paths and reference sources; apply
+refuses further removal. Restore the exact referenced bytes from Git and inspect
+again. Ordinary unreferenced pruned history remains a completed removal.
 
 Before integrating pruning with new branch references, validate retained hashes
 and restore exact referenced bytes from Git when needed. Missing or pruned content

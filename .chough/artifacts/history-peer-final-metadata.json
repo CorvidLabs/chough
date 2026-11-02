@@ -1,0 +1,17 @@
+{
+  "source_head_before_commit": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+  "file_sha256": {
+    "src/history.rs": "cb6c661475eaece3068f13673fe77eb12345eca2b17e090d4eeaa19afd014de1",
+    "tests/history.rs": "120e72521d51f925a84bfd8906990d5852a84fdefbdfecb7733c360477a6aa9d",
+    "docs/cli.md": "b6a2a08c241b654ac2a0cfb506ae5d93cd4792f9bed220d854791a01c2b5be4c"
+  },
+  "tests": 225,
+  "suites": 11,
+  "bound_cases": 10,
+  "lane_steps": 9,
+  "rust_versions": [
+    "1.95.0",
+    "1.88.0"
+  ],
+  "binding_note": "The first new case used a filter but the adapter requires an exact test name. Its original not-run observation is preserved; exact cases now execute all three new regressions."
+}

@@ -1,0 +1,135 @@
+[
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "init",
+      "--objective",
+      "Idle cycle age reproduction",
+      "--module",
+      "cli"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"created\": [\n    \".chough/session.json\",\n    \".agents/skills/chough-workflow/SKILL.md\",\n    \".agents/skills/chough-workflow/agents/openai.yaml\",\n    \".agents/skills/chough-workflow/references/accept.md\",\n    \".agents/skills/chough-workflow/references/bugs.md\",\n    \".agents/skills/chough-workflow/references/build.md\",\n    \".agents/skills/chough-workflow/references/checkpoint.md\",\n    \".agents/skills/chough-workflow/references/design.md\",\n    \".agents/skills/chough-workflow/references/intent.md\",\n    \".agents/skills/chough-workflow/references/librarian.md\",\n    \".agents/skills/chough-workflow/references/lifecycle.md\",\n    \".agents/skills/chough-workflow/references/plan.md\",\n    \".agents/skills/chough-workflow/references/release.md\",\n    \".agents/skills/chough-workflow/references/roles.md\",\n    \".agents/skills/chough-workflow/references/stages.md\",\n    \".agents/skills/chough-workflow/references/testing.md\",\n    \".agents/skills/chough-workflow/references/validate.md\",\n    \".agents/skills/chough-workflow/templates/brief.md\",\n    \".agents/skills/chough-workflow/templates/bug-report.md\",\n    \".agents/skills/chough-workflow/templates/cases.toml\",\n    \".agents/skills/chough-workflow/templates/frd.md\",\n    \".agents/skills/chough-workflow/templates/prototype/COMPANION.md\",\n    \".agents/skills/chough-workflow/templates/prototype/index.html\",\n    \".agents/skills/chough-workflow/templates/prototype/styles.css\",\n    \".agents/skills/chough-workflow/templates/review-findings.md\"\n  ],\n  \"hosts\": [\n    \"openai\"\n  ],\n  \"preserved\": [],\n  \"schema_version\": 1\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "stage",
+      "iterate",
+      "--note",
+      "event before a long idle interval"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"iteration\": 2,\n    \"kind\": \"iterate\",\n    \"stage\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"event before a long idle interval\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 2,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "new cycle 0"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1791050168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"event before a long idle interval\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "new cycle 1"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1791050168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"event before a long idle interval\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "new cycle 2"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1791050168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"event before a long idle interval\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 2\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "new cycle 3"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1791050168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"event before a long idle interval\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 2\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642168,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"new cycle 3\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "history",
+      "prune"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": false,\n  \"complete\": true,\n  \"eligible\": [\n    {\n      \"bytes\": 348,\n      \"cycle\": \"CYC-afa1b6c81edd60eccf9551b7\",\n      \"files\": [\n        {\n          \"bytes\": 348,\n          \"digest\": \"56b9c77915c7747352a633bc6dde509ded559594d181d32ba14872ab880f9ce5\",\n          \"path\": \".chough/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 348,\n          \"digest\": \"56b9c77915c7747352a633bc6dde509ded559594d181d32ba14872ab880f9ce5\",\n          \"path\": \".chough/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json\"\n        }\n      ],\n      \"planned_bytes\": 348\n    }\n  ],\n  \"note\": \"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed\",\n  \"protected\": [\n    {\n      \"cycle\": \"CYC-02dbcca797e5fcc2a895835c\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\",\n        \"younger than 14 days\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-5cedb0be23b8a8879a3572d0\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\",\n        \"younger than 14 days\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-64372f84a1d535c79e4e1169\",\n      \"reasons\": [\n        \"active checkpoint cycle\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-dcb571abd8d5a7c9dd6a3ab1\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\",\n        \"younger than 14 days\"\n      ]\n    }\n  ],\n  \"reclaimable_bytes\": 348,\n  \"reclaimed_bytes\": 0,\n  \"removed\": [],\n  \"schema_version\": 1,\n  \"skipped\": []\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "consent",
+      "grant",
+      "retention",
+      "--source",
+      "fixture retention authorization"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"objective\": \"Idle cycle age reproduction\",\n  \"run_consents\": [\n    {\n      \"granted_at_unix_seconds\": 1793642168,\n      \"key\": \"retention\",\n      \"objective\": \"Idle cycle age reproduction\",\n      \"source\": \"fixture retention authorization\"\n    }\n  ],\n  \"schema_version\": 1\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-5t0skq4m/fixture",
+      "history",
+      "prune",
+      "--apply"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": true,\n  \"complete\": true,\n  \"eligible\": [\n    {\n      \"bytes\": 348,\n      \"cycle\": \"CYC-afa1b6c81edd60eccf9551b7\",\n      \"files\": [\n        {\n          \"bytes\": 348,\n          \"digest\": \"56b9c77915c7747352a633bc6dde509ded559594d181d32ba14872ab880f9ce5\",\n          \"path\": \".chough/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 348,\n          \"digest\": \"56b9c77915c7747352a633bc6dde509ded559594d181d32ba14872ab880f9ce5\",\n          \"path\": \".chough/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json\"\n        }\n      ],\n      \"planned_bytes\": 348\n    }\n  ],\n  \"note\": \"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed\",\n  \"protected\": [\n    {\n      \"cycle\": \"CYC-02dbcca797e5fcc2a895835c\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\",\n        \"younger than 14 days\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-5cedb0be23b8a8879a3572d0\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\",\n        \"younger than 14 days\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-64372f84a1d535c79e4e1169\",\n      \"reasons\": [\n        \"active checkpoint cycle\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-dcb571abd8d5a7c9dd6a3ab1\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\",\n        \"younger than 14 days\"\n      ]\n    }\n  ],\n  \"reclaimable_bytes\": 348,\n  \"reclaimed_bytes\": 348,\n  \"removed\": [\n    \".chough/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json\"\n  ],\n  \"schema_version\": 1,\n  \"skipped\": []\n}\n",
+    "stderr": ""
+  }
+]

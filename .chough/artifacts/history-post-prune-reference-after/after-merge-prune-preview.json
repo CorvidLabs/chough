@@ -1,0 +1,69 @@
+{
+  "applied": false,
+  "complete": false,
+  "eligible": [],
+  "note": "protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed",
+  "partial": [
+    {
+      "path": ".chough/history/cycles/CYC-26a3a5b76b4250325b8093a7/EVT-deeb05288ec8a369dc26e12f.json",
+      "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+      "sources": [
+        ".chough/session.json"
+      ]
+    }
+  ],
+  "protected": [
+    {
+      "cycle": "CYC-01f52e296ae9f51ef64cf74d",
+      "reasons": [
+        "active checkpoint cycle",
+        "referenced by .chough/session.json",
+        "unselected orphan or unresolved cycle closure"
+      ]
+    },
+    {
+      "cycle": "CYC-052457f59f97892f4e6acb5f",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    },
+    {
+      "cycle": "CYC-26a3a5b76b4250325b8093a7",
+      "reasons": [
+        "already pruned",
+        "referenced by .chough/session.json",
+        "unselected orphan or unresolved cycle closure"
+      ]
+    },
+    {
+      "cycle": "CYC-6a8c31040fee0431e480538b",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    },
+    {
+      "cycle": "CYC-899b3862966c4e2a35443f8f",
+      "reasons": [
+        "already pruned",
+        "unselected orphan or unresolved cycle closure"
+      ]
+    },
+    {
+      "cycle": "CYC-8a894b0230cc6c249b035408",
+      "reasons": [
+        "already pruned"
+      ]
+    },
+    {
+      "cycle": "CYC-c2e777d9b55d4bfffedc39e0",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    }
+  ],
+  "reclaimable_bytes": 0,
+  "reclaimed_bytes": 0,
+  "removed": [],
+  "schema_version": 1,
+  "skipped": []
+}

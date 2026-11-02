@@ -506,7 +506,10 @@ fn new_protection_prevents_resuming_an_interrupted_plan() {
         "fixture authorization",
     ]);
     f.ok(&["checkpoint", "--file", &paths[0]]);
-    f.ok(&["history", "prune", "--apply"]);
+    assert!(
+        f.fails(&["history", "prune", "--apply"])
+            .contains("referenced history")
+    );
     assert_eq!(f.read(&paths[1]), before);
 }
 
@@ -861,4 +864,237 @@ fn frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply() 
             assert_eq!(authorized, saved_files(f.root()), "apply changed {alias}");
         }
     }
+}
+
+fn idle_closed_cycle_fixture(closed_at: u64) -> (Fixture, String, String) {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let f = Fixture::new();
+    init(&f);
+    f.ok(&["stage", "iterate", "--note", "before a long idle interval"]);
+    set_latest_time(&f, now - 30 * 86_400);
+    let old_path = event_path(&f);
+    let mut closing_path = String::new();
+    for index in 0..4 {
+        f.ok(&[
+            "stage",
+            "reset",
+            "--to",
+            "intent",
+            "--reason",
+            &format!("close idle cycle {index}"),
+        ]);
+        if index == 0 {
+            set_latest_time(&f, closed_at);
+            closing_path = event_path(&f);
+        } else {
+            set_latest_time(&f, now - 4 + index);
+        }
+    }
+    (f, old_path, closing_path)
+}
+
+#[test]
+fn idle_cycle_age_uses_the_selected_closure_and_receipts_record_it() {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    for days_since_closure in [7, 15] {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let closed_at = now - days_since_closure * 86_400;
+        let (f, old_path, closing_path) = idle_closed_cycle_fixture(closed_at);
+        let cycle = old_path.split('/').nth(3).unwrap();
+        let old_bytes = f.read(&old_path);
+        let closing_bytes = f.read(&closing_path);
+        let preview = f.ok(&["history", "prune"]);
+        assert_eq!(preview["complete"], true);
+        if days_since_closure == 7 {
+            assert!(
+                preview["eligible"].as_array().unwrap().is_empty(),
+                "{preview}"
+            );
+            let protected = preview["protected"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|entry| entry["cycle"] == cycle)
+                .unwrap();
+            assert!(
+                protected["reasons"]
+                    .to_string()
+                    .contains("younger than 14 days")
+            );
+            assert!(!protected["reasons"].to_string().contains("newest three"));
+        } else {
+            assert!(
+                preview["eligible"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|entry| entry["cycle"] == cycle),
+                "{preview}"
+            );
+        }
+        assert_eq!(f.read(&old_path), old_bytes);
+        f.ok(&[
+            "consent",
+            "grant",
+            "retention",
+            "--source",
+            "fixture authorization",
+        ]);
+        let checkpoint = f.read(".chough/session.json");
+        let applied = f.ok(&["history", "prune", "--apply"]);
+        assert_eq!(applied["complete"], true);
+        let receipt_path = format!(".chough/history/pruned/{cycle}.json");
+        if days_since_closure == 7 {
+            assert_eq!(applied["removed"], serde_json::json!([]));
+            assert_eq!(f.read(&old_path), old_bytes);
+            assert!(!f.exists(&receipt_path));
+        } else {
+            assert_eq!(applied["removed"], serde_json::json!([old_path]));
+            let receipt: Value = serde_json::from_str(&f.read(&receipt_path)).unwrap();
+            assert_eq!(receipt["closed_at"], closed_at);
+        }
+        assert_eq!(f.read(".chough/session.json"), checkpoint);
+        assert_eq!(f.read(&closing_path), closing_bytes);
+    }
+}
+
+#[test]
+fn stale_receipt_age_cannot_override_a_recent_selected_closure() {
+    use sha2::{Digest, Sha256};
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let (f, old_path, _) = idle_closed_cycle_fixture(now - 7 * 86_400);
+    let cycle = old_path.split('/').nth(3).unwrap();
+    let old_bytes = f.read(&old_path);
+    let plan = serde_json::json!({"cycle":cycle,"files":[{"path":old_path,"bytes":old_bytes.len(),"digest":format!("{:x}",Sha256::digest(old_bytes.as_bytes()))}]});
+    let (receipt_path, _) = simulated_receipt(&f, &plan);
+    let receipt_bytes = f.read(&receipt_path);
+    let preview = f.ok(&["history", "prune"]);
+    assert!(
+        preview["eligible"].as_array().unwrap().is_empty(),
+        "{preview}"
+    );
+    assert!(
+        preview["protected"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entry| {
+                entry["cycle"] == cycle
+                    && entry["reasons"]
+                        .to_string()
+                        .contains("younger than 14 days")
+            })
+    );
+    f.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "fixture authorization",
+    ]);
+    let applied = f.ok(&["history", "prune", "--apply"]);
+    assert_eq!(applied["removed"], serde_json::json!([]));
+    assert_eq!(f.read(&old_path), old_bytes);
+    assert_eq!(f.read(&receipt_path), receipt_bytes);
+}
+
+#[test]
+fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
+    let f = closed_cycles();
+    let preview = f.ok(&["history", "prune"]);
+    let target = preview["eligible"][0]["files"][0]["path"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let target_bytes = f.read(&target);
+    let cycle = target.split('/').nth(3).unwrap();
+    let receipt_path = format!(".chough/history/pruned/{cycle}.json");
+    f.write(
+        ".gitattributes",
+        ".chough/session.json merge=chough-session\n",
+    );
+    git_ok(&f, &["init"]);
+    let binary = env!("CARGO_BIN_EXE_chough")
+        .replace('\\', "/")
+        .replace('\'', "'\\''");
+    git_ok(
+        &f,
+        &[
+            "config",
+            "merge.chough-session.driver",
+            &format!("'{binary}' checkpoint --merge %O %A %B"),
+        ],
+    );
+    git_ok(&f, &["checkout", "-b", "baseline"]);
+    git_ok(&f, &["add", "."]);
+    git_ok(&f, &["commit", "-m", "shared pre-prune history"]);
+    git_ok(&f, &["checkout", "-b", "cleanup"]);
+    f.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "fixture authorization",
+    ]);
+    let removal = f.ok(&["history", "prune", "--apply"]);
+    assert!(
+        removal["removed"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|path| path == &target)
+    );
+    assert_eq!(f.ok(&["history", "show"])["complete"], true);
+    git_ok(&f, &["add", ".chough"]);
+    git_ok(&f, &["commit", "-m", "prune unreferenced old cycles"]);
+    git_ok(&f, &["checkout", "-b", "new-reference", "baseline"]);
+    assert_eq!(f.read(&target), target_bytes);
+    f.ok(&["checkpoint", "--file", &target]);
+    git_ok(&f, &["add", ".chough/session.json"]);
+    git_ok(
+        &f,
+        &["commit", "-m", "reference the retained baseline event"],
+    );
+    git_ok(&f, &["merge", "cleanup", "--no-edit"]);
+    assert!(!f.exists(&target));
+    let before = git(&f, &["status", "--porcelain"]).stdout;
+    let checkpoint = f.read(".chough/session.json");
+    let receipt = f.read(&receipt_path);
+    for report in [f.ok(&["history", "show"]), f.ok(&["history", "prune"])] {
+        assert_eq!(report["complete"], false, "{report}");
+        assert!(
+            report["partial"].as_array().unwrap().iter().any(|entry| {
+                entry["path"] == target
+                    && entry["sources"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|source| source == ".chough/session.json")
+            }),
+            "{report}"
+        );
+    }
+    assert!(
+        f.fails(&["history", "prune", "--apply"])
+            .contains("referenced history")
+    );
+    assert_eq!(f.read(".chough/session.json"), checkpoint);
+    assert_eq!(f.read(&receipt_path), receipt);
+    assert_eq!(git(&f, &["status", "--porcelain"]).stdout, before);
+    assert!(!f.exists(&target));
+    git_ok(&f, &["restore", "--source", "baseline", "--", &target]);
+    assert_eq!(f.read(&target), target_bytes);
+    assert_eq!(f.ok(&["history", "show"])["complete"], true);
+    assert_eq!(f.ok(&["history", "prune"])["complete"], true);
 }

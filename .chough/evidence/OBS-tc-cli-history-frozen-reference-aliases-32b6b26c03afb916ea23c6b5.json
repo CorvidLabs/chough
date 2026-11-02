@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-frozen-reference-aliases-32b6b26c03afb916ea23c6b5",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test history -- --exact frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply for TC-cli-history-frozen-reference-aliases: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-32b6b26c03afb916ea23c6b5.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-32b6b26c03afb916ea23c6b5.log": "610fd0bda74d0348edda1f67b95790ec2b7e32a3c3813f636750dd8d9f7f05a9"
+  },
+  "observed_at_unix_seconds": 1793643086,
+  "snapshot": {
+    "revision": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+    "dirty": true,
+    "fingerprint": "7b9ce92233fde658ef2cbef8225e89d6297be7afccf72ec25851a9312fdc77ca",
+    "content": "9fe40085660dc33fbcca4fe27ee091587762e75a578a0aebe9699b2d94a81bef"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-frozen-reference-aliases",
+      "digest": "f72e27378ccb41e66aa47400992a3a8593863b15934b5c5d5da3363341ddbebd"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "history",
+    "--",
+    "--exact",
+    "frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 5
+}

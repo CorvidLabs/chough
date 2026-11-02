@@ -216,3 +216,17 @@ asserts byte-identical preview/apply fixtures. Future use: apply reference path
 normalization to every protection source, including raw frozen text, and verify
 equivalent paths preserve identical protected sets. Limits: synthetic local fixtures;
 no live project cleanup or new cold-start proof is implied.
+
+2026-11-02, retention review boundaries (observation): independent peer review
+reproduced two gaps at 489ecf50. An idle cycle was aged from its last activity,
+so a reset that closed it moments ago did not receive fourteen-day protection.
+Separately, a branch added a reference after another branch pruned the target;
+Git merged cleanly but history inspection incorrectly claimed completeness.
+Sources: OBS-product-test-4d5f09a757e2e50d651abef4 and
+OBS-product-test-f59a8fa906c43f699940f33c, with exact source, binary, commands and
+fixture inventories under .chough/artifacts/history-idle-closure-before/ and
+.chough/artifacts/history-post-prune-reference-before/.
+Future use: measure closure from its causal successor event, and inspect merged
+references against removal receipts. Do not infer that a clean Git merge restores
+proof or that old event activity establishes an old closure. Limits: disposable
+local fixtures; no live proof was removed and no automatic restoration is implied.

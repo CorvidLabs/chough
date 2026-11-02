@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-4d5f09a757e2e50d651abef4",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Recently closed idle cycles are eligible for history pruning reproduced at clean 489ecf50 before source edits. Preview makes the newly closed cycle eligible and authorized disposable apply removes its event.",
+  "artifacts": [
+    ".chough/artifacts/history-idle-closure-before/reproduce.py",
+    ".chough/artifacts/history-idle-closure-before/metadata.json",
+    ".chough/artifacts/history-idle-closure-before/commands.json",
+    ".chough/artifacts/history-idle-closure-before/apply.json",
+    ".chough/artifacts/history-idle-closure-before/source.diff",
+    ".chough/artifacts/history-idle-closure-before/preview.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/session.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/session.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-5cedb0be23b8a8879a3572d0/EVT-a1190055b8ad17fd97199581.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-64372f84a1d535c79e4e1169/EVT-a77e18e7f33a30da92543c6c.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-dcb571abd8d5a7c9dd6a3ab1/EVT-15628642addbc146c322cfdc.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-5cedb0be23b8a8879a3572d0/EVT-a1190055b8ad17fd97199581.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-64372f84a1d535c79e4e1169/EVT-a77e18e7f33a30da92543c6c.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-dcb571abd8d5a7c9dd6a3ab1/EVT-15628642addbc146c322cfdc.json",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-idle-closure-before/apply.json": "eb2db0a086e8e948fe67e43a63299085550a0450413d909214099c71e522d808",
+    ".chough/artifacts/history-idle-closure-before/commands.json": "98ca2a2d98638bd95cfff50b7707a4ee382e998342b1b577927cd956436a181e",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json": "dfb330c223b149d22201ca46c3beea5afae9fc9f5de567e5609eb70c6dfcc793",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-5cedb0be23b8a8879a3572d0/EVT-a1190055b8ad17fd97199581.json": "667399438f67b3fe4c849f5ae60b023a1f2d4f15dbd917a80f3a54ebcb29f708",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-64372f84a1d535c79e4e1169/EVT-a77e18e7f33a30da92543c6c.json": "b8aaed151662694d6d0ad6fdd7346ff2b0db0a315235d81061f3bb69ba3f28c8",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json": "56b9c77915c7747352a633bc6dde509ded559594d181d32ba14872ab880f9ce5",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-dcb571abd8d5a7c9dd6a3ab1/EVT-15628642addbc146c322cfdc.json": "fa38eeebc53890e07bef8558b0f161e9111aeb809522ec56258a4cc450110f9d",
+    ".chough/artifacts/history-idle-closure-before/input-before-apply/session.json": "441c28b317b8a58aa535a7e8476f7688ca936601c7e0e5138ec97d36fe6671cc",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json": "dfb330c223b149d22201ca46c3beea5afae9fc9f5de567e5609eb70c6dfcc793",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-5cedb0be23b8a8879a3572d0/EVT-a1190055b8ad17fd97199581.json": "667399438f67b3fe4c849f5ae60b023a1f2d4f15dbd917a80f3a54ebcb29f708",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-64372f84a1d535c79e4e1169/EVT-a77e18e7f33a30da92543c6c.json": "b8aaed151662694d6d0ad6fdd7346ff2b0db0a315235d81061f3bb69ba3f28c8",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-afa1b6c81edd60eccf9551b7/EVT-737fc2412ebb086e8a38db9c.json": "56b9c77915c7747352a633bc6dde509ded559594d181d32ba14872ab880f9ce5",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/history/cycles/CYC-dcb571abd8d5a7c9dd6a3ab1/EVT-15628642addbc146c322cfdc.json": "fa38eeebc53890e07bef8558b0f161e9111aeb809522ec56258a4cc450110f9d",
+    ".chough/artifacts/history-idle-closure-before/input-before-preview/session.json": "3f73475e48936c2443f1bb3afaa69260acbbdf8013e9c3c178ee39c7da20de4e",
+    ".chough/artifacts/history-idle-closure-before/metadata.json": "427d70994fabcdd1269bb8dddbd3829d51d332a1d529ddc342c83848f5535dcf",
+    ".chough/artifacts/history-idle-closure-before/preview.json": "de954b625d8024cbdaa9f248ef0ac7d84b93de14ed1fa89eba5eacad328a34cf",
+    ".chough/artifacts/history-idle-closure-before/reproduce.py": "163c57ae53e643cb0644fe093f9e86787bbea1872a2360c87fcc4ace9f0651e7",
+    ".chough/artifacts/history-idle-closure-before/source.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "observed_at_unix_seconds": 1793642229,
+  "snapshot": {
+    "revision": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+    "dirty": false,
+    "fingerprint": "c90627ac0689b77c4aec43acfb4b0c94c28c78a783f92f7b3eda98cfbc5ef972",
+    "content": "fdd264c30beb9a54d5fdc114f4882d3af7f578b2cfaec9be46f6c55296c81e90"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Disposable fixture; no real repository history or recorded proof was removed. Exact source and binary identities are retained."
+  ]
+}

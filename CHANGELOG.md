@@ -45,6 +45,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- History retention measures a reset-closed cycle's age from the closing reset,
+  preserving recently closed cycles even after long inactivity.
+- History inspection reports missing referenced pruned events after branch
+  integration, and cleanup refuses until the referenced proof is restored.
 - History retention normalizes directory aliases in frozen plaintext artifacts as
   well as structured references, preserving cycles named with Windows separators,
   case differences, repeated separators and dot components.

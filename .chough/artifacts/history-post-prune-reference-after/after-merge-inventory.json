@@ -1,0 +1,34 @@
+{
+  ".chough/history/cycles/CYC-01f52e296ae9f51ef64cf74d/EVT-22dac8af804d3ab76027a2ae.json": {
+    "bytes": 522,
+    "sha256": "8861de300a7097a818cf0dc3265b5dffb32df1db553a6a88de00853346a529c9"
+  },
+  ".chough/history/cycles/CYC-052457f59f97892f4e6acb5f/EVT-bd92660e9055efc4982bd1c2.json": {
+    "bytes": 522,
+    "sha256": "383695018ee6932bff5356876b63ed190e5efbaa1b95f135a506b9178932119a"
+  },
+  ".chough/history/cycles/CYC-6a8c31040fee0431e480538b/EVT-6f330b7e5561091e069db2da.json": {
+    "bytes": 522,
+    "sha256": "aa55e6d66da8531d2df37bb29645b380aea69f78d46d45cb68284e3e36ab892e"
+  },
+  ".chough/history/cycles/CYC-c2e777d9b55d4bfffedc39e0/EVT-59613bb84342b4d7f1a72de2.json": {
+    "bytes": 522,
+    "sha256": "897ce49ce2b93ed53b3d5c360508aae01692ded34b0ba67ca7e9e517112e2c4b"
+  },
+  ".chough/history/pruned/CYC-26a3a5b76b4250325b8093a7.json": {
+    "bytes": 481,
+    "sha256": "ec803a6b88de39a21b61d388df21392e923e096d47d7d62b18424f3de683f22c"
+  },
+  ".chough/history/pruned/CYC-899b3862966c4e2a35443f8f.json": {
+    "bytes": 481,
+    "sha256": "357fdbc550edd1908a53dc513e2929de6e41698d067d4087e05e7c16333edbd8"
+  },
+  ".chough/history/pruned/CYC-8a894b0230cc6c249b035408.json": {
+    "bytes": 481,
+    "sha256": "0d4e3cee31f85daeff1295cd3b1e71ee7eaeb380dda5e56224804809b7ac9195"
+  },
+  ".chough/session.json": {
+    "bytes": 1173,
+    "sha256": "7eb095dd6efab2fb6da8ea316130c16bb3379463e4d0b89f469e8a8d72715b2f"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "BUG-history-inspection-claims-completeness-for-a-missing-referenced-pruned-c15bc08868b100926c733b0b",
+  "title": "History inspection claims completeness for a missing referenced pruned event",
+  "symptom": "The checkpoint reference remains, its file is absent, and history show reports complete true.",
+  "trigger": "Branch A prunes; branch B forked before pruning references the removed event; Git merges A into B cleanly.",
+  "expected": "History inspection explicitly reports partial missing referenced history and its source.",
+  "actual": "The checkpoint reference remains, its file is absent, and history show reports complete true.",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-027"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+  "steps": [],
+  "fixture": ".chough/artifacts/history-post-prune-reference-before",
+  "observations": [
+    "OBS-product-test-f59a8fa906c43f699940f33c",
+    "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763"
+  ],
+  "impact": "Acceptance blocker for proof-preserving history and retention.",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "corvid-agent PR37 review5740236776, independently reproduced by Codex",
+  "notes": [
+    {
+      "at_unix_seconds": 1793643308,
+      "text": "status: open -> verified. Both independently reproduced failures now have failure-first regressions, original-reproducer confirmation, ten passed bound cases, all225tests on currentRust/Rust1.88 and all nine Fledge steps. Failed proof remains unchanged.",
+      "observations": [
+        "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793642243,
+  "updated_at_unix_seconds": 1793643308
+}
