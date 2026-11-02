@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0130-1793578919",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact handoff_blocks_stay_within_the_cap_and_are_byte_identical for TC-cli-0130: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0130-1793578919.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0130-1793578919.log": "005936e965faae1a5fcdb55df4e19bd9a2f1a9f09eee2b9f4588f88f8bd2fdb9"
+  },
+  "observed_at_unix_seconds": 1793578922,
+  "snapshot": {
+    "revision": "eb88d6a4201e461f58eaacd28480b0b3c47a07c1",
+    "dirty": false,
+    "fingerprint": "1c2a1cb519b60444ab0f82d30dd71330a30044c93ee2a5a0e43a77f571565dc9",
+    "content": "4c0ebf11141fd5bbf8ccda38c81de97245e01906afa14c6725e6ac15b31f45ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0130",
+      "digest": "b7c887a854449b55c5b1662dfdceca20b9b997ae1a92da74c41bef935d90a79d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "handoff_blocks_stay_within_the_cap_and_are_byte_identical"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

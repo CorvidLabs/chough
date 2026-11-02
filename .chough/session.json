@@ -101,7 +101,8 @@
     "0xLeif approved the scope as drafted (AskUserQuestion, 2026-11-01); recorded with specsync change approve --actor 0xLeif",
     "0xLeif stated he read the frozen rubric docs/exercises/handoff-cold-start/rubric.md (sha256 f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17) and chose the Kimi baseline (AskUserQuestion, 2026-11-01); recorded as his statement, not an approval",
     "Baseline cold start on main graded by 0xLeif: Fail (P2, P3 not met); observation handoff-cold-start-baseline-kimi-1-grade",
-    "Closeout pass: four labelled lessons in specs/cli/context.md (cold-start baseline, driving Kimi, record bounds in criteria, closeout order); extended after the change runs"
+    "Closeout pass: four labelled lessons in specs/cli/context.md (cold-start baseline, driving Kimi, record bounds in criteria, closeout order); extended after the change runs",
+    "Scoped change check verified; TC-cli-0126 to 0131 passed and TC-cli-0132 reviewed at the implementation tip"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -121,7 +122,14 @@
     "tc-cli-0112-1793548338",
     "tc-cli-0112-1793548660",
     "tc-cli-0113-1793548805",
-    "tc-cli-0114-1793549250"
+    "tc-cli-0114-1793549250",
+    "tc-cli-0126-1793578907",
+    "tc-cli-0127-1793578916",
+    "tc-cli-0128-1793578917",
+    "tc-cli-0129-1793578918",
+    "tc-cli-0130-1793578919",
+    "tc-cli-0131-1793578923",
+    "tc-cli-0132-tip-review"
   ],
   "bugs": [
     "BUG-0001",
@@ -139,5 +147,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Scoped specsync change check, re-add TC-cli-0126 to TC-cli-0133 from target/handoff/cases-TC-cli-0126-0133.patch, then the Kimi change run at the implementation tip"
+  "next_action": "Kimi change run (TC-cli-0133) at the implementation tip with the same model, prompt and rune script; then one run on this repository; 0xLeif grades both"
 }
