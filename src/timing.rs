@@ -3,21 +3,33 @@
 //! no case and makes no network request; its only external commands are bounded
 //! `specsync change status` reads. Every duration is elapsed wall-clock time, never
 //! effort, and a time no record holds stays unknown, never zero.
+//!
+//! Native reads (REQ-cli-024) are local to one report: each change ID is read at most
+//! once, archived history is read only when the report shows it, and total native
+//! wait is bounded by one budget. None of this applies to gates, `next` or `status`.
 
 use crate::checkpoint::{Session, read_session};
 use crate::evidence::{self, Outcome};
-use crate::records::{local_path, native_json, now, print_json, read_log_full, read_record};
+use crate::records::{
+    NativeJson, TIMING_BUDGET_VARIABLE, local_path, native_json_within, now, print_json,
+    read_log_full, read_record, trace_phase,
+};
 use crate::{bugs, stage, validate};
-use anyhow::Result;
+use anyhow::{Result, bail};
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
+use std::time::{Duration, Instant};
 
 /// Transitions are read in full up to this bound; earlier bytes are skipped.
 const TRANSITIONS_LIMIT: u64 = 16 * 1_048_576;
 /// Archived changes read for history, most recent first; older ones are skipped.
 const ARCHIVE_HISTORY: usize = 10;
+/// Default whole-report native budget, in seconds (REQ-cli-024).
+const NATIVE_BUDGET: u64 = 120;
+const HISTORY_RULE: &str =
+    "Archived native history is read only for --cycle all with no --stage, --case or --bug filter.";
 /// Fewer samples than this are too few to estimate.
 const MIN_SAMPLES: usize = 3;
 const ARCHIVE_DIR: &str = ".specsync/archive/changes";
@@ -957,13 +969,92 @@ fn record_time(root: &Path, directory: &str, name: &str) -> Time {
 /// One change's native times: created and updated from status; approvals (gate and
 /// timestamp only), reopening timestamps, verification, review and finalization from
 /// its record files. Actor, note, reviewer and every other field are never read.
-fn native_change(root: &Path, id: &str, directory: Option<&str>) -> Value {
-    let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
-    let (status, unavailable) = match response.value {
-        Some(value) => (Some(value), None),
+/// The whole-report native budget: CHOUGH_TIMING_NATIVE_BUDGET_SECONDS, a whole
+/// number of seconds from 1 to 3600, 120 when unset. An invalid value is refused.
+fn native_budget() -> Result<Duration> {
+    let Some(value) = std::env::var_os(TIMING_BUDGET_VARIABLE) else {
+        return Ok(Duration::from_secs(NATIVE_BUDGET));
+    };
+    match value
+        .to_str()
+        .and_then(|text| text.parse::<u64>().ok())
+        .filter(|seconds| (1..=3_600).contains(seconds))
+    {
+        Some(seconds) => Ok(Duration::from_secs(seconds)),
+        None => bail!(
+            "{TIMING_BUDGET_VARIABLE} must be a whole number of seconds from 1 to 3600; got {:?}, so no native command was run",
+            value.to_string_lossy().chars().take(64).collect::<String>()
+        ),
+    }
+}
+
+/// The native reads of one report: each change ID is read at most once, and every
+/// read shares one budget. Nothing outlives the report.
+struct NativeReads {
+    budget: Duration,
+    started: Instant,
+    responses: BTreeMap<String, NativeJson>,
+}
+
+/// How a change's status was obtained for the report.
+enum Fetch {
+    Read,
+    Reused,
+    BudgetExhausted,
+}
+
+impl NativeReads {
+    fn new(budget: Duration) -> Self {
+        Self {
+            budget,
+            started: Instant::now(),
+            responses: BTreeMap::new(),
+        }
+    }
+
+    fn fetch(&mut self, root: &Path, id: &str) -> Fetch {
+        if self.responses.contains_key(id) {
+            return Fetch::Reused;
+        }
+        let remaining = self.budget.saturating_sub(self.started.elapsed());
+        if remaining.is_zero() {
+            return Fetch::BudgetExhausted;
+        }
+        let response = native_json_within(
+            root,
+            "specsync",
+            &["change", "status", id, "--json"],
+            Some(remaining),
+        );
+        self.responses.insert(id.to_string(), response);
+        Fetch::Read
+    }
+}
+
+/// One change for the report; `response` is None when the budget left no time to read.
+fn native_change(
+    root: &Path,
+    id: &str,
+    directory: Option<&str>,
+    response: Option<&NativeJson>,
+) -> Value {
+    let (status, unavailable, status_read, not_read_reason) = match response {
+        Some(response) => match &response.value {
+            Some(value) => (Some(value), None, response.section.state.clone(), None),
+            None => (
+                None,
+                Some(format!("native read {}", response.section.state)),
+                response.section.state.clone(),
+                None,
+            ),
+        },
         None => (
             None,
-            Some(format!("native read {}", response.section.state)),
+            Some(format!(
+                "native read not-read: the timing native budget ({TIMING_BUDGET_VARIABLE}) was exhausted"
+            )),
+            "not-read".to_string(),
+            Some("budget-exhausted"),
         ),
     };
     let status_time = |key: &str| match (&status, &unavailable) {
@@ -976,14 +1067,14 @@ fn native_change(root: &Path, id: &str, directory: Option<&str>) -> Value {
         (None, reason) => Time::Unknown(reason.clone().unwrap_or_default()),
     };
     let approval_valid = status
-        .as_ref()
         .and_then(|value| value.pointer("/summary/approval_valid"))
         .and_then(Value::as_bool);
     let Some(directory) = directory else {
         let missing = Time::Unknown("no native record".into()).to_json();
         return json!({
             "id": id,
-            "status_read": response.section.state,
+            "status_read": status_read,
+            "not_read_reason": not_read_reason,
             "created": status_time("created_at").to_json(),
             "updated": status_time("updated_at").to_json(),
             "approvals": [],
@@ -1059,7 +1150,8 @@ fn native_change(root: &Path, id: &str, directory: Option<&str>) -> Value {
         .collect();
     json!({
         "id": id,
-        "status_read": response.section.state,
+        "status_read": status_read,
+        "not_read_reason": not_read_reason,
         "created": status_time("created_at").to_json(),
         "updated": status_time("updated_at").to_json(),
         "approvals": standings,
@@ -1135,7 +1227,15 @@ fn archived_id(directory: &str) -> &str {
     if dated { &directory[11..] } else { directory }
 }
 
-fn native_section(root: &Path, session: &Session, partial: &mut Vec<Value>) -> Result<Value> {
+/// The native section. Archived history is read only when `excluded` (the filters that
+/// hide it) is empty; the checkpoint change is always read, through `reads`.
+fn native_section(
+    root: &Path,
+    session: &Session,
+    partial: &mut Vec<Value>,
+    excluded: &[String],
+    reads: &mut NativeReads,
+) -> Result<Value> {
     if !local_path(root, ".specsync/config.toml")?.is_file()
         && !local_path(root, ".specsync/config.json")?.is_file()
     {
@@ -1144,6 +1244,7 @@ fn native_section(root: &Path, session: &Session, partial: &mut Vec<Value>) -> R
             "detail": "No native SpecSync configuration; native lifecycle times are unknown.",
             "current": null,
             "history": [],
+            "history_selection": {"state": "not-configured", "filters": excluded},
             "skipped_archived": 0,
         }));
     }
@@ -1160,12 +1261,25 @@ fn native_section(root: &Path, session: &Session, partial: &mut Vec<Value>) -> R
                         .map(|name| format!("{ARCHIVE_DIR}/{name}"))
                 })
             };
-            native_change(root, id, directory.as_deref())
+            reads.fetch(root, id);
+            native_change(root, id, directory.as_deref(), reads.responses.get(id))
         }),
         Session::V1(_) => None,
     };
+    if !excluded.is_empty() {
+        partial.push(json!({"source": ARCHIVE_DIR, "reason": format!("archived native history not read: excluded by {}", excluded.join(", "))}));
+        return Ok(json!({
+            "state": "observed",
+            "detail": "Times from `specsync change status --json` (created, updated) and native record files read read-only (gate and timestamp only); approval validity only from native status.",
+            "current": current,
+            "history": null,
+            "history_selection": {"state": "skipped-by-filter", "filters": excluded, "reason": HISTORY_RULE},
+            "skipped_archived": null,
+        }));
+    }
     let mut history = vec![];
     let mut skipped = 0;
+    let (mut read, mut reused, mut not_read_budget) = (0, 0, 0);
     match archived(root) {
         Err(reason) => partial.push(json!({"source": ARCHIVE_DIR, "reason": format!("archived changes unreadable: {reason}")})),
         Ok(names) => {
@@ -1173,14 +1287,27 @@ fn native_section(root: &Path, session: &Session, partial: &mut Vec<Value>) -> R
             for name in names.into_iter().take(ARCHIVE_HISTORY) {
                 let id = archived_id(&name).to_string();
                 if plain_id(&id) {
-                    history.push(native_change(root, &id, Some(&format!("{ARCHIVE_DIR}/{name}"))));
+                    match reads.fetch(root, &id) {
+                        Fetch::Read => read += 1,
+                        Fetch::Reused => reused += 1,
+                        Fetch::BudgetExhausted => not_read_budget += 1,
+                    }
+                    history.push(native_change(
+                        root,
+                        &id,
+                        Some(&format!("{ARCHIVE_DIR}/{name}")),
+                        reads.responses.get(&id),
+                    ));
                 } else {
                     let unknown = Time::Unknown("unexpected archive directory name".into()).to_json();
-                    history.push(json!({"id": name, "status_read": "not-read", "created": unknown, "updated": unknown, "approvals": [], "approvals_unknown": "unexpected archive directory name", "reopenings": [], "verification": unknown, "review": unknown, "finalization": unknown}));
+                    history.push(json!({"id": name, "status_read": "not-read", "not_read_reason": "unexpected-name", "created": unknown, "updated": unknown, "approvals": [], "approvals_unknown": "unexpected archive directory name", "reopenings": [], "verification": unknown, "review": unknown, "finalization": unknown}));
                 }
             }
             if skipped > 0 {
                 partial.push(json!({"source": ARCHIVE_DIR, "reason": format!("{skipped} older archived changes skipped; at most {ARCHIVE_HISTORY} are read")}));
+            }
+            if not_read_budget > 0 {
+                partial.push(json!({"source": ARCHIVE_DIR, "reason": format!("{not_read_budget} archived changes not read: the {} s timing native budget ({TIMING_BUDGET_VARIABLE}) was exhausted", reads.budget.as_secs())}));
             }
         }
     }
@@ -1189,6 +1316,15 @@ fn native_section(root: &Path, session: &Session, partial: &mut Vec<Value>) -> R
         "detail": "Times from `specsync change status --json` (created, updated) and native record files read read-only (gate and timestamp only); approval validity only from native status.",
         "current": current,
         "history": history,
+        "history_selection": {
+            "state": "selected",
+            "filters": excluded,
+            "read": read,
+            "reused": reused,
+            "skipped_beyond_bound": skipped,
+            "not_read_budget": not_read_budget,
+            "budget_seconds": reads.budget.as_secs(),
+        },
         "skipped_archived": skipped,
     }))
 }
@@ -1230,6 +1366,9 @@ fn native_text(change: &Value) -> Vec<String> {
 // The report.
 
 pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
+    // Refused before any record or native read when invalid (REQ-cli-024).
+    let budget = native_budget()?;
+    let phase = Instant::now();
     let session = read_session(root)?;
     let at = now()?;
     let mut partial: Vec<Value> = vec![];
@@ -1244,6 +1383,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         partial.push(json!({"source": stage::TRANSITIONS, "reason": format!("{} records of unrecognised kinds skipped", transitions.unrecognised)}));
     }
     let derived = derive(&transitions, &session, at);
+    trace_phase("transitions", phase);
     let stage_filter = args.stage.as_deref();
     let shows = |segment: &Segment| stage_filter.is_none_or(|stage| segment.stage == stage);
 
@@ -1282,9 +1422,30 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         .filter_map(|row| row.fix_time)
         .filter(|seconds| *seconds > 0)
         .collect();
+    let phase = Instant::now();
     let tests = tests_section(root, args.case.as_deref(), &mut partial);
+    trace_phase("tests", phase);
+    let phase = Instant::now();
     let runs = validation_section(root, args.case.as_deref(), &mut partial);
-    let native = native_section(root, &session, &mut partial)?;
+    trace_phase("validation", phase);
+    // Archived history is shown, and so read, only for an unfiltered report.
+    let mut excluded = vec![];
+    if args.cycle == "current" {
+        excluded.push("--cycle current".to_string());
+    }
+    for (flag, value) in [
+        ("--stage", &args.stage),
+        ("--case", &args.case),
+        ("--bug", &args.bug),
+    ] {
+        if let Some(value) = value {
+            excluded.push(format!("{flag} {value}"));
+        }
+    }
+    let phase = Instant::now();
+    let mut reads = NativeReads::new(budget);
+    let native = native_section(root, &session, &mut partial, &excluded, &mut reads)?;
+    trace_phase("native", phase);
 
     let shown: Vec<&Cycle> = if args.cycle == "current" {
         derived.cycles.last().into_iter().collect()
@@ -1356,13 +1517,16 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
             "gates": estimate(&mut gate_samples, "human gate waiting times"),
         },
     });
+    let phase = Instant::now();
     if args.json {
-        return print_json(&report);
+        print_json(&report)?;
+    } else {
+        print!(
+            "{}",
+            render(&report, &derived, &shown, before_first, stage_filter)
+        );
     }
-    print!(
-        "{}",
-        render(&report, &derived, &shown, before_first, stage_filter)
-    );
+    trace_phase("render", phase);
     Ok(())
 }
 
@@ -1549,6 +1713,24 @@ fn render(
         for line in native_text(&native["current"]) {
             out.push_str(&format!("{line}\n"));
         }
+    }
+    let selection = &native["history_selection"];
+    match selection["state"].as_str() {
+        Some("skipped-by-filter") => out.push_str(&format!(
+            "Archived native history was not read: excluded by {}. {HISTORY_RULE}\n",
+            selection["filters"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter_map(Value::as_str)
+                .collect::<Vec<_>>()
+                .join(", ")
+        )),
+        Some("selected") => out.push_str(&format!(
+            "Archived native history: read {}, reused {}, skipped beyond the bound {}, not read for the budget {} (budget {} s).\n",
+            selection["read"], selection["reused"], selection["skipped_beyond_bound"], selection["not_read_budget"], selection["budget_seconds"]
+        )),
+        _ => {}
     }
     if native["history"]
         .as_array()

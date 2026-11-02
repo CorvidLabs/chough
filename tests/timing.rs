@@ -94,6 +94,70 @@ fn text(fixture: &Fixture, extra: &[&str]) -> String {
     String::from_utf8(output.stdout).unwrap()
 }
 
+/// Variables that change native reads or tracing; tests set them explicitly so the
+/// caller's environment cannot leak in.
+const NATIVE_VARIABLES: [&str; 3] = [
+    "CHOUGH_NATIVE_TIMEOUT_SECONDS",
+    "CHOUGH_TIMING_NATIVE_BUDGET_SECONDS",
+    "CHOUGH_TRACE",
+];
+
+/// Run chough with the fixture's stand-ins first on PATH and exactly `env` set among
+/// the native variables.
+fn run_env(fixture: &Fixture, args: &[&str], env: &[(&str, &str)]) -> std::process::Output {
+    let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_chough"));
+    command.arg("--root").arg(fixture.root()).args(args);
+    for name in NATIVE_VARIABLES {
+        command.env_remove(name);
+    }
+    command.envs(env.iter().copied());
+    command.env(
+        "PATH",
+        std::env::join_paths(std::iter::once(fixture.root().join("bin")).chain(
+            std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()),
+        ))
+        .unwrap(),
+    );
+    command.output().unwrap()
+}
+
+fn json_ok(output: &std::process::Output) -> Value {
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    serde_json::from_slice(&output.stdout).unwrap()
+}
+
+/// The change IDs the stand-in was asked for since the last call, in order.
+fn stub_calls(fixture: &Fixture) -> Vec<String> {
+    let path = fixture.root().join(".stub-calls");
+    let calls = fs::read_to_string(&path)
+        .unwrap_or_default()
+        .lines()
+        .map(str::to_string)
+        .collect();
+    let _ = fs::remove_file(path);
+    calls
+}
+
+/// PIDs of stand-in descendants that are still running.
+fn surviving_children(fixture: &Fixture) -> Vec<String> {
+    fs::read_to_string(fixture.root().join(".stub-children"))
+        .unwrap_or_default()
+        .lines()
+        .filter(|pid| {
+            std::process::Command::new("kill")
+                .args(["-0", pid])
+                .stderr(std::process::Stdio::null())
+                .status()
+                .is_ok_and(|status| status.success())
+        })
+        .map(str::to_string)
+        .collect()
+}
+
 fn seconds(duration: &Value) -> Option<u64> {
     duration["seconds"].as_u64()
 }
@@ -1090,6 +1154,9 @@ fn transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identica
 }
 
 /// A SpecSync stand-in: status per change from `.stub-status-<id>`, a default otherwise.
+/// Every call appends its change ID to `.stub-calls`. `.stub-malformed-<id>` prints
+/// output that is not JSON; `.stub-hang-<id>` waits on a background child that holds
+/// the output pipes and records its PID in `.stub-children`.
 #[cfg(unix)]
 fn native_fixture() -> Fixture {
     let fixture = Fixture::new();
@@ -1098,7 +1165,10 @@ fn native_fixture() -> Fixture {
         "bin/specsync",
         r#"#!/bin/sh
 id="$3"
+echo "$id" >>.stub-calls
 if [ -f ".stub-fail-$id" ]; then echo 'status failed' >&2; exit 2; fi
+if [ -f ".stub-malformed-$id" ]; then echo 'not json {'; exit 0; fi
+if [ -f ".stub-hang-$id" ]; then sleep 60 & echo $! >>.stub-children; wait; fi
 if [ -f ".stub-sleep-$id" ]; then exec sleep 30; fi
 if [ -f ".stub-status-$id" ]; then cat ".stub-status-$id"; exit 0; fi
 printf '{"change":{"id":"%s","created_at":100,"updated_at":200},"summary":{"state":"archived","approval_valid":true}}\n' "$id"
@@ -1249,6 +1319,94 @@ fn native_times_come_only_from_status_and_native_records_read_read_only() {
     assert_eq!(history[0]["id"], "aaa-later", "{:#}", report["native"]);
     assert_eq!(history[1]["id"], "zzz-earlier");
     assert_eq!(report["native"]["skipped_archived"], 4);
+
+    // REQ-cli-024: the checkpoint change, also archived, is read once and its one
+    // response serves both places the report shows it.
+    fixture.write(
+        ".specsync/archive/changes/2026-03-01-cur-change/finalization.json",
+        "{\"timestamp\": 9500}\n",
+    );
+    stub_calls(&fixture);
+    let report = timing(&fixture, &[]);
+    let calls = stub_calls(&fixture);
+    assert_eq!(
+        calls.iter().filter(|id| *id == "cur-change").count(),
+        1,
+        "{calls:?}"
+    );
+    assert_eq!(calls.len(), 10, "one read per distinct change: {calls:?}");
+    let native = &report["native"];
+    assert_eq!(native["history"][0]["id"], "cur-change", "{native:#}");
+    assert_eq!(
+        native["history"][0]["created"],
+        native["current"]["created"]
+    );
+    assert_eq!(native["history"][0]["status_read"], "observed");
+    let selection = &native["history_selection"];
+    assert_eq!(selection["state"], "selected", "{selection:#}");
+    assert_eq!(selection["filters"], json!([]));
+    assert_eq!(selection["read"], 9);
+    assert_eq!(selection["reused"], 1);
+    assert_eq!(selection["skipped_beyond_bound"], 5);
+    assert_eq!(selection["not_read_budget"], 0);
+    assert_eq!(native["skipped_archived"], 5);
+    let estimates = report["estimates"]["stages"].clone();
+    assert!(
+        text(&fixture, &[]).contains("Archived native history: read"),
+        "unfiltered text names the selection"
+    );
+    stub_calls(&fixture);
+
+    // A filtered report does not show archived history, so it reads only the
+    // checkpoint change and says why history is absent: null, never an empty list.
+    for filter in [
+        ["--cycle", "current"],
+        ["--stage", "test"],
+        ["--case", "TC-a"],
+        ["--bug", "BUG-0001"],
+    ] {
+        let report = timing(&fixture, &filter);
+        assert_eq!(stub_calls(&fixture), vec!["cur-change"], "{filter:?}");
+        let native = &report["native"];
+        assert_eq!(native["history"], Value::Null, "{filter:?}: {native:#}");
+        assert_eq!(native["skipped_archived"], Value::Null, "{filter:?}");
+        assert_eq!(native["current"]["id"], "cur-change");
+        let selection = &native["history_selection"];
+        assert_eq!(selection["state"], "skipped-by-filter", "{filter:?}");
+        assert!(
+            selection["filters"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|named| named.as_str().unwrap().starts_with(filter[0])),
+            "{filter:?}: {selection:#}"
+        );
+        assert!(
+            report["partial"]
+                .to_string()
+                .contains("archived native history not read"),
+            "{filter:?}: {}",
+            report["partial"]
+        );
+        // Stage estimates come only from transitions.
+        assert_eq!(report["estimates"]["stages"], estimates, "{filter:?}");
+        let rendered = text(&fixture, &filter);
+        stub_calls(&fixture);
+        assert!(
+            rendered.contains("Archived native history was not read"),
+            "{filter:?}: {rendered}"
+        );
+    }
+    before_filters_unchanged(&fixture);
+}
+
+/// Records stay byte-identical across the filtered and unfiltered reports above.
+#[cfg(unix)]
+fn before_filters_unchanged(fixture: &Fixture) {
+    let before = record_digests(fixture.root());
+    timing(fixture, &["--cycle", "current"]);
+    timing(fixture, &[]);
+    assert_eq!(before, record_digests(fixture.root()));
 }
 
 #[cfg(unix)]
@@ -1292,6 +1450,236 @@ fn a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown() {
     let report = timing(&plain, &[]);
     assert_eq!(report["native"]["state"], "not-configured");
     assert_eq!(report["native"]["current"], Value::Null);
+
+    // REQ-cli-024: one whole-report budget. A hung read whose child holds the pipes
+    // gets the remaining budget, not the 120 s per-read deadline, and every read the
+    // budget leaves no time for is not-read with unknown times, never zero.
+    let fixture = native_fixture();
+    fixture.write(".stub-hang-cur-change", "");
+    stub_calls(&fixture);
+    let started = std::time::Instant::now();
+    let output = run_env(
+        &fixture,
+        &["timing", "--json"],
+        &[
+            ("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS", "2"),
+            ("CHOUGH_NATIVE_TIMEOUT_SECONDS", "120"),
+        ],
+    );
+    let elapsed = started.elapsed();
+    let report = json_ok(&output);
+    assert!(
+        elapsed < std::time::Duration::from_secs(30),
+        "bounded by the budget, not the per-read deadline: {elapsed:?}"
+    );
+    assert_eq!(stub_calls(&fixture), vec!["cur-change"]);
+    assert!(
+        surviving_children(&fixture).is_empty(),
+        "a stand-in descendant outlived the report"
+    );
+    let native = &report["native"];
+    assert_eq!(native["current"]["status_read"], "timed-out", "{native:#}");
+    assert_eq!(native["current"]["created"]["unix_seconds"], Value::Null);
+    let history = native["history"].as_array().unwrap();
+    assert_eq!(history.len(), 10);
+    for change in history {
+        assert_eq!(change["status_read"], "not-read", "{change:#}");
+        assert_eq!(change["not_read_reason"], "budget-exhausted");
+        assert_eq!(change["created"]["unix_seconds"], Value::Null);
+        assert!(
+            change["created"]["unknown"]
+                .as_str()
+                .unwrap()
+                .contains("budget"),
+            "{change:#}"
+        );
+        assert_eq!(change["approvals"][0]["standing"], "unknown");
+    }
+    assert_eq!(native["history_selection"]["not_read_budget"], 10);
+    assert_eq!(native["history_selection"]["read"], 0);
+    assert!(
+        report["partial"].to_string().contains("native budget"),
+        "{}",
+        report["partial"]
+    );
+
+    // A per-read deadline shorter than the remaining budget still applies; hung,
+    // failing and malformed responses keep their own explicit states.
+    let fixture = native_fixture();
+    fixture.write(".stub-hang-arch-11", "");
+    fixture.write(".stub-malformed-arch-09", "");
+    let report = json_ok(&run_env(
+        &fixture,
+        &["timing", "--json"],
+        &[
+            ("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS", "60"),
+            ("CHOUGH_NATIVE_TIMEOUT_SECONDS", "1"),
+        ],
+    ));
+    assert!(surviving_children(&fixture).is_empty());
+    let history = report["native"]["history"].as_array().unwrap();
+    let state = |id: &str| {
+        history
+            .iter()
+            .find(|change| change["id"] == id)
+            .map(|change| change["status_read"].clone())
+    };
+    assert_eq!(state("arch-11"), Some(json!("timed-out")));
+    assert_eq!(state("arch-10"), Some(json!("failed")));
+    assert_eq!(state("arch-09"), Some(json!("invalid-output")));
+    assert_eq!(state("arch-08"), Some(json!("observed")));
+    assert_eq!(report["native"]["history_selection"]["not_read_budget"], 0);
+
+    // Invalid budgets are refused before any native process starts; the bounds work.
+    for invalid in ["0", "3601", "abc", "", "1.5", "-1"] {
+        stub_calls(&fixture);
+        let output = run_env(
+            &fixture,
+            &["timing", "--json"],
+            &[("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS", invalid)],
+        );
+        assert!(!output.status.success(), "{invalid:?} was accepted");
+        assert!(
+            String::from_utf8_lossy(&output.stderr).contains("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS"),
+            "{invalid:?}"
+        );
+        assert!(stub_calls(&fixture).is_empty(), "{invalid:?} ran a read");
+    }
+    fs::remove_file(fixture.root().join(".stub-hang-arch-11")).unwrap();
+    for valid in ["1", "3600"] {
+        let report = json_ok(&run_env(
+            &fixture,
+            &["timing", "--json"],
+            &[("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS", valid)],
+        ));
+        assert_eq!(report["native"]["history_selection"]["state"], "selected");
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit() {
+    let fixture = native_fixture();
+    // Reports end ongoing segments now, so compare runs made within one second.
+    let mut matched = None;
+    for _ in 0..5 {
+        stub_calls(&fixture);
+        let plain = run_env(&fixture, &["timing", "--json"], &[]);
+        let calls = stub_calls(&fixture).len();
+        let traced = run_env(&fixture, &["timing", "--json"], &[("CHOUGH_TRACE", "1")]);
+        stub_calls(&fixture);
+        if plain.stdout == traced.stdout {
+            matched = Some((plain, traced, calls));
+            break;
+        }
+    }
+    let (plain, traced, calls) = matched.expect("traced and untraced reports differ");
+    assert_eq!(plain.status.code(), traced.status.code());
+    assert!(plain.stderr.is_empty(), "untraced stderr is unchanged");
+    let lines: Vec<String> = String::from_utf8(traced.stderr)
+        .unwrap()
+        .lines()
+        .map(str::to_string)
+        .collect();
+    assert!(
+        lines
+            .iter()
+            .all(|line| line.starts_with("chough-trace: ") && line.len() <= 1024),
+        "{lines:#?}"
+    );
+    let native: Vec<&String> = lines
+        .iter()
+        .filter(|line| line.starts_with("chough-trace: native "))
+        .collect();
+    assert_eq!(native.len(), calls, "{lines:#?}");
+    assert!(
+        native
+            .iter()
+            .all(|line| line.contains("specsync change status")
+                && line.contains(" state=")
+                && line.contains(" elapsed_ms=")),
+        "{native:#?}"
+    );
+    assert!(native.iter().any(|line| line.contains("state=failed")));
+    for phase in ["transitions", "tests", "validation", "native", "render"] {
+        assert!(
+            lines
+                .iter()
+                .any(|line| line.starts_with(&format!("chough-trace: phase {phase} elapsed_ms="))),
+            "{phase}: {lines:#?}"
+        );
+    }
+
+    // Text output and a refused request keep the same output and exit code.
+    for args in [&["timing"][..], &["timing", "--cycle", "current"][..]] {
+        let plain = run_env(&fixture, args, &[]);
+        let traced = run_env(&fixture, args, &[("CHOUGH_TRACE", "1")]);
+        assert_eq!(plain.status.code(), traced.status.code(), "{args:?}");
+        assert!(plain.stderr.is_empty());
+    }
+    let plain = run_env(
+        &fixture,
+        &["timing", "--json"],
+        &[("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS", "0")],
+    );
+    let traced = run_env(
+        &fixture,
+        &["timing", "--json"],
+        &[
+            ("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS", "0"),
+            ("CHOUGH_TRACE", "1"),
+        ],
+    );
+    assert_eq!(plain.status.code(), traced.status.code());
+    assert_eq!(plain.stdout, traced.stdout);
+    assert!(!plain.status.success());
+}
+
+#[cfg(unix)]
+#[test]
+fn next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_report_budget() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(".stub-count", "");
+    fixture.native("approved");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", "gate-change"]);
+    fixture.no_spec_approval("gate-change");
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.native_calls();
+    // The report budget does not apply here: even a value timing refuses leaves next,
+    // status and stage moves to their one native read.
+    for budget in ["0", "1"] {
+        let env = [
+            ("CHOUGH_TIMING_NATIVE_BUDGET_SECONDS", budget),
+            ("CHOUGH_TRACE", "1"),
+        ];
+        for args in [&["next", "--json"][..], &["status", "--json"][..]] {
+            let output = run_env(&fixture, args, &env);
+            json_ok(&output);
+            assert_eq!(fixture.native_calls(), 1, "{args:?} with budget {budget}");
+            let native_lines = String::from_utf8_lossy(&output.stderr)
+                .lines()
+                .filter(|line| line.starts_with("chough-trace: native "))
+                .count();
+            assert_eq!(native_lines, 1, "{args:?}");
+        }
+        fixture.write(".stub-fail", "");
+        let refused = run_env(&fixture, &["stage", "advance"], &env);
+        assert!(
+            !refused.status.success(),
+            "a failed native read opened a gate"
+        );
+        assert!(
+            String::from_utf8_lossy(&refused.stderr).contains("refused:native-unknown"),
+            "{}",
+            String::from_utf8_lossy(&refused.stderr)
+        );
+        fs::remove_file(fixture.root().join(".stub-fail")).unwrap();
+        fixture.native_calls();
+    }
+    assert_eq!(fixture.session()["stage"]["current"], "plan");
 }
 
 #[cfg(unix)]
