@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -141,7 +141,8 @@
     "decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, \"Approve as drafted\"); recorded with specsync change approve --actor 0xLeif",
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
-    "human: 0xLeif authorized the ticket changes through PRs in chat on 2026-11-02: \"And I already gave it some approval and told it can do any changes. It just needs a PR.\" This completed #32 definition is covered by that standing scope/implementation authorization. Native implementation acceptance, review/ship and merge remain separate."
+    "human: 0xLeif authorized the ticket changes through PRs in chat on 2026-11-02: \"And I already gave it some approval and told it can do any changes. It just needs a PR.\" This completed #32 definition is covered by that standing scope/implementation authorization. Native implementation acceptance, review/ship and merge remain separate.",
+    "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the PR closeout status was presented. This authorizes this session to finish native closeout for PR #46 under the existing through-PR authorization; acting native account is corvid-agent. Merge, release, deployment and live cleanup remain separate."
   ],
   "open_questions": [],
   "completed": [
@@ -223,7 +224,8 @@
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
     "Implemented #32 request-local case reads with typed error preservation. All3boundcases, all201tests on current Rust and Rust1.88, and the9-step Fledge lane passed. Final paired debug diagnostics show reduced local next/statuswork with identical output and1160unchanged managedfiles; capped native attempts remain timedout. The reproduced cache error-chain defect is verified fixed.",
-    "Clarified definition actor/source provenance: corvid-agent records the project operation and cites0xLeif standing chat authorization as SOURCE. The same approved scope and original ledger record are preserved; implementation acceptance and native review/ship remain pending."
+    "Clarified definition actor/source provenance: corvid-agent records the project operation and cites0xLeif standing chat authorization as SOURCE. The same approved scope and original ledger record are preserved; implementation acceptance and native review/ship remain pending.",
+    "PR #46 native scoped review and ship completed under the human finish-all instruction; original approval history, failed proof and cold-start not-run boundary remain intact."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -357,9 +359,7 @@
     "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "0xLeif implementation acceptance of the request-local report reads PR; scope approval is already recorded under the standing instruction and native review/ship and merge remain pending"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Review the request-local report reads PR on branch0xleif/feat/request-local-report-reads, integrate any agent findings, then obtain human implementation acceptance before native closeout"
+  "next_action": "0xLeif merges PR #46 once hosted checks and review are clear; integrate main and requalify after an earlier PR merges"
 }
