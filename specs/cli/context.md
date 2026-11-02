@@ -150,6 +150,24 @@ reopened, after later runs. Source: this change's first scoped check. Limits: ch
 that list closeout as a checkbox. Future use: write closeout as the last checkbox and
 do it just before the scoped check.
 
+2026-11-01, cold-start change run (observation): with this change's `chough next`
+(9009d9a), Kimi Code CLI 0.41.0 on the same frozen repository was shown the decisions,
+the failure with its bug status and the lesson pointer, and it read `context.md` and
+`session.json` before its first edit, yet none of its messages before that edit stated
+them; 0xLeif graded it Fail (P1 to P3 not met), with P4 to P6 met. Source:
+observations handoff-cold-start-change-kimi-1 and handoff-cold-start-change-kimi-1-grade.
+Limits: one run, one host and model; the skill has no step asking an agent to state
+the handoff before acting. Future use (hypothesis, untested): add a skill step that
+states the goal, binding decisions with reasons, the last failure with its bug status
+and the applicable lesson before the first edit, in its own native change, and rerun
+the frozen cold start.
+
+2026-11-01, external host quota (observation): the real-repository run stopped after
+8 tool calls with Kimi's 429 "5-hour usage limit", after three earlier runs that day.
+Source: observation handoff-cold-start-real-repo-kimi-1-attempt-1. Limits: this
+account and plan. Future use: check the host's remaining quota before a run and keep
+an interrupted run as not-run, never as a graded result.
+
 Add further lessons only from observed work, with source, applicable scope, concrete
 future use and revision or retirement guidance. A future native cli.3md would become
 the lesson source in place of this section.
