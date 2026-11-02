@@ -134,7 +134,8 @@
     "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it",
     "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks.",
     "human: 0xLeif accepted the implementation as is (2026-11-01, in chat: \"accept\"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change.",
-    "Agent's design choice, not a human decision: skill-only (SKILL.md resume step), no next-view change, so the proof tests one cause; a next-view hint is the fallback if the change run still fails"
+    "Agent's design choice, not a human decision: skill-only (SKILL.md resume step), no next-view change, so the proof tests one cause; a next-view hint is the fallback if the change run still fails",
+    "decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, \"Approve as drafted\"); recorded with specsync change approve --actor 0xLeif"
   ],
   "open_questions": [],
   "completed": [
@@ -337,8 +338,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of native change agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal"
+    "0xLeif starts and grades the baseline cold-start run at main 118a895"
   ],
   "run_consents": [],
-  "next_action": "0xLeif reviews the draft definition and decides on scope approval (specsync change approve --actor 0xLeif only on his decision); then the baseline Kimi run at main 118a895, which 0xLeif starts"
+  "next_action": "0xLeif starts the baseline Kimi run at main 118a895 with the prepared script, then grades it against the frozen rubric; implementation starts after the baseline"
 }
