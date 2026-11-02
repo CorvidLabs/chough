@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -271,7 +271,8 @@
     "Integrated main 3d00e44 with PR 46 report reads: preserved 1261 immutable files from both parents with zero mismatches; retained all additive checkpoint collections and all 30 appended transition occurrences; three report cases passed on integrated source",
     "Integrated final main 9d02 into PR 46; 1300 immutable files from both parents preserved with no mismatches; main gate, package, skill, walkthrough and example files remain byte-identical; canonical version 21 preserves every changelog entry",
     "Final main 9d02 integration qualified: all 9 Fledge steps and all 208 tests passed on Rust 1.95 and Rust 1.88; all three report cases passed; 1300 immutable parent files unchanged; no semantic code drift from the approved parents",
-    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG"
+    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
+    "Final d839 feature synchronization qualified: all 9 Fledge steps and all 209 tests passed on Rust 1.95 and Rust 1.88; three report cases passed; 1352 parent proof files remain unchanged; report implementation and main setup/gates/guidance remain exact"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -396,7 +397,12 @@
     "OBS-product-test-78623c6bbd991426e1aa5281",
     "OBS-tc-cli-report-case-read-budget-a0a80356168af0b213a7556a",
     "OBS-tc-cli-report-read-invalidation-95bacbb519effa3eeb96a29b",
-    "OBS-tc-cli-report-trace-parity-051f249a7d85374797bc812f"
+    "OBS-tc-cli-report-trace-parity-051f249a7d85374797bc812f",
+    "OBS-product-test-28d4f3cb3bbc83861250084a",
+    "OBS-product-test-580d35526a6c84a506290382",
+    "OBS-tc-cli-report-case-read-budget-aee0b88320de964d65ad9b26",
+    "OBS-tc-cli-report-read-invalidation-68974df72c40393969063d4e",
+    "OBS-tc-cli-report-trace-parity-e1f70504a9463e6169ace244"
   ],
   "bugs": [
     "BUG-0001",
@@ -421,5 +427,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Requalify the d839 feature synchronization; root alone closes the remaining active integration after current evidence and normal guarded push"
+  "next_action": "Root alone records review and ship for the remaining active PR 46 main integration; after hosted checks pass Leif may merge. Do not advance main or merge a GitHub PR during the hold."
 }
