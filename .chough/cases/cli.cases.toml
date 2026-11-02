@@ -2380,3 +2380,22 @@ expected = [
   "The step is at most 8 lines, has no em or en dash, and SKILL.md is under 6144 bytes",
   "chough skill status reports both host copies current",
 ]
+
+
+[[case]]
+id = "TC-cli-agent-native-workflow-upgrade"
+title = "Native workflow guidance upgrades unchanged shipped copies and preserves edits"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "FLOW-5", "LIFE-4", "LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-016", "REQ-cli-029"]
+paths = ["skills/chough-workflow/SKILL.md", "skills/chough-workflow/references/lifecycle.md", "src/skill.rs", "tests/workflow_authority.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["The exact independent 825a380 digests match frozen fixtures; real skill status/update upgrades unchanged copies and preserves edited bytes and the checkpoint"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "workflow_authority"
+test = "workflow_guidance_from_main_825a380_updates_and_preserves_edits"

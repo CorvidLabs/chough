@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 16
+version: 17
 status: active
 files:
   - src/main.rs
@@ -25,6 +25,9 @@ files:
   - tests/stages.rs
   - tests/timing.rs
   - tests/common/mod.rs
+  - tests/workflow_authority.rs
+  - tests/fixtures/workflow-at-825a380-SKILL.md
+  - tests/fixtures/workflow-at-825a380-lifecycle.md
 
 db_tables: []
 depends_on: []
@@ -218,3 +221,4 @@ provider, runtime or hosted service.
 | 14 | 2026-11-02 | make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound: Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace |
 | 15 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |
 | 16 | 2026-11-02 | agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal: Agents state the recorded handoff before their first edit: the skill's resume steps ask a fresh agent to say the goal, binding decisions with reasons, the last failure with its bug status, the applicable lessons and the next task in its own words |
+| 17 | 2026-11-02 | let-chough-drive-native-tools-and-reuse-existing-human-authorization: Let Chough drive native tools and reuse existing human authorization |

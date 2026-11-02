@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "let-chough-drive-native-tools-and-reuse-existing-human-authorization",
+  "slug": "let-chough-drive-native-tools-and-reuse-existing-human-authorization",
+  "title": "Let Chough drive native tools and reuse existing human authorization",
+  "description": "Let Chough drive native tools and reuse existing human authorization",
+  "kind": "feature",
+  "state": "verifying",
+  "canonical_applied": true,
+  "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "created_at": 1793635401,
+  "updated_at": 1793636938,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "skills/chough-workflow/SKILL.md",
+    "skills/chough-workflow/references/lifecycle.md",
+    "README.md",
+    "src/skill.rs",
+    "tests/workflow_authority.rs",
+    "tests/fixtures/workflow-at-825a380-SKILL.md",
+    "tests/fixtures/workflow-at-825a380-lifecycle.md",
+    "docs/FRD.md",
+    "docs/ROADMAP.md",
+    "CHANGELOG.md",
+    ".chough/cases/cli.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The current agent executes HI, SpecSync and Fledge internally, records concrete native scope from applicable explicit prior or standing human authorization with its source and limits, and asks no repeated tool-specific approval; ordinary keep-working instructions and agent labels alone still cannot create human authority; actual checks, task ordering, separate implementation acceptance and delivery boundaries remain authoritative; the user-facing README explains goal/authorization to PR flow; exact shipped predecessor copies upgrade safely and edited copies are preserved."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "User standing scope/implementation authorization in chat 2026-11-02: I already gave it some approval and told it can do any changes. It just needs a PR. The user explicitly asks Chough to manage native tools and avoid repeated tool-specific authorization. Source relay: issue11 comment6581702299. Preserve actualhumanprovenance and native ownership; this is not agent approval or implementation acceptance. No new runtime, modelclient, service, persisted lifecycle ledger or weakened nativechecks. Grok41 owns immediate ordering fix in plan/testing/accept refs; this scope owns mainSKILL/lifecycle/README and safeupgrades, plus additive contract updates. REQcli029 is reserved, performanceowns028 and historyowns025to027. Existing lessons require registration of exact priorbundle hashes, preserved editedcopies, source+Choughcommit before nativeverification, and no fabricated coldstart grade.",
+    "public_contract": "yes"
+  }
+}

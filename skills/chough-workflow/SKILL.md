@@ -12,6 +12,19 @@ owns contracts, changes, approval, verification, review and archive, Fledge runs
 tasks, and the actual environment produces evidence. Never copy their state into a
 second ledger, and never record a human decision that a human did not make.
 
+## Drive the workflow
+
+Run HI, SpecSync and Fledge yourself. Native commands in references are agent
+instructions; give the human outcomes and PRs.
+
+Use applicable explicit prior or standing human authorization for a concrete scope.
+Record its source, limits and human actor before native approval; do not ask again
+just to run a tool. Ask when authority is missing or exceeded. Continuation, bot
+reviews and actor labels alone are not human decisions.
+
+Keep native checks and separate implementation acceptance and delivery authority.
+See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
+
 ## Start or resume
 
 1. Read applicable `AGENTS.md` files. Prefer Fledge for tasks it supports.
@@ -43,7 +56,7 @@ host you want, for example `--host openai --host claude`. A schema 1 session is 
 |---|---|---|
 | intent | [intent.md](references/intent.md), [roles.md](references/roles.md) | Approve the intent as a whole |
 | design (only when visuals or interactions change) | [design.md](references/design.md) | Approve rendered prototype and companion together |
-| plan | [plan.md](references/plan.md) | One native scope approval |
+| plan | [plan.md](references/plan.md) | Apply existing human authorization, otherwise one scope decision |
 | build | [build.md](references/build.md) | None for routine work inside scope |
 | test | [testing.md](references/testing.md) | None; failures go to bugs |
 | accept | [accept.md](references/accept.md), [lifecycle.md](references/lifecycle.md) | Native implementation review |
@@ -57,9 +70,10 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
 - Talk naturally. Map requests such as "go back to design", "pause", "skip design,
   it is a CLI change" or "check the library" to `chough stage …` commands, and say
   what you recorded.
-- Ask the human only when the answer changes the product, a consequential
-  assumption, the approved scope or an optional execution policy. Synthesize review
-  findings first; do not forward every observation as a question.
+- Resolve routine engineering and tool choices within applicable authorization.
+  Ask the human when a consequential product choice, authority or optional execution
+  policy remains unresolved. Synthesize findings first; do not return internal tool
+  operations as new approval questions.
 - Keep doing independent authorized work while a human gate is pending, and record
   the gate with `chough checkpoint --awaiting-human "<decision>"`.
 - Evidence states what ran, where and on which inputs. A structural pass, exit code,

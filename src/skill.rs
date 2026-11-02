@@ -43,6 +43,15 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Main 825a380 (PR #36); superseded by the agent-operated native workflow.
+    (
+        "SKILL.md",
+        "6b81882bc2e8305dc1ae0181b1eb52ad9d586c0a9a6990e03e865d0de4149198",
+    ),
+    (
+        "references/lifecycle.md",
+        "14fd2277d5e3f97f24fe6b995b1815eff1cfcd7b49d03669919bdcc7290c2200",
+    ),
     (
         "SKILL.md",
         "6eb4980c784757c2898ce871551282fe251a5c0715dd625e95806cff2be7f06a",

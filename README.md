@@ -86,6 +86,14 @@ is the full JSON report. Then ask your agent in plain language, for example "Use
 Chough workflow to add free shipping at fifty dollars", or give it
 [the skill](skills/chough-workflow/SKILL.md) directly.
 
+Give Chough the goal and authorization, then review the PR. For example: "Work
+through these tickets, make the needed changes and deliver PRs." The current agent
+runs HI, SpecSync and Fledge internally and records the applicable human authority.
+When an explicit prior or standing instruction covers the concrete change, it uses
+that authorization without asking you to repeat permission for each internal tool
+step. It asks when a consequential decision or permission is still missing. Native
+checks and your separate implementation acceptance and merge decision remain.
+
 ## The loop
 
 ![Stages, backtracking and side stages](docs/diagrams/stages.svg)
@@ -94,7 +102,7 @@ Chough workflow to add free shipping at fifty dollars", or give it
 |---|---|---|
 | intent | Capture wants in HI, derive an FRD, synthesize role reviews | The human approves the intent as a whole |
 | design | Only for visual changes: one local HTML/CSS prototype and its companion | The human approves the render and notes together |
-| plan | SpecSync change with design, plan and tasks | One native scope approval |
+| plan | Agent prepares the native change and records applicable authority | Existing human authorization or one scope decision |
 | build | Implement the approved tasks through Fledge | Agent, within scope |
 | test | Focused cases for the affected criteria; three tracks | Evidence, not opinion |
 | accept | Present evidence; native review, then same-PR archive | The human reviews the implementation |
@@ -165,9 +173,11 @@ owns live checkpoint writes, and merging adds no second store. See
 [Checkpoint merges](docs/cli.md#checkpoint-merges) for the collection and conflict
 rules.
 
-Chough does not authenticate people, record approvals or reviews, publish anything,
-or deploy. A structural pass, an exit code or an actor label is never treated as
-behavioral proof or human acceptance.
+Native approvals and reviews remain in SpecSync. The current agent invokes those
+writers from actual human authority; the Rust helper reads native state for gates.
+Actor labels do not authenticate people, and a structural pass or exit code does
+not establish behavioral proof or human acceptance. Publication and deployment
+keep their separate authorization and evidence requirements.
 
 ## Tested platforms
 
