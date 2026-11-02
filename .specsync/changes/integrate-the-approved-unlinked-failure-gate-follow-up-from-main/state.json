@@ -7,10 +7,11 @@
   "title": "Integrate the approved unlinked-failure gate follow-up from main",
   "description": "Integrate the approved unlinked-failure gate follow-up from main",
   "kind": "documentation",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "e4eadd817a38127a1ebf49815b599cd89cfbefd0",
   "created_at": 1793661169,
-  "updated_at": 1793661175,
+  "updated_at": 1793662437,
   "affected_specs": [],
   "affected_paths": [
     "src/stage.rs",

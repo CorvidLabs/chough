@@ -267,7 +267,8 @@
     "PR #44 completed all three native scoped reviews and archives in SpecSync required order under the human finish-all instruction. Original approval events and failed qualification proof remain intact; the checkpoint is done.",
     "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
     "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)",
-    "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45"
+    "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45",
+    "Intermediate main 9d02fbf source 421e8ce passed the full nine-step Fledge lane, all 205 Rust 1.95 and 1.88 tests and three applicable authority/ordering cases. Main 47 remains to be imported and qualified before final push."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -392,7 +393,12 @@
     "OBS-tc-cli-agent-native-workflow-upgrade-809454a22a0dcd22dac3987f",
     "OBS-tc-cli-native-workflow-bundle-consistency-1de0a14c5139751b1ea7ffa4",
     "OBS-tc-cli-agent-native-workflow-upgrade-629794b9905f71763493a1de",
-    "OBS-tc-cli-agent-native-workflow-upgrade-bb63e838fc5d8248a6d5e303"
+    "OBS-tc-cli-agent-native-workflow-upgrade-bb63e838fc5d8248a6d5e303",
+    "OBS-product-test-f307568459a1d29aa5369a74",
+    "OBS-product-test-506e8a6e02b6aa27262540b1",
+    "OBS-tc-cli-agent-native-workflow-upgrade-163aee4f748898deb7dee104",
+    "OBS-tc-cli-native-workflow-bundle-consistency-33824187f0d1e55af27bc01a",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d1140d9c201cc555471ac823"
   ],
   "bugs": [
     "BUG-0001",
@@ -419,5 +425,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: Start the approved bounded PR44 main integration after preserving the original closed cycle. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "Import already-merged main 47 into this feature branch only, preserve its archived ownership and current workflow authority, then requalify before ordinary push"
 }

@@ -7,10 +7,11 @@
   "title": "Integrate the approved case ordering and native authority workflow changes",
   "description": "Integrate the approved case ordering and native authority workflow changes",
   "kind": "refactor",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "6fde285473f3fa3b6efd45bc0582b3826ec8775d",
   "created_at": 1793660876,
-  "updated_at": 1793661007,
+  "updated_at": 1793662429,
   "affected_specs": [],
   "affected_paths": [
     "skills/chough-workflow/references/plan.md",
