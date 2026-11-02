@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -176,7 +176,8 @@
     "Materialized REQ-cli-024 with specsync change check; bound it to TC-cli-0089 and TC-cli-0100; final observations OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e and OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52 passed",
     "End-to-end trace regression for a 255-byte change ID fails on the pre-review records.rs and passes now",
     "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read",
-    "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts."
+    "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts.",
+    "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -275,5 +276,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit final proof records, refresh native check --commit, record the authorized native review and ship without an intervening commit, push archive, require all hosted checks green, then mark ready and merge."
+  "next_action": "Push the completed timing archive and checkpoint, wait for every hosted check at the exact head to pass, then mark ready and squash-merge."
 }
