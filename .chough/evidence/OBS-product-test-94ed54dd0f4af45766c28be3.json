@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-94ed54dd0f4af45766c28be3",
+  "criteria": [
+    "LIFE-9",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-031"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-linux-x86_64",
+  "summary": "Issue 40: with SpecSync configured and SDD off, chough next says 'not checked: no native lifecycle' and never names specsync change adopt; tests/stages.rs::a_configured_project_with_sdd_off_says_to_run_specsync_change_adopt fails with src/stage.rs at main",
+  "artifacts": [
+    ".chough/artifacts/bug40-hint-before-fix.log",
+    ".chough/artifacts/bug40-repro.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug40-hint-before-fix.log": "afdcf4ecb5e03aba3c2d7337402ad1578c2cfab548b481fcb7906239e20f440d",
+    ".chough/artifacts/bug40-repro.log": "be351a9c49fa00ed8446faf7cbb9f3d95db680e592331c830d0419f1616bf276"
+  },
+  "observed_at_unix_seconds": 1793640172,
+  "snapshot": {
+    "revision": "89130c01a28fb83f00f69d61f0d998a13bfc83a6",
+    "dirty": true,
+    "fingerprint": "10280e48df21c2ba21422593e4a1024391a40ed295206da427e25c0d05f48aaa",
+    "content": "1a8127a94834e6ad6fc996cc3142e6c0998a1f57eca6384eb782b8b9580ca81e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional"
+}

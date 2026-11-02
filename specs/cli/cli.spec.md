@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 21
+version: 22
 status: active
 files:
   - src/main.rs
@@ -222,4 +222,5 @@ provider, runtime or hosted service.
 | 18 | 2026-11-02 | unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links: Unlinked failure gate: leaving test refuses while a checkpoint case's latest observation failed and no local bug links it (issue 39) |
 | 19 | 2026-11-02 | unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation: Unlinked failure ignores not-run: leaving test keeps refusing when a referenced case's latest executed observation failed and a later observation is only not-run (PR 43 review) |
 | 20 | 2026-11-02 | human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38: Human-gate hold: stage advance and skip refuse while the checkpoint has an open awaiting-human gate (issue 38) |
-| 21 | 2026-11-02 | read-report-case-definitions-once-per-request-and-expose-local-phase-costs: Read report case definitions once per request and expose local phase costs |
+| 21 | 2026-11-02 | new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project: New-project setup path and SDD-off hint: document HI, specsync init/scaffold and specsync change adopt for a new project, and have chough next say to run specsync change adopt when SpecSync is configured but SDD is off (issue 40) |
+| 22 | 2026-11-02 | read-report-case-definitions-once-per-request-and-expose-local-phase-costs: Read report case definitions once per request and expose local phase costs |
