@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "PR #43 review fix: a later not-run observation must not clear an unlinked failure",
+  "objective": "Issue #38: stage advance and skip refuse while an awaiting-human gate is open",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
+  "native_change": "human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -30,7 +30,8 @@
       "LIFE-9",
       "LIFE-1",
       "FLOW-12",
-      "LIFE-10"
+      "LIFE-10",
+      "FLOW-3"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -47,7 +48,8 @@
       "REQ-cli-020",
       "REQ-cli-024",
       "REQ-cli-009",
-      "REQ-cli-005"
+      "REQ-cli-005",
+      "REQ-cli-030"
     ],
     "cases": [
       "TC-cli-0101",
@@ -81,7 +83,9 @@
       "TC-cli-leaving-test-refuses-an-unlinked-failed-case",
       "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal",
       "TC-cli-0032",
-      "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
+      "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused",
+      "TC-cli-open-human-gates-refuse-advance-and-skip",
+      "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next"
     ],
     "design": [],
     "files": [
@@ -158,7 +162,9 @@
     "Proposed (on #39, pending scope approval): refuse, not warn, with refused:unlinked-failure; a linking bug of any status satisfies it; stale observations do not trigger it; next and status name it via assess; REQ-cli-008 modified, no new ID",
     "corvid-agent records no approval for a human; scope approval is 0xLeif's",
     "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction",
-    "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif"
+    "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif",
+    "Proposed on #38 and approved in scope: refuse advance and skip with refused:awaiting-human, no reason override, other moves unaffected, next and status say so; new REQ-cli-030 since #43 modifies REQ-cli-008",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #38 change recorded with actor corvid-agent"
   ],
   "open_questions": [],
   "completed": [
@@ -246,7 +252,10 @@
     "fledge lanes run verify passed all 9 steps (198 tests, 0 failed) on Linux with fledge 1.8.0, specsync 6.1.2, hi 0.8.0 after the scoped change check",
     "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated",
     "Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)",
-    "Change archived (approve/review/finalize recorded as corvid-agent per 0xLeif's 9:14 AM MT instruction)"
+    "Change archived (approve/review/finalize recorded as corvid-agent per 0xLeif's 9:14 AM MT instruction)",
+    "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
+    "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)",
+    "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -378,5 +387,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for hosted CI on PR #43; 0xLeif owns merge"
+  "next_action": "Write failing tests in tests/stages.rs for refused:awaiting-human, record the failing run, then implement in src/stage.rs"
 }

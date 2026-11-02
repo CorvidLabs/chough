@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "BUG-stage-advance-and-skip-ignore-open-awaiting-human-gates-44e1fb6326c0fb84df93913d",
+  "title": "Stage advance and skip ignore open awaiting-human gates",
+  "symptom": "stage advance and skip apply while the checkpoint awaits a human decision; the gate carries into the next stage",
+  "trigger": "chough checkpoint --awaiting-human <gate>, then chough stage advance or skip",
+  "expected": "The move is refused until the gate is cleared",
+  "actual": "Exit 0; the stage moves and awaiting_human is unchanged",
+  "criteria": [
+    "FLOW-3",
+    "FLOW-5",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "Linux x86_64, main 825a380, SpecSync 6.1.2, Fledge 1.8.0, hi 0.8.0, examples/shipping copy with SDD off",
+  "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-8a888ae0b4d5866b8dedc6ed",
+    "OBS-tc-cli-open-human-gates-refuse-advance-and-skip-6fc7a43ac647ae0a7d1fe491",
+    "OBS-tc-cli-open-human-gates-leave-other-moves-and-agree-in-next-4371a46d89acedf07b7ebd72",
+    "OBS-product-test-c78b4ac4ffd21c898000a98b"
+  ],
+  "impact": "An agent can leave intent or design before the human answers",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "https://github.com/CorvidLabs/chough/issues/38",
+  "notes": [
+    {
+      "at_unix_seconds": 1793637515,
+      "text": "status: open -> verified. Cases TC-cli-open-human-gates-* pass on local-linux-x86_64",
+      "observations": [
+        "OBS-tc-cli-open-human-gates-refuse-advance-and-skip-6fc7a43ac647ae0a7d1fe491",
+        "OBS-tc-cli-open-human-gates-leave-other-moves-and-agree-in-next-4371a46d89acedf07b7ebd72"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793637526,
+      "text": "Fix in src/stage.rs move_forward (ensure_no_open_human_gate) per REQ-cli-030; full cargo test passes (198/0). Status went open -> verified in one step, skipping fix-pending-verification, because a scripted update failed before its intermediate call.",
+      "observations": [
+        "OBS-product-test-c78b4ac4ffd21c898000a98b"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793637235,
+  "updated_at_unix_seconds": 1793637526
+}

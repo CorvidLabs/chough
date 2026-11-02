@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-c78b4ac4ffd21c898000a98b",
+  "criteria": [
+    "FLOW-3",
+    "FLOW-5",
+    "FLOW-13",
+    "FLOW-2"
+  ],
+  "requirements": [
+    "REQ-cli-030"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Issue #38 fix: full cargo test passes (198 passed, 0 failed) including both new gate tests; cargo clippy -D warnings clean",
+  "artifacts": [
+    ".chough/artifacts/bug38-after-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug38-after-fix.log": "e347518673313d349f60a2148ea89b137c05470d0f73d9113b35ec7b05161c32"
+  },
+  "observed_at_unix_seconds": 1793637515,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "f2c1c31cc3e38bbe75b66e7e701ee53cf51d0fdc336105b54e81d6ad8c14b335",
+    "content": "64e2f811634fdf18ba8c2e3b49a2a561f7b032acd10cb828e326fa14e45b66ef"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional"
+}

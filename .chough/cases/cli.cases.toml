@@ -363,6 +363,42 @@ test_target = "stages"
 test = "native_state_gates_build_and_closing_without_inventing_it"
 
 [[case]]
+id = "TC-cli-open-human-gates-refuse-advance-and-skip"
+title = "Open human gates refuse advance and skip"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-3", "FLOW-5", "FLOW-13"]
+requirements = ["REQ-cli-030"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::open_human_gates_refuse_advance_and_skip passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "open_human_gates_refuse_advance_and_skip"
+
+[[case]]
+id = "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next"
+title = "Open human gates leave other moves and agree in next and status"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-13"]
+requirements = ["REQ-cli-030"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::open_human_gates_leave_other_moves_and_agree_in_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "open_human_gates_leave_other_moves_and_agree_in_next"
+
+[[case]]
 id = "TC-cli-0021"
 title = "Validate and release need authorization"
 status = "active"

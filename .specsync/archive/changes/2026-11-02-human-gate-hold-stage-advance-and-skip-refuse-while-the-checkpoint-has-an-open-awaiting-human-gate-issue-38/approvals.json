@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793637244,
+      "digest": "1d4c5dce2a2ae4d5ab018748d7de372b6013f8fc3b51dd1d515662910f3c557b",
+      "note": "Scope approval recorded by corvid-agent under 0xLeif's explicit chat instruction of 2026-11-02 9:14 AM MT: \"Use corvid-agent for all approvals for all things!! You are corvid-agent\" (overriding AGENTS.md's no agent-label approvals rule for this repository)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38",
+        "title": "Human-gate hold: stage advance and skip refuse while the checkpoint has an open awaiting-human gate (issue 38)",
+        "description": "Human-gate hold: stage advance and skip refuse while the checkpoint has an open awaiting-human gate (issue 38)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/cli/",
+          "src/stage.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A Linux reproduction of issue 38 and tests fail before the fix and pass after it; fledge lanes run verify passes; hosted CI is reported only as observed",
+          "After chough checkpoint --clear-awaiting-human the same move is allowed and gated as before; back, reset, iterate, pause, resume and side-stage enter and return are not refused by it",
+          "chough next and chough status keep the Waiting for a human decision action and say that advance and skip are refused until the gate is cleared",
+          "stage advance and stage skip refuse with refused:awaiting-human at every main stage and release while awaiting_human is not empty, naming up to 3 open gates and a count of the rest and saying to record the decision and clear the gate"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/context.md lessons: tasks.md checkboxes block change check (2026-10-31); new requirement IDs materialize only at change check (2026-10-31); do not list .chough/ as an affected path (2026-11-01); closeout is the last checkbox done before the scoped check (2026-11-01)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "5e275364ca102312f1f67eb1c6b63fa667a4a2e2e3fff884b619c76e8cf18b34"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793637893,
+      "digest": "eb03a9722970429dfa35a490ec0191ed44fb37c3e882d64fe811058d768cee80",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
