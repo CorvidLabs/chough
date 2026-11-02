@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-open-human-gates-leave-other-moves-and-agree-in-next-4371a46d89acedf07b7ebd72",
+  "criteria": [
+    "FLOW-2",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-030"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test stages -- --exact open_human_gates_leave_other_moves_and_agree_in_next for TC-cli-open-human-gates-leave-other-moves-and-agree-in-next: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-open-human-gates-leave-other-moves-and-agree-in-next-4371a46d89acedf07b7ebd72.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-open-human-gates-leave-other-moves-and-agree-in-next-4371a46d89acedf07b7ebd72.log": "4a140fc6995ed37b096137aa79fd48e16feb5823cbc1de52de3eaac2f50ccc38"
+  },
+  "observed_at_unix_seconds": 1793637506,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "f2c1c31cc3e38bbe75b66e7e701ee53cf51d0fdc336105b54e81d6ad8c14b335",
+    "content": "64e2f811634fdf18ba8c2e3b49a2a561f7b032acd10cb828e326fa14e45b66ef"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next",
+      "digest": "5daf3a235e10e0ccf140ae1ed2a65841700b4b518ce41cd54483fcaa554c46b8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "open_human_gates_leave_other_moves_and_agree_in_next"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

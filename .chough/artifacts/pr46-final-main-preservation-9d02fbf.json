@@ -1,0 +1,48 @@
+{
+  "parents": [
+    "7e758a4052b69591f18533cd334273db2ce25aea",
+    "9d02fbf173f8a7471661a556676603123f70482f"
+  ],
+  "protected_files": 1300,
+  "parent_conflicts": [],
+  "mismatches": [],
+  "preserved_implementations_and_guidance": {
+    "src/cases.rs": true,
+    "src/evidence.rs": true,
+    "src/main.rs": true,
+    "tests/next.rs": true,
+    "src/skill.rs": true,
+    "src/stage.rs": true,
+    "tests/package.rs": true,
+    "tests/stages.rs": true,
+    "docs/walkthrough.md": true,
+    "examples/feature-bug-loop.sh": true,
+    "skills/chough-workflow/references/plan.md": true,
+    "skills/chough-workflow/references/accept.md": true,
+    "skills/chough-workflow/references/testing.md": true
+  },
+  "canonical_version": 21,
+  "changelog_versions": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ]
+}

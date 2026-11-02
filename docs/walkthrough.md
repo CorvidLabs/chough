@@ -51,7 +51,7 @@ The agent drafts a native change and presents it:
 specsync change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/ --json
 chough checkpoint --native-change free-shipping-at-the-threshold \
   --awaiting-human "Scope approval of free-shipping-at-the-threshold"
-chough stage advance        # refused: refused:native-draft
+chough stage advance        # refused: refused:awaiting-human (refused:native-draft once cleared)
 ```
 
 Only after you approve does it run `specsync change approve <id> --actor "<you>"` and
