@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "read-report-case-definitions-once-per-request-and-expose-local-phase-costs",
+  "slug": "read-report-case-definitions-once-per-request-and-expose-local-phase-costs",
+  "title": "Read report case definitions once per request and expose local phase costs",
+  "description": "Read report case definitions once per request and expose local phase costs",
+  "kind": "refactor",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "created_at": 1793634769,
+  "updated_at": 1793659915,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/evidence.rs",
+    "src/cases.rs",
+    "src/records.rs",
+    "src/timing.rs",
+    "tests/next.rs",
+    "tests/cli.rs",
+    "tests/timing.rs",
+    "tests/cases.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "docs/architecture.md",
+    "docs/ROADMAP.md",
+    "CHANGELOG.md",
+    ".chough/cases/cli.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "One request reads and validates the case suite at most once while preserving legacy/current case digests, report output, artifact and environment checks, native read counts and genuine lifecycle refusal; a later request observes changed source/case/artifact/native inputs and never reuses stale results; opt-in local phase traces preserve stdout and exit behavior; before/after first-process and repeated measurements record the exact revision, freshly built binary, input sizes, toolchain and censored versus completed native work with no unobserved speedup claim."
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks",
+    "research",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Preserve native authority, fresh gate reads, unknown/timed-out states, existing digests and all proof. Request-local reuse only, with no persistent cache, service, runtime, schema changes, retention/identity changes, or verification exclusions. Existing lessons in specs/cli/context.md require materializing new requirement IDs before linked cases and completing source plus Chough records before native committed verification. Scope approval and human implementation acceptance are separate; this definition has neither. PR37 owns history storage and retention; proposed REQ-cli-028 avoids its reserved IDs. Capped native runs are censored diagnostics, and the direct unwrapped native completion is separate evidence. No Kimi cold-start grade, live adoption, cleanup, native approval/review/ship or merge is implied.",
+    "public_contract": "yes"
+  }
+}
