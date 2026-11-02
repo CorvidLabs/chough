@@ -1,6 +1,6 @@
 ---
 id: unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 466594bf7ed98b332c701afe1cae4d0f70355aa1
 ---
