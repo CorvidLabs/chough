@@ -237,6 +237,312 @@ fn a_skill_copy_from_an_earlier_main_build_is_known_outdated_and_updated() {
     assert_eq!(fs::read_to_string(&installed).unwrap(), "my own notes\n");
 }
 
+#[test]
+fn slug_identity_bundle_predecessors_update_and_edited_copies_stay() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow");
+    let earlier = [
+        (
+            "templates/cases.toml",
+            CASES_BEFORE_SLUG_IDENTITIES,
+            "5f839a81742b9dc3df3b1278e340061a08e95e2a00e203f0f2554eab3aa3fed9",
+        ),
+        (
+            "references/testing.md",
+            TESTING_BEFORE_SLUG_IDENTITIES,
+            "8ca2b70f36ee162638cafd63bcc97e8c9ed688b59c2b67b98d61ba3be1d28f37",
+        ),
+        (
+            "references/validate.md",
+            VALIDATE_BEFORE_SLUG_IDENTITIES,
+            "51281ff6c9af4b939105cdf6ecf80d9dd11080dc8d682ecbba9d5b5c17d75c42",
+        ),
+        (
+            "references/librarian.md",
+            LIBRARIAN_BEFORE_SLUG_IDENTITIES,
+            "df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17",
+        ),
+    ];
+    for (file, content, digest) in earlier {
+        assert_eq!(
+            format!("{:x}", Sha256::digest(content.as_bytes())),
+            digest,
+            "{file}"
+        );
+        fs::write(installed.join(file), content).unwrap();
+    }
+
+    let status = chough(root, &["skill", "status"]);
+    for (file, _, _) in earlier {
+        assert_eq!(
+            skill_state(&status, file)["state"],
+            "known-outdated",
+            "{file}"
+        );
+    }
+    chough(root, &["skill", "update"]);
+    for (file, _, _) in earlier {
+        assert_eq!(
+            fs::read(installed.join(file)).unwrap(),
+            fs::read(manifest_dir().join("skills/chough-workflow").join(file)).unwrap(),
+            "{file}"
+        );
+    }
+    let status = chough(root, &["skill", "status"]);
+    for file in bundle_files() {
+        assert_eq!(skill_state(&status, &file)["state"], "current", "{file}");
+    }
+
+    for (file, content, _) in earlier {
+        let edited = format!("{content}\nA local identity note.\n");
+        fs::write(installed.join(file), &edited).unwrap();
+        let status = chough(root, &["skill", "update"]);
+        assert_eq!(skill_state(&status, file)["state"], "edited", "{file}");
+        assert_eq!(
+            skill_state(&status, file)["action"],
+            "preserved-edit",
+            "{file}"
+        );
+        assert_eq!(
+            fs::read_to_string(installed.join(file)).unwrap(),
+            edited,
+            "{file}"
+        );
+    }
+}
+
+const CASES_BEFORE_SLUG_IDENTITIES: &str = r##"# .chough/cases/<module>.cases.toml: test-case definitions only.
+# Observations live in .chough/evidence/. Unknown fields are rejected.
+profile = "chough-testing/1"
+module = "<module>"
+
+[[case]]
+id = "TC-<module>-0001"            # stable; never reused, retire instead
+title = "<what this case shows>"
+status = "active"                  # active | retired
+track = "functional"               # functional | copy-localization | design-qa
+method = "automated"               # automated | manual | agent-assisted
+criteria = ["<FAMILY-N>"]
+requirements = ["REQ-<module>-001"]
+paths = ["src/"]                   # optional: changed paths that select this case
+environments = ["local", "ci-linux"]
+artifacts = ["test-log"]           # test-log | report-json | screenshot | recording | transcript | reviewer-note
+setup = ["<preconditions>"]
+steps = ["<what runs>"]
+expected = ["<explicit observable outcome>"]
+
+[case.bind]
+adapter = "cargo-test"             # cargo-test | fledge-task | command
+test_target = "<integration test file stem>"
+test = "<exact test name>"         # exactly one test must run for a pass
+# timeout_seconds = 600            # optional, 1 to 3600 (default 600); a timeout is recorded failed
+# env = { NO_COLOR = "1" }         # optional variables on top of the inherited environment; never secrets
+# A fledge-task binding instead: adapter = "fledge-task", task = "<fledge task>",
+#   expect_output = ["<visible text>"] (at least one fragment).
+# A command binding instead: adapter = "command", argv = ["<program>", "<arg>"],
+#   expect_output = ["<visible text>"] (at least one fragment; run without a shell).
+
+[[case]]
+id = "TC-<module>-0002"
+title = "<what a person checks>"
+status = "active"
+track = "design-qa"
+method = "manual"                  # manual cases have no binding
+criteria = ["<FAMILY-N>"]
+requirements = ["REQ-<module>-001"]
+environments = ["chromium-1280x800", "chromium-390x844"]
+artifacts = ["screenshot", "reviewer-note"]
+setup = ["Open design/prototype/index.html and the implementation side by side"]
+steps = ["Compare the empty, error and success states at each viewport"]
+expected = [
+  "Layout and spacing match the prototype at each viewport",
+  "Focus order and visible focus match the companion notes",
+]
+"##;
+
+const TESTING_BEFORE_SLUG_IDENTITIES: &str = r##"# Focused testing
+
+Test what the change affects, not every criterion the product has.
+
+## Choose the checks
+
+Run `chough cases select --requirement <REQ> --criterion <ID> --path <changed path>`
+for the affected scope. Add `--track copy-localization` when visible text,
+terminology, comprehension or locale behavior changed, and `--track design-qa` when
+visuals or interactions changed. The output lists selected cases, omitted cases with
+reasons, and the project-required lane if one is configured
+(`chough pref set required-lane <lane> --source …`). Also run proportionate
+regressions for nearby behavior and the project's mandatory gates. Explain any
+meaningful omission and record test debt in the native `testing.md`.
+
+| Track | When | Typical method |
+|---|---|---|
+| functional | Always | Automated unit, integration or UI tests; manual checks where needed |
+| copy-localization | Visible text or locale behavior changed | Deterministic string assertions plus reviewer notes |
+| design-qa | Visuals or interactions changed | Rendered comparison with the canonical prototype at the target viewports and states |
+
+## Definitions are not observations
+
+Definitions live in `.chough/cases/<module>.cases.toml` (profile `chough-testing/1`,
+see [the template](../templates/cases.toml)). Each case has a stable ID
+`TC-<module>-NNNN`, links to HI criteria and requirements, setup, steps, explicit
+expected outcomes, method, environments and expected artifact types. Several cases
+can cover one criterion. Never edit an expected outcome to match a failure; retire a
+case (`status = "retired"`) instead of deleting or reusing its ID.
+
+`chough cases check` validates every definition, including its HI and requirement
+links. The digest of a case ignores its position and title, so reordering never
+changes identity, while editing what it asserts makes earlier observations
+`stale-case-definition`.
+
+## Execute honestly
+
+- Automated: `chough cases run <ID> --environment <env>` runs the binding without a
+  shell and records the observation with the captured log. `cargo-test` passes only
+  when exactly one test ran and passed; a filter matching nothing is `not-run`.
+  `fledge-task` and `command` pass only with exit 0 and every `expect_output`
+  fragment present, so each needs at least one fragment. `timeout_seconds` bounds a
+  run from 1 to 3600 (default 600); a run that times out is recorded failed. The
+  command exits 3 when the outcome is not passed.
+- A binding may declare `env`, variables set on top of the inherited environment,
+  for example `env = { NO_COLOR = "1" }` when a tool should print plain text. Chough
+  sets none by default. `env` is committed with the case, so never put secrets in
+  it. A `cargo-test` binding cannot set, in any ASCII case, names that choose what
+  cargo builds or runs: `PATH`, `CARGO`, `CARGO_HOME`, `RUSTC`, `RUSTDOC`,
+  `RUSTC_WRAPPER`, `RUSTC_WORKSPACE_WRAPPER`, `RUSTFLAGS`, `CARGO_ENCODED_RUSTFLAGS`,
+  `RUSTDOCFLAGS`, `CARGO_ENCODED_RUSTDOCFLAGS`, `RUSTC_BOOTSTRAP`, or any name
+  starting with `RUSTUP_`, `CARGO_BUILD_`, `CARGO_TARGET_` (`CARGO_TARGET_DIR` stays
+  allowed), `CARGO_HOST_`, `CARGO_PROFILE_` or `CARGO_UNSTABLE_`. Observations name
+  the declared variables, not their values, and always state that inherited
+  variables were not recorded.
+- `expect_output` and the `cargo-test` count read the output with complete terminal
+  escape sequences (colours, hyperlinks) removed, while the artifact keeps the raw
+  bytes. Write fragments as the visible text; a fragment containing ESC is refused.
+- Manual or agent-assisted: `chough cases record <ID> --method manual --verdict 1=pass
+  --verdict 2=fail … --summary "…" --artifact <screenshot>` gives a verdict for every
+  expected outcome; any fail makes the observation failed. Like `cases run`, it
+  exits 3 when the outcome is not passed.
+
+A failing case stays failed even when every other case passes. Do not rerun until
+it passes and report only the pass. Capture the failure with
+[the bug procedure](bugs.md).
+
+AI judgment is never the only oracle when an assertion or a reproducible procedure
+can decide. Keep rendered, copy and human judgments as observations with method and
+limits. Magpie can run real commands, but its generic mode judges exit codes and
+records skipped steps as passes; bind a Magpie run only through `command` with an
+`expect_output` assertion, and only where it is installed.
+
+## Artifacts
+
+Artifacts stay inside the project; there are no external artifact paths. Keep
+screenshots and other large files small. One may be ignored by Git: the observation
+keeps its fingerprint, and a clone without the file reads `stale-artifact`, never
+passed. Do not use Git LFS for them while SpecSync `change check` refuses tracked LFS
+files (CorvidLabs/spec-sync#789).
+
+## Retention
+
+Routine reruns are prunable; proof that something still references is not.
+`chough evidence prune` previews eligible and protected observation sets with reasons
+and bytes, and changes nothing. It protects what the checkpoint, a bug, an active
+native change or the most recent archived one lists, non-routine records, the newest
+3 automated runs and the newest failure per case and environment, validation failures
+and boundary passes, and anything younger than 14 days. Apply only with `--apply` under
+`chough consent grant retention --source "<their words>"`, or when a human set
+`chough pref set retention auto --source …` (default `off`), which also prunes after
+`cases run` and `validate run`. Removals are logged in `.chough/pruned.jsonl`. Never
+delete evidence by hand, and never report a `pruned` or `unavailable` observation as
+passed.
+"##;
+
+const VALIDATE_BEFORE_SLUG_IDENTITIES: &str = r##"# Optional repeated validation and monitoring
+
+Ordinary functional checks and project-required gates always run during approved
+work. Repetition beyond that, and monitoring, are optional.
+
+## Who decides
+
+| Situation | What to do |
+|---|---|
+| Standing preference `always` | Run within its stated limits |
+| Preference `off` | Do not run unless the human asks for this run |
+| Preference `ask` (default) and the choice matters | Ask one short contextual question |
+| The human agrees for this run | `chough consent grant repeat-validation --source "<their words>"` |
+| The human says "always for this project" | `chough pref set repeat-validation always --source "<their words>"` |
+
+A run consent ends with the objective and never becomes a standing preference.
+Record preferences only from an explicit human statement. `chough pref show` lists
+effective values and where each came from.
+
+## Run, stop, resume
+
+`chough validate run <case> --times N [--interval S] --environment <env>` repeats an
+automated case in the foreground and records every attempt. It needs a
+`repeat-validation` run consent or the standing preference `always`; a `monitoring`
+consent or preference only allows entering the validate stage, not `validate run`.
+
+`chough validate stop` leaves a stop request in `.chough/validation.stop`. The running
+repetition halts before its next attempt, and any later run halts at once, until
+`chough validate resume <run>` clears the request and continues that run with the
+same stored limits after re-checking authorization. Pausing the stage
+(`chough stage pause`) pauses a run the same way. `chough validate status` lists
+runs.
+
+Each failure is kept locally: it opens or extends a bug for that case, which stays in
+the backlog after a restart. Results are labelled as repeated runs with attempts,
+failures and elapsed time. Retrying until one success is not soak testing, a file
+watcher is not product health, and neither is authority to repair anything.
+
+## Monitoring sources
+
+Monitor with the project's own health, log or error sources, wrapped as cases with a
+`command` binding and an `expect_output` assertion. No general production-health
+service is assumed. Any real or live job needs explicit authorization.
+
+Whether a monitor may open an investigation is unsettled. The default,
+`monitor-initiation capture-only`, only records local findings. With
+`propose-change`, Chough prints a suggested `specsync change new` command; it never
+runs it. Any repair follows the normal scope and gates.
+"##;
+
+const LIBRARIAN_BEFORE_SLUG_IDENTITIES: &str = r##"# Optional project librarian
+
+The librarian is a project-local knowledge folder, off by default. Turn it on only
+when the human wants it: `chough pref set librarian on --source "<their words>"`.
+The folder name defaults to `library` and can be changed with `chough pref set
+library-dir <name> --source …`. It is not a shared cross-project vault.
+
+## From any stage
+
+Enter it as a side stage and return to the caller:
+
+```sh
+chough stage enter librarian --reason "Snapshot the approved prototype before redesign"
+chough library snapshot design/prototype/index.html design/prototype/COMPANION.md --reason "Approved version 1"
+chough library index
+chough stage return --note "Snapshot 2026-10-31-1 taken"
+```
+
+- `library init` creates `README.md`, `INDEX.md` and `briefs/`.
+- `library snapshot` copies originals into `snapshots/<date>-<n>/` with a manifest of
+  source path, Git revision and SHA-256. Sources are never moved or edited.
+- `library index` regenerates `INDEX.md`: living sources and their owners, active
+  and archived native changes, the open bug backlog, recent observations, briefs and
+  snapshots.
+- Briefs in `briefs/` are focused next-session summaries written from
+  [the brief template](../templates/brief.md), linking to originals.
+
+## Boundaries
+
+Living HI, prototypes, contracts and native archives stay in their owning locations;
+a snapshot is history, not a second current copy. Summaries complement originals.
+Unfixed bugs remain in the live backlog even when an old report is snapshotted. The
+mandatory checkpoint does not depend on the librarian.
+"##;
+
 /// `skills/chough-workflow/references/stages.md` as shipped by main at f19823d.
 const STAGES_AT_F19823D: &str = r##"# Stage contract
 

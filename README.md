@@ -127,6 +127,18 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `library init/snapshot/index` | Optional project-local librarian |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
+## Record identities and compatibility
+
+New cases use curated `TC-<module>-<title-slug>` IDs. Automatic observations,
+validation runs and librarian snapshots use `OBS-<slug>-<24-lowercase-hex>`,
+`VAL-<slug>-<24-lowercase-hex>` and `SNAP-<slug>-<24-lowercase-hex>`, with random
+96-bit suffixes and no runtime or service. Existing numeric cases, legacy
+observations and validation runs, and dated snapshots remain readable and
+resumable where supported, with no migration or schema rewrite. Older Chough
+versions require an upgrade to use the new-form IDs. See the
+[CLI identity reference](docs/cli.md#case-observation-validation-and-snapshot-identities)
+for allocation, artifact paths, collision refusal and compatibility details.
+
 ## Merge parallel checkpoint edits
 
 The repository declares `.chough/session.json merge=chough-session` in

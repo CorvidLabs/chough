@@ -54,7 +54,7 @@ fn definitions_with_bad_shapes_are_refused_with_their_location() {
         (
             format!(
                 "{HEADER}{}",
-                case("TC-cli-1", "functional", "REQ-cli-001", "")
+                case("TC-cli-1!", "functional", "REQ-cli-001", "")
             ),
             "TC-cli-0001",
         ),
@@ -457,7 +457,7 @@ fn schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct() {
     fixture.ok(&[
         "evidence",
         "add",
-        "deploy-rehearsal",
+        "OBS-dry-run-000000000000000000000005",
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -475,8 +475,10 @@ fn schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct() {
         "--limitation",
         "simulated adapter",
     ]);
-    let record: Value =
-        serde_json::from_str(&fixture.read(".chough/evidence/deploy-rehearsal.json")).unwrap();
+    let record: Value = serde_json::from_str(
+        &fixture.read(".chough/evidence/OBS-dry-run-000000000000000000000005.json"),
+    )
+    .unwrap();
     assert_eq!(record["schema_version"], 2);
     assert_eq!(record["kind"], "dry-run");
     assert_eq!(record["limitations"][0], "simulated adapter");
@@ -1092,4 +1094,405 @@ fn an_unterminated_escape_never_hides_a_second_test_result() {
         limitations(&record).contains(&"the binding should select exactly one test; 2 ran".into()),
         "{record}"
     );
+}
+
+#[test]
+fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations() {
+    let definition = bound(
+        "TC-cli-0001",
+        "adapter = \"cargo-test\"\ntest_target = \"cli\"\ntest = \"passes\"",
+        "",
+    );
+    let roots = [bounded_fixture(&definition), bounded_fixture(&definition)];
+    let mut observations = vec![];
+    for fixture in &roots {
+        common::stand_in(
+            &fixture.root().join("bin"),
+            "cargo",
+            "running 1 test\ntest passes ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored",
+        );
+        for _ in 0..2 {
+            let output = fixture.run(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+            observations.push(report["observation"].as_str().unwrap().to_string());
+        }
+    }
+    for id in &observations {
+        let suffix = id
+            .strip_prefix("OBS-tc-cli-0001-")
+            .unwrap_or_else(|| panic!("old-form observation allocated: {id}"));
+        assert_eq!(suffix.len(), 24, "{id}");
+        assert!(
+            suffix
+                .bytes()
+                .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()),
+            "{id}"
+        );
+        let artifact = format!(".chough/artifacts/{id}.log");
+        let fixture = roots
+            .iter()
+            .find(|fixture| fixture.exists(&format!(".chough/evidence/{id}.json")))
+            .unwrap();
+        let record: Value =
+            serde_json::from_str(&fixture.read(&format!(".chough/evidence/{id}.json"))).unwrap();
+        assert_eq!(record["artifacts"][0], artifact);
+        assert!(
+            fixture
+                .read(&artifact)
+                .contains("test result: ok. 1 passed")
+        );
+        assert!(record["observed_at_unix_seconds"].is_u64());
+        assert!(record["duration_seconds"].is_u64());
+    }
+    let unique = observations
+        .iter()
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(unique.len(), 4, "observations: {observations:?}");
+}
+
+#[test]
+fn slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let legacy = case("TC-cli-0001", "functional", "REQ-cli-001", "");
+    fixture.write(".chough/cases/cli.cases.toml", &format!("{HEADER}{legacy}"));
+    let legacy_digest = list(&fixture)[0]["digest"].clone();
+    let slug = case(
+        "TC-cli-curated-login-check",
+        "functional",
+        "REQ-cli-002",
+        "",
+    );
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{legacy}{slug}"),
+    );
+    let cases = list(&fixture);
+    assert_eq!(cases.len(), 2);
+    assert_eq!(cases[0]["digest"], legacy_digest);
+
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!(
+            "{HEADER}{slug}{}",
+            legacy.replace("Case TC-cli-0001", "Renamed legacy case")
+        ),
+    );
+    assert_eq!(list(&fixture)[1]["digest"], legacy_digest);
+
+    for invalid in [
+        "TC-cli-",
+        "TC-cli-Uppercase",
+        "TC-cli-repeated--separator",
+        "TC-cli--leading",
+        "TC-cli-trailing-",
+        "TC-cli-punctuation!",
+        "TC-cli-non-ascii-猫",
+        "TC-cli-../traversal",
+    ] {
+        fixture.write(
+            ".chough/cases/cli.cases.toml",
+            &format!("{HEADER}{}", case(invalid, "functional", "REQ-cli-001", "")),
+        );
+        assert!(
+            fixture.fails(&["cases", "list"]).contains("id must"),
+            "accepted invalid slug {invalid}"
+        );
+    }
+
+    fixture.write(".chough/cases/cli.cases.toml", HEADER);
+    for module in ["m", "cli", "long-module"] {
+        let file = format!(".chough/cases/{module}.cases.toml");
+        for offset in [0, 1, 2] {
+            let length = 96 - module.len() - 1 + offset;
+            let id = format!("TC-{module}-{}", "a".repeat(length));
+            assert_eq!(id.len(), 99 + offset);
+            fixture.write(
+                &file,
+                &format!(
+                    "profile = \"chough-testing/1\"\nmodule = \"{module}\"\n{}",
+                    case(&id, "functional", "REQ-cli-001", "")
+                ),
+            );
+            assert_eq!(
+                fixture.run(&["cases", "list"]).status.success(),
+                offset < 2,
+                "{id}"
+            );
+        }
+        if module == "cli" {
+            fixture.write(&file, HEADER);
+        } else {
+            std::fs::remove_file(fixture.root().join(file)).unwrap();
+        }
+    }
+
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{legacy}{slug}{slug}"),
+    );
+    assert!(
+        fixture
+            .fails(&["cases", "list"])
+            .contains("duplicate case ID")
+    );
+    fixture.write(
+        ".chough/cases/other.cases.toml",
+        &format!("profile = \"chough-testing/1\"\nmodule = \"other\"\n{slug}"),
+    );
+    assert!(
+        fixture
+            .fails(&["cases", "list"])
+            .contains("duplicate case ID TC-cli-curated-login-check")
+    );
+}
+
+fn add_evidence(
+    fixture: &Fixture,
+    id: Option<&str>,
+    kind: &str,
+    case: Option<&str>,
+    summary: &str,
+) -> std::process::Output {
+    let mut args = vec!["evidence", "add"];
+    if let Some(id) = id {
+        args.push(id);
+    }
+    args.extend([
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        kind,
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        summary,
+    ]);
+    if let Some(case) = case {
+        args.extend(["--case", case]);
+    }
+    fixture.run(&args)
+}
+
+fn recorded_id(output: &std::process::Output) -> String {
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let path = report["recorded"].as_str().unwrap();
+    path.strip_prefix(".chough/evidence/")
+        .and_then(|name| name.strip_suffix(".json"))
+        .unwrap()
+        .to_string()
+}
+
+fn assert_observation_form(id: &str, slug: &str) {
+    let suffix = id
+        .strip_prefix(&format!("OBS-{slug}-"))
+        .unwrap_or_else(|| panic!("wrong observation form: {id}"));
+    assert_eq!(suffix.len(), 24, "{id}");
+    assert!(
+        suffix
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
+        "{id}"
+    );
+}
+
+#[test]
+fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records() {
+    let fixture = bounded_fixture(&case("TC-cli-0001", "functional", "REQ-cli-001", ""));
+    let automatic = recorded_id(&add_evidence(
+        &fixture,
+        None,
+        "product-test",
+        None,
+        "Automatic from kind",
+    ));
+    assert_observation_form(&automatic, "product-test");
+    let linked = recorded_id(&add_evidence(
+        &fixture,
+        None,
+        "product-test",
+        Some("TC-cli-0001"),
+        "Automatic from case",
+    ));
+    assert_observation_form(&linked, "tc-cli-0001");
+
+    let explicit = "OBS-product-test-000000000000000000000010";
+    assert_eq!(
+        recorded_id(&add_evidence(
+            &fixture,
+            Some(explicit),
+            "product-test",
+            None,
+            "Explicit new form",
+        )),
+        explicit
+    );
+    let name = format!(".chough/evidence/{explicit}.json");
+    let before = fixture.read(&name);
+    let collision = add_evidence(
+        &fixture,
+        Some(explicit),
+        "product-test",
+        None,
+        "Different content",
+    );
+    assert!(!collision.status.success());
+    assert!(String::from_utf8_lossy(&collision.stderr).contains("identity collision"));
+    assert_eq!(fixture.read(&name), before);
+
+    let mut legacy: Value = serde_json::from_str(&before).unwrap();
+    legacy["id"] = Value::from("legacy-free-form");
+    legacy["summary"] = Value::from("Stored legacy record");
+    fixture.write(
+        ".chough/evidence/legacy-free-form.json",
+        &(serde_json::to_string_pretty(&legacy).unwrap() + "\n"),
+    );
+    let status = fixture.ok(&["status", "--environment", "local", "--json"]);
+    let ids = status["observations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| entry["record"]["id"].as_str().unwrap())
+        .collect::<Vec<_>>();
+    assert!(ids.contains(&"legacy-free-form"), "{ids:?}");
+    assert!(ids.contains(&automatic.as_str()), "{ids:?}");
+}
+
+#[test]
+fn old_style_explicit_observation_ids_have_an_omit_remedy_on_every_write_path() {
+    let definitions = format!(
+        "{}{}",
+        bound(
+            "TC-cli-0001",
+            "adapter = \"cargo-test\"\ntest_target = \"cli\"\ntest = \"passes\"",
+            ""
+        ),
+        case("TC-cli-0002", "functional", "REQ-cli-001", "")
+    );
+    let fixture = bounded_fixture(&definitions);
+    common::stand_in(
+        &fixture.root().join("bin"),
+        "cargo",
+        "running 1 test\ntest passes ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored",
+    );
+    for old in [
+        "legacy-free-form",
+        "tc-cli-0001-1793579540",
+        "observation-1",
+    ] {
+        let output = add_evidence(&fixture, Some(old), "product-test", None, "Refused");
+        assert!(!output.status.success());
+        assert!(
+            String::from_utf8_lossy(&output.stderr)
+                .contains("omit the ID for automatic allocation")
+        );
+    }
+    let automated = fixture.run(&[
+        "cases",
+        "run",
+        "TC-cli-0001",
+        "--environment",
+        "local",
+        "--observation-id",
+        "legacy-free-form",
+    ]);
+    assert!(!automated.status.success());
+    assert!(
+        String::from_utf8_lossy(&automated.stderr).contains("omit the ID for automatic allocation")
+    );
+    let manual = fixture.run(&[
+        "cases",
+        "record",
+        "TC-cli-0002",
+        "--environment",
+        "local",
+        "--method",
+        "agent-assisted",
+        "--verdict",
+        "1=pass",
+        "--verdict",
+        "2=pass",
+        "--summary",
+        "Refused",
+        "--observation-id",
+        "legacy-free-form",
+    ]);
+    assert!(!manual.status.success());
+    assert!(String::from_utf8_lossy(&manual.stderr).contains("omit the ID"));
+    assert!(!fixture.exists(".chough/evidence"));
+    assert!(!fixture.exists(".chough/artifacts"));
+
+    let explicit = "OBS-tc-cli-0002-000000000000000000000011";
+    let accepted = fixture.run(&[
+        "cases",
+        "record",
+        "TC-cli-0002",
+        "--environment",
+        "local",
+        "--method",
+        "agent-assisted",
+        "--verdict",
+        "1=pass",
+        "--verdict",
+        "2=pass",
+        "--summary",
+        "Accepted explicit new form",
+        "--observation-id",
+        explicit,
+    ]);
+    assert!(
+        accepted.status.success(),
+        "{}",
+        String::from_utf8_lossy(&accepted.stderr)
+    );
+    assert!(fixture.exists(&format!(".chough/evidence/{explicit}.json")));
+}
+
+#[test]
+fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback() {
+    let fixture = bounded_fixture(&bound(
+        "TC-cli-0001",
+        "adapter = \"cargo-test\"\ntest_target = \"cli\"\ntest = \"passes\"",
+        "",
+    ));
+    common::stand_in(
+        &fixture.root().join("bin"),
+        "cargo",
+        "running 1 test\ntest passes ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored",
+    );
+    let id = "OBS-tc-cli-0001-000000000000000000000012";
+    let artifact = format!(".chough/artifacts/{id}.log");
+    fixture.write(&artifact, "original artifact bytes\n");
+    let output = fixture.run(&[
+        "cases",
+        "run",
+        "TC-cli-0001",
+        "--environment",
+        "local",
+        "--observation-id",
+        id,
+    ]);
+    assert!(!output.status.success());
+    let error = String::from_utf8_lossy(&output.stderr);
+    assert!(error.contains("artifact identity collision"), "{error}");
+    assert!(error.contains(id), "{error}");
+    assert_eq!(fixture.read(&artifact), "original artifact bytes\n");
+    assert!(!fixture.exists(&format!(".chough/evidence/{id}.json")));
+    assert!(std::fs::read_dir(fixture.root().join(".chough/evidence")).is_err());
 }

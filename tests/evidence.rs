@@ -906,7 +906,7 @@ fn one_artifact_spelled_two_ways_is_shared_and_kept() {
         let refused = fixture.fails(&[
             "evidence",
             "add",
-            "spelled",
+            "OBS-product-test-000000000000000000000006",
             "--criterion",
             "LIFE-1",
             "--requirement",

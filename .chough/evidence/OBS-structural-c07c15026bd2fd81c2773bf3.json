@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-c07c15026bd2fd81c2773bf3",
+  "criteria": [
+    "FLOW-5",
+    "FLOW-6",
+    "FLOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-003"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "After actual human approval, the identity parent was natively archived, the fixture check became available, and full Fledge verify passed all 9 steps in 156.372 seconds, including audit and 182 unfiltered tests.",
+  "artifacts": [
+    ".chough/artifacts/identity-takeover/approved-closeout-full-verify.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/identity-takeover/approved-closeout-full-verify.log": "f7bc3f2e9916eef4eee382557e880f9556a9b01480053e91b3c03cd8f4cf79ac"
+  },
+  "observed_at_unix_seconds": 1793585081,
+  "snapshot": {
+    "revision": "7dca7a700f18ba2091bd0a199610bf53fd19a1a2",
+    "dirty": true,
+    "fingerprint": "a82114891fb920bd47d48629c702ad6f0d267ac74237bbb6cc9cc43892bc054f",
+    "content": "1fcc70468c2694ed16f86958849b15503a9febf2c2c7b7b970d33878cb7fff47"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "limitations": [
+    "This verifies the formerly blocked local native ordering and product lane; hosted CI and merge still require their own observed passing results. Scope approval and acceptance are actual user decisions, not inferred from this pass."
+  ]
+}

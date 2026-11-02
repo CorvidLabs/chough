@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "update-compact-next-fixture-for-slug-observations",
+  "implementation_commit": "9e422fc1629d3b70b443054d17e0bb4c669bf86e",
+  "implementation_tree": "affb2bc2a50cc74cb2d6dd4e5b4a2cba7c373032",
+  "contract_digest": "df4428ff258decb10bd82a8048e1ff8ebe5d598dc7b61e5e11a7fd5f492ce49b",
+  "workspace_digest": "aac47d5feb2b0d16f5f8a11608ecc64fbc81a79ae508d715209c6d6bea4a026c",
+  "closing_digest": "6b6999eaa607d1cbddde1f529d3fde413bf934c71783e10c3466024b9cee0bdd",
+  "review_digest": "9e8f4a9ee96d2ea24ae673be0a75bae901e7dc190d9605bb28c6684998061fc8",
+  "finalization_digest": "2ab7a603ff530b9b958f845601caed6ff92942f9363a66cb307ba888169265a6",
+  "timestamp": 1793585285
+}

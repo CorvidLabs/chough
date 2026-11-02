@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-slug-validation-allocation-b1eb4af179f28f15e8224463",
+  "criteria": [
+    "FLOW-9",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-013",
+    "REQ-cli-023"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test optional -- --exact independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs for TC-cli-slug-validation-allocation: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-slug-validation-allocation-b1eb4af179f28f15e8224463.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-slug-validation-allocation-b1eb4af179f28f15e8224463.log": "4b6032017809a34ae7b4268312e36f34b510d54a020ea8a9d1596115cd8439ef"
+  },
+  "observed_at_unix_seconds": 1793581822,
+  "snapshot": {
+    "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+    "dirty": true,
+    "fingerprint": "265783315cc8eadeb60c9f84fb10c2e5e3ca8abf422610bd47cfb0312e6bf300",
+    "content": "e262857779c52658af2b715d13bb0a137a7fd3653aa345ce8ec2eb33614bfffd"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-slug-validation-allocation",
+      "digest": "f3d269885c7e794742abee7801915f2a731c07eefe9d8f762b5abb3cccfc28c3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

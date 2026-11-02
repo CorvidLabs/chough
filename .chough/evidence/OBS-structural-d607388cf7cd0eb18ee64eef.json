@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-d607388cf7cd0eb18ee64eef",
+  "criteria": [
+    "FLOW-5",
+    "FLOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-003"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Native qualification is blocked by the accepted-first fixture dependency: change check refused exit 1 while the parent is verifying; full verify audit rejected tests/next.rs coverage at step 6.",
+  "artifacts": [
+    ".chough/artifacts/identity-takeover/approved-fixture-full-verify.log",
+    ".chough/artifacts/identity-takeover/fixture-child-check-before-verify.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/identity-takeover/approved-fixture-full-verify.log": "93220b6c130f6ed6e46db4a011031d544d6400f0ceb75d1950dd727279fe599d",
+    ".chough/artifacts/identity-takeover/fixture-child-check-before-verify.log": "0deb04889865e46e2b2b79ec36339e31029a2d2ba7e95e9e1cff70d35946bf88"
+  },
+  "observed_at_unix_seconds": 1793583803,
+  "snapshot": {
+    "revision": "b118422c826b29a41df2eea38c58120f6dbc77ae",
+    "dirty": false,
+    "fingerprint": "5a6b9bbd6d130eab93bb07d8a6156a70843b7218124d6214357fef5c7b973173",
+    "content": "1fcc70468c2694ed16f86958849b15503a9febf2c2c7b7b970d33878cb7fff47"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "limitations": [
+    "This is an unsuitable planning edge for a co-reviewed fixture, not a failed product test. Scope approval remains valid. No dependency, approval or parent acceptance was rewritten to bypass the refusal."
+  ]
+}

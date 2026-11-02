@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793582987,
+      "digest": "df4428ff258decb10bd82a8048e1ff8ebe5d598dc7b61e5e11a7fd5f492ce49b",
+      "note": "0xLeif explicitly approved the prepared one-file fixture-only scope by replying \"yes i approve\" on 2026-11-01. This approves tests/next.rs fixture construction only, preserving all assertions; it is not implementation acceptance, native review, archive or merge authorization.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "update-compact-next-fixture-for-slug-observations",
+        "title": "Update compact-next fixture for slug observations",
+        "description": "Update compact-next fixture for slug observations",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/next.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "The existing compact-next output-bound test must create and reference a new-form observation under the approved identity policy. This changes only test fixture construction and preserves every output-bound assertion.",
+        "acceptance_criteria": [
+          "The compact-next large-record fixture creates its current observation through automatic allocation and references the returned ID; all existing 16384-byte bounds, one-native-read counts, totals and historical-label assertions remain unchanged; tests/next.rs and the full suite pass with the approved identity behavior."
+        ],
+        "dependencies": [
+          "use-slug-identities-for-all-new-chough-records"
+        ],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Only tests/next.rs fixture construction changes; preserve every existing bound/count/label/native-read assertion and all legacy stale fixtures. Depend on the approved identity change; no production, canonical spec, approval-state amendment, release or deployment changes.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793585285,
+      "digest": "6b6999eaa607d1cbddde1f529d3fde413bf934c71783e10c3466024b9cee0bdd",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

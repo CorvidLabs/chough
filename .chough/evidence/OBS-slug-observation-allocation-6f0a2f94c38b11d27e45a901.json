@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-slug-observation-allocation-6f0a2f94c38b11d27e45a901",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-017"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Direct regression exited 101: independent roots and repeated runs allocated old-form observation tc-cli-0001-1793579540 instead of OBS slug plus 24 lowercase hex.",
+  "artifacts": [
+    ".chough/artifacts/OBS-slug-observation-allocation-6f0a2f94c38b11d27e45a901.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-slug-observation-allocation-6f0a2f94c38b11d27e45a901.log": "760625033ae67467e6673606fd020540bed647de3f65ebf6520e655293c89211"
+  },
+  "observed_at_unix_seconds": 1793579558,
+  "snapshot": {
+    "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+    "dirty": true,
+    "fingerprint": "1638de1f5913b376676f4593c4738deb547e5226c040ebea76473025adf18f71",
+    "content": "c269fe17329d96e67a5c532044ddc9a9d7c2e435e7e66f0923378c8fd383f5f6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "No case link because the pre-fix validator cannot load slug case IDs; the direct test was run instead of cases run."
+  ]
+}

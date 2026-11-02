@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "use-slug-identities-for-all-new-chough-records",
+  "implementation_commit": "caf97f4971a1307b96c58954e7a2767d885e4ebe",
+  "implementation_tree": "b31cd756d11743899e972e1323e7b353a86b84c2",
+  "contract_digest": "13887d3ebb297998d9ba9223847691529abfd7123ccb738377cb7395f1930240",
+  "workspace_digest": "8de65cc42e2ad9d8121711739a858738d66661dff0d404f6e0ffee623080da51",
+  "closing_digest": "d69aa788c9765bf62cbaa8eb9086700a3073c879070fc2fa692f991c207c64b9",
+  "review_digest": "01d7c0a44bafdfbb75a67bf70be8e6828b7d145446e2a8dcefe4f82c534f7727",
+  "finalization_digest": "5fa4f8c8867cda38a82ba2cf7481ec3876c6c5614a4a723ecd6c9e042c79e299",
+  "timestamp": 1793584557
+}

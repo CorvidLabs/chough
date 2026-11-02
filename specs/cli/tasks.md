@@ -27,6 +27,21 @@ native change package until it is archived.
   retains the failed `tc-cli-0125-collision-pre-fix` and strictly later passed
   `tc-cli-0125-collision-post-fix` on `local-macos-arm64`; BUG-0026 is verified.
 
+Implemented approved work (human acceptance pending):
+
+- [x] Implement `use-slug-identities-for-all-new-chough-records`: curated slug
+  cases, random OBS, VAL and SNAP allocation, atomic refusal, legacy reads and
+  resume, inherited artifact paths, documentation and package-update coverage.
+  The four identity bugs retain failed observations and strictly later passes.
+- [x] Apply the separately approved compact-next fixture follow-up: use automatic
+  allocation and reference the returned ID, preserving every original assertion.
+  The focused next suite passed all 3 tests; both Rust 1.99.1 and 1.88.0 passed all
+  182 tests without exclusions. Keep the original failed TC-cli-0120 observation
+  and a later passing case record. The full verify lane remains failed at native
+  audit because the accepted-first dependency blocks follow-up path coverage.
+  Cases, exercise and build passed separately. Resolve that ordering blocker
+  before claiming full verification; human review and finalization remain gates.
+
 Completed approved work:
 
 - [x] Complete `make-checkpoint-merges-safe-across-parallel-changes`: bounded schema 2

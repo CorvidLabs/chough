@@ -1,0 +1,91 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793579375,
+      "digest": "13887d3ebb297998d9ba9223847691529abfd7123ccb738377cb7395f1930240",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "use-slug-identities-for-all-new-chough-records",
+        "title": "Use slug identities for all new Chough records",
+        "description": "Use slug identities for all new Chough records",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/librarian.md",
+          ".agents/skills/chough-workflow/references/testing.md",
+          ".agents/skills/chough-workflow/references/validate.md",
+          ".agents/skills/chough-workflow/templates/cases.toml",
+          ".claude/skills/chough-workflow/references/librarian.md",
+          ".claude/skills/chough-workflow/references/testing.md",
+          ".claude/skills/chough-workflow/references/validate.md",
+          ".claude/skills/chough-workflow/templates/cases.toml",
+          "Cargo.lock",
+          "Cargo.toml",
+          "README.md",
+          "docs/FRD.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/librarian.md",
+          "skills/chough-workflow/references/testing.md",
+          "skills/chough-workflow/references/validate.md",
+          "skills/chough-workflow/templates/cases.toml",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/cli/tasks.md",
+          "specs/cli/testing.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "src/identity.rs",
+          "src/library.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "src/validate.rs",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/cli.rs",
+          "tests/common/mod.rs",
+          "tests/evidence.rs",
+          "tests/optional.rs",
+          "tests/package.rs",
+          "tests/stages.rs",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Automated artifact names remain exactly `.chough/artifacts/<observation-id>.log`. Observation, validation, snapshot and artifact creation is atomic and refuses same-ID different-content creation without overwrite, timestamp or numeric fallback, or digest retry. Random-source and write failures preserve existing records.",
+          "Automatic observations use `OBS-<slug>-<24-lowercase-hex>`, validation runs use `VAL-<slug>-<24-lowercase-hex>`, and librarian snapshots use `SNAP-<slug>-<24-lowercase-hex>`. Random 96-bit suffixes allow identical repeated runs to remain distinct history; timestamps remain in their existing fields and determine chronology.",
+          "Explicit observation IDs are optional for automatic allocation. New writes supplied an old-style ID fail with an omit-ID remedy, while every legacy case, observation, validation and snapshot ID remains readable, linkable and resumable with no bulk migration or schema rewrite.",
+          "Failure-first independent-root and repeated-run evidence is retained and linked to local bugs before implementation, followed by later passes for the new generators and compatibility. Slug case definitions themselves use the new form. Focused and full Rust tests, real command exercises, formatting, Clippy with warnings denied, fledge verify and pre-push pass with CI-matching tools. Bug known-answer vectors remain unchanged.",
+          "Mixed legacy and new IDs work through bug links, checkpoint references, status and next, timing, retention and pruning, native manifests, validation resume and librarian indexes. Older Chough versions require an upgrade for slug case IDs. Transitions, preference keys, consent keys, stop markers and pruning-ledger entry shapes do not gain IDs.",
+          "New case definitions accept curated `TC-<module>-<title-slug>` IDs with lowercase ASCII normalization, module-aware length bounds and global duplicate refusal. Exact legacy `TC-<module>-NNNN` cases remain valid with unchanged definition digests and no renumbering.",
+          "The existing getrandom package is used directly without a runtime or service. No change is made to bug identity generation, HI criteria, requirement IDs, SpecSync IDs, release or deployment."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "REQ-cli-007 keeps one canonical checkpoint; REQ-cli-009 keeps stable case IDs and position-free digests; REQ-cli-011 keeps explicit execution and honest not-run outcomes; REQ-cli-017 and REQ-cli-018 keep observation schema and retention references intact; use the existing getrandom 0.4.3 lock entry directly with no runtime or service; preserve bug ID generation and known-answer vectors byte-for-byte; do not list .chough as a native affected path; preserve all legacy records, artifacts and frozen archives; canonical and installed skill files stay byte-identical with previous digests registered; no new numeric case ID; no em or en dashes; use current CI versions HI 0.8.0, Fledge 1.8.0 and SpecSync 6.1.2; no bulk migration, release or deployment",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "bb201f818b26196811b171ec38e9673d8ba4c29e792bea72685714eb8268f725"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793584557,
+      "digest": "d69aa788c9765bf62cbaa8eb9086700a3073c879070fc2fa692f991c207c64b9",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

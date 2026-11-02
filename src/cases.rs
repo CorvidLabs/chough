@@ -1,6 +1,7 @@
 //! Test-case definitions (`chough-testing/1`), focused selection and explicit execution.
 
 use crate::evidence::{self, CaseRef, Evidence, Kind, Outcome, PROVENANCE};
+use crate::identity;
 use crate::records::{
     Captured, Limits, digest_bytes, local_path, now, print_json, run_bounded, valid_name,
     write_new_bytes,
@@ -243,13 +244,13 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
             "{file}: module must equal the file stem"
         );
         for case in parsed.cases {
-            validate_shape(&parsed.module, &case)
-                .with_context(|| format!("{file}: case {}", case.id))?;
             ensure!(
                 ids.insert(case.id.clone()),
                 "{file}: duplicate case ID {}",
                 case.id
             );
+            validate_shape(&parsed.module, &case)
+                .with_context(|| format!("{file}: case {}", case.id))?;
             located.push(Located {
                 module: parsed.module.clone(),
                 file: file.clone(),
@@ -272,10 +273,8 @@ fn non_blank(label: &str, values: &[String]) -> Result<()> {
 fn validate_shape(module: &str, case: &Case) -> Result<()> {
     let prefix = format!("TC-{module}-");
     ensure!(
-        case.id.strip_prefix(&prefix).is_some_and(
-            |number| number.len() == 4 && number.bytes().all(|byte| byte.is_ascii_digit())
-        ),
-        "id must look like {prefix}0001"
+        identity::valid_case_id(module, &case.id),
+        "id must look like {prefix}0001 or {prefix}<title-slug>"
     );
     ensure!(!case.title.trim().is_empty(), "title must not be blank");
     ensure!(
@@ -773,23 +772,36 @@ fn argv_for(binding: &Binding) -> Vec<String> {
     }
 }
 
-fn observation_id(root: &Path, case: &str, requested: Option<String>) -> Result<String> {
+fn observation_id(case: &str, requested: Option<String>) -> Result<String> {
     if let Some(id) = requested {
         ensure!(valid_name(&id), "invalid observation ID");
+        identity::require_explicit_observation_id(&id)?;
         return Ok(id);
     }
-    let base = format!("{}-{}", case.to_ascii_lowercase(), now()?);
-    for suffix in 0..1_000 {
-        let id = if suffix == 0 {
-            base.clone()
-        } else {
-            format!("{base}-{suffix}")
-        };
-        if !local_path(root, &format!("{}/{id}.json", evidence::EVIDENCE_DIR))?.exists() {
-            return Ok(id);
+    identity::observation(case)
+}
+
+fn write_artifact(root: &Path, artifact: &str, output: &[u8]) -> Result<()> {
+    let created = match write_new_bytes(root, artifact, output) {
+        Ok(created) => created,
+        Err(error)
+            if error
+                .downcast_ref::<std::io::Error>()
+                .is_some_and(|error| error.kind() == std::io::ErrorKind::AlreadyExists) =>
+        {
+            false
         }
+        Err(error) => return Err(error),
+    };
+    if created {
+        return Ok(());
     }
-    bail!("cannot allocate an observation ID for {case}")
+    let path = local_path(root, artifact)?;
+    let identical = fs::metadata(&path)?.len() == output.len() as u64 && fs::read(path)? == output;
+    ensure!(!identical, "artifact {artifact} already exists");
+    bail!(
+        "artifact identity collision: {artifact} already exists with different content; refusing to overwrite or retry"
+    );
 }
 
 /// The outcome of one explicit case execution, already recorded.
@@ -820,7 +832,7 @@ pub(super) fn run_case(
     let digest = located.digest()?;
     let argv = argv_for(binding);
     let timeout = Duration::from_secs(binding.timeout_seconds.unwrap_or(600));
-    let observation = observation_id(root, id, requested_id)?;
+    let observation = observation_id(id, requested_id)?;
     let env: Vec<(String, String)> = binding
         .env
         .iter()
@@ -831,10 +843,7 @@ pub(super) fn run_case(
     let duration_seconds = started.elapsed().as_secs();
     let (output, text, escapes_removed) = artifact(&execution);
     let artifact = format!("{ARTIFACTS_DIR}/{observation}.log");
-    ensure!(
-        write_new_bytes(root, &artifact, &output)?,
-        "artifact {artifact} already exists"
-    );
+    write_artifact(root, &artifact, &output)?;
     let mut limitations = vec![];
     let missing: Vec<&String> = binding
         .expect_output
@@ -1034,7 +1043,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         .map(|(index, value)| format!("{index}={value}"))
         .collect::<Vec<_>>()
         .join(", ");
-    let observation = observation_id(root, id, requested_id)?;
+    let observation = observation_id(id, requested_id)?;
     let record = Evidence {
         schema_version: 2,
         id: observation.clone(),

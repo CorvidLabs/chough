@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "update-compact-next-fixture-for-slug-observations",
+  "slug": "update-compact-next-fixture-for-slug-observations",
+  "title": "Update compact-next fixture for slug observations",
+  "description": "Update compact-next fixture for slug observations",
+  "kind": "refactor",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+  "created_at": 1793581146,
+  "updated_at": 1793585285,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/next.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "The existing compact-next output-bound test must create and reference a new-form observation under the approved identity policy. This changes only test fixture construction and preserves every output-bound assertion.",
+  "acceptance_criteria": [
+    "The compact-next large-record fixture creates its current observation through automatic allocation and references the returned ID; all existing 16384-byte bounds, one-native-read counts, totals and historical-label assertions remain unchanged; tests/next.rs and the full suite pass with the approved identity behavior."
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing"
+  ],
+  "dependencies": [
+    "use-slug-identities-for-all-new-chough-records"
+  ],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Only tests/next.rs fixture construction changes; preserve every existing bound/count/label/native-read assertion and all legacy stale fixtures. Depend on the approved identity change; no production, canonical spec, approval-state amendment, release or deployment changes.",
+    "public_contract": "no"
+  }
+}
