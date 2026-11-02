@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -146,7 +146,8 @@
     "Applied the approved fixture-only patch: automatic observation allocation and returned-ID reference; all existing assertions retained.",
     "Applied the explicitly approved fixture-only update; all 182 tests pass on Rust 1.99.1 and 1.88.0 with no exclusions. Next suite, five focused cases, case definitions, real CLI exercise and build pass.",
     "Identity parent archived through native review and ship after actual human approval; dependent fixture verification is now unblocked.",
-    "Full verify passes all 9 steps with 182 tests and zero exclusions after the approved identity parent archive unlocked the fixture. The native-ordering bug has a strictly later passed observation."
+    "Full verify passes all 9 steps with 182 tests and zero exclusions after the approved identity parent archive unlocked the fixture. The native-ordering bug has a strictly later passed observation.",
+    "Both identity and fixture native changes are archived under 0xLeif implementation approval. Full verify passed all 9 steps and pre-push passed all 5; hosted CI and merge are still pending."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -238,5 +239,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit the final records, check the fixture --commit, record the already-authorized human native review and ship it with no intervening commit, push both archives, require every CI check green, then mark ready and merge."
+  "next_action": "Push the archive and done checkpoint, observe all checks at the exact PR head, then mark ready and squash-merge only if every gate is green. No release or deployment is authorized."
 }

@@ -91,3 +91,4 @@
 {"schema_version":1,"at_unix_seconds":1793583025,"kind":"gate-closed","from":"build","to":"build","reason":"Scope approval of update-compact-next-fixture-for-slug-observations","gate":null,"revision":"3931d29bfc5d48e2deba15b3c950d9ec510aa892","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793583834,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"b118422c826b29a41df2eea38c58120f6dbc77ae","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793585086,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"7dca7a700f18ba2091bd0a199610bf53fd19a1a2","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793585582,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"34f7b11b608cadf2af33ef41215c2f6d6598bbfb","refresh":[]}
