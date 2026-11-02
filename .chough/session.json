@@ -221,7 +221,8 @@
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
-    "Prepared issue #31 native requirements, design, research, plan, verification cases and sequential role findings; reconciled roadmap delivery and cold-start limits; native audit and HI intent validation passed"
+    "Prepared issue #31 native requirements, design, research, plan, verification cases and sequential role findings; reconciled roadmap delivery and cold-start limits; native audit and HI intent validation passed",
+    "Published definition-only draft PR #37 at https://github.com/CorvidLabs/chough/pull/37; reconciled issues #30, #31 and #32 with dated status sections while preserving their original bodies and keeping unmet criteria open"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -349,5 +350,5 @@
     "Scope approval of bound-transition-history-and-preserve-referenced-proof, including explicit adoption, the optional checkpoint cursor, proposed bounds and protected whole-cycle retention"
   ],
   "run_consents": [],
-  "next_action": "0xLeif reviews the complete issue #31 definition and approves or revises its proposed scope before implementation"
+  "next_action": "0xLeif reviews draft PR #37 and approves or revises the complete bound-transition-history-and-preserve-referenced-proof scope; native approval and implementation remain pending"
 }
