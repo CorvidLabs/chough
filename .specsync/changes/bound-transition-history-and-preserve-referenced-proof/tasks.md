@@ -21,3 +21,5 @@ Human scope approval and implementation acceptance are separate gates, recorded 
 SpecSync requires implementation task completion before it materializes the new requirement IDs. The five executable cases need those IDs for validation. The checklist above therefore records completed implementation, regression testing and verification preparation, not results of commands that have not run.
 
 After native materialization, execute TC-cli-history-adoption, TC-cli-history-branches, TC-cli-history-bounds, TC-cli-history-retention and TC-cli-retention-revalidation; run the required `fledge lanes run verify`; and verify the final implementation on Rust 1.88. These remain mandatory before requesting human implementation acceptance. Record their actual outcomes and limitations in Chough observations and the checkpoint. The approved scope and semantic delta remain unchanged.
+
+- [x] Fix the independently reproduced frozen artifact directory alias protection gap and retain its failure-first preservation regression.

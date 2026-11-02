@@ -782,3 +782,83 @@ fn directory_references_protect_cycles_across_case_and_separator_aliases() {
             .any(|cycle| cycle["reasons"].to_string().contains("session.json"))
     );
 }
+
+#[test]
+fn frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply() {
+    fn saved_files(
+        root: &std::path::Path,
+    ) -> std::collections::BTreeMap<std::path::PathBuf, Vec<u8>> {
+        fn visit(
+            directory: &std::path::Path,
+            files: &mut std::collections::BTreeMap<std::path::PathBuf, Vec<u8>>,
+        ) {
+            for entry in std::fs::read_dir(directory).unwrap() {
+                let path = entry.unwrap().path();
+                if path.is_dir() {
+                    visit(&path, files);
+                } else {
+                    files.insert(path.clone(), std::fs::read(path).unwrap());
+                }
+            }
+        }
+        let mut files = std::collections::BTreeMap::new();
+        visit(&root.join(".chough"), &mut files);
+        files
+    }
+
+    for alias in [
+        ".chough/history/cycles",
+        r".CHOUGH\history\CYCLES",
+        r".CHOUGH\\history\\CYCLES",
+        r".CHOUGH//history/./CYCLES\",
+    ] {
+        for quote in ['`', '"'] {
+            let f = closed_cycles();
+            assert!(
+                !f.ok(&["history", "prune"])["eligible"]
+                    .as_array()
+                    .unwrap()
+                    .is_empty()
+            );
+            let artifact = ".chough/artifacts/frozen-path-reference.log";
+            f.write(
+                artifact,
+                &format!("Frozen reference: preserve {quote}{alias}{quote}.\n"),
+            );
+            let before = saved_files(f.root());
+            let preview = f.ok(&["history", "prune"]);
+            assert_eq!(preview["complete"], true);
+            assert_eq!(before, saved_files(f.root()), "preview changed {alias}");
+            assert!(
+                preview["eligible"].as_array().unwrap().is_empty(),
+                "{alias}: {preview}"
+            );
+            assert_eq!(preview["protected"].as_array().unwrap().len(), 7);
+            assert!(
+                preview["protected"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .all(|cycle| { cycle["reasons"].to_string().contains(artifact) }),
+                "{alias}: {preview}"
+            );
+            f.ok(&[
+                "consent",
+                "grant",
+                "retention",
+                "--source",
+                "fixture authorization",
+            ]);
+            let authorized = saved_files(f.root());
+            let applied = f.ok(&["history", "prune", "--apply"]);
+            assert_eq!(applied["complete"], true);
+            assert_eq!(
+                applied["removed"],
+                serde_json::json!([]),
+                "{alias}: {applied}"
+            );
+            assert_eq!(applied["reclaimed_bytes"], 0);
+            assert_eq!(authorized, saved_files(f.root()), "apply changed {alias}");
+        }
+    }
+}

@@ -204,3 +204,15 @@ at 6fa45db on local macOS arm64. Limits: legacy checkpoints without a history cu
 the immutable-event traversal was already bounded. Future use: apply shared request
 limits to every compatible storage path and test the exact limit and one record
 beyond it, including malformed input counted against the read budget.
+
+2026-11-02, frozen reference aliases (verified): structured checkpoint paths were
+normalized but frozen artifact text was not. A retained Windows-style cycles
+directory reference made three protected fixture cycles eligible for deletion.
+Sources: OBS-product-test-063bada1f0797d7f9fc3d83e and
+BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3,
+with exact binary hash and commands under .chough/artifacts/history-frozen-reference-before/.
+The failure-first regression now covers four aliases under two quote styles and
+asserts byte-identical preview/apply fixtures. Future use: apply reference path
+normalization to every protection source, including raw frozen text, and verify
+equivalent paths preserve identical protected sets. Limits: synthetic local fixtures;
+no live project cleanup or new cold-start proof is implied.

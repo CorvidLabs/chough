@@ -2489,3 +2489,22 @@ expected = ["tests/timing.rs::legacy_timing_retains_the_latest_4096_input_lines_
 adapter = "cargo-test"
 test_target = "timing"
 test = "legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission"
+
+
+[[case]]
+id = "TC-cli-history-frozen-reference-aliases"
+title = "Frozen artifact directory path aliases protect every referenced history cycle"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-026", "REQ-cli-027"]
+paths = ["src/history.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["Canonical, mixed-case backslash, repeated-separator and dot-component directory references in frozen text protect all cycles; preview and authorized fixture apply leave every .chough byte unchanged"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply"

@@ -45,6 +45,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- History retention normalizes directory aliases in frozen plaintext artifacts as
+  well as structured references, preserving cycles named with Windows separators,
+  case differences, repeated separators and dot components.
 - `chough next` and `chough status` no longer say `Continue <stage>`, or give the
   build gate refusal, at intent to accept once the recorded native change is
   archived with authenticated terminal evidence; they name the archive and the new

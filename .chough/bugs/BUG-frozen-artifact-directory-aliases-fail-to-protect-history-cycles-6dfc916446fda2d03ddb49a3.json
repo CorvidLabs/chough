@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "id": "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
+  "title": "Frozen artifact directory aliases fail to protect history cycles",
+  "symptom": "Windows-style directory references in frozen text are missed by history retention",
+  "trigger": "A retained artifact names the cycles directory with mixed case or backslash separators",
+  "expected": "Equivalent references protect every matching cycle in preview and apply",
+  "actual": "Three referenced cycles are eligible and deleted with complete:true",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "cases": [
+    "TC-cli-history-retention"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "76da6287c145240ce580ddf35fedb71aac53acc4",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-063bada1f0797d7f9fc3d83e",
+    "OBS-product-test-4ca251f7695567122f3b2bcd",
+    "OBS-product-test-ba4c86bbf0c00f16f5636082"
+  ],
+  "impact": "P2: referenced proof can be removed despite its retained protection source",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Independent merge-readiness retention review at76da628",
+  "notes": [
+    {
+      "at_unix_seconds": 1793639662,
+      "text": "status: open -> verified. Structured and plaintext reference paths share normalization; equivalent frozen artifact aliases no longer expose protected cycles to pruning. Eight fixture variants and all19 history tests passed.",
+      "observations": [
+        "OBS-product-test-4ca251f7695567122f3b2bcd"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793641457,
+      "text": "The final full verification also passes the new frozen-reference alias preservation case and all222tests; all original failures and proof remain retained.",
+      "observations": [
+        "OBS-product-test-ba4c86bbf0c00f16f5636082"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793639448,
+  "updated_at_unix_seconds": 1793641457
+}

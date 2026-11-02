@@ -83,7 +83,8 @@
       "TC-cli-history-bounds",
       "TC-cli-history-retention",
       "TC-cli-retention-revalidation",
-      "TC-cli-history-legacy-timing-bounds"
+      "TC-cli-history-legacy-timing-bounds",
+      "TC-cli-history-frozen-reference-aliases"
     ],
     "design": [],
     "files": [
@@ -236,7 +237,8 @@
     "Published definition-only draft PR #37 at https://github.com/CorvidLabs/chough/pull/37; reconciled issues #30, #31 and #32 with dated status sections while preserving their original bodies and keeping unmet criteria open",
     "Core implementation: new-project cursor, explicit byte-preserving adoption, event-backed stage/gate writes and coherent cursor merge selection. All three retained history regressions now pass, including the real Git branch event fixture; retention safety and full qualification remain in progress.",
     "Implemented the approved PR #37 scope and qualified the final source: all five bound cases passed, the mandatory Fledge verify lane passed all nine steps with 219 tests, and all 219 tests passed on Rust 1.88.0. Three reproduced in-scope bugs have later passing evidence and are verified. No live adoption or cleanup ran.",
-    "Independent branch and bounds reviews completed; the reproduced legacy timing overflow has failure-first tests and is verified fixed. All six affected cases, the nine-step Fledge lane and all 221 tests on Rust 1.88 passed. Grok is assigned independent retention/proof review when the human starts it; human implementation acceptance remains pending."
+    "Independent branch and bounds reviews completed; the reproduced legacy timing overflow has failure-first tests and is verified fixed. All six affected cases, the nine-step Fledge lane and all 221 tests on Rust 1.88 passed. Grok is assigned independent retention/proof review when the human starts it; human implementation acceptance remains pending.",
+    "PR37 protected-reference blocker is fixed: frozen plaintext aliases share normalization with structured paths, all7affectedcases and all222tests on currentRust/Rust1.88 passed, as did all9Fledgesteps. The independently reproduced deletion failure and strictly later passing evidence are preserved. No live cleanup occurred."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -356,7 +358,18 @@
     "OBS-tc-cli-history-retention-a53d75159357634fc3653085",
     "OBS-tc-cli-retention-revalidation-d4cb9e37cf11becf209c48f0",
     "OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922",
-    "OBS-product-test-2ae43c5b0d01e1ff9d570f51"
+    "OBS-product-test-2ae43c5b0d01e1ff9d570f51",
+    "OBS-product-test-063bada1f0797d7f9fc3d83e",
+    "OBS-product-test-4ca251f7695567122f3b2bcd",
+    "OBS-product-test-ba4c86bbf0c00f16f5636082",
+    "OBS-product-test-c15c11e67b8c42a50a4cf835",
+    "OBS-tc-cli-history-adoption-40b0753b89cbc28fd20232fb",
+    "OBS-tc-cli-history-branches-df08dbceeb00e4ad0a17e062",
+    "OBS-tc-cli-history-bounds-40e498cd99373968597f550e",
+    "OBS-tc-cli-history-retention-0884ced5b5b7c5bc4964c170",
+    "OBS-tc-cli-retention-revalidation-2a910a07f6d3ffdc73fdf2fb",
+    "OBS-tc-cli-history-legacy-timing-bounds-4fd40efecc92433cfdb1554c",
+    "OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56"
   ],
   "bugs": [
     "BUG-0001",
@@ -378,12 +391,13 @@
     "BUG-shared-transition-appends-collide-across-independent-branches-8bcc3168f918377ac434cd77",
     "BUG-history-allocation-runs-before-initialization-preflight-cd2ea3e4eb06d54d1bb019ba",
     "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc",
-    "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a"
+    "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
+    "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3"
   ],
   "blockers": [],
   "awaiting_human": [
     "0xLeif's implementation review and acceptance of PR #37; scope approval is already recorded, and native review/ship and merge remain pending"
   ],
   "run_consents": [],
-  "next_action": "Complete corvid-agent retention/proof peer review of PR37 and address concrete findings; handle native bookkeeping internally and present the implementation for acceptance"
+  "next_action": "Push the fully qualified frozen-reference protection fix and obtain corvid-agent retention re-review before merge readiness"
 }

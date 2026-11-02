@@ -964,15 +964,18 @@ fn read_receipt(root: &Path, cycle: &str, budget: u64) -> Result<Receipt> {
     Ok(receipt)
 }
 
+fn normalize_reference_path(text: &str) -> String {
+    text.replace('\\', "/")
+        .split('/')
+        .filter(|part| !part.is_empty() && *part != ".")
+        .collect::<Vec<_>>()
+        .join("/")
+}
+
 fn normalize_reference_paths(value: &mut Value) {
     match value {
         Value::String(text) if text.to_lowercase().starts_with(".chough") => {
-            *text = text
-                .replace('\\', "/")
-                .split('/')
-                .filter(|part| !part.is_empty() && *part != ".")
-                .collect::<Vec<_>>()
-                .join("/");
+            *text = normalize_reference_path(text);
         }
         Value::Array(values) => {
             for value in values {
@@ -988,10 +991,30 @@ fn normalize_reference_paths(value: &mut Value) {
     }
 }
 
+fn normalize_plaintext_references(text: &str) -> String {
+    let boundary =
+        |character: char| character.is_whitespace() || matches!(character, '`' | '"' | '\'');
+    text.split_inclusive(boundary)
+        .map(|part| {
+            let token = part.trim_end_matches(boundary);
+            if token.to_lowercase().starts_with(".chough") {
+                format!(
+                    "{}{}",
+                    normalize_reference_path(token),
+                    &part[token.len()..]
+                )
+            } else {
+                part.to_string()
+            }
+        })
+        .collect::<String>()
+        .to_lowercase()
+}
+
 fn reference_text(path: &str, bytes: &[u8]) -> Result<String> {
     let text = String::from_utf8_lossy(bytes);
     if path.starts_with(".chough/artifacts/") {
-        return Ok(text.to_lowercase());
+        return Ok(normalize_plaintext_references(&text));
     }
     if path.ends_with(".json") {
         let mut value: Value = serde_json::from_str(&text)?;
@@ -1004,7 +1027,7 @@ fn reference_text(path: &str, bytes: &[u8]) -> Result<String> {
         normalize_reference_paths(&mut value);
         return Ok(value.to_string().to_lowercase());
     }
-    Ok(text.to_lowercase())
+    Ok(normalize_plaintext_references(&text))
 }
 
 fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
