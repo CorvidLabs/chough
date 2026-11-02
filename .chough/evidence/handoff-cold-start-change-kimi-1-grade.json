@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "handoff-cold-start-change-kimi-1-grade",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "human-observation",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "0xLeif graded the change run handoff-cold-start-change-kimi-1 (Kimi Code CLI 0.41.0, implementation tip 9009d9a) against the frozen rubric: Fail (P1-P3 not met). Answer given in an AskUserQuestion on 2026-11-01 after reading the grading sheet, whose option read: by the rubric's wording (the transcript states before the first edit), facts appearing only in tool output and files read do not count; P4 to P6 met. Recorded as his statement, not an approval.",
+  "artifacts": [
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/grading-sheet.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/grading-sheet.md": "a518c0681c75af8d6a49c4cc7abc8791660d98be6a4517abd73b19a2dc97d977"
+  },
+  "observed_at_unix_seconds": 1793580736,
+  "snapshot": {
+    "revision": "6c4a0d03a708eeefc01e42654154920aabccedd9",
+    "dirty": false,
+    "fingerprint": "3780f6ecc28fcd894f399370d392754f3d9b7eb0f78c08f50a26c35e28c0d2ed",
+    "content": "4c0ebf11141fd5bbf8ccda38c81de97245e01906afa14c6725e6ac15b31f45ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0133",
+      "digest": "821aedfc92e545217bc64e51ca897c29cede365795c89dacdcf2f397c93c668e"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "One run on one host and model; a sample of one."
+  ]
+}

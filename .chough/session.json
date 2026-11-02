@@ -103,7 +103,8 @@
     "Baseline cold start on main graded by 0xLeif: Fail (P2, P3 not met); observation handoff-cold-start-baseline-kimi-1-grade",
     "Closeout pass: four labelled lessons in specs/cli/context.md (cold-start baseline, driving Kimi, record bounds in criteria, closeout order); extended after the change runs",
     "Scoped change check verified; TC-cli-0126 to 0131 passed and TC-cli-0132 reviewed at the implementation tip",
-    "Kimi change run of the handoff cold start recorded at the implementation tip 9009d9a (observation handoff-cold-start-change-kimi-1, outcome not-run until graded)"
+    "Kimi change run of the handoff cold start recorded at the implementation tip 9009d9a (observation handoff-cold-start-change-kimi-1, outcome not-run until graded)",
+    "0xLeif graded the change run: Fail (P1-P3 not met); P4 to P6 met (observation handoff-cold-start-change-kimi-1-grade)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -131,7 +132,8 @@
     "tc-cli-0130-1793578919",
     "tc-cli-0131-1793578923",
     "tc-cli-0132-tip-review",
-    "handoff-cold-start-change-kimi-1"
+    "handoff-cold-start-change-kimi-1",
+    "handoff-cold-start-change-kimi-1-grade"
   ],
   "bugs": [
     "BUG-0001",
@@ -147,9 +149,7 @@
     "BUG-0025"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "0xLeif grades the Kimi change run handoff-cold-start-change-kimi-1 against the frozen rubric (grading sheet in .chough/artifacts/handoff-cold-start/change-kimi-1/)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "After 0xLeif grades the change run and the real-repository run (both started by the operator, never by a resuming agent): fledge lanes run verify, specsync change check --commit, push and CI. Until then the only agent work is a local fledge lanes run verify; do not record grades, run change check --commit, push or start agent runs."
 }
