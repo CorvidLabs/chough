@@ -120,6 +120,36 @@ verification, so do not list it; and SpecSync applies a MODIFIED requirement onl
 an exact `### REQ-cli-NNN` heading. Retire the ordering part when SpecSync ships an
 opt-in verification exclusion (proposed upstream as `verification_ignored_paths`).
 
+2026-11-01, cold-start handoff (observation): Kimi Code CLI 0.41.0 resuming the
+frozen csvsum repository with main's `chough next` (fb6e487) recovered the next task
+and avoided both recorded mistakes, but read neither `.chough/session.json` nor
+`specs/csvsum/context.md`, so it never stated the decisions, the failure or the lesson
+before its first edit. Source: observations handoff-cold-start-baseline-kimi-1 and
+handoff-cold-start-baseline-kimi-1-grade (0xLeif: P2 and P3 not met). Limits: one run,
+one host and model. Future use: put what a fresh agent must know into the `chough
+next` output itself; do not rely on an agent opening the files it points to.
+
+2026-11-01, driving Kimi for a cold start (observation): `kimi -p` rejects `--auto`
+and `--yolo`, so an unattended run uses interactive `kimi --auto` through
+CorvidLabs/rune 0.9.0; a prompt sent before the input box is ready is lost, so wait
+until the screen shows `context: 0%`. `kimi export` keeps the full tool-call record.
+Source: not-run attempts 0 to 2 and the run script kept with
+handoff-cold-start-baseline-kimi-1. Limits: Kimi Code CLI 0.41.0 on this machine.
+Future use: reuse that script shape for later runs; re-check on new Kimi versions.
+
+2026-11-01, record bounds in criteria (verified): Chough refuses a checkpoint over
+64 KiB, so an approved fixture of 50 decisions plus 80 gates and blockers of 4 KiB
+each could not be built, and the tested fixture fills the bound instead. Source:
+`tests/next.rs` cap fixture in this change; reported as a deviation by 0xLeif's
+choice. Limits: checkpoint-backed lists. Future use: check record-size bounds when
+writing a criterion's fixture, before approval.
+
+2026-11-01, closeout order (verified): SpecSync 6.1.2 `change check` refuses while the
+closeout box is open, so closeout runs before the scoped check and is extended, not
+reopened, after later runs. Source: this change's first scoped check. Limits: changes
+that list closeout as a checkbox. Future use: write closeout as the last checkbox and
+do it just before the scoped check.
+
 Add further lessons only from observed work, with source, applicable scope, concrete
 future use and revision or retirement guidance. A future native cli.3md would become
 the lesson source in place of this section.

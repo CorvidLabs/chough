@@ -29,7 +29,7 @@ Implementation:
 - [x] Refresh .agents/ and .claude/ copies with chough skill update and confirm byte identity.
 - [x] Normalize the canonical REQ-cli-002 heading to exactly `### REQ-cli-002` after approval, as requirements.md shows.
 - [x] Update docs/cli.md, CHANGELOG.md (Unreleased) and docs/ROADMAP.md (only to list this slice).
-- [ ] Run the closeout pass inside this change: labelled lessons into specs/cli/context.md, one completed checkpoint entry, one summary of at most 12 lines.
+- [x] Run the closeout pass inside this change: labelled lessons into specs/cli/context.md, one completed checkpoint entry, one summary of at most 12 lines.
 
 Human gates and steps (not tasks), in order: 0xLeif's scope approval of this change,
 before any implementation commit; normalizing the canonical REQ-cli-002 heading (the

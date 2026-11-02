@@ -74,7 +74,8 @@
     "0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json",
     "decided: cold-start proof: freeze a seeded fixture repo and a written pass/fail rubric before implementation and hash them as an observation; run a fresh agent on a different host (Kimi Code CLI 0.41.0 or Codex CLI 0.153.4) on main as a mandatory baseline, then on the change; 0xLeif grades; plus one run on this real repo (0xLeif, 2026-11-01)",
     "decided: lessons live in the existing specs/<module>/context.md Lessons section (SpecSync briefs it); Chough only points at them; no .3md, no library/ store (0xLeif, 2026-11-01)",
-    "assumption (agent, stated in design.md, not a human decision): checkpoint decisions stay Vec<String>; a decided:, rejected: or failed: prefix with a reason clause is read best-effort with a latest-N fallback; no checkpoint schema change"
+    "assumption (agent, stated in design.md, not a human decision): checkpoint decisions stay Vec<String>; a decided:, rejected: or failed: prefix with a reason clause is read best-effort with a latest-N fallback; no checkpoint schema change",
+    "decided: report criterion 5's cap fixture as a deviation, not re-approve, because the approved 4 KiB fixture exceeds the 64 KiB checkpoint bound (0xLeif chose \"Report as deviation\")"
   ],
   "open_questions": [],
   "completed": [
@@ -99,7 +100,8 @@
     "2026-11-01: corrected the three decision entries of this cycle after review: removed agent rationale that had been attributed to 0xLeif and the decided: prefix on the agent assumption (removed by hand, since the CLI has no remove flag, then re-added with chough checkpoint --decision)",
     "0xLeif approved the scope as drafted (AskUserQuestion, 2026-11-01); recorded with specsync change approve --actor 0xLeif",
     "0xLeif stated he read the frozen rubric docs/exercises/handoff-cold-start/rubric.md (sha256 f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17) and chose the Kimi baseline (AskUserQuestion, 2026-11-01); recorded as his statement, not an approval",
-    "Baseline cold start on main graded by 0xLeif: Fail (P2, P3 not met); observation handoff-cold-start-baseline-kimi-1-grade"
+    "Baseline cold start on main graded by 0xLeif: Fail (P2, P3 not met); observation handoff-cold-start-baseline-kimi-1-grade",
+    "Closeout pass: four labelled lessons in specs/cli/context.md (cold-start baseline, driving Kimi, record bounds in criteria, closeout order); extended after the change runs"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -137,5 +139,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Build: implement criteria 1 to 8 within the approved scope (rename the REQ-cli-002 heading first), then the change run on Kimi with the same model and prompt"
+  "next_action": "Scoped specsync change check, re-add TC-cli-0126 to TC-cli-0133 from target/handoff/cases-TC-cli-0126-0133.patch, then the Kimi change run at the implementation tip"
 }
