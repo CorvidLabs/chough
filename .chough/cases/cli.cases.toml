@@ -2399,3 +2399,22 @@ expected = ["The exact independent 825a380 digests match frozen fixtures; real s
 adapter = "cargo-test"
 test_target = "workflow_authority"
 test = "workflow_guidance_from_main_825a380_updates_and_preserves_edits"
+
+
+[[case]]
+id = "TC-cli-native-workflow-bundle-consistency"
+title = "Native writer examples and installed workflows consistently use agent accounts"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "FLOW-13", "LIFE-4", "LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-029"]
+paths = ["skills/chough-workflow", "README.md", "tests/workflow_authority.rs", ".agents/skills/chough-workflow", ".claude/skills/chough-workflow"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["Native approve/review examples use agent actor/reviewer arguments and all4 target guidance files in both installed host copies match canonical bytes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "workflow_authority"
+test = "native_writer_examples_and_installed_workflows_are_consistent"

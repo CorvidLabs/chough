@@ -37,17 +37,22 @@ Do not claim all checks are green and do not bypass the gate.
 
 ## After the human decides
 
-Only after a real review decision, record it and close natively, following native
-status rather than a remembered sequence:
+Only after a real implementation acceptance decision, the current agent records
+it and closes natively, following native status rather than a remembered sequence.
+The user reviews the implementation or PR; the agent handles these internal commands.
+Use the acting project agent account for the native record and retain the actual
+acceptance source separately. The actor label does not create that decision:
 
 ```sh
-specsync change review <id> --reviewer "<the human>"
+specsync change review <id> --reviewer "<agent-account>"
 specsync change ship <id>        # or: specsync change finalize <id>
 ```
 
 Do not commit between review and finalize. Only then clear the gate with `chough
 checkpoint --clear-awaiting-human` and run `chough stage advance`, which moves accept
-to done; it is refused until native state is `archived`. Push the archive commit and
+to done; it is refused until native state is `archived`. Record the actual acceptance
+source in the checkpoint after archival, preserving the verification window above.
+Push the archive commit and
 the checkpoint on the same pull request, wait for required checks, then merge through
 the repository's normal process. If several changes share a pull request, review and
 finalize them one at a time. If evidence went stale, use the recovery action that

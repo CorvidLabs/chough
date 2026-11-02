@@ -74,7 +74,8 @@
       "TC-cli-0130",
       "TC-cli-0131",
       "TC-cli-0132",
-      "TC-cli-agent-native-workflow-upgrade"
+      "TC-cli-agent-native-workflow-upgrade",
+      "TC-cli-native-workflow-bundle-consistency"
     ],
     "design": [],
     "files": [
@@ -82,7 +83,8 @@
       "src/records.rs",
       "tests/timing.rs",
       "docs/cli.md",
-      ".chough/artifacts/learning-integration/single-lineage-repair.json"
+      ".chough/artifacts/learning-integration/single-lineage-repair.json",
+      ".specsync/changes/make-native-workflow-stage-references-and-installed-copies-consistent/change.md"
     ]
   },
   "decisions": [
@@ -222,7 +224,8 @@
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
     "Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested.",
-    "PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass."
+    "PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass.",
+    "PR44 complete bundle consistency: plan/accept references apply existing authority and use acting agent accounts; both tracked hosts safely refreshed; four exact predecessors and every edited variant covered; structural writer/copy regression and both bound cases pass. All198tests on currentRust/Rust1.88 and all9Fledgesteps pass. Both native changes must close on thisPR."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -334,7 +337,13 @@
     "OBS-product-test-3a457c6c1ccc8b7f17ec9336",
     "OBS-tc-cli-agent-native-workflow-upgrade-9ee6d6d2e80829306188c6b7",
     "OBS-product-test-78bade59b97d61395419ccae",
-    "OBS-product-test-8c7a28bc8d391ad764019e99"
+    "OBS-product-test-8c7a28bc8d391ad764019e99",
+    "OBS-product-test-ebe8dcc6161354afe79b4f95",
+    "OBS-product-test-fa1399785a5046d25484052c",
+    "OBS-product-test-42eaa88e1ebc9f69e4d357b5",
+    "OBS-product-test-01416b5b1b2d5274537def26",
+    "OBS-tc-cli-agent-native-workflow-upgrade-809454a22a0dcd22dac3987f",
+    "OBS-tc-cli-native-workflow-bundle-consistency-1de0a14c5139751b1ea7ffa4"
   ],
   "bugs": [
     "BUG-0001",
@@ -353,12 +362,13 @@
     "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca",
     "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838",
-    "BUG-native-workflow-guidance-exceeds-the-bounded-skill-entrypoint-0c432bf829e08bf33dfc41b9"
+    "BUG-native-workflow-guidance-exceeds-the-bounded-skill-entrypoint-0c432bf829e08bf33dfc41b9",
+    "BUG-stage-references-and-installed-workflows-contradict-agent-authority-gui-17c8cf5e8275ded08fcacc38"
   ],
   "blockers": [],
   "awaiting_human": [
     "Implementation review of the issue42 workflow PR; the agent handles native closeout after the applicable acceptance decision"
   ],
   "run_consents": [],
-  "next_action": "Push the qualified PR44 actor/source refinement, obtain corvid-agent re-review and resolve remaining merge-readiness blockers"
+  "next_action": "Push the fully qualified PR44 consistency fix, obtain corvid-agent re-review and clear remaining review/native lifecycle blockers toward merge readiness"
 }

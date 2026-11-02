@@ -53,6 +53,14 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "14fd2277d5e3f97f24fe6b995b1815eff1cfcd7b49d03669919bdcc7290c2200",
     ),
     (
+        "references/plan.md",
+        "1022db57d0c114effc8669ede9ebb453f932109f608f883712725e57ba53551d",
+    ),
+    (
+        "references/accept.md",
+        "80f71366ad81e1720bdc5f91d51c5428cd6a60729c9d1675977e284f7b08e398",
+    ),
+    (
         "SKILL.md",
         "6eb4980c784757c2898ce871551282fe251a5c0715dd625e95806cff2be7f06a",
     ),

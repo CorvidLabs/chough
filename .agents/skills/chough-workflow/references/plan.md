@@ -23,14 +23,26 @@ new` prints the lessons of the modules you declare.
 
 ## One approval
 
-Present one coherent package: what will change, the contract delta, the plan, the
-verification approach, and any consequential open choice with your recommendation.
-Ask one concise question. Record `chough checkpoint --awaiting-human "Scope approval
-of <id>"`, then keep doing independent preparation.
+Prepare one coherent concrete package: outcome, contract delta, plan, verification
+and consequential choices. Apply the main skill's authorization rule before asking
+for a decision. If an actual prior or standing human instruction covers this scope,
+that authorization already exists: record its source, scope and limits in the
+checkpoint and native context, then run the native operation yourself.
 
-Only after the human actually approves, run `specsync change approve <id> --actor
-"<their name>"` and clear the gate with `chough checkpoint --clear-awaiting-human`.
-The actor is a label, not authenticated identity.
+```sh
+specsync change approve <id> --actor "<agent-account>" --note "<human authority source, covered scope and limits>"
+chough checkpoint --clear-awaiting-human
+```
+
+The acting agent account is the actor; the human instruction supplies the authority.
+Do not use the human's name merely because they authorized the agent's work, and do
+not ask the operator to execute this command or repeat covered permission.
+
+When a consequential decision or authority is actually missing, ask one concise
+question and record that real gate with `chough checkpoint --awaiting-human
+"Scope decision of <id>"`. Keep doing independent preparation while it is pending.
+After the missing decision arrives, record its source and perform the native steps
+as the agent. An actor label alone never supplies human authority.
 
 Lessons learned from rehearsing SpecSync 6.1: the delta is frozen once approved and
 `change check` refuses an edited delta; `change check` also refuses while `tasks.md`

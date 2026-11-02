@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "make-native-workflow-stage-references-and-installed-copies-consistent",
+  "slug": "make-native-workflow-stage-references-and-installed-copies-consistent",
+  "title": "Make native workflow stage references and installed copies consistent",
+  "description": "Make native workflow stage references and installed copies consistent",
+  "kind": "documentation",
+  "state": "verifying",
+  "canonical_applied": true,
+  "base_commit": "7cd739219ff667dcf6d153a6f439d6c3661b1fce",
+  "created_at": 1793640357,
+  "updated_at": 1793641269,
+  "affected_specs": [],
+  "affected_paths": [
+    "skills/chough-workflow/references/plan.md",
+    "skills/chough-workflow/references/accept.md",
+    ".agents/skills/chough-workflow/",
+    ".claude/skills/chough-workflow/"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Complete the existing REQ-cli-029 agent-operated authority guidance across plan/accept references and installed host copies; no additional canonical requirement, helper command or lifecycle state is introduced. The primary workflow change owns its contract and helper/test support.",
+  "acceptance_criteria": [
+    "Plan applies existing explicit authority before asking any missing decision, native writer examples use the acting agent account with actual human authority as source, accept preserves the actual implementation acceptance boundary, managed repository host copies match canonical guidance without overwriting edits, and cross-bundle actor/copy consistency plus safe predecessor upgrades are tested."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

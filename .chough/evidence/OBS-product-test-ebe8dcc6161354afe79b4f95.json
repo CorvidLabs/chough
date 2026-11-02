@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-ebe8dcc6161354afe79b4f95",
+  "criteria": [
+    "FLOW-5",
+    "LIFE-4",
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "The structural cross-bundle native-writer and installed-copy regression fails: plan/accept command examples still use human actor/reviewer placeholders, and both tracked host installations retain stale SKILL/lifecycle guidance.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-bundle-consistency-before.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-bundle-consistency-before.log": "fa0d71adff195ff6668a8b04377edb02f27eeacf9bfe626c05e694d717b4d326"
+  },
+  "observed_at_unix_seconds": 1793640842,
+  "snapshot": {
+    "revision": "7cd739219ff667dcf6d153a6f439d6c3661b1fce",
+    "dirty": true,
+    "fingerprint": "a51bd004a8ceec9383fbc301885f028b2be01855fcc59c8641f1ab9cd7b4722d",
+    "content": "4cba4165d14bb58ee296fcc29fcf2a20ba04e04cc79ceab2854800b173c3e458"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "This is source/package consistency evidence, not a fresh-agent compliance test or a new cold-start run."
+  ]
+}
