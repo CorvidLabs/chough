@@ -1,6 +1,6 @@
 ---
 id: adopt-merged-main-human-gate-walkthrough-and-example-in-pr-46
-state: implementing
+state: archived
 type: operations
 base_commit: 9dd30dd5d27720c33fab3fcf97dbce345fe3d482
 ---

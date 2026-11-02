@@ -7,11 +7,11 @@
   "title": "Adopt merged main human-gate walkthrough and example in PR 46",
   "description": "Adopt merged main human-gate walkthrough and example in PR 46",
   "kind": "operations",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "9dd30dd5d27720c33fab3fcf97dbce345fe3d482",
   "created_at": 1793661675,
-  "updated_at": 1793662230,
+  "updated_at": 1793662839,
   "affected_specs": [
     "cli"
   ],
