@@ -22,12 +22,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-0120-76a960d09d62f9e548d773cf"
+    "OBS-tc-cli-0120-76a960d09d62f9e548d773cf",
+    "OBS-tc-cli-0120-a8f83f0b745b921305211bfd"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
-  "scope": "out-of-scope",
-  "status": "open",
+  "scope": "in-scope",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -37,8 +38,15 @@
       "at_unix_seconds": 1793582343,
       "text": "Added despite similar reports: BUG-0025 covers archived done action wording; this is test fixture construction excluded from the identity change affected_paths.",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793583743,
+      "text": "status: open -> verified; scope: out-of-scope -> in-scope. After the explicitly approved fixture-only patch, this focused case passed with automatic observation allocation. All original assertions and failure artifacts remain intact. Full product suites each pass 182 tests; native ordering still blocks the full verify lane.",
+      "observations": [
+        "OBS-tc-cli-0120-a8f83f0b745b921305211bfd"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793582343,
-  "updated_at_unix_seconds": 1793582343
+  "updated_at_unix_seconds": 1793583743
 }

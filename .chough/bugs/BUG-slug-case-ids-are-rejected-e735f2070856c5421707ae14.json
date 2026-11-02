@@ -26,7 +26,8 @@
     "OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674",
     "OBS-tc-cli-slug-case-compatibility-649b7f61182d9e2cbf4c4c38",
     "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637",
-    "OBS-tc-cli-slug-case-compatibility-a5f05dbb3b838dedd3c3b422"
+    "OBS-tc-cli-slug-case-compatibility-a5f05dbb3b838dedd3c3b422",
+    "OBS-tc-cli-slug-case-compatibility-46e48b2d212fe44a838f3735"
   ],
   "impact": "Approved slug case definitions cannot be loaded or executed.",
   "classification": "product-defect",
@@ -57,8 +58,15 @@
       "observations": [
         "OBS-tc-cli-slug-case-compatibility-a5f05dbb3b838dedd3c3b422"
       ]
+    },
+    {
+      "at_unix_seconds": 1793583750,
+      "text": "After the explicitly approved fixture-only patch, this focused case passed with automatic observation allocation. All original assertions and failure artifacts remain intact. Full product suites each pass 182 tests; native ordering still blocks the full verify lane.",
+      "observations": [
+        "OBS-tc-cli-slug-case-compatibility-46e48b2d212fe44a838f3735"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793579580,
-  "updated_at_unix_seconds": 1793582554
+  "updated_at_unix_seconds": 1793583750
 }

@@ -25,7 +25,8 @@
     "OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92",
     "OBS-tc-cli-slug-validation-allocation-b1eb4af179f28f15e8224463",
     "OBS-tc-cli-slug-validation-allocation-71fe2212baa0de8c7e2caab1",
-    "OBS-tc-cli-slug-validation-allocation-f467e013bacf0b99eddafc60"
+    "OBS-tc-cli-slug-validation-allocation-f467e013bacf0b99eddafc60",
+    "OBS-tc-cli-slug-validation-allocation-87329eb940db06d9d61aa0c8"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
@@ -56,8 +57,15 @@
       "observations": [
         "OBS-tc-cli-slug-validation-allocation-f467e013bacf0b99eddafc60"
       ]
+    },
+    {
+      "at_unix_seconds": 1793583747,
+      "text": "After the explicitly approved fixture-only patch, this focused case passed with automatic observation allocation. All original assertions and failure artifacts remain intact. Full product suites each pass 182 tests; native ordering still blocks the full verify lane.",
+      "observations": [
+        "OBS-tc-cli-slug-validation-allocation-87329eb940db06d9d61aa0c8"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793579565,
-  "updated_at_unix_seconds": 1793582552
+  "updated_at_unix_seconds": 1793583747
 }

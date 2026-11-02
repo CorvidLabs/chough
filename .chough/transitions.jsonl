@@ -88,3 +88,5 @@
 {"schema_version":1,"at_unix_seconds":1793579375,"kind":"gate-closed","from":"plan","to":"plan","reason":"Scope approval of use-slug-identities-for-all-new-chough-records","gate":null,"revision":"6800b2dadebec358ab1a6fdb18b5d78136eb6631","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793579376,"kind":"advance","from":"plan","to":"build","reason":null,"gate":"native:approved","revision":"6800b2dadebec358ab1a6fdb18b5d78136eb6631","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793581725,"kind":"gate-opened","from":"build","to":"build","reason":"Scope approval of update-compact-next-fixture-for-slug-observations","gate":null,"revision":"6800b2dadebec358ab1a6fdb18b5d78136eb6631","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793583025,"kind":"gate-closed","from":"build","to":"build","reason":"Scope approval of update-compact-next-fixture-for-slug-observations","gate":null,"revision":"3931d29bfc5d48e2deba15b3c950d9ec510aa892","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793583834,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"b118422c826b29a41df2eea38c58120f6dbc77ae","refresh":[]}
