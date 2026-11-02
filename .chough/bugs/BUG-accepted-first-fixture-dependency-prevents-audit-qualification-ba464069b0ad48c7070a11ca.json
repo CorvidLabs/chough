@@ -22,12 +22,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-structural-d607388cf7cd0eb18ee64eef"
+    "OBS-structural-d607388cf7cd0eb18ee64eef",
+    "OBS-structural-c07c15026bd2fd81c2773bf3"
   ],
   "impact": "Blocks full verify, native closeout and merge qualification despite passing product tests.",
   "classification": "requirement-gap",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -37,8 +38,15 @@
       "at_unix_seconds": 1793583804,
       "text": "Added despite similar reports: The obsolete observation-ID fixture defect is fixed and has a later passing case. This is a separate planning/recovery gap in the accepted-first native dependency.",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793585082,
+      "text": "status: open -> verified. Resolved through the supported sequential native workflow after 0xLeif explicitly approved the implementation: parent review/ship archived it, enabling the dependent fixture check. A strictly later full 9-step verify passes audit. Original refusals remain retained.",
+      "observations": [
+        "OBS-structural-c07c15026bd2fd81c2773bf3"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793583804,
-  "updated_at_unix_seconds": 1793583804
+  "updated_at_unix_seconds": 1793585082
 }

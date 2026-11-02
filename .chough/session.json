@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "use-slug-identities-for-all-new-chough-records",
+  "native_change": "update-compact-next-fixture-for-slug-observations",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -96,7 +96,8 @@
     "0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup",
     "Codex resumed Kimi's approved identity scope in a preserved takeover checkout; tests/next.rs is covered by a separate prepared fixture change, not by amending the frozen identity scope.",
     "2026-11-01: 0xLeif replied \"yes i approve\" to the prepared one-file tests/next.rs fixture scope; native update-compact-next-fixture-for-slug-observations records that definition approval. Implementation acceptance is still pending.",
-    "failed: native co-review qualification because the accepted-first dependency chosen for the fixture prevents its approved path from counting until parent acceptance. Keep the approval and refusal evidence; do not fabricate acceptance or weaken audit."
+    "failed: native co-review qualification because the accepted-first dependency chosen for the fixture prevents its approved path from counting until parent acceptance. Keep the approval and refusal evidence; do not fabricate acceptance or weaken audit.",
+    "2026-11-01: 0xLeif explicitly approved the PR packages and instructed \"i approve.. get these prs out of draft and merged when all green\". Parent identity native review and archive are now recorded. The fixture native ordering can proceed; merge remains conditional on green checks."
   ],
   "open_questions": [],
   "completed": [
@@ -143,7 +144,9 @@
     "PR #29 merged as 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec, observed on GitHub",
     "Resumed Kimi identity implementation on the existing PR branch; four slug regressions pass with automatic IDs and original failures retained. Rust 1.99.1 and 1.88.0 each passed 181 tests with the known compact-next fixture excluded.",
     "Applied the approved fixture-only patch: automatic observation allocation and returned-ID reference; all existing assertions retained.",
-    "Applied the explicitly approved fixture-only update; all 182 tests pass on Rust 1.99.1 and 1.88.0 with no exclusions. Next suite, five focused cases, case definitions, real CLI exercise and build pass."
+    "Applied the explicitly approved fixture-only update; all 182 tests pass on Rust 1.99.1 and 1.88.0 with no exclusions. Next suite, five focused cases, case definitions, real CLI exercise and build pass.",
+    "Identity parent archived through native review and ship after actual human approval; dependent fixture verification is now unblocked.",
+    "Full verify passes all 9 steps with 182 tests and zero exclusions after the approved identity parent archive unlocked the fixture. The native-ordering bug has a strictly later passed observation."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -212,7 +215,8 @@
     "OBS-tc-cli-slug-observation-allocation-74cf834b8d5f25c963b434b3",
     "OBS-tc-cli-slug-validation-allocation-87329eb940db06d9d61aa0c8",
     "OBS-tc-cli-slug-snapshot-allocation-af22af889455b7ae173e7a35",
-    "OBS-tc-cli-slug-case-compatibility-46e48b2d212fe44a838f3735"
+    "OBS-tc-cli-slug-case-compatibility-46e48b2d212fe44a838f3735",
+    "OBS-structural-c07c15026bd2fd81c2773bf3"
   ],
   "bugs": [
     "BUG-0001",
@@ -231,10 +235,8 @@
     "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca"
   ],
-  "blockers": [
-    "Native accepted-first fixture dependency blocks audit coverage and follow-up check; ordering recovery is required before full verification or closeout."
-  ],
+  "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Resolve the unsuitable accepted-first fixture dependency through a supported native planning/recovery path, then rerun full verify and pre-push. Product and fixture tests pass; both existing scope approvals remain valid. Human implementation review, archive and merge have not occurred."
+  "next_action": "Commit the final records, check the fixture --commit, record the already-authorized human native review and ship it with no intervening commit, push both archives, require every CI check green, then mark ready and merge."
 }
