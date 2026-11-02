@@ -1131,6 +1131,8 @@ fn unlinked_failure(root: &Path, session: &Checkpoint) -> Result<Option<String>>
             observations
                 .iter()
                 .filter(|record| record.cases.iter().any(|link| &link.id == case))
+                // A not-run attempt executed nothing; the latest executed result decides.
+                .filter(|record| record.outcome != evidence::Outcome::NotRun)
                 .max_by(|a, b| {
                     (a.observed_at_unix_seconds, &a.id).cmp(&(b.observed_at_unix_seconds, &b.id))
                 })

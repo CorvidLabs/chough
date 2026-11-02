@@ -2547,6 +2547,77 @@ fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
     assert_eq!(stage(&fixture), "accept");
 }
 
+/// PR #43 review: a later `not-run` observation executed nothing, so the latest
+/// executed (passed or failed) observation decides; a not-run-only case does not
+/// refuse, and a later pass still lifts the refusal.
+#[test]
+fn a_later_not_run_keeps_an_unlinked_failure_refused() {
+    let fixture = at_test_with_case();
+    case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 100);
+    case_observation(
+        &fixture,
+        "OBS-notrun-000000000000000000000001",
+        "TC-cli-0001",
+        "not-run",
+        200,
+    );
+    for route in [
+        vec!["stage", "advance"],
+        vec!["stage", "skip", "--reason", "nothing to accept"],
+    ] {
+        let error = fixture.fails(&route);
+        assert!(
+            error.contains("refused:unlinked-failure"),
+            "{route:?}: {error}"
+        );
+        assert!(error.contains(FAILED), "{route:?}: {error}");
+        assert_eq!(stage(&fixture), "test");
+    }
+    let next = fixture.ok(&["next", "--json"]);
+    let status = fixture.ok(&["status", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(action.contains("refused:unlinked-failure"), "{action}");
+    assert!(action.contains(FAILED), "{action}");
+    assert_eq!(
+        next["next_valid_action"]["action"],
+        status["next_valid_action"]
+    );
+    case_observation(
+        &fixture,
+        "OBS-pass-000000000000000000000003",
+        "TC-cli-0001",
+        "passed",
+        300,
+    );
+    case_observation(
+        &fixture,
+        "OBS-notrun-000000000000000000000002",
+        "TC-cli-0001",
+        "not-run",
+        400,
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+
+    let fixture = at_test_with_case();
+    case_observation(
+        &fixture,
+        "OBS-notrun-000000000000000000000003",
+        "TC-cli-0001",
+        "not-run",
+        200,
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        !next["next_valid_action"]["action"]
+            .as_str()
+            .unwrap()
+            .contains("refused:unlinked-failure")
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+}
+
 /// A bug of any status that links the failed observation lifts the refusal; an open
 /// blocking bug keeps its own refusal first; a failure of an unreferenced case and a
 /// failure followed by a pass do not refuse; equal times order by observation ID.

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
+  "slug": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
+  "title": "Unlinked failure ignores not-run: leaving test keeps refusing when a referenced case's latest executed observation failed and a later observation is only not-run (PR 43 review)",
+  "description": "Unlinked failure ignores not-run: leaving test keeps refusing when a referenced case's latest executed observation failed and a later observation is only not-run (PR 43 review)",
+  "kind": "bug_fix",
+  "state": "verifying",
+  "canonical_applied": true,
+  "base_commit": "466594bf7ed98b332c701afe1cae4d0f70355aa1",
+  "created_at": 1793638947,
+  "updated_at": 1793639162,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "CHANGELOG.md",
+    "docs/cli.md",
+    "specs/cli/",
+    "src/stage.rs",
+    "tests/stages.rs"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With a referenced case failed at time 100 and only not-run at time 200, stage advance and stage skip at test are refused with refused:unlinked-failure naming the failed observation, and next and status name the same refusal",
+    "A later passed observation still lifts the refusal even when a not-run follows it; a case with only not-run observations does not refuse",
+    "The regression test fails before the fix and passes after it; fledge lanes run verify passes; hosted CI is reported only as observed"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "specs/cli/context.md lessons: tasks.md checkboxes block change check, so cases and human gates stay out of tasks.md; keep the src/stage.rs diff minimal (PR 45 also edits it)",
+    "public_contract": "yes"
+  }
+}

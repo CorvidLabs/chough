@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Issue #39: leaving test refuses while a referenced case's latest observation failed and no bug links it",
+  "objective": "PR #43 review fix: a later not-run observation must not clear an unlinked failure",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links",
+  "native_change": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -76,7 +76,8 @@
       "TC-cli-0132",
       "TC-cli-leaving-test-refuses-an-unlinked-failed-case",
       "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal",
-      "TC-cli-0032"
+      "TC-cli-0032",
+      "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
     ],
     "design": [],
     "files": [
@@ -225,7 +226,8 @@
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
-    "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated"
+    "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated",
+    "Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -351,5 +353,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif reviews and merges PR #43 after hosted CI is green"
+  "next_action": "Record the case, verify and advance to accept"
 }
