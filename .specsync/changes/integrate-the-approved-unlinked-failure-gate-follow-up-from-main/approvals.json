@@ -1,0 +1,37 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793661175,
+      "digest": "6e2bb78e8cdcd77398faae23096892aad58eaf3871e691726cdf1103f93a6101",
+      "note": "Acting agent account: corvid-agent. Human authority: 0xLeif standing repository-through-PR instruction on2026-11-02, relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 , plus his later \"Can you finish up all these?\" request. Covered scope: import already archived PR43 stage failure/not-run gates/tests and CLI doc integration from pinned main3d00e44 into PR44, then qualify and push normally. Common paths remain owned by the existing integration scope. Root alone reviews/ships; no new as-is acceptance, merge, release, deployment or cleanup is inferred.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-the-approved-unlinked-failure-gate-follow-up-from-main",
+        "title": "Integrate the approved unlinked-failure gate follow-up from main",
+        "description": "Integrate the approved unlinked-failure gate follow-up from main",
+        "kind": "documentation",
+        "affected_specs": [],
+        "affected_paths": [
+          "docs/cli.md",
+          "src/stage.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Import the already approved and archived PR43 failure/not-run gate and its tests while integrating the now-current main into PR44. No new gate meaning, canonical requirement or source behavior is invented. The first integration scope continues to own shared metadata and bundle resolution.",
+        "acceptance_criteria": [
+          "Preserve the exact approved unlinked-failure and later-not-run gate behavior and its tests from pinned main3d00e44 while retaining PR44 user-doc actor/source guidance, with no proof/archive rewrite or native gate bypass; qualify the combined main result under Rust1.95/1.88 and required Fledge/cases before ordinary branch push, with native review/ship reserved for root."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
