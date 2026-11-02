@@ -16,6 +16,38 @@
         }
       ],
       "requirement_ids": []
+    },
+    {
+      "timestamp": 1793663427,
+      "commit": "04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9",
+      "contract_digest": "2169ffeb5386a14b4c4a332aad2cc0222a55c44b396b2ee9446755c8743d8d87",
+      "execution_digest": "c9dddf70b6dad374e70f63f46906d26c8492ed99d39691abbafc7afc2b855694",
+      "workspace_digest": "cb016073e63ec5923b07bcd6aa1b81abc43ec111b8ff98f39f478e984a04bda8",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793663539,
+      "commit": "04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9",
+      "contract_digest": "2169ffeb5386a14b4c4a332aad2cc0222a55c44b396b2ee9446755c8743d8d87",
+      "execution_digest": "c9dddf70b6dad374e70f63f46906d26c8492ed99d39691abbafc7afc2b855694",
+      "workspace_digest": "aaa21320aa96786667726f09fc94d8e6736c811020b6cb09300040b4371daaf0",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
     }
   ]
 }

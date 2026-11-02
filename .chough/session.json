@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
-  "objective": "Integrate final main9d02fbf into PR44 while preserving ordering, authority, failure and human gates and immutable proof",
+  "objective": "Integrate already-merged main d839fef into PR44 while preserving ordering, setup hints, authority, all gates and immutable proof",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -270,7 +270,10 @@
     "PR44 user-doc guidance is consistent across CLI/walkthrough/next-change docs, canonical skill and installed bundles. All198tests on Rust1.95/Rust1.88, both bound cases and allnineFledge steps pass. Initial unrelated timing-budget MSRV failure is preserved with an open reliability bug; isolated/full unchanged reruns passed, cause unconfirmed. Three native scopes must close after actual implementation acceptance.",
     "PR #44 completed all three native scoped reviews and archives in SpecSync required order under the human finish-all instruction. Original approval events and failed qualification proof remain intact; the checkpoint is done.",
     "Intermediate main 9d02fbf source 421e8ce passed the full nine-step Fledge lane, all 205 Rust 1.95 and 1.88 tests and three applicable authority/ordering cases. Main 47 remains to be imported and qualified before final push.",
-    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG"
+    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
+    "The feature-only main47 merge is committed at04fa590, canonical version22. All1366protected parent blobs and139case identities survive. Only three explicit conflict paths were staged after verifying the imported archive objects; both main refs remain unchanged.",
+    "Integrated already-merged main d839 into PR44 at canonical version22, preserving main ordering, unlinked-failure and open-human-gate guards, setup guidance and native actor/source boundaries.",
+    "Final d839 qualification passed Fledge9 and all206tests on Rust1.95 and Rust1.88 with0failed,0ignored,0filtered; all3applicable cases passed; native audit0errors/0warnings. Protected1366parent blobs and alltransition occurrences remain intact."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -400,7 +403,12 @@
     "OBS-product-test-506e8a6e02b6aa27262540b1",
     "OBS-tc-cli-agent-native-workflow-upgrade-163aee4f748898deb7dee104",
     "OBS-tc-cli-native-workflow-bundle-consistency-33824187f0d1e55af27bc01a",
-    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d1140d9c201cc555471ac823"
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d1140d9c201cc555471ac823",
+    "OBS-product-test-ad3e8cdd22f775f4c7f71412",
+    "OBS-product-test-4774c0494f82c6dbb144c977",
+    "OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe",
+    "OBS-tc-cli-native-workflow-bundle-consistency-1f667e9b8cbe3ee379930c77",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-b811635bcafdf40315b15950"
   ],
   "bugs": [
     "BUG-0001",
@@ -427,5 +435,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Import already-merged main 47 into this feature branch only, preserve its archived ownership and current workflow authority, then requalify before ordinary push"
+  "next_action": "Root alone records native review and ship for all3integration scopes after checking current verification. The feature branch may be pushed only if main remains d839 and origin feature remains the expected head. No PR merge, release or deployment."
 }

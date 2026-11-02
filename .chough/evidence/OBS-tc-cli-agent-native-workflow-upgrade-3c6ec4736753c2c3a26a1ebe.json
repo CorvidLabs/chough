@@ -1,0 +1,60 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe",
+  "criteria": [
+    "FLOW-1",
+    "FLOW-5",
+    "LIFE-4",
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test workflow_authority -- --exact workflow_guidance_from_main_825a380_updates_and_preserves_edits for TC-cli-agent-native-workflow-upgrade: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe.log": "9e715921ea0ccc149d9f8bb21bc001e4d1c7744f447f227c001f60ab0973498d"
+  },
+  "observed_at_unix_seconds": 1793663455,
+  "snapshot": {
+    "revision": "04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9",
+    "dirty": false,
+    "fingerprint": "d1d08445c2ff1928eb39539d65becb6d717443288e3e676a3be5e651bd7e5b95",
+    "content": "1748d4d746d459e23d32461774503e646af81dd4afd7007c4c9d132153161959"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-agent-native-workflow-upgrade",
+      "digest": "df58494ed355c0121e0e12514d3a6b539bec2588121efa437b06a3f2bc9238fd"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "workflow_authority",
+    "--",
+    "--exact",
+    "workflow_guidance_from_main_825a380_updates_and_preserves_edits"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

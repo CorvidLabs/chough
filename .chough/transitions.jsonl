@@ -173,3 +173,5 @@
 {"schema_version":1,"at_unix_seconds":1793640105,"kind":"advance","from":"build","to":"test","reason":"Implementation and docs complete; new test green","gate":"native:approved","revision":"89130c01a28fb83f00f69d61f0d998a13bfc83a6","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793640210,"kind":"advance","from":"test","to":"accept","reason":"Case passed; fledge verify lane passed locally","gate":"native:verifying","revision":"89130c01a28fb83f00f69d61f0d998a13bfc83a6","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793640245,"kind":"advance","from":"accept","to":"done","reason":"Accepted: archived SpecSync change, verify lane passed locally","gate":"native:archived","revision":"892ef32c6eb6a4964a92f3e922816f2958a001be","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793663521,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793663850,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9","refresh":[]}

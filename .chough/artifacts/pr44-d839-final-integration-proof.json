@@ -1,0 +1,121 @@
+{
+  "source_head": "04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9",
+  "main": "d839fef0820bf63a736a37d805265d7d6d362486",
+  "protected_parent_blobs_exact": 1366,
+  "unchanged_imported_source_paths": 4,
+  "host_reference_pairs_exact": 10,
+  "unique_case_ids": 139,
+  "canonical_version": 22,
+  "requirements_preserved": {
+    "REQ-cli-008": "exact main d839",
+    "REQ-cli-009": "exact main d839",
+    "REQ-cli-030": "exact main d839",
+    "REQ-cli-031": "exact main d839",
+    "REQ-cli-029": "exact original PR44"
+  },
+  "scope": "Feature-branch integration of already-merged main d839 into PR44. No main update, PR merge, native review or ship performed.",
+  "checkpoint_selection": "Root selected the complete PR44 current-cycle group. Original divergent inputs were refused first; the explicit selected-cycle operand merges additive collections. This is branch ownership, not human approval.",
+  "original_inputs": {
+    "refs.json": {
+      "sha256": "31725ccb2b9566ecb46156f5821b3ed153e74dafdb465ebc964bcea26308c30d",
+      "bytes": 301,
+      "retained_at": "/tmp/chough44-maind839fef-proof/refs.json"
+    },
+    "base.session.json": {
+      "sha256": "06e5c373c232f80e165940e198610574eeebc1fcc052d612aa49f361c80a25e7",
+      "bytes": 36539,
+      "retained_at": "/tmp/chough44-maind839fef-proof/base.session.json"
+    },
+    "ours.session.json": {
+      "sha256": "e2ac1cbad8be5f22e2ee19f53a0aa6218c092081ce33e369a3647d9ca37a49ad",
+      "bytes": 41991,
+      "retained_at": "/tmp/chough44-maind839fef-proof/ours.session.json"
+    },
+    "theirs.session.json": {
+      "sha256": "98c3f063d87fac1747fe948534968064cad55f44c6082fa374fb177f25cfa237",
+      "bytes": 36702,
+      "retained_at": "/tmp/chough44-maind839fef-proof/theirs.session.json"
+    },
+    "base.transitions.jsonl": {
+      "sha256": "000ed51c398c8229d886649287f166c9f611a8011921ff5aa827bce0c23bfe5d",
+      "bytes": 51730,
+      "retained_at": "/tmp/chough44-maind839fef-proof/base.transitions.jsonl"
+    },
+    "ours.transitions.jsonl": {
+      "sha256": "6207bb59c17a71bbcebe2e3c705185ba9633753350baea453072dece78111906",
+      "bytes": 56616,
+      "retained_at": "/tmp/chough44-maind839fef-proof/ours.transitions.jsonl"
+    },
+    "theirs.transitions.jsonl": {
+      "sha256": "ea8173b94e790b184e7a6521d691b2d77fdf74244d03522c8e1ad91acd3c82de",
+      "bytes": 53490,
+      "retained_at": "/tmp/chough44-maind839fef-proof/theirs.transitions.jsonl"
+    },
+    "checkpoint-selection.json": {
+      "sha256": "9fb445b515f3522826767b7148c7b359b589b82066ff3da5ab9109709efa8766",
+      "bytes": 509,
+      "retained_at": "/tmp/chough44-maind839fef-proof/checkpoint-selection.json"
+    },
+    "protected-verification.json": {
+      "sha256": "6119de67ebe8a8f16c11ef798226b74e9d9914c10010762bc7e8ec5820303b5a",
+      "bytes": 56,
+      "retained_at": "/tmp/chough44-maind839fef-proof/protected-verification.json"
+    }
+  },
+  "all_parent_transition_occurrences_preserved": true,
+  "transitions_after_legitimate_integration_stage_moves": 176,
+  "qualification": {
+    "verify": {
+      "passed": 206,
+      "suites": 11,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 0,
+      "artifact": ".chough/artifacts/pr44-d839-final-verify.log",
+      "fledge_steps": 9,
+      "rust": "1.95.0"
+    },
+    "msrv": {
+      "passed": 206,
+      "suites": 11,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 0,
+      "artifact": ".chough/artifacts/pr44-d839-final-msrv.log",
+      "rust": "1.88.0"
+    }
+  },
+  "applicable_cases": {
+    "TC-cli-agent-native-workflow-upgrade": {
+      "observation_id": "OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe",
+      "outcome": "passed",
+      "environment": "local-macos-arm64",
+      "method": "automated"
+    },
+    "TC-cli-native-workflow-bundle-consistency": {
+      "observation_id": "OBS-tc-cli-native-workflow-bundle-consistency-1f667e9b8cbe3ee379930c77",
+      "outcome": "passed",
+      "environment": "local-macos-arm64",
+      "method": "automated"
+    },
+    "TC-cli-skill-orders-the-change-check-before-new-requirement-cases": {
+      "observation_id": "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-b811635bcafdf40315b15950",
+      "outcome": "passed",
+      "environment": "repository-text",
+      "method": "agent-assisted"
+    }
+  },
+  "native_audit": {
+    "checked_changes": 3,
+    "enabled": true,
+    "errors": [],
+    "warnings": []
+  },
+  "limits": [
+    "Local macOS arm64 execution only; hosted CI is separate.",
+    "Source/package consistency is not fresh-agent or cold-start proof. Kimi was not run.",
+    "Imported guard case definitions support Linux/CI only. Their exact Rust tests passed within all39 stage tests on this macOS run; no unsupported managed-case observation was recorded.",
+    "Existing timing-budget flaky bug remains open, was not reproduced by these successful runs, and is not closed by them.",
+    "No merge, release or deployment was performed. Root is the sole native closeout writer."
+  ]
+}
