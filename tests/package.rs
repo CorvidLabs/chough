@@ -806,6 +806,105 @@ fn checkpoint_and_plan_references_from_main_2756dc2_are_known_outdated() {
 }
 
 #[test]
+fn a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow");
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/skill-fb6e487");
+    let files = [
+        (
+            "references/accept.md",
+            "4e085b88eaa66a59fd6c8ce7d3acb1201b46292603a2cf13ab5333fc5ea85d86",
+        ),
+        (
+            "references/bugs.md",
+            "df42d472ae25b0ed07ad3beb1257ce77c3fe4e159feefe8e70e7c18ec03a6945",
+        ),
+        (
+            "references/checkpoint.md",
+            "28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf",
+        ),
+        (
+            "references/librarian.md",
+            "df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17",
+        ),
+        (
+            "references/lifecycle.md",
+            "e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235",
+        ),
+    ];
+    for (file, digest) in files {
+        // The known digests are of LF bytes; a Windows checkout may have converted them.
+        let old = fs::read_to_string(fixtures.join(file))
+            .unwrap()
+            .replace("\r\n", "\n");
+        assert_eq!(
+            format!("{:x}", Sha256::digest(old.as_bytes())),
+            digest,
+            "{file}"
+        );
+        fs::write(installed.join(file), old).unwrap();
+    }
+    let status = chough(root, &["skill", "status"]);
+    for (file, _) in files {
+        assert_eq!(
+            skill_state(&status, file)["state"],
+            "known-outdated",
+            "{file}"
+        );
+    }
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    for file in bundle_files() {
+        assert_eq!(skill_state(&status, &file)["state"], "current", "{file}");
+    }
+
+    // A copy edited from the fb6e487 version is edited, and update keeps it.
+    for (file, _) in files {
+        let mut edited = fs::read_to_string(fixtures.join(file))
+            .unwrap()
+            .replace("\r\n", "\n");
+        edited.push_str("\nA local note.\n");
+        fs::write(installed.join(file), &edited).unwrap();
+        let status = chough(root, &["skill", "status"]);
+        assert_eq!(skill_state(&status, file)["state"], "edited", "{file}");
+        chough(root, &["skill", "update"]);
+        assert_eq!(
+            fs::read_to_string(installed.join(file)).unwrap(),
+            edited,
+            "{file}"
+        );
+    }
+}
+
+#[test]
+fn a_checkpoint_reference_from_main_with_merge_guidance_is_known_outdated_and_updated() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow/references/checkpoint.md");
+    // The known digest is of LF bytes; a Windows checkout may have converted them.
+    let old = CHECKPOINT_AT_66BEF80.replace("\r\n", "\n");
+    assert_eq!(
+        format!("{:x}", Sha256::digest(old.as_bytes())),
+        "70ec5dee386c4ef178abe76a45236072bea7342aa265192fd0210536fe2639e8"
+    );
+    fs::write(&installed, old).unwrap();
+    let status = chough(root, &["skill", "status"]);
+    assert_eq!(
+        skill_state(&status, "references/checkpoint.md")["state"],
+        "known-outdated"
+    );
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    assert_eq!(
+        skill_state(&status, "references/checkpoint.md")["state"],
+        "current"
+    );
+}
+
+#[test]
 fn checkpoint_reference_before_merge_guidance_is_known_outdated_and_edited_copies_stay() {
     let project = empty_project();
     let root = project.path();
@@ -2421,3 +2520,190 @@ expected = [
   "Focus order and visible focus match the companion notes",
 ]
 "##;
+
+/// `references/checkpoint.md` as shipped by main 66bef80 (safe checkpoint merges, #29).
+const CHECKPOINT_AT_66BEF80: &str = r##"# Checkpoint and cold resume
+
+Essential state must never live only in model context. `.chough/session.json` is the
+single writable checkpoint. It works without the librarian and without any other
+storage adapter.
+
+## What it holds
+
+| Field | Content |
+|---|---|
+| `objective`, `stage` | Current outcome, stage, status, side-stage callers and iteration |
+| `native_change` | The SpecSync change ID; native status decides its state |
+| `references` | Criteria, requirements, cases, design sources and files in scope |
+| `decisions`, `open_questions` | Decisions with their reason in the sentence; questions that matter |
+| `completed`, `observations`, `bugs`, `blockers` | Work done and the records that show it |
+| `awaiting_human` | Real gates still waiting for a person |
+| `run_consents` | Consent for this objective only |
+| `next_action` | Suggested next step; never overrides native state |
+
+Standing preferences are in `.chough/preferences.json`, transitions in
+`.chough/transitions.jsonl`, observations in `.chough/evidence/`, bugs in
+`.chough/bugs/`, case definitions in `.chough/cases/` and retention removals in
+`.chough/pruned.jsonl`.
+
+## When to save
+
+Save after each meaningful increment, before handing off, before context is cleared,
+and whenever a human gate opens or closes:
+
+```sh
+chough checkpoint --completed "<what was done>" --observation <id> \
+  --decision "<decision, because reason>" --next-action "<next step>"
+```
+
+Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` record to
+`.chough/transitions.jsonl` (only when that gate is not already open), and
+`--clear-awaiting-human` appends one `gate-closed` record per gate it clears. They
+record when a gate waited, never who decided or what, and `chough timing` reads them
+to show waiting-on-human time. Open and clear gates through these flags rather than by
+editing `session.json`, or the waiting time is lost.
+
+`--clear-awaiting-human` clears every open gate, not just one. To close some gates
+and keep the others, pass the gates still waiting with `--awaiting-human` in the same
+call; they are logged closed and opened again, so their waiting time restarts there.
+
+Write decision summaries and observations, not private reasoning transcripts.
+SpecSync's `Handoff:` line says whether its own records are safe to clear; follow it
+too.
+
+## Resume cold
+
+A fresh agent with none of the earlier conversation:
+
+1. Reads `AGENTS.md`, then this skill.
+2. Runs `chough next --environment <env>` (or reads the files above directly); it is
+   the focused view, and `chough status` is the full one.
+3. Checks native status for `native_change`, freshness of the referenced observations,
+   open blocking bugs and `awaiting_human`. A referenced observation is `current`,
+   `historical` (present but stale), `pruned` (removed by retention, in the ledger) or
+   `unavailable` (missing, not in the ledger); only a current one counts, so rerun the
+   others rather than treat them as passed.
+4. Continues with `next_valid_action` under the same scope, preferences and gates. It
+   never records a pending human decision itself. In stage done with the native
+   change archived, the cycle is closed: `chough next` recommends `chough stage reset
+   --to intent --reason "<why>"` (or `--to plan` when the approved intent already
+   covers the new work), then `specsync change new "<outcome>" --spec <module> --path
+   <path>` and `chough checkpoint --native-change <id> --next-action "<next step>"`.
+   A reset replaces the checkpoint's next action.
+
+## Schema and concurrency
+
+A schema 1 session keeps working for `context` and `status`. `chough migrate`
+converts it after saving the original bytes to `.chough/session.v1.json`. Hand edits
+are allowed and validated on every read. With several agents, one agent owns live
+checkpoint writes; others report to it. APS was evaluated as a backend and deferred:
+it lost concurrent read-modify-write updates without error and accepts unknown fields.
+
+For committed parallel schema 2 edits, the repository declares:
+
+```gitattributes
+.chough/session.json merge=chough-session
+```
+
+Each clone that wants automatic merging configures the driver locally:
+
+```sh
+git config --local merge.chough-session.name "Chough schema 2 checkpoint"
+git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
+```
+
+Git supplies base, ours and theirs as `%O`, `%A` and `%B`. `chough init` never sets
+these values. Without a driver, use the explicit fallback:
+
+```sh
+chough checkpoint --merge <base> <ours> <theirs>
+```
+
+The merge preserves ordered exact-string history and reference changes. It treats
+objective, intent scope, modules, stage, native change, next action, run consents,
+blockers and awaiting-human gates as one current-cycle group. If both sides change
+that group differently, leave the conflict unresolved and ask the checkpoint owner
+or human to select a coherent cycle. Never hand-resolve it by combining fields. A
+merge is not approval, consent, gate closure or a lifecycle transition.
+
+Success replaces only ours. Every refusal preserves all three inputs and writes no
+Chough record. The merge adds no second checkpoint store and does not change the
+one-owner rule for live writes.
+"##;
+
+#[test]
+fn librarian_reference_from_identity_main_updates_without_overwriting_edits() {
+    let project = empty_project();
+    let root = project.path();
+    chough(
+        root,
+        &["init", "--objective", "Resume the identity main skill"],
+    );
+    let file = "references/librarian.md";
+    let installed = root.join(".agents/skills/chough-workflow").join(file);
+    let old = IDENTITY_MAIN_LIBRARIAN.replace("\r\n", "\n");
+    assert_eq!(
+        format!("{:x}", Sha256::digest(old.as_bytes())),
+        "4fa746a83405059803f3589579559dd2ac909d942e1fd8dd709158b488e5dc0d"
+    );
+    fs::write(&installed, &old).unwrap();
+    assert_eq!(
+        skill_state(&chough(root, &["skill", "status"]), file)["state"],
+        "known-outdated"
+    );
+    chough(root, &["skill", "update"]);
+    assert_eq!(
+        skill_state(&chough(root, &["skill", "status"]), file)["state"],
+        "current"
+    );
+    let edited = format!("{old}\nA local librarian note.\n");
+    fs::write(&installed, &edited).unwrap();
+    assert_eq!(
+        skill_state(&chough(root, &["skill", "status"]), file)["state"],
+        "edited"
+    );
+    chough(root, &["skill", "update"]);
+    assert_eq!(fs::read_to_string(&installed).unwrap(), edited);
+}
+
+// Exact LF predecessor bytes from the integrated identity head, held inside the
+// already-approved test file rather than a new fixture directory.
+const IDENTITY_MAIN_LIBRARIAN: &str = r####"# Optional project librarian
+
+The librarian is a project-local knowledge folder, off by default. Turn it on only
+when the human wants it: `chough pref set librarian on --source "<their words>"`.
+The folder name defaults to `library` and can be changed with `chough pref set
+library-dir <name> --source …`. It is not a shared cross-project vault.
+
+## From any stage
+
+Enter it as a side stage and return to the caller:
+
+```sh
+chough stage enter librarian --reason "Snapshot the approved prototype before redesign"
+chough library snapshot design/prototype/index.html design/prototype/COMPANION.md --reason "Approved version 1"
+chough library index
+chough stage return --note "Snapshot SNAP-approved-version-1-<24-lowercase-hex> taken"
+```
+
+- `library init` creates `README.md`, `INDEX.md` and `briefs/`.
+- `library snapshot` copies originals into
+  `snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a random 96-bit suffix and a
+  manifest of source path, Git revision, SHA-256 and creation time. Sources are
+  never moved or edited, and their bytes and digests stay unchanged. Repeated
+  snapshots of identical inputs remain distinct history.
+- `library index` regenerates `INDEX.md`: living sources and their owners, active
+  and archived native changes, the open bug backlog, recent observations, briefs and
+  snapshots. Legacy `snapshots/<date>-<n>/` directories remain listed beside new
+  SNAP directories without renaming or migration. Manifest timestamps determine
+  chronology, never the snapshot ID or random suffix.
+- Briefs in `briefs/` are focused next-session summaries written from
+  [the brief template](../templates/brief.md), linking to originals.
+
+## Boundaries
+
+Living HI, prototypes, contracts and native archives stay in their owning locations;
+a snapshot is history, not a second current copy. Summaries complement originals.
+Unfixed bugs remain in the live backlog even when an old report is snapshotted. The
+mandatory checkpoint does not depend on the librarian.
+"####;

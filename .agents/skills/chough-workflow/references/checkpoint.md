@@ -43,6 +43,22 @@ editing `session.json`, or the waiting time is lost.
 and keep the others, pass the gates still waiting with `--awaiting-human` in the same
 call; they are logged closed and opened again, so their waiting time restarts there.
 
+Write decisions with a prefix and a reason, so a fresh agent can tell what was chosen,
+what was ruled out and what already failed:
+
+```text
+decided: <what> because <reason>
+rejected: <approach> because <reason>
+failed: <experiment> because <reason>
+```
+
+This is a convention, read best-effort: the prefix starts the entry, lowercase, with a
+colon, and the reason is the text after the last ` because `. Any other entry, such as
+older free text or a dated note, is still kept and shown whole. Decisions stay plain
+strings in the checkpoint; nothing validates the convention. Record a human's decision
+only in their words, and label an agent's own assumption as the agent's, without a
+`decided:` prefix.
+
 Write decision summaries and observations, not private reasoning transcripts.
 SpecSync's `Handoff:` line says whether its own records are safe to clear; follow it
 too.
@@ -53,7 +69,12 @@ A fresh agent with none of the earlier conversation:
 
 1. Reads `AGENTS.md`, then this skill.
 2. Runs `chough next --environment <env>` (or reads the files above directly); it is
-   the focused view, and `chough status` is the full one.
+   the focused view, and `chough status` is the full one. Besides the stage, native
+   state, next action and gates, it shows the 5 newest decisions with their kind and
+   reason, the latest failed observation by recorded time with the status of each bug
+   that links it, and where each module's lessons live (`<module>.3md`, or the
+   `## Lessons` line of `context.md`) with the newest archived SpecSync lesson
+   bundles. It points to lessons and never prints them; read the source it names.
 3. Checks native status for `native_change`, freshness of the referenced observations,
    open blocking bugs and `awaiting_human`. A referenced observation is `current`,
    `historical` (present but stale), `pruned` (removed by retention, in the ledger) or
@@ -65,7 +86,10 @@ A fresh agent with none of the earlier conversation:
    --to intent --reason "<why>"` (or `--to plan` when the approved intent already
    covers the new work), then `specsync change new "<outcome>" --spec <module> --path
    <path>` and `chough checkpoint --native-change <id> --next-action "<next step>"`.
-   A reset replaces the checkpoint's next action.
+   The same holds at an earlier stage when the native change is already archived:
+   `chough next` names the archive and the new cycle instead of continuing, after
+   `chough stage advance` to done at accept. A reset replaces the checkpoint's next
+   action.
 
 ## Schema and concurrency
 

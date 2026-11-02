@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "id": "handoff-cold-start-baseline-kimi-1-grade",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "human-observation",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "0xLeif graded the baseline run handoff-cold-start-baseline-kimi-1 (Kimi Code CLI 0.41.0, main fb6e487) against the frozen rubric: Fail, P2 and P3 not met. Answer given in an AskUserQuestion on 2026-11-01 after reading the grading sheet; recorded as his statement, not an approval.",
+  "artifacts": [
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/grading-sheet.md",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt": "24730f27d22ec32a0ea2f0d24e49e5ec7a099c3449e57b3c1872d036abe3e1b6",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/grading-sheet.md": "e13f743303c91fbedb6a6117659c7094a0cec71c46b86244efb6a50c7e7ca045",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md": "b699fcb9a20eb159a7730ef50a0a5d0cb8e352ac484cde280b8fa29c29569503"
+  },
+  "observed_at_unix_seconds": 1793574970,
+  "snapshot": {
+    "revision": "d4d0f0b0599dd8b95745d5c7c990a01fb4cb5e2c",
+    "dirty": false,
+    "fingerprint": "26adfba0a4c7ab3afc9133c53b6b09df86089beaefa84a8e0bb99791da272a71",
+    "content": "4ca1a13fa978da2950aa5fea68e82dc7c39453f6d68f375aab9a5a275ca71358"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "The grading sheet was prepared by the authoring agent; the verdict is 0xLeif's."
+  ]
+}

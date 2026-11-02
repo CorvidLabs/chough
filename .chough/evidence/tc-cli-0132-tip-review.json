@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0132-tip-review",
+  "criteria": [
+    "FLOW-12",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-002",
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Skill wording for lesson labels, decision precedence, same-PR failure records, closeout and verification_ignored_paths present in the canonical bundle; both host copies current (24/24)",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0132/reviewer-note.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0132/reviewer-note.md": "ab643ad9f968cf26df774856cd2766ed9d623eb033b694b36101d4ece6ec958a"
+  },
+  "observed_at_unix_seconds": 1793578956,
+  "snapshot": {
+    "revision": "eb88d6a4201e461f58eaacd28480b0b3c47a07c1",
+    "dirty": false,
+    "fingerprint": "1c2a1cb519b60444ab0f82d30dd71330a30044c93ee2a5a0e43a77f571565dc9",
+    "content": "4c0ebf11141fd5bbf8ccda38c81de97245e01906afa14c6725e6ac15b31f45ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0132",
+      "digest": "fdd5f515c01ed5a3275b9910ddafc0d97aeb522aa86854ede4dbe03ceda9ff90"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Reviewed by the authoring agent, not an independent reviewer",
+    "Checks wording, not agent behavior"
+  ]
+}

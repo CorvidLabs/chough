@@ -1,0 +1,13 @@
+{
+  "failed_shared_head": "c517a6d44e0c46eb179079b81d34bcdfb19bfaf8",
+  "author_closeout_preserved": "f7a9a652f6dd1bab0572e24b313c19001b139540",
+  "canonical_combined_archive": "326959ded966abe5e200e9297c1c53255eeb6b6a",
+  "canonical_reviewed_implementation": "9a230918dd7c2a4a523a58345eae6bd47219e97d",
+  "backup_ref": "backup/learning-parallel-closeout-c517a6d",
+  "repair": "Preserve both complete native closeouts on a backup ref; retain the combined canonical archive in the PR with one authenticated review lineage. Preserve the author acceptance note and both transition events as checkpoint history, without introducing the conflicting review ledger as a second ancestor.",
+  "source_unchanged": true,
+  "limits": [
+    "The native reopen/re-finalize attempt on a separate recovery branch was refused; it is not represented as a successful archive.",
+    "Original cold-start Fail/void and not-run records are unchanged."
+  ]
+}

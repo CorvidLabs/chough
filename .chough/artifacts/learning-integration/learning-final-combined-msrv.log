@@ -1,0 +1,306 @@
+▶️ Running task: test
+   Compiling proc-macro2 v1.0.107
+   Compiling libc v0.2.191
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.229
+   Compiling version_check v0.9.5
+   Compiling quote v1.0.47
+   Compiling typenum v1.20.1
+   Compiling utf8parse v0.2.2
+   Compiling zmij v1.0.23
+   Compiling colorchoice v1.0.5
+   Compiling getrandom v0.4.3
+   Compiling anstyle-query v1.1.5
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling cfg-if v1.0.5
+   Compiling anyhow v1.0.104
+   Compiling rustix v1.1.6
+   Compiling strsim v0.11.1
+   Compiling winnow v1.0.4
+   Compiling heck v0.5.0
+   Compiling anstyle-parse v1.0.0
+   Compiling serde_json v1.0.154
+   Compiling clap_lex v1.1.1
+   Compiling serde v1.0.229
+   Compiling itoa v1.0.18
+   Compiling bitflags v2.13.2
+   Compiling memchr v2.8.3
+   Compiling toml_writer v1.1.3+spec-1.1.0
+   Compiling anstream v1.0.0
+   Compiling generic-array v0.14.7
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling clap_builder v4.6.7
+   Compiling syn v3.0.9
+   Compiling cpufeatures v0.2.17
+   Compiling errno v0.3.14
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling sha2 v0.10.9
+   Compiling clap_derive v4.6.7
+   Compiling serde_derive v1.0.229
+   Compiling tempfile v3.27.0
+   Compiling clap v4.6.7
+   Compiling chough v0.1.0 (/Users/leif/.codex/visualizations/2026/11/01/01a198dd-39f8-7e93-af29-fee466711cd0/learning-completion/repo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.11s
+     Running unittests src/main.rs (target/msrv/debug/deps/chough-7d5dc03ec5f9b276)
+
+running 42 tests
+test cases::tests::complete_sequences_are_removed ... ok
+test cases::tests::incomplete_or_unknown_sequences_are_kept ... ok
+test cases::tests::a_sequence_that_swallows_a_count_never_lowers_the_matched_counts ... ok
+test identity::tests::twelve_random_bytes_encode_as_twenty_four_lowercase_hex_digits ... ok
+test identity::tests::exact_validators_keep_suffixes_and_legacy_case_ids ... ok
+test identity::tests::normalization_is_ascii_bounded_and_nonempty ... ok
+test identity::tests::random_source_failure_is_returned_after_one_draw_without_a_fallback ... ok
+test bugs::tests::bug_id_validation_accepts_legacy_and_generated_forms_only ... ok
+test bugs::tests::slug_normalization_is_ascii_bounded_and_nonempty ... ok
+test bugs::tests::canonical_payload_and_digest_match_fixed_known_answer ... ok
+test bugs::tests::canonical_payload_frames_adjacent_fields_and_creation_is_deterministic ... ok
+test records::tests::an_abandoned_reader_stops_retaining ... ok
+test records::tests::a_long_native_command_keeps_the_trace_state_and_elapsed_fields_within_the_bound ... ok
+test records::tests::a_reader_retains_at_most_its_cap_while_counting_every_byte ... ok
+test records::tests::native_deadline_override_is_validated ... ok
+test tests::cut_bounds_the_escaped_width ... ok
+test timing::tests::archive_directories_name_their_change ... ok
+test timing::tests::only_a_recorded_status_change_marks_verified ... ok
+test timing::tests::overlapping_gates_are_counted_once ... ok
+test timing::tests::spans_never_go_negative_or_hide_unknowns ... ok
+test timing::tests::utc_times_are_iso_8601 ... ok
+test records::tests::a_full_log_read_keeps_whole_lines_within_its_bound ... ok
+test stage::tests::product_digests_match_every_archived_approval ... ok
+test cases::tests::cleaning_a_long_unterminated_line_is_linear ... ok
+test records::tests::an_empty_argument_vector_is_refused ... ok
+test evidence::tests::a_random_source_failure_preserves_the_existing_record_tree ... ok
+test evidence::tests::a_forced_observation_collision_preserves_bytes_without_another_random_draw ... ok
+test bugs::tests::concurrent_create_new_has_one_winner_and_never_replaces_it ... ok
+test bugs::tests::same_id_different_content_is_refused_without_overwrite_or_numeric_fallback ... ok
+test records::tests::both_streams_are_counted_beyond_their_caps ... ok
+test validate::tests::validation_random_failure_preserves_existing_records ... ok
+test validate::tests::validation_collision_preserves_the_original_without_fallback ... ok
+test library::tests::an_interrupted_snapshot_has_no_completion_manifest ... ok
+test bugs::tests::updates_keep_the_generated_id_and_filename_after_creation_content_changes ... ok
+test validate::tests::timing_uses_timestamps_instead_of_random_id_order ... ok
+test library::tests::snapshot_random_failure_preserves_existing_records ... ok
+test stage::tests::approved_deltas_compare_on_every_platform ... ok
+test cases::tests::cleaning_keeps_every_line_break_and_never_hides_a_test_result_line ... ok
+test library::tests::snapshot_collision_preserves_the_original_without_fallback ... ok
+test records::tests::a_deadline_stops_descendants_that_hold_the_pipes ... ok
+test records::tests::a_command_that_closes_its_output_early_is_still_awaited_to_its_exit ... ok
+test records::tests::output_held_open_after_exit_ends_the_run_within_the_grace ... ok
+
+test result: ok. 42 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.07s
+
+     Running tests/bugs.rs (target/msrv/debug/deps/bugs-95236666853b5627)
+
+running 10 tests
+test unverified_out_of_scope_bugs_stay_visible_without_changing_scope ... ok
+test a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag ... ok
+test an_open_blocking_bug_sends_work_back_to_build ... ok
+test regression_needs_a_passed_observation_at_an_earlier_ancestor_revision ... ok
+test a_reproduced_bug_is_deduplicated_and_keeps_added_evidence ... ok
+test a_bug_without_a_linked_failure_cannot_be_verified ... ok
+test a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug ... ok
+test a_pass_observed_before_the_latest_failure_does_not_verify_a_bug ... ok
+test a_pass_observed_after_the_latest_failure_verifies_a_bug ... ok
+test independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.43s
+
+     Running tests/cases.rs (target/msrv/debug/deps/cases-2eaa2d495879548f)
+
+running 22 tests
+test an_empty_env_keeps_the_case_digest_and_editing_env_changes_it ... ok
+test case_identity_survives_reordering_and_title_edits ... ok
+test definitions_with_bad_shapes_are_refused_with_their_location ... ok
+test an_unresolved_requirement_is_refused_with_the_check_first_hint ... ok
+test check_validates_links_against_native_records ... ok
+test slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness ... ok
+test a_requirement_of_another_module_names_the_cases_file_that_binds_it ... ok
+test selection_is_focused_on_the_affected_scope_and_tracks ... ok
+test binding_env_is_bounded_and_refused_with_its_location ... ok
+test output_beyond_the_per_stream_bound_is_counted_not_retained ... ok
+test direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records ... ok
+test schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct ... ok
+test a_declared_variable_reaches_the_command_and_is_named_without_its_value ... ok
+test manual_records_need_a_verdict_for_every_expected_outcome ... ok
+test coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes ... ok
+test old_style_explicit_observation_ids_have_an_omit_remedy_on_every_write_path ... ok
+test an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback ... ok
+test a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline ... ok
+test a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline ... ok
+test an_unterminated_escape_never_hides_a_second_test_result ... ok
+test independent_roots_and_identical_repeated_runs_allocate_distinct_observations ... ok
+test execution_records_failures_and_vacuous_runs_honestly ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.49s
+
+     Running tests/cli.rs (target/msrv/debug/deps/cli-cf9a12eb5e6792f9)
+
+running 26 tests
+test init_rejects_unreadable_session_sizes_before_writing ... ok
+test init_preserves_user_files_and_installs_a_complete_skill ... ok
+test invalid_modules_and_future_schemas_are_rejected ... ok
+test accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated ... ok
+test aggregate_context_budget_is_explicit ... ok
+test oversized_records_fail_explicitly ... ok
+test symlink_write_escape_is_rejected_before_any_file_is_created ... ok
+test context_resumes_deterministically_and_prefers_native_lesson_source ... ok
+test init_leaves_the_checkpoint_merge_driver_unconfigured ... ok
+test missing_native_tools_remain_unknown ... ok
+test invalid_traceability_and_escaped_artifacts_are_rejected ... ok
+test evidence_add_names_the_contract_for_another_modules_requirement ... ok
+test successful_native_process_with_invalid_json_does_not_establish_lifecycle_state ... ok
+test native_reads_end_by_their_deadline_and_retain_bounded_output ... ok
+test executable_mode_changes_stale_observations ... ok
+test committing_edits_already_present_when_observed_keeps_an_observation_current ... ok
+test a_malformed_content_identity_is_refused ... ok
+test artifacts_inside_managed_records_are_independently_bound ... ok
+test observations_without_a_content_identity_stay_stale_after_a_commit ... ok
+test observations_bind_revision_inputs_and_environment_without_granting_acceptance ... ok
+test untracked_inputs_also_stale_observations ... ok
+test committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current ... ok
+test archiving_a_change_keeps_an_observation_current_until_an_artifact_changes ... ok
+test any_fingerprinted_content_change_stales_an_observation ... ok
+test specsync_bookkeeping_writes_keep_an_observation_current ... ok
+test edits_to_a_native_change_scope_stale_an_observation ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.22s
+
+     Running tests/evidence.rs (target/msrv/debug/deps/evidence-abaee5f171629a09)
+
+running 12 tests
+test a_multi_case_record_counts_in_the_group_of_every_case ... ok
+test bug_show_labels_note_observations_once ... ok
+test preview_lists_sets_with_reasons_and_bytes_and_changes_nothing ... ok
+test newest_runs_count_per_case_and_environment ... ok
+test one_artifact_spelled_two_ways_is_shared_and_kept ... ok
+test bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name ... ok
+test every_protection_reason_is_named ... ok
+test a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned ... ok
+test apply_needs_consent_or_the_standing_preference_and_appends_the_ledger ... ok
+test native_manifests_protect_their_sets_and_a_failed_read_protects_everything ... ok
+test removed_and_missing_observations_are_labeled_and_never_count ... ok
+test automatic_pruning_follows_case_runs_only_when_retention_is_auto ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s
+
+     Running tests/next.rs (target/msrv/debug/deps/next-1aa58d47a1643f92)
+
+running 8 tests
+test next_points_to_the_lesson_source_and_counts_archived_bundles ... ok
+test next_shows_the_five_newest_decisions_with_kind_and_reason ... ok
+test next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs ... ok
+test next_prints_a_compact_action_view_as_text_by_default_and_json_with_a_flag ... ok
+test next_and_status_each_read_native_status_once_and_agree_on_the_action ... ok
+test handoff_blocks_stay_within_the_cap_and_are_byte_identical ... ok
+test both_forms_stay_within_the_cap_with_totals_for_large_records ... ok
+test an_archived_change_before_done_names_a_new_cycle_not_continue ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.24s
+
+     Running tests/optional.rs (target/msrv/debug/deps/optional-a342c73fe23e4d43)
+
+running 11 tests
+test snapshotting_a_symlink_is_refused ... ok
+test checkpoint_reference_updates_only_known_outdated_copies ... ok
+test standing_preferences_need_a_source_and_stay_separate_from_consent ... ok
+test snapshot_indexes_mix_legacy_and_new_ids_by_manifest_time ... ok
+test skills_install_per_host_and_update_only_unmodified_files ... ok
+test librarian_snapshots_originals_and_indexes_the_open_backlog ... ok
+test independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots ... ok
+test legacy_validation_runs_resume_with_their_ids_and_schema_unchanged ... ok
+test repeated_validation_needs_authority_honors_stop_and_persists_findings ... ok
+test repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval ... ok
+test independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.33s
+
+     Running tests/package.rs (target/msrv/debug/deps/package-5fd8935656b4960f)
+
+running 15 tests
+test the_shipped_bundle_holds_no_em_or_en_dash ... ok
+test tool_and_rust_version_pins_agree ... ok
+test the_crate_package_holds_only_the_helper_source_and_canonical_skill ... ok
+test bundle_files_from_the_latest_main_build_are_never_reported_as_edited ... ok
+test init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only ... ok
+test a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated ... ok
+test librarian_reference_from_identity_main_updates_without_overwriting_edits ... ok
+test checkpoint_and_plan_references_from_main_2756dc2_are_known_outdated ... ok
+test checkpoint_reference_before_merge_guidance_is_known_outdated_and_edited_copies_stay ... ok
+test a_checkpoint_reference_from_main_with_merge_guidance_is_known_outdated_and_updated ... ok
+test a_skill_copy_from_an_earlier_main_build_is_known_outdated_and_updated ... ok
+test slug_identity_bundle_predecessors_update_and_edited_copies_stay ... ok
+test dashed_copies_from_main_2756dc2_are_known_outdated_and_updated ... ok
+test skill_and_checkpoint_copies_from_main_ee6e3d2_are_known_outdated_and_edited_copies_stay ... ok
+test a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s
+
+     Running tests/stages.rs (target/msrv/debug/deps/stages-184e770bcc8db5d5)
+
+running 33 tests
+test migration_is_explicit_and_preserves_schema_1_bytes ... ok
+test every_stage_is_documented_in_the_shared_stage_contract ... ok
+test init_writes_a_schema_2_checkpoint_at_intent ... ok
+test checkpoint_merge_closed_stdout_does_not_turn_a_successful_write_into_failure ... ok
+test checkpoint_merge_requires_distinct_regular_files_and_exact_arguments ... ok
+test native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes ... ok
+test clear_flags_apply_before_new_entries ... ok
+test checkpoint_round_trips_across_processes_and_rejects_unknown_fields ... ok
+test recomputed_digests_match_every_archived_approval_in_this_repository ... ok
+test checkpoint_merge_enforces_input_collection_and_output_byte_bounds ... ok
+test checkpoint_merge_rejects_invalid_schemas_json_and_unknown_fields ... ok
+test checkpoint_merge_combines_every_exact_string_collection_in_order ... ok
+test done_without_a_native_change_or_with_sdd_disabled_recommends_the_reset ... ok
+test reset_replaces_the_next_action_and_back_keeps_it ... ok
+test optional_side_stages_and_release_need_authorization ... ok
+test done_keeps_the_gate_refusal_for_an_archive_that_does_not_authenticate ... ok
+test checkpoint_merge_selects_the_current_cycle_as_one_group ... ok
+test done_with_an_archived_change_recommends_a_new_cycle_with_a_reason ... ok
+test transitions_cover_every_kind_and_keep_history ... ok
+test invalid_native_approval_refuses_every_route_into_build_and_later_stages ... ok
+test real_git_without_driver_conflict ... ok
+test real_git_current_cycle_conflict_and_direct_fallback_preserve_ours ... ok
+test real_git_driver_merges_compatible_checkpoint_changes ... ok
+test done_archived_change_recommends_new_cycle_and_preserves_precedence ... ok
+test large_native_status_still_gates_by_its_summary_state ... ok
+test a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_changed ... ok
+test sdd_policy_is_read_with_specsync_semantics ... ok
+test return_from_a_side_stage_meets_the_caller_prerequisite ... ok
+test native_state_gates_build_and_closing_without_inventing_it ... ok
+test a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable ... ok
+test reset_back_and_release_meet_their_destination_prerequisites ... ok
+test the_guard_accepts_every_archived_approval_in_this_repository ... ok
+test real_specsync_approval_reported_invalid_refuses_build ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.57s
+
+     Running tests/timing.rs (target/msrv/debug/deps/timing-2eecdf8530cfd5d6)
+
+running 15 tests
+test every_transition_kind_yields_the_expected_segments_and_cycles ... ok
+test bug_fix_times_come_from_observations_notes_and_the_retention_ledger ... ok
+test gate_records_are_reconciled_with_the_awaiting_human_list ... ok
+test observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock ... ok
+test gate_records_start_or_end_no_segment_and_give_waiting_time ... ok
+test history_ranges_need_three_samples_and_exclude_idle_time ... ok
+test missing_and_out_of_order_times_are_unknown_never_zero ... ok
+test checkpoint_gates_append_one_record_when_opened_and_one_when_cleared ... ok
+test next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_report_budget ... ok
+test a_maximal_change_id_trace_keeps_state_and_elapsed_before_the_command ... ok
+test native_times_come_only_from_status_and_native_records_read_read_only ... ok
+test timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit ... ok
+test transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical ... ok
+test a_case_run_records_its_run_time_and_the_report_shows_it ... ok
+test a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.00s
+
+✅ test (72.4s)

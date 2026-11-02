@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "id": "handoff-cold-start-baseline-kimi-1",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "not-run",
+  "environment": "local-macos-arm64",
+  "summary": "Mandatory baseline run of the handoff cold start (rubric frozen in handoff-cold-start-frozen-pair-1). Host Kimi Code CLI 0.41.0 (kimi-code 2.4.1, wire 1.5), model kimi-code/k3.1-pro-highspeed, thinking high, mode auto, driven by CorvidLabs/rune 0.9.0 session send. chough binary and skill from main fb6e487 (binary sha256 365f7ebfa12b1492129acd32a616d500448736074cd22a67df650330f9012af6). Seeded HEAD c1b7e74b50ead7677f29d7150bf63550acb59469, tree 9be61b11fd4ff2dfabd1725edeee5e1923dc0d0c. Kimi session session_926d0ead-1af4-401f-9bb4-b55eb632c87d, 2026-11-01T23:07:30Z to 23:09:42Z, 48 tool calls. The only user message is the prompt 'Resume this project.'; the single steer event is Kimi loading the installed chough-workflow skill through its own Skill tool.",
+  "artifacts": [
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/kimi-session.zip",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/rune-screen.json",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/run-kimi-rune.sh",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-diff.patch",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-status.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt": "24730f27d22ec32a0ea2f0d24e49e5ec7a099c3449e57b3c1872d036abe3e1b6",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/kimi-session.zip": "94a5098805e990a02ed2e5a60c7ba1b820fcb0b87f7ac56e9354e352b2f55aaa",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/run-kimi-rune.sh": "96437ae600a4ec1a37e2b9dd2f674a2835a4b7a87d7304b9256ec6aa7191a3c4",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/rune-screen.json": "01631fb54bef468af3bc7eba2bf4d9f3be9ee454fe2783cdff3b015db01ad38a",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-diff.patch": "d26ef636034bef9558aee8054dc77febbbf9aba4d154c2880f81c71ca37e5907",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-status.txt": "32ed8e8024bc512fc1fc6f9a48d25421a51242d92e6ca3c93258ba2cfb465206",
+    ".chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md": "b699fcb9a20eb159a7730ef50a0a5d0cb8e352ac484cde280b8fa29c29569503"
+  },
+  "observed_at_unix_seconds": 1793574880,
+  "snapshot": {
+    "revision": "3fc3baddccc5321bf7368255a8ca45a76f13d59c",
+    "dirty": false,
+    "fingerprint": "71dc2c1eb73d0ef39d5899cac5c939a0bb62f72c41cda511f1a32930dad30d05",
+    "content": "4ca1a13fa978da2950aa5fea68e82dc7c39453f6d68f375aab9a5a275ca71358"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Outcome not-run: this records the captured run only; 0xLeif grades it against the frozen rubric and his grade is recorded separately as his statement, not an approval.",
+    "transcript.md and command-log.txt are derived by the operator from agents/main/wire.jsonl inside kimi-session.zip (agent text parts and tool calls in order; thinking parts omitted); the zip is the primary record.",
+    "Three earlier attempts never delivered the prompt and are not runs: two Kimi prompt-mode start errors (-p rejects --auto and --yolo) and one rune send before Kimi's input was ready; kept in the operator scratchpad.",
+    "Kimi's user-level configuration (~/.kimi-code/config.toml) and system prompt were present as installed, not added for the run.",
+    "A sample of one."
+  ]
+}

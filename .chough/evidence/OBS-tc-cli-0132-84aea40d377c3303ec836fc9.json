@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0132-84aea40d377c3303ec836fc9",
+  "criteria": [
+    "FLOW-12",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-002",
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass, 5=pass, 6=pass. Root verified all six skill wording and installed-copy outcomes on the combined tree; both host copies report all 24 files current.",
+  "artifacts": [
+    ".chough/artifacts/learning-integration/root-skill-review.txt",
+    ".chough/artifacts/learning-integration/combined-skill-status.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/learning-integration/combined-skill-status.json": "af85c231ac4b78cab5d083c4a7311ca6ee29aa00a3acab4d8ed83ca8da24a22d",
+    ".chough/artifacts/learning-integration/root-skill-review.txt": "7aea398b8bf882a5799bb365328dd4df81dd7da11e64cc5bae3ce3933b24afde"
+  },
+  "observed_at_unix_seconds": 1793590766,
+  "snapshot": {
+    "revision": "a9a4b6c2c76d0d1eb5b7f54c33055c95af2581bf",
+    "dirty": false,
+    "fingerprint": "5a339a52bd07e92c0c795ab6da1bda5ae4c81db5894824f6ef05780a6f356e94",
+    "content": "f8d6dedc12f3ca184d4a7fb6f4d4fc28bbcf536211fc103cec8deac05920879c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0132",
+      "digest": "fdd5f515c01ed5a3275b9910ddafc0d97aeb522aa86854ede4dbe03ceda9ff90"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Agent-assisted text review; root authored integration fixes. This is neither human implementation approval nor a new cold-start Pass grade."
+  ]
+}

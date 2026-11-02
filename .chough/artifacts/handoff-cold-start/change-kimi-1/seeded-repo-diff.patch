@@ -1,0 +1,204 @@
+diff --git a/.chough/cases/csvsum.cases.toml b/.chough/cases/csvsum.cases.toml
+index 58c31e1..b881f54 100644
+--- a/.chough/cases/csvsum.cases.toml
++++ b/.chough/cases/csvsum.cases.toml
+@@ -55,3 +55,21 @@ expected = ["Both tests in tests/test_quoting.py pass"]
+ adapter = "command"
+ argv = ["python3", "-m", "unittest", "tests.test_quoting"]
+ expect_output = ["Ran 2 tests", "OK"]
++
++[[case]]
++id = "TC-csvsum-0004"
++title = "Semicolon export matches comma export"
++status = "active"
++track = "functional"
++method = "automated"
++criteria = ["SUMMARY-4"]
++requirements = ["REQ-csvsum-004"]
++paths = ["csvsum/", "tests/test_delimiter.py", "samples/expenses.csv", "samples/expenses-semicolon.csv"]
++environments = ["local-macos"]
++artifacts = ["test-log"]
++expected = ["tests.test_delimiter.DelimiterTest.test_semicolon_export_matches_comma_export passes"]
++
++[case.bind]
++adapter = "command"
++argv = ["python3", "-m", "unittest", "tests.test_delimiter"]
++expect_output = ["Ran 1 test", "OK"]
+diff --git a/.chough/session.json b/.chough/session.json
+index 0765c71..9ec0d73 100644
+--- a/.chough/session.json
++++ b/.chough/session.json
+@@ -6,7 +6,7 @@
+     "csvsum"
+   ],
+   "stage": {
+-    "current": "build",
++    "current": "accept",
+     "status": "active",
+     "callers": [],
+     "iteration": 1
+@@ -28,10 +28,15 @@
+     "cases": [
+       "TC-csvsum-0001",
+       "TC-csvsum-0002",
+-      "TC-csvsum-0003"
++      "TC-csvsum-0003",
++      "TC-csvsum-0004"
+     ],
+     "design": [],
+-    "files": []
++    "files": [
++      "csvsum/__main__.py",
++      "csvsum/summarize.py",
++      "tests/test_delimiter.py"
++    ]
+   },
+   "decisions": [
+     "decided: amounts are parsed as decimal.Decimal after removing thousands separators, never as float, so totals match the bank statement to the cent (Robin Ash, 2026-09-01)",
+@@ -40,16 +45,28 @@
+   "open_questions": [],
+   "completed": [
+     "REQ-csvsum-001 and REQ-csvsum-002 built: count, total and mean with Decimal amounts.",
+-    "BUG-0001 fixed with csv.reader and verified: TC-csvsum-0003 passed in tc-csvsum-0003-after-fix; lesson recorded in specs/csvsum/context.md."
++    "BUG-0001 fixed with csv.reader and verified: TC-csvsum-0003 passed in tc-csvsum-0003-after-fix; lesson recorded in specs/csvsum/context.md.",
++    "REQ-csvsum-004 built: --delimiter defaults to comma, accepts one character, and produces matching summaries for the semicolon and comma samples; tests, case definition, tasks and documentation updated.",
++    "Verification complete: python3 -m unittest passed 5 tests; TC-csvsum-0001 through TC-csvsum-0004 passed in coldstart-change with no blocking bugs."
+   ],
+   "observations": [
+-    "tc-csvsum-0003-after-fix"
++    "tc-csvsum-0003-after-fix",
++    "tc-csvsum-0001-1793579949",
++    "tc-csvsum-0002-1793579949",
++    "tc-csvsum-0003-1793579949",
++    "tc-csvsum-0004-1793579949",
++    "tc-csvsum-0001-1793579975",
++    "tc-csvsum-0002-1793579975",
++    "tc-csvsum-0003-1793579975",
++    "tc-csvsum-0004-1793579975"
+   ],
+   "bugs": [
+     "BUG-0001"
+   ],
+   "blockers": [],
+-  "awaiting_human": [],
++  "awaiting_human": [
++    "Implementation review of REQ-csvsum-004 delimiter support"
++  ],
+   "run_consents": [],
+-  "next_action": "Build REQ-csvsum-004: add tests/test_delimiter.py and case TC-csvsum-0004 first and see them fail, then add --delimiter to python3 -m csvsum summarize."
++  "next_action": "Wait for the human implementation review; no native SpecSync change is configured, and no commit, push or release has been requested."
+ }
+diff --git a/.chough/transitions.jsonl b/.chough/transitions.jsonl
+index ed523d4..4ca636e 100644
+--- a/.chough/transitions.jsonl
++++ b/.chough/transitions.jsonl
+@@ -3,3 +3,6 @@
+ {"schema_version":1,"at_unix_seconds":1788253920,"kind":"advance","from":"plan","to":"build","reason":null,"gate":"ungated:not-configured","revision":"65e35c1d1832cc5c4740a23e43aae132a0f9bb17","refresh":[]}
+ {"schema_version":1,"at_unix_seconds":1788355800,"kind":"advance","from":"build","to":"test","reason":null,"gate":"ungated:not-configured","revision":"65e35c1d1832cc5c4740a23e43aae132a0f9bb17","refresh":[]}
+ {"schema_version":1,"at_unix_seconds":1788356820,"kind":"back","from":"test","to":"build","reason":"BUG-0001 blocks REQ-csvsum-003","gate":"ungated:not-configured","revision":"65e35c1d1832cc5c4740a23e43aae132a0f9bb17","refresh":["build: implementation against the current definition","test: rerun affected cases; earlier observations may be stale"]}
++{"schema_version":1,"at_unix_seconds":1793579961,"kind":"advance","from":"build","to":"test","reason":null,"gate":"ungated:not-configured","revision":"c1b7e74b50ead7677f29d7150bf63550acb59469","refresh":[]}
++{"schema_version":1,"at_unix_seconds":1793579980,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"ungated:not-configured","revision":"c1b7e74b50ead7677f29d7150bf63550acb59469","refresh":[]}
++{"schema_version":1,"at_unix_seconds":1793579990,"kind":"gate-opened","from":"accept","to":"accept","reason":"Implementation review of REQ-csvsum-004 delimiter support","gate":null,"revision":"c1b7e74b50ead7677f29d7150bf63550acb59469","refresh":[]}
+diff --git a/README.md b/README.md
+index aa1b72a..336359a 100644
+--- a/README.md
++++ b/README.md
+@@ -5,5 +5,6 @@ to the cent. Python 3 standard library only.
+ 
+ ```sh
+ python3 -m csvsum summarize samples/expenses.csv --column amount
++python3 -m csvsum summarize samples/expenses-semicolon.csv --column amount --delimiter ';'
+ python3 -m unittest
+ ```
+diff --git a/csvsum/__main__.py b/csvsum/__main__.py
+index 69a65c8..5e40bf5 100644
+--- a/csvsum/__main__.py
++++ b/csvsum/__main__.py
+@@ -11,10 +11,13 @@ def main(argv=None):
+     summary = commands.add_parser("summarize", help="count, total and mean of one column")
+     summary.add_argument("path")
+     summary.add_argument("--column", required=True)
++    summary.add_argument("--delimiter", default=",", help="one-character field delimiter (default: ,)")
+     args = parser.parse_args(argv)
++    if len(args.delimiter) != 1:
++        summary.error("--delimiter must be one character")
+     with open(args.path, newline="", encoding="utf-8") as handle:
+         try:
+-            result = summarize(handle, args.column)
++            result = summarize(handle, args.column, delimiter=args.delimiter)
+         except ValueError as error:
+             parser.exit(2, f"csvsum: {error}\n")
+     print(f"count {result['count']}")
+diff --git a/csvsum/summarize.py b/csvsum/summarize.py
+index e8c8ac5..e09acf2 100644
+--- a/csvsum/summarize.py
++++ b/csvsum/summarize.py
+@@ -10,9 +10,9 @@ def parse_amount(text):
+     return Decimal(text.strip().replace(",", ""))
+ 
+ 
+-def summarize(lines, column):
++def summarize(lines, column, delimiter=","):
+     """Count, total and mean of `column` over CSV `lines`, header first."""
+-    rows = [row for row in csv.reader(lines) if row]
++    rows = [row for row in csv.reader(lines, delimiter=delimiter) if row]
+     header, data = rows[0], rows[1:]
+     if column not in header:
+         raise ValueError(f"no column named {column!r}")
+diff --git a/specs/csvsum/csvsum.spec.md b/specs/csvsum/csvsum.spec.md
+index d3947f6..0a4a767 100644
+--- a/specs/csvsum/csvsum.spec.md
++++ b/specs/csvsum/csvsum.spec.md
+@@ -1,6 +1,6 @@
+ ---
+ module: csvsum
+-version: 1
++version: 2
+ status: active
+ files:
+   - csvsum/summarize.py
+@@ -21,8 +21,8 @@ the cent.
+ 
+ | Name | Description |
+ |------|-------------|
+-| `python3 -m csvsum summarize <path> --column <name>` | Prints `count <n>`, `total <amount>` and `mean <amount>` |
+-| `summarize(lines, column)` | Count, total and mean of `column` over CSV lines, header first |
++| `python3 -m csvsum summarize <path> --column <name> [--delimiter <char>]` | Prints `count <n>`, `total <amount>` and `mean <amount>`; delimiter defaults to `,` |
++| `summarize(lines, column, delimiter=",")` | Count, total and mean of `column` over CSV lines, header first |
+ | `parse_amount(text)` | An amount such as `1,250.00` as a `Decimal` |
+ 
+ ## Invariants
+@@ -43,6 +43,7 @@ Then it prints the row count, the total and the mean to the cent
+ | Error | When | Behavior |
+ |-------|------|----------|
+ | Unknown column | The header has no such column | Exits with an error naming the column |
++| Invalid delimiter | `--delimiter` is not one character | Exits with an error |
+ 
+ ## Dependencies
+ 
+@@ -52,4 +53,5 @@ None beyond the Python 3 standard library.
+ 
+ | Version | Date | Changes |
+ |---------|------|---------|
++| 2 | 2026-11-01 | Added `--delimiter` for semicolon exports |
+ | 1 | 2026-09-01 | Count, total and mean; quoted fields; semicolon exports planned |
+diff --git a/specs/csvsum/tasks.md b/specs/csvsum/tasks.md
+index e372d76..efde09c 100644
+--- a/specs/csvsum/tasks.md
++++ b/specs/csvsum/tasks.md
+@@ -2,4 +2,4 @@
+ 
+ - [x] Count, total and mean of one column (REQ-csvsum-001, REQ-csvsum-002).
+ - [x] Quoted fields (REQ-csvsum-003).
+-- [ ] `--delimiter` for semicolon exports (REQ-csvsum-004).
++- [x] `--delimiter` for semicolon exports (REQ-csvsum-004).
+diff --git a/specs/csvsum/testing.md b/specs/csvsum/testing.md
+index 218be2f..f73e567 100644
+--- a/specs/csvsum/testing.md
++++ b/specs/csvsum/testing.md
+@@ -9,4 +9,4 @@ local-macos`.
+ | REQ-csvsum-001 | TC-csvsum-0001 | tests/test_summary.py |
+ | REQ-csvsum-002 | TC-csvsum-0002 | tests/test_summary.py |
+ | REQ-csvsum-003 | TC-csvsum-0003 | tests/test_quoting.py |
+-| REQ-csvsum-004 | TC-csvsum-0004 (to add) | tests/test_delimiter.py (to add) |
++| REQ-csvsum-004 | TC-csvsum-0004 | tests/test_delimiter.py |

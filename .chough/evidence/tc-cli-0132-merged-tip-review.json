@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "tc-cli-0132-merged-tip-review",
+  "criteria": [
+    "FLOW-12",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-002",
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "At 8b5b4cd (after merging main 66bef80): skill wording for lesson labels, decision precedence, same-PR failure records, closeout and verification_ignored_paths still present alongside main's checkpoint merge guidance; both host copies current (24/24)",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0132/reviewer-note-merged.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0132/reviewer-note-merged.md": "1194f8b696ddbb7a2522c8d728ff0cc9a5fa36ba71822ba920401a6400b63c98"
+  },
+  "observed_at_unix_seconds": 1793581364,
+  "snapshot": {
+    "revision": "8b5b4cd043e95d69dde4f95aa8821b2dc194e7a9",
+    "dirty": false,
+    "fingerprint": "45da106aa77105a11a851a34257e9abe6ca533a94da7273d381e5b27c302ef6a",
+    "content": "8029f3571f7dd2f2bc726da4c7066288c67171646504c71ef2019e508a5ea2f5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0132",
+      "digest": "fdd5f515c01ed5a3275b9910ddafc0d97aeb522aa86854ede4dbe03ceda9ff90"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Reviewed by the authoring agent, not an independent reviewer",
+    "Checks wording, not agent behavior"
+  ]
+}

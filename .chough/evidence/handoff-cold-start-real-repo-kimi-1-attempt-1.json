@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "handoff-cold-start-real-repo-kimi-1-attempt-1",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "not-run",
+  "environment": "local-macos-arm64",
+  "summary": "Real-repository run attempt 1 of the handoff cold start, interrupted by the host: Kimi Code CLI 0.41.0 (kimi-code 2.4.1), model kimi-code/k3.1-pro-highspeed, on a disposable clone of this repository at 45c8258 (expected facts in .chough/artifacts/handoff-cold-start/real-repo-kimi-1/expected-facts.md), binary and skill from 9009d9a (sha256 3d9cf60b53f52aebc7e4fc50a5ca84ed2d227c03db636127d0d2f8977e2c43b3). Session session_f85af0c4-4594-4f1c-918e-003beb8af3fc, 2026-11-02T00:49:06Z to 00:49:45Z, 8 tool calls (cargo run -- next, three skill reads, specsync change check, specsync change status, git status), then the turn failed with provider.api_error 429 'You've reached your 5-hour usage limit'. No edit and no final answer; the clone's tracked files are unchanged. Not gradable; to be rerun after the quota resets.",
+  "artifacts": [
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/transcript.md",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/command-log.txt",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/kimi-session.zip",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-screen.json",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/run-kimi-rune.sh",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/started.txt",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-trust.json",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/repo-status.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/command-log.txt": "3264603674e8ebbd80007aff4c89f187f26a52ff65e0d151f5e419fa00c1df81",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/kimi-session.zip": "5443a9ca7722bc63f62f6cf843eb7b89c2e3d29e1de97836d2c589d882273505",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/repo-status.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/run-kimi-rune.sh": "e1bf865e16394eb2ee3090293e1d6b279a70902f34f2e49cf5a849990b2c2f47",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-screen.json": "2b3b8d304b46690076c0053f272a9dab7f715f25db753885560892f9d61447e3",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-trust.json": "caf2b5373e6bb8d0b199b7ffe65cf3b723977adfd4773bef452bd27a7df3f73d",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/started.txt": "1fe416fb3ddd5705de02771c8ea6b36838a0cf54d12833a25e73874d151eafb7",
+    ".chough/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/transcript.md": "7787176a40f441c5636cfa01305c41ed872d43af4342efbaf88f1c81a6a169a9"
+  },
+  "observed_at_unix_seconds": 1793580802,
+  "snapshot": {
+    "revision": "1d152397fc37fcdd5a4e24b8bc735cadc0582327",
+    "dirty": false,
+    "fingerprint": "fda05f8313aa09092fc624c26c36f3c8f496f49c7f3943584799dc34ccfa92ec",
+    "content": "4c0ebf11141fd5bbf8ccda38c81de97245e01906afa14c6725e6ac15b31f45ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0133",
+      "digest": "821aedfc92e545217bc64e51ca897c29cede365795c89dacdcf2f397c93c668e"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Interrupted by the host's usage quota, not by the agent; the transcript is kept but is not a complete run."
+  ]
+}

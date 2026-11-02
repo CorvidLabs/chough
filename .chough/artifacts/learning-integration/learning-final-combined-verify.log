@@ -1,0 +1,2387 @@
+▶️ Lane: verify — Product, structural, native lifecycle and case-definition verification
+  ▶️ Running task: fmt
+  ✔ Step 1 done (625ms)
+  ▶️ Running task: lint
+    Checking chough v0.1.0 (/Users/leif/.codex/visualizations/2026/11/01/01a198dd-39f8-7e93-af29-fee466711cd0/learning-completion/repo)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.17s
+  ✔ Step 2 done (2.338s)
+  ▶️ Running task: test
+   Compiling chough v0.1.0 (/Users/leif/.codex/visualizations/2026/11/01/01a198dd-39f8-7e93-af29-fee466711cd0/learning-completion/repo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.06s
+     Running unittests src/main.rs (target/debug/deps/chough-1eb8cfba98d8e96f)
+
+running 42 tests
+test cases::tests::complete_sequences_are_removed ... ok
+test identity::tests::normalization_is_ascii_bounded_and_nonempty ... ok
+test cases::tests::incomplete_or_unknown_sequences_are_kept ... ok
+test identity::tests::twelve_random_bytes_encode_as_twenty_four_lowercase_hex_digits ... ok
+test identity::tests::random_source_failure_is_returned_after_one_draw_without_a_fallback ... ok
+test identity::tests::exact_validators_keep_suffixes_and_legacy_case_ids ... ok
+test cases::tests::a_sequence_that_swallows_a_count_never_lowers_the_matched_counts ... ok
+test bugs::tests::bug_id_validation_accepts_legacy_and_generated_forms_only ... ok
+test bugs::tests::canonical_payload_and_digest_match_fixed_known_answer ... ok
+test bugs::tests::slug_normalization_is_ascii_bounded_and_nonempty ... ok
+test bugs::tests::canonical_payload_frames_adjacent_fields_and_creation_is_deterministic ... ok
+test records::tests::an_abandoned_reader_stops_retaining ... ok
+test records::tests::a_reader_retains_at_most_its_cap_while_counting_every_byte ... ok
+test records::tests::native_deadline_override_is_validated ... ok
+test records::tests::a_long_native_command_keeps_the_trace_state_and_elapsed_fields_within_the_bound ... ok
+test timing::tests::archive_directories_name_their_change ... ok
+test tests::cut_bounds_the_escaped_width ... ok
+test timing::tests::only_a_recorded_status_change_marks_verified ... ok
+test timing::tests::overlapping_gates_are_counted_once ... ok
+test timing::tests::spans_never_go_negative_or_hide_unknowns ... ok
+test records::tests::an_empty_argument_vector_is_refused ... ok
+test timing::tests::utc_times_are_iso_8601 ... ok
+test library::tests::an_interrupted_snapshot_has_no_completion_manifest ... ok
+test bugs::tests::concurrent_create_new_has_one_winner_and_never_replaces_it ... ok
+test bugs::tests::same_id_different_content_is_refused_without_overwrite_or_numeric_fallback ... ok
+test evidence::tests::a_random_source_failure_preserves_the_existing_record_tree ... ok
+test evidence::tests::a_forced_observation_collision_preserves_bytes_without_another_random_draw ... ok
+test cases::tests::cleaning_a_long_unterminated_line_is_linear ... ok
+test records::tests::a_full_log_read_keeps_whole_lines_within_its_bound ... ok
+test validate::tests::validation_random_failure_preserves_existing_records ... ok
+test bugs::tests::updates_keep_the_generated_id_and_filename_after_creation_content_changes ... ok
+test validate::tests::timing_uses_timestamps_instead_of_random_id_order ... ok
+test validate::tests::validation_collision_preserves_the_original_without_fallback ... ok
+test stage::tests::product_digests_match_every_archived_approval ... ok
+test stage::tests::approved_deltas_compare_on_every_platform ... ok
+test library::tests::snapshot_random_failure_preserves_existing_records ... ok
+test library::tests::snapshot_collision_preserves_the_original_without_fallback ... ok
+test records::tests::both_streams_are_counted_beyond_their_caps ... ok
+test cases::tests::cleaning_keeps_every_line_break_and_never_hides_a_test_result_line ... ok
+test records::tests::a_deadline_stops_descendants_that_hold_the_pipes ... ok
+test records::tests::a_command_that_closes_its_output_early_is_still_awaited_to_its_exit ... ok
+test records::tests::output_held_open_after_exit_ends_the_run_within_the_grace ... ok
+
+test result: ok. 42 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.06s
+
+     Running tests/bugs.rs (target/debug/deps/bugs-4d3ce8dd0b0761ad)
+
+running 10 tests
+test unverified_out_of_scope_bugs_stay_visible_without_changing_scope ... ok
+test a_scope_given_as_a_classification_and_the_reverse_name_the_right_flag ... ok
+test an_open_blocking_bug_sends_work_back_to_build ... ok
+test a_pass_observed_before_the_latest_failure_does_not_verify_a_bug ... ok
+test a_bug_without_a_linked_failure_cannot_be_verified ... ok
+test a_pass_in_the_same_second_as_the_failure_does_not_verify_a_bug ... ok
+test a_pass_observed_after_the_latest_failure_verifies_a_bug ... ok
+test regression_needs_a_passed_observation_at_an_earlier_ancestor_revision ... ok
+test a_reproduced_bug_is_deduplicated_and_keeps_added_evidence ... ok
+test independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.87s
+
+     Running tests/cases.rs (target/debug/deps/cases-869a565c83edc77f)
+
+running 22 tests
+test case_identity_survives_reordering_and_title_edits ... ok
+test an_empty_env_keeps_the_case_digest_and_editing_env_changes_it ... ok
+test definitions_with_bad_shapes_are_refused_with_their_location ... ok
+test an_unresolved_requirement_is_refused_with_the_check_first_hint ... ok
+test slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness ... ok
+test a_requirement_of_another_module_names_the_cases_file_that_binds_it ... ok
+test check_validates_links_against_native_records ... ok
+test selection_is_focused_on_the_affected_scope_and_tracks ... ok
+test binding_env_is_bounded_and_refused_with_its_location ... ok
+test schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct ... ok
+test manual_records_need_a_verdict_for_every_expected_outcome ... ok
+test coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes ... ok
+test output_beyond_the_per_stream_bound_is_counted_not_retained ... ok
+test a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline ... ok
+test direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records ... ok
+test old_style_explicit_observation_ids_have_an_omit_remedy_on_every_write_path ... ok
+test a_declared_variable_reaches_the_command_and_is_named_without_its_value ... ok
+test an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback ... ok
+test an_unterminated_escape_never_hides_a_second_test_result ... ok
+test a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline ... ok
+test execution_records_failures_and_vacuous_runs_honestly ... ok
+test independent_roots_and_identical_repeated_runs_allocate_distinct_observations ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.78s
+
+     Running tests/cli.rs (target/debug/deps/cli-1320d8f7518ddd8c)
+
+running 26 tests
+test init_rejects_unreadable_session_sizes_before_writing ... ok
+test invalid_modules_and_future_schemas_are_rejected ... ok
+test init_preserves_user_files_and_installs_a_complete_skill ... ok
+test accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated ... ok
+test oversized_records_fail_explicitly ... ok
+test symlink_write_escape_is_rejected_before_any_file_is_created ... ok
+test context_resumes_deterministically_and_prefers_native_lesson_source ... ok
+test aggregate_context_budget_is_explicit ... ok
+test init_leaves_the_checkpoint_merge_driver_unconfigured ... ok
+test missing_native_tools_remain_unknown ... ok
+test evidence_add_names_the_contract_for_another_modules_requirement ... ok
+test invalid_traceability_and_escaped_artifacts_are_rejected ... ok
+test successful_native_process_with_invalid_json_does_not_establish_lifecycle_state ... ok
+test native_reads_end_by_their_deadline_and_retain_bounded_output ... ok
+test executable_mode_changes_stale_observations ... ok
+test artifacts_inside_managed_records_are_independently_bound ... ok
+test observations_bind_revision_inputs_and_environment_without_granting_acceptance ... ok
+test committing_edits_already_present_when_observed_keeps_an_observation_current ... ok
+test a_malformed_content_identity_is_refused ... ok
+test observations_without_a_content_identity_stay_stale_after_a_commit ... ok
+test committing_only_chough_records_or_an_empty_commit_keeps_an_observation_current ... ok
+test untracked_inputs_also_stale_observations ... ok
+test archiving_a_change_keeps_an_observation_current_until_an_artifact_changes ... ok
+test any_fingerprinted_content_change_stales_an_observation ... ok
+test specsync_bookkeeping_writes_keep_an_observation_current ... ok
+test edits_to_a_native_change_scope_stale_an_observation ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.32s
+
+     Running tests/evidence.rs (target/debug/deps/evidence-681e71a2a8468d77)
+
+running 12 tests
+test every_protection_reason_is_named ... ok
+test newest_runs_count_per_case_and_environment ... ok
+test a_multi_case_record_counts_in_the_group_of_every_case ... ok
+test preview_lists_sets_with_reasons_and_bytes_and_changes_nothing ... ok
+test bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name ... ok
+test bug_show_labels_note_observations_once ... ok
+test one_artifact_spelled_two_ways_is_shared_and_kept ... ok
+test a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned ... ok
+test native_manifests_protect_their_sets_and_a_failed_read_protects_everything ... ok
+test removed_and_missing_observations_are_labeled_and_never_count ... ok
+test apply_needs_consent_or_the_standing_preference_and_appends_the_ledger ... ok
+test automatic_pruning_follows_case_runs_only_when_retention_is_auto ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.15s
+
+     Running tests/next.rs (target/debug/deps/next-39a61b549593f01c)
+
+running 8 tests
+test next_points_to_the_lesson_source_and_counts_archived_bundles ... ok
+test next_shows_the_five_newest_decisions_with_kind_and_reason ... ok
+test next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs ... ok
+test next_prints_a_compact_action_view_as_text_by_default_and_json_with_a_flag ... ok
+test next_and_status_each_read_native_status_once_and_agree_on_the_action ... ok
+test handoff_blocks_stay_within_the_cap_and_are_byte_identical ... ok
+test both_forms_stay_within_the_cap_with_totals_for_large_records ... ok
+test an_archived_change_before_done_names_a_new_cycle_not_continue ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.10s
+
+     Running tests/optional.rs (target/debug/deps/optional-cc769a5ba1f6ea9e)
+
+running 11 tests
+test snapshotting_a_symlink_is_refused ... ok
+test checkpoint_reference_updates_only_known_outdated_copies ... ok
+test standing_preferences_need_a_source_and_stay_separate_from_consent ... ok
+test snapshot_indexes_mix_legacy_and_new_ids_by_manifest_time ... ok
+test skills_install_per_host_and_update_only_unmodified_files ... ok
+test librarian_snapshots_originals_and_indexes_the_open_backlog ... ok
+test independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots ... ok
+test legacy_validation_runs_resume_with_their_ids_and_schema_unchanged ... ok
+test repeated_validation_needs_authority_honors_stop_and_persists_findings ... ok
+test repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval ... ok
+test independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.60s
+
+     Running tests/package.rs (target/debug/deps/package-bb1bb6baf0cc99a1)
+
+running 15 tests
+test the_shipped_bundle_holds_no_em_or_en_dash ... ok
+test tool_and_rust_version_pins_agree ... ok
+test the_crate_package_holds_only_the_helper_source_and_canonical_skill ... ok
+test checkpoint_reference_before_merge_guidance_is_known_outdated_and_edited_copies_stay ... ok
+test init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only ... ok
+test a_checkpoint_reference_from_main_with_merge_guidance_is_known_outdated_and_updated ... ok
+test a_skill_copy_from_an_earlier_main_build_is_known_outdated_and_updated ... ok
+test librarian_reference_from_identity_main_updates_without_overwriting_edits ... ok
+test bundle_files_from_the_latest_main_build_are_never_reported_as_edited ... ok
+test checkpoint_and_plan_references_from_main_2756dc2_are_known_outdated ... ok
+test dashed_copies_from_main_2756dc2_are_known_outdated_and_updated ... ok
+test a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated ... ok
+test skill_and_checkpoint_copies_from_main_ee6e3d2_are_known_outdated_and_edited_copies_stay ... ok
+test a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated ... ok
+test slug_identity_bundle_predecessors_update_and_edited_copies_stay ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s
+
+     Running tests/stages.rs (target/debug/deps/stages-4665364af62113fa)
+
+running 33 tests
+test migration_is_explicit_and_preserves_schema_1_bytes ... ok
+test every_stage_is_documented_in_the_shared_stage_contract ... ok
+test init_writes_a_schema_2_checkpoint_at_intent ... ok
+test native_change_ids_up_to_the_specsync_ceiling_are_kept_across_processes ... ok
+test checkpoint_merge_closed_stdout_does_not_turn_a_successful_write_into_failure ... ok
+test checkpoint_merge_requires_distinct_regular_files_and_exact_arguments ... ok
+test clear_flags_apply_before_new_entries ... ok
+test checkpoint_round_trips_across_processes_and_rejects_unknown_fields ... ok
+test recomputed_digests_match_every_archived_approval_in_this_repository ... ok
+test checkpoint_merge_enforces_input_collection_and_output_byte_bounds ... ok
+test checkpoint_merge_rejects_invalid_schemas_json_and_unknown_fields ... ok
+test checkpoint_merge_combines_every_exact_string_collection_in_order ... ok
+test reset_replaces_the_next_action_and_back_keeps_it ... ok
+test done_without_a_native_change_or_with_sdd_disabled_recommends_the_reset ... ok
+test done_keeps_the_gate_refusal_for_an_archive_that_does_not_authenticate ... ok
+test optional_side_stages_and_release_need_authorization ... ok
+test checkpoint_merge_selects_the_current_cycle_as_one_group ... ok
+test done_with_an_archived_change_recommends_a_new_cycle_with_a_reason ... ok
+test transitions_cover_every_kind_and_keep_history ... ok
+test large_native_status_still_gates_by_its_summary_state ... ok
+test invalid_native_approval_refuses_every_route_into_build_and_later_stages ... ok
+test real_git_driver_merges_compatible_checkpoint_changes ... ok
+test real_git_current_cycle_conflict_and_direct_fallback_preserve_ours ... ok
+test real_git_without_driver_conflict ... ok
+test done_archived_change_recommends_new_cycle_and_preserves_precedence ... ok
+test a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_changed ... ok
+test a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable ... ok
+test native_state_gates_build_and_closing_without_inventing_it ... ok
+test return_from_a_side_stage_meets_the_caller_prerequisite ... ok
+test sdd_policy_is_read_with_specsync_semantics ... ok
+test reset_back_and_release_meet_their_destination_prerequisites ... ok
+test the_guard_accepts_every_archived_approval_in_this_repository ... ok
+test real_specsync_approval_reported_invalid_refuses_build ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.98s
+
+     Running tests/timing.rs (target/debug/deps/timing-1d0cbfa239e14f9b)
+
+running 15 tests
+test every_transition_kind_yields_the_expected_segments_and_cycles ... ok
+test bug_fix_times_come_from_observations_notes_and_the_retention_ledger ... ok
+test observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock ... ok
+test gate_records_are_reconciled_with_the_awaiting_human_list ... ok
+test history_ranges_need_three_samples_and_exclude_idle_time ... ok
+test gate_records_start_or_end_no_segment_and_give_waiting_time ... ok
+test missing_and_out_of_order_times_are_unknown_never_zero ... ok
+test checkpoint_gates_append_one_record_when_opened_and_one_when_cleared ... ok
+test next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_report_budget ... ok
+test a_maximal_change_id_trace_keeps_state_and_elapsed_before_the_command ... ok
+test timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit ... ok
+test native_times_come_only_from_status_and_native_records_read_read_only ... ok
+test transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical ... ok
+test a_case_run_records_its_run_time_and_the_report_shows_it ... ok
+test a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.90s
+
+  ✔ Step 3 done (59.109s)
+  ▶️ Running task: intent
+{
+  "notes": [],
+  "files": 2,
+  "criteria": 23,
+  "retired": 0,
+  "families": [
+    "FLOW",
+    "LIFE"
+  ],
+  "problems": []
+}
+  ✔ Step 4 done (9ms)
+  ▶️ Running task: spec
+
+specs/cli/cli.spec.md
+  ✓ Frontmatter valid
+  ✓ All source files exist
+  ✓ All required sections present
+  ✓ 14/14 exports documented
+  ✓ All dependency specs exist
+
+1 specs checked: 1 passed, 0 warning(s), 0 failed
+File coverage: 14/14 (100%)
+LOC coverage:  12340/12340 (100%)
+  ✔ Step 5 done (68ms)
+  ▶️ Running task: audit
+Auditing active changes (1)…
+✓ audit passed (1 active)
+  ✔ Step 6 done (2.771s)
+  ▶️ Running task: cases
+{
+  "cases": [
+    {
+      "criteria": [
+        "LIFE-4",
+        "LIFE-6"
+      ],
+      "digest": "3a8103b80cdb935658cc3d6b67dd53d1b03e1ce7c6b4608bb1828c5816dabcad",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0001",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-001"
+      ],
+      "status": "active",
+      "title": "Init preserves user files and installs the skill",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "3853cee0aca7eda3b552cfafa85ae21a0ae5ec9b160165f43e5b64d8241c2457",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0002",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-002"
+      ],
+      "status": "active",
+      "title": "Context is deterministic and prefers native lessons",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "60a8304dfa6c9722f8fe09c5a138f3a9bdb085fc477d55487e83a7ef067d9365",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0003",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-003"
+      ],
+      "status": "active",
+      "title": "Missing native tools stay unknown",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-7"
+      ],
+      "digest": "f7afcd94f3a88574f44f5acf783e6570ddadc121f5c02125d37c4e8ba75e0870",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0004",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-003"
+      ],
+      "status": "active",
+      "title": "Non-JSON native output is not lifecycle state",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "9d3628168f9ef30d6659bf018944f38c44554e88ab69528c47a109a6c35130cb",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0005",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Observations bind inputs and environment without acceptance",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2"
+      ],
+      "digest": "d0f27524493db78d90f10f6e3c7f0e7d4eb72c6db6dd0aa784cc016ecd7b2094",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0006",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Untracked inputs stale observations",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2"
+      ],
+      "digest": "a304c655e3fb31c76c2b1593ec533707bfa738b0fcf9349d21c19d11fb09fdd2",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0007",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Executable-bit changes stale observations",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2"
+      ],
+      "digest": "4c1efdd1286878850ac4eb97de4189b8204871d68c7c5f6425d55e90ac9cb8d5",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0008",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Artifacts are bound independently",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-1",
+        "LIFE-5"
+      ],
+      "digest": "c6e18ed8ffb72fac1ee13e8a0b3bc2d8d806db93d19c5d4cee238b84e009a1b7",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0009",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005"
+      ],
+      "status": "active",
+      "title": "Invalid traceability and escaped artifacts are rejected",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4"
+      ],
+      "digest": "6acb629fe38e8602bcb5b6119f09fbac7ba47f83022380c708479b21d44967de",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0010",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Symlink write escape is rejected",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "4afdf48bbc1f3df45899f78b19c42f76bae6d54767d7fd449f3c0bb25f7cceef",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0011",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Aggregate context budget is explicit",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "dd6a225689bfb44ac34edfcaa8972331f9496a7bd188b2417f8175475bcbf471",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0012",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Oversized records fail explicitly",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4"
+      ],
+      "digest": "b80d70a70bf028af5339a62e91fed0e4a840777435c8656631d0e193b308b083",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0013",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Oversized init input is refused before writing",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "fbd4995e95f5ef5a64b595aa30269e6a806510cf62dc386669cdc9042e4900b2",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0014",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Invalid modules and future schemas are rejected",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13"
+      ],
+      "digest": "9d0a70612d1f1fc0ee3cc020b1b0ea6faffab56a5f8162d5a191f39f4c81da1c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0015",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Init writes a schema 2 checkpoint at intent",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "LIFE-3"
+      ],
+      "digest": "dc760ed6100b6c91bb737d6b7fc49c17e68cebc6780be718e9bb242abdacbf56",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0016",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Migration is explicit and keeps schema 1 bytes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13"
+      ],
+      "digest": "52e0e9fa15511eac414de63f623a1c883743c70f659f71b404c884e955e9eaff",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0017",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Checkpoint round-trips across processes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2"
+      ],
+      "digest": "c6cd216eb7ba2b5d5d3b786be3916bba264d16f24bf774d95dc0885f9d3c51f6",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0018",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Every transition kind keeps history",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2",
+        "FLOW-1"
+      ],
+      "digest": "819b779a4fca0dce077f616969df8ed44f82e511687d08107e7dd3f8f2c04712",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0019",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Helper stages match the stage contract",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-5",
+        "FLOW-10"
+      ],
+      "digest": "c0e1bd3828a1d2ba2dbc1cf2bca037e1bc87734168af002795efa5570ef1f810",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0020",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Native state gates build and closing",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9",
+        "FLOW-11"
+      ],
+      "digest": "7f4b58b5d89ecfcde63d03c82d5fb50daf905ee46257a761b4e8ae93ebf1de20",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0021",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-013",
+        "REQ-cli-014"
+      ],
+      "status": "active",
+      "title": "Validate and release need authorization",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "eb5fc83805614a33ed9bf060768fe51f402a6bac8d2b1e7979254a1f35e3cb4a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0022",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Bad definitions are refused with their location",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "f549f8b21703eb3144187d0e084ddc5670f292a14ab5aab4e7714d0af84e5931",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0023",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Case identity survives reordering",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "c1966a20adf20339d19dc63fb495a25d70a1974112df1a8ee655e60039289c6b",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0024",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Case links are validated against native records",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-6"
+      ],
+      "digest": "f0899dd4ed225b7b5b853cb5711948e8bd8c7d5355d650a31848cc163b14042c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0025",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-010"
+      ],
+      "status": "active",
+      "title": "Selection is focused on affected scope and tracks",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "b1cedd144331576c33b4fffe72b8f6823c3a9c63a51b3c0ace9cd1300ccaa63c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0026",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-017"
+      ],
+      "status": "active",
+      "title": "Failures and vacuous runs are recorded honestly",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "8bb3220178d038283251e99a94a8cec750d44c58881219da02be5781e39e2170",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0027",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "Manual records need every verdict",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-11",
+        "LIFE-7"
+      ],
+      "digest": "6ecc56b8c56841a28adf71294124a18648ccbe542816c1f3830f537410f4cf61",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0028",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-017",
+        "REQ-cli-014"
+      ],
+      "status": "active",
+      "title": "Delivery kinds and dry runs stay distinct",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8"
+      ],
+      "digest": "17e873396849332f80bcbbfcb5d239d33caa6b7daad477db999b29dad46f92db",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0029",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "Out-of-scope bugs stay visible without changing scope",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8"
+      ],
+      "digest": "f03ece95a477f0e367e440886a5327c8488df3ff8075d7552464c80e1a845b1a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0030",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "Reproduced bugs are deduplicated and keep evidence",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8",
+        "LIFE-5"
+      ],
+      "digest": "43604aeec294f7180b9cc7b0060b2be7fe29f0f025d5198e4b74196e1990c9c3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0031",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "Regression needs an earlier passing ancestor",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8",
+        "FLOW-2"
+      ],
+      "digest": "2f48b81fb4bdb8165ee6b17d52e635224ea3eea1f3be6db273a9a9f0cb8e1b23",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0032",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012",
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "A blocking bug sends work back to build",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9"
+      ],
+      "digest": "6f5f908393363c9e9e5a7d578334b2d5987159d8cdb4e62e71d9d31e163c1a44",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0033",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-013"
+      ],
+      "status": "active",
+      "title": "Standing preferences stay separate from consent",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9"
+      ],
+      "digest": "858b5abb91d702c4c43af3d0acc5e41f4c52e07b81f6bd4c6e52ab71f6529d42",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0034",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-013"
+      ],
+      "status": "active",
+      "title": "Repeated validation needs authority and honors stop",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-12"
+      ],
+      "digest": "9717527f70bd8176af97a37e354243d818c43e86212adf4fa3c136868e4741cf",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0035",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-015"
+      ],
+      "status": "active",
+      "title": "Librarian snapshots originals and indexes open bugs",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-12"
+      ],
+      "digest": "57f25325003542d0e6560599e8c1bd121ff72be7d63c23793db8053ea68c67a8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0036",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-015"
+      ],
+      "status": "active",
+      "title": "Snapshotting a symlink is refused",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-1"
+      ],
+      "digest": "bc4a585cc7f16f841b4b86815e785e3b9ac99c9a5ce4b698d34b708278b0d94f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0037",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-016"
+      ],
+      "status": "active",
+      "title": "Skills install per host and keep edits",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2",
+        "FLOW-6",
+        "FLOW-7",
+        "FLOW-8"
+      ],
+      "digest": "1e7f2b1b7f7233a259067382e7643decc69e0385d2d7a6383c5a6958fc42eb9f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0101",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008",
+        "REQ-cli-010",
+        "REQ-cli-011",
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "The feature-and-bug exercise passes end to end",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "FLOW-1",
+        "FLOW-9",
+        "FLOW-10"
+      ],
+      "digest": "31013730387868ca96100d9765db556e8810ca67ea6d565bd22ea9865495028f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0102",
+      "method": "agent-assisted",
+      "requirements": [
+        "REQ-cli-007",
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "A fresh agent resumes from project files alone",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-7",
+        "FLOW-9",
+        "FLOW-11"
+      ],
+      "digest": "9292cc0bc18341c46f13fcb9ab98e9da096697f64890c968dc8182d9c5bee9df",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0103",
+      "method": "agent-assisted",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-013",
+        "REQ-cli-014"
+      ],
+      "status": "active",
+      "title": "Workflow wording keeps evidence, consent and delivery terms distinct",
+      "track": "copy-localization"
+    },
+    {
+      "criteria": [
+        "FLOW-10",
+        "LIFE-7"
+      ],
+      "digest": "cfb3b404ffbddc4b14a889f568d6ac41d3577d18ee79dcf87134c1740bfc926c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0038",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Large native status still gates by its summary state",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13"
+      ],
+      "digest": "32582463acabe77f95ca4f83df3a72c5899ff86900996d26395ebae48f94adc3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0039",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Checkpoint clear flags apply before new entries",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-5",
+        "FLOW-2"
+      ],
+      "digest": "3c11dc9e7d02393f631bcdbdbf0be51596fa858e5ca59c6566a53f941963dcb9",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0040",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "An approval native status reports invalid refuses every route into build and later stages",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2",
+        "FLOW-10"
+      ],
+      "digest": "76c3279a125b32b3978f36183eec9433c220f2a94fbe03a0d06798adeac187b1",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0041",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Reset, back and release meet their destination prerequisites",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2"
+      ],
+      "digest": "0ef5ae076d06bc634d495ca5fc24540c0ac9ac90b689e12bf5d864376ca7cb30",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0042",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Return from a side stage meets the caller's prerequisite",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-5",
+        "LIFE-7"
+      ],
+      "digest": "1febbe8b35867468f6e54d05c2ac67d88a1c19ad10e229bdec0774a995de6167",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0043",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "The SDD policy is read with SpecSync semantics",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-5"
+      ],
+      "digest": "b63f23619b3cb8f2b9abc31a3fc93ce9954a40aed64eb52512ecf93e095b6b0b",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0044",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Real SpecSync reporting an invalid approval refuses build",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-7"
+      ],
+      "digest": "e846351fbad4c1fe856c44109c72f1486c94aeb56fbf5bf0b8950970c15d1794",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0045",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "A case deadline stops descendants that hold the pipes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-7"
+      ],
+      "digest": "393432e604ab7cf6c612bde2c750dc1f7e70fcdfedae40da5c3c73ece38b81c9",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0046",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "Output held open after exit is stopped by the deadline",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "03b6a7c063f31235add5fc8416c448b4d06164270c3f70d131770cfdbf846497",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0047",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Case output beyond the per-stream bound is counted, not retained",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9"
+      ],
+      "digest": "bd6a056713ccc06f0663e0a43059237ada37e17a36225b69ad6a2b8444903c9c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0048",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "Repeated runs halt promptly for a stop or pause during the interval",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-7"
+      ],
+      "digest": "79e2fe2c899710ae14a8801397cc57f21339fdbccfc74cb829b0268cd1eac967",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0049",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-003",
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Native reads end by their deadline and retain bounded output",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "167486c76a9c4f9d1ce253f1de7e75bb833a3f018477a988632fcff017b3da48",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0050",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Preview lists sets with reasons and bytes and changes nothing",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "65b56f425899939b9c499c72333dbc2b8bc35f8298e21a11ba91984258daaabe",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0051",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Every protection reason is named",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "5262d09f31ae23d12f8251abaf0acc14dd21871687c59f719f6e9a4a6e9ae854",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0052",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Newest runs count per case and environment",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "f1b6202da3747f39d0c59b7d975f97f9746bc41f1b94631a9c1eecf16abf211b",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0053",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Apply needs consent or the standing preference and appends the ledger",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "80d3a165e285b3c236acf0b1afe800cadbaf3a840f1ddd69f2403b7f2d46c584",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0054",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Removed and missing observations are labeled and never count",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "672a79ede992863aa77acd112bd2a241cc48cae8261e3a21c40740a67dd52e7a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0055",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "A validation run keeps its counts after its middle passes are pruned",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "d3cb980e4b1af9e36f3f89f3998996e2f7244b368562169b42f8df4d4b95f006",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0056",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Native manifests protect their sets and a failed read protects everything",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "4bc29aa39656bc57c69d5f55ce651aca2e5a58b36630bc98919e440b3c507c0f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0057",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Automatic pruning follows case runs only when retention is auto",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "0438601a4eb8945942cca0f42455cfc95b6ec8d94d2ea2070b60edc966920f65",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0058",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "A multi case record counts in the group of every case",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "09710a6ab94905416220863cb3fa5fcaa7147b8a9f7c0ed68dddaa8d5022ffd5",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0059",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "One artifact spelled two ways is shared and kept",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "e0b07ac6086f750bf7867dc058017f2dfb4109505bb53c74251e6dfc125c79d4",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0060",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Bug fixtures and checkpoint paths protect the sets they name",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "00b3e232be274dd9731d21f1e9442484ec12c996698b927d05f5d3db8f7ed8ee",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0061",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-018"
+      ],
+      "status": "active",
+      "title": "Bug show labels note observations once",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9"
+      ],
+      "digest": "b414b58db4b2adbec4afddd1ce8d4bad33235f41cac62f596337a89f7a19d95d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0062",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "The crate package holds only the helper source and canonical skill",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9"
+      ],
+      "digest": "8d9cd558553d53886fbac1d7f973e3f6835d2111e997328f7674ee5106a33590",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0063",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "Init in a new project installs the skill and an empty checkpoint only",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9"
+      ],
+      "digest": "01b48535a374335e5cd85a2ac02b64cc1c68dbfd04ea80049cefc33c99c4245d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0064",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "A skill copy from an earlier main build is known outdated and updated",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9"
+      ],
+      "digest": "cd5aa50ca1f1923544a6bb426e66eaf45730ba7e7fc1c3ba1d0b75f6e3afe1d0",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0065",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "Bundle files from the latest main build are never reported as edited",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13"
+      ],
+      "digest": "ccb13c3fc4f4d0ba1f2d3899a06f0394419f1d3748a8f8063e60babf4227af77",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0066",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007",
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Native change IDs up to the SpecSync ceiling are kept across processes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "c7b4aa61d81b88840eaf7c21ea4fb1176e624a50a9667e16176cca2ece3a3359",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0080",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020",
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Every transition kind yields the expected stage segments and cycles",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "1b6713c4d701e7c012e4bb178afb8fba74b0441ecbf120be80bdb7695854e4ea",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0081",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020"
+      ],
+      "status": "active",
+      "title": "Gate records start or end no segment and give waiting-on-human time",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "7925785814bc992c26db5a9359eb55c1ecff7d0fccbe0e3e47e04edda3889965",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0082",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020",
+        "REQ-cli-007",
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Checkpoint gates append one record when opened and one when cleared",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "4f068d1e79af0c9bc513e7d3fcbc73b33de1d8df29b7f9aed1e01f0246bf5ea2",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0083",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020"
+      ],
+      "status": "active",
+      "title": "Gate records are reconciled with the awaiting-human list",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "1d8ea2d57e68bc04e80810a79f4605133e3cff7bc80ec194ad5bfc79661759a6",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0084",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020"
+      ],
+      "status": "active",
+      "title": "Missing and out-of-order times are unknown, never zero",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "ecafa635ab40b50bd81228979666589a49ca0d5866a15597ec1fbd1445f17f0d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0085",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020"
+      ],
+      "status": "active",
+      "title": "History ranges need three samples and exclude idle time",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "6d995954e19ca0e29dfc9db8d3eb5fa1c3b62503f3c138feeea15a4a5edac822",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0086",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020"
+      ],
+      "status": "active",
+      "title": "Bug fix times come from observations, notes and the retention ledger",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "e4c5e5b0c917d4129b58d47ebf496dcf38f34d21aa066735f8d11c552d41f3b9",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0087",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020"
+      ],
+      "status": "active",
+      "title": "Observations group per case and validation elapsed is total run wall-clock",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "95ca680f2e1c329ea9ac27058f189d77b7374aefb547fee08bea30bd81de4624",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0088",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020",
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Transitions beyond the bound are partial and every record stays byte-identical",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "cc2f7d4525251106376dab1b19b40efc36ebdd214a8fbf8e368e5803942aaa13",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0089",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020",
+        "REQ-cli-003",
+        "REQ-cli-024"
+      ],
+      "status": "active",
+      "title": "Native times come only from status and native records read read-only",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "f30d53084ef8876bf158555da829f81f5cc7417842c0b256dc1fda7787ad324d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0100",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020",
+        "REQ-cli-003",
+        "REQ-cli-006",
+        "REQ-cli-024"
+      ],
+      "status": "active",
+      "title": "A timed-out or unconfigured native read leaves native times unknown",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "6ed12b92dc68d39361598270ca5904dde9e8aa82429bb67a5913daf5c62684d8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0104",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-020",
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "A case run records its run time and the timing report shows it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "ae0a214ac7ea18f81c98ced40f22340666a1b039f1532c3a539fdcaef2e9c7ac",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0067",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Committing only Chough records or an empty commit keeps an observation current",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "5f73ff87c94ac173fe495b26f673966d6a350f24b5ba74d7fac9a86ac6ae8075",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0068",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Committing edits already present when observed keeps an observation current",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "6c737d65a07bae2ee3a6544cfcb6604b45d303c47f93ee97aebe7fbcbf8bfca8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0069",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Any fingerprinted content change stales an observation",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "ee73ffc1f6e8e74e66ad008bf152fa4d3915eba2162bcda3225ca83008d1e449",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0070",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "SpecSync bookkeeping writes keep an observation current",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "4962cc13c0e60f9435898d5e0f9a0f0007f7117d63ed9999e1763b5c085eb99c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0071",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Edits to a native change's scope stale an observation",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "c2adbaa8ca6e791306a83469076acdcd4f307544303cec8738c3535ca47076af",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0072",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Archiving a change keeps an observation current until an artifact changes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "9e6a6dc2156be99c5c1634f2d29d390b0f1cc51aab691242195ece316ad58869",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0073",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004",
+        "REQ-cli-017"
+      ],
+      "status": "active",
+      "title": "Observations without a content identity, or in schema 1, stay stale after a commit",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "cddec2d484d0dc69057661018116dd433e00770ddb178cb35c2d4be4f88a3962",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0074",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-017"
+      ],
+      "status": "active",
+      "title": "A malformed content identity is refused",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13"
+      ],
+      "digest": "14a11794895e1bed29ae5e763171812f24230398372554df04ec223cc2cfce4c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0075",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-016"
+      ],
+      "status": "active",
+      "title": "Accept, lifecycle and bugs references from main 2756dc2 are known outdated",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "5e0b685158277684219c9dfd3502b338659e6090ed8209006d48f7a5eb272546",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0076",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A pass observed before the latest failure does not verify a bug",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "5c39b812f2e7776b2bb2c5f78ee4421cd0340bdd2b7280d1fc9cda1908798cb9",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0077",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A pass observed after the latest failure verifies a bug",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "ef231f853a0ff684cd29c91bf8a98371fad92c9e01b7b3c13519309ffa1be516",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0078",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A pass in the same second as the failure does not verify a bug",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "1a2705054f562dfed2ed941e734c627144dd5010aff4f5a7606aa32cdced39a3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0079",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A bug without a linked failure cannot be verified",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9",
+        "LIFE-4"
+      ],
+      "digest": "1f872622615fe10f0fa6922e02bbdc38c50f21b4ae4ba80857e5cd266daaf82d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0090",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "The shipped skill bundle holds no em or en dash",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4",
+        "LIFE-9"
+      ],
+      "digest": "c08f1855aa217443bb4c1640e7131ace4cc28ce627daab77437d567df718db30",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0091",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-016",
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "Dashed bundle copies from main 2756dc2 are known-outdated and updated",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "e7077db93b58fdb69da20a59f0186755f46ec1c82a31734bb8261767279211f3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0092",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A scope given as a classification, or the reverse, names the right flag",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-5"
+      ],
+      "digest": "0209056257b64c5ffd5778f62a8a66c247a21980718d72503fac20729151086f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0093",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005",
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "A requirement of another module names the cases file that binds it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-5"
+      ],
+      "digest": "058cef64fdff2d9ed0f88b66cc5503eaf63caaf73b195df6fc6485238ef273b2",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0094",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005",
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "An unresolved requirement is refused with the check-first hint",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-5"
+      ],
+      "digest": "29576106777169522575eefd635795acd028a70b27be5ab37b962f3edfce93f5",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0095",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005"
+      ],
+      "status": "active",
+      "title": "Evidence add names the contract for another module's requirement",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "608553d197944c29740d4e79c07d58467cfc93df62ee540ef929f44aeb1d8797",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0096",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Binding env is bounded and refused with its location",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "582fac83e15815c1d6601e7df036dfbd5d285ba17b97d76ce1d851a70b6d4aec",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0097",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "A declared variable reaches the command and is named without its value",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "ceb11569879eb79e82ca5597a556f532a67fd05c2176c35a5733e1b7f16f5caa",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0098",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "Coloured output matches its visible text and the artifact keeps the raw bytes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "7f793ffc5f61f8d08ed0753c64a8218a180ccf6bdad3627eaa724dc3cfecd2ce",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0099",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "An unterminated escape never hides a second test result",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9",
+        "LIFE-6"
+      ],
+      "digest": "c78d7dc9bb45b1119f5a07c5ee6bc77cd70a0ae9aa03f44ebaf4706744b44e55",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0110",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "Tool pins and the minimum Rust version agree across README, AGENTS, CI and Cargo",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9"
+      ],
+      "digest": "e5a30d962f907cc1b763f9a5b65e444e24165b36f38ca6a15256845a99ddbd19",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0111",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "The full suite passes with the declared minimum Rust version",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4",
+        "LIFE-9"
+      ],
+      "digest": "b40043ea644cd92905d9c37c61671557cca5a4314d6fdc9b3e249db94af3450a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0112",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-016",
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "A skill copy from main before the release prep is known outdated and updated",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4"
+      ],
+      "digest": "907673c3652c2c7981f1ce0a550cb34982496545acea99f4029fcd5664d61e46",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0113",
+      "method": "agent-assisted",
+      "requirements": [
+        "REQ-cli-016",
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "The nine skill corrections state what the helper does and host copies are current",
+      "track": "copy-localization"
+    },
+    {
+      "criteria": [
+        "LIFE-9",
+        "LIFE-6"
+      ],
+      "digest": "ab6e3417ee4946a214ad35a6a9ddd695bb5588f5e34640db70a130260e530004",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0114",
+      "method": "agent-assisted",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "The README toolchain command installs the pinned HI, Fledge and SpecSync",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "LIFE-3"
+      ],
+      "digest": "61acdd91c64609ec4bcea9cf12f598d6d2d074f6ff9ce2f061329008fbed8a20",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0105",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021",
+        "REQ-cli-003",
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Archived done recommends a new cycle and preserves report precedence",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "FLOW-1",
+        "LIFE-4"
+      ],
+      "digest": "9306885ac0365a73944302c527dae2935465f1f55c932f4de386eb243eb9554f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0106",
+      "method": "agent-assisted",
+      "requirements": [
+        "REQ-cli-007",
+        "REQ-cli-016"
+      ],
+      "status": "active",
+      "title": "Kimi cold-start record and guidance stay accurate",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "LIFE-7"
+      ],
+      "digest": "9f386b129c8042c3c14877daf78a5d365c2396d8eabd1b43993a15f724707a89",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0120",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021",
+        "REQ-cli-003"
+      ],
+      "status": "active",
+      "title": "The next view keeps both forms within 16384 bytes with list totals for large records",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "LIFE-3"
+      ],
+      "digest": "e1abe6bb803f07e67e34f6ae16db2235e59fd9d5562bff0496bfc84e75ce4927",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0121",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "In stage done with an authenticated archive, next recommends a new cycle with a reset that carries a reason",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2",
+        "LIFE-3"
+      ],
+      "digest": "c855735af1d47da3ddc176b1e066b2115ee32d85b622446f56610ca73d177135",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0122",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "A stage reset replaces the checkpoint's next action and back keeps it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-5",
+        "LIFE-7"
+      ],
+      "digest": "d077df65b09b9386c39c6f7743ca4e5ae17e1ce89da2ddf3f4a86f876f4ebeed",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0123",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-022"
+      ],
+      "status": "active",
+      "title": "An edited, added or deleted approved delta refuses every route to build, test and accept as native-delta-changed",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-5",
+        "LIFE-1"
+      ],
+      "digest": "7d0370dc1cac72f5e647ce7e80f0c1be6b3766ccbd5f5fa6cba6f211b4661dca",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0124",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-022"
+      ],
+      "status": "active",
+      "title": "A comparison of approved deltas that cannot be made refuses as native-delta-unverifiable",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8",
+        "LIFE-5"
+      ],
+      "digest": "8f19cd1848d96598121e3c64b3a420404956a7fd42ee5ac7117aedc1462c083a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0125",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "Independent roots allocate distinct bug IDs and retain legacy compatibility",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "LIFE-3"
+      ],
+      "digest": "47aed932ef9c9f6c950bd23b2876bd3ce6f02313006bdc4620259359d88df587",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0126",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "An archived native change before done names a new cycle, not Continue <stage>, and keeps today's action when something else applies",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "FLOW-13"
+      ],
+      "digest": "1e38e2aed9cf04383c9ee83b5a3cd996f6bf28bec4de3a387ec8f6304407cf36",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0127",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "The next view shows the five newest decisions with kind and reason",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "FLOW-13"
+      ],
+      "digest": "124f90eb0a987d221906162a8e6b2effe6ac2583671ed07bb968180bb4fd0eea",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0128",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "The next view names the latest failed observation by recorded time with the bugs that link it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-1",
+        "FLOW-12"
+      ],
+      "digest": "1ae73729ce66ed7837138a50a02ea6e39930339e8eaaebff59d0078113af7c2c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0129",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021",
+        "REQ-cli-002"
+      ],
+      "status": "active",
+      "title": "The next view points to each module's lesson source and counts archived lesson bundles without lesson text",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "b7c887a854449b55c5b1662dfdceca20b9b997ae1a92da74c41bef935d90a79d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0130",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "The handoff blocks stay within the cap with correct totals and give byte-identical output",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-1"
+      ],
+      "digest": "063379ea32b4e5718789caaf4c0d3a4f174fd1bd0b329406663bf62090d3905b",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0131",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-016",
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "A skill copy from main before the learning handoff is known outdated and updated, and an edited copy stays",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-12",
+        "LIFE-1"
+      ],
+      "digest": "fdd5f515c01ed5a3275b9910ddafc0d97aeb522aa86854ede4dbe03ceda9ff90",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0132",
+      "method": "agent-assisted",
+      "requirements": [
+        "REQ-cli-002",
+        "REQ-cli-015"
+      ],
+      "status": "active",
+      "title": "The skill states lesson certainty labels, decision precedence, same-PR failure records and closeout inside the open change",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "LIFE-3",
+        "LIFE-1"
+      ],
+      "digest": "821aedfc92e545217bc64e51ca897c29cede365795c89dacdcf2f397c93c668e",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0133",
+      "method": "manual",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "A fresh agent on another host resumes the seeded handoff repository and passes the frozen rubric",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-2"
+      ],
+      "digest": "b4c964639a94224b07de6ece9176357291fd784205072a5d3cd899925320eb9f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-slug-observation-allocation",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-017",
+        "REQ-cli-023"
+      ],
+      "status": "active",
+      "title": "Independent roots and identical repeated runs allocate distinct observations",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9",
+        "LIFE-7"
+      ],
+      "digest": "f3d269885c7e794742abee7801915f2a731c07eefe9d8f762b5abb3cccfc28c3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-slug-validation-allocation",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-013",
+        "REQ-cli-023"
+      ],
+      "status": "active",
+      "title": "Independent roots and identical repeated runs allocate distinct validation runs",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-12"
+      ],
+      "digest": "6588c7737c95f31d281441e4844e26b6208c42c219bccd41dad67f9cf28978e8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-slug-snapshot-allocation",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-015",
+        "REQ-cli-023"
+      ],
+      "status": "active",
+      "title": "Independent roots and identical repeated runs allocate distinct snapshots",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-2"
+      ],
+      "digest": "228ecdadf163d013d182b2931cc6eee68dcaba68eedaa9b252ae9db4cd8bcc95",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-slug-case-compatibility",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Slug case IDs validate without changing legacy IDs digests or global uniqueness",
+      "track": "functional"
+    }
+  ],
+  "profile": "chough-testing/1",
+  "schema_version": 1,
+  "valid": true
+}
+  ✔ Step 7 done (1.304s)
+  ▶️ Running task: exercise
+
+== Intent: sample criteria CHECKOUT-1 and CHECKOUT-2 (sample input, already in hi/)
+
+== Design: nothing visual changes, so the stage is skipped with a reason
+design -> plan (skip)
+
+== Plan: a native SpecSync change, and the scope gate before build
+refused as expected: entering build before scope approval (refused:native-draft)
+plan -> build, gate native:approved
+
+== Build: implement the feature with its boundary tests
+
+== Test: focused selection for the affected requirement and path
+selected: TC-shipping-0001, TC-shipping-0002, TC-shipping-0003
+omitted: TC-shipping-0004 (copy-localization track not requested as relevant to this change)
+TC-shipping-0001: failed, observation OBS-tc-shipping-0001-76e000f4005a8272498277eb
+TC-shipping-0002: passed, observation OBS-tc-shipping-0002-fbef4aec1eafd8439b9b1f3a
+TC-shipping-0003: passed, observation OBS-tc-shipping-0003-8740a749e3dad67b1c7ab61e
+
+== Bug: reproduce, search, record locally, and refuse a duplicate
+existing matches: 0
+recorded BUG-shipping-charged-at-exactly-the-free-threshold-2c0b4d8cc5cb6e3aed86073a: reproduced
+refused as expected: a duplicate report (similar bugs exist)
+refused as expected: accepting with an open blocking bug (refused:blocking-bugs)
+refused as expected: repeated validation without consent (not authorized)
+
+== Back to build: fix the boundary and retest the focused cases
+build: implementation against the current definition
+test: rerun affected cases; earlier observations may be stale
+checkpoint references: 1 case(s) and 1 observation(s) to re-check with `chough status`
+TC-shipping-0001: passed, observation OBS-tc-shipping-0001-ab58fa4f4ba4f6d88ce2bc65
+TC-shipping-0002: passed, observation OBS-tc-shipping-0002-de5f3086f8f0b8e6148c0f22
+TC-shipping-0003: passed, observation OBS-tc-shipping-0003-4b3e6e47cf50b51ce46a8903
+BUG-shipping-charged-at-exactly-the-free-threshold-2c0b4d8cc5cb6e3aed86073a: verified, reproduced-and-later-passed
+
+== Accept: only a human review and native archive can close this
+refused as expected: leaving accept before review and archive (refused:native-verifying)
+Gate not open (refused:native-verifying): Reaching done needs native state archived; it is verifying. Native next action: run `specsync change check free-shipping-at-the-threshold`. Run `specsync change status free-shipping-at-the-threshold`.
+
+EXERCISE PASSED in /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T//chough-exercise.tyRdTG
+  ✔ Step 8 done (37.749s)
+  ▶️ Running task: build
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+  ✔ Step 9 done (75ms)
+✅ Lane verify completed (9 steps in 1m 44.054s)

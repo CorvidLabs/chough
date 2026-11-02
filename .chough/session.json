@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Make chough timing responsive (issue #32 first slice): read each native change at most once, read archived history only when the report selects it, bound total timing native wait, and add an opt-in trace, without weakening native gates",
+  "objective": "Project-local learning and reliable handoffs, first slice: chough next shows recent decisions, the last failure and a lessons pointer within its size cap, never says Continue <stage> after the native change is archived, and the skill labels lesson certainty and closes out quietly inside the open change",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound",
+  "native_change": "fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -28,6 +28,8 @@
       "LIFE-5",
       "LIFE-6",
       "LIFE-9",
+      "LIFE-1",
+      "FLOW-12",
       "LIFE-10"
     ],
     "requirements": [
@@ -41,6 +43,7 @@
       "REQ-cli-012",
       "REQ-cli-019",
       "REQ-cli-023",
+      "REQ-cli-002",
       "REQ-cli-020",
       "REQ-cli-024"
     ],
@@ -63,14 +66,22 @@
       "TC-cli-0113",
       "TC-cli-0114",
       "TC-cli-0089",
-      "TC-cli-0100"
+      "TC-cli-0100",
+      "TC-cli-0126",
+      "TC-cli-0127",
+      "TC-cli-0128",
+      "TC-cli-0129",
+      "TC-cli-0130",
+      "TC-cli-0131",
+      "TC-cli-0132"
     ],
     "design": [],
     "files": [
       "src/timing.rs",
       "src/records.rs",
       "tests/timing.rs",
-      "docs/cli.md"
+      "docs/cli.md",
+      ".chough/artifacts/learning-integration/single-lineage-repair.json"
     ]
   },
   "decisions": [
@@ -108,6 +119,12 @@
     "2026-11-01: 0xLeif replied \"yes i approve\" to the prepared one-file tests/next.rs fixture scope; native update-compact-next-fixture-for-slug-observations records that definition approval. Implementation acceptance is still pending.",
     "failed: native co-review qualification because the accepted-first dependency chosen for the fixture prevents its approved path from counting until parent acceptance. Keep the approval and refusal evidence; do not fabricate acceptance or weaken audit.",
     "2026-11-01: 0xLeif explicitly approved the PR packages and instructed \"i approve.. get these prs out of draft and merged when all green\". Parent identity native review and archive are now recorded. The fixture native ordering can proceed; merge remains conditional on green checks.",
+    "decided: cold-start proof: freeze a seeded fixture repo and a written pass/fail rubric before implementation and hash them as an observation; run a fresh agent on a different host (Kimi Code CLI 0.41.0 or Codex CLI 0.153.4) on main as a mandatory baseline, then on the change; 0xLeif grades; plus one run on this real repo (0xLeif, 2026-11-01)",
+    "decided: lessons live in the existing specs/<module>/context.md Lessons section (SpecSync briefs it); Chough only points at them; no .3md, no library/ store (0xLeif, 2026-11-01)",
+    "assumption (agent, stated in design.md, not a human decision): checkpoint decisions stay Vec<String>; a decided:, rejected: or failed: prefix with a reason clause is read best-effort with a latest-N fallback; no checkpoint schema change",
+    "decided: report criterion 5's cap fixture as a deviation, not re-approve, because the approved 4 KiB fixture exceeds the 64 KiB checkpoint bound (0xLeif chose \"Report as deviation\")",
+    "0xLeif said \"just finish this up urself\" after the change run failed criterion 9 and the real-repository run hit Kimi's quota. Agent's choice under that instruction, not a human decision on scope: report criterion 9 as failed and the real-repository run as not done in the PR, do not amend the approved definition, and leave acceptance, native review and merge to 0xLeif",
+    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\" after the PR packages and limitations were presented. This authorizes the implementation closeout and conditional merge; original cold-start Fail/void and not-run records remain unchanged, and no new Pass grade was provided.",
     "2026-11-01: Leif assigned Claude the #30/#31/#32 pickup starting with #32; Kimi keeps checkpoint merge (PR #29); this is backlog authorization, not native scope approval",
     "Draft native change adds REQ-cli-023 (pending approval, not yet canonical) instead of modifying REQ-cli-020 or 003, so its delta stays disjoint from PR #29's",
     "Coverage extends TC-cli-0089 and TC-cli-0100 with named Rust regressions and explicit observation IDs; no new case number, because #30 owns case allocation",
@@ -115,7 +132,8 @@
     "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending",
     "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33.",
     "Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it",
-    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks."
+    "2026-11-01: 0xLeif instructed \"i approve.. get these prs out of draft and merged when all green\". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks.",
+    "human: 0xLeif accepted the implementation as is (2026-11-01, in chat: \"accept\"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change."
   ],
   "open_questions": [],
   "completed": [
@@ -166,6 +184,18 @@
     "Identity parent archived through native review and ship after actual human approval; dependent fixture verification is now unblocked.",
     "Full verify passes all 9 steps with 182 tests and zero exclusions after the approved identity parent archive unlocked the fixture. The native-ordering bug has a strictly later passed observation.",
     "Both identity and fixture native changes are archived under 0xLeif implementation approval. Full verify passed all 9 steps and pre-push passed all 5; hosted CI and merge are still pending.",
+    "Drafted native change fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer (MODIFIED REQ-cli-021 and REQ-cli-002; cases TC-cli-0126 to TC-cli-0133 reserved in testing.md); specsync change status names change approve next and change audit passes",
+    "2026-11-01: corrected the three decision entries of this cycle after review: removed agent rationale that had been attributed to 0xLeif and the decided: prefix on the agent assumption (removed by hand, since the CLI has no remove flag, then re-added with chough checkpoint --decision)",
+    "0xLeif approved the scope as drafted (AskUserQuestion, 2026-11-01); recorded with specsync change approve --actor 0xLeif",
+    "0xLeif stated he read the frozen rubric docs/exercises/handoff-cold-start/rubric.md (sha256 f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17) and chose the Kimi baseline (AskUserQuestion, 2026-11-01); recorded as his statement, not an approval",
+    "Baseline cold start on main graded by 0xLeif: Fail (P2, P3 not met); observation handoff-cold-start-baseline-kimi-1-grade",
+    "Closeout pass: four labelled lessons in specs/cli/context.md (cold-start baseline, driving Kimi, record bounds in criteria, closeout order); extended after the change runs",
+    "Scoped change check verified; TC-cli-0126 to 0131 passed and TC-cli-0132 reviewed at the implementation tip",
+    "Kimi change run of the handoff cold start recorded at the implementation tip 9009d9a (observation handoff-cold-start-change-kimi-1, outcome not-run until graded)",
+    "0xLeif graded the change run: Fail (P1-P3 not met); P4 to P6 met (observation handoff-cold-start-change-kimi-1-grade)",
+    "Closeout extended: lessons for the change run result and the host quota in specs/cli/context.md",
+    "Merged main 66bef80 (#26, #29); TC-cli-0126 to 0131 passed and TC-cli-0132 re-reviewed at the merged tip 8b5b4cd; the graded change run predates main's src and skill changes, so by the rubric it is void at the new tip until rerun",
+    "Integrated the approved identity archive head while preserving the learning current-cycle group, every history occurrence and all case IDs; fixed and tested the identity-main librarian safe-upgrade predecessor.",
     "Observed PR #26 merged to main as b35acaf on 2026-11-01; its stale merge gate was cleared during Claude's local checkpoint repair",
     "Measured on b35acaf (fresh debug and release builds; load average about 60-70): one archived-change specsync status read completed in 49.954 s; timing makes 11 native reads with one duplicate; next, status and prune make 1; raw data in ../claude-perf-raw",
     "Drafted native change make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound; artifacts complete; specsync change audit and hi check pass",
@@ -177,7 +207,10 @@
     "End-to-end trace regression for a 255-byte change ID fails on the pre-review records.rs and passes now",
     "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read",
     "Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts.",
-    "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate."
+    "Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate.",
+    "Final combined identity, timing and learning source passed 194 unfiltered tests on Rust 1.99.1 and MSRV 1.88.0, the full nine-step verify lane and five-step pre-push lane. Frozen cold-start records and every referenced artifact remain byte-identical.",
+    "Learning implementation natively reviewed and archived under 0xLeif approval with original cold-start Fail/void and real-repository not-run proof unchanged. Final combined local qualification passed 194 tests on Rust 1.99.1 and 1.88.0, nine verify steps and five pre-push steps.",
+    "Parallel native reviews at the first shared head could not authenticate. Both original closeouts are preserved in a backup ref; this branch keeps the already-finalized combined archive with one review lineage and retains the author acceptance note and transition events. A separate native reopen attempt was refused and is preserved as failed diagnostic evidence."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -248,13 +281,39 @@
     "OBS-tc-cli-slug-snapshot-allocation-af22af889455b7ae173e7a35",
     "OBS-tc-cli-slug-case-compatibility-46e48b2d212fe44a838f3735",
     "OBS-structural-c07c15026bd2fd81c2773bf3",
+    "tc-cli-0126-1793578907",
+    "tc-cli-0127-1793578916",
+    "tc-cli-0128-1793578917",
+    "tc-cli-0129-1793578918",
+    "tc-cli-0130-1793578919",
+    "tc-cli-0131-1793578923",
+    "tc-cli-0132-tip-review",
+    "handoff-cold-start-change-kimi-1",
+    "handoff-cold-start-change-kimi-1-grade",
+    "tc-cli-0126-1793581325",
+    "tc-cli-0127-1793581336",
+    "tc-cli-0128-1793581338",
+    "tc-cli-0129-1793581339",
+    "tc-cli-0130-1793581340",
+    "tc-cli-0131-1793581344",
+    "tc-cli-0132-merged-tip-review",
+    "OBS-product-test-bfc159865a39075249fb6e40",
+    "OBS-product-test-b0ea9516761a4e7adcf61406",
     "OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266",
     "OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777",
     "OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21",
     "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37",
     "OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e",
     "OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52",
-    "OBS-structural-2cb53c21d6c98144f9e9ee17"
+    "OBS-structural-2cb53c21d6c98144f9e9ee17",
+    "OBS-product-test-691b9012d1892af5c103d51d",
+    "OBS-tc-cli-0126-3a69c555999c2b38e7836107",
+    "OBS-tc-cli-0127-dad78ccab3753c1ba84dd059",
+    "OBS-tc-cli-0128-dfdc72848b35f76f8600d036",
+    "OBS-tc-cli-0129-396ac9ba0ef98d906553b910",
+    "OBS-tc-cli-0130-e3f217a14172b85e4df24bff",
+    "OBS-tc-cli-0131-77a1de3784d43a441c697247",
+    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9"
   ],
   "bugs": [
     "BUG-0001",
@@ -271,10 +330,11 @@
     "BUG-0026",
     "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee",
     "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
-    "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca"
+    "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca",
+    "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Push the completed timing archive and checkpoint, wait for every hosted check at the exact head to pass, then mark ready and squash-merge."
+  "next_action": "Run the unchanged archive gate locally, then update PR #35 with an exact lease preserving a backup. Mark ready and merge only after every hosted check succeeds. Cold-start Fail/void and not-run proof remains unchanged."
 }

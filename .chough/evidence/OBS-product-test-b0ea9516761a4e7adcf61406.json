@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-b0ea9516761a4e7adcf61406",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Registering the exact identity-main librarian predecessor digest makes the new integration regression pass: unedited copies update and real user edits remain preserved.",
+  "artifacts": [
+    ".chough/artifacts/learning-integration/identity-librarian-after-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/learning-integration/identity-librarian-after-fix.log": "83709182fd96eefa7fb3cce8420c678c5186e78de08d5a84d9b64048e2b45526"
+  },
+  "observed_at_unix_seconds": 1793586879,
+  "snapshot": {
+    "revision": "a1920f7f0ade695b718273a0ebfa7138e1805821",
+    "dirty": true,
+    "fingerprint": "fb275da65704ee45cced162e2cd9334bd0737148c55aa1d18f95a19b4d26ec34",
+    "content": "fe7300eebcb4d452fa251e79ac937c56137d2baff26c6f66c7900f2926550eff"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "One focused Rust 1.99.1 integration test on macOS; no cold-start grade is implied."
+  ]
+}

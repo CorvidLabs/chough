@@ -1,0 +1,19 @@
+ M .chough/cases/csvsum.cases.toml
+ M .chough/session.json
+ M .chough/transitions.jsonl
+ M README.md
+ M csvsum/__main__.py
+ M csvsum/summarize.py
+ M specs/csvsum/csvsum.spec.md
+ M specs/csvsum/tasks.md
+ M specs/csvsum/testing.md
+?? .agents/
+?? .chough/artifacts/tc-csvsum-0001-1793574551.log
+?? .chough/artifacts/tc-csvsum-0002-1793574551.log
+?? .chough/artifacts/tc-csvsum-0003-1793574551.log
+?? .chough/artifacts/tc-csvsum-0004-1793574551.log
+?? .chough/evidence/tc-csvsum-0001-1793574551.json
+?? .chough/evidence/tc-csvsum-0002-1793574551.json
+?? .chough/evidence/tc-csvsum-0003-1793574551.json
+?? .chough/evidence/tc-csvsum-0004-1793574551.json
+?? tests/test_delimiter.py

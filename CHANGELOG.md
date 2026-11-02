@@ -6,21 +6,45 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
-### Changed
-
-- `chough timing` reads each native change at most once per report, and reads
-  archived native history only for an unfiltered report (`--cycle all` with no
-  `--stage`, `--case` or `--bug`). Filtered reports now emit `native.history: null`
-  with `native.history_selection` naming the filters, instead of the archived list
-  ([#34](https://github.com/CorvidLabs/chough/pull/34), REQ-cli-024).
-
 ### Added
+
+- Fresh-agent handoff blocks in `chough next`, read from existing records and within
+  the same 16384-byte cap: the 5 newest checkpoint decisions with the kind and reason
+  of entries written as `decided:`, `rejected:` or `failed:` `<text> because
+  <reason>` (other entries shown whole; no checkpoint schema change), the latest
+  failed observation by recorded time with the status of each bug that links it, and
+  a pointer to each module's lesson source with the newest archived SpecSync lesson
+  bundles. Output is ordered by recorded fields and names only, so the same records
+  give byte-identical text and JSON.
+- Skill guidance: lessons carry an `observation`, `hypothesis` or `verified` label
+  with their source and limits, a project decision always outranks a lesson, a
+  failure fixed in the same pull request still gets a bug or lesson, and closeout is
+  one quiet pass inside the open native change.
+
 
 - `CHOUGH_TIMING_NATIVE_BUDGET_SECONDS` (1 to 3600, default 120) bounds the total
   native wait of one timing report; changes left unread are `not-read`
   (`budget-exhausted`) with unknown times. Gates, `next` and `status` are unaffected.
 - `CHOUGH_TRACE=1` writes bounded stderr lines for each native read and each timing
   phase, without changing output or exit codes.
+
+### Fixed
+
+- `chough next` and `chough status` no longer say `Continue <stage>`, or give the
+  build gate refusal, at intent to accept once the recorded native change is
+  archived with authenticated terminal evidence; they name the archive and the new
+  cycle, recording done first at accept.
+
+### Changed
+
+- The skill now says SpecSync 6.1.2 ships `verification_ignored_paths` and why
+  Chough's own repository has not adopted it.
+
+- `chough timing` reads each native change at most once per report, and reads
+  archived native history only for an unfiltered report (`--cycle all` with no
+  `--stage`, `--case` or `--bug`). Filtered reports now emit `native.history: null`
+  with `native.history_selection` naming the filters, instead of the archived list
+  ([#34](https://github.com/CorvidLabs/chough/pull/34), REQ-cli-024).
 
 ## [0.1.0] - 2026-11-01
 

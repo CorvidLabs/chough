@@ -1,0 +1,1 @@
+{"status":"ok","data":{"action":"start","name":"chough-coldstart-change","command":["kimi","--auto","-m","kimi-code/k3.1-pro-highspeed"],"project":"repo-cf6f0164","child_pid":30606,"supervisor_pid":30596,"state":"running"}}

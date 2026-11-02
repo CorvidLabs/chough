@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test handoff_blocks_stay_within_the_cap_and_are_byte_identical ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 6.09s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/next.rs (target/debug/deps/next-39a61b549593f01c)
