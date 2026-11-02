@@ -22,7 +22,14 @@ second ledger, and never record a human decision that a human did not make.
 3. Check what is still true: native state, evidence freshness, open blocking bugs,
    and `awaiting_human`. A saved stage or next action is a suggestion; native status
    decides gates.
-4. Read [the stage contract](references/stages.md), then only the reference for the
+4. Before your first edit, state the handoff in your own message. Reading it in tool
+   output is not the same as stating it. Say the goal; each recorded decision that
+   binds the next task, with its reason, naming a rejected approach as rejected; the
+   last failure, its bug and that bug's status; the lessons that apply and where they
+   are recorded; and the next task. An edit is any file change, including a Chough
+   command that writes a record. Where the records do not say one of these, say so
+   instead of guessing.
+5. Read [the stage contract](references/stages.md), then only the reference for the
    current stage.
 
 With no checkpoint, run `chough init --objective "<outcome>" --intent-scope <HI-family>

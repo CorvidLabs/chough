@@ -205,6 +205,12 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/librarian.md",
         "4fa746a83405059803f3589579559dd2ac909d942e1fd8dd709158b488e5dc0d",
     ),
+    // Main 118a895 (learning handoffs, #35); superseded by the resume step that asks an
+    // agent to state the recorded handoff before its first edit.
+    (
+        "SKILL.md",
+        "367a9873293e79ca40c9634e2b2a12c3223074aaec161c7444690c2d02e12199",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.
