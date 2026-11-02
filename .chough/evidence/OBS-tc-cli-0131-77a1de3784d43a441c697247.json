@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0131-77a1de3784d43a441c697247",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test package -- --exact a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated for TC-cli-0131: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-0131-77a1de3784d43a441c697247.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-0131-77a1de3784d43a441c697247.log": "c911fe6e459b98b58519c4448b98e7c8e8f6b8ef93092e5a82597dbd3ae78d4e"
+  },
+  "observed_at_unix_seconds": 1793590575,
+  "snapshot": {
+    "revision": "a9a4b6c2c76d0d1eb5b7f54c33055c95af2581bf",
+    "dirty": false,
+    "fingerprint": "5a339a52bd07e92c0c795ab6da1bda5ae4c81db5894824f6ef05780a6f356e94",
+    "content": "f8d6dedc12f3ca184d4a7fb6f4d4fc28bbcf536211fc103cec8deac05920879c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0131",
+      "digest": "063379ea32b4e5718789caaf4c0d3a4f174fd1bd0b329406663bf62090d3905b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "package",
+    "--",
+    "--exact",
+    "a_skill_copy_from_main_before_the_learning_handoff_is_known_outdated_and_updated"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

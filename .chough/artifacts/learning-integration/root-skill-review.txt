@@ -1,0 +1,9 @@
+TC-cli-0132 text review by Codex root on the combined identity/timing/learning tree.
+accept.md: certainty labels, sources/limits and decision precedence are present.
+checkpoint.md: best-effort decided/rejected/failed prefixes and bounded handoff blocks are documented.
+bugs.md: a same-PR failing check still gets a bug or source lesson.
+librarian.md: quiet closeout is inside the open change before verification/finalize, with at most 12 summary lines; no post-archive spec edits; off mode works and briefs require on mode.
+accept.md/lifecycle.md: SpecSync 6.1.2 exclusions are shipped but not adopted here because directory prefixes would also hide case definitions.
+Both installed copies are byte-identical to canonical; actual skill status reports all 48 selected files current.
+Limits: agent-assisted review, not human approval or an independent review of root's own integration work.
+This is not a cold-start grade; TC-cli-0133's original Fail/void and not-run evidence remains unchanged.
