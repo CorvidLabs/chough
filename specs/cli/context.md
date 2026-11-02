@@ -168,6 +168,25 @@ Source: observation handoff-cold-start-real-repo-kimi-1-attempt-1. Limits: this
 account and plan. Future use: check the host's remaining quota before a run and keep
 an interrupted run as not-run, never as a graded result.
 
+2026-11-02, resume handoff step shipped unproven (observation): the skill step that
+asks an agent to state the handoff before its first edit (change
+agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal)
+shipped without a cold-start run. The Kimi baseline script was prepared, but the
+agent cannot start an auto-approving host and the operator's `!` command arrived as
+plain text, so 0xLeif chose to proceed without Kimi. Source: the checkpoint decision
+of 2026-11-02 and the package tests for the step. Limits: the step's presence and
+wording are tested; its effect on a fresh agent is not. The earlier hypothesis stays
+a hypothesis. Future use: run the frozen cold start (baseline at 118a895, change run,
+real repository) when a human can start the host, and record the result here; a
+pass shows the step is followed, not that more was understood, because the step
+mirrors rubric P1 to P3.
+
+2026-11-02, starting external hosts (observation): an agent session cannot start an
+auto-approving host such as `kimi --auto`, so every external cold-start run needs a
+human to run the prepared script with `!` as the first character of the prompt.
+Source: this change's baseline attempt. Limits: this Claude Code permission setup.
+Future use: before planning a graded run, confirm who will start it and when.
+
 Add further lessons only from observed work, with source, applicable scope, concrete
 future use and revision or retirement guidance. A future native cli.3md would become
 the lesson source in place of this section.

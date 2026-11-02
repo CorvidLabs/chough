@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal",
+  "implementation_commit": "c2218e9b1c3ea7cc7f0d18b3784d3e892f8a064e",
+  "implementation_tree": "8113762bc5f7e119882c3ca4359c93bb0109b44d",
+  "contract_digest": "a2b9d34e9ae86f7f52378c78342a75f175d4568da79e5579b65aae11375240c2",
+  "workspace_digest": "05f7f91b6429a0b8626ebe3d7b2315b42390dc524a4b5d543c93a355c6286e38",
+  "closing_digest": "f84fa04d4124db1d4a2a6f428300fdb12ccf6555b83ccc0b9111c4aec7176acb",
+  "review_digest": "7b2cc1b01e76488026aef4ab73e876ebfcf3b35443f69ea8f04ba06362d7a40e",
+  "finalization_digest": "2ff01523cb08168530f8dcfae7351e74861b14cc4892f066fa553ca16e5324ae",
+  "timestamp": 1793597457
+}

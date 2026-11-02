@@ -2357,3 +2357,26 @@ expected = ["tests/cases.rs::slug_case_ids_validate_without_changing_legacy_ids_
 adapter = "cargo-test"
 test_target = "cases"
 test = "slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness"
+
+[[case]]
+id = "TC-cli-skill-asks-for-the-handoff-before-the-first-edit"
+title = "The skill asks a resuming agent to state the recorded handoff before its first edit"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["LIFE-3", "FLOW-13", "LIFE-1", "FLOW-12"]
+requirements = ["REQ-cli-002"]
+paths = ["skills/chough-workflow/SKILL.md", ".agents/skills/chough-workflow/", ".claude/skills/chough-workflow/"]
+environments = ["repository-text"]
+artifacts = ["reviewer-note"]
+setup = ["The canonical skill bundle and both host copies at the implementation tip"]
+steps = [
+  "Read SKILL.md Start or resume",
+  "Run chough skill status for both host copies",
+]
+expected = [
+  "The resume list has the step between Check what is still true and the stage contract",
+  "The step names the goal, binding decisions with reasons and rejected approaches, the last failure with its bug status, the lessons with their source and the next task, says what counts as an edit and to say what the records lack instead of guessing",
+  "The step is at most 8 lines, has no em or en dash, and SKILL.md is under 6144 bytes",
+  "chough skill status reports both host copies current",
+]

@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-skill-asks-for-the-handoff-before-the-first-edit-3642b96dc12c219cfe533066",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "LIFE-1",
+    "FLOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-002"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass. SKILL.md resume step 4 states the handoff before the first edit, in order, 7 lines, no dash, 5403 bytes; both host copies current (reviewed at 040b57e)",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-skill-handoff/tip-review.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-skill-handoff/tip-review.md": "ea1e8a99fb490c95409668eb1f45871f4266c308b1e6987071047815eeb381d4"
+  },
+  "observed_at_unix_seconds": 1793596911,
+  "snapshot": {
+    "revision": "040b57ea1b021ccdc6f0e79622f113313fa1389f",
+    "dirty": true,
+    "fingerprint": "4c37b67cd4f5bd9ad5e2ef2bd49a58a307a213a632915f624d00d63efb0ac612",
+    "content": "8a4794f7365470dfadfed4e2abd4aa5c3be53c78c51e50011d950868bb887f8f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-skill-asks-for-the-handoff-before-the-first-edit",
+      "digest": "571cb99e7069b52d6c40d70c1a82b03583271eb4c7c7759a45d1dc371db220a5"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Reviewed by the authoring agent, not an independent reviewer",
+    "Text review only; the step's effect on a fresh agent was not run (no cold-start run, by 0xLeif's decision)"
+  ]
+}

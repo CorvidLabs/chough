@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793596433,
+      "digest": "a2b9d34e9ae86f7f52378c78342a75f175d4568da79e5579b65aae11375240c2",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal",
+        "title": "Agents state the recorded handoff before their first edit: the skill's resume steps ask a fresh agent to say the goal, binding decisions with reasons, the last failure with its bug status, the applicable lessons and the next task in its own words",
+        "description": "Agents state the recorded handoff before their first edit: the skill's resume steps ask a fresh agent to say the goal, binding decisions with reasons, the last failure with its bug status, the applicable lessons and the next task in its own words",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/SKILL.md",
+          ".claude/skills/chough-workflow/SKILL.md",
+          "CHANGELOG.md",
+          "docs/",
+          "skills/chough-workflow/SKILL.md",
+          "specs/cli/",
+          "src/skill.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "See the Acceptance Criteria section of change.md: skill step, installed copies, contract and docs, cold-start proof, verification."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/context.md lessons: the cold-start change run (observation) and its untested hypothesis that the code puts the facts in front of the agent but the skill never asks it to state them; record bounds in criteria; closeout order (change check refuses while tasks.md has open boxes, so human gates are plain text); listing .chough/ in affected paths stales verification; confirm an external agent can start (quota, trust dialog) before relying on a run; parallel closeouts of one change on one branch corrupt archive history, so only one session closes out. AGENTS.md: never record or infer human approval, review or grades; no new store or model client.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "cfd0272f3f1409476e879cd00938fe45c49e24e864466d3bc6a4de5f0ff6d2fa"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793597456,
+      "digest": "f84fa04d4124db1d4a2a6f428300fdb12ccf6555b83ccc0b9111c4aec7176acb",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

@@ -8,6 +8,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Added
 
+- Skill resume step: before its first edit, an agent states the recorded handoff in
+  its own message (the goal, binding decisions with their reasons, the last failure
+  with its bug status, the applicable lessons and the next task) and says what the
+  records do not tell it. `SKILL.md` copies from main 118a895 are known-outdated, so
+  `chough skill update` replaces them.
 - Fresh-agent handoff blocks in `chough next`, read from existing records and within
   the same 16384-byte cap: the 5 newest checkpoint decisions with the kind and reason
   of entries written as `decided:`, `rejected:` or `failed:` `<text> because
