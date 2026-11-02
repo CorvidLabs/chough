@@ -2434,3 +2434,27 @@ expected = [
   "The step is at most 8 lines, has no em or en dash, and SKILL.md is under 6144 bytes",
   "chough skill status reports both host copies current",
 ]
+
+[[case]]
+id = "TC-cli-skill-orders-the-change-check-before-new-requirement-cases"
+title = "The skill runs the scoped change check before cases that link a new requirement and keeps case recording out of tasks.md checkboxes"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["FLOW-7", "LIFE-6", "LIFE-2"]
+requirements = ["REQ-cli-009"]
+paths = ["skills/chough-workflow/references/plan.md", "skills/chough-workflow/references/testing.md", "skills/chough-workflow/references/accept.md", ".agents/skills/chough-workflow/", ".claude/skills/chough-workflow/"]
+environments = ["repository-text"]
+artifacts = ["reviewer-note"]
+setup = ["The canonical skill bundle and both host copies at the implementation tip"]
+steps = [
+  "Read references/plan.md (the SpecSync lessons paragraph), testing.md (Definitions are not observations) and accept.md (Prepare the review, step 1)",
+  "Run chough skill status for both host copies",
+]
+expected = [
+  "plan.md lists running or recording Chough cases with human gates as plain text rather than checkboxes, and says a requirement the delta adds reaches the companion only when change check materializes it",
+  "testing.md says to finish the implementation tasks, run the scoped specsync change check, then add, run and record cases that link a new requirement, and that running or recording cases is never a tasks.md checkbox",
+  "accept.md step 1 says the scoped check refuses while tasks.md has an unchecked box, so the cases in step 2 are never a box there",
+  "The new text has no em or en dash",
+  "chough skill status reports both host copies current",
+]

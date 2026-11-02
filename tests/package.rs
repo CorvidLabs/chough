@@ -949,6 +949,347 @@ fn checkpoint_reference_before_merge_guidance_is_known_outdated_and_edited_copie
     assert_eq!(fs::read_to_string(installed).unwrap(), edited);
 }
 
+#[test]
+fn plan_testing_and_accept_references_from_main_825a380_are_known_outdated_and_edited_copies_stay()
+{
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow");
+    let files = [
+        (
+            "references/plan.md",
+            PLAN_AT_825A380,
+            "1022db57d0c114effc8669ede9ebb453f932109f608f883712725e57ba53551d",
+        ),
+        (
+            "references/testing.md",
+            TESTING_AT_825A380,
+            "426c2df68e8d25bfbdee4bf81b4deaa06eac4525b6dfad3c771311e0d6a4ac99",
+        ),
+        (
+            "references/accept.md",
+            ACCEPT_AT_825A380,
+            "80f71366ad81e1720bdc5f91d51c5428cd6a60729c9d1675977e284f7b08e398",
+        ),
+    ];
+    for (file, content, digest) in files {
+        // The known digests are of LF bytes; a Windows checkout may have converted them.
+        let old = content.replace("\r\n", "\n");
+        assert_eq!(
+            format!("{:x}", Sha256::digest(old.as_bytes())),
+            digest,
+            "{file}"
+        );
+        fs::write(installed.join(file), old).unwrap();
+    }
+    let status = chough(root, &["skill", "status"]);
+    for (file, _, _) in files {
+        assert_eq!(
+            skill_state(&status, file)["state"],
+            "known-outdated",
+            "{file}"
+        );
+    }
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    for file in bundle_files() {
+        assert_eq!(skill_state(&status, &file)["state"], "current", "{file}");
+    }
+
+    // A copy edited from the 825a380 version is edited, and update keeps it.
+    for (file, content, _) in files {
+        let edited = format!("{}\nA local note.\n", content.replace("\r\n", "\n"));
+        fs::write(installed.join(file), &edited).unwrap();
+        let status = chough(root, &["skill", "status"]);
+        assert_eq!(skill_state(&status, file)["state"], "edited", "{file}");
+        chough(root, &["skill", "update"]);
+        assert_eq!(
+            fs::read_to_string(installed.join(file)).unwrap(),
+            edited,
+            "{file}"
+        );
+    }
+}
+
+#[test]
+fn the_skill_runs_the_change_check_before_cases_that_link_a_new_requirement() {
+    let reference = |file: &str| {
+        fs::read_to_string(
+            manifest_dir()
+                .join("skills/chough-workflow/references")
+                .join(file),
+        )
+        .unwrap()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+    };
+    for (file, phrases) in [
+        (
+            "plan.md",
+            &[
+                "and running or recording Chough cases, as plain text rather than checkboxes",
+                "reaches the companion only when `change check` materializes it",
+            ][..],
+        ),
+        (
+            "testing.md",
+            &[
+                "is not in the companion until the scoped `specsync change check <id>` materializes it",
+                "Finish the implementation tasks, run that check, then add, run and record those cases.",
+                "Running or recording cases is never a `tasks.md` checkbox",
+            ][..],
+        ),
+        (
+            "accept.md",
+            &["so the cases in step 2 are never a box there"][..],
+        ),
+    ] {
+        let text = reference(file);
+        for phrase in phrases {
+            assert!(text.contains(phrase), "{file} lacks: {phrase}");
+        }
+    }
+}
+
+/// Frozen plan reference from main 825a380. Keep its bytes.
+const PLAN_AT_825A380: &str = r##"# Technical design and plan
+
+SpecSync drives this stage with its own adaptive artifacts. Read source
+instructions, existing architecture and the native lessons first; `specsync change
+new` prints the lessons of the modules you declare.
+
+1. Create the change with installed help as the authority, for example
+   `specsync change new "<one outcome>" --spec <module> --path <path> --json`.
+   Declare every path you expect to touch: scope freezes at approval.
+2. Answer the deterministic interview with `specsync change answer <id> <question>
+   "<answer>"`.
+3. Complete the selected artifacts: requirements, research, design, plan (approach,
+   out of scope, steps, risks, constraints consulted), tasks, testing, docs, and a
+   semantic delta per affected module.
+4. Estimate meaningful increments with relative size and the main uncertainty. Do not
+   invent precise hours. Run `chough timing` and use its history ranges (per stage, bug
+   fix and human gate) as the basis: they are elapsed wall-clock time, not effort, and
+   estimates from recorded history, not targets. When it reports too few samples, say
+   that history is too thin and estimate by relative size alone; never present a range
+   as a deadline.
+5. If several agents will build, assign file or module ownership in the plan.
+6. Record the change: `chough checkpoint --native-change <id>`.
+
+## One approval
+
+Present one coherent package: what will change, the contract delta, the plan, the
+verification approach, and any consequential open choice with your recommendation.
+Ask one concise question. Record `chough checkpoint --awaiting-human "Scope approval
+of <id>"`, then keep doing independent preparation.
+
+Only after the human actually approves, run `specsync change approve <id> --actor
+"<their name>"` and clear the gate with `chough checkpoint --clear-awaiting-human`.
+The actor is a label, not authenticated identity.
+
+Lessons learned from rehearsing SpecSync 6.1: the delta is frozen once approved and
+`change check` refuses an edited delta; `change check` also refuses while `tasks.md`
+has unchecked boxes, so list human gates as plain text rather than checkboxes.
+
+## What needs reapproval
+
+A change to approved intent, contract, acceptance criteria or affected scope needs
+native reapproval. Routine implementation, tests, evidence, delta materialization
+and lifecycle metadata do not.
+"##;
+
+/// Frozen testing reference from main 825a380. Keep its bytes.
+const TESTING_AT_825A380: &str = r##"# Focused testing
+
+Test what the change affects, not every criterion the product has.
+
+## Choose the checks
+
+Run `chough cases select --requirement <REQ> --criterion <ID> --path <changed path>`
+for the affected scope. Add `--track copy-localization` when visible text,
+terminology, comprehension or locale behavior changed, and `--track design-qa` when
+visuals or interactions changed. The output lists selected cases, omitted cases with
+reasons, and the project-required lane if one is configured
+(`chough pref set required-lane <lane> --source …`). Also run proportionate
+regressions for nearby behavior and the project's mandatory gates. Explain any
+meaningful omission and record test debt in the native `testing.md`.
+
+| Track | When | Typical method |
+|---|---|---|
+| functional | Always | Automated unit, integration or UI tests; manual checks where needed |
+| copy-localization | Visible text or locale behavior changed | Deterministic string assertions plus reviewer notes |
+| design-qa | Visuals or interactions changed | Rendered comparison with the canonical prototype at the target viewports and states |
+
+## Definitions are not observations
+
+Definitions live in `.chough/cases/<module>.cases.toml` (profile `chough-testing/1`,
+see [the template](../templates/cases.toml)). Each new case has a curated stable ID
+`TC-<module>-<title-slug>`, with lowercase ASCII letters and digits in nonempty runs
+separated by single hyphens. The complete ID stays within the module-aware 100-byte
+bound, and duplicate IDs are refused globally. Exact legacy `TC-<module>-NNNN` cases
+remain valid without renumbering or changing their definition digests. Each case
+links to HI criteria and requirements, setup, steps, explicit expected outcomes,
+method, environments and expected artifact types. Several cases can cover one
+criterion. Never edit an expected outcome to match a failure; retire a case
+(`status = "retired"`) instead of deleting or reusing its ID.
+
+`chough cases check` validates every definition, including its HI and requirement
+links. The digest of a case ignores its position and title, so reordering never
+changes identity, while editing what it asserts makes earlier observations
+`stale-case-definition`.
+
+## Execute honestly
+
+- Automated: `chough cases run <ID> --environment <env>` runs the binding without a
+  shell and records an automatic `OBS-<slug>-<24-lowercase-hex>` observation with
+  the captured log at exactly `.chough/artifacts/<observation-id>.log`. An optional
+  `--observation-id` accepts only the new OBS form. An old-style ID supplied for a
+  new write is refused with a remedy to omit the ID for automatic allocation.
+  `cargo-test` passes only when exactly one test ran and passed; a filter matching
+  nothing is `not-run`. A validator refusing to load or run a definition is not a
+  behavioral `not-run` observation: run the bound regression directly when failure
+  first evidence is needed before the validator can accept its new case ID.
+  `fledge-task` and `command` pass only with exit 0 and every `expect_output`
+  fragment present, so each needs at least one fragment. `timeout_seconds` bounds a
+  run from 1 to 3600 (default 600); a run that times out is recorded failed. The
+  command exits 3 when the outcome is not passed.
+- A binding may declare `env`, variables set on top of the inherited environment,
+  for example `env = { NO_COLOR = "1" }` when a tool should print plain text. Chough
+  sets none by default. `env` is committed with the case, so never put secrets in
+  it. A `cargo-test` binding cannot set, in any ASCII case, names that choose what
+  cargo builds or runs: `PATH`, `CARGO`, `CARGO_HOME`, `RUSTC`, `RUSTDOC`,
+  `RUSTC_WRAPPER`, `RUSTC_WORKSPACE_WRAPPER`, `RUSTFLAGS`, `CARGO_ENCODED_RUSTFLAGS`,
+  `RUSTDOCFLAGS`, `CARGO_ENCODED_RUSTDOCFLAGS`, `RUSTC_BOOTSTRAP`, or any name
+  starting with `RUSTUP_`, `CARGO_BUILD_`, `CARGO_TARGET_` (`CARGO_TARGET_DIR` stays
+  allowed), `CARGO_HOST_`, `CARGO_PROFILE_` or `CARGO_UNSTABLE_`. Observations name
+  the declared variables, not their values, and always state that inherited
+  variables were not recorded.
+- `expect_output` and the `cargo-test` count read the output with complete terminal
+  escape sequences (colours, hyperlinks) removed, while the artifact keeps the raw
+  bytes. Write fragments as the visible text; a fragment containing ESC is refused.
+- Manual or agent-assisted: `chough cases record <ID> --method manual --verdict 1=pass
+  --verdict 2=fail … --summary "…" --artifact <screenshot>` gives a verdict for every
+  expected outcome; any fail makes the observation failed. Like `cases run`, it
+  allocates an OBS ID with a random 96-bit suffix when `--observation-id` is omitted
+  and exits 3 when the outcome is not passed. Direct `chough evidence add [ID]` also
+  allocates when ID is omitted and applies the same explicit new-form and old-style
+  omit-ID rules. Stored legacy observations remain readable and linkable without
+  migration.
+
+A failing case stays failed even when every other case passes. Do not rerun until
+it passes and report only the pass. Capture the failure with
+[the bug procedure](bugs.md).
+
+AI judgment is never the only oracle when an assertion or a reproducible procedure
+can decide. Keep rendered, copy and human judgments as observations with method and
+limits. Magpie can run real commands, but its generic mode judges exit codes and
+records skipped steps as passes; bind a Magpie run only through `command` with an
+`expect_output` assertion, and only where it is installed.
+
+## Artifacts
+
+Artifacts stay inside the project; there are no external artifact paths. Keep
+screenshots and other large files small. One may be ignored by Git: the observation
+keeps its fingerprint, and a clone without the file reads `stale-artifact`, never
+passed. Do not use Git LFS for them while SpecSync `change check` refuses tracked LFS
+files (CorvidLabs/spec-sync#789).
+
+## Retention
+
+Routine reruns are prunable; proof that something still references is not.
+`chough evidence prune` previews eligible and protected observation sets with reasons
+and bytes, and changes nothing. It protects what the checkpoint, a bug, an active
+native change or the most recent archived one lists, non-routine records, the newest
+3 automated runs and the newest failure per case and environment, validation failures
+and boundary passes, and anything younger than 14 days. Apply only with `--apply` under
+`chough consent grant retention --source "<their words>"`, or when a human set
+`chough pref set retention auto --source …` (default `off`), which also prunes after
+`cases run` and `validate run`. Removals are logged in `.chough/pruned.jsonl`. Never
+delete evidence by hand, and never report a `pruned` or `unavailable` observation as
+passed.
+"##;
+
+/// Frozen accept reference from main 825a380. Keep its bytes.
+const ACCEPT_AT_825A380: &str = r##"# Acceptance and native closeout
+
+Acceptance is where the human decides whether the implementation is what they
+wanted. Agent review, a passing command, scope approval or an actor label never
+stands in for that decision.
+
+## Prepare the review
+
+Follow this order, so that one verification covers both the code and Chough's
+records. Follow native status where it names a different next action.
+
+1. When the delta adds or modifies requirements, run `specsync change check <id>`
+   first, so the requirement text that cases link is materialized.
+2. Run the affected cases: `chough cases run <ID> --environment <env>`, plus the
+   project lanes.
+3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
+4. Commit the source together with `.chough/`.
+5. Run `specsync change check <id> --commit` (stage new source files first).
+6. Push the branch, open or update the pull request, and observe hosted CI at the
+   real tip. Report product tests, structural checks, native lifecycle state,
+   provenance and platforms separately.
+7. Present to the human: what changed, the current verification, the relevant case
+   observations with freshness, open bugs and limits, and what was not checked.
+
+Between the check in step 5 and finalize, nothing writes to `.chough/` and nothing is
+committed. Committing Chough records or SpecSync bookkeeping does not make Chough
+observations stale, but SpecSync's verification digest covers every non-ignored file,
+including `.chough/`. SpecSync 6.1.2 ships an opt-in verification exclusion,
+`verification_ignored_paths`, but Chough's own repository has not adopted it: its
+entries are directory prefixes, so covering `.chough/session.json` would also hide
+`.chough/cases/`, whose case definitions must stay verified. Unless a project lists
+only directories that are safe to leave out, any Chough write in that window forces
+another `change check`.
+
+If native archive checks are red because review has not happened, say exactly that.
+Do not claim all checks are green and do not bypass the gate.
+
+## After the human decides
+
+Only after a real review decision, record it and close natively, following native
+status rather than a remembered sequence:
+
+```sh
+specsync change review <id> --reviewer "<the human>"
+specsync change ship <id>        # or: specsync change finalize <id>
+```
+
+Do not commit between review and finalize. Only then clear the gate with `chough
+checkpoint --clear-awaiting-human` and run `chough stage advance`, which moves accept
+to done; it is refused until native state is `archived`. Push the archive commit and
+the checkpoint on the same pull request, wait for required checks, then merge through
+the repository's normal process. If several changes share a pull request, review and
+finalize them one at a time. If evidence went stale, use the recovery action that
+`specsync change status` names. Finishing never enters release.
+
+## Compounding
+
+Lessons can be recorded at any stage. Put them in the module's native lesson source
+(`<module>.3md` later plane when present, otherwise the Lessons section of
+`context.md`) with the source, the scope where it applies and the future action it
+changes. `chough next` points to that source; Chough keeps no lesson store of its own.
+
+Each lesson carries a certainty label:
+
+- `observation`: something seen once, with what was run and where.
+- `hypothesis`: a likely explanation not yet tested. It is a prompt to check, not a
+  rule.
+- `verified`: supported by a test or a repeated observation.
+
+Each lesson names its source (an observation ID, a bug ID or a commit) and its limits
+(where it applies and where it was not checked). A project decision, meaning a
+checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, always
+outranks a lesson. A lesson never changes a decision; if a lesson argues against one,
+raise it with the human. A lesson that changes behavior or policy may need its own
+native change. Write lessons from a change during closeout, inside the open native
+change (see [librarian.md](librarian.md)). Archival does not mean no bug remains;
+open bugs stay in the backlog.
+"##;
+
 const CHECKPOINT_BEFORE_MERGE_GUIDANCE: &str = r##"# Checkpoint and cold resume
 
 Essential state must never live only in model context. `.chough/session.json` is the
