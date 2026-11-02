@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "d8c6e1e48b31ee4a1047bc2db495af7a762ed535",
+      "contract_digest": "1d4c5dce2a2ae4d5ab018748d7de372b6013f8fc3b51dd1d515662910f3c557b",
+      "execution_digest": "8cd51dbac3418539712eb603bf3c07fd05268524ab9cb1b6b82dfc900e534167",
+      "workspace_digest": "549d1085f507fdd82042e3278aac096955259acaf3d8cbd8ce285a55c9f38044",
+      "timestamp": 1793637888
+    }
+  ]
+}

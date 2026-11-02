@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-f2fe3e74105b6b50775d28cd",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-6",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "At the implementation tip after the scoped change check materialized REQ-cli-009, the canonical plan, testing and accept references say the scoped check precedes cases linking a requirement the change adds and that running or recording cases is not a tasks.md checkbox; no em or en dash; chough skill status reports all 48 host files current.",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-skill-orders-review.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-skill-orders-review.log": "4ab4028983f8c95e35f991a550031fc4b60c78a6657d9ffd74fe61184eb405eb"
+  },
+  "observed_at_unix_seconds": 1793635304,
+  "snapshot": {
+    "revision": "46790b408f8f418bdbaafef86119c5a642c55941",
+    "dirty": true,
+    "fingerprint": "1caf9b361b20fbae5dc1198776e979da9608c2ada79259c70be08339b70e4963",
+    "content": "59b7590451926a1df2941dc39cfbedf2b2d0bb005fb0d69cf33520e3daa293b1"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-skill-orders-the-change-check-before-new-requirement-cases",
+      "digest": "c95a3cb3f548d3bbbe233dfa84743012078e9a158875fbe0520b9aa8b32ff30e"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Agent-assisted review by corvid-agent, not human review",
+    "Shows the guidance is present; its effect on a fresh agent is not measured"
+  ]
+}

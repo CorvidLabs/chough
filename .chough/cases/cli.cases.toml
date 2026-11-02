@@ -363,6 +363,42 @@ test_target = "stages"
 test = "native_state_gates_build_and_closing_without_inventing_it"
 
 [[case]]
+id = "TC-cli-open-human-gates-refuse-advance-and-skip"
+title = "Open human gates refuse advance and skip"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-3", "FLOW-5", "FLOW-13"]
+requirements = ["REQ-cli-030"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::open_human_gates_refuse_advance_and_skip passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "open_human_gates_refuse_advance_and_skip"
+
+[[case]]
+id = "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next"
+title = "Open human gates leave other moves and agree in next and status"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-13"]
+requirements = ["REQ-cli-030"]
+paths = ["src/", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::open_human_gates_leave_other_moves_and_agree_in_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "open_human_gates_leave_other_moves_and_agree_in_next"
+
+[[case]]
 id = "TC-cli-0021"
 title = "Validate and release need authorization"
 status = "active"
@@ -577,6 +613,60 @@ expected = ["tests/bugs.rs::an_open_blocking_bug_sends_work_back_to_build passes
 adapter = "cargo-test"
 test_target = "bugs"
 test = "an_open_blocking_bug_sends_work_back_to_build"
+
+[[case]]
+id = "TC-cli-leaving-test-refuses-an-unlinked-failed-case"
+title = "Leaving test refuses an unlinked failed case until it passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::leaving_test_refuses_an_unlinked_failed_case_until_it_passes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "leaving_test_refuses_an_unlinked_failed_case_until_it_passes"
+
+[[case]]
+id = "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
+title = "A later not-run observation keeps an unlinked failure refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-5"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_later_not_run_keeps_an_unlinked_failure_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_later_not_run_keeps_an_unlinked_failure_refused"
+
+[[case]]
+id = "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal"
+title = "A linking bug lifts the unlinked-failure refusal; other moves are unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-8"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged"
 
 [[case]]
 id = "TC-cli-0033"
@@ -2378,6 +2468,30 @@ expected = [
   "The resume list has the step between Check what is still true and the stage contract",
   "The step names the goal, binding decisions with reasons and rejected approaches, the last failure with its bug status, the lessons with their source and the next task, says what counts as an edit and to say what the records lack instead of guessing",
   "The step is at most 8 lines, has no em or en dash, and SKILL.md is under 6144 bytes",
+  "chough skill status reports both host copies current",
+]
+
+[[case]]
+id = "TC-cli-skill-orders-the-change-check-before-new-requirement-cases"
+title = "The skill runs the scoped change check before cases that link a new requirement and keeps case recording out of tasks.md checkboxes"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["FLOW-7", "LIFE-6", "LIFE-2"]
+requirements = ["REQ-cli-009"]
+paths = ["skills/chough-workflow/references/plan.md", "skills/chough-workflow/references/testing.md", "skills/chough-workflow/references/accept.md", ".agents/skills/chough-workflow/", ".claude/skills/chough-workflow/"]
+environments = ["repository-text"]
+artifacts = ["reviewer-note"]
+setup = ["The canonical skill bundle and both host copies at the implementation tip"]
+steps = [
+  "Read references/plan.md (the SpecSync lessons paragraph), testing.md (Definitions are not observations) and accept.md (Prepare the review, step 1)",
+  "Run chough skill status for both host copies",
+]
+expected = [
+  "plan.md lists running or recording Chough cases with human gates as plain text rather than checkboxes, and says a requirement the delta adds reaches the companion only when change check materializes it",
+  "testing.md says to finish the implementation tasks, run the scoped specsync change check, then add, run and record cases that link a new requirement, and that running or recording cases is never a tasks.md checkbox",
+  "accept.md step 1 says the scoped check refuses while tasks.md has an unchecked box, so the cases in step 2 are never a box there",
+  "The new text has no em or en dash",
   "chough skill status reports both host copies current",
 ]
 
