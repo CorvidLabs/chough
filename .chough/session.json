@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -267,7 +267,8 @@
     "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
     "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)",
     "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45",
-    "Integrated final main 9d02 into PR 46; 1300 immutable files from both parents preserved with no mismatches; main gate, package, skill, walkthrough and example files remain byte-identical; canonical version 21 preserves every changelog entry"
+    "Integrated final main 9d02 into PR 46; 1300 immutable files from both parents preserved with no mismatches; main gate, package, skill, walkthrough and example files remain byte-identical; canonical version 21 preserves every changelog entry",
+    "Final main 9d02 integration qualified: all 9 Fledge steps and all 208 tests passed on Rust 1.95 and Rust 1.88; all three report cases passed; 1300 immutable parent files unchanged; no semantic code drift from the approved parents"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -387,7 +388,12 @@
     "OBS-dry-run-0e4dd668cbac148ce76e0974",
     "OBS-tc-cli-report-case-read-budget-fbb511b1569aa7d4613f9da3",
     "OBS-tc-cli-report-read-invalidation-1804738b444d14141f0e6856",
-    "OBS-tc-cli-report-trace-parity-ab2c3c3517422d5227b92cb0"
+    "OBS-tc-cli-report-trace-parity-ab2c3c3517422d5227b92cb0",
+    "OBS-product-test-cf9307de785bafa006d50393",
+    "OBS-product-test-78623c6bbd991426e1aa5281",
+    "OBS-tc-cli-report-case-read-budget-a0a80356168af0b213a7556a",
+    "OBS-tc-cli-report-read-invalidation-95bacbb519effa3eeb96a29b",
+    "OBS-tc-cli-report-trace-parity-051f249a7d85374797bc812f"
   ],
   "bugs": [
     "BUG-0001",
@@ -412,5 +418,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Run final main qualification and report cases; root alone performs native integration review and ship before Leif merges PR 46"
+  "next_action": "Root records native review and ship for the two bounded PR 46 integration changes, then observes hosted checks; Leif merges only after final checks pass"
 }
