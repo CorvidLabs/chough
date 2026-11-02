@@ -24,12 +24,16 @@
     "tc-cli-0094-1793500286",
     "bug-0017-repro-1",
     "tc-cli-0094-1793500898",
-    "bug-0017-fixed-1"
+    "bug-0017-fixed-1",
+    "OBS-product-test-11dfd04637cfc41549d8bec2",
+    "OBS-product-test-61a4a912f4e142a100dd919e",
+    "OBS-product-test-694fad65ec7621ab2e3e2b32",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-f2fe3e74105b6b50775d28cd"
   ],
   "impact": "Cases run twice",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -50,8 +54,24 @@
         "tc-cli-0094-1793500898",
         "bug-0017-fixed-1"
       ]
+    },
+    {
+      "at_unix_seconds": 1793635102,
+      "text": "Ordering half reproduced on Linux at 46790b4 before the skill fix (issue #11, native change case-recording-order-...): an unchecked case-recording task blocks the change check that would let cases check link the new requirement.",
+      "observations": [
+        "OBS-product-test-11dfd04637cfc41549d8bec2"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793635312,
+      "text": "status: open -> verified. Documented-order half fixed in the shipped skill (plan, testing, accept references): package tests failed before the fix and pass after; the agent-assisted case review passed at the implementation tip. TC-cli-0094 still passes (OBS-tc-cli-0094-b36b0ba7e05a14833ddbe65f), so REQ-cli-005's refusal and hint are unchanged.",
+      "observations": [
+        "OBS-product-test-61a4a912f4e142a100dd919e",
+        "OBS-product-test-694fad65ec7621ab2e3e2b32",
+        "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-f2fe3e74105b6b50775d28cd"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1793500931
+  "updated_at_unix_seconds": 1793635312
 }
