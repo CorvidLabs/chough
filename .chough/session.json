@@ -222,7 +222,8 @@
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
-    "Implemented #32 request-local case reads with typed error preservation. All3boundcases, all201tests on current Rust and Rust1.88, and the9-step Fledge lane passed. Final paired debug diagnostics show reduced local next/statuswork with identical output and1160unchanged managedfiles; capped native attempts remain timedout. The reproduced cache error-chain defect is verified fixed."
+    "Implemented #32 request-local case reads with typed error preservation. All3boundcases, all201tests on current Rust and Rust1.88, and the9-step Fledge lane passed. Final paired debug diagnostics show reduced local next/statuswork with identical output and1160unchanged managedfiles; capped native attempts remain timedout. The reproduced cache error-chain defect is verified fixed.",
+    "Clarified definition actor/source provenance: corvid-agent records the project operation and cites0xLeif standing chat authorization as SOURCE. The same approved scope and original ledger record are preserved; implementation acceptance and native review/ship remain pending."
   ],
   "observations": [
     "tc-cli-0101-1793473306",

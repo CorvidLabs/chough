@@ -1,6 +1,6 @@
 ---
 id: read-report-case-definitions-once-per-request-and-expose-local-phase-costs
-state: implementing
+state: verifying
 type: refactor
 base_commit: 825a3805530456005e361dfa6d96d93eee52cd09
 ---
