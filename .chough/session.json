@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -227,7 +227,8 @@
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
     "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated",
-    "Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)"
+    "Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)",
+    "Change archived (approve/review/finalize recorded as corvid-agent per 0xLeif's 9:14 AM MT instruction)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -353,5 +354,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Record the case, verify and advance to accept"
+  "next_action": "Wait for hosted CI on PR #43; 0xLeif owns merge"
 }
