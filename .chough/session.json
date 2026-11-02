@@ -150,7 +150,8 @@
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
     "human: 0xLeif said \"Ok continue\" after the proposed sequence of reconciling stale tracking and preparing issue #31 scope; this authorizes definition work, not native scope approval or implementation acceptance",
     "agent proposal: explicit history adoption, immutable transition events and a cursor inside the sole checkpoint, because a shared append-only log cannot keep independent branch timelines separate; all storage policy and limits remain proposed until scope approval",
-    "human: 0xLeif approved the complete issue #31 scope in draft PR #37 by replying \"Yes\" in chat on 2026-11-02; recorded with specsync change approve --actor 0xLeif; implementation acceptance, live adoption, live cleanup and merge remain separate decisions"
+    "human: 0xLeif approved the complete issue #31 scope in draft PR #37 by replying \"Yes\" in chat on 2026-11-02; recorded with specsync change approve --actor 0xLeif; implementation acceptance, live adoption, live cleanup and merge remain separate decisions",
+    "decided: project agent actor corvid-agent is recorded separately from actual human authorization, because the acting account and the authority source have different provenance roles; renewed native scope approval preserves the original event and all product proof"
   ],
   "open_questions": [],
   "completed": [
@@ -384,5 +385,5 @@
     "0xLeif's implementation review and acceptance of PR #37; scope approval is already recorded, and native review/ship and merge remain pending"
   ],
   "run_consents": [],
-  "next_action": "0xLeif reviews the implemented PR #37 and the independent retention findings, then chooses acceptance; only after that decision may the sole closing session record native review and ship"
+  "next_action": "Complete corvid-agent retention/proof peer review of PR37 and address concrete findings; handle native bookkeeping internally and present the implementation for acceptance"
 }

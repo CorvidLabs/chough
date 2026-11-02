@@ -1,6 +1,6 @@
 ---
 id: bound-transition-history-and-preserve-referenced-proof
-state: implementing
+state: verifying
 type: feature
 base_commit: 825a3805530456005e361dfa6d96d93eee52cd09
 ---

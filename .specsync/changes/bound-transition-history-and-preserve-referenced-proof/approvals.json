@@ -55,6 +55,62 @@
       "approved_delta_digests": {
         "cli": "edbe2d6971d1fef8fdf6d268fca70331e8ad4af89edaa31bbeeacefaabcd610e"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793638878,
+      "digest": "1413ace27e0672a01fc40e3a68bd99fed33fefa065aa8e5adba771a51891c905",
+      "note": "Project-agent actor renewal for existing scope; actual human authority is the original scope approval and the current0xLeifstanding chat authorization permitting repository changes delivered byPRs, relayed at issue11comment6581702299. The acting agent account is separate from that human source. Preserve all prior approval events. No implementation acceptance, merge, release or deployment is inferred.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "bound-transition-history-and-preserve-referenced-proof",
+        "title": "Bound transition history and preserve referenced proof",
+        "description": "Bound transition history and preserve referenced proof",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.cases.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "src/checkpoint.rs",
+          "src/evidence.rs",
+          "src/history.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "src/timing.rs",
+          "tests/common/mod.rs",
+          "tests/evidence.rs",
+          "tests/history.rs",
+          "tests/next.rs",
+          "tests/package.rs",
+          "tests/stages.rs",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Legacy logs and recorded proof remain byte-identical; explicit adoption writes independent immutable transition events with a cursor in the sole checkpoint; compatible branch events integrate without loss and divergent current-cycle cursors refuse; normal reads and per-cycle storage have tested byte and event limits; timing keeps lineages separate and reports missing or pruned history as partial or unknown; retention previews exact protected and eligible sets and applies only with explicit authorization and fresh protection checks; crash, collision, unsafe-path and interruption fixtures preserve active state; roadmap and backlog mappings distinguish delivered work from open criteria"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Preserve the single schema-2 checkpoint and atomic current-cycle merge group from PR #29; preserve all legacy proof and frozen native archives; keep native gates authoritative and fail closed on unreadable protection sources; reuse existing evidence retention policy without automatic transition deletion; lessons in specs/cli/context.md require bounded fixtures and distinguish observed results from proposed tests; the Kimi cold-start proof remains not run by 0xLeif choice; no implementation, scope approval, review, release or merge is implied by this definition; no model client, runtime, service or duplicate lifecycle state",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "edbe2d6971d1fef8fdf6d268fca70331e8ad4af89edaa31bbeeacefaabcd610e"
+      }
     }
   ],
   "reopenings": []
