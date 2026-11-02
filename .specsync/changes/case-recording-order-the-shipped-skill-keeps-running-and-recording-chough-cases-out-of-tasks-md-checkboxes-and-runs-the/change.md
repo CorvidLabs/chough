@@ -1,6 +1,6 @@
 ---
 id: case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the
-state: draft
+state: implementing
 type: bug_fix
 base_commit: 825a3805530456005e361dfa6d96d93eee52cd09
 ---

@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -76,7 +76,8 @@
       "TC-cli-0130",
       "TC-cli-0131",
       "TC-cli-0132",
-      "TC-cli-0094"
+      "TC-cli-0094",
+      "TC-cli-skill-orders-the-change-check-before-new-requirement-cases"
     ],
     "design": [],
     "files": [
@@ -84,7 +85,12 @@
       "src/records.rs",
       "tests/timing.rs",
       "docs/cli.md",
-      ".chough/artifacts/learning-integration/single-lineage-repair.json"
+      ".chough/artifacts/learning-integration/single-lineage-repair.json",
+      "skills/chough-workflow/references/plan.md",
+      "skills/chough-workflow/references/testing.md",
+      "skills/chough-workflow/references/accept.md",
+      "src/skill.rs",
+      "tests/package.rs"
     ]
   },
   "decisions": [
@@ -142,7 +148,8 @@
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
     "decided: 0xLeif in chat (2026-11-02 8:43 AM MT, relayed: \"I approve all\") gave the go-ahead on #11 with the options proposed there (because the smallest fix keeps REQ-cli-005 unchanged): ordering and skill text only, no delta-aware link resolution, no SpecSync change, trace to existing HI LIFE-6 and FLOW-7. Not a native scope approval of this definition",
-    "rejected: resolving case links against approved deltas (because REQ-cli-005 says the hint SHALL NOT read native deltas)"
+    "rejected: resolving case links against approved deltas (because REQ-cli-005 says the hint SHALL NOT read native deltas)",
+    "Scope approval recorded natively with actor 0xLeif from his explicit chat approval at 8:56 AM MT 2026-11-02, relayed by corvid-agent."
   ],
   "open_questions": [],
   "completed": [
@@ -222,7 +229,12 @@
     "Parallel native reviews at the first shared head could not authenticate. Both original closeouts are preserved in a backup ref; this branch keeps the already-finalized combined archive with one review lineage and retains the author acceptance note and transition events. A separate native reopen attempt was refused and is preserved as failed diagnostic evidence.",
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
-    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)"
+    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
+    "Recorded the BUG-0017 ordering reproduction on Linux (OBS-product-test-11dfd04637cfc41549d8bec2) before the skill fix",
+    "Implemented the case recording order skill text (plan, testing, accept), 825a380 digests in KNOWN_PREVIOUS, host copies refreshed, CHANGELOG and ROADMAP; package tests failed first (OBS-product-test-61a4a912f4e142a100dd919e) and pass now",
+    "Closeout: one labelled observation lesson (case recording order) in specs/cli/context.md; new decisions carry reasons",
+    "Scoped change check materialized REQ-cli-009; TC-cli-skill-orders-the-change-check-before-new-requirement-cases passed (agent-assisted) and TC-cli-0094 passed; BUG-0017 verified (reproduced, later passed)",
+    "fledge lanes run verify passed all 9 steps (198 tests, 0 failed) on Linux with fledge 1.8.0, specsync 6.1.2, hi 0.8.0 after the scoped change check"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -325,7 +337,12 @@
     "OBS-tc-cli-0129-396ac9ba0ef98d906553b910",
     "OBS-tc-cli-0130-e3f217a14172b85e4df24bff",
     "OBS-tc-cli-0131-77a1de3784d43a441c697247",
-    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9"
+    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9",
+    "OBS-product-test-11dfd04637cfc41549d8bec2",
+    "OBS-product-test-61a4a912f4e142a100dd919e",
+    "OBS-product-test-694fad65ec7621ab2e3e2b32",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-f2fe3e74105b6b50775d28cd",
+    "OBS-tc-cli-0094-b36b0ba7e05a14833ddbe65f"
   ],
   "bugs": [
     "BUG-0001",
@@ -348,8 +365,8 @@
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the"
+    "Implementation review of case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the"
   ],
   "run_consents": [],
-  "next_action": "After 0xLeif's native scope approval, advance to build and take the first task in tasks.md"
+  "next_action": "Commit with .chough/, specsync change check --commit, push, observe hosted CI; then 0xLeif's implementation review"
 }
