@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer",
+  "implementation_commit": "a1920f7f0ade695b718273a0ebfa7138e1805821",
+  "implementation_tree": "a1e8b6c10de030f024420ef1bc036db541496fee",
+  "contract_digest": "6ff393b00c02cf5cfdc4e9e4ed3280883d8e9f09459b01fc2aeb7152e5594bf1",
+  "workspace_digest": "461c59a4b840bf6e783ac925c15fcd65cb05834a0712c40fec6f9c8065a6abc1",
+  "closing_digest": "fb2083d817884fc1ce28252973ebbd001ee470f3b71f13a3140c409a7dbe589b",
+  "review_digest": "777cde49fbeafe9878760286307777adf138076dbf4be269312cfd50a871c67c",
+  "finalization_digest": "18c024466e9d396bd6668aa43f3ea4e34423ffbe172e39547c8836d031ed9a09",
+  "timestamp": 1793591203
+}
