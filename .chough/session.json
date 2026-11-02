@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -100,7 +100,8 @@
     "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised",
     "0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints",
     "0xLeif approved a separate native change for slug-based bug identity with legacy numeric compatibility and no bulk migration",
-    "0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup"
+    "0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup",
+    "human: 0xLeif accepted the implementation as is (2026-11-01, in chat: \"accept\"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change."
   ],
   "open_questions": [],
   "completed": [
@@ -240,9 +241,7 @@
     "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "0xLeif's implementation review and acceptance decision for the learning-handoff change: criterion 9 failed (change run graded Fail, P1-P3 not met), criterion 5 fixture reported as a deviation, real-repository run not done (Kimi quota)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "0xLeif reviews the draft PR's acceptance package and decides: accept as is (then specsync change review --reviewer 0xLeif and ship), or amend with a restate-before-first-edit skill step (needs his re-approval and new Kimi runs), or reject. Agents: do not record review or acceptance."
 }
