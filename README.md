@@ -65,6 +65,7 @@ different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
 
 ## Start here
 
+For a new project without them, start with [New project](docs/walkthrough.md#new-project).
 In a Git project with HI criteria and SpecSync module contracts:
 
 ```sh

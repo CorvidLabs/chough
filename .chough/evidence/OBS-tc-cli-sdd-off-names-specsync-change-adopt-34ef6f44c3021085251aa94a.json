@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-sdd-off-names-specsync-change-adopt-34ef6f44c3021085251aa94a",
+  "criteria": [
+    "LIFE-9",
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-031"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test stages -- --exact a_configured_project_with_sdd_off_says_to_run_specsync_change_adopt for TC-cli-sdd-off-names-specsync-change-adopt: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-sdd-off-names-specsync-change-adopt-34ef6f44c3021085251aa94a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-sdd-off-names-specsync-change-adopt-34ef6f44c3021085251aa94a.log": "63b3ed692c17ec0b48e8ec3a2f25463c098271f7806c659a8418c830d245f597"
+  },
+  "observed_at_unix_seconds": 1793640174,
+  "snapshot": {
+    "revision": "89130c01a28fb83f00f69d61f0d998a13bfc83a6",
+    "dirty": true,
+    "fingerprint": "10280e48df21c2ba21422593e4a1024391a40ed295206da427e25c0d05f48aaa",
+    "content": "1a8127a94834e6ad6fc996cc3142e6c0998a1f57eca6384eb782b8b9580ca81e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-sdd-off-names-specsync-change-adopt",
+      "digest": "ba999ce4f0bdeffbdb9d79b518c59c2e28a3eef6fac8b63446cec3ad2c7b3b3b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "a_configured_project_with_sdd_off_says_to_run_specsync_change_adopt"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
