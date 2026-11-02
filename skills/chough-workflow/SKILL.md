@@ -18,9 +18,9 @@ Run HI, SpecSync and Fledge yourself. Native commands in references are agent
 instructions; give the human outcomes and PRs.
 
 Use applicable explicit prior or standing human authorization for a concrete scope.
-Record its source, limits and human actor before native approval; do not ask again
-just to run a tool. Ask when authority is missing or exceeded. Continuation, bot
-reviews and actor labels alone are not human decisions.
+Record the agent actor and human source, scope and limits before native approval;
+do not ask again just to run a tool. Ask when authority is missing or exceeded.
+Continuation, bot reviews and actor labels alone are not human decisions.
 
 Keep native checks and separate implementation acceptance and delivery authority.
 See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.

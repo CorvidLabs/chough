@@ -44,6 +44,51 @@
       "approved_delta_digests": {
         "cli": "b928ad64da0522b0677b80df9ee36c8735d385e89e682eadad0415842bd931f1"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793638448,
+      "digest": "1cd8a0ca38870368b4e62c85b2193d699dd224e40a6a3869204c468fa95c1f7f",
+      "note": "Renewed definition after PR44 actor/source feedback. The acting project agent is corvid-agent; actual human authority remains 0xLeif standing chat instruction on2026-11-02 permitting repository changes delivered byPRs, relayed at issue11comment6581702299. This event covers the modified already-materialized REQ-cli-029 and preserves the original approval event. It does not claim human implementation acceptance, merge, release or deployment.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "let-chough-drive-native-tools-and-reuse-existing-human-authorization",
+        "title": "Let Chough drive native tools and reuse existing human authorization",
+        "description": "Let Chough drive native tools and reuse existing human authorization",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.cases.toml",
+          "CHANGELOG.md",
+          "README.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "skills/chough-workflow/SKILL.md",
+          "skills/chough-workflow/references/lifecycle.md",
+          "src/skill.rs",
+          "tests/fixtures/workflow-at-825a380-SKILL.md",
+          "tests/fixtures/workflow-at-825a380-lifecycle.md",
+          "tests/workflow_authority.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The current agent executes HI, SpecSync and Fledge internally, records concrete native scope from applicable explicit prior or standing human authorization with its source and limits, and asks no repeated tool-specific approval; ordinary keep-working instructions and agent labels alone still cannot create human authority; actual checks, task ordering, separate implementation acceptance and delivery boundaries remain authoritative; the user-facing README explains goal/authorization to PR flow; exact shipped predecessor copies upgrade safely and edited copies are preserved."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "User standing scope/implementation authorization in chat 2026-11-02: I already gave it some approval and told it can do any changes. It just needs a PR. The user explicitly asks Chough to manage native tools and avoid repeated tool-specific authorization. Source relay: issue11 comment6581702299. Preserve actualhumanprovenance and native ownership; this is not agent approval or implementation acceptance. No new runtime, modelclient, service, persisted lifecycle ledger or weakened nativechecks. Grok41 owns immediate ordering fix in plan/testing/accept refs; this scope owns mainSKILL/lifecycle/README and safeupgrades, plus additive contract updates. REQcli029 is reserved, performanceowns028 and historyowns025to027. Existing lessons require registration of exact priorbundle hashes, preserved editedcopies, source+Choughcommit before nativeverification, and no fabricated coldstart grade.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "c271d3b17a390f8d73c3763b248997a899592d40153940fc47615e8247b3a2ef"
+      }
     }
   ],
   "reopenings": []

@@ -16,3 +16,8 @@ label are insufficient. Fresh native checks, frozen approved scope, honest produ
 evidence and separate implementation acceptance remain required. No new CLI writer
 or policy engine is added; this is the current-agent skill contract and safe bundle
 upgrade behavior.
+
+The native actor is the acting agent account; actual human authorization is the
+separately cited source, scope and limits. The human name is not used as the actor
+merely because the human authorized agent work. A renewed event preserves earlier
+records and covers the refined wording; it does not retroactively rewrite them.

@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-8c7a28bc8d391ad764019e99",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-019",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64-rust-1.88.0",
+  "summary": "All197tests across11suites passed on Rust1.88.0 offline for the final actor/source refinement, with no failures or ignored tests. The main skill is6137bytes within the unchanged6144-byte assertion.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-agent-actor-msrv.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-agent-actor-msrv.log": "6e70e15212f902e747f101c428a68a830a94d26c0da3d7a0f8a7de3f568020ff"
+  },
+  "observed_at_unix_seconds": 1793639000,
+  "snapshot": {
+    "revision": "016075c4791ada78fe4bab743ecee49c060f9829",
+    "dirty": true,
+    "fingerprint": "33aace1e4548246468556553a2539345612fcdf39d5fa1919754af2789224978",
+    "content": "e55baa4e63891083b59cd3211b502a4bc99a8234a573b5ab9e2205a4af59327b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Local source/package/integration qualification. Fresh-agent behavior, human implementation acceptance and hosted product passes are not inferred. Prior approval and evidence events remain preserved."
+  ]
+}

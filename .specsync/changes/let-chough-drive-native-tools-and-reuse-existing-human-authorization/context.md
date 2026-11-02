@@ -31,3 +31,15 @@ in specs/cli/context.md require registering exact known predecessor bytes, retai
 edited copies, materializing requirements before linked cases, and committing source
 plus Chough records before native committed verification. Kimi cold-start proof
 remains not run by the human's choice and no substitute grade is claimed.
+
+## Actor and authorization source refinement
+
+Peer review on PR44 at016075c identified that the first wording conflated the
+acting agent account with the human who supplied standing authority. The revised
+scope records the project agent account corvid-agent as native actor and cites the
+actual human instruction separately as source, scope and limits. This refinement
+is implementation work under the existing human permission; it does not assert a
+new human decision or implementation acceptance. The original approval event stays
+preserved, and the native writer appends the renewed event for this revised wording.
+Source: PR44 corvid-agent review PRR_kwDOVeQoF88AAAABViDL0Q and the actual human
+standing instruction already recorded above. No approval ledger is edited manually.

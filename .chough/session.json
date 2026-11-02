@@ -139,7 +139,8 @@
     "decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, \"Approve as drafted\"); recorded with specsync change approve --actor 0xLeif",
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
-    "human: 0xLeif clarified in chat on 2026-11-02 that the agent can do any changes and it just needs a PR; Chough must handle SpecSync and other tools internally. This standing scope/implementation authorization applies to this concrete workflow fix and is relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . It is not implementation acceptance, merge, release or deployment authorization."
+    "human: 0xLeif clarified in chat on 2026-11-02 that the agent can do any changes and it just needs a PR; Chough must handle SpecSync and other tools internally. This standing scope/implementation authorization applies to this concrete workflow fix and is relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . It is not implementation acceptance, merge, release or deployment authorization.",
+    "decided: native operations record project agent actor corvid-agent and cite actual human authorization separately, because the acting account and the authority source are different provenance roles; PR44 peer-review refinement is covered by the existing standing permission, and the original approval event is preserved"
   ],
   "open_questions": [],
   "completed": [
@@ -220,7 +221,8 @@
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
-    "Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested."
+    "Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested.",
+    "PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -329,7 +331,10 @@
     "OBS-tc-cli-agent-native-workflow-upgrade-a7cd062c44c5685362a8adeb",
     "OBS-tc-cli-agent-native-workflow-upgrade-edf66796f0c8d203c9710485",
     "OBS-product-test-89d0bc200d842657b5c0c5dd",
-    "OBS-product-test-3a457c6c1ccc8b7f17ec9336"
+    "OBS-product-test-3a457c6c1ccc8b7f17ec9336",
+    "OBS-tc-cli-agent-native-workflow-upgrade-9ee6d6d2e80829306188c6b7",
+    "OBS-product-test-78bade59b97d61395419ccae",
+    "OBS-product-test-8c7a28bc8d391ad764019e99"
   ],
   "bugs": [
     "BUG-0001",
@@ -355,5 +360,5 @@
     "Implementation review of the issue42 workflow PR; the agent handles native closeout after the applicable acceptance decision"
   ],
   "run_consents": [],
-  "next_action": "Open the qualified issue42 PR, request corvid-agent peer review, address concrete findings and present the implementation for acceptance without returning internal tool commands to the operator"
+  "next_action": "Push the qualified PR44 actor/source refinement, obtain corvid-agent re-review and resolve remaining merge-readiness blockers"
 }

@@ -17,8 +17,9 @@ references are agent instructions, not a checklist to send back to the operator.
 
 Recognize explicit bounded prior or standing authorization from the actual human
 instruction and recorded decisions. Record its source, scope and limits in the
-checkpoint and native context, then invoke the native writer with the actual human
-actor. Record once per concrete definition; a later changed definition follows native
+checkpoint and native context, then invoke the native writer with the acting agent
+account as actor and the human instruction as authority source. Record once per
+concrete definition; a later changed definition follows native
 reapproval rules using the same authority only while it still covers that scope.
 Ask only for a consequential decision or authority the existing instruction lacks.
 

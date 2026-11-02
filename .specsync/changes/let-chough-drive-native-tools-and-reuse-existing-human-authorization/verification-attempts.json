@@ -108,6 +108,42 @@
       "requirement_ids": [
         "REQ-cli-029"
       ]
+    },
+    {
+      "timestamp": 1793638537,
+      "commit": "016075c4791ada78fe4bab743ecee49c060f9829",
+      "contract_digest": "1cd8a0ca38870368b4e62c85b2193d699dd224e40a6a3869204c468fa95c1f7f",
+      "execution_digest": "c6396a9d510d11df9429545ed2fc300768afd480151bf6eb57ff22c415c93f64",
+      "workspace_digest": "39a016852cd17803dcce089f3a0e9266851bc32657ede2abf5c3331fc7160558",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-029"
+      ]
+    },
+    {
+      "timestamp": 1793638669,
+      "commit": "016075c4791ada78fe4bab743ecee49c060f9829",
+      "contract_digest": "1cd8a0ca38870368b4e62c85b2193d699dd224e40a6a3869204c468fa95c1f7f",
+      "execution_digest": "477f216fbfd6e3aeffbd6d97450be90d17998e41d0c9040a58f6294403bb5271",
+      "workspace_digest": "4344f69267e38a537a0f6132af593a8e0a00dda00a7bc29876331d3cbd10693b",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-029"
+      ]
     }
   ]
 }

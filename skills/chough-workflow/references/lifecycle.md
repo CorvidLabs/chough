@@ -48,13 +48,15 @@ applicable human authority exists.
 
 ## Approval
 
-Before recording `specsync change approve <id> --actor "<human>"`, identify the
+Before recording `specsync change approve <id> --actor "<agent-account>"`, identify the
 actual human authority that covers this concrete definition. It may be an explicit
 prior decision or a standing instruction authorizing a bounded class of changes,
 such as repository ticket implementations delivered through PRs. Record the source,
 covered scope and limits in the checkpoint decisions and native context, and cite
-that source in the native approval note. Record with the human actor, then continue
-without asking them to repeat permission for this internal operation.
+that source in the native approval note. Record the acting agent account as the
+native actor, separately from the human authorization source, then continue without
+asking the human to repeat permission for this internal operation. Do not use the
+human's name merely because they authorized the agent's work.
 
 If the proposed work exceeds that authority, ask the consequential scope question.
 An ordinary keep-working instruction without applicable authority, an agent label,
@@ -80,11 +82,13 @@ Push only after the applicable local gates and observe required CI at the actual
 After the human reviews the change package, diff, delta and evidence:
 
 ```sh
-specsync change review <id> --reviewer "<human>"
+specsync change review <id> --reviewer "<agent-account>"
 specsync change ship <id>
 ```
 
-The reviewer may be the scope approver. Do not commit between review and ship or
+Use the project agent account for the native record and retain the actual human
+acceptance source separately; the actor label does not supply that acceptance. The
+reviewer may be the scope approver. Do not commit between review and ship or
 finalize. Archive on the same pull request, push the archive commit, wait for its
 checks, and merge only when every change on that pull request is archived. Review and
 finalize several changes one at a time.
