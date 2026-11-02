@@ -153,7 +153,8 @@
     "Retained the real Git checkpoint conflict, implemented bounded three-way merging, and passed focused tests and Clippy after consent-bound and closed-stdout review fixes",
     "Materialized REQ-cli-007, recorded the strictly later real Git pass, and verified the merge bug",
     "Full verify, Rust 1.88 tests and pre-push passed; the final current-content real Git observation passed",
-    "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done"
+    "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "Merged main 66bef80 (#26, #29); TC-cli-0126 to 0131 passed and TC-cli-0132 re-reviewed at the merged tip 8b5b4cd; the graded change run predates main's src and skill changes, so by the rubric it is void at the new tip until rerun"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -214,7 +215,14 @@
     "tc-cli-0125-collision-final",
     "checkpoint-merge-real-git-pre-fix",
     "checkpoint-merge-real-git-post-fix",
-    "checkpoint-merge-real-git-final"
+    "checkpoint-merge-real-git-final",
+    "tc-cli-0126-1793581325",
+    "tc-cli-0127-1793581336",
+    "tc-cli-0128-1793581338",
+    "tc-cli-0129-1793581339",
+    "tc-cli-0130-1793581340",
+    "tc-cli-0131-1793581344",
+    "tc-cli-0132-merged-tip-review"
   ],
   "bugs": [
     "BUG-0001",
