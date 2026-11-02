@@ -111,12 +111,12 @@ cross-module view and its traceability without restating it.
 
 | Requirement | Observable behavior | Criteria | Verification |
 |---|---|---|---|
-| REQ-cli-007 | One schema 2 checkpoint; explicit migration keeps schema 1 bytes | FLOW-13, LIFE-3 | tests/stages.rs; cold-start exercise |
+| REQ-cli-007 | One schema 2 checkpoint; bounded three-way merges preserve ordered collection changes and select the current-cycle group atomically, refusing divergent group edits; explicit migration keeps schema 1 bytes | FLOW-13, LIFE-3 | tests/stages.rs; real Git merges; cold-start exercise |
 | REQ-cli-008 | Stage routing with append-only history; every route into build, test, accept and done meets its native prerequisite, and unknown native state, invalid approval, unauthenticated archives or an invalid SDD policy refuse | FLOW-2, FLOW-5, FLOW-10, LIFE-1 | tests/stages.rs; feature-and-bug exercise |
 | REQ-cli-009 | `chough-testing/1` definitions with stable IDs and position-free digests | FLOW-7, LIFE-2 | tests/cases.rs |
 | REQ-cli-010 | Focused selection with tracks and stated omissions | FLOW-6 | tests/cases.rs; both exercises |
 | REQ-cli-011 | Explicit case execution; vacuous and environment failures are not-run | FLOW-7, FLOW-9, LIFE-7 | tests/cases.rs, tests/optional.rs |
-| REQ-cli-012 | Local backlog with duplicate search and regression baselines | FLOW-8, LIFE-5 | tests/bugs.rs; feature-and-bug exercise |
+| REQ-cli-012 | Local backlog with duplicate search and regression baselines; one collision-resistant creation-ID generator for manual and automatic bugs, create-once ID immutability, schema 1 legacy compatibility without migration, cross-form links and atomic different-content refusal without numeric fallback | FLOW-8, LIFE-5 | tests/bugs.rs; feature-and-bug exercise |
 | REQ-cli-013 | Standing preferences separate from run consent | FLOW-9, FLOW-11 | tests/optional.rs, tests/stages.rs |
 | REQ-cli-014 | Release only when authorized; distinct delivery and dry-run kinds | FLOW-11, LIFE-7 | tests/stages.rs, tests/cases.rs |
 | REQ-cli-015 | Optional librarian with source-linked snapshots and index | FLOW-12 | tests/optional.rs |
@@ -167,11 +167,11 @@ a TOML profile was chosen over 3md (D-011).
 | Conditional design | One canonical evolving local HTML/CSS prototype, interactions/states/viewports as relevant, companion Markdown with HI/AC/FRD mappings, actual rendered/source review and human approval of prototype plus notes. Nonvisual work skips with a reason. |
 | Technical planning/build | SpecSync adaptive design/constraints/architecture/estimates/tasks/orchestration, one coherent initial human scope approval, then scoped implementation through Fledge. Required human implementation review occurs at acceptance before routine native archival. |
 | Focused verification | Affected AC/FRD and relevant regressions; functional/basic always, copy/localization and design QA when applicable. Stable test-case IDs, explicit expected outcomes/methods/environments/artifacts; definitions separate from execution results. 3md profile is a candidate to qualify. |
-| Local bug loop | Persistent reproduction/expected/actual/environment/revision/evidence/status; local dedup and live backlog. Blocking bugs repair/retest; out-of-scope findings queue without scope expansion or automatic external posting. |
+| Local bug loop | Persistent reproduction/expected/actual/environment/revision/evidence/status; local dedup and live backlog. Manual and automatic creation share collision-resistant IDs generated once; schema 1 legacy IDs remain usable without migration, duplicate and related links work across forms, and atomic creation refuses same-ID different-content results without overwrite or numeric fallback. Blocking bugs repair/retest; out-of-scope findings queue without scope expansion or automatic external posting. |
 | Optional validation | Routine checks continue naturally. Optional extended/background checks respect explicit run-only versus standing project preferences and pause/stop. Findings persist locally; auto-investigation policy remains open, default local capture. Retry/watch is not soak/live health. |
 | Native closeout / optional release | Genuine acceptance/review before eligible same-PR native archive, archive CI and merge. Release requires request or explicit setting; publication/deployment/health remain separate observations. |
 | Optional librarian | Project-local, callable from any stage and returns to its caller; source-linked history/snapshots, current index, focused briefs and visible unresolved bugs. Canonical living sources stay with native owners. |
-| Core checkpoint/cold resume | Save objective/stage/scope refs/files/IDs/decisions/questions/preferences/work/tests/bugs/blockers/next action independently of the librarian. Fresh agent with no original conversation verifies real repo/native state and resumes the same scope/gates; demonstrate with a real cold-start exercise. |
+| Core checkpoint/cold resume | Save objective/stage/scope refs/files/IDs/decisions/questions/preferences/work/tests/bugs/blockers/next action independently of the librarian. Reconcile parallel schema 2 checkpoints with ordered collection merges and atomic current-cycle selection, leaving divergent current-cycle edits unresolved. Fresh agent with no original conversation verifies real repo/native state and resumes the same scope/gates; demonstrate with a real cold-start exercise. |
 
 Every stage may iterate/backtrack/reset/pause/resume or skip when inapplicable;
 preserve history and refresh affected evidence through its owner. Current-agent-first

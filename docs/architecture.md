@@ -93,7 +93,18 @@ paths). Commands replace it atomically. With several agents, one agent owns the
 checkpoint and the others report back; there is no distributed lock. APS was
 evaluated as a backend and deferred (D-010). The checkpoint stores decision summaries
 and references, never reasoning transcripts, and it never stores native lifecycle
-state: it stores the change ID and reads status when a gate matters. Because SpecSync
+state: it stores the change ID and reads status when a gate matters.
+
+For committed parallel edits, Git can invoke the same bounded
+`chough checkpoint --merge <base> <ours> <theirs>` command through a per-clone driver.
+The explicit command remains available without that driver. It merges ordered
+exact-string collections, but treats the current cycle as one indivisible value. A
+divergent current-cycle conflict remains unresolved rather than manufacturing a
+combined objective, stage, consent or human gate. Success atomically replaces only
+ours; every refusal preserves all three inputs and writes no Chough record. This is
+not a lock or a change to one-owner live writes. `.chough/session.json` remains the
+sole canonical checkpoint, with no second store, runtime, service or copied SpecSync
+state. Because SpecSync
 6.1.1 status does not report an edited approved delta (BUG-0002), the gate into build,
 test and accept also reads the native approval ledger
 (`.specsync/changes/<id>/approvals.json`) and the change's deltas read-only, within

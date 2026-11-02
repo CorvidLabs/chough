@@ -181,6 +181,12 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/lifecycle.md",
         "e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235",
     ),
+    // Main 66bef80 (safe checkpoint merges, #29); superseded when the learning handoff
+    // change added decision prefixes and the handoff blocks to the same file.
+    (
+        "references/checkpoint.md",
+        "70ec5dee386c4ef178abe76a45236072bea7342aa265192fd0210536fe2639e8",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

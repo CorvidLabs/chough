@@ -20,6 +20,22 @@ native change package until it is archived.
   TC-cli-0121, TC-cli-0122, focused Rust tests and the local verify and pre-push
   lanes passed. BUG-0025 is verified from the later pass. Original observations
   remain retained, and no fresh Kimi run or hosted check is claimed.
+- [x] Complete `use-collision-resistant-slug-identities-for-new-bugs`: implement the
+  shared creation generator and immutable new-form IDs, retain schema 1 legacy
+  records and cross-form links, refuse same-ID different-content creation without
+  overwrite or numeric fallback, and finish the public documentation. TC-cli-0125
+  retains the failed `tc-cli-0125-collision-pre-fix` and strictly later passed
+  `tc-cli-0125-collision-post-fix` on `local-macos-arm64`; BUG-0026 is verified.
+
+Completed approved work:
+
+- [x] Complete `make-checkpoint-merges-safe-across-parallel-changes`: bounded schema 2
+  checkpoint merges, real Git driver coverage, documentation and safe skill updates
+  are implemented. `checkpoint-merge-real-git-pre-fix` is retained before
+  implementation, and the strictly later `checkpoint-merge-real-git-post-fix` passed
+  on `local-macos-arm64` and verified the linked local bug. The full verify lane
+  passed 9 steps in 221.890 seconds, the full Rust suite passed with Rust 1.88.0,
+  and pre-push passed 5 steps in 5.422 seconds.
 
 Open follow-ups, not part of the approved change:
 

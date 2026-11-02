@@ -1,6 +1,7 @@
 mod common;
 
 use serde_json::{Value, json};
+use sha2::{Digest, Sha256};
 use std::fs;
 use std::path::Path;
 use std::process::{Command, Output};
@@ -179,6 +180,50 @@ fn init_preserves_user_files_and_installs_a_complete_skill() {
         )
         .unwrap(),
         "user owned skill\n"
+    );
+}
+
+#[test]
+fn init_leaves_the_checkpoint_merge_driver_unconfigured() {
+    let fixture = Fixture::new();
+    fixture.write(
+        ".gitattributes",
+        ".chough/session.json merge=chough-session\n",
+    );
+    let git = |args: &[&str]| {
+        Command::new("git")
+            .current_dir(fixture.root())
+            .args(args)
+            .env("HOME", fixture.root().join("isolated-home"))
+            .env(
+                "GIT_CONFIG_GLOBAL",
+                fixture.root().join("isolated-global-config"),
+            )
+            .env(
+                "GIT_CONFIG_SYSTEM",
+                fixture.root().join("isolated-system-config"),
+            )
+            .env("GIT_CONFIG_NOSYSTEM", "1")
+            .output()
+            .unwrap()
+    };
+    assert!(git(&["init"]).status.success());
+    let config = fixture.root().join(".git/config");
+    let before = fs::read(&config).unwrap();
+    let digest = format!("{:x}", Sha256::digest(&before));
+    assert!(
+        !git(&["config", "--local", "--get", "merge.chough-session.driver"])
+            .status
+            .success()
+    );
+    fixture.init();
+    let after = fs::read(&config).unwrap();
+    assert_eq!(format!("{:x}", Sha256::digest(&after)), digest);
+    assert_eq!(after, before);
+    assert!(
+        !git(&["config", "--local", "--get", "merge.chough-session.driver"])
+            .status
+            .success()
     );
 }
 

@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "make-checkpoint-merges-safe-across-parallel-changes",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "c93de0eb5ce7789559cf71df8a3273be4681824e",
+  "contract_digest": "2944df08e2d2c903b313f3bdd00f825dc4dfe42fa4351bf287170331f5e855b0",
+  "execution_digest": "0e285155151444022d59562697d3d19981b0fe1333db9904c7b13e5330d228f8",
+  "workspace_digest": "69ff1e37db8a15c38e6d658f96ead19f40432a38514a1ef75ed42748512fa2fa",
+  "timestamp": 1793577265
+}

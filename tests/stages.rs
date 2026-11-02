@@ -4,7 +4,10 @@ mod common;
 
 use common::Fixture;
 use serde_json::{Value, json};
+use std::collections::BTreeMap;
 use std::fs;
+use std::path::{Path, PathBuf};
+use std::process::{Command, Output};
 
 fn transitions(fixture: &Fixture) -> Vec<Value> {
     fixture
@@ -1564,4 +1567,855 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
         fixture.ok(&["stage", "advance"])["applied"]["gate"],
         "native:approved"
     );
+}
+
+fn merge_base() -> Value {
+    json!({
+        "schema_version": 2,
+        "objective": "Merge parallel checkpoint edits",
+        "intent_scope": "FLOW-13",
+        "modules": ["cli"],
+        "stage": {"current": "build", "status": "active", "callers": [], "iteration": 1},
+        "native_change": "merge-checkpoints",
+        "references": {
+            "criteria": ["FLOW-13"],
+            "requirements": ["REQ-cli-007"],
+            "cases": [],
+            "design": [],
+            "files": []
+        },
+        "decisions": [],
+        "open_questions": [],
+        "completed": [],
+        "observations": [],
+        "bugs": [],
+        "blockers": [],
+        "awaiting_human": [],
+        "run_consents": [],
+        "next_action": "Merge compatible edits"
+    })
+}
+
+fn merge_json(value: &Value) -> String {
+    serde_json::to_string_pretty(value).unwrap() + "\n"
+}
+
+fn merge_paths(fixture: &Fixture) -> [String; 3] {
+    ["base.json", "ours.json", "theirs.json"].map(|name| {
+        fixture
+            .root()
+            .join("merge-inputs")
+            .join(name)
+            .to_string_lossy()
+            .into_owned()
+    })
+}
+
+fn run_merge_text(fixture: &Fixture, base: &str, ours: &str, theirs: &str) -> Output {
+    fixture.write("merge-inputs/base.json", base);
+    fixture.write("merge-inputs/ours.json", ours);
+    fixture.write("merge-inputs/theirs.json", theirs);
+    let paths = merge_paths(fixture);
+    fixture.run(&["checkpoint", "--merge", &paths[0], &paths[1], &paths[2]])
+}
+
+fn merge_record_snapshot(root: &Path) -> BTreeMap<PathBuf, Vec<u8>> {
+    fn visit(root: &Path, directory: &Path, files: &mut BTreeMap<PathBuf, Vec<u8>>) {
+        if !directory.exists() {
+            return;
+        }
+        for entry in fs::read_dir(directory).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                visit(root, &path, files);
+            } else {
+                files.insert(
+                    path.strip_prefix(root).unwrap().to_owned(),
+                    fs::read(&path).unwrap(),
+                );
+            }
+        }
+    }
+
+    let mut files = BTreeMap::new();
+    visit(root, &root.join(".chough"), &mut files);
+    files
+}
+
+fn assert_merge_refusal(fixture: &Fixture, base: &str, ours: &str, theirs: &str, reason: &str) {
+    let before = [base.as_bytes(), ours.as_bytes(), theirs.as_bytes()];
+    let records = merge_record_snapshot(fixture.root());
+    let output = run_merge_text(fixture, base, ours, theirs);
+    assert!(
+        !output.status.success(),
+        "merge unexpectedly passed: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains(reason), "missing {reason:?}: {stderr}");
+    for (name, expected) in ["base.json", "ours.json", "theirs.json"].iter().zip(before) {
+        assert_eq!(
+            fs::read(fixture.root().join("merge-inputs").join(name)).unwrap(),
+            expected
+        );
+    }
+    assert_eq!(merge_record_snapshot(fixture.root()), records);
+}
+
+fn assert_merge_ok(fixture: &Fixture, base: &Value, ours: &Value, theirs: &Value) -> Value {
+    let records = merge_record_snapshot(fixture.root());
+    let output = run_merge_text(
+        fixture,
+        &merge_json(base),
+        &merge_json(ours),
+        &merge_json(theirs),
+    );
+    assert!(
+        output.status.success(),
+        "merge failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(fixture.read("merge-inputs/base.json"), merge_json(base));
+    assert_eq!(fixture.read("merge-inputs/theirs.json"), merge_json(theirs));
+    assert_eq!(merge_record_snapshot(fixture.root()), records);
+    serde_json::from_str(&fixture.read("merge-inputs/ours.json")).unwrap()
+}
+
+#[test]
+fn checkpoint_merge_combines_every_exact_string_collection_in_order() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let collections = [
+        (
+            "references",
+            "criteria",
+            "FLOW-1",
+            "FLOW-2",
+            "FLOW-3",
+            "FLOW-4",
+            "FLOW-5",
+            "FLOW-6",
+        ),
+        (
+            "references",
+            "requirements",
+            "REQ-cli-001",
+            "REQ-cli-002",
+            "REQ-cli-003",
+            "REQ-cli-004",
+            "REQ-cli-005",
+            "REQ-cli-006",
+        ),
+        (
+            "references",
+            "cases",
+            "CASE-a",
+            "CASE-b",
+            "CASE-c",
+            "CASE-d",
+            "CASE-e",
+            "CASE-f",
+        ),
+        (
+            "references",
+            "design",
+            "docs/a.md",
+            "docs/b.md",
+            "docs/c.md",
+            "docs/d.md",
+            "docs/e.md",
+            "docs/f.md",
+        ),
+        (
+            "references",
+            "files",
+            "src/a.rs",
+            "src/b.rs",
+            "src/c.rs",
+            "src/d.rs",
+            "src/e.rs",
+            "src/f.rs",
+        ),
+        (
+            "",
+            "decisions",
+            "keep",
+            "remove ours",
+            "remove theirs",
+            "ours",
+            "theirs",
+            "shared",
+        ),
+        (
+            "",
+            "open_questions",
+            "keep",
+            "remove ours",
+            "remove theirs",
+            "ours",
+            "theirs",
+            "shared",
+        ),
+        (
+            "",
+            "completed",
+            "keep",
+            "remove ours",
+            "remove theirs",
+            "ours",
+            "theirs",
+            "shared",
+        ),
+        (
+            "",
+            "observations",
+            "OBS-a",
+            "OBS-b",
+            "OBS-c",
+            "OBS-d",
+            "OBS-e",
+            "OBS-f",
+        ),
+        (
+            "", "bugs", "BUG-a", "BUG-b", "BUG-c", "BUG-d", "BUG-e", "BUG-f",
+        ),
+    ];
+    for (parent, field, keep, remove_ours, remove_theirs, ours_add, theirs_add, shared) in
+        collections
+    {
+        let mut base = merge_base();
+        let mut ours = merge_base();
+        let mut theirs = merge_base();
+        fn slot<'a>(session: &'a mut Value, parent: &str, field: &str) -> &'a mut Value {
+            if parent.is_empty() {
+                &mut session[field]
+            } else {
+                &mut session[parent][field]
+            }
+        }
+        *slot(&mut base, parent, field) = json!([keep, remove_ours, remove_theirs]);
+        *slot(&mut ours, parent, field) = json!([keep, remove_theirs, ours_add, shared]);
+        *slot(&mut theirs, parent, field) = json!([keep, remove_ours, theirs_add, shared]);
+        let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
+        let actual = if parent.is_empty() {
+            &merged[field]
+        } else {
+            &merged[parent][field]
+        };
+        assert_eq!(
+            actual,
+            &json!([keep, ours_add, shared, theirs_add]),
+            "{parent}.{field}"
+        );
+    }
+
+    let mut base = merge_base();
+    let mut ours = merge_base();
+    let mut theirs = merge_base();
+    base["decisions"] = json!([]);
+    ours["decisions"] = json!(["Case", "case ", "case!", "shared"]);
+    theirs["decisions"] = json!(["case", "case ", "shared", "case."]);
+    let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
+    assert_eq!(
+        merged["decisions"],
+        json!(["Case", "case ", "case!", "shared", "case", "case."])
+    );
+}
+
+#[test]
+fn checkpoint_merge_selects_the_current_cycle_as_one_group() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let changes = [
+        ("objective", json!("A different objective")),
+        ("intent_scope", json!("LIFE-3")),
+        ("modules", json!(["cli", "docs"])),
+        (
+            "stage",
+            json!({"current": "design", "status": "paused", "callers": [], "iteration": 2}),
+        ),
+        ("native_change", json!("another-change")),
+        ("next_action", json!("Wait for the selected cycle")),
+        (
+            "run_consents",
+            json!([{"key": "validation", "source": "human", "objective": "Merge parallel checkpoint edits", "granted_at_unix_seconds": 123}]),
+        ),
+        ("blockers", json!(["A selected blocker"])),
+        ("awaiting_human", json!(["A selected human gate"])),
+    ];
+    for (field, value) in changes {
+        let base = merge_base();
+        let mut ours = base.clone();
+        ours[field] = value.clone();
+        let merged = assert_merge_ok(&fixture, &base, &ours, &base);
+        assert_eq!(merged[field], value, "ours field {field}");
+
+        let mut theirs = base.clone();
+        theirs[field] = value.clone();
+        let merged = assert_merge_ok(&fixture, &base, &base, &theirs);
+        assert_eq!(merged[field], value, "theirs field {field}");
+
+        let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
+        assert_eq!(merged[field], value, "identical field {field}");
+    }
+
+    let base = merge_base();
+    let mut changed = base.clone();
+    changed["objective"] = json!("Identical new cycle");
+    changed["next_action"] = json!("Continue the identical cycle");
+    changed["blockers"] = json!(["Same blocker"]);
+    let merged = assert_merge_ok(&fixture, &base, &changed, &changed);
+    assert_eq!(merged, changed);
+
+    let mut ours = base.clone();
+    let mut theirs = base.clone();
+    ours["objective"] = json!("Ours cycle");
+    theirs["next_action"] = json!("Theirs next action");
+    assert_merge_refusal(
+        &fixture,
+        &merge_json(&base),
+        &merge_json(&ours),
+        &merge_json(&theirs),
+        "current-cycle conflict",
+    );
+    let output = run_merge_text(
+        &fixture,
+        &merge_json(&base),
+        &merge_json(&ours),
+        &merge_json(&theirs),
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("objective"), "{stderr}");
+    assert!(stderr.contains("next_action"), "{stderr}");
+
+    let mut ours = base.clone();
+    let mut theirs = base.clone();
+    ours["native_change"] = json!("ours-change");
+    theirs["native_change"] = json!("theirs-change");
+    assert_merge_refusal(
+        &fixture,
+        &merge_json(&base),
+        &merge_json(&ours),
+        &merge_json(&theirs),
+        "native_change",
+    );
+
+    for (field, ours_value, theirs_value) in [
+        (
+            "run_consents",
+            json!([{"key": "validation", "source": "human", "objective": "Merge parallel checkpoint edits", "granted_at_unix_seconds": 123}]),
+            json!([{"key": "release", "source": "human", "objective": "Merge parallel checkpoint edits", "granted_at_unix_seconds": 456}]),
+        ),
+        (
+            "blockers",
+            json!(["Ours blocker"]),
+            json!(["Theirs blocker"]),
+        ),
+        (
+            "awaiting_human",
+            json!(["Ours gate"]),
+            json!(["Theirs gate"]),
+        ),
+    ] {
+        let mut ours = base.clone();
+        let mut theirs = base.clone();
+        ours[field] = ours_value;
+        theirs[field] = theirs_value;
+        assert_merge_refusal(
+            &fixture,
+            &merge_json(&base),
+            &merge_json(&ours),
+            &merge_json(&theirs),
+            "current-cycle conflict",
+        );
+    }
+
+    let records = merge_record_snapshot(fixture.root());
+    let output = run_merge_text(
+        &fixture,
+        &merge_json(&base),
+        &base.to_string(),
+        &merge_json(&base),
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(merge_record_snapshot(fixture.root()), records);
+}
+
+#[test]
+fn checkpoint_merge_rejects_invalid_schemas_json_and_unknown_fields() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let valid = merge_json(&merge_base());
+    let schema_1 = "{\n  \"schema_version\": 1,\n  \"objective\": \"Old session\",\n  \"intent_scope\": \"LIFE\",\n  \"modules\": [\"cli\"],\n  \"decisions\": [],\n  \"open_questions\": [],\n  \"next_action\": \"Migrate explicitly\"\n}\n";
+    let mut unknown_top = merge_base();
+    unknown_top["unknown"] = json!(true);
+    let mut unknown_nested = merge_base();
+    unknown_nested["stage"]["unknown"] = json!(true);
+    let mut unsupported = merge_base();
+    unsupported["schema_version"] = json!(3);
+    let invalid = [
+        schema_1.to_string(),
+        "{\n".to_string(),
+        merge_json(&unknown_top),
+        merge_json(&unknown_nested),
+        merge_json(&unsupported),
+    ];
+    for content in invalid {
+        for position in 0..3 {
+            let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
+            inputs[position] = content.clone();
+            assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "session");
+        }
+    }
+    assert!(!fixture.exists(".chough/session.v1.json"));
+}
+
+#[test]
+fn checkpoint_merge_enforces_input_collection_and_output_byte_bounds() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let valid = merge_json(&merge_base());
+    let oversized = format!("{}{}", valid, " ".repeat(65_536));
+    for position in 0..3 {
+        let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
+        inputs[position] = oversized.clone();
+        assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "65536");
+    }
+
+    let base = merge_base();
+    let mut ours = base.clone();
+    let mut theirs = base.clone();
+    ours["decisions"] = json!(
+        (0..150)
+            .map(|index| format!("ours-{index}"))
+            .collect::<Vec<_>>()
+    );
+    theirs["decisions"] = json!(
+        (0..150)
+            .map(|index| format!("theirs-{index}"))
+            .collect::<Vec<_>>()
+    );
+    assert_merge_refusal(
+        &fixture,
+        &merge_json(&base),
+        &merge_json(&ours),
+        &merge_json(&theirs),
+        "too many",
+    );
+
+    ours["decisions"] = json!(
+        (0..100)
+            .map(|index| format!("ours-{index}-{}", "o".repeat(320)))
+            .collect::<Vec<_>>()
+    );
+    theirs["decisions"] = json!(
+        (0..100)
+            .map(|index| format!("theirs-{index}-{}", "t".repeat(320)))
+            .collect::<Vec<_>>()
+    );
+    assert_merge_refusal(
+        &fixture,
+        &merge_json(&base),
+        &merge_json(&ours),
+        &merge_json(&theirs),
+        "65536",
+    );
+
+    ours["decisions"] = json!(
+        (0..100)
+            .map(|index| format!("ours-{index}"))
+            .collect::<Vec<_>>()
+    );
+    theirs["decisions"] = json!(
+        (0..100)
+            .map(|index| format!("theirs-{index}"))
+            .collect::<Vec<_>>()
+    );
+    let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
+    assert_eq!(merged["decisions"].as_array().unwrap().len(), 200);
+
+    ours["run_consents"] = json!(
+        (0..200)
+            .map(|index| {
+                json!({
+                    "key": format!("consent-{index}"),
+                    "source": "test",
+                    "objective": base["objective"].clone(),
+                    "granted_at_unix_seconds": 1
+                })
+            })
+            .collect::<Vec<_>>()
+    );
+    theirs = base.clone();
+    let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
+    assert_eq!(merged["run_consents"].as_array().unwrap().len(), 200);
+    ours["run_consents"].as_array_mut().unwrap().push(json!({
+        "key": "consent-200",
+        "source": "test",
+        "objective": base["objective"].clone(),
+        "granted_at_unix_seconds": 1
+    }));
+    assert_merge_refusal(
+        &fixture,
+        &merge_json(&base),
+        &merge_json(&ours),
+        &merge_json(&theirs),
+        "too many run consents",
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn checkpoint_merge_closed_stdout_does_not_turn_a_successful_write_into_failure() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let base = merge_base();
+    let mut ours = base.clone();
+    ours["decisions"] = json!(["merge succeeded before reporting"]);
+    let theirs = base.clone();
+    fixture.write("merge-inputs/base.json", &merge_json(&base));
+    fixture.write("merge-inputs/ours.json", &merge_json(&ours));
+    fixture.write("merge-inputs/theirs.json", &merge_json(&theirs));
+    let paths = merge_paths(&fixture);
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg("exec 1>&-; \"$@\"")
+        .arg("sh")
+        .arg(env!("CARGO_BIN_EXE_chough"))
+        .arg("checkpoint")
+        .arg("--merge")
+        .args(paths)
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "closed stdout changed the result: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let merged: Value = serde_json::from_str(&fixture.read("merge-inputs/ours.json")).unwrap();
+    assert_eq!(
+        merged["decisions"],
+        json!(["merge succeeded before reporting"])
+    );
+    assert_eq!(fixture.read("merge-inputs/base.json"), merge_json(&base));
+    assert_eq!(
+        fixture.read("merge-inputs/theirs.json"),
+        merge_json(&theirs)
+    );
+}
+
+#[test]
+fn checkpoint_merge_requires_distinct_regular_files_and_exact_arguments() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let valid = merge_json(&merge_base());
+    fixture.write("merge-inputs/base.json", &valid);
+    fixture.write("merge-inputs/ours.json", &valid);
+    fixture.write("merge-inputs/theirs.json", &valid);
+    fs::create_dir_all(fixture.root().join("merge-inputs/directory")).unwrap();
+    let paths = merge_paths(&fixture);
+    let records = merge_record_snapshot(fixture.root());
+    for arguments in [
+        vec!["checkpoint", "--merge", &paths[0], &paths[1]],
+        vec![
+            "checkpoint",
+            "--merge",
+            &paths[0],
+            &paths[1],
+            &paths[2],
+            &paths[0],
+        ],
+        vec![
+            "checkpoint",
+            "--merge",
+            &paths[0],
+            &paths[1],
+            &paths[2],
+            "--next-action",
+            "No",
+        ],
+        vec!["checkpoint", "--merge", &paths[0], &paths[1], &paths[1]],
+        vec!["checkpoint", "--merge", &paths[0], &paths[0], &paths[2]],
+    ] {
+        assert!(
+            !fixture.run(&arguments).status.success(),
+            "{arguments:?} unexpectedly passed"
+        );
+        assert_eq!(merge_record_snapshot(fixture.root()), records);
+    }
+    let directory = fixture
+        .root()
+        .join("merge-inputs/directory")
+        .to_string_lossy()
+        .into_owned();
+    assert!(
+        !fixture
+            .run(&["checkpoint", "--merge", &paths[0], &directory, &paths[2]])
+            .status
+            .success()
+    );
+    let missing = fixture
+        .root()
+        .join("merge-inputs/missing.json")
+        .to_string_lossy()
+        .into_owned();
+    assert!(
+        !fixture
+            .run(&["checkpoint", "--merge", &paths[0], &missing, &paths[2]])
+            .status
+            .success()
+    );
+    assert_eq!(fixture.read("merge-inputs/base.json"), valid);
+    assert_eq!(fixture.read("merge-inputs/ours.json"), valid);
+    assert_eq!(fixture.read("merge-inputs/theirs.json"), valid);
+
+    #[cfg(unix)]
+    for position in 0..3 {
+        let link = fixture.root().join("merge-inputs/link.json");
+        std::os::unix::fs::symlink(fixture.root().join("merge-inputs/base.json"), &link).unwrap();
+        let mut operands = paths.clone();
+        operands[position] = link.to_string_lossy().into_owned();
+        assert!(
+            !fixture
+                .run(&[
+                    "checkpoint",
+                    "--merge",
+                    &operands[0],
+                    &operands[1],
+                    &operands[2]
+                ])
+                .status
+                .success()
+        );
+        fs::remove_file(link).unwrap();
+    }
+}
+
+fn isolated_git(root: &Path, args: &[&str]) -> Output {
+    let binary = Path::new(env!("CARGO_BIN_EXE_chough"));
+    let mut paths = vec![binary.parent().unwrap().to_owned()];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    fs::create_dir_all(root.join("isolated-home")).unwrap();
+    Command::new("git")
+        .current_dir(root)
+        .args(args)
+        .env("HOME", root.join("isolated-home"))
+        .env("GIT_CONFIG_GLOBAL", root.join("isolated-global-config"))
+        .env("GIT_CONFIG_SYSTEM", root.join("isolated-system-config"))
+        .env("GIT_CONFIG_NOSYSTEM", "1")
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .output()
+        .unwrap()
+}
+
+fn git_ok(root: &Path, args: &[&str]) {
+    let output = isolated_git(root, args);
+    assert!(
+        output.status.success(),
+        "git {args:?} failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+fn git_merge_fixture(
+    driver: bool,
+    current_cycle_conflict: bool,
+) -> (Fixture, Output, Value, Value, Value) {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(
+        ".gitattributes",
+        ".chough/session.json merge=chough-session\n",
+    );
+    let base = merge_base();
+    let mut ours = base.clone();
+    let mut theirs = base.clone();
+    let mut base = base;
+    base["decisions"] = json!(["base keep", "remove ours", "remove theirs"]);
+    ours["decisions"] = json!([
+        "base keep",
+        "remove theirs",
+        "ours addition",
+        "shared addition"
+    ]);
+    theirs["decisions"] = json!([
+        "base keep",
+        "remove ours",
+        "theirs addition",
+        "shared addition"
+    ]);
+    if current_cycle_conflict {
+        ours["objective"] = json!("Ours current cycle");
+        theirs["next_action"] = json!("Theirs independent next action");
+    }
+    fixture.write(".chough/session.json", &merge_json(&base));
+    git_ok(fixture.root(), &["init", "--initial-branch=main"]);
+    git_ok(fixture.root(), &["config", "user.name", "Checkpoint Test"]);
+    git_ok(
+        fixture.root(),
+        &["config", "user.email", "checkpoint@example.invalid"],
+    );
+    git_ok(fixture.root(), &["config", "commit.gpgsign", "false"]);
+    if driver {
+        git_ok(
+            fixture.root(),
+            &[
+                "config",
+                "merge.chough-session.driver",
+                "chough checkpoint --merge %O %A %B",
+            ],
+        );
+    }
+    git_ok(fixture.root(), &["add", "."]);
+    git_ok(fixture.root(), &["commit", "-m", "base checkpoint"]);
+    git_ok(fixture.root(), &["checkout", "-b", "ours"]);
+    fixture.write(".chough/session.json", &merge_json(&ours));
+    git_ok(fixture.root(), &["add", ".chough/session.json"]);
+    git_ok(fixture.root(), &["commit", "-m", "ours checkpoint"]);
+    git_ok(fixture.root(), &["checkout", "main"]);
+    git_ok(fixture.root(), &["checkout", "-b", "theirs"]);
+    fixture.write(".chough/session.json", &merge_json(&theirs));
+    git_ok(fixture.root(), &["add", ".chough/session.json"]);
+    git_ok(fixture.root(), &["commit", "-m", "theirs checkpoint"]);
+    git_ok(fixture.root(), &["checkout", "ours"]);
+    let output = isolated_git(fixture.root(), &["merge", "--no-edit", "theirs"]);
+    (fixture, output, base, ours, theirs)
+}
+
+fn print_git_merge(output: &Output, checkpoint: &[u8]) {
+    println!("command: git merge --no-edit theirs");
+    println!("exit status: {}", output.status);
+    println!("stdout:\n{}", String::from_utf8_lossy(&output.stdout));
+    println!("stderr:\n{}", String::from_utf8_lossy(&output.stderr));
+    println!(
+        "resulting .chough/session.json bytes:\n{}",
+        String::from_utf8_lossy(checkpoint)
+    );
+}
+
+#[test]
+fn real_git_without_driver_conflict() {
+    let (fixture, output, _, _, _) = git_merge_fixture(false, false);
+    let checkpoint = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+    print_git_merge(&output, &checkpoint);
+    assert!(!output.status.success());
+    assert!(
+        !isolated_git(fixture.root(), &["ls-files", "-u"])
+            .stdout
+            .is_empty()
+    );
+    assert!(String::from_utf8_lossy(&checkpoint).contains("<<<<<<<"));
+}
+
+#[test]
+fn real_git_driver_merges_compatible_checkpoint_changes() {
+    let (fixture, output, base, ours, theirs) = git_merge_fixture(true, false);
+    let checkpoint = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+    print_git_merge(&output, &checkpoint);
+    assert!(output.status.success(), "configured driver did not merge");
+    let expected = r#"{
+  "schema_version": 2,
+  "objective": "Merge parallel checkpoint edits",
+  "intent_scope": "FLOW-13",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "merge-checkpoints",
+  "references": {
+    "criteria": [
+      "FLOW-13"
+    ],
+    "requirements": [
+      "REQ-cli-007"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "base keep",
+    "ours addition",
+    "shared addition",
+    "theirs addition"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Merge compatible edits"
+}
+"#;
+    assert_eq!(checkpoint, expected.as_bytes());
+    assert!(
+        isolated_git(fixture.root(), &["ls-files", "-u"])
+            .stdout
+            .is_empty()
+    );
+    assert!(
+        isolated_git(fixture.root(), &["status", "--porcelain"])
+            .stdout
+            .is_empty()
+    );
+    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
+
+    fixture.write("merge-inputs/base.json", &merge_json(&base));
+    fixture.write("merge-inputs/ours.json", &merge_json(&ours));
+    fixture.write("merge-inputs/theirs.json", &merge_json(&theirs));
+    let paths = merge_paths(&fixture);
+    let direct = fixture.run(&["checkpoint", "--merge", &paths[0], &paths[1], &paths[2]]);
+    assert!(
+        direct.status.success(),
+        "{}",
+        String::from_utf8_lossy(&direct.stderr)
+    );
+    assert_eq!(fixture.read("merge-inputs/ours.json"), expected);
+    assert_eq!(fixture.read("merge-inputs/base.json"), merge_json(&base));
+    assert_eq!(
+        fixture.read("merge-inputs/theirs.json"),
+        merge_json(&theirs)
+    );
+    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
+}
+
+#[test]
+fn real_git_current_cycle_conflict_and_direct_fallback_preserve_ours() {
+    let (fixture, output, base, ours, theirs) = git_merge_fixture(true, true);
+    let checkpoint = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+    print_git_merge(&output, &checkpoint);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("current-cycle conflict"));
+    assert_eq!(checkpoint, merge_json(&ours).as_bytes());
+    assert!(!String::from_utf8_lossy(&checkpoint).contains("<<<<<<<"));
+    assert!(
+        !isolated_git(fixture.root(), &["ls-files", "-u"])
+            .stdout
+            .is_empty()
+    );
+    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
+    git_ok(fixture.root(), &["merge", "--abort"]);
+
+    fixture.write("merge-inputs/base.json", &merge_json(&base));
+    fixture.write("merge-inputs/ours.json", &merge_json(&ours));
+    fixture.write("merge-inputs/theirs.json", &merge_json(&theirs));
+    let paths = merge_paths(&fixture);
+    let direct = fixture.run(&["checkpoint", "--merge", &paths[0], &paths[1], &paths[2]]);
+    assert!(!direct.status.success());
+    assert!(String::from_utf8_lossy(&direct.stderr).contains("current-cycle conflict"));
+    assert_eq!(fixture.read("merge-inputs/ours.json"), merge_json(&ours));
+    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
 }

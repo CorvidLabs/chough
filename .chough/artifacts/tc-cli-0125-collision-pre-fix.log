@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links ... FAILED
+
+failures:
+
+---- independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links stdout ----
+legacy high-water BUG-0019: manual left BUG-0020, manual right BUG-0020, automatic left BUG-0020, automatic right BUG-0020
+
+thread 'independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links' (296263340) panicked at tests/bugs.rs:585:5:
+independent roots at legacy high-water BUG-0019 collided: manual IDs BUG-0020 and BUG-0020; automatic IDs BUG-0020 and BUG-0020
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaking_legacy_links
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 1.88s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/bugs.rs (target/debug/deps/bugs-84c5024159755c26)
+error: test failed, to rerun pass `--test bugs`

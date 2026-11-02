@@ -26,7 +26,10 @@
       "LIFE-9",
       "LIFE-1",
       "LIFE-3",
-      "FLOW-12"
+      "FLOW-12",
+      "FLOW-5",
+      "FLOW-8",
+      "LIFE-5"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -35,7 +38,10 @@
       "REQ-cli-016",
       "REQ-cli-019",
       "REQ-cli-021",
-      "REQ-cli-002"
+      "REQ-cli-002",
+      "REQ-cli-003",
+      "REQ-cli-022",
+      "REQ-cli-012"
     ],
     "cases": [
       "TC-cli-0101",
@@ -47,7 +53,14 @@
       "TC-cli-0111",
       "TC-cli-0112",
       "TC-cli-0113",
-      "TC-cli-0114"
+      "TC-cli-0114",
+      "TC-cli-0105",
+      "TC-cli-0106",
+      "TC-cli-0120",
+      "TC-cli-0121",
+      "TC-cli-0122",
+      "TC-cli-0123",
+      "TC-cli-0124"
     ],
     "design": [],
     "files": []
@@ -76,7 +89,18 @@
     "decided: lessons live in the existing specs/<module>/context.md Lessons section (SpecSync briefs it); Chough only points at them; no .3md, no library/ store (0xLeif, 2026-11-01)",
     "assumption (agent, stated in design.md, not a human decision): checkpoint decisions stay Vec<String>; a decided:, rejected: or failed: prefix with a reason clause is read best-effort with a latest-N fallback; no checkpoint schema change",
     "decided: report criterion 5's cap fixture as a deviation, not re-approve, because the approved 4 KiB fixture exceeds the 64 KiB checkpoint bound (0xLeif chose \"Report as deviation\")",
-    "0xLeif said \"just finish this up urself\" after the change run failed criterion 9 and the real-repository run hit Kimi's quota. Agent's choice under that instruction, not a human decision on scope: report criterion 9 as failed and the real-repository run as not done in the PR, do not amend the approved definition, and leave acceptance, native review and merge to 0xLeif"
+    "0xLeif said \"just finish this up urself\" after the change run failed criterion 9 and the real-repository run hit Kimi's quota. Agent's choice under that instruction, not a human decision on scope: report criterion 9 as failed and the real-repository run as not done in the PR, do not amend the approved definition, and leave acceptance, native review and merge to 0xLeif",
+    "Draft adds REQ-cli-021 and REQ-cli-022 instead of modifying REQ-cli-008, 016 or 019, because open PR #22 modifies those",
+    "No gate runs specsync change check: measured on 6.1.1 it mutates canonical specs and native records and refuses while tasks are unchecked; the guard recomputes SpecSync's approved-delta digests instead",
+    "2026-11-01: 0xLeif approved the scope of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume with the drafter's recommended answers to the open questions; recorded with specsync change approve --actor 0xLeif",
+    "The human task supplies the intent and requested deliverables; no native scope approval is inferred",
+    "Limit this change to BUG-0024 and BUG-0021 plus honest exercise and roadmap records, because the output-size and global-tool issues do not need the same scoped fix",
+    "Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007",
+    "0xLeif approved the native scope in conversation; SpecSync recorded that decision with actor 0xLeif",
+    "2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised",
+    "0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints",
+    "0xLeif approved a separate native change for slug-based bug identity with legacy numeric compatibility and no bulk migration",
+    "0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup"
   ],
   "open_questions": [],
   "completed": [
@@ -106,7 +130,30 @@
     "Scoped change check verified; TC-cli-0126 to 0131 passed and TC-cli-0132 reviewed at the implementation tip",
     "Kimi change run of the handoff cold start recorded at the implementation tip 9009d9a (observation handoff-cold-start-change-kimi-1, outcome not-run until graded)",
     "0xLeif graded the change run: Fail (P1-P3 not met); P4 to P6 met (observation handoff-cold-start-change-kimi-1-grade)",
-    "Closeout extended: lessons for the change run result and the host quota in specs/cli/context.md"
+    "Closeout extended: lessons for the change run result and the host quota in specs/cli/context.md",
+    "Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated",
+    "TC-cli-0120 to TC-cli-0124 passed on local-macos-arm64 after the scoped change check materialized REQ-cli-021 and REQ-cli-022; BUG-0002 noted as guarded, still open",
+    "PR #23 review at 2eb10bb: next strings bounded by escaped width, SpecSync module names accepted by the guard, the no-digest remedy names a new approval, reset next action bounded, cross-platform unit tests, SKILL.md host caveats; TC-cli-0120 to TC-cli-0124 rerun and passed on local-macos-arm64 at 72fe1e2",
+    "Kimi Code CLI 0.41.0 cold start on macOS arm64: discovery, build, native checks and baseline verify observed; four friction items classified as BUG-0024 and BUG-0021 to BUG-0023",
+    "Preserved the concise Kimi cold-start log and recorded failed observation kimi-cold-start-5af3f78 with discovery successes, cold-resume failure and tool and coaching limits",
+    "TC-cli-0105 and TC-cli-0106 failed at the unfixed tip for the approved archived-guidance and Kimi-guidance defects; failures linked before implementation",
+    "Implemented archived native next-action routing, Kimi skill guidance with safe updates, and the approved roadmap and host documentation refresh",
+    "Final TC-cli-0105, TC-cli-0037 and TC-cli-0106 observations passed on the completed content; BUG-0024 and BUG-0021 verified from later passes",
+    "Native materialization passed, and the final CI-matching fledge verify lane completed all 9 steps in 82.220 seconds",
+    "Native change archived at 2189038 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "Integrated main's REQ-cli-021 new-cycle behavior, retained the BUG-0025 failure-first evidence, corrected the Kimi docs and recorded focused passes",
+    "Final-content TC-cli-0105, TC-cli-0106, TC-cli-0121 and TC-cli-0122 passed; BUG-0025 has a retained failure followed by later passes",
+    "The final full verify lane passed all 9 steps in 74.258 seconds with CI-matching tools after the final-content case passes",
+    "Native integration change archived at a91e066 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "Recorded the independent-root collision before implementation, implemented dual-form collision-resistant bug IDs, and passed focused tests and Clippy after the race-diagnostic fix",
+    "Materialized REQ-cli-012, recorded tc-cli-0125-collision-post-fix after the retained failure, and verified BUG-0026",
+    "The full verify lane passed all 9 steps in 79.865 seconds and the exercise created and verified a real slug-based bug ID; final TC-cli-0125 also passed",
+    "Native bug identity change archived at aee2af3 after 0xLeif authorized finalization; Chough advanced from accept to done",
+    "PR #26 was merged by 0xLeif as b35acaf0804f84a2c56fcee4b3ca1504cf74c95e, observed on GitHub",
+    "Retained the real Git checkpoint conflict, implemented bounded three-way merging, and passed focused tests and Clippy after consent-bound and closed-stdout review fixes",
+    "Materialized REQ-cli-007, recorded the strictly later real Git pass, and verified the merge bug",
+    "Full verify, Rust 1.88 tests and pre-push passed; the final current-content real Git observation passed",
+    "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -135,7 +182,39 @@
     "tc-cli-0131-1793578923",
     "tc-cli-0132-tip-review",
     "handoff-cold-start-change-kimi-1",
-    "handoff-cold-start-change-kimi-1-grade"
+    "handoff-cold-start-change-kimi-1-grade",
+    "kimi-cold-start-5af3f78",
+    "kimi-cold-start-5af3f78-scope",
+    "tc-cli-0105-1793551352",
+    "tc-cli-0106-kimi-original",
+    "tc-cli-0120-1793552331",
+    "tc-cli-0121-1793552334",
+    "tc-cli-0122-1793552336",
+    "tc-cli-0123-1793552337",
+    "tc-cli-0124-1793552338",
+    "tc-cli-0120-1793553262",
+    "tc-cli-0121-1793553270",
+    "tc-cli-0122-1793553272",
+    "tc-cli-0123-1793553274",
+    "tc-cli-0124-1793553276",
+    "tc-cli-0105-1793553670",
+    "tc-cli-0037-1793553673",
+    "tc-cli-0106-kimi-final",
+    "tc-cli-0105-bug-0025-pre-fix",
+    "tc-cli-0105-bug-0025-post-fix",
+    "tc-cli-0121-new-cycle-post-fix",
+    "tc-cli-0122-reset-next-action-post-fix",
+    "tc-cli-0106-kimi-integration",
+    "tc-cli-0105-integration-final",
+    "tc-cli-0106-integration-final",
+    "tc-cli-0121-integration-final",
+    "tc-cli-0122-integration-final",
+    "tc-cli-0125-collision-pre-fix",
+    "tc-cli-0125-collision-post-fix",
+    "tc-cli-0125-collision-final",
+    "checkpoint-merge-real-git-pre-fix",
+    "checkpoint-merge-real-git-post-fix",
+    "checkpoint-merge-real-git-final"
   ],
   "bugs": [
     "BUG-0001",
@@ -148,7 +227,9 @@
     "BUG-0022",
     "BUG-0023",
     "BUG-0024",
-    "BUG-0025"
+    "BUG-0025",
+    "BUG-0026",
+    "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee"
   ],
   "blockers": [],
   "awaiting_human": [

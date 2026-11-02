@@ -15,6 +15,30 @@ lesson pointer blocks of `next`, their cap and byte-identical output, the fb6e48
 skill digests, the skill wording review and the graded cold-start protocol in
 `docs/exercises/handoff-cold-start/`.
 
+## Observed checkpoint merge verification
+
+The approved change `make-checkpoint-merges-safe-across-parallel-changes` covers
+ordered exact-string collections, atomic current-cycle selection, fail-closed
+validation and refusal preservation in `tests/stages.rs`. Real Git fixtures use
+`.chough/session.json merge=chough-session` and the documented per-clone driver for
+compatible merges and unresolved current-cycle conflicts, with the explicit command
+as the no-driver fallback. `tests/cli.rs` proves init leaves Git configuration
+unchanged. `tests/package.rs` and `tests/optional.rs` prove known-outdated reference
+updates and edited-copy preservation. No new case number was allocated.
+
+- Failed observation `checkpoint-merge-real-git-pre-fix` was recorded before
+  implementation on `local-macos-arm64`. Its artifact retains both the ordinary Git
+  conflict and the unsupported driver result.
+- The configured real Git regression passed after implementation and review fixes.
+  Passed observation `checkpoint-merge-real-git-post-fix` was recorded strictly
+  later and linked to the same local bug, which is now verified.
+- Focused checks passed 33 stage tests, 26 CLI tests, 11 package tests and 7
+  optional tests, plus formatting and warnings-denied Clippy. The scoped native
+  check materialized REQ-cli-007. The complete Fledge verify lane passed all 9
+  steps in 221.890 seconds, the full Rust suite also passed with Rust 1.88.0,
+  and pre-push passed all 5 steps in 5.422 seconds. These are local results,
+  not hosted CI or human review.
+
 | Requirement | Verification responsibility | Cases |
 |-------------|-----------------------------|-------|
 | REQ-cli-001 | Init repeated around edited files and partial installed bundles | TC-cli-0001 |
@@ -28,7 +52,7 @@ skill digests, the skill wording review and the graded cold-start protocol in
 | REQ-cli-009 | Definition validation, location in errors, position-free digests | TC-cli-0022 to 0024 |
 | REQ-cli-010 | Focused selection with tracks and omissions | TC-cli-0025, 0101 |
 | REQ-cli-011 | Failing, not-run, missing-output, timeout and build-failure outcomes; verdicts; stop and resume | TC-cli-0026, 0027, 0034, 0101, 0103 |
-| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure | TC-cli-0029 to 0032, 0076 to 0079, 0101 |
+| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure; TC-cli-0125 retains `tc-cli-0125-collision-pre-fix`, the failed `local-macos-arm64` observation of independent-root manual and automatic ID collisions, and the strictly later `tc-cli-0125-collision-post-fix` pass for distinct new-form IDs, schema 1 legacy compatibility and cross-form duplicate and related links | TC-cli-0029 to 0032, 0076 to 0079, 0101, 0125 (failed then passed on `local-macos-arm64`) |
 | REQ-cli-013 | Preferences separate from consent; authorization for validate | TC-cli-0021, 0033, 0034, 0103 |
 | REQ-cli-014 | Release only when authorized; dry-run kind | TC-cli-0021, 0028, 0103 |
 | REQ-cli-015 | Snapshots keep sources; index lists open bugs; symlinks refused; closeout works with the librarian off | TC-cli-0035, 0036, 0132 |
@@ -64,7 +88,8 @@ Project skill. Discovery passed in this one run, not as a general host-matrix re
   verify lane passed 9 steps in 114 seconds. The baseline used HI 0.5.0 and Fledge
   1.8.0 with SpecSync 6.1.1, so it is not final CI-toolchain or hosted CI evidence.
   Release-verified HI 0.8.0 and Fledge 1.7.2 were later placed under
-  `target/tmp/ci-tools`; final checks require those versions with SpecSync 6.1.1.
+  `target/tmp/ci-tools`; the final checks for that historical change used those
+  versions with SpecSync 6.1.1.
 - Safe cold resume exposed BUG-0024, and absent mapping guidance exposed BUG-0021.
   BUG-0022 records the initial tool drift and BUG-0023 the output size; both remain
   open and out of scope.
@@ -110,7 +135,7 @@ observations and frozen archives were not edited.
 ## Observed evolution verification — 2026-10-31
 
 Environment: macOS arm64, rustc 1.95.0, hi 0.8.0, fledge 1.7.2, specsync 6.1.1 (the
-versions CI uses). Product tip for the observations below: 5074711, after the scoped
+versions CI used for these observations). Product tip for the observations below: 5074711, after the scoped
 native check.
 
 - Fledge tasks: fmt, lint (Clippy, all targets, warnings denied), test (37 integration

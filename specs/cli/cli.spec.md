@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 10
+version: 13
 status: active
 files:
   - src/main.rs
@@ -76,7 +76,14 @@ than presented as Rust API symbols to the structural checker.
    passed only when the binding's assertion holds.
 8. `.chough/session.json` is the single writable checkpoint. Transition history is
    append-only, and schema migration is explicit and preserves the original bytes.
+   Bounded three-way merges accept schema 2 only, replace only ours on success and
+   introduce no second writable checkpoint store.
 9. The helper publishes nothing to an external service.
+10. Bug records remain schema 1. Manual and automatic creation share one generator
+    for `BUG-<lowercase-title-slug>-<24-lowercase-hex>` IDs, whose creation-time
+    digest, ID and filename never change during updates. Exact legacy `BUG-NNNN`
+    records remain usable without migration or renumbering, and duplicate and related
+    links accept either ID form.
 
 ## Behavioral Examples
 
@@ -105,6 +112,19 @@ Then the failing case is recorded failed and the passing case does not hide it
 Given a run consent for repeated validation
 When the objective changes
 Then the consent is cleared and project preferences are unchanged
+
+Given independent roots at the same legacy numeric high-water mark
+When distinct bug reports are created manually and by automatic failure capture
+Then each distinct report receives a different new-form ID
+And legacy schema 1 records and cross-form duplicate and related links remain usable
+
+Given schema 2 base, ours and theirs checkpoints with compatible collection edits and an unchanged current-cycle group
+When checkpoint merge runs directly or through the configured Git driver
+Then exact-string additions, removals and ordering are reconciled and only ours is replaced
+
+Given base, ours and theirs checkpoints whose current-cycle groups changed differently on the two sides
+When checkpoint merge runs
+Then it refuses with a current-cycle conflict and leaves all three inputs byte-identical without creating a Chough record
 ```
 
 ## Error Cases
@@ -114,11 +134,13 @@ Then the consent is cleared and project preferences are unchanged
 | Invalid path/schema | A record escapes the root or uses an unsupported version | Fail with an actionable error |
 | Missing native tool/source | Context or lifecycle information is unavailable | Report unavailable/unknown without inventing state |
 | Existing observation ID | An observation record already exists | Refuse replacement and retain the original |
+| Existing bug ID | A new bug candidate ID already exists, including a same-ID different-content result | Refuse creation and leave the original record byte-identical, with no overwrite, digest retry or numeric fallback |
 | Invalid traceability | A criterion, requirement or case cannot be established | Refuse to record the observation |
 | Native gate not satisfied | A stage transition needs a native state that is absent or unknown | Refuse the transition and name the native status command |
 | Unauthorized optional track | Repeated validation or release lacks consent or a standing preference | Refuse and explain how a human can authorize it |
 | Vacuous check | A bound command exits zero without its declared assertion | Record not-run or failed, never passed |
 | Schema 1 session | A stage command meets a schema 1 checkpoint | Refuse and name the explicit migration command |
+| Checkpoint merge refusal | Inputs use schema 1, mixed or unsupported versions, malformed content or unknown fields; bounds overflow; or current-cycle groups conflict | Fail closed with all three inputs byte-identical and no checkpoint, transition, gate, consent, approval, review or other record |
 
 ## Dependencies
 
@@ -142,4 +164,6 @@ provider and no hosted service.
 | 8 | 2026-11-01 | bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors: Bundle hygiene, case binding environment and colour-safe matching, and actionable requirement and bug errors |
 | 9 | 2026-11-01 | focused-chough-next-a-verification-guard-before-build-and-done-stage-resume: Focused chough next, a verification guard before build, and done-stage resume |
 | 10 | 2026-11-01 | prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill: Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log |
-| 10 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |
+| 11 | 2026-11-01 | use-collision-resistant-slug-identities-for-new-bugs: Use collision-resistant slug identities for new bugs |
+| 12 | 2026-11-01 | make-checkpoint-merges-safe-across-parallel-changes: Make checkpoint merges safe across parallel changes |
+| 13 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |
