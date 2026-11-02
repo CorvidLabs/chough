@@ -106,7 +106,8 @@
     "Draft native change adds REQ-cli-023 (pending approval, not yet canonical) instead of modifying REQ-cli-020 or 003, so its delta stays disjoint from PR #29's",
     "Coverage extends TC-cli-0089 and TC-cli-0100 with named Rust regressions and explicit observation IDs; no new case number, because #30 owns case allocation",
     "Filtered timing reports would emit native.history null with a skipped-by-filter reason: an explicit output-semantics change; next, status and stage gates keep their single native read and get no faster from this slice",
-    "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending"
+    "Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending",
+    "Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33."
   ],
   "open_questions": [],
   "completed": [
