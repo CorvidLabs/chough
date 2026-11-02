@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "align-native-actor-examples-in-user-documentation",
+  "slug": "align-native-actor-examples-in-user-documentation",
+  "title": "Align native actor examples in user documentation",
+  "description": "Align native actor examples in user documentation",
+  "kind": "documentation",
+  "state": "verifying",
+  "canonical_applied": true,
+  "base_commit": "9c41e95949adcb1009c986f97db50faa593d81b2",
+  "created_at": 1793642725,
+  "updated_at": 1793642980,
+  "affected_specs": [],
+  "affected_paths": [
+    "docs/cli.md",
+    "docs/walkthrough.md",
+    "docs/NEXT_CHANGE.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Complete the existing REQ-cli-029 actor/source guidance in current user-facing command examples; no canonical requirement, helper behavior, lifecycle state, or historical acceptance record changes. The primary workflow scope owns the existing consistency test support.",
+  "acceptance_criteria": [
+    "The three current user documentation files show acting-agent native approve arguments and a human authority source, covered scope and limits note; existing applicable permission is used before asking a missing decision, actual implementation acceptance remains separate, historical proposal status is preserved, and the structural native-writer regression covers all three files while retaining bundle and installed-copy checks."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

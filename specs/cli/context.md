@@ -206,3 +206,13 @@ not historical native qualification. Future use: register every changed shipped
 predecessor and verify unchanged upgrades and edited-copy preservation before
 publishing a bundle. This does not establish fresh-agent behavior or a cold-start
 result. The earlier exact-predecessor lesson remains applicable.
+
+2026-11-02, user-doc authority consistency (observation): extending the native
+writer check beyond the skill reproduced four human-actor examples across the
+CLI guide, walkthrough and next-change proposal. Source:
+OBS-product-test-4df13417a21256aaa3c5b151 and
+.chough/artifacts/native-workflow-user-docs-before/. Future use: check current
+writer examples in user documentation as well as installed bundles; preserve
+historical proposal status and separate the acting account from the actual human
+source. Limits: structural copy consistency, not fresh-agent compliance or human
+implementation acceptance. Existing approval history remains unchanged.

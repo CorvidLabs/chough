@@ -2,7 +2,7 @@
 
 This follows the [shipping sample](../examples/shipping/). To run the whole sequence
 with assertions in a disposable directory, use `fledge run exercise` or
-`sh examples/feature-bug-loop.sh`; the commands below are the same steps by hand.
+`sh examples/feature-bug-loop.sh`; the commands below show the agent's operations.
 Human gates appear as decisions a person makes; the sample script labels its
 stand-ins as SIMULATED.
 
@@ -45,7 +45,9 @@ rendered prototype and its companion.
 
 ## One scope approval
 
-The agent drafts a native change and presents it:
+The agent drafts a native change and checks whether actual prior or standing human
+authority covers its concrete scope. When that authority is missing, it presents
+the decision and records the pending gate as shown here:
 
 ```sh
 specsync change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/ --json
@@ -54,8 +56,12 @@ chough checkpoint --native-change free-shipping-at-the-threshold \
 chough stage advance        # refused: refused:native-draft
 ```
 
-Only after you approve does it run `specsync change approve <id> --actor "<you>"` and
-`chough checkpoint --clear-awaiting-human`. Then `chough stage advance` enters build.
+Once actual human authority covers the definition, the agent runs
+`specsync change approve <id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"`
+and clears the resolved gate with `chough checkpoint --clear-awaiting-human`.
+Applicable existing permission is used without another tool-specific question.
+Then `chough stage advance` enters build. The acting account and human authority
+source remain separate, as does your later implementation acceptance.
 
 ## Build, focused tests and a bug
 

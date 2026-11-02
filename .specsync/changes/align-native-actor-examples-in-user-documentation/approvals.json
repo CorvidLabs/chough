@@ -1,0 +1,37 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793642782,
+      "digest": "9a686a661cc2b1b2db6ae149dfd0db64bad44d74ba8aabadd0b790218d43291d",
+      "note": "Acting project agent: corvid-agent. Human authority: 0xLeif stated in chat on 2026-11-02, \"I already gave it some approval and told it can do any changes. It just needs a PR.\" Source relay: https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . Covered scope: correct native actor/source command examples in docs/cli.md, docs/walkthrough.md and docs/NEXT_CHANGE.md within PR44. Limits: preserve historical proposal status and actual implementation acceptance; no native review/ship, merge, release or deployment authorization. The actor label is separate from the human instruction and does not authenticate it.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "align-native-actor-examples-in-user-documentation",
+        "title": "Align native actor examples in user documentation",
+        "description": "Align native actor examples in user documentation",
+        "kind": "documentation",
+        "affected_specs": [],
+        "affected_paths": [
+          "docs/NEXT_CHANGE.md",
+          "docs/cli.md",
+          "docs/walkthrough.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Complete the existing REQ-cli-029 actor/source guidance in current user-facing command examples; no canonical requirement, helper behavior, lifecycle state, or historical acceptance record changes. The primary workflow scope owns the existing consistency test support.",
+        "acceptance_criteria": [
+          "The three current user documentation files show acting-agent native approve arguments and a human authority source, covered scope and limits note; existing applicable permission is used before asking a missing decision, actual implementation acceptance remains separate, historical proposal status is preserved, and the structural native-writer regression covers all three files while retaining bundle and installed-copy checks."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

@@ -35,6 +35,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- User-facing native writer examples now use the acting agent account and cite
+  actual human authority separately, consistently with the workflow bundle.
 - `chough next` and `chough status` no longer say `Continue <stage>`, or give the
   build gate refusal, at intent to accept once the recorded native change is
   archived with authenticated terminal evidence; they name the archive and the new

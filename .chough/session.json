@@ -225,7 +225,8 @@
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
     "Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested.",
     "PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass.",
-    "PR44 complete bundle consistency: plan/accept references apply existing authority and use acting agent accounts; both tracked hosts safely refreshed; four exact predecessors and every edited variant covered; structural writer/copy regression and both bound cases pass. All198tests on currentRust/Rust1.88 and all9Fledgesteps pass. Both native changes must close on thisPR."
+    "PR44 complete bundle consistency: plan/accept references apply existing authority and use acting agent accounts; both tracked hosts safely refreshed; four exact predecessors and every edited variant covered; structural writer/copy regression and both bound cases pass. All198tests on currentRust/Rust1.88 and all9Fledgesteps pass. Both native changes must close on thisPR.",
+    "PR44 user-doc guidance is consistent across CLI/walkthrough/next-change docs, canonical skill and installed bundles. All198tests on Rust1.95/Rust1.88, both bound cases and allnineFledge steps pass. Initial unrelated timing-budget MSRV failure is preserved with an open reliability bug; isolated/full unchanged reruns passed, cause unconfirmed. Three native scopes must close after actual implementation acceptance."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -370,5 +371,5 @@
     "Implementation review of the issue42 workflow PR; the agent handles native closeout after the applicable acceptance decision"
   ],
   "run_consents": [],
-  "next_action": "Push the fully qualified PR44 consistency fix, obtain corvid-agent re-review and clear remaining review/native lifecycle blockers toward merge readiness"
+  "next_action": "Push the qualified user-documentation repair, obtain corvid-agent re-review, and retain the actual implementation acceptance gate before closing all three native scopes"
 }

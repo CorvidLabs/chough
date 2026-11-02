@@ -2409,10 +2409,10 @@ track = "functional"
 method = "automated"
 criteria = ["FLOW-5", "FLOW-13", "LIFE-4", "LIFE-6", "LIFE-7"]
 requirements = ["REQ-cli-029"]
-paths = ["skills/chough-workflow", "README.md", "tests/workflow_authority.rs", ".agents/skills/chough-workflow", ".claude/skills/chough-workflow"]
+paths = ["skills/chough-workflow", "README.md", "docs/cli.md", "docs/walkthrough.md", "docs/NEXT_CHANGE.md", "tests/workflow_authority.rs", ".agents/skills/chough-workflow", ".claude/skills/chough-workflow"]
 environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
-expected = ["Native approve/review examples use agent actor/reviewer arguments and all4 target guidance files in both installed host copies match canonical bytes"]
+expected = ["Native approve/review examples in the canonical skill, README and three user docs use agent actor/reviewer arguments; all four target guidance files in both installed host copies match canonical bytes"]
 
 [case.bind]
 adapter = "cargo-test"
