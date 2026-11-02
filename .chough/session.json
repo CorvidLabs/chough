@@ -6,10 +6,10 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
-    "iteration": 2
+    "iteration": 1
   },
   "native_change": "bound-transition-history-and-preserve-referenced-proof",
   "references": {
@@ -283,7 +283,8 @@
     "Final directory reference repair passed 225 tests on Rust1.95/Rust1.88, ten exact cases and nine Fledge steps. This is pre-integration evidence; main8fb0ea7 has now merged and the integrated source needs fresh qualification.",
     "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
     "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)",
-    "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45"
+    "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45",
+    "Integrated main9d02 (#41/#43/#45) with PR37 using one owner-selected current cycle and all additive records. All232tests on Rust1.95/Rust1.88, ten bound cases and nine Fledge steps pass; preserved all parent proof and clarified local append limits."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -448,5 +449,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Qualify the complete main9d02fbf integration on both Rust versions and affected cases, then close all three native scopes and observe archive CI; merge remains 0xLeif"
+  "next_action": "Record committed verification for all three active changes, review and ship in native required order under the finish-all instruction, then push done checkpoint and watch hosted checks; merge remains 0xLeif"
 }

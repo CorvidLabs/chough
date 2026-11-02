@@ -21,7 +21,8 @@
     "OBS-product-test-f59a8fa906c43f699940f33c",
     "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763",
     "OBS-tc-cli-history-post-prune-reference-23f4f23b82735a0a21fc1aab",
-    "OBS-tc-cli-history-adoption-7e242d1718d20b2678fe6af5"
+    "OBS-tc-cli-history-adoption-7e242d1718d20b2678fe6af5",
+    "OBS-tc-cli-history-adoption-b8147b0b44224077038a22bb"
   ],
   "impact": "Acceptance blocker for proof-preserving history and retention.",
   "classification": "product-defect",
@@ -52,8 +53,15 @@
       "observations": [
         "OBS-tc-cli-history-adoption-7e242d1718d20b2678fe6af5"
       ]
+    },
+    {
+      "at_unix_seconds": 1793662364,
+      "text": "Final integrated main9d02 source retains the five-form directory/exact-file repair and passes all232tests on both Rust versions, ten cases and nine Fledge steps; no failure or old proof was rewritten.",
+      "observations": [
+        "OBS-tc-cli-history-adoption-b8147b0b44224077038a22bb"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793642243,
-  "updated_at_unix_seconds": 1793660742
+  "updated_at_unix_seconds": 1793662364
 }

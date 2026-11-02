@@ -1,6 +1,6 @@
 ---
 id: integrate-the-approved-human-gate-sample-into-bounded-history
-state: approved
+state: implementing
 type: documentation
 base_commit: ceb8192621a18c146255d753499389b3c5a47118
 ---
