@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Issue #11 / BUG-0017 ordering half: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds; REQ-cli-005 unchanged",
+  "objective": "PR #43 review fix: a later not-run observation must not clear an unlinked failure",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the",
+  "native_change": "unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -77,7 +77,11 @@
       "TC-cli-0131",
       "TC-cli-0132",
       "TC-cli-0094",
-      "TC-cli-skill-orders-the-change-check-before-new-requirement-cases"
+      "TC-cli-skill-orders-the-change-check-before-new-requirement-cases",
+      "TC-cli-leaving-test-refuses-an-unlinked-failed-case",
+      "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal",
+      "TC-cli-0032",
+      "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
     ],
     "design": [],
     "files": [
@@ -150,7 +154,11 @@
     "decided: 0xLeif in chat (2026-11-02 8:43 AM MT, relayed: \"I approve all\") gave the go-ahead on #11 with the options proposed there (because the smallest fix keeps REQ-cli-005 unchanged): ordering and skill text only, no delta-aware link resolution, no SpecSync change, trace to existing HI LIFE-6 and FLOW-7. Not a native scope approval of this definition",
     "rejected: resolving case links against approved deltas (because REQ-cli-005 says the hint SHALL NOT read native deltas)",
     "Scope approval recorded natively with actor 0xLeif from his explicit chat approval at 8:56 AM MT 2026-11-02, relayed by corvid-agent.",
-    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; the native definition approval recorded earlier with actor 0xLeif was removed and re-recorded with actor corvid-agent (same scope digest b98afa26); review and finalize recorded as corvid-agent; merge stays with 0xLeif"
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; the native definition approval recorded earlier with actor 0xLeif was removed and re-recorded with actor corvid-agent (same scope digest b98afa26); review and finalize recorded as corvid-agent; merge stays with 0xLeif",
+    "Proposed (on #39, pending scope approval): refuse, not warn, with refused:unlinked-failure; a linking bug of any status satisfies it; stale observations do not trigger it; next and status name it via assess; REQ-cli-008 modified, no new ID",
+    "corvid-agent records no approval for a human; scope approval is 0xLeif's",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction",
+    "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif"
   ],
   "open_questions": [],
   "completed": [
@@ -235,7 +243,10 @@
     "Implemented the case recording order skill text (plan, testing, accept), 825a380 digests in KNOWN_PREVIOUS, host copies refreshed, CHANGELOG and ROADMAP; package tests failed first (OBS-product-test-61a4a912f4e142a100dd919e) and pass now",
     "Closeout: one labelled observation lesson (case recording order) in specs/cli/context.md; new decisions carry reasons",
     "Scoped change check materialized REQ-cli-009; TC-cli-skill-orders-the-change-check-before-new-requirement-cases passed (agent-assisted) and TC-cli-0094 passed; BUG-0017 verified (reproduced, later passed)",
-    "fledge lanes run verify passed all 9 steps (198 tests, 0 failed) on Linux with fledge 1.8.0, specsync 6.1.2, hi 0.8.0 after the scoped change check"
+    "fledge lanes run verify passed all 9 steps (198 tests, 0 failed) on Linux with fledge 1.8.0, specsync 6.1.2, hi 0.8.0 after the scoped change check",
+    "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated",
+    "Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)",
+    "Change archived (approve/review/finalize recorded as corvid-agent per 0xLeif's 9:14 AM MT instruction)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -367,5 +378,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif reviews and merges PR #41 after hosted CI is green"
+  "next_action": "Wait for hosted CI on PR #43; 0xLeif owns merge"
 }

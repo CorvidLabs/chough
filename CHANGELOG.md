@@ -35,6 +35,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- Leaving test for accept, by `stage advance` or `stage skip`, is refused with
+  `refused:unlinked-failure` while the latest executed (passed or failed) observation
+  of a case referenced in the checkpoint failed and no local bug links it; a later
+  `not-run` observation does not clear it. `next` and `status` at test name the same
+  refusal. A later pass, or a bug of any status linking the failure, lifts it
+  (issue #39).
+
 - Skill guidance for case recording order (#11, BUG-0017): the plan, testing and
   accept references say that a requirement an approved change adds is linkable only
   after the scoped `specsync change check` materializes it, so that check runs before

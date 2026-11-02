@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-cb90047d10b04254e607a3a5",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-linux-x86_64",
+  "summary": "Issue #39 gate tests written before the fix fail: stage advance and skip from test succeed with a referenced case's failed, unlinked latest observation (2 of 2 new tests in tests/stages.rs fail)",
+  "artifacts": [
+    ".chough/artifacts/bug39-tests-before-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug39-tests-before-fix.log": "8fc9584c4f6094211d2cb88a589a01b5742106da84803fe5c928169938937686"
+  },
+  "observed_at_unix_seconds": 1793636185,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "db1c0ea3e76f9c9c281b7e438a0b3f9a78f84bb5138356aac604e827ad5a560d",
+    "content": "5fa02c16edc0c8dd7ed0156bfc1ded167821febd9f1227aaeded820ffe721829"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional"
+}
