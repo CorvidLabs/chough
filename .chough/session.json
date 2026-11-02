@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -367,5 +367,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Verify, specsync change check --commit, push, native review and finalize as corvid-agent, then 0xLeif reviews and merges PR #41 after hosted CI is green"
+  "next_action": "0xLeif reviews and merges PR #41 after hosted CI is green"
 }
