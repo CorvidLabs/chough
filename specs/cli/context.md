@@ -171,3 +171,5 @@ an interrupted run as not-run, never as a graded result.
 Add further lessons only from observed work, with source, applicable scope, concrete
 future use and revision or retirement guidance. A future native cli.3md would become
 the lesson source in place of this section.
+
+verified: When another approved branch edits a bundled skill file during a learning change, register that integrated main predecessor as well as the original baseline. The exact identity-main librarian bytes were otherwise classified as edited and skipped. Sources: BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838, OBS-product-test-bfc159865a39075249fb6e40 and OBS-product-test-b0ea9516761a4e7adcf61406; the named package regression checks both safe update and edited-copy preservation. Limits: observed on macOS with Rust 1.99.1; this is bundle-upgrade evidence, not a fresh-agent cold-start grade.

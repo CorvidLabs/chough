@@ -118,25 +118,48 @@ impl Fixture {
     }
 
     fn add(&self, id: &str, kind: &str, outcome: &str) -> Output {
-        self.run(&[
-            "evidence",
-            "add",
-            id,
-            "--criterion",
-            "LIFE-1",
-            "--requirement",
-            "REQ-cli-001",
-            "--contract",
-            "specs/cli/cli.spec.md",
-            "--kind",
-            kind,
-            "--outcome",
-            outcome,
-            "--environment",
-            "test-local",
-            "--summary",
-            "Observed behavior in isolated fixture",
-        ])
+        let run = |id: &str| {
+            self.run(&[
+                "evidence",
+                "add",
+                id,
+                "--criterion",
+                "LIFE-1",
+                "--requirement",
+                "REQ-cli-001",
+                "--contract",
+                "specs/cli/cli.spec.md",
+                "--kind",
+                kind,
+                "--outcome",
+                outcome,
+                "--environment",
+                "test-local",
+                "--summary",
+                "Observed behavior in isolated fixture",
+            ])
+        };
+        let allocated = format!("OBS-{id}-000000000000000000000001");
+        let output = run(&allocated);
+        if !output.status.success() {
+            return output;
+        }
+        let allocated_name = format!(".chough/evidence/{allocated}.json");
+        let legacy_name = format!(".chough/evidence/{id}.json");
+        if self.root().join(&legacy_name).exists() {
+            fs::remove_file(self.root().join(allocated_name)).unwrap();
+            return run(id);
+        }
+        let mut record: Value =
+            serde_json::from_str(&fs::read_to_string(self.root().join(&allocated_name)).unwrap())
+                .unwrap();
+        record["id"] = json!(id);
+        self.write(
+            &legacy_name,
+            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+        );
+        fs::remove_file(self.root().join(allocated_name)).unwrap();
+        output
     }
 }
 
@@ -334,7 +357,7 @@ fn artifacts_inside_managed_records_are_independently_bound() {
     let output = fixture.run(&[
         "evidence",
         "add",
-        "artifact",
+        "OBS-product-test-000000000000000000000001",
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -537,11 +560,23 @@ fn invalid_traceability_and_escaped_artifacts_are_rejected() {
         "Observation",
     ];
     for criterion in ["NOPE-1", "LIFE-2"] {
-        let mut arguments = vec!["evidence", "add", "invalid", "--criterion", criterion];
+        let mut arguments = vec![
+            "evidence",
+            "add",
+            "OBS-structural-000000000000000000000002",
+            "--criterion",
+            criterion,
+        ];
         arguments.extend(common);
         assert!(!fixture.run(&arguments).status.success());
     }
-    let mut arguments = vec!["evidence", "add", "escaped", "--criterion", "LIFE-1"];
+    let mut arguments = vec![
+        "evidence",
+        "add",
+        "OBS-structural-000000000000000000000003",
+        "--criterion",
+        "LIFE-1",
+    ];
     arguments.extend(common);
     arguments.extend(["--artifact", "../outside"]);
     assert!(!fixture.run(&arguments).status.success());
@@ -1259,7 +1294,7 @@ fn evidence_add_names_the_contract_for_another_modules_requirement() {
         fixture.run(&[
             "evidence",
             "add",
-            "cross-module",
+            "OBS-product-test-000000000000000000000004",
             "--criterion",
             "LIFE-1",
             "--requirement",
@@ -1306,14 +1341,14 @@ fn evidence_add_names_the_contract_for_another_modules_requirement() {
     assert!(
         !fixture
             .root()
-            .join(".chough/evidence/cross-module.json")
+            .join(".chough/evidence/OBS-product-test-000000000000000000000004.json")
             .exists()
     );
     // With the owning contract named, the same link is accepted.
     let output = fixture.run(&[
         "evidence",
         "add",
-        "cross-module",
+        "OBS-product-test-000000000000000000000004",
         "--criterion",
         "LIFE-1",
         "--requirement",

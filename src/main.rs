@@ -3,6 +3,7 @@ mod cases;
 mod checkpoint;
 mod context;
 mod evidence;
+mod identity;
 mod library;
 mod prefs;
 mod records;

@@ -1,0 +1,28 @@
+command: cargo test --locked --test cases -- --exact slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/cases.rs (target/debug/deps/cases-aebdf6374da16d6b)
+
+running 1 test
+test slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness ... FAILED
+
+failures:
+
+---- slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness stdout ----
+
+thread 'slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness' (310356146) panicked at tests/common/mod.rs:58:9:
+["cases", "list"] failed: Error: .chough/cases/cli.cases.toml: case TC-cli-curated-login-check
+
+Caused by:
+    id must look like TC-cli-0001
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.35s
+
+error: test failed, to rerun pass `--test cases`
+
+exit_status: 101

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca",
+  "title": "Accepted-first fixture dependency prevents audit qualification",
+  "symptom": "An approved same-PR fixture follow-up does not count as native coverage because its declared dependency requires the parent to be accepted first.",
+  "trigger": "Run native fixture check or the verify lane while the approved identity parent is verifying.",
+  "expected": "Qualify the parent and its approved fixture together before human acceptance, using an ordering plan supported by native tooling.",
+  "actual": "The fixture check refuses until parent acceptance and native audit reports tests/next.rs uncovered; all 182 product tests pass on both toolchains.",
+  "criteria": [
+    "FLOW-5",
+    "FLOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-003"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "b118422c826b29a41df2eea38c58120f6dbc77ae",
+  "steps": [
+    "specsync change check update-compact-next-fixture-for-slug-observations --json",
+    "fledge lanes run verify"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-structural-d607388cf7cd0eb18ee64eef",
+    "OBS-structural-c07c15026bd2fd81c2773bf3"
+  ],
+  "impact": "Blocks full verify, native closeout and merge qualification despite passing product tests.",
+  "classification": "requirement-gap",
+  "scope": "blocking",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Observed takeover native-ordering error",
+  "notes": [
+    {
+      "at_unix_seconds": 1793583804,
+      "text": "Added despite similar reports: The obsolete observation-ID fixture defect is fixed and has a later passing case. This is a separate planning/recovery gap in the accepted-first native dependency.",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793585082,
+      "text": "status: open -> verified. Resolved through the supported sequential native workflow after 0xLeif explicitly approved the implementation: parent review/ship archived it, enabling the dependent fixture check. A strictly later full 9-step verify passes audit. Original refusals remain retained.",
+      "observations": [
+        "OBS-structural-c07c15026bd2fd81c2773bf3"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793583804,
+  "updated_at_unix_seconds": 1793585082
+}

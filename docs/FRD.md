@@ -9,7 +9,8 @@ and REQ-cli-019 come from
 REQ-cli-020 comes from
 `report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records`;
 REQ-cli-021 and REQ-cli-022 come from
-`focused-chough-next-a-verification-guard-before-build-and-done-stage-resume`.
+`focused-chough-next-a-verification-guard-before-build-and-done-stage-resume`;
+REQ-cli-023 comes from `use-slug-identities-for-all-new-chough-records`.
 The criteria describe
 the intended product. This document refines implementation scope; evidence records
 describe what has actually been observed. Neither is a list of completed work.
@@ -103,7 +104,7 @@ records, bounded context, and direct argument handling.
 
 Trace: LIFE-3, LIFE-4. Contract: [CLI](../specs/cli/cli.spec.md).
 
-## Resumable stage workflow and later requirements (REQ-cli-007 to REQ-cli-022)
+## Resumable stage workflow and later requirements (REQ-cli-007 to REQ-cli-023)
 
 The canonical text of each requirement is in
 [specs/cli/requirements.md](../specs/cli/requirements.md); this section gives the
@@ -113,20 +114,21 @@ cross-module view and its traceability without restating it.
 |---|---|---|---|
 | REQ-cli-007 | One schema 2 checkpoint; bounded three-way merges preserve ordered collection changes and select the current-cycle group atomically, refusing divergent group edits; explicit migration keeps schema 1 bytes | FLOW-13, LIFE-3 | tests/stages.rs; real Git merges; cold-start exercise |
 | REQ-cli-008 | Stage routing with append-only history; every route into build, test, accept and done meets its native prerequisite, and unknown native state, invalid approval, unauthenticated archives or an invalid SDD policy refuse | FLOW-2, FLOW-5, FLOW-10, LIFE-1 | tests/stages.rs; feature-and-bug exercise |
-| REQ-cli-009 | `chough-testing/1` definitions with stable IDs and position-free digests | FLOW-7, LIFE-2 | tests/cases.rs |
+| REQ-cli-009 | `chough-testing/1` definitions with stable curated slug or exact legacy numeric IDs, global duplicate refusal and position-free digests; legacy IDs and digests do not change | FLOW-7, LIFE-2 | tests/cases.rs; TC-cli-slug-case-compatibility |
 | REQ-cli-010 | Focused selection with tracks and stated omissions | FLOW-6 | tests/cases.rs; both exercises |
-| REQ-cli-011 | Explicit case execution; vacuous and environment failures are not-run | FLOW-7, FLOW-9, LIFE-7 | tests/cases.rs, tests/optional.rs |
-| REQ-cli-012 | Local backlog with duplicate search and regression baselines; one collision-resistant creation-ID generator for manual and automatic bugs, create-once ID immutability, schema 1 legacy compatibility without migration, cross-form links and atomic different-content refusal without numeric fallback | FLOW-8, LIFE-5 | tests/bugs.rs; feature-and-bug exercise |
-| REQ-cli-013 | Standing preferences separate from run consent | FLOW-9, FLOW-11 | tests/optional.rs, tests/stages.rs |
+| REQ-cli-011 | Explicit case execution; vacuous and environment failures are not-run; optional explicit new-form observation IDs, automatic random OBS and VAL allocation, inherited artifact paths and legacy resume | FLOW-7, FLOW-9, LIFE-7 | tests/cases.rs, tests/optional.rs; slug observation and validation cases |
+| REQ-cli-012 | Local backlog with duplicate search and regression baselines; the deterministic creation-ID generator, known answers, create-once immutability, schema 1 compatibility and atomic refusal remain unchanged | FLOW-8, LIFE-5 | tests/bugs.rs; unchanged known-answer vectors; feature-and-bug exercise |
+| REQ-cli-013 | Standing preferences separate from run consent; new and legacy validation runs retain pause, stop, authorization and resume behavior | FLOW-9, FLOW-11 | tests/optional.rs, tests/stages.rs; TC-cli-slug-validation-allocation |
 | REQ-cli-014 | Release only when authorized; distinct delivery and dry-run kinds | FLOW-11, LIFE-7 | tests/stages.rs, tests/cases.rs |
-| REQ-cli-015 | Optional librarian with source-linked snapshots and index | FLOW-12 | tests/optional.rs |
-| REQ-cli-016 | Per-host skill install; updates never replace edits | FLOW-1, LIFE-4 | tests/optional.rs; host discovery checks |
-| REQ-cli-017 | Observation schema 2; schema 1 still read | LIFE-2, LIFE-7, FLOW-7 | tests/cases.rs |
-| REQ-cli-018 | Reference-aware retention: preview by default, apply only under run consent or standing preference, append-only ledger, current, historical, pruned and unavailable labels | LIFE-8, LIFE-2, LIFE-7, FLOW-7, FLOW-13 | tests/evidence.rs |
+| REQ-cli-015 | Optional librarian with source-linked random SNAP snapshots, timestamp chronology and indexes mixing new and legacy dated snapshots without migration | FLOW-12 | tests/optional.rs; TC-cli-slug-snapshot-allocation |
+| REQ-cli-016 | Per-host skill install; updates never replace edits | FLOW-1, LIFE-4 | tests/optional.rs; tests/package.rs; host discovery checks |
+| REQ-cli-017 | Observation schema 2 and schema 1 reads with mixed new and legacy IDs, exact inherited artifact paths and unchanged references | LIFE-2, LIFE-7, FLOW-7 | tests/cases.rs, tests/evidence.rs; TC-cli-slug-observation-allocation |
+| REQ-cli-018 | Reference-aware retention across mixed legacy and new IDs: preview by default, consented apply, inherited artifact paths, append-only ledger with unchanged entry shape, and current, historical, pruned and unavailable labels | LIFE-8, LIFE-2, LIFE-7, FLOW-7, FLOW-13 | tests/evidence.rs |
 | REQ-cli-019 | Installable package without Chough's own records; new projects get the skills and an empty checkpoint; no em or en dash in the bundle | LIFE-9, LIFE-4 | tests/package.rs |
-| REQ-cli-020 | Read-only timing report from existing records, with timestamped awaiting-human gate records; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
+| REQ-cli-020 | Read-only timing report across mixed legacy and new IDs, ordered by timestamps and stored durations rather than lexical IDs or random suffixes; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-cli-021 | Focused `next` view within 16384 bytes, text by default and compact JSON with `--json`, one native status read shared with `status`, and a new-cycle action at a closed done stage; a reset replaces the checkpoint's next action | LIFE-3, FLOW-13, FLOW-2, LIFE-7 | tests/next.rs, tests/stages.rs |
 | REQ-cli-022 | Approved-delta guard: moves to build, test and accept compare SpecSync's approved-delta digests with the current deltas, read-only and bounded, refusing as delta-changed or delta-unverifiable | FLOW-5, LIFE-7, LIFE-1 | tests/stages.rs |
+| REQ-cli-023 | Shared slug normalization and random 96-bit OBS, VAL and SNAP allocation; one-candidate atomic create-new refusal without overwrite, fallback or retry; legacy reads, links and resume without migration, and unchanged non-ID record shapes | FLOW-7, FLOW-9, FLOW-12, FLOW-13, LIFE-2, LIFE-3, LIFE-7 | tests/cases.rs, tests/optional.rs, tests/evidence.rs, tests/timing.rs; four slug cases |
 
 Skill-led behavior with no helper requirement, verified by exercises rather than
 helper tests: intent interviewing and role synthesis (FLOW-3,
@@ -166,11 +168,11 @@ a TOML profile was chosen over 3md (D-011).
 | Intent and review | HI wording/IDs → appropriately sized FRD/AC links; relevant product/QA/design/accessibility/engineering/architecture role review, synthesized consequential questions, and explicit intent-stage approval. Conventional choices proceed; alignment percentages are judgment, not per-item scoring gates. |
 | Conditional design | One canonical evolving local HTML/CSS prototype, interactions/states/viewports as relevant, companion Markdown with HI/AC/FRD mappings, actual rendered/source review and human approval of prototype plus notes. Nonvisual work skips with a reason. |
 | Technical planning/build | SpecSync adaptive design/constraints/architecture/estimates/tasks/orchestration, one coherent initial human scope approval, then scoped implementation through Fledge. Required human implementation review occurs at acceptance before routine native archival. |
-| Focused verification | Affected AC/FRD and relevant regressions; functional/basic always, copy/localization and design QA when applicable. Stable test-case IDs, explicit expected outcomes/methods/environments/artifacts; definitions separate from execution results. 3md profile is a candidate to qualify. |
-| Local bug loop | Persistent reproduction/expected/actual/environment/revision/evidence/status; local dedup and live backlog. Manual and automatic creation share collision-resistant IDs generated once; schema 1 legacy IDs remain usable without migration, duplicate and related links work across forms, and atomic creation refuses same-ID different-content results without overwrite or numeric fallback. Blocking bugs repair/retest; out-of-scope findings queue without scope expansion or automatic external posting. |
-| Optional validation | Routine checks continue naturally. Optional extended/background checks respect explicit run-only versus standing project preferences and pause/stop. Findings persist locally; auto-investigation policy remains open, default local capture. Retry/watch is not soak/live health. |
+| Focused verification | Affected AC/FRD and relevant regressions; functional/basic always, copy/localization and design QA when applicable. Curated slug cases and exact legacy numeric cases keep stable IDs and position-free digests; automatic OBS records use random 96-bit suffixes, optional explicit new-form IDs and exact inherited artifact paths, while legacy evidence remains readable. Definitions stay separate from execution results. |
+| Local bug loop | Persistent reproduction/expected/actual/environment/revision/evidence/status; local dedup and live backlog. Manual and automatic creation share the unchanged deterministic collision-resistant generator and known answers; schema 1 legacy IDs remain usable without migration, duplicate and related links work across forms, and atomic creation refuses same-ID different-content results without overwrite or numeric fallback. Blocking bugs repair/retest; out-of-scope findings queue without scope expansion or automatic external posting. |
+| Optional validation | Routine checks continue naturally. Optional extended/background checks respect explicit run-only versus standing project preferences and pause/stop. New runs use random VAL IDs and every attempt uses a new OBS ID; legacy and new runs resume under their original IDs without migration. Findings persist locally; auto-investigation policy remains open, default local capture. Retry/watch is not soak/live health. |
 | Native closeout / optional release | Genuine acceptance/review before eligible same-PR native archive, archive CI and merge. Release requires request or explicit setting; publication/deployment/health remain separate observations. |
-| Optional librarian | Project-local, callable from any stage and returns to its caller; source-linked history/snapshots, current index, focused briefs and visible unresolved bugs. Canonical living sources stay with native owners. |
+| Optional librarian | Project-local, callable from any stage and returns to its caller; source-linked random SNAP snapshots and legacy dated snapshots share a timestamp-ordered current index without migration, with focused briefs and visible unresolved bugs. Canonical living sources and bytes stay with native owners. |
 | Core checkpoint/cold resume | Save objective/stage/scope refs/files/IDs/decisions/questions/preferences/work/tests/bugs/blockers/next action independently of the librarian. Reconcile parallel schema 2 checkpoints with ordered collection merges and atomic current-cycle selection, leaving divergent current-cycle edits unresolved. Fresh agent with no original conversation verifies real repo/native state and resumes the same scope/gates; demonstrate with a real cold-start exercise. |
 
 Every stage may iterate/backtrack/reset/pause/resume or skip when inapplicable;

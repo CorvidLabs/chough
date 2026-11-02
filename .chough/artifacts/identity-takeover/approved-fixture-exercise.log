@@ -1,0 +1,42 @@
+▶️ Running task: exercise
+
+== Intent: sample criteria CHECKOUT-1 and CHECKOUT-2 (sample input, already in hi/)
+
+== Design: nothing visual changes, so the stage is skipped with a reason
+design -> plan (skip)
+
+== Plan: a native SpecSync change, and the scope gate before build
+refused as expected: entering build before scope approval (refused:native-draft)
+plan -> build, gate native:approved
+
+== Build: implement the feature with its boundary tests
+
+== Test: focused selection for the affected requirement and path
+selected: TC-shipping-0001, TC-shipping-0002, TC-shipping-0003
+omitted: TC-shipping-0004 (copy-localization track not requested as relevant to this change)
+TC-shipping-0001: failed, observation OBS-tc-shipping-0001-ab1e8247818f9123d55f0aa8
+TC-shipping-0002: passed, observation OBS-tc-shipping-0002-b1ffdd32f57818695108bf61
+TC-shipping-0003: passed, observation OBS-tc-shipping-0003-a9011870ceb652f63329686b
+
+== Bug: reproduce, search, record locally, and refuse a duplicate
+existing matches: 0
+recorded BUG-shipping-charged-at-exactly-the-free-threshold-f7120688dfbbcd01cf1fa0bc: reproduced
+refused as expected: a duplicate report (similar bugs exist)
+refused as expected: accepting with an open blocking bug (refused:blocking-bugs)
+refused as expected: repeated validation without consent (not authorized)
+
+== Back to build: fix the boundary and retest the focused cases
+build: implementation against the current definition
+test: rerun affected cases; earlier observations may be stale
+checkpoint references: 1 case(s) and 1 observation(s) to re-check with `chough status`
+TC-shipping-0001: passed, observation OBS-tc-shipping-0001-bc94d3b140c6a2eb00e0cb52
+TC-shipping-0002: passed, observation OBS-tc-shipping-0002-24a25483c4fb8c8d1c043be4
+TC-shipping-0003: passed, observation OBS-tc-shipping-0003-8fc266b33ec5631df2907b65
+BUG-shipping-charged-at-exactly-the-free-threshold-f7120688dfbbcd01cf1fa0bc: verified, reproduced-and-later-passed
+
+== Accept: only a human review and native archive can close this
+refused as expected: leaving accept before review and archive (refused:native-verifying)
+Gate not open (refused:native-verifying): Reaching done needs native state archived; it is verifying. Native next action: run `specsync change check free-shipping-at-the-threshold`. Run `specsync change status free-shipping-at-the-threshold`.
+
+EXERCISE PASSED in /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T//chough-exercise.RybxJr
+✅ exercise (38.3s)

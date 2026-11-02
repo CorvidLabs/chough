@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-bfc159865a39075249fb6e40",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "The new identity-main librarian upgrade regression failed: the exact unedited 4fa746a8 predecessor is reported edited instead of known-outdated, so the learning bundle cannot update it. Fledge exits 1 after the Rust test exits 101.",
+  "artifacts": [
+    ".chough/artifacts/learning-integration/identity-librarian-before-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/learning-integration/identity-librarian-before-fix.log": "e173c84f233178c3ef79801ea43a02bff55a1823c76bec26591d0713a1249626"
+  },
+  "observed_at_unix_seconds": 1793586630,
+  "snapshot": {
+    "revision": "a1920f7f0ade695b718273a0ebfa7138e1805821",
+    "dirty": true,
+    "fingerprint": "4fd3b4389327081bde12108cab99f15773670392f3ecd4c3b53c373ed956e224",
+    "content": "dbd7ac4955ff39aeb983c13994bdba67fc019bfd3108f53a1b4088d06adb08c3"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Observed in the uncommitted identity/learning integration on macOS with Rust 1.99.1. This is not a cold-start grade."
+  ]
+}

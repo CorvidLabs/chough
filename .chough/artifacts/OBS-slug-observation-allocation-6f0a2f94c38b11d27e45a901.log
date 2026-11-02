@@ -1,0 +1,25 @@
+command: cargo test --locked --test cases -- --exact independent_roots_and_identical_repeated_runs_allocate_distinct_observations
+   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/chough/.worktrees/kimi-host-cold-start)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.95s
+     Running tests/cases.rs (target/debug/deps/cases-aebdf6374da16d6b)
+
+running 1 test
+test independent_roots_and_identical_repeated_runs_allocate_distinct_observations ... FAILED
+
+failures:
+
+---- independent_roots_and_identical_repeated_runs_allocate_distinct_observations stdout ----
+
+thread 'independent_roots_and_identical_repeated_runs_allocate_distinct_observations' (310355451) panicked at tests/cases.rs:1126:32:
+old-form observation allocated: tc-cli-0001-1793579540
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    independent_roots_and_identical_repeated_runs_allocate_distinct_observations
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 18 filtered out; finished in 1.93s
+
+error: test failed, to rerun pass `--test cases`
+
+exit_status: 101

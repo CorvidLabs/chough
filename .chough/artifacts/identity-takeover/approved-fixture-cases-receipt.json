@@ -1,0 +1,16 @@
+{
+  "name": "approved-fixture-cases-check",
+  "command": [
+    "/Users/leif/.cargo/bin/fledge",
+    "run",
+    "cases"
+  ],
+  "rust_toolchain": "1.99.1",
+  "exit": 0,
+  "seconds": 1.501,
+  "log": "/Users/leif/.codex/visualizations/2026/11/01/01a198dd-39f8-7e93-af29-fee466711cd0/kimi-completion/evidence/approved-fixture-cases-check.log",
+  "valid": true,
+  "case_count": 121,
+  "raw_log_sha256": "c0f62ab808eea881530e7d9c177cdfcf035dfccd03b879258ae49741ed1b15d6",
+  "raw_log_retained": "Local takeover evidence/approved-fixture-cases-check.log; this receipt avoids duplicating the complete case list."
+}

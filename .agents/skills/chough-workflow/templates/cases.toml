@@ -1,10 +1,15 @@
 # .chough/cases/<module>.cases.toml: test-case definitions only.
 # Observations live in .chough/evidence/. Unknown fields are rejected.
+# New IDs use TC-<module>-<title-slug>: curated lowercase ASCII letters and digits
+# in nonempty runs separated by single hyphens. Keep IDs stable and globally unique.
+# The complete ID stays within 100 bytes using the module-aware title-slug bound.
+# Exact legacy TC-<module>-NNNN cases remain valid; never renumber or reuse an ID.
+# Retire a case instead of deleting it or changing its ID to match a new title.
 profile = "chough-testing/1"
 module = "<module>"
 
 [[case]]
-id = "TC-<module>-0001"            # stable; never reused, retire instead
+id = "TC-<module>-<automated-test-slug>"
 title = "<what this case shows>"
 status = "active"                  # active | retired
 track = "functional"               # functional | copy-localization | design-qa
@@ -30,7 +35,7 @@ test = "<exact test name>"         # exactly one test must run for a pass
 #   expect_output = ["<visible text>"] (at least one fragment; run without a shell).
 
 [[case]]
-id = "TC-<module>-0002"
+id = "TC-<module>-<person-check-slug>"
 title = "<what a person checks>"
 status = "active"
 track = "design-qa"

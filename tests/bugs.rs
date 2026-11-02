@@ -6,10 +6,11 @@ use common::Fixture;
 use serde_json::{Value, json};
 
 fn observe(fixture: &Fixture, id: &str, outcome: &str) {
+    let allocated = format!("OBS-{id}-000000000000000000000001");
     fixture.ok(&[
         "evidence",
         "add",
-        id,
+        &allocated,
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -25,6 +26,14 @@ fn observe(fixture: &Fixture, id: &str, outcome: &str) {
         "--summary",
         "Observed the shipping threshold check",
     ]);
+    let allocated_name = format!(".chough/evidence/{allocated}.json");
+    let mut record: Value = serde_json::from_str(&fixture.read(&allocated_name)).unwrap();
+    record["id"] = json!(id);
+    fixture.write(
+        &format!(".chough/evidence/{id}.json"),
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    std::fs::remove_file(fixture.root().join(allocated_name)).unwrap();
 }
 
 fn add_bug(fixture: &Fixture, extra: &[&str]) -> std::process::Output {

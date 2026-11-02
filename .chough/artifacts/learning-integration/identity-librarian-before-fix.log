@@ -1,0 +1,74 @@
+▶️ Running task: test
+   Compiling libc v0.2.191
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling version_check v0.9.5
+   Compiling serde_core v1.0.229
+   Compiling typenum v1.20.1
+   Compiling utf8parse v0.2.2
+   Compiling getrandom v0.4.3
+   Compiling cfg-if v1.0.5
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstyle v1.0.14
+   Compiling zmij v1.0.23
+   Compiling rustix v1.1.6
+   Compiling anyhow v1.0.104
+   Compiling winnow v1.0.4
+   Compiling heck v0.5.0
+   Compiling strsim v0.11.1
+   Compiling anstyle-parse v1.0.0
+   Compiling clap_lex v1.1.1
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling bitflags v2.13.2
+   Compiling toml_writer v1.1.3+spec-1.1.0
+   Compiling generic-array v0.14.7
+   Compiling anstream v1.0.0
+   Compiling once_cell v1.21.4
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling fastrand v2.5.0
+   Compiling clap_builder v4.6.7
+   Compiling errno v0.3.14
+   Compiling cpufeatures v0.2.17
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling syn v3.0.9
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling serde_spanned v1.1.2
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling tempfile v3.27.0
+   Compiling clap_derive v4.6.7
+   Compiling serde_derive v1.0.229
+   Compiling clap v4.6.7
+   Compiling chough v0.1.0 (/Users/leif/.codex/visualizations/2026/11/01/01a198dd-39f8-7e93-af29-fee466711cd0/learning-completion/repo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 26.72s
+     Running tests/package.rs (target/debug/deps/package-bb1bb6baf0cc99a1)
+
+running 1 test
+test librarian_reference_from_identity_main_updates_without_overwriting_edits ... FAILED
+
+failures:
+
+---- librarian_reference_from_identity_main_updates_without_overwriting_edits stdout ----
+
+thread 'librarian_reference_from_identity_main_updates_without_overwriting_edits' (313712202) panicked at tests/package.rs:2647:5:
+assertion `left == right` failed
+  left: String("edited")
+ right: "known-outdated"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    librarian_reference_from_identity_main_updates_without_overwriting_edits
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 14 filtered out; finished in 1.16s
+
+error: test failed, to rerun pass `--test package`
+error: Task 'test' failed with exit code 101

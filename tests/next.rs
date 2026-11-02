@@ -268,7 +268,6 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     let added = fixture.run(&[
         "evidence",
         "add",
-        "current-one",
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -289,6 +288,11 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
         "{}",
         String::from_utf8_lossy(&added.stderr)
     );
+
+    let added: Value = serde_json::from_slice(&added.stdout).unwrap();
+    let current: Value =
+        serde_json::from_str(&fixture.read(added["recorded"].as_str().unwrap())).unwrap();
+    let current_id = current["id"].as_str().unwrap();
 
     // 40 human gates and 40 blockers. The session record is bounded at 64 KiB, so six
     // of each are 4 KiB long, the most that fits beside the rest, and they come first.
@@ -311,7 +315,7 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     };
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
-    session["observations"] = json!(["current-one", "stale-000"]);
+    session["observations"] = json!([current_id, "stale-000"]);
     session["next_action"] = json!("n".repeat(4_096));
     session["objective"] = json!("o".repeat(4_000));
     let session_text = serde_json::to_string(&session).unwrap();

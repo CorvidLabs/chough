@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-slug-snapshot-allocation-b731a60c294f8de0175c34a2",
+  "criteria": [
+    "FLOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Direct independent-root and repeated-run snapshot regression allocated the old dated ID 2026-11-02-1 instead of a random SNAP slug ID.",
+  "artifacts": [
+    ".chough/artifacts/OBS-slug-snapshot-allocation-b731a60c294f8de0175c34a2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-slug-snapshot-allocation-b731a60c294f8de0175c34a2.log": "b90492c1a5abfe58592d8bb93dab09eef91c4944b40cb1cc83e95f396b773bb3"
+  },
+  "observed_at_unix_seconds": 1793579552,
+  "snapshot": {
+    "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+    "dirty": true,
+    "fingerprint": "1638de1f5913b376676f4593c4738deb547e5226c040ebea76473025adf18f71",
+    "content": "c269fe17329d96e67a5c532044ddc9a9d7c2e435e7e66f0923378c8fd383f5f6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "The old case validator cannot load the slug regression definition, so this retained direct test has no case link and does not use unmaterialized REQ-cli-023."
+  ]
+}

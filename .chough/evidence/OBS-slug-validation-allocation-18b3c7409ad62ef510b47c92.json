@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92",
+  "criteria": [
+    "FLOW-9",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-013"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Direct independent-root and repeated-run validation regression allocated the old timestamp ID tc-cli-0001-1793579525 instead of a random VAL slug ID.",
+  "artifacts": [
+    ".chough/artifacts/OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92.log": "66c97678f658caf414a92e6fa597b8962de7c7bcc1c6da18cd777b8fd8ab0eb9"
+  },
+  "observed_at_unix_seconds": 1793579547,
+  "snapshot": {
+    "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+    "dirty": true,
+    "fingerprint": "1638de1f5913b376676f4593c4738deb547e5226c040ebea76473025adf18f71",
+    "content": "c269fe17329d96e67a5c532044ddc9a9d7c2e435e7e66f0923378c8fd383f5f6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "The old case validator cannot load the slug regression definition, so this retained direct test has no case link and does not use unmaterialized REQ-cli-023."
+  ]
+}

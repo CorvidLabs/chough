@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838",
+  "title": "Identity main librarian reference is mistaken for a user edit",
+  "symptom": "The unedited librarian reference shipped by the just-integrated identity change is classified edited, preventing its safe upgrade to the learning bundle.",
+  "trigger": "Install the exact identity-main librarian reference and run the learning helper skill status and update.",
+  "expected": "Recognize the known predecessor, update it to current, and still preserve truly edited copies.",
+  "actual": "The named integration regression gets edited instead of known-outdated at the first status assertion.",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "a1920f7f0ade695b718273a0ebfa7138e1805821",
+  "steps": [
+    "fledge run test -- --locked --test package -- --exact librarian_reference_from_identity_main_updates_without_overwriting_edits"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-bfc159865a39075249fb6e40",
+    "OBS-product-test-b0ea9516761a4e7adcf61406"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793586631,
+      "text": "Added despite similar reports: This is a new predecessor digest introduced by the identity-main integration, not a user-edited bundle or the earlier checkpoint predecessor.",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793586880,
+      "text": "status: open -> verified. The strictly later named regression passes after adding the missing identity-main predecessor digest. Real edited-copy preservation is asserted by the same test.",
+      "observations": [
+        "OBS-product-test-b0ea9516761a4e7adcf61406"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793586631,
+  "updated_at_unix_seconds": 1793586880
+}

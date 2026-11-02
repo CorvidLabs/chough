@@ -1,0 +1,13 @@
+▶️ Running task: test
+   Compiling chough v0.1.0 (/Users/leif/.codex/visualizations/2026/11/01/01a198dd-39f8-7e93-af29-fee466711cd0/kimi-completion/repo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.95s
+     Running tests/next.rs (target/debug/deps/next-39a61b549593f01c)
+
+running 3 tests
+test next_prints_a_compact_action_view_as_text_by_default_and_json_with_a_flag ... ok
+test next_and_status_each_read_native_status_once_and_agree_on_the_action ... ok
+test both_forms_stay_within_the_cap_with_totals_for_large_records ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.49s
+
+✅ test (4.9s)

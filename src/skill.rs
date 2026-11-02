@@ -187,6 +187,24 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/checkpoint.md",
         "70ec5dee386c4ef178abe76a45236072bea7342aa265192fd0210536fe2639e8",
     ),
+    // Identity predecessor bundle digests retained across integration.
+    (
+        "templates/cases.toml",
+        "5f839a81742b9dc3df3b1278e340061a08e95e2a00e203f0f2554eab3aa3fed9",
+    ),
+    (
+        "references/testing.md",
+        "8ca2b70f36ee162638cafd63bcc97e8c9ed688b59c2b67b98d61ba3be1d28f37",
+    ),
+    (
+        "references/validate.md",
+        "51281ff6c9af4b939105cdf6ecf80d9dd11080dc8d682ecbba9d5b5c17d75c42",
+    ),
+    // Identity main's librarian reference, superseded by the learning closeout guidance.
+    (
+        "references/librarian.md",
+        "4fa746a83405059803f3589579559dd2ac909d942e1fd8dd709158b488e5dc0d",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.
