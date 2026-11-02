@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -41,7 +41,8 @@
       "REQ-cli-012",
       "REQ-cli-019",
       "REQ-cli-023",
-      "REQ-cli-020"
+      "REQ-cli-020",
+      "REQ-cli-024"
     ],
     "cases": [
       "TC-cli-0101",
@@ -169,7 +170,11 @@
     "Drafted native change make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound; artifacts complete; specsync change audit and hi check pass",
     "Failure-first: TC-cli-0089 (OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266) and TC-cli-0100 (OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777) failed at the unfixed tip on the extended regressions (duplicate cur-change read; hung read ran past 30 s with no budget); the trace and gate regressions also failed on the missing trace",
     "Implemented REQ-cli-024 at 75c5453 (dedupe, history selection, whole-report budget, trace); TC-cli-0089 (OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21) and TC-cli-0100 (OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37) passed on the unchanged case definitions after the retained failures",
-    "Review fixes at 5cd1991: trace outcome fields precede a shortened command (unit regression); budget-skipped changes read no record files; fmt, warnings-denied Clippy, full tests on 1.99.1 and 1.88.0 passed"
+    "Review fixes at 5cd1991: trace outcome fields precede a shortened command (unit regression); budget-skipped changes read no record files; fmt, warnings-denied Clippy, full tests on 1.99.1 and 1.88.0 passed",
+    "Integrated origin/main 48cc9f6 (PR #33) by manual checkpoint resolution; full tests and cases check passed after integration",
+    "Materialized REQ-cli-024 with specsync change check; bound it to TC-cli-0089 and TC-cli-0100; final observations OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e and OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52 passed",
+    "End-to-end trace regression for a 255-byte change ID fails on the pre-review records.rs and passes now",
+    "Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -243,7 +248,9 @@
     "OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266",
     "OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777",
     "OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21",
-    "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37"
+    "OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37",
+    "OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e",
+    "OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52"
   ],
   "bugs": [
     "BUG-0001",
@@ -263,7 +270,9 @@
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound"
+  ],
   "run_consents": [],
-  "next_action": "Integrate origin/main after PR #33 lands, then materialize REQ-cli-024, bind the cases, record final observations, run verify/pre-push and final measurements, and push the branch for root's review"
+  "next_action": "Root and 0xLeif: independent review and native implementation review of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound on PR #34; Claude does not record review, ship or merge"
 }
