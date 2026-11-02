@@ -339,7 +339,7 @@ pub(super) fn gate_for_state(
         NativeState::Disabled => Gate {
             allowed: true,
             label: "ungated:sdd-disabled".into(),
-            detail: "Native SDD is disabled or not adopted; this transition is not gated by a native lifecycle.".into(),
+            detail: "Native SDD is disabled or not adopted; this transition is not gated by a native lifecycle. Run `specsync change adopt` to gate stages.".into(),
         },
         NativeState::PolicyInvalid(reason) => refused(
             "refused:sdd-policy-invalid".into(),
@@ -692,8 +692,11 @@ pub(super) fn delta_summary(root: &Path, change: Option<&str>, state: &NativeSta
                 "not checked: no native change recorded".into()
             }
             NativeState::Unknown(_) => "not checked: native state unknown".into(),
-            NativeState::NotConfigured | NativeState::Disabled => {
-                "not checked: no native lifecycle".into()
+            NativeState::NotConfigured => "not checked: no native lifecycle".into(),
+            // `specsync init` leaves SDD off; say how to turn the lifecycle on (issue #40).
+            NativeState::Disabled => {
+                "not checked: native SDD is disabled; run `specsync change adopt` to gate stages"
+                    .into()
             }
             NativeState::PolicyInvalid(_) => "not checked: SDD policy invalid".into(),
         };

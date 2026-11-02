@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Criterion 9 follow-up: the skill asks a resuming agent to state the recorded handoff (goal, binding decisions with reasons, last failure with bug status, lessons, next task) before its first edit, proven by rerunning the frozen Kimi cold start",
+  "objective": "Issue #40: new-project setup docs and a chough next hint to run specsync change adopt when SDD is off",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal",
+  "native_change": "new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -73,7 +73,11 @@
       "TC-cli-0129",
       "TC-cli-0130",
       "TC-cli-0131",
-      "TC-cli-0132"
+      "TC-cli-0132",
+      "TC-cli-leaving-test-refuses-an-unlinked-failed-case",
+      "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal",
+      "TC-cli-0032",
+      "TC-cli-sdd-off-names-specsync-change-adopt"
     ],
     "design": [],
     "files": [
@@ -137,7 +141,11 @@
     "Agent's design choice, not a human decision: skill-only (SKILL.md resume step), no next-view change, so the proof tests one cause; a next-view hint is the fallback if the change run still fails",
     "decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, \"Approve as drafted\"); recorded with specsync change approve --actor 0xLeif",
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
-    "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction"
+    "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
+    "Proposed (on #39, pending scope approval): refuse, not warn, with refused:unlinked-failure; a linking bug of any status satisfies it; stale observations do not trigger it; next and status name it via assess; REQ-cli-008 modified, no new ID",
+    "corvid-agent records no approval for a human; scope approval is 0xLeif's",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction",
+    "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif"
   ],
   "open_questions": [],
   "completed": [
@@ -217,7 +225,9 @@
     "Parallel native reviews at the first shared head could not authenticate. Both original closeouts are preserved in a backup ref; this branch keeps the already-finalized combined archive with one review lineage and retains the author acceptance note and transition events. A separate native reopen attempt was refused and is preserved as failed diagnostic evidence.",
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
-    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)"
+    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
+    "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated",
+    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -343,5 +353,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif merges PR #36 once hosted checks pass"
+  "next_action": "Record the case, verify and advance to accept"
 }

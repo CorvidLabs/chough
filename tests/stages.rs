@@ -2419,3 +2419,73 @@ fn real_git_current_cycle_conflict_and_direct_fallback_preserve_ours() {
     assert_eq!(fixture.read("merge-inputs/ours.json"), merge_json(&ours));
     assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
 }
+
+/// Issue #40: a new project runs `specsync init`, which leaves SDD off. The approved-delta
+/// line and the gate detail say to run `specsync change adopt`, so an agent does not take
+/// `ungated:sdd-disabled` for a configured lifecycle; an unconfigured project and a
+/// malformed policy read as before.
+#[cfg(unix)]
+#[test]
+fn a_configured_project_with_sdd_off_says_to_run_specsync_change_adopt() {
+    const HINT: &str =
+        "not checked: native SDD is disabled; run `specsync change adopt` to gate stages";
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["native"]["approved_deltas"], "not checked: no native lifecycle",
+        "{next}"
+    );
+    assert_eq!(next["gate"]["label"], "ungated:not-configured", "{next}");
+    assert!(
+        !next.to_string().contains("specsync change adopt"),
+        "{next}"
+    );
+
+    fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
+    for policy in [None, Some("{\"enabled\": false}\n")] {
+        match policy {
+            Some(policy) => fixture.write(".specsync/sdd.json", policy),
+            None => assert!(!fixture.root().join(".specsync/sdd.json").exists()),
+        }
+        let next = fixture.ok(&["next", "--json"]);
+        assert_eq!(
+            next["native"]["approved_deltas"], HINT,
+            "{policy:?}: {next}"
+        );
+        assert_eq!(next["gate"]["label"], "ungated:sdd-disabled", "{next}");
+        assert!(
+            next["gate"]["detail"]
+                .as_str()
+                .unwrap()
+                .contains("Run `specsync change adopt` to gate stages."),
+            "{next}"
+        );
+        let output = fixture.run(&["next"]);
+        assert!(output.status.success());
+        let shown = String::from_utf8(output.stdout).unwrap();
+        assert!(
+            shown.contains(&format!("Approved deltas: {HINT}")),
+            "{shown}"
+        );
+        let status = fixture.ok(&["status"]);
+        assert!(
+            status.to_string().contains("specsync change adopt"),
+            "{status}"
+        );
+    }
+
+    fixture.write(".specsync/sdd.json", "{\"enabled\": \"yes\"}\n");
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["native"]["approved_deltas"], "not checked: SDD policy invalid",
+        "{next}"
+    );
+    assert!(
+        !next.to_string().contains("specsync change adopt"),
+        "{next}"
+    );
+}

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 16
+version: 17
 status: active
 files:
   - src/main.rs
@@ -218,3 +218,4 @@ provider, runtime or hosted service.
 | 14 | 2026-11-02 | make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound: Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace |
 | 15 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |
 | 16 | 2026-11-02 | agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal: Agents state the recorded handoff before their first edit: the skill's resume steps ask a fresh agent to say the goal, binding decisions with reasons, the last failure with its bug status, the applicable lessons and the next task in its own words |
+| 17 | 2026-11-02 | new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project: New-project setup path and SDD-off hint: document HI, specsync init/scaffold and specsync change adopt for a new project, and have chough next say to run specsync change adopt when SpecSync is configured but SDD is off (issue 40) |
