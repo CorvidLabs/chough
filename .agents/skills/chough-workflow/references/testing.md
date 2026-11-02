@@ -22,11 +22,15 @@ meaningful omission and record test debt in the native `testing.md`.
 ## Definitions are not observations
 
 Definitions live in `.chough/cases/<module>.cases.toml` (profile `chough-testing/1`,
-see [the template](../templates/cases.toml)). Each case has a stable ID
-`TC-<module>-NNNN`, links to HI criteria and requirements, setup, steps, explicit
-expected outcomes, method, environments and expected artifact types. Several cases
-can cover one criterion. Never edit an expected outcome to match a failure; retire a
-case (`status = "retired"`) instead of deleting or reusing its ID.
+see [the template](../templates/cases.toml)). Each new case has a curated stable ID
+`TC-<module>-<title-slug>`, with lowercase ASCII letters and digits in nonempty runs
+separated by single hyphens. The complete ID stays within the module-aware 100-byte
+bound, and duplicate IDs are refused globally. Exact legacy `TC-<module>-NNNN` cases
+remain valid without renumbering or changing their definition digests. Each case
+links to HI criteria and requirements, setup, steps, explicit expected outcomes,
+method, environments and expected artifact types. Several cases can cover one
+criterion. Never edit an expected outcome to match a failure; retire a case
+(`status = "retired"`) instead of deleting or reusing its ID.
 
 `chough cases check` validates every definition, including its HI and requirement
 links. The digest of a case ignores its position and title, so reordering never
@@ -36,8 +40,14 @@ changes identity, while editing what it asserts makes earlier observations
 ## Execute honestly
 
 - Automated: `chough cases run <ID> --environment <env>` runs the binding without a
-  shell and records the observation with the captured log. `cargo-test` passes only
-  when exactly one test ran and passed; a filter matching nothing is `not-run`.
+  shell and records an automatic `OBS-<slug>-<24-lowercase-hex>` observation with
+  the captured log at exactly `.chough/artifacts/<observation-id>.log`. An optional
+  `--observation-id` accepts only the new OBS form. An old-style ID supplied for a
+  new write is refused with a remedy to omit the ID for automatic allocation.
+  `cargo-test` passes only when exactly one test ran and passed; a filter matching
+  nothing is `not-run`. A validator refusing to load or run a definition is not a
+  behavioral `not-run` observation: run the bound regression directly when failure
+  first evidence is needed before the validator can accept its new case ID.
   `fledge-task` and `command` pass only with exit 0 and every `expect_output`
   fragment present, so each needs at least one fragment. `timeout_seconds` bounds a
   run from 1 to 3600 (default 600); a run that times out is recorded failed. The
@@ -59,7 +69,11 @@ changes identity, while editing what it asserts makes earlier observations
 - Manual or agent-assisted: `chough cases record <ID> --method manual --verdict 1=pass
   --verdict 2=fail … --summary "…" --artifact <screenshot>` gives a verdict for every
   expected outcome; any fail makes the observation failed. Like `cases run`, it
-  exits 3 when the outcome is not passed.
+  allocates an OBS ID with a random 96-bit suffix when `--observation-id` is omitted
+  and exits 3 when the outcome is not passed. Direct `chough evidence add [ID]` also
+  allocates when ID is omitted and applies the same explicit new-form and old-style
+  omit-ID rules. Stored legacy observations remain readable and linkable without
+  migration.
 
 A failing case stays failed even when every other case passes. Do not rerun until
 it passes and report only the pass. Capture the failure with

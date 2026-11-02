@@ -1,6 +1,6 @@
 ---
 id: use-slug-identities-for-all-new-chough-records
-state: draft
+state: implementing
 type: feature
 base_commit: 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec
 ---

@@ -13,15 +13,20 @@ Enter it as a side stage and return to the caller:
 chough stage enter librarian --reason "Snapshot the approved prototype before redesign"
 chough library snapshot design/prototype/index.html design/prototype/COMPANION.md --reason "Approved version 1"
 chough library index
-chough stage return --note "Snapshot 2026-10-31-1 taken"
+chough stage return --note "Snapshot SNAP-approved-version-1-<24-lowercase-hex> taken"
 ```
 
 - `library init` creates `README.md`, `INDEX.md` and `briefs/`.
-- `library snapshot` copies originals into `snapshots/<date>-<n>/` with a manifest of
-  source path, Git revision and SHA-256. Sources are never moved or edited.
+- `library snapshot` copies originals into
+  `snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a random 96-bit suffix and a
+  manifest of source path, Git revision, SHA-256 and creation time. Sources are
+  never moved or edited, and their bytes and digests stay unchanged. Repeated
+  snapshots of identical inputs remain distinct history.
 - `library index` regenerates `INDEX.md`: living sources and their owners, active
   and archived native changes, the open bug backlog, recent observations, briefs and
-  snapshots.
+  snapshots. Legacy `snapshots/<date>-<n>/` directories remain listed beside new
+  SNAP directories without renaming or migration. Manifest timestamps determine
+  chronology, never the snapshot ID or random suffix.
 - Briefs in `briefs/` are focused next-session summaries written from
   [the brief template](../templates/brief.md), linking to originals.
 

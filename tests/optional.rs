@@ -330,6 +330,263 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
     );
 }
 
+fn assert_random_record_id(id: &str, prefix: &str, slug: &str, slug_limit: usize) {
+    assert!(id.len() <= 100, "record ID exceeds 100 bytes: {id}");
+    let rest = id
+        .strip_prefix(prefix)
+        .unwrap_or_else(|| panic!("expected {prefix} prefix: {id}"));
+    let (actual_slug, suffix) = rest
+        .rsplit_once('-')
+        .unwrap_or_else(|| panic!("missing random suffix separator: {id}"));
+    assert_eq!(actual_slug, slug, "unexpected stable slug: {id}");
+    assert!(actual_slug.len() <= slug_limit);
+    assert_eq!(suffix.len(), 24, "suffix length is not 24: {id}");
+    assert!(
+        suffix
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
+        "suffix is not lowercase hex: {id}"
+    );
+}
+
+fn validation_fixture() -> Fixture {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Version probe\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"Git reports its version\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"git\", \"--version\"]\nexpect_output = [\"git version\"]\n",
+    );
+    fixture.commit("fixture");
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "repeat-validation",
+        "--source",
+        "Human: repeat the probe",
+    ]);
+    fixture
+}
+
+fn validation_attempt(fixture: &Fixture) -> (String, String) {
+    let run = fixture.ok(&[
+        "validate",
+        "run",
+        "TC-cli-0001",
+        "--times",
+        "1",
+        "--environment",
+        "local-macos-arm64",
+    ]);
+    let id = run["run"]["id"].as_str().unwrap().to_string();
+    assert_random_record_id(&id, "VAL-", "tc-cli-0001", 71);
+    let observations = run["run"]["observations"].as_array().unwrap();
+    assert_eq!(observations.len(), 1, "one attempt needs one observation");
+    let observation = observations[0].as_str().unwrap();
+    assert_random_record_id(observation, "OBS-", "tc-cli-0001", 71);
+    let record: Value =
+        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{observation}.json")))
+            .unwrap();
+    let artifact = format!(".chough/artifacts/{observation}.log");
+    assert_eq!(record["artifacts"][0], artifact);
+    assert!(fixture.read(&artifact).contains("git version"));
+    (id, observation.to_string())
+}
+
+#[test]
+fn independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs() {
+    let first = validation_fixture();
+    let second = validation_fixture();
+    let attempts = [
+        validation_attempt(&first),
+        validation_attempt(&first),
+        validation_attempt(&second),
+        validation_attempt(&second),
+    ];
+    let run_ids = attempts
+        .iter()
+        .map(|(run, _)| run.clone())
+        .collect::<std::collections::BTreeSet<_>>();
+    let observation_ids = attempts
+        .iter()
+        .map(|(_, observation)| observation.clone())
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(
+        run_ids.len(),
+        attempts.len(),
+        "validation IDs: {attempts:?}"
+    );
+    assert_eq!(
+        observation_ids.len(),
+        attempts.len(),
+        "observation IDs: {attempts:?}"
+    );
+}
+
+fn snapshot_attempt(fixture: &Fixture) -> (String, String) {
+    let snapshot = fixture.ok(&[
+        "library",
+        "snapshot",
+        "src/input.txt",
+        "--reason",
+        "Same source",
+    ]);
+    let base = snapshot["snapshot"].as_str().unwrap().to_string();
+    let id = base.strip_prefix("library/snapshots/").unwrap();
+    assert_random_record_id(id, "SNAP-", "same-source", 70);
+    assert_eq!(snapshot["manifest"]["schema_version"], 1);
+    assert!(snapshot["manifest"]["created_at_unix_seconds"].is_u64());
+    let digest = snapshot["manifest"]["entries"][0]["sha256"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert_eq!(
+        fixture.read(snapshot["manifest"]["entries"][0]["copy"].as_str().unwrap()),
+        "first version\n"
+    );
+    (id.to_string(), digest)
+}
+
+fn snapshot_fixture() -> Fixture {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "on",
+        "--source",
+        "Human: retain snapshot history",
+    ]);
+    fixture
+}
+
+#[test]
+fn independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots() {
+    let first = snapshot_fixture();
+    let second = snapshot_fixture();
+    let snapshots = [
+        snapshot_attempt(&first),
+        snapshot_attempt(&first),
+        snapshot_attempt(&second),
+        snapshot_attempt(&second),
+    ];
+    let ids = snapshots
+        .iter()
+        .map(|(id, _)| id.clone())
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(ids.len(), snapshots.len(), "snapshot IDs: {snapshots:?}");
+    assert!(
+        snapshots
+            .iter()
+            .all(|(_, digest)| digest == &snapshots[0].1)
+    );
+}
+
+#[test]
+fn legacy_validation_runs_resume_with_their_ids_and_schema_unchanged() {
+    let fixture = validation_fixture();
+    let id = "tc-cli-0001-1700000000-7";
+    let legacy = serde_json::json!({
+        "schema_version": 1,
+        "id": id,
+        "case": "TC-cli-0001",
+        "times": 1,
+        "interval_seconds": 0,
+        "environment": "local-macos-arm64",
+        "authority": "run consent: retained legacy authority",
+        "state": "stopped",
+        "completed": 0,
+        "failures": 0,
+        "not_run": 0,
+        "observations": [],
+        "bugs": [],
+        "elapsed_seconds": 9,
+        "started_at_unix_seconds": 1_700_000_000_u64
+    });
+    fixture.write(
+        &format!(".chough/validation/{id}.json"),
+        &(serde_json::to_string_pretty(&legacy).unwrap() + "\n"),
+    );
+    let resumed = fixture.ok(&["validate", "resume", id]);
+    assert_eq!(resumed["run"]["id"], id);
+    assert_eq!(resumed["run"]["schema_version"], 1);
+    assert_eq!(resumed["run"]["started_at_unix_seconds"], 1_700_000_000_u64);
+    assert_eq!(resumed["run"]["completed"], 1);
+    assert_eq!(resumed["run"]["times"], 1);
+    assert_eq!(resumed["run"]["interval_seconds"], 0);
+    assert_eq!(resumed["run"]["environment"], "local-macos-arm64");
+    let observation = resumed["run"]["observations"][0].as_str().unwrap();
+    assert_random_record_id(observation, "OBS-", "tc-cli-0001", 71);
+    let record: Value =
+        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{observation}.json")))
+            .unwrap();
+    assert_eq!(
+        record["artifacts"][0],
+        format!(".chough/artifacts/{observation}.log")
+    );
+    let status = fixture.ok(&["validate", "status"]);
+    assert!(status.to_string().contains(id));
+    let timing = fixture.ok(&["timing", "--json"]);
+    assert!(timing.to_string().contains(id));
+    let preview = fixture.ok(&["evidence", "prune"]);
+    let protected = preview["protected"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| entry["id"] == observation)
+        .unwrap();
+    assert!(
+        protected["reasons"]
+            .as_array()
+            .unwrap()
+            .contains(&Value::from(format!("validation {id}"))),
+        "{preview:#}"
+    );
+    let stored: Value =
+        serde_json::from_str(&fixture.read(&format!(".chough/validation/{id}.json"))).unwrap();
+    assert_eq!(stored["schema_version"], 1);
+    assert_eq!(stored["id"], id);
+    assert_eq!(stored["started_at_unix_seconds"], 1_700_000_000_u64);
+}
+
+#[test]
+fn snapshot_indexes_mix_legacy_and_new_ids_by_manifest_time() {
+    let fixture = snapshot_fixture();
+    let legacy_base = "library/snapshots/2024-01-01-1";
+    let legacy_copy = format!("{legacy_base}/files/src/input.txt");
+    fixture.write(&legacy_copy, "first version\n");
+    let legacy = serde_json::json!({
+        "schema_version": 1,
+        "reason": "Legacy dated snapshot",
+        "revision": null,
+        "created_at_unix_seconds": 1,
+        "entries": [{
+            "source": "src/input.txt",
+            "copy": legacy_copy,
+            "sha256": format!("{:x}", Sha256::digest(b"first version\n")),
+            "bytes": 14
+        }]
+    });
+    let legacy_manifest = serde_json::to_string_pretty(&legacy).unwrap() + "\n";
+    fixture.write(&format!("{legacy_base}/manifest.json"), &legacy_manifest);
+    let (new_id, _) = snapshot_attempt(&fixture);
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("library/INDEX.md");
+    assert!(index.contains("2024-01-01-1"));
+    assert!(index.contains(&new_id));
+    let new_position = index.find(&new_id).unwrap();
+    let legacy_position = index.find("2024-01-01-1").unwrap();
+    assert!(
+        new_position < legacy_position,
+        "manifest chronology must not use lexical ID order: {index}"
+    );
+    assert_eq!(
+        fixture.read(&format!("{legacy_base}/manifest.json")),
+        legacy_manifest
+    );
+}
+
 #[test]
 fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     let fixture = Fixture::new();

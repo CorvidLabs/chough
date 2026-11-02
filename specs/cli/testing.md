@@ -11,6 +11,36 @@ start, wording review and timing. TC-cli-0105 retains the BUG-0024 archived-resu
 scenarios and covers the BUG-0025 integrated new-cycle regression. TC-cli-0106 is
 the BUG-0021 retrospective Kimi guidance review.
 
+## Planned slug identity verification
+
+The approved change `use-slug-identities-for-all-new-chough-records` adds four
+curated cases: `TC-cli-slug-observation-allocation`,
+`TC-cli-slug-validation-allocation`, `TC-cli-slug-snapshot-allocation` and
+`TC-cli-slug-case-compatibility`. Their direct regressions run first against the
+unfixed tip in independent roots and for identical repeated runs, then unchanged
+after implementation. Failure-first records and strictly later passes must remain
+separate observations linked to the same deduplicated local bugs. The old case
+validator's rejection of a slug definition is not a behavioral `not-run` result;
+the direct failed test supplies that pre-fix evidence instead.
+
+The planned checks cover lowercase curated case syntax and module-aware bounds,
+global duplicates and unchanged legacy digests; random OBS, VAL and SNAP forms and
+independent-root and repeated-run distinctness; optional explicit new-form
+observations and old-style new-write refusal with omit-ID guidance; exact inherited
+artifact paths; random-source, same-ID different-content, create-new race and write
+failure preservation; mixed legacy and new reads, links, status, native manifests,
+retention, pruning and timing; and legacy and new validation resume and librarian
+indexes. Random-looking output is not a deterministic randomness proof. Snapshot
+manifest-last publication is not claimed as a crash-proof multi-file transaction.
+Bug known-answer vectors and transition, preference, consent, stop-marker and
+pruning-ledger entry shapes remain unchanged.
+
+After materialization and implementation, run the four cases without explicit
+observation IDs and record only actual returned IDs, outcomes, environments, linked
+bugs and limitations. No slug identity observation or result is recorded by this
+planning update. Hosted results, human implementation review, finalization and merge
+remain unclaimed until separately observed.
+
 ## Observed checkpoint merge verification
 
 The approved change `make-checkpoint-merges-safe-across-parallel-changes` covers
@@ -45,16 +75,19 @@ updates and edited-copy preservation. No new case number was allocated.
 | REQ-cli-006 | Traversal/symlink escape, unsupported schema and bounded output | TC-cli-0010 to 0014 |
 | REQ-cli-007 | Schema 2 checkpoint, cross-process round trip, explicit migration; checkpoint resumption, paused and awaiting-human precedence, native-failure closed-gate precedence and unchanged session guidance; TC-cli-0106 retrospectively reviews the original Kimi cold-start record and guidance without a new host session | TC-cli-0015 to 0017, 0102, 0105, 0106 |
 | REQ-cli-008 | Every transition kind, history, native gates, stage contract parity | TC-cli-0018 to 0020, 0032, 0101 |
-| REQ-cli-009 | Definition validation, location in errors, position-free digests | TC-cli-0022 to 0024 |
+| REQ-cli-009 | Definition validation, location in errors, position-free digests; curated slug syntax and bounds, global duplicates and unchanged legacy IDs and digests | TC-cli-0022 to 0024, TC-cli-slug-case-compatibility |
 | REQ-cli-010 | Focused selection with tracks and omissions | TC-cli-0025, 0101 |
-| REQ-cli-011 | Failing, not-run, missing-output, timeout and build-failure outcomes; verdicts; stop and resume | TC-cli-0026, 0027, 0034, 0101, 0103 |
-| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure; TC-cli-0125 retains `tc-cli-0125-collision-pre-fix`, the failed `local-macos-arm64` observation of independent-root manual and automatic ID collisions, and the strictly later `tc-cli-0125-collision-post-fix` pass for distinct new-form IDs, schema 1 legacy compatibility and cross-form duplicate and related links | TC-cli-0029 to 0032, 0076 to 0079, 0101, 0125 (failed then passed on `local-macos-arm64`) |
-| REQ-cli-013 | Preferences separate from consent; authorization for validate | TC-cli-0021, 0033, 0034, 0103 |
+| REQ-cli-011 | Failing, not-run, missing-output, timeout and build-failure outcomes; verdicts; stop and resume; automatic OBS and VAL allocation, optional explicit new-form IDs, old-style write refusal and inherited artifacts | TC-cli-0026, 0027, 0034, 0101, 0103, TC-cli-slug-observation-allocation, TC-cli-slug-validation-allocation |
+| REQ-cli-012 | Reproduce, deduplicate, regression baseline, blocking scope; verified only by a pass observed after the latest failure; TC-cli-0125 retains `tc-cli-0125-collision-pre-fix`, the failed `local-macos-arm64` observation of independent-root manual and automatic ID collisions, and the strictly later `tc-cli-0125-collision-post-fix` pass for distinct new-form IDs, schema 1 legacy compatibility and cross-form duplicate and related links. Bug generation and known answers stay unchanged | TC-cli-0029 to 0032, 0076 to 0079, 0101, 0125 (failed then passed on `local-macos-arm64`) |
+| REQ-cli-013 | Preferences separate from consent; authorization, stop, pause and resume for legacy and new validation runs | TC-cli-0021, 0033, 0034, 0103, TC-cli-slug-validation-allocation |
 | REQ-cli-014 | Release only when authorized; dry-run kind | TC-cli-0021, 0028, 0103 |
-| REQ-cli-015 | Snapshots keep sources; index lists open bugs; symlinks refused | TC-cli-0035, 0036 |
+| REQ-cli-015 | Snapshots keep sources; index lists open bugs and mixed legacy and new snapshots; symlinks refused; random SNAP allocation and timestamp chronology | TC-cli-0035, 0036, TC-cli-slug-snapshot-allocation |
 | REQ-cli-016 | Per-host install; TC-cli-0037 proves byte-identical installation and safe update mechanics that preserve edits, while TC-cli-0106 reviews the Kimi mapping and documentation without a new host session; 2756dc2 references known-outdated | TC-cli-0037, 0075, 0106 |
-| REQ-cli-017 | Schema 2 observations; schema 1 still read; optional content identity validated | TC-cli-0026, 0028, 0073, 0074 |
+| REQ-cli-017 | Schema 2 observations; schema 1 still read; optional content identity validated; mixed legacy and new IDs and exact artifact inheritance | TC-cli-0026, 0028, 0073, 0074, TC-cli-slug-observation-allocation |
+| REQ-cli-018 | Mixed-ID retention previews and apply, reference protection, pruning labels, byte accounting and unchanged ledger entries | Existing retention regressions and planned mixed-ID fixtures |
+| REQ-cli-020 | Mixed-ID timing from timestamps and stored durations, never lexical IDs or random suffixes; read-only validation resume accounting | Existing timing regressions and planned mixed-ID fixtures |
 | REQ-cli-021 | Focused next and status parity, bounded forms and one native read; archived done new-cycle action and precedence; reason-bearing reset replaces and back preserves the checkpoint next action | TC-cli-0105, 0120 to 0122 |
+| REQ-cli-023 | Independent-root and repeated-run allocation, random-source and collision refusal, atomic preservation, legacy reads and resume, native manifests, retention, timing and unchanged non-ID shapes | All four slug cases plus focused cases, optional, evidence, bugs, CLI, timing and package suites |
 
 Unix-only tests are gated with `cfg(unix)` because they use shell stubs for native
 tools; their cases list only macOS and Linux environments. Windows runs the portable
@@ -127,6 +160,33 @@ open BUG-0020. Removing only the override restored the shared `stage::assess` ac
 These are local structural and product-test observations, not hosted checks, human
 implementation review, another Kimi cold start, release, or deployment. Original
 observations and frozen archives were not edited.
+
+## Identity takeover verification - 2026-11-01
+
+The identity implementation was resumed from Kimi's uncommitted work at
+`6800b2dadebec358ab1a6fdb18b5d78136eb6631` in an independent clone on the same
+PR branch; the original workspace was preserved.
+
+- All four slug cases passed on local-macos-arm64 using automatic observation
+  allocation. Their original failed observations, artifact bytes and bug links are
+  retained. Each bug links its strictly later pass; the case records name the
+  generated OBS IDs and inherited artifact logs.
+- Rust 1.99.1 and Rust 1.88.0 each passed 181 tests with exactly one named fixture
+  excluded: `both_forms_stay_within_the_cap_with_totals_for_large_records`.
+  This is partial verification, not a passing full suite.
+- That excluded test was observed failing, including through TC-cli-0120: it writes
+  `current-one`, an old-form ID deliberately refused by the approved identity policy,
+  before reaching its output-bound assertions. The dependent native definition
+  `update-compact-next-fixture-for-slug-observations` proposes only automatic fixture
+  allocation and referencing the returned ID. It is unapproved; tests/next.rs has
+  not been changed and no assertion has been removed or weakened.
+- Formatting and Rust 1.99.1 all-target warnings-denied Clippy passed. HI 0.8.0,
+  Fledge 1.8.0 and SpecSync 6.1.2 were selected explicitly. The first pre-push attempt
+  passed format, check, intent and spec but audit refused stale native evidence;
+  the scoped native check must refresh it after the final content changes.
+
+Full verify, an unfiltered full suite, the CLI exercise and hosted platform checks
+remain required. No native human review, archive, merge or release is recorded.
 
 ## Observed evolution verification — 2026-10-31
 
