@@ -7,11 +7,11 @@
   "title": "Unlinked failure gate: leaving test refuses while a checkpoint case's latest observation failed and no local bug links it (issue 39)",
   "description": "Unlinked failure gate: leaving test refuses while a checkpoint case's latest observation failed and no local bug links it (issue 39)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
   "created_at": 1793635928,
-  "updated_at": 1793636400,
+  "updated_at": 1793636445,
   "affected_specs": [
     "cli"
   ],

@@ -1,6 +1,6 @@
 ---
 id: unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 825a3805530456005e361dfa6d96d93eee52cd09
 ---

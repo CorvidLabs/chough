@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "4c3db9a25c1003b491812eb5b1b1f6f51a07e625",
+  "contract_digest": "e4b4816d60705627b3b313f521fd39db69b113043b7e854b093a1766fe8ab1a5",
+  "execution_digest": "a17998c87cce90d7a8025a06f6a3620e1701e45368a63f439872c99133ef9700",
+  "workspace_digest": "7a4320c9a34614fc238e080e06e88ad42c7c274bfdb067041fddd5b8aca547db",
+  "timestamp": 1793636430
+}
