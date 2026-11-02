@@ -84,6 +84,12 @@ impl Fixture {
             "--module",
             "cli",
         ]);
+        // These pre-existing workflow fixtures exercise legacy schema-2 projects.
+        // New-format history tests initialize through the CLI directly, and explicit
+        // adoption tests cover the transition from these unchanged legacy records.
+        let mut session = self.session();
+        session.as_object_mut().unwrap().remove("history_cursor");
+        self.write(".chough/session.json", &session.to_string());
     }
 
     /// Set an observation's recorded time, since `now()` is not injectable and two

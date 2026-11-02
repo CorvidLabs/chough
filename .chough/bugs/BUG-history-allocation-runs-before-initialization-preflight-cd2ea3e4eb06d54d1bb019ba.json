@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "BUG-history-allocation-runs-before-initialization-preflight-cd2ea3e4eb06d54d1bb019ba",
+  "title": "History allocation runs before initialization preflight",
+  "symptom": "Rejected initialization leaves a new .chough directory behind",
+  "trigger": "Run the existing CLI before-write tests after adding new-project history allocation",
+  "expected": "Oversized checkpoints and unsafe skill destinations are rejected before creating any managed file or directory",
+  "actual": "History reservation creates .chough/history before existing validation rejects initialization",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-001"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "9a8b9b11e16bedac4808c56d48307fa29ad9cfe3",
+  "steps": [],
+  "fixture": "tests/cli.rs",
+  "observations": [
+    "OBS-product-test-c08495b2fd395eecff258213",
+    "OBS-product-test-fca5c5e603111f6dc31f5f4d"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Current-source targeted reproduction before the preflight fix",
+  "notes": [
+    {
+      "at_unix_seconds": 1793631730,
+      "text": "status: open -> verified. The later full lane passes the original before-write assertions and empty-checkpoint package contract; event directories are deferred until the first event.",
+      "observations": [
+        "OBS-product-test-fca5c5e603111f6dc31f5f4d"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793629112,
+  "updated_at_unix_seconds": 1793631730
+}

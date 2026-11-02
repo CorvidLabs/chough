@@ -36,7 +36,9 @@ flowchart TB
 | `fledge.toml` | Fledge tasks and lanes |
 | `.chough/session.json` | Chough: the single writable checkpoint (schema 2) |
 | `.chough/session.v1.json` | The original schema 1 bytes kept by `chough migrate` |
-| `.chough/transitions.jsonl` | Append-only stage history, including `gate-opened` and `gate-closed` records written when an awaiting-human gate opens or is cleared; `chough timing` derives durations from it and stores none |
+| `.chough/transitions.jsonl` | Preserved legacy stage history, including `gate-opened` and `gate-closed` records written when an awaiting-human gate opens or is cleared; `chough timing` derives durations from it and stores none |
+| `.chough/history/cycles/<cycle>/<event>.json` | Immutable transition events; the existing checkpoint cursor selects the current lineage |
+| `.chough/history/pruned/<cycle>.json` | Immutable planned-removal receipt; missing receipted content is pruned or interrupted, never timing proof |
 | `.chough/preferences.json` | Standing project preferences, each with its source |
 | `.chough/cases/<module>.cases.toml` | Test definitions (`chough-testing/1`) with curated `TC-<module>-<title-slug>` IDs for new cases and exact legacy numeric IDs retained |
 | `.chough/evidence/OBS-*.json`, `.chough/evidence/<legacy-id>.json` | Schema 1 and 2 observations with new or legacy IDs |
@@ -200,3 +202,24 @@ An adapter consumes a native structured result or bounded source, preserves its
 status and trust limits, and contributes context or evidence references. It never
 allocates a second change identity or turns a degraded or unknown state into success.
 See [integrations](integrations.md) for what is qualified, deferred or unavailable.
+
+## Immutable history and maintenance
+
+REQ-cli-025 to REQ-cli-027 add explicit adoption for existing projects and event
+history for new projects. The optional cursor stays in the single schema-2
+checkpoint and its atomic current-cycle merge group. Parent links order one
+lineage; different branch tips and unpublished-orphan outcomes never become one
+completed timeline. Event publication precedes atomic checkpoint publication;
+failed saves preserve the checkpoint and leave unselected events inspectable.
+
+Legacy logs and migration backups remain unchanged. Recent guidance reads only
+selected parents within 128 events / 512 KiB. Cycles and timing transition reads
+are bounded at 4,096 events / 16 MiB. Maintenance counts revalidation against one
+16,384-read / 64-MiB metadata budget; unavailable protection refuses apply.
+
+Cycle retention is separate from evidence auto-retention. Preview names exact
+files, digests, bytes and protections. Active/reference-linked, unresolved and
+recent/newest closed cycles remain. Consented explicit apply works from oldest
+selected ancestors first, revalidates protection, and publishes a bounded immutable
+receipt before deleting eligible cycle files. Receipts cannot supply stage times
+or human acceptance. Protected proof may grow beyond the retention target.

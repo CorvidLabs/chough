@@ -107,22 +107,22 @@ pub(super) enum StageCommand {
     },
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Transition {
-    schema_version: u32,
-    at_unix_seconds: u64,
-    kind: String,
-    from: String,
-    to: String,
+pub(super) struct Transition {
+    pub(super) schema_version: u32,
+    pub(super) at_unix_seconds: u64,
+    pub(super) kind: String,
+    pub(super) from: String,
+    pub(super) to: String,
     #[serde(default)]
-    reason: Option<String>,
+    pub(super) reason: Option<String>,
     #[serde(default)]
-    gate: Option<String>,
+    pub(super) gate: Option<String>,
     #[serde(default)]
-    revision: Option<String>,
+    pub(super) revision: Option<String>,
     #[serde(default)]
-    refresh: Vec<String>,
+    pub(super) refresh: Vec<String>,
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -768,7 +768,16 @@ fn archived_and_authenticated(root: &Path, session: &Checkpoint, state: &NativeS
 /// checkpoint still names the archived change until a new one is recorded, and the
 /// reset's own next action applies. Gate records start no stage segment and are
 /// skipped; an unreadable log reads as no reset.
-fn reached_by_reset(root: &Path) -> bool {
+fn reached_by_reset(root: &Path, history: Option<&crate::history::HistoryRead>) -> bool {
+    if let Some(read) = history {
+        return read
+            .records
+            .iter()
+            .rev()
+            .filter_map(|value| value["kind"].as_str())
+            .find(|kind| STAGE_KINDS.contains(kind))
+            .is_some_and(|kind| kind == "reset");
+    }
     let Ok(path) = local_path(root, TRANSITIONS) else {
         return false;
     };
@@ -796,6 +805,7 @@ pub(super) fn assess(
     session: &Checkpoint,
     state: &NativeState,
     blocking: &[String],
+    history: Option<&crate::history::HistoryRead>,
 ) -> (Option<(String, Gate)>, Action) {
     let current = session.stage.current.as_str();
     let gate = next_main(current).and_then(|to| {
@@ -838,7 +848,7 @@ pub(super) fn assess(
         done_action(root, session, state, native_next)
     } else if is_main(current)
         && archived_and_authenticated(root, session, state)
-        && !reached_by_reset(root)
+        && !reached_by_reset(root, history)
     {
         archived_action(session, state, native_next)
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
@@ -961,13 +971,14 @@ fn refresh_note(stage: &str) -> &'static str {
 
 fn log_transition(
     root: &Path,
+    session: &mut Checkpoint,
     kind: &str,
-    from: &str,
-    to: &str,
+    route: (&str, &str),
     reason: Option<&str>,
     gate: Option<&str>,
     refresh: Vec<String>,
 ) -> Result<()> {
+    let (from, to) = route;
     let transition = Transition {
         schema_version: 1,
         at_unix_seconds: now()?,
@@ -979,7 +990,11 @@ fn log_transition(
         revision: head_revision(root),
         refresh,
     };
-    append_line(root, TRANSITIONS, &serde_json::to_string(&transition)?)
+    if session.history_cursor.is_some() {
+        crate::history::append(root, session, transition)
+    } else {
+        append_line(root, TRANSITIONS, &serde_json::to_string(&transition)?)
+    }
 }
 
 /// Transition kinds that end the open stage segment and start the next one.
@@ -993,15 +1008,39 @@ pub(super) const GATE_CLOSED: &str = "gate-closed";
 
 /// Append a gate record: when a gate opened or was cleared, in the current stage, with
 /// the gate text as its reason. It never records who decided or what was decided.
-pub(super) fn log_gate(root: &Path, kind: &str, stage: &str, gate: &str) -> Result<()> {
+pub(super) fn log_gate(
+    root: &Path,
+    session: &mut Checkpoint,
+    kind: &str,
+    stage: &str,
+    gate: &str,
+) -> Result<()> {
     ensure!(
         kind == GATE_OPENED || kind == GATE_CLOSED,
         "not a gate record kind: {kind}"
     );
-    log_transition(root, kind, stage, stage, Some(gate), None, vec![])
+    log_transition(
+        root,
+        session,
+        kind,
+        (stage, stage),
+        Some(gate),
+        None,
+        vec![],
+    )
 }
 
 pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value>, bool)> {
+    if let Some(cursor) = read_checkpoint(root)?.history_cursor {
+        let read = crate::history::selected(
+            root,
+            &cursor,
+            count.min(crate::history::RECENT_EVENTS),
+            crate::history::RECENT_BYTES,
+            true,
+        );
+        return Ok((read.records, !read.partial.is_empty()));
+    }
     let (lines, partial) = read_log_tail(&local_path(root, TRANSITIONS)?, count)?;
     let mut values = vec![];
     for line in lines {
@@ -1145,9 +1184,9 @@ fn move_forward(
     }
     log_transition(
         root,
+        session,
         kind,
-        &from,
-        &to,
+        (&from, &to),
         reason,
         gate_label.as_deref(),
         vec![],
@@ -1216,9 +1255,9 @@ fn move_back(
     }
     log_transition(
         root,
+        session,
         kind,
-        &from,
-        target,
+        (&from, target),
         Some(reason),
         gate_label.as_deref(),
         refresh.clone(),
@@ -1274,7 +1313,15 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
             ensure_text("note", &note)?;
             ensure_active(&session)?;
             let stage = session.stage.current.clone();
-            log_transition(root, "iterate", &stage, &stage, Some(&note), None, vec![])?;
+            log_transition(
+                root,
+                &mut session,
+                "iterate",
+                (&stage, &stage),
+                Some(&note),
+                None,
+                vec![],
+            )?;
             session.stage.iteration += 1;
             Some(json!({"kind": "iterate", "stage": stage, "iteration": session.stage.iteration}))
         }
@@ -1288,14 +1335,30 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
             ensure_text("reason", &reason)?;
             ensure_active(&session)?;
             let stage = session.stage.current.clone();
-            log_transition(root, "pause", &stage, &stage, Some(&reason), None, vec![])?;
+            log_transition(
+                root,
+                &mut session,
+                "pause",
+                (&stage, &stage),
+                Some(&reason),
+                None,
+                vec![],
+            )?;
             session.stage.status = "paused".into();
             Some(json!({"kind": "pause", "stage": stage}))
         }
         StageCommand::Resume => {
             ensure!(session.stage.status == "paused", "the stage is not paused");
             let stage = session.stage.current.clone();
-            log_transition(root, "resume", &stage, &stage, None, None, vec![])?;
+            log_transition(
+                root,
+                &mut session,
+                "resume",
+                (&stage, &stage),
+                None,
+                None,
+                vec![],
+            )?;
             session.stage.status = "active".into();
             Some(json!({
                 "kind": "resume",
@@ -1319,9 +1382,9 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 })?;
                 log_transition(
                     root,
+                    &mut session,
                     "enter",
-                    &from,
-                    "release",
+                    (&from, "release"),
                     Some(&reason),
                     Some(&authority),
                     vec![],
@@ -1349,9 +1412,9 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 }
                 log_transition(
                     root,
+                    &mut session,
                     "enter",
-                    &from,
-                    &stage,
+                    (&from, &stage),
                     Some(&reason),
                     authority.as_deref(),
                     vec![],
@@ -1390,9 +1453,9 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
             let from = session.stage.current.clone();
             log_transition(
                 root,
+                &mut session,
                 "return",
-                &from,
-                &caller.stage,
+                (&from, &caller.stage),
                 note.as_deref(),
                 gate_label.as_deref(),
                 vec![],

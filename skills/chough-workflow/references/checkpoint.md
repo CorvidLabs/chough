@@ -17,8 +17,10 @@ storage adapter.
 | `run_consents` | Consent for this objective only |
 | `next_action` | Suggested next step; never overrides native state |
 
-Standing preferences are in `.chough/preferences.json`, transitions in
-`.chough/transitions.jsonl`, observations in `.chough/evidence/`, bugs in
+Standing preferences are in `.chough/preferences.json`. Legacy transitions stay in
+`.chough/transitions.jsonl`; adopted and new projects use immutable events under
+`.chough/history/cycles/`, selected by `history_cursor` in the same checkpoint.
+Observations are in `.chough/evidence/`, bugs in
 `.chough/bugs/`, case definitions in `.chough/cases/` and retention removals in
 `.chough/pruned.jsonl`.
 
@@ -129,3 +131,42 @@ merge is not approval, consent, gate closure or a lifecycle transition.
 Success replaces only ours. Every refusal preserves all three inputs and writes no
 Chough record. The merge adds no second checkpoint store and does not change the
 one-owner rule for live writes.
+
+## Immutable transition history
+
+New projects use event history. Existing schema-2 projects remain in legacy mode
+until the owner previews `chough history adopt` and explicitly runs
+`chough history adopt --apply`. Adoption preserves the legacy log and schema-1
+migration backup byte-for-byte. A digest-bound anchor detects later legacy changes.
+An older helper may reject an adopted checkpoint; use a compatible helper and never
+remove its cursor to make an old reader accept it.
+
+The optional `history_cursor` is part of the atomic current-cycle merge group.
+Immutable event paths from independent branches can integrate, while divergent
+cursors require selecting one coherent checkpoint. Other branch events and orphan
+writes remain visible in `chough history show`; they do not prove a completed stage.
+Only parent links on the selected lineage order current work. Native gates still
+decide lifecycle transitions.
+
+Recent guidance follows at most 128 events and 512 KiB. A cycle holds at most 4,096
+events and 16 MiB; a capacity refusal preserves the checkpoint, and a reasoned
+`chough stage reset` can begin a new cycle without deleting the old proof. Timing
+bounds transition content at 4,096 events / 16 MiB and keeps other tips separate
+with unknown durations. Missing or intentionally pruned history is partial, never
+zero or verified.
+
+`chough history prune` is a read-only preview. It preserves active or referenced
+cycles, unresolved branches/orphans, the newest three closed cycles including time
+ties, and cycles younger than 14 days. Protected proof can prevent reclamation.
+`--apply` requires both an explicit history-prune command and human retention
+authorization; evidence auto-retention never starts history pruning. Maintenance
+has one 16,384-read / 64-MiB metadata budget, including revalidation. An incomplete
+scan refuses apply, and an interruption leaves an immutable receipt with an
+explicit partial result. Applying adoption or cleanup to a real project is a
+separate human operation, never a side effect of finishing implementation.
+
+Before integrating a branch that pruned history, check the other branch's new
+references and retained hashes. If new proof references removed content, restore
+the exact bytes from Git before accepting integration; a pruned or unavailable
+reference is not passing evidence. The one-owner live checkpoint and maintenance
+rule still applies; arbitrary external filesystem writers are not serialized.

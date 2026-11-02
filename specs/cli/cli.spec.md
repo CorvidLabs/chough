@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 16
+version: 17
 status: active
 files:
   - src/main.rs
@@ -10,6 +10,7 @@ files:
   - src/context.rs
   - src/evidence.rs
   - src/identity.rs
+  - src/history.rs
   - src/library.rs
   - src/prefs.rs
   - src/records.rs
@@ -25,6 +26,9 @@ files:
   - tests/stages.rs
   - tests/timing.rs
   - tests/common/mod.rs
+  - tests/history.rs
+  - tests/evidence.rs
+  - tests/next.rs
 
 db_tables: []
 depends_on: []
@@ -47,7 +51,7 @@ requirements.md and docs/FRD.md.
 
 The binary exposes CLI commands; it does not export a Rust library API. The
 observable command contract is `chough --help`, docs/cli.md and README.md. The
-command groups are init, context, status, next, migrate, checkpoint, stage, cases,
+command groups are init, context, status, next, migrate, checkpoint, stage, history, cases,
 evidence, bug, pref, consent, validate, library, skill and timing.
 
 Internal modules under src/ make their entry points visible to the crate root only.
@@ -218,3 +222,4 @@ provider, runtime or hosted service.
 | 14 | 2026-11-02 | make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound: Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace |
 | 15 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |
 | 16 | 2026-11-02 | agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal: Agents state the recorded handoff before their first edit: the skill's resume steps ask a fresh agent to say the goal, binding decisions with reasons, the last failure with its bug status, the applicable lessons and the next task in its own words |
+| 17 | 2026-11-02 | bound-transition-history-and-preserve-referenced-proof: Bound transition history and preserve referenced proof |

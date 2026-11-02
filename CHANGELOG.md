@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+### History and protected retention
+
+- Immutable transition events for new projects, explicit byte-preserving adoption
+  for existing projects, and a history cursor in the sole checkpoint/current-cycle
+  merge group. Unselected branch/orphan events remain separate.
+- Bounded recent and timing reads, per-cycle storage capacity, and explicit
+  whole-cycle retention preview/apply with protected proof, immutable receipts and
+  conservative interruption handling. Evidence auto-retention stays separate.
+- Evidence cleanup revalidates references and artifact identity before removal.
+
 ### Added
 
 - Skill resume step: before its first edit, an agent states the recorded handoff in

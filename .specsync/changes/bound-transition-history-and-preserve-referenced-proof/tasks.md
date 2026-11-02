@@ -5,13 +5,19 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Retain failure-first regressions and local bug links for the affected history and retention defects.
-- [ ] Add event storage, explicit adoption and checkpoint cursor with compatible legacy reads and merge refusal.
-- [ ] Update stage, gate, recent-context, next and timing consumers with bounded lineage-aware reads.
-- [ ] Add read-only cycle retention preview, authorized apply, immutable receipts and protection revalidation.
-- [ ] Verify existing evidence retention protection and interrupted/missing/unsafe-input reporting.
-- [ ] Exercise real Git branch integration, boundary, collision and interrupted-write fixtures.
-- [ ] Update curated case definitions, docs, package/bundle compatibility and closeout lessons.
-- [ ] Run focused cases and the required Fledge verification lane; retain observed outcomes and limitations.
+- [x] Retain failure-first regressions and local bug links for the affected history and retention defects.
+- [x] Add event storage, explicit adoption and checkpoint cursor with compatible legacy reads and merge refusal.
+- [x] Update stage, gate, recent-context, next and timing consumers with bounded lineage-aware reads.
+- [x] Add read-only cycle retention preview, authorized apply, immutable receipts and protection revalidation.
+- [x] Verify existing evidence retention protection and interrupted/missing/unsafe-input reporting.
+- [x] Exercise real Git branch integration, boundary, collision and interrupted-write fixtures.
+- [x] Update curated case definitions, docs, package/bundle compatibility and closeout lessons.
+- [x] Run focused Rust regression suites and prepare all five bound cases and the required Fledge verification lane.
 
 Human scope approval and implementation acceptance are separate gates, recorded by their native owner after the human decides. They are not task checkboxes. No review or ship occurs during definition preparation.
+
+## Required verification after native materialization
+
+SpecSync requires implementation task completion before it materializes the new requirement IDs. The five executable cases need those IDs for validation. The checklist above therefore records completed implementation, regression testing and verification preparation, not results of commands that have not run.
+
+After native materialization, execute TC-cli-history-adoption, TC-cli-history-branches, TC-cli-history-bounds, TC-cli-history-retention and TC-cli-retention-revalidation; run the required `fledge lanes run verify`; and verify the final implementation on Rust 1.88. These remain mandatory before requesting human implementation acceptance. Record their actual outcomes and limitations in Chough observations and the checkpoint. The approved scope and semantic delta remain unchanged.

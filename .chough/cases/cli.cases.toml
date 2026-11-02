@@ -2380,3 +2380,93 @@ expected = [
   "The step is at most 8 lines, has no em or en dash, and SKILL.md is under 6144 bytes",
   "chough skill status reports both host copies current",
 ]
+
+[[case]]
+id = "TC-cli-history-adoption"
+title = "Explicit history adoption preserves legacy bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-3", "LIFE-7"]
+requirements = ["REQ-cli-025"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::adoption_preview_preserves_legacy_bytes_and_apply_is_explicit passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "adoption_preview_preserves_legacy_bytes_and_apply_is_explicit"
+
+[[case]]
+id = "TC-cli-history-branches"
+title = "Independent branch events survive with explicit checkpoint selection"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7"]
+requirements = ["REQ-cli-025"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::real_git_branch_events_survive_while_checkpoint_selection_remains_explicit passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "real_git_branch_events_survive_while_checkpoint_selection_remains_explicit"
+
+[[case]]
+id = "TC-cli-history-bounds"
+title = "History event, cycle, recent and maintenance limits are exercised"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-8", "LIFE-10"]
+requirements = ["REQ-cli-026"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::history_bounds_cover_all_resource_limits passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "history_bounds_cover_all_resource_limits"
+
+[[case]]
+id = "TC-cli-history-retention"
+title = "History retention revalidates new protection and preserves proof"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-026"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::cycle_retention_is_read_only_until_authorized_and_revalidates_new_references passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "cycle_retention_is_read_only_until_authorized_and_revalidates_new_references"
+
+[[case]]
+id = "TC-cli-retention-revalidation"
+title = "Evidence cleanup retains changed missing and newly referenced proof"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-027"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::retention_revalidation_keeps_changed_missing_and_newly_referenced_proof passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "retention_revalidation_keeps_changed_missing_and_newly_referenced_proof"

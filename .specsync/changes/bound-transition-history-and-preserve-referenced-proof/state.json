@@ -7,10 +7,11 @@
   "title": "Bound transition history and preserve referenced proof",
   "description": "Bound transition history and preserve referenced proof",
   "kind": "feature",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
   "created_at": 1793598583,
-  "updated_at": 1793598757,
+  "updated_at": 1793631336,
   "affected_specs": [
     "cli"
   ],

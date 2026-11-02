@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
-  "objective": "Prepare issue #31: bounded transition history and retention that preserves resumability, independent branch events and referenced proof",
+  "objective": "Implement issue #31: bounded transition history and protected retention with explicit adoption and preserved proof",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -46,7 +46,10 @@
       "REQ-cli-023",
       "REQ-cli-002",
       "REQ-cli-020",
-      "REQ-cli-024"
+      "REQ-cli-024",
+      "REQ-cli-025",
+      "REQ-cli-026",
+      "REQ-cli-027"
     ],
     "cases": [
       "TC-cli-0101",
@@ -74,7 +77,12 @@
       "TC-cli-0129",
       "TC-cli-0130",
       "TC-cli-0131",
-      "TC-cli-0132"
+      "TC-cli-0132",
+      "TC-cli-history-adoption",
+      "TC-cli-history-branches",
+      "TC-cli-history-bounds",
+      "TC-cli-history-retention",
+      "TC-cli-retention-revalidation"
     ],
     "design": [],
     "files": [
@@ -140,7 +148,8 @@
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
     "human: 0xLeif said \"Ok continue\" after the proposed sequence of reconciling stale tracking and preparing issue #31 scope; this authorizes definition work, not native scope approval or implementation acceptance",
-    "agent proposal: explicit history adoption, immutable transition events and a cursor inside the sole checkpoint, because a shared append-only log cannot keep independent branch timelines separate; all storage policy and limits remain proposed until scope approval"
+    "agent proposal: explicit history adoption, immutable transition events and a cursor inside the sole checkpoint, because a shared append-only log cannot keep independent branch timelines separate; all storage policy and limits remain proposed until scope approval",
+    "human: 0xLeif approved the complete issue #31 scope in draft PR #37 by replying \"Yes\" in chat on 2026-11-02; recorded with specsync change approve --actor 0xLeif; implementation acceptance, live adoption, live cleanup and merge remain separate decisions"
   ],
   "open_questions": [],
   "completed": [
@@ -222,7 +231,9 @@
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
     "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
     "Prepared issue #31 native requirements, design, research, plan, verification cases and sequential role findings; reconciled roadmap delivery and cold-start limits; native audit and HI intent validation passed",
-    "Published definition-only draft PR #37 at https://github.com/CorvidLabs/chough/pull/37; reconciled issues #30, #31 and #32 with dated status sections while preserving their original bodies and keeping unmet criteria open"
+    "Published definition-only draft PR #37 at https://github.com/CorvidLabs/chough/pull/37; reconciled issues #30, #31 and #32 with dated status sections while preserving their original bodies and keeping unmet criteria open",
+    "Core implementation: new-project cursor, explicit byte-preserving adoption, event-backed stage/gate writes and coherent cursor merge selection. All three retained history regressions now pass, including the real Git branch event fixture; retention safety and full qualification remain in progress.",
+    "Implemented the approved PR #37 scope and qualified the final source: all five bound cases passed, the mandatory Fledge verify lane passed all nine steps with 219 tests, and all 219 tests passed on Rust 1.88.0. Three reproduced in-scope bugs have later passing evidence and are verified. No live adoption or cleanup ran."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -325,7 +336,14 @@
     "OBS-tc-cli-0129-396ac9ba0ef98d906553b910",
     "OBS-tc-cli-0130-e3f217a14172b85e4df24bff",
     "OBS-tc-cli-0131-77a1de3784d43a441c697247",
-    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9"
+    "OBS-tc-cli-0132-84aea40d377c3303ec836fc9",
+    "OBS-tc-cli-history-adoption-c4f32d29bd66502a82da2f41",
+    "OBS-tc-cli-history-branches-af8a1be077b88571650a8232",
+    "OBS-tc-cli-history-bounds-dd01913f7046f56559fbd7c0",
+    "OBS-tc-cli-history-retention-5dec264cea1663509a5fbf11",
+    "OBS-tc-cli-retention-revalidation-74543f11e9867427a7c29af2",
+    "OBS-product-test-fca5c5e603111f6dc31f5f4d",
+    "OBS-product-test-7336e2f0d0bfb795cb731d93"
   ],
   "bugs": [
     "BUG-0001",
@@ -343,12 +361,15 @@
     "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee",
     "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca",
-    "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838"
+    "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838",
+    "BUG-shared-transition-appends-collide-across-independent-branches-8bcc3168f918377ac434cd77",
+    "BUG-history-allocation-runs-before-initialization-preflight-cd2ea3e4eb06d54d1bb019ba",
+    "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc"
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of bound-transition-history-and-preserve-referenced-proof, including explicit adoption, the optional checkpoint cursor, proposed bounds and protected whole-cycle retention"
+    "0xLeif's implementation review and acceptance of PR #37; scope approval is already recorded, and native review/ship and merge remain pending"
   ],
   "run_consents": [],
-  "next_action": "0xLeif reviews draft PR #37 and approves or revises the complete bound-transition-history-and-preserve-referenced-proof scope; native approval and implementation remain pending"
+  "next_action": "0xLeif reviews the implemented PR #37 and chooses acceptance; only after that decision may the sole closing session record native review and ship"
 }
