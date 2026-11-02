@@ -72,7 +72,7 @@ updates and edited-copy preservation. No new case number was allocated.
 | Requirement | Verification responsibility | Cases |
 |-------------|-----------------------------|-------|
 | REQ-cli-001 | Init repeated around edited files and partial installed bundles | TC-cli-0001 |
-| REQ-cli-002 | Focused ordered output and session resumption in isolated repo; the lesson source pointer (`<module>.3md`, else the `context.md` Lessons line) with archived bundles and no lesson text; the skill's certainty labels and decision-outranks-lesson rule | TC-cli-0002, 0129, 0132 |
+| REQ-cli-002 | Focused ordered output and session resumption in isolated repo; the lesson source pointer (`<module>.3md`, else the `context.md` Lessons line) with archived bundles and no lesson text; the skill's certainty labels and decision-outranks-lesson rule; the resume step that states the handoff before the first edit | TC-cli-0002, 0129, 0132, TC-cli-skill-asks-for-the-handoff-before-the-first-edit |
 | REQ-cli-003 | Native status passthrough and unavailable tool states; archived native guidance stays visible without replacing the new-cycle action | TC-cli-0003, 0004, 0105 |
 | REQ-cli-004 | Current → changed content → stale; environment mismatch/unchecked; content identity kept across Chough-only, empty and already-present commits and SpecSync bookkeeping and archive moves, stale on any scope or source edit; legacy records stay revision-bound | TC-cli-0005 to 0008, 0067 to 0073 |
 | REQ-cli-005 | Unknown criterion/requirement and duplicate observation rejected | TC-cli-0009 |
