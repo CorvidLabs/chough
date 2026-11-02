@@ -1,0 +1,66 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793661065,
+      "digest": "4cf1308030115ea081f22da25061be42985be4448ad8306e0fe81bf38b1b37b2",
+      "note": "Authority source: 0xLeif standing ticket changes through PR authorization and 2026-11-02 \"Can you finish up all these?\"; this approval covers only the concrete bounded PR 46/main integration package. Actor corvid-agent is not human identity. No as-is acceptance or merge is recorded.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance",
+        "title": "Integrate merged main into PR 46 while preserving report reads and lifecycle guidance",
+        "description": "Integrate merged main into PR 46 while preserving report reads and lifecycle guidance",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/accept.md",
+          ".agents/skills/chough-workflow/references/plan.md",
+          ".agents/skills/chough-workflow/references/testing.md",
+          ".chough/cases/cli.cases.toml",
+          ".chough/session.json",
+          ".chough/transitions.jsonl",
+          ".claude/skills/chough-workflow/references/accept.md",
+          ".claude/skills/chough-workflow/references/plan.md",
+          ".claude/skills/chough-workflow/references/testing.md",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/testing.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/context.md",
+          "specs/cli/requirements.md",
+          "specs/cli/testing.md",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "tests/next.rs",
+          "tests/package.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Reconcile already approved and archived PR 46 report reads with merged main case-order and unlinked-failure behavior. Preserve all semantic requirements and source behavior; only integration, canonical version/changelog reconciliation and qualification records are new.",
+        "acceptance_criteria": [
+          "Merged main retains case-order guidance and unlinked-failure behavior together with request-local report reads and typed error chains; all immutable proof bytes and additive checkpoint collections and transition occurrences survive; canonical version and changelog are monotonic; mandatory lane and Rust 1.88 tests and the three report cases pass; native verification is current before sole-writer closeout"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Preserve archived proof and cold-start material; keep request-local typed error reuse and main case-order/unlinked-failure behavior; keep PR 46 current-cycle ownership and all additive collections and transition occurrences; no persistent cache or runtime; actor corvid-agent is separate from 0xLeif authorization; root alone writes native review and ship",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

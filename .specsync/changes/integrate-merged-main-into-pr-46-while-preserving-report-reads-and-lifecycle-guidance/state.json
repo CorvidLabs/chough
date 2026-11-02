@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance",
+  "slug": "integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance",
+  "title": "Integrate merged main into PR 46 while preserving report reads and lifecycle guidance",
+  "description": "Integrate merged main into PR 46 while preserving report reads and lifecycle guidance",
+  "kind": "operations",
+  "state": "approved",
+  "base_commit": "7b3d4fcab3b64088a1268eb11c5823cf06ac98f3",
+  "created_at": 1793660930,
+  "updated_at": 1793661065,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".agents/skills/chough-workflow/references/accept.md",
+    ".agents/skills/chough-workflow/references/plan.md",
+    ".agents/skills/chough-workflow/references/testing.md",
+    ".chough/cases/cli.cases.toml",
+    ".chough/session.json",
+    ".chough/transitions.jsonl",
+    ".claude/skills/chough-workflow/references/accept.md",
+    ".claude/skills/chough-workflow/references/plan.md",
+    ".claude/skills/chough-workflow/references/testing.md",
+    "CHANGELOG.md",
+    "docs/FRD.md",
+    "docs/ROADMAP.md",
+    "docs/architecture.md",
+    "docs/cli.md",
+    "skills/chough-workflow/references/accept.md",
+    "skills/chough-workflow/references/plan.md",
+    "skills/chough-workflow/references/testing.md",
+    "specs/cli/cli.spec.md",
+    "specs/cli/context.md",
+    "specs/cli/requirements.md",
+    "specs/cli/testing.md",
+    "src/cases.rs",
+    "src/evidence.rs",
+    "src/main.rs",
+    "src/skill.rs",
+    "src/stage.rs",
+    "tests/next.rs",
+    "tests/package.rs",
+    "tests/stages.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Reconcile already approved and archived PR 46 report reads with merged main case-order and unlinked-failure behavior. Preserve all semantic requirements and source behavior; only integration, canonical version/changelog reconciliation and qualification records are new.",
+  "acceptance_criteria": [
+    "Merged main retains case-order guidance and unlinked-failure behavior together with request-local report reads and typed error chains; all immutable proof bytes and additive checkpoint collections and transition occurrences survive; canonical version and changelog are monotonic; mandatory lane and Rust 1.88 tests and the three report cases pass; native verification is current before sole-writer closeout"
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Preserve archived proof and cold-start material; keep request-local typed error reuse and main case-order/unlinked-failure behavior; keep PR 46 current-cycle ownership and all additive collections and transition occurrences; no persistent cache or runtime; actor corvid-agent is separate from 0xLeif authorization; root alone writes native review and ship",
+    "public_contract": "no"
+  }
+}
