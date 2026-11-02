@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "id": "handoff-cold-start-change-kimi-1",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "not-run",
+  "environment": "local-macos-arm64",
+  "summary": "Change run of the handoff cold start (rubric frozen in handoff-cold-start-frozen-pair-1). Host Kimi Code CLI 0.41.0 (kimi-code 2.4.1, wire 1.5), model kimi-code/k3.1-pro-highspeed, thinking high, mode auto, driven by CorvidLabs/rune 0.9.0 session send, same script as the baseline plus one host-setup step. chough binary and skill from the implementation tip 9009d9a478b02b280eeffecf23352f8e70887f04 (binary sha256 3d9cf60b53f52aebc7e4fc50a5ca84ed2d227c03db636127d0d2f8977e2c43b3, debug build of a clean git archive; installed skill byte-identical to skills/chough-workflow at 9009d9a); hi 0.8.0 sha256 2c4d7557c54423fe70eaa535bdccffb95ca727f320c08ffd907a9d2fd6157bd3. Seeded HEAD c1b7e74b50ead7677f29d7150bf63550acb59469, tree 9be61b11fd4ff2dfabd1725edeee5e1923dc0d0c. Kimi session session_01b09c7e-6c0a-4335-8ecc-160279ca23f8, 2026-11-02T00:37:12Z to 00:40:04Z, 54 tool calls. The only user message is the prompt 'Resume this project.'; the single steer event is Kimi loading the installed chough-workflow skill through its own Skill tool. Outcome not-run here; 0xLeif's grade is recorded separately.",
+  "artifacts": [
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/transcript.md",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/command-log.txt",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/kimi-session.zip",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/rune-screen.json",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/run-kimi-rune.sh",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/seeded-repo-diff.patch",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/seeded-repo-status.txt",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/started.txt",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/rune-trust.json",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-screen.json",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/script-output.txt",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/started.txt",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-start.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-screen.json": "23caac63438335d6e4b1d7399efbb344da4a83d697275ce54d7b64bd96a5995e",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-start.json": "8e7310ee0d1f773137fad51db6ad14d7a78646a1a37b488df00fda8b06240a6f",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/script-output.txt": "3da35daecc3df4bb4870e7f13a2e73262eef3b880a2f1d93e3ec8a1130a80221",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/started.txt": "8d1c37014cfc1add138fbc0416e3435a49491ed8123cfd9c305769dd883280a9",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/command-log.txt": "fbfa7db88b3c1493fdc9c7cf0f856d809664f4c2fa85a4d7cd54010106bdae9f",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/kimi-session.zip": "202777b4175f850cd1a134371f095ab6ee20de86c82c4d45843878d150c80343",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/run-kimi-rune.sh": "f8afd053c235f381bc78dbd4f4e072c27a0ff92d706b54c8d7097ea8177fb712",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/rune-screen.json": "9cb9d729dcf5cc12fbc622804ef9e1fdff913135fd1216530dc22144c89f991b",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/rune-trust.json": "29e0c47d4d1c4cc8e6ae8d0010b7757885a2006bd3e2ea8640b88a2dad3d2eff",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/seeded-repo-diff.patch": "d0f0593d3914c2362a11b2c33e85da058668ea64ac8bbecc84ae42764ce7a6ed",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/seeded-repo-status.txt": "ace7fe5e422f9a24bfe416aa3e9d8511cada60c8adecf0baa934752dab0f1b37",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/started.txt": "72e6cd53292a76abb12baf896f32ec151657f0735ed41c2ba0e8479235eb14b6",
+    ".chough/artifacts/handoff-cold-start/change-kimi-1/transcript.md": "360f6d55bf98e5a05b3271b6162ee7aab4bc5fda107e24089dd84ea8c7e1a494"
+  },
+  "observed_at_unix_seconds": 1793580361,
+  "snapshot": {
+    "revision": "1c6743c552e37c45ccc0ec23a43fee340b3acaad",
+    "dirty": false,
+    "fingerprint": "56595a9d54f196e4745101d9bb6fb9aa827dba3994dd8be296cc624760eddfd4",
+    "content": "4c0ebf11141fd5bbf8ccda38c81de97245e01906afa14c6725e6ac15b31f45ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0133",
+      "digest": "821aedfc92e545217bc64e51ca897c29cede365795c89dacdcf2f397c93c668e"
+    }
+  ],
+  "method": "manual",
+  "track": "functional",
+  "limitations": [
+    "Host setup differs from the baseline in one step: the new folder showed Kimi's 'Trust this folder?' dialog, which the script accepted with Enter before the prompt (logged in started.txt). The baseline folder had been trusted in its not-run attempt 2. Attempt 0 of this run stopped at that dialog before any prompt and is kept in attempt-0-trust-dialog/.",
+    "One run on one host and model; a sample of one.",
+    "transcript.md and command-log.txt cut tool arguments at 600 characters, as the baseline's do; kimi-session.zip holds the full record."
+  ]
+}
