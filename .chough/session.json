@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Criterion 9 follow-up: the skill asks a resuming agent to state the recorded handoff (goal, binding decisions with reasons, last failure with bug status, lessons, next task) before its first edit, proven by rerunning the frozen Kimi cold start",
+  "objective": "Issue #38: stage advance and skip refuse while an awaiting-human gate is open",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal",
+  "native_change": "human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -30,7 +30,8 @@
       "LIFE-9",
       "LIFE-1",
       "FLOW-12",
-      "LIFE-10"
+      "LIFE-10",
+      "FLOW-3"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -45,7 +46,8 @@
       "REQ-cli-023",
       "REQ-cli-002",
       "REQ-cli-020",
-      "REQ-cli-024"
+      "REQ-cli-024",
+      "REQ-cli-030"
     ],
     "cases": [
       "TC-cli-0101",
@@ -73,7 +75,9 @@
       "TC-cli-0129",
       "TC-cli-0130",
       "TC-cli-0131",
-      "TC-cli-0132"
+      "TC-cli-0132",
+      "TC-cli-open-human-gates-refuse-advance-and-skip",
+      "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next"
     ],
     "design": [],
     "files": [
@@ -137,7 +141,9 @@
     "Agent's design choice, not a human decision: skill-only (SKILL.md resume step), no next-view change, so the proof tests one cause; a next-view hint is the fallback if the change run still fails",
     "decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, \"Approve as drafted\"); recorded with specsync change approve --actor 0xLeif",
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
-    "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction"
+    "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
+    "Proposed on #38 and approved in scope: refuse advance and skip with refused:awaiting-human, no reason override, other moves unaffected, next and status say so; new REQ-cli-030 since #43 modifies REQ-cli-008",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #38 change recorded with actor corvid-agent"
   ],
   "open_questions": [],
   "completed": [
@@ -217,7 +223,9 @@
     "Parallel native reviews at the first shared head could not authenticate. Both original closeouts are preserved in a backup ref; this branch keeps the already-finalized combined archive with one review lineage and retains the author acceptance note and transition events. A separate native reopen attempt was refused and is preserved as failed diagnostic evidence.",
     "Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked",
     "Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision",
-    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)"
+    "Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)",
+    "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
+    "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -343,5 +351,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif merges PR #36 once hosted checks pass"
+  "next_action": "Write failing tests in tests/stages.rs for refused:awaiting-human, record the failing run, then implement in src/stage.rs"
 }

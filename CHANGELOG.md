@@ -35,6 +35,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- `chough stage advance` and `chough stage skip` (and release → done) are refused as
+  `refused:awaiting-human` while the checkpoint has an open awaiting-human gate, so an
+  agent can no longer leave intent, design or plan before the human answers. The
+  message names up to 3 gates and the clearing command; `next` and `status` say the
+  moves are refused until the gate is cleared (#38).
 - `chough next` and `chough status` no longer say `Continue <stage>`, or give the
   build gate refusal, at intent to accept once the recorded native change is
   archived with authenticated terminal evidence; they name the archive and the new
