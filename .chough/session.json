@@ -84,10 +84,11 @@
       "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal",
       "TC-cli-0032",
       "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused",
+      "TC-cli-open-human-gates-refuse-advance-and-skip",
+      "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next",
       "TC-cli-agent-native-workflow-upgrade",
       "TC-cli-native-workflow-bundle-consistency",
-      "TC-cli-open-human-gates-refuse-advance-and-skip",
-      "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next"
+      "TC-cli-sdd-off-names-specsync-change-adopt"
     ],
     "design": [],
     "files": [
@@ -166,11 +167,11 @@
     "corvid-agent records no approval for a human; scope approval is 0xLeif's",
     "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction",
     "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif",
+    "Proposed on #38 and approved in scope: refuse advance and skip with refused:awaiting-human, no reason override, other moves unaffected, next and status say so; new REQ-cli-030 since #43 modifies REQ-cli-008",
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #38 change recorded with actor corvid-agent",
     "human: 0xLeif clarified in chat on 2026-11-02 that the agent can do any changes and it just needs a PR; Chough must handle SpecSync and other tools internally. This standing scope/implementation authorization applies to this concrete workflow fix and is relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . It is not implementation acceptance, merge, release or deployment authorization.",
     "decided: native operations record project agent actor corvid-agent and cite actual human authorization separately, because the acting account and the authority source are different provenance roles; PR44 peer-review refinement is covered by the existing standing permission, and the original approval event is preserved",
     "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status and remaining native closeout gate were presented. This authorizes this session to finish all three native scopes on PR #44 under the existing through-PR authorization; native acting account is corvid-agent. Merge, release, deployment and live cleanup remain separate.",
-    "Proposed on #38 and approved in scope: refuse advance and skip with refused:awaiting-human, no reason override, other moves unaffected, next and status say so; new REQ-cli-030 since #43 modifies REQ-cli-008",
-    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #38 change recorded with actor corvid-agent",
     "agent: root selected the complete PR44 current-cycle group for integration. The native checkpoint helper first refused the original divergent inputs; a separate explicit selected-cycle operand preserved that group while merging additive collections. Original parent inputs and all transition occurrences remain retained. This is branch ownership, not approval or gate closure."
   ],
   "open_questions": [],
@@ -260,15 +261,16 @@
     "Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated",
     "Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)",
     "Change archived (approve/review/finalize recorded as corvid-agent per 0xLeif's 9:14 AM MT instruction)",
+    "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
+    "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)",
+    "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45",
     "Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested.",
     "PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass.",
     "PR44 complete bundle consistency: plan/accept references apply existing authority and use acting agent accounts; both tracked hosts safely refreshed; four exact predecessors and every edited variant covered; structural writer/copy regression and both bound cases pass. All198tests on currentRust/Rust1.88 and all9Fledgesteps pass. Both native changes must close on thisPR.",
     "PR44 user-doc guidance is consistent across CLI/walkthrough/next-change docs, canonical skill and installed bundles. All198tests on Rust1.95/Rust1.88, both bound cases and allnineFledge steps pass. Initial unrelated timing-budget MSRV failure is preserved with an open reliability bug; isolated/full unchanged reruns passed, cause unconfirmed. Three native scopes must close after actual implementation acceptance.",
     "PR #44 completed all three native scoped reviews and archives in SpecSync required order under the human finish-all instruction. Original approval events and failed qualification proof remain intact; the checkpoint is done.",
-    "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
-    "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)",
-    "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45",
-    "Intermediate main 9d02fbf source 421e8ce passed the full nine-step Fledge lane, all 205 Rust 1.95 and 1.88 tests and three applicable authority/ordering cases. Main 47 remains to be imported and qualified before final push."
+    "Intermediate main 9d02fbf source 421e8ce passed the full nine-step Fledge lane, all 205 Rust 1.95 and 1.88 tests and three applicable authority/ordering cases. Main 47 remains to be imported and qualified before final push.",
+    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
