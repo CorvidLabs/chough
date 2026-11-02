@@ -159,6 +159,10 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "SKILL.md",
         "f479854d764ce83917a15889c16b9bf447c3c2e8e208224515f784ca1c57ad40",
     ),
+    (
+        "references/checkpoint.md",
+        "28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

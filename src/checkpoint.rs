@@ -8,7 +8,10 @@ use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::path::Path;
+use std::collections::HashSet;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
+use std::path::{Path, PathBuf};
 
 pub(super) const SESSION: &str = ".chough/session.json";
 pub(super) const SESSION_V1_BACKUP: &str = ".chough/session.v1.json";
@@ -284,6 +287,10 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
     ] {
         ensure!(list.len() <= MAX_ITEMS, "too many checkpoint entries");
     }
+    ensure!(
+        session.run_consents.len() <= MAX_ITEMS,
+        "too many run consents"
+    );
     for consent in &session.run_consents {
         ensure!(valid_name(&consent.key), "invalid consent key");
     }
@@ -379,8 +386,225 @@ pub(super) fn migrate(root: &Path, initial_stage: &str) -> Result<()> {
     }))
 }
 
+fn read_merge_operand(path: &Path) -> Result<(PathBuf, Checkpoint)> {
+    let metadata = fs::symlink_metadata(path)
+        .with_context(|| format!("reading merge operand {}", path.display()))?;
+    ensure!(
+        metadata.file_type().is_file(),
+        "merge operand must be an existing regular file whose final component is not a symbolic link: {}",
+        path.display()
+    );
+    let resolved = path.canonicalize()?;
+    let content = read_record(path)?;
+    match parse(&content)? {
+        Session::V2(session) => Ok((resolved, *session)),
+        Session::V1(_) => bail!(
+            "checkpoint --merge requires schema 2 session inputs; schema 1 requires explicit migration"
+        ),
+    }
+}
+
+fn merge_strings(base: &[String], ours: &[String], theirs: &[String]) -> Vec<String> {
+    let base_members: HashSet<&str> = base.iter().map(String::as_str).collect();
+    let ours_members: HashSet<&str> = ours.iter().map(String::as_str).collect();
+    let theirs_members: HashSet<&str> = theirs.iter().map(String::as_str).collect();
+    let mut emitted = HashSet::new();
+    let mut merged = Vec::new();
+    for value in base {
+        if ours_members.contains(value.as_str())
+            && theirs_members.contains(value.as_str())
+            && emitted.insert(value.as_str())
+        {
+            merged.push(value.clone());
+        }
+    }
+    for value in ours.iter().chain(theirs) {
+        if !base_members.contains(value.as_str())
+            && (ours_members.contains(value.as_str()) || theirs_members.contains(value.as_str()))
+            && emitted.insert(value.as_str())
+        {
+            merged.push(value.clone());
+        }
+    }
+    merged
+}
+
+const CURRENT_CYCLE_FIELDS: [&str; 9] = [
+    "objective",
+    "intent_scope",
+    "modules",
+    "stage",
+    "native_change",
+    "next_action",
+    "run_consents",
+    "blockers",
+    "awaiting_human",
+];
+
+fn current_cycle(session: &Checkpoint) -> Value {
+    json!({
+        "objective": session.objective,
+        "intent_scope": session.intent_scope,
+        "modules": session.modules,
+        "stage": session.stage,
+        "native_change": session.native_change,
+        "next_action": session.next_action,
+        "run_consents": session.run_consents,
+        "blockers": session.blockers,
+        "awaiting_human": session.awaiting_human,
+    })
+}
+
+fn merge_checkpoints(operands: &[PathBuf]) -> Result<()> {
+    ensure!(
+        operands.len() == 3,
+        "checkpoint --merge needs base, ours and theirs"
+    );
+    let (base_path, base) = read_merge_operand(&operands[0])?;
+    let (ours_path, ours) = read_merge_operand(&operands[1])?;
+    let (theirs_path, theirs) = read_merge_operand(&operands[2])?;
+    let mut distinct = HashSet::new();
+    ensure!(
+        distinct.insert(&base_path) && distinct.insert(&ours_path) && distinct.insert(&theirs_path),
+        "merge operands must resolve to three distinct paths"
+    );
+
+    let base_cycle = current_cycle(&base);
+    let ours_cycle = current_cycle(&ours);
+    let theirs_cycle = current_cycle(&theirs);
+    let ours_changed = ours_cycle != base_cycle;
+    let theirs_changed = theirs_cycle != base_cycle;
+    let selected = match (ours_changed, theirs_changed) {
+        (false, false) => &base,
+        (true, false) => &ours,
+        (false, true) => &theirs,
+        (true, true) if ours_cycle == theirs_cycle => &ours,
+        (true, true) => {
+            let differing = CURRENT_CYCLE_FIELDS
+                .iter()
+                .filter(|field| ours_cycle[**field] != theirs_cycle[**field])
+                .copied()
+                .collect::<Vec<_>>()
+                .join(", ");
+            bail!("current-cycle conflict: {differing}");
+        }
+    };
+    let mut merged = selected.clone();
+    merged.references.criteria = merge_strings(
+        &base.references.criteria,
+        &ours.references.criteria,
+        &theirs.references.criteria,
+    );
+    merged.references.requirements = merge_strings(
+        &base.references.requirements,
+        &ours.references.requirements,
+        &theirs.references.requirements,
+    );
+    merged.references.cases = merge_strings(
+        &base.references.cases,
+        &ours.references.cases,
+        &theirs.references.cases,
+    );
+    merged.references.design = merge_strings(
+        &base.references.design,
+        &ours.references.design,
+        &theirs.references.design,
+    );
+    merged.references.files = merge_strings(
+        &base.references.files,
+        &ours.references.files,
+        &theirs.references.files,
+    );
+    merged.decisions = merge_strings(&base.decisions, &ours.decisions, &theirs.decisions);
+    merged.open_questions = merge_strings(
+        &base.open_questions,
+        &ours.open_questions,
+        &theirs.open_questions,
+    );
+    merged.completed = merge_strings(&base.completed, &ours.completed, &theirs.completed);
+    merged.observations =
+        merge_strings(&base.observations, &ours.observations, &theirs.observations);
+    merged.bugs = merge_strings(&base.bugs, &ours.bugs, &theirs.bugs);
+
+    validate_v2(&merged)?;
+    let serialized = serde_json::to_string_pretty(&merged)? + "\n";
+    ensure!(
+        serialized.len() as u64 <= RECORD_LIMIT,
+        "merged session exceeds 65536 bytes"
+    );
+    match parse(&serialized)? {
+        Session::V2(_) => {}
+        Session::V1(_) => bail!("merged session is not schema 2"),
+    }
+    let report = serde_json::to_string(&json!({
+        "schema_version": 1,
+        "merged": true,
+        "checkpoint": merged
+    }))?;
+    replace_merged_ours(&operands[1], &serialized)?;
+    let mut output = std::io::stdout().lock();
+    let _ = writeln!(output, "{report}");
+    Ok(())
+}
+
+fn replace_merged_ours(ours: &Path, content: &str) -> Result<()> {
+    let metadata = fs::symlink_metadata(ours)?;
+    ensure!(
+        metadata.file_type().is_file(),
+        "merge output must remain a regular non-symlink file: {}",
+        ours.display()
+    );
+    let parent = ours.parent().context("merge output has no parent")?;
+    let name = ours
+        .file_name()
+        .and_then(|name| name.to_str())
+        .context("merge output name must be UTF-8")?;
+    let temporary = parent.join(format!(".{name}.{}.chough-merge.tmp", std::process::id()));
+    let result = (|| -> Result<()> {
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&temporary)?;
+        file.write_all(content.as_bytes())?;
+        file.sync_all()?;
+        fs::rename(&temporary, ours)?;
+        Ok(())
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result.with_context(|| format!("writing merged checkpoint {}", ours.display()))
+}
+
 #[derive(clap::Args)]
 pub(super) struct CheckpointArgs {
+    /// Three-way merge schema 2 checkpoints, replacing only ours after every check passes.
+    #[arg(
+        long,
+        num_args = 3,
+        value_names = ["BASE", "OURS", "THEIRS"],
+        conflicts_with_all = [
+            "objective",
+            "next_action",
+            "native_change",
+            "decisions",
+            "questions",
+            "resolved",
+            "completed",
+            "blockers",
+            "clear_blockers",
+            "awaiting_human",
+            "clear_awaiting_human",
+            "criteria",
+            "requirements",
+            "cases",
+            "design",
+            "files",
+            "observations",
+            "bugs",
+        ]
+    )]
+    merge: Option<Vec<PathBuf>>,
     /// Replace the objective; this clears run consents tied to the old objective.
     #[arg(long)]
     objective: Option<String>,
@@ -431,6 +655,9 @@ fn push_unique(list: &mut Vec<String>, values: Vec<String>) {
 }
 
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
+    if let Some(operands) = args.merge {
+        return merge_checkpoints(&operands);
+    }
     let mut session = read_checkpoint(root)?;
     let mut changed = false;
     if let Some(objective) = args.objective {

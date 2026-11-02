@@ -146,6 +146,11 @@
     "Native bug identity change archived at aee2af3 after 0xLeif authorized finalization; Chough advanced from accept to done",
     "0.1.0 release prep implemented: pins, MSRV job and rust-version, nine skill corrections with KNOWN_PREVIOUS and host refresh, context history, README, CHANGELOG, docs/releasing.md, D-019",
     "TC-cli-0110 and 0112 failed before the fix and passed at f6416a5 with TC-cli-0111, 0113, 0114, 0064 and 0065",
+    "PR #26 was merged by 0xLeif as b35acaf0804f84a2c56fcee4b3ca1504cf74c95e, observed on GitHub",
+    "Retained the real Git checkpoint conflict, implemented bounded three-way merging, and passed focused tests and Clippy after consent-bound and closed-stdout review fixes",
+    "Materialized REQ-cli-007, recorded the strictly later real Git pass, and verified the merge bug",
+    "Full verify, Rust 1.88 tests and pre-push passed; the final current-content real Git observation passed",
+    "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done",
     "Observed PR #26 merged to main as b35acaf on 2026-11-01; its stale merge gate was cleared during Claude's local checkpoint repair",
     "Measured on b35acaf (fresh debug and release builds; load average about 60-70): one archived-change specsync status read completed in 49.954 s; timing makes 11 native reads with one duplicate; next, status and prune make 1; raw data in ../claude-perf-raw",
     "Drafted native change make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound; artifacts complete; specsync change audit and hi check pass"
@@ -197,7 +202,10 @@
     "tc-cli-0112-1793548338",
     "tc-cli-0112-1793548660",
     "tc-cli-0113-1793548805",
-    "tc-cli-0114-1793549250"
+    "tc-cli-0114-1793549250",
+    "checkpoint-merge-real-git-pre-fix",
+    "checkpoint-merge-real-git-post-fix",
+    "checkpoint-merge-real-git-final"
   ],
   "bugs": [
     "BUG-0001",
@@ -211,7 +219,8 @@
     "BUG-0023",
     "BUG-0024",
     "BUG-0025",
-    "BUG-0026"
+    "BUG-0026",
+    "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee"
   ],
   "blockers": [],
   "awaiting_human": [

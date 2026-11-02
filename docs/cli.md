@@ -18,7 +18,7 @@ their JSON.
 | `status [--environment NAME]` | The full view, always JSON (`--json` is accepted and changes nothing): checkpoint, the native gate for the next main stage in `checkpoint.gate` (`null` when that stage has no prerequisite), valid transitions, `next_valid_action`, native status, snapshot, observations with freshness, open and blocking bugs. |
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). Earlier builds printed the full status JSON here; scripts that read `next_valid_action` now read `.next_valid_action.action` from `next --json`, or use `status`. |
 | `migrate [--stage S]` | Converts a schema 1 session after saving its bytes to `.chough/session.v1.json`; refuses if that backup exists. |
-| `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved. |
+| `checkpoint` | Show, update or merge: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`, `--merge <base> <ours> <theirs>`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved. |
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test needs no open blocking bug; entering validate or release needs consent or a standing preference. |
 | `cases check\|list\|select\|run\|record` | Validate definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` exit 3 when the recorded outcome is not passed. |
 | `evidence add ID`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
@@ -40,9 +40,12 @@ up to 16 KiB; `status` carries the parsed state and next action in `native_summa
 and `next` in `native`. Larger output is reported as `oversized` and refuses gated
 transitions. `status` and `next` each run `specsync change status` at most once and
 evaluate the gate on that response.
-Unknown fields and unsupported schema versions are rejected. Paths are
-project-relative; traversal and symlinks are rejected. Native tools and bound
-commands receive direct arguments, never shell-evaluated text.
+Unknown fields and unsupported schema versions are rejected. Managed project paths
+are project-relative; traversal and symlinks are rejected. The three checkpoint
+merge operands may be absolute or outside the project because Git uses temporary
+files, but each must be an existing regular file whose final component is not a
+symlink. Native tools and bound commands receive direct arguments, never
+shell-evaluated text.
 
 | Record | Schema |
 |---|---|
@@ -86,6 +89,58 @@ reports a collision and leaves the existing record byte-identical; identical exi
 content also remains untouched. Creation never falls back to numeric allocation,
 retries the digest or makes a second candidate. Evidence, artifact, validation,
 snapshot, transition, case, HI, requirement and SpecSync ID schemes are unchanged.
+
+## Checkpoint merges
+
+`chough checkpoint --merge <base> <ours> <theirs>` performs a bounded three-way merge
+of schema 2 checkpoints. It reads only the three supplied files, not the canonical
+session merely because `--root` names a project. Schema 1, mixed or unsupported
+versions, malformed JSON, wrong types and unknown fields at any level refuse. Schema
+1 live writes still require the explicit backup-preserving `chough migrate` command;
+merge never migrates it or creates a schema 1 backup.
+
+Every input and the emitted result stay within the existing 65536-byte checkpoint
+bound and 200-item collection bound, with all existing field validation enforced. A
+compatible merge atomically replaces only `<ours>` after the complete result passes
+validation. `<base>` and `<theirs>` remain byte-identical. Every refusal leaves all
+three inputs byte-identical and creates no checkpoint, transition, gate, consent,
+approval, review or other Chough record.
+
+For `decisions`, `open_questions`, `completed`, `observations`, `bugs` and every
+collection under `references`, strings compare exactly and case-sensitively without
+trimming or normalization. A base entry survives only when both sides retain it, so
+a one-side removal is not resurrected. An entry absent from base survives when either
+side adds it, and an identical addition on both sides appears once. Output walks
+surviving base entries in base order, then new ours entries in ours order, then new
+theirs entries in theirs order. Reordering alone does not change membership.
+
+The complete values of `objective`, `intent_scope`, `modules`, `stage`,
+`native_change`, `next_action`, `run_consents`, `blockers` and `awaiting_human` form
+one indivisible current-cycle group. Merge selects base when neither side changes it,
+the changed side when only one changes it, or the identical new group when both make
+the same change. If both sides change it differently, merge refuses with a
+`current-cycle conflict` diagnostic naming the differing members. It never combines
+fields, unions consents, blockers or human gates, or infers a lifecycle event.
+
+The repository declares this driver association:
+
+```gitattributes
+.chough/session.json merge=chough-session
+```
+
+Automatic merging requires this setup in each clone:
+
+```sh
+git config --local merge.chough-session.name "Chough schema 2 checkpoint"
+git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
+```
+
+Git supplies base, ours and theirs as `%O`, `%A` and `%B`. The driver exits zero only
+for a clean merge; a nonzero result leaves the conflict for human resolution.
+`chough init` never sets either value or otherwise changes Git configuration. When no
+driver is configured, the explicit `chough checkpoint --merge <base> <ours> <theirs>`
+command is the fallback. One-owner live writes and the single canonical
+`.chough/session.json` remain unchanged, with no second checkpoint store.
 
 ## Execution bounds
 

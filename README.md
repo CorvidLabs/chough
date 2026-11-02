@@ -127,6 +127,32 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `library init/snapshot/index` | Optional project-local librarian |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
+## Merge parallel checkpoint edits
+
+The repository declares `.chough/session.json merge=chough-session` in
+`.gitattributes`. To enable the merge driver, each clone runs:
+
+```sh
+git config --local merge.chough-session.name "Chough schema 2 checkpoint"
+git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
+```
+
+Git supplies base, ours and theirs as `%O`, `%A` and `%B`. A nonzero driver result
+leaves the conflict for human resolution. `chough init` never sets either Git
+configuration value.
+
+Without the driver, use the explicit fallback:
+
+```sh
+chough checkpoint --merge <base> <ours> <theirs>
+```
+
+The command merges schema 2 checkpoints only. Success replaces only ours, while a
+current-cycle conflict stays unresolved instead of combining fields. One agent still
+owns live checkpoint writes, and merging adds no second store. See
+[Checkpoint merges](docs/cli.md#checkpoint-merges) for the collection and conflict
+rules.
+
 Chough does not authenticate people, record approvals or reviews, publish anything,
 or deploy. A structural pass, an exit code or an actor label is never treated as
 behavioral proof or human acceptance.

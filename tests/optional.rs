@@ -650,3 +650,58 @@ fn skills_install_per_host_and_update_only_unmodified_files() {
         edited
     );
 }
+
+#[test]
+fn checkpoint_reference_updates_only_known_outdated_copies() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture
+        .root()
+        .join(".agents/skills/chough-workflow/references/checkpoint.md");
+    let old = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/skill-ee6e3d2/references/checkpoint.md"),
+    )
+    .unwrap()
+    .replace("\r\n", "\n");
+    assert_eq!(
+        format!("{:x}", Sha256::digest(old.as_bytes())),
+        "20daaaa0cec972169abcedd508cd9ad18ff93ef7ec9d1f4e7330fcd18ca80ac0"
+    );
+    fixture.write(
+        ".agents/skills/chough-workflow/references/checkpoint.md",
+        &old,
+    );
+    let state = |report: &Value| {
+        report["hosts"][0]["files"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["file"] == "references/checkpoint.md")
+            .unwrap()
+            .clone()
+    };
+
+    let status = fixture.ok(&["skill", "status", "--host", "openai"]);
+    assert_eq!(state(&status)["state"], "known-outdated");
+    let updated = fixture.ok(&["skill", "update", "--host", "openai"]);
+    assert_eq!(state(&updated)["action"], "updated");
+    assert_eq!(
+        fs::read(&installed).unwrap(),
+        fs::read(
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("skills/chough-workflow/references/checkpoint.md")
+        )
+        .unwrap()
+    );
+
+    let edited = format!("{old}\nA local checkpoint note.\n");
+    fixture.write(
+        ".agents/skills/chough-workflow/references/checkpoint.md",
+        &edited,
+    );
+    let preserved = fixture.ok(&["skill", "update", "--host", "openai"]);
+    assert_eq!(state(&preserved)["state"], "edited");
+    assert_eq!(state(&preserved)["action"], "preserved-edit");
+    assert_eq!(fs::read_to_string(installed).unwrap(), edited);
+}
