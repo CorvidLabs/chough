@@ -6,6 +6,56 @@ with assertions in a disposable directory, use `fledge run exercise` or
 Human gates appear as decisions a person makes; the sample script labels its
 stand-ins as SIMULATED.
 
+## New project
+
+For a Git project that has no HI or SpecSync files yet. These steps were observed on
+Linux x86_64 with hi 0.8.0, specsync 6.1.2 and fledge 1.8.0 (issue #40). Install the
+tools first as in [Install](#install).
+
+1. Write the intent as a minimal HI file, for example `hi/checkout.md`:
+
+   ```markdown
+   ---
+   hi: 1
+   families: [CHECKOUT]
+   ---
+
+   # Checkout
+
+   ## Intent
+
+   Shoppers should not pay shipping on larger orders.
+
+   ## Criteria
+
+   - **CHECKOUT-1**  An order of fifty dollars or more ships free.
+   ```
+
+   `hi check` validates it and `hi ls` lists the criteria. The IDs never move.
+
+2. Create the module contracts:
+
+   ```sh
+   specsync init               # .specsync/config.toml and sdd.json, SDD off
+   specsync scaffold shipping  # specs/shipping/: shipping.spec.md, context, requirements, tasks, testing
+   ```
+
+   Fill in the scaffolded files (source files, requirements and testing) before
+   you rely on them. `specsync check` reports what is still missing.
+
+3. Turn on the SpecSync change workflow, which `specsync init` leaves off:
+
+   ```sh
+   specsync change adopt
+   ```
+
+   Until you do, stage moves pass as `ungated:sdd-disabled`. They are allowed, but
+   no native lifecycle gates them, and `chough next` reports "not checked: native SDD
+   is disabled; run `specsync change adopt` to gate stages". Once SDD is adopted, gated
+   moves need a native change recorded with `chough checkpoint --native-change <id>`.
+
+4. Continue with `chough init` as below.
+
 ## Install
 
 ```sh
@@ -70,12 +120,14 @@ chough bug add --title "Shipping charged at exactly the free threshold" \
   --environment local --case TC-shipping-0001 --observation <failed-observation> \
   --scope blocking --classification product-defect
 chough stage advance                                   # refused: refused:blocking-bugs
-chough stage back --to build --reason "BUG-0001 blocks acceptance"
+chough stage back --to build --reason "<bug-id> blocks acceptance"
 ```
 
 After the fix, rerun the focused cases, link the passing observation and mark the bug
-verified (`chough bug update BUG-0001 --status verified --observation <passing>`).
-`chough bug report BUG-0001` prints a report candidate; nothing is posted unless you
+verified (`chough bug update <bug-id> --status verified --observation <passing>`).
+`bug add` prints the new ID in the form `BUG-<slug>-<24 hex>`, here
+`BUG-shipping-charged-at-exactly-the-free-threshold-` followed by 24 hex digits.
+`chough bug report <bug-id>` prints a report candidate; nothing is posted unless you
 ask.
 
 ## Acceptance

@@ -18,6 +18,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Added
 
+- New-project setup path: `docs/walkthrough.md` now opens with a minimal HI file,
+  `specsync init` and `specsync scaffold`, and `specsync change adopt`, and explains what
+  `ungated:sdd-disabled` means. README Start here points to it. With SpecSync configured
+  but SDD off, `chough next` reports "not checked: native SDD is disabled; run
+  `specsync change adopt` to gate stages", and the `ungated:sdd-disabled` gate detail says
+  the same. The walkthrough shows the `BUG-<slug>-<24 hex>` ID form, and the exercise
+  notes state SpecSync versions only as observed (issue #40).
 - Skill resume step: before its first edit, an agent states the recorded handoff in
   its own message (the goal, binding decisions with their reasons, the last failure
   with its bug status, the applicable lessons and the next task) and says what the

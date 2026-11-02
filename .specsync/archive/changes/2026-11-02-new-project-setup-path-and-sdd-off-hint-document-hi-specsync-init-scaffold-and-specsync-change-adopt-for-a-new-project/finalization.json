@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project",
+  "implementation_commit": "6a6f0bd1f2dd720f3b51a80b4bef63eceaca2d09",
+  "implementation_tree": "573e407552e169011fa14e5624d91b92be0556c2",
+  "contract_digest": "5b8a3dc2a75b9df55cfcbc6eaaeab045cbbe522666956eefadc291836ac9cee7",
+  "workspace_digest": "39ff7fac0dcb361450e315a4e1658f736c399e03128701c45d9067575ced0470",
+  "closing_digest": "a34557f3919c19ae7ce7782318a9489be8f530a958f4d3e0e3c47a9072e8dba9",
+  "review_digest": "84071e582eefe79325cdd99f9aa3d2af38fc904ac1dcc4e2ded1cc822946d6ca",
+  "finalization_digest": "a5a3142900de8b100b8e334c0207719bc32f36473a8e8dfc3e032688cd5df3c7",
+  "timestamp": 1793640235
+}
