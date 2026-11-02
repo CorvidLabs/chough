@@ -169,24 +169,27 @@ PR branch; the original workspace was preserved.
 
 - All four slug cases passed on local-macos-arm64 using automatic observation
   allocation. Their original failed observations, artifact bytes and bug links are
-  retained. Each bug links its strictly later pass; the case records name the
-  generated OBS IDs and inherited artifact logs.
-- Rust 1.99.1 and Rust 1.88.0 each passed 181 tests with exactly one named fixture
-  excluded: `both_forms_stay_within_the_cap_with_totals_for_large_records`.
-  This is partial verification, not a passing full suite.
-- That excluded test was observed failing, including through TC-cli-0120: it writes
-  `current-one`, an old-form ID deliberately refused by the approved identity policy,
-  before reaching its output-bound assertions. The dependent native definition
-  `update-compact-next-fixture-for-slug-observations` proposes only automatic fixture
-  allocation and referencing the returned ID. It is unapproved; tests/next.rs has
-  not been changed and no assertion has been removed or weakened.
-- Formatting and Rust 1.99.1 all-target warnings-denied Clippy passed. HI 0.8.0,
-  Fledge 1.8.0 and SpecSync 6.1.2 were selected explicitly. The first pre-push attempt
-  passed format, check, intent and spec but audit refused stale native evidence;
-  the scoped native check must refresh it after the final content changes.
+  retained. Each bug links its strictly later pass; case records name the generated
+  OBS IDs and inherited artifact logs.
+- The initial takeover passed 181 tests on Rust 1.99.1 and Rust 1.88.0 with exactly
+  `both_forms_stay_within_the_cap_with_totals_for_large_records` excluded. TC-cli-0120
+  separately retained that fixture's failure: it supplied obsolete `current-one` to
+  a new observation write, which the approved identity policy correctly refused.
+- 0xLeif then approved the separate one-file native definition
+  `update-compact-next-fixture-for-slug-observations`. The fixture now allocates
+  automatically and references the returned observation ID. Every original report
+  assertion and stale fixture remains unchanged. The full tests/next.rs suite
+  passed all 3 tests with Rust 1.99.1, including the original failing regression.
+- After this fix, the unfiltered Rust 1.88.0 suite passed all 182 tests, with no
+  ignored or filtered tests. The raw focused and full-suite logs are retained with
+  the takeover's Chough observations.
+- Tool PATH selects HI 0.8.0, Fledge 1.8.0 and SpecSync 6.1.2. Full Rust 1.99.1
+  verification, the CLI exercise and pre-push remain mandatory before acceptance;
+  their actual results are recorded in `.chough/evidence/` and `.chough/artifacts/`.
+  A structural native check never substitutes for those product checks.
 
-Full verify, an unfiltered full suite, the CLI exercise and hosted platform checks
-remain required. No native human review, archive, merge or release is recorded.
+Original failures and prior partial results remain retained. Hosted platform results,
+human implementation review, native archive and merge are separate evidence and gates.
 
 ## Observed evolution verification — 2026-10-31
 

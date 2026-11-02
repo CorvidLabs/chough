@@ -28,4 +28,4 @@ Hardcoding another ID could hide automatic-allocation behavior. Reference the re
 
 FLOW-6, FLOW-7, LIFE-2, LIFE-7, REQ-cli-021 and the approved identity policy. This change depends natively on use-slug-identities-for-all-new-chough-records. Relative size: very small. No product choice changes.
 
-The actual fixture failure is retained in `OBS-tc-cli-0120-76a960d09d62f9e548d773cf` and linked to local bug `BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75`. This definition remains unapproved; no tests/next.rs edit has been made.
+The actual fixture failure is retained in `OBS-tc-cli-0120-76a960d09d62f9e548d773cf` and linked to local bug `BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75`. 0xLeif subsequently approved this exact one-file scope by replying "yes i approve" on 2026-11-01. Native approval was recorded before applying the prepared patch. The full tests/next.rs suite then passed all 3 tests with Rust 1.99.1, including the original failing regression; every existing assertion remains unchanged.

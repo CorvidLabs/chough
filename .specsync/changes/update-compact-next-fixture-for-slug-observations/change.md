@@ -1,6 +1,6 @@
 ---
 id: update-compact-next-fixture-for-slug-observations
-state: draft
+state: approved
 type: refactor
 base_commit: 6800b2dadebec358ab1a6fdb18b5d78136eb6631
 ---

@@ -7,10 +7,10 @@
   "title": "Update compact-next fixture for slug observations",
   "description": "Update compact-next fixture for slug observations",
   "kind": "refactor",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
   "created_at": 1793581146,
-  "updated_at": 1793581419,
+  "updated_at": 1793582987,
   "affected_specs": [
     "cli"
   ],

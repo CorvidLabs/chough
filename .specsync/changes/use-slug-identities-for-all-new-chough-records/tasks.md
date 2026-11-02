@@ -16,7 +16,7 @@ artifact: tasks
 
 Human gates: native scope approval, human implementation review, native finalization and archive, merge, and any optional release remain separate human decisions. No checked task, local observation, structural pass or agent label approves, archives, merges, releases or deploys this change.
 
-## Required verification after native materialization (pending)
+## Required verification after native materialization
 
 The checkmarks above record implemented code and test definitions. They do not claim that the steps below have passed. These remain mandatory before implementation acceptance; they are plain text because the scoped check itself materializes the requirements needed by the case validator.
 
@@ -24,4 +24,4 @@ The checkmarks above record implemented code and test definitions. They do not c
 
 2. Pass focused and full Rust tests, real CLI exercises, formatting, warnings-denied Clippy, package and bundle checks, `fledge lanes run verify` and `fledge lanes run pre-push` using HI 0.8.0, Fledge 1.8.0 and SpecSync 6.1.2. Run the Rust 1.88.0 MSRV suite where that toolchain is available and leave hosted results unclaimed unless actually observed.
 
-Takeover status: all four slug cases passed with automatic IDs and verified their original local bugs through strictly later passes; the original failed observations and hashes are intact. Rust 1.99.1 and 1.88.0 each pass 181 tests with exactly the known compact-next fixture excluded. Formatting and latest-toolchain Clippy passed. The compact-next fixture needs the separate tests/next.rs definition approval. Pre-push initially refused stale native evidence after four successful steps; refresh it after final content changes. No passing full suite, full verify, human acceptance, archive or merge is claimed.
+Takeover observations: all four slug cases passed with automatic IDs and their original failures and hashes were retained. The initial scoped suites passed 181 tests with one fixture excluded. After 0xLeif approved the separate tests/next.rs definition, the fixture-only patch was applied without assertion changes; the focused next suite passed all 3 tests and the full Rust 1.88.0 suite passed all 182 tests without exclusions. The required full Rust 1.99.1 verify, CLI exercise, pre-push and later case results are recorded in Chough observations and artifacts. Native evidence must be refreshed after the final record writes. No human acceptance, archive or merge is claimed.

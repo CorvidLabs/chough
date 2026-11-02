@@ -27,25 +27,18 @@ native change package until it is archived.
   retains the failed `tc-cli-0125-collision-pre-fix` and strictly later passed
   `tc-cli-0125-collision-post-fix` on `local-macos-arm64`; BUG-0026 is verified.
 
-Planned approved work:
+Implemented approved work (human acceptance pending):
 
-- [ ] Complete `use-slug-identities-for-all-new-chough-records`: curated slug cases,
-  random OBS, VAL and SNAP allocation, atomic refusal, legacy reads and resume,
-  inherited artifact paths, documentation and package-update coverage. Retain the
-  planned failure-first and later-pass evidence boundaries in `testing.md`; record
-  only actual observations and checks after they run. Human implementation review,
-  native finalization and merge remain separate human gates.
-
-Identity takeover progress (verification incomplete):
-
-- The slug identity code, documentation, package-update coverage and four direct
-  failure/pass regressions are implemented. The four allocation/compatibility bugs
-  retain failed evidence and strictly later passes. Rust 1.99.1 and 1.88.0 each pass
-  181 tests with the compact-next fixture explicitly excluded.
-- The tests/next.rs fixture follow-up remains a separate unapproved dependent
-  definition. Its observed failure is retained as TC-cli-0120 evidence. Complete
-  that approval and fix, then require the full suite, verify and pre-push lanes;
-  native human review and finalization remain pending.
+- [x] Implement `use-slug-identities-for-all-new-chough-records`: curated slug
+  cases, random OBS, VAL and SNAP allocation, atomic refusal, legacy reads and
+  resume, inherited artifact paths, documentation and package-update coverage.
+  The four identity bugs retain failed observations and strictly later passes.
+- [x] Apply the separately approved compact-next fixture follow-up: use automatic
+  allocation and reference the returned ID, preserving every original assertion.
+  The focused next suite passed all 3 tests and the unfiltered Rust 1.88.0 suite
+  passed all 182 tests. Keep the original failed TC-cli-0120 observation and a later
+  passing case record. Full verification and pre-push results live in the Chough
+  evidence records; human implementation review and finalization remain gates.
 
 Completed approved work:
 
