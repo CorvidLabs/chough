@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -147,7 +147,9 @@
     "BUG-0025"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "0xLeif grades the Kimi change run handoff-cold-start-change-kimi-1 against the frozen rubric (grading sheet in .chough/artifacts/handoff-cold-start/change-kimi-1/)"
+  ],
   "run_consents": [],
-  "next_action": "0xLeif grades the change run handoff-cold-start-change-kimi-1 against the frozen rubric; then the real-repository run (same host, model and prompt on this repository at the implementation tip), graded the same way; then fledge lanes run verify, specsync change check --commit, push and CI"
+  "next_action": "After 0xLeif grades the change run and the real-repository run (both started by the operator, never by a resuming agent): fledge lanes run verify, specsync change check --commit, push and CI. Until then the only agent work is a local fledge lanes run verify; do not record grades, run change check --commit, push or start agent runs."
 }
