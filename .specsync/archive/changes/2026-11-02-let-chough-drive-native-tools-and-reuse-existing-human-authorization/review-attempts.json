@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "let-chough-drive-native-tools-and-reuse-existing-human-authorization",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "b24c881bd2b8f662a9a1b08d4a1fa11a0ae7a6c5",
+      "contract_digest": "1cd8a0ca38870368b4e62c85b2193d699dd224e40a6a3869204c468fa95c1f7f",
+      "execution_digest": "477f216fbfd6e3aeffbd6d97450be90d17998e41d0c9040a58f6294403bb5271",
+      "workspace_digest": "fe528a5bfa2f82640b722306147cee14016dd735247b980b8497129e274453c6",
+      "timestamp": 1793659730
+    },
+    {
+      "schema_version": 2,
+      "change_id": "let-chough-drive-native-tools-and-reuse-existing-human-authorization",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "9317ca938000b1b56e953b5ffe16f2b877e89297",
+      "contract_digest": "1cd8a0ca38870368b4e62c85b2193d699dd224e40a6a3869204c468fa95c1f7f",
+      "execution_digest": "477f216fbfd6e3aeffbd6d97450be90d17998e41d0c9040a58f6294403bb5271",
+      "workspace_digest": "fe528a5bfa2f82640b722306147cee14016dd735247b980b8497129e274453c6",
+      "timestamp": 1793660033
+    }
+  ]
+}

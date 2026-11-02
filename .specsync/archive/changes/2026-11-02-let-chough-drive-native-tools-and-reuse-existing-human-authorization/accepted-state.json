@@ -7,11 +7,11 @@
   "title": "Let Chough drive native tools and reuse existing human authorization",
   "description": "Let Chough drive native tools and reuse existing human authorization",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "825a3805530456005e361dfa6d96d93eee52cd09",
   "created_at": 1793635401,
-  "updated_at": 1793643451,
+  "updated_at": 1793660068,
   "affected_specs": [
     "cli"
   ],
