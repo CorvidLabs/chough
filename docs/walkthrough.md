@@ -53,7 +53,7 @@ the decision and records the pending gate as shown here:
 specsync change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/ --json
 chough checkpoint --native-change free-shipping-at-the-threshold \
   --awaiting-human "Scope approval of free-shipping-at-the-threshold"
-chough stage advance        # refused: refused:native-draft
+chough stage advance        # refused: refused:awaiting-human (refused:native-draft once cleared)
 ```
 
 Once actual human authority covers the definition, the agent runs

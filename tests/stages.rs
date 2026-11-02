@@ -457,7 +457,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     for command in ["next", "status"] {
         assert_action(
             command,
-            "Waiting for a human decision: Human scope decision. Do not record it on their behalf; continue only independent work within scope.",
+            "Waiting for a human decision: Human scope decision. Do not record it on their behalf; continue only independent work within scope. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
             &session_bytes,
         );
     }
@@ -2418,6 +2418,135 @@ fn real_git_current_cycle_conflict_and_direct_fallback_preserve_ours() {
     assert!(String::from_utf8_lossy(&direct.stderr).contains("current-cycle conflict"));
     assert_eq!(fixture.read("merge-inputs/ours.json"), merge_json(&ours));
     assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
+}
+
+/// Issue #38: with a gate awaiting a human, advance and skip are refused at intent,
+/// design, plan (SDD disabled) and release, writing nothing; at most 3 gates are
+/// named; clearing the gate allows the same move with its usual gate label.
+#[test]
+fn open_human_gates_refuse_advance_and_skip() {
+    let fixture = Fixture::new();
+    fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
+    fixture.write(".specsync/sdd.json", "{\"enabled\": false}\n");
+    fixture.init();
+    let refused = |fixture: &Fixture, gate: &str| {
+        let before = (
+            fixture.read(".chough/session.json"),
+            fixture.read(".chough/transitions.jsonl"),
+        );
+        for route in [
+            vec!["stage", "advance"],
+            vec!["stage", "skip", "--reason", "not needed"],
+        ] {
+            let error = fixture.fails(&route);
+            for expected in [
+                "refused:awaiting-human",
+                gate,
+                "chough checkpoint --clear-awaiting-human",
+            ] {
+                assert!(error.contains(expected), "{route:?}: {expected}: {error}");
+            }
+        }
+        let after = (
+            fixture.read(".chough/session.json"),
+            fixture.read(".chough/transitions.jsonl"),
+        );
+        assert!(before == after, "a refused move wrote records");
+    };
+    for (stage_name, gate) in [
+        ("intent", "Intent approval of LIFE-1"),
+        ("design", "Design approval"),
+        ("plan", "Scope approval of x"),
+    ] {
+        assert_eq!(stage(&fixture), stage_name);
+        fixture.ok(&["checkpoint", "--awaiting-human", gate]);
+        refused(&fixture, gate);
+        assert_eq!(stage(&fixture), stage_name);
+        fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+        let applied = fixture.ok(&["stage", "advance"]);
+        if stage_name == "plan" {
+            assert_eq!(applied["applied"]["gate"], "ungated:sdd-disabled");
+        }
+    }
+    assert_eq!(stage(&fixture), "build");
+
+    // Five gates: three named, two counted.
+    let mut args = vec!["checkpoint"];
+    let gates = ["Gate A", "Gate B", "Gate C", "Gate D", "Gate E"];
+    for gate in &gates {
+        args.extend(["--awaiting-human", gate]);
+    }
+    fixture.ok(&args);
+    let error = fixture.fails(&["stage", "advance"]);
+    assert!(
+        error.contains("Gate A; Gate B; Gate C (and 2 more)"),
+        "{error}"
+    );
+    assert!(!error.contains("Gate D"), "{error}");
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+
+    // Release -> done.
+    for _ in 0..3 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    assert_eq!(stage(&fixture), "done");
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "Human: publish it",
+    ]);
+    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Release approval"]);
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("refused:awaiting-human")
+    );
+    assert_eq!(stage(&fixture), "release");
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "done");
+}
+
+/// With a gate open, other moves still work, and next and status give the same
+/// waiting action, which says advance and skip are refused until it is cleared.
+#[test]
+fn open_human_gates_leave_other_moves_and_agree_in_next() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Design approval"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let status = fixture.ok(&["status", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        action.starts_with("Waiting for a human decision: Design approval"),
+        "{action}"
+    );
+    assert!(
+        action.contains(
+            "`chough stage advance` and `chough stage skip` are refused until it is cleared"
+        ),
+        "{action}"
+    );
+    assert_eq!(
+        next["next_valid_action"]["action"],
+        status["next_valid_action"]
+    );
+    fixture.ok(&["stage", "iterate", "--note", "Second prototype"]);
+    fixture.ok(&["stage", "pause", "--reason", "Waiting"]);
+    fixture.ok(&["stage", "resume"]);
+    fixture.ok(&["stage", "enter", "bugs", "--reason", "Triage"]);
+    fixture.ok(&["stage", "return"]);
+    fixture.ok(&["stage", "back", "--to", "intent", "--reason", "Rethink"]);
+    assert_eq!(stage(&fixture), "intent");
+    fixture.ok(&["stage", "reset", "--reason", "Start over"]);
+    assert_eq!(
+        fixture.session()["awaiting_human"],
+        json!(["Design approval"])
+    );
 }
 
 /// A fixture at stage test with SDD not configured whose checkpoint references

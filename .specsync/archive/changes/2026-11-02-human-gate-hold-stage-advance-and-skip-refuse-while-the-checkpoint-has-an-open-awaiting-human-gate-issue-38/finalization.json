@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38",
+  "implementation_commit": "d8c6e1e48b31ee4a1047bc2db495af7a762ed535",
+  "implementation_tree": "3be16595568d8707802712a71a778411665c5b58",
+  "contract_digest": "1d4c5dce2a2ae4d5ab018748d7de372b6013f8fc3b51dd1d515662910f3c557b",
+  "workspace_digest": "549d1085f507fdd82042e3278aac096955259acaf3d8cbd8ce285a55c9f38044",
+  "closing_digest": "eb03a9722970429dfa35a490ec0191ed44fb37c3e882d64fe811058d768cee80",
+  "review_digest": "e7ce4f51ceec010ca9446333f07d554d87c935e3cb5a0558a07f4f4eec36c1be",
+  "finalization_digest": "6c30ffab5cd99b06c53dc8b52da92db3b02b0b3273818cdac37b6188fae9100d",
+  "timestamp": 1793637893
+}

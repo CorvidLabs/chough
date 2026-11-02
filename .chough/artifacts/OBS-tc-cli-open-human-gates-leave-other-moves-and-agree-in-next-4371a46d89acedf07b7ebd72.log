@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test open_human_gates_leave_other_moves_and_agree_in_next ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 0.05s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/stages.rs (target/debug/deps/stages-216c7e915a016826)
