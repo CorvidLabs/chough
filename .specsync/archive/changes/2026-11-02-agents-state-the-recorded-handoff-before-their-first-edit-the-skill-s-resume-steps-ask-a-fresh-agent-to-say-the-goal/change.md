@@ -1,6 +1,6 @@
 ---
 id: agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal
-state: implementing
+state: archived
 type: feature
 base_commit: 118a895e6db179b1fbf7abeee9a9e7130cd7e399
 ---
