@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -142,7 +142,8 @@
     "decided: 0xLeif said \"Just go without Kimi\" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent",
     "human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: \"I approve\"); the cold-start criterion was not run by his decision (\"Just go without Kimi\"); review and ship recorded on his instruction",
     "human: 0xLeif clarified in chat on 2026-11-02 that the agent can do any changes and it just needs a PR; Chough must handle SpecSync and other tools internally. This standing scope/implementation authorization applies to this concrete workflow fix and is relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . It is not implementation acceptance, merge, release or deployment authorization.",
-    "decided: native operations record project agent actor corvid-agent and cite actual human authorization separately, because the acting account and the authority source are different provenance roles; PR44 peer-review refinement is covered by the existing standing permission, and the original approval event is preserved"
+    "decided: native operations record project agent actor corvid-agent and cite actual human authorization separately, because the acting account and the authority source are different provenance roles; PR44 peer-review refinement is covered by the existing standing permission, and the original approval event is preserved",
+    "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status and remaining native closeout gate were presented. This authorizes this session to finish all three native scopes on PR #44 under the existing through-PR authorization; native acting account is corvid-agent. Merge, release, deployment and live cleanup remain separate."
   ],
   "open_questions": [],
   "completed": [
@@ -226,7 +227,8 @@
     "Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested.",
     "PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass.",
     "PR44 complete bundle consistency: plan/accept references apply existing authority and use acting agent accounts; both tracked hosts safely refreshed; four exact predecessors and every edited variant covered; structural writer/copy regression and both bound cases pass. All198tests on currentRust/Rust1.88 and all9Fledgesteps pass. Both native changes must close on thisPR.",
-    "PR44 user-doc guidance is consistent across CLI/walkthrough/next-change docs, canonical skill and installed bundles. All198tests on Rust1.95/Rust1.88, both bound cases and allnineFledge steps pass. Initial unrelated timing-budget MSRV failure is preserved with an open reliability bug; isolated/full unchanged reruns passed, cause unconfirmed. Three native scopes must close after actual implementation acceptance."
+    "PR44 user-doc guidance is consistent across CLI/walkthrough/next-change docs, canonical skill and installed bundles. All198tests on Rust1.95/Rust1.88, both bound cases and allnineFledge steps pass. Initial unrelated timing-budget MSRV failure is preserved with an open reliability bug; isolated/full unchanged reruns passed, cause unconfirmed. Three native scopes must close after actual implementation acceptance.",
+    "PR #44 completed all three native scoped reviews and archives in SpecSync required order under the human finish-all instruction. Original approval events and failed qualification proof remain intact; the checkpoint is done."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -367,9 +369,7 @@
     "BUG-stage-references-and-installed-workflows-contradict-agent-authority-gui-17c8cf5e8275ded08fcacc38"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of the issue42 workflow PR; the agent handles native closeout after the applicable acceptance decision"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Push the qualified user-documentation repair, obtain corvid-agent re-review, and retain the actual implementation acceptance gate before closing all three native scopes"
+  "next_action": "0xLeif merges PR #44 once hosted checks are green; integrate main and requalify after an earlier PR merges"
 }
