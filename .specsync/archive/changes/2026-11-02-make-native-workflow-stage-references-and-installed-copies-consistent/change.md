@@ -1,6 +1,6 @@
 ---
 id: make-native-workflow-stage-references-and-installed-copies-consistent
-state: implementing
+state: archived
 type: documentation
 base_commit: 7cd739219ff667dcf6d153a6f439d6c3661b1fce
 ---

@@ -7,11 +7,11 @@
   "title": "Make native workflow stage references and installed copies consistent",
   "description": "Make native workflow stage references and installed copies consistent",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "7cd739219ff667dcf6d153a6f439d6c3661b1fce",
   "created_at": 1793640357,
-  "updated_at": 1793643467,
+  "updated_at": 1793660316,
   "affected_specs": [],
   "affected_paths": [
     "skills/chough-workflow/references/plan.md",
