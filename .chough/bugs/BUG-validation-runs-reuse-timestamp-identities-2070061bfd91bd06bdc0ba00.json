@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "BUG-validation-runs-reuse-timestamp-identities-2070061bfd91bd06bdc0ba00",
+  "title": "Validation runs reuse timestamp identities",
+  "symptom": "Independent roots and repeated validation runs use timestamp and counter IDs instead of random VAL slug identities.",
+  "trigger": "Run the direct independent-root and identical repeated-run validation regression.",
+  "expected": "Every new run has a distinct VAL slug ID and every attempt has its own OBS ID and inherited artifact.",
+  "actual": "The unfixed regression allocated tc-cli-0001-1793579525 and failed the required VAL form assertion.",
+  "criteria": [
+    "FLOW-9",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-013"
+  ],
+  "cases": [
+    "TC-cli-slug-validation-allocation"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92",
+    "OBS-tc-cli-slug-validation-allocation-b1eb4af179f28f15e8224463",
+    "OBS-tc-cli-slug-validation-allocation-71fe2212baa0de8c7e2caab1"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "failure-first direct cargo regression",
+  "notes": [
+    {
+      "at_unix_seconds": 1793582114,
+      "text": "status: open -> verified. Takeover rerun passed the original focused regression with an automatically allocated new-form observation and inherited artifact path. Original failed observation and artifact retained. Native acceptance and full-suite verification remain separate.",
+      "observations": [
+        "OBS-tc-cli-slug-validation-allocation-b1eb4af179f28f15e8224463"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793582435,
+      "text": "Focused rerun at committed production source 27c0964 passed with automatic allocation. Retains original failure and prior pass. Full-suite fixture gate remains separate.",
+      "observations": [
+        "OBS-tc-cli-slug-validation-allocation-71fe2212baa0de8c7e2caab1"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793579565,
+  "updated_at_unix_seconds": 1793582435
+}

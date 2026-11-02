@@ -1,0 +1,22 @@
+Command: cargo test --locked --test optional -- --exact independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots
+Exit status: 101
+Environment: local-macos-arm64
+Generated ID: 2026-11-02-1
+
+running 1 test
+test independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots ... FAILED
+
+failures:
+
+---- independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots stdout ----
+
+thread 'independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots' panicked at tests/optional.rs:337:28:
+expected SNAP- prefix: 2026-11-02-1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+failures:
+    independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.52s
+
+error: test failed, to rerun pass `--test optional`

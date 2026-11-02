@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0120-76a960d09d62f9e548d773cf",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-021",
+    "REQ-cli-003"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact both_forms_stay_within_the_cap_with_totals_for_large_records for TC-cli-0120: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-0120-76a960d09d62f9e548d773cf.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-0120-76a960d09d62f9e548d773cf.log": "d2b234f1e42fc289ad8629ccc251c933163b7052c07dc56cc7db78137292b3d4"
+  },
+  "observed_at_unix_seconds": 1793582342,
+  "snapshot": {
+    "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+    "dirty": true,
+    "fingerprint": "265783315cc8eadeb60c9f84fb10c2e5e3ca8abf422610bd47cfb0312e6bf300",
+    "content": "e262857779c52658af2b715d13bb0a137a7fd3653aa345ce8ec2eb33614bfffd"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0120",
+      "digest": "9f386b129c8042c3c14877daf78a5d365c2396d8eabd1b43993a15f724707a89"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "both_forms_stay_within_the_cap_with_totals_for_large_records"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

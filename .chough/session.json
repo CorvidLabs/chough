@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -93,7 +93,8 @@
     "0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints",
     "0xLeif approved a separate native change for slug-based bug identity with legacy numeric compatibility and no bulk migration",
     "0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json",
-    "0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup"
+    "0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup",
+    "Codex resumed Kimi's approved identity scope in a preserved takeover checkout; tests/next.rs is covered by a separate prepared fixture change, not by amending the frozen identity scope."
   ],
   "open_questions": [],
   "completed": [
@@ -137,7 +138,8 @@
     "Materialized REQ-cli-007, recorded the strictly later real Git pass, and verified the merge bug",
     "Full verify, Rust 1.88 tests and pre-push passed; the final current-content real Git observation passed",
     "Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done",
-    "PR #29 merged as 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec, observed on GitHub"
+    "PR #29 merged as 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec, observed on GitHub",
+    "Resumed Kimi identity implementation on the existing PR branch; four slug regressions pass with automatic IDs and original failures retained. Rust 1.99.1 and 1.88.0 each passed 181 tests with the known compact-next fixture excluded."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -189,7 +191,12 @@
     "tc-cli-0114-1793549250",
     "checkpoint-merge-real-git-pre-fix",
     "checkpoint-merge-real-git-post-fix",
-    "checkpoint-merge-real-git-final"
+    "checkpoint-merge-real-git-final",
+    "OBS-tc-cli-0120-76a960d09d62f9e548d773cf",
+    "OBS-tc-cli-slug-observation-allocation-f02d9d7cc4d216e577cfce37",
+    "OBS-tc-cli-slug-validation-allocation-71fe2212baa0de8c7e2caab1",
+    "OBS-tc-cli-slug-snapshot-allocation-6e6f67c6b9c8a661f088ecd3",
+    "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637"
   ],
   "bugs": [
     "BUG-0001",
@@ -204,12 +211,13 @@
     "BUG-0024",
     "BUG-0025",
     "BUG-0026",
-    "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee"
+    "BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee",
+    "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75"
   ],
   "blockers": [],
   "awaiting_human": [
-    "Scope approval of use-slug-identities-for-all-new-chough-records"
+    "Scope approval of update-compact-next-fixture-for-slug-observations"
   ],
   "run_consents": [],
-  "next_action": "0xLeif to approve the .chough record identity scope; do not implement before native approval"
+  "next_action": "Approve the one-file compact-next fixture definition, apply its prepared automatic-ID fixture update, then require the unfiltered full suite and verify/pre-push lanes. Keep learning PR 35 unaccepted pending a valid graded cold-start run."
 }

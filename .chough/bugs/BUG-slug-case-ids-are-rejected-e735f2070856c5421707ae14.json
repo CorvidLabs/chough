@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "id": "BUG-slug-case-ids-are-rejected-e735f2070856c5421707ae14",
+  "title": "Slug case IDs are rejected",
+  "symptom": "Case validation accepts only numeric IDs and rejects approved curated slug identities.",
+  "trigger": "Load a case definition whose ID is TC-cli-curated-login-check.",
+  "expected": "Lowercase bounded slug case IDs validate while legacy IDs and digests remain stable and duplicates refuse globally.",
+  "actual": "The direct test observed id must look like TC-cli-0001 and exited 101.",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "cases": [
+    "TC-cli-slug-case-compatibility"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+  "steps": [
+    "cargo test --locked --test cases -- --exact slug_case_ids_validate_without_changing_legacy_ids_digests_or_global_uniqueness"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674",
+    "OBS-tc-cli-slug-case-compatibility-649b7f61182d9e2cbf4c4c38",
+    "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637"
+  ],
+  "impact": "Approved slug case definitions cannot be loaded or executed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793582115,
+      "text": "status: open -> verified. Takeover rerun passed the original focused regression with an automatically allocated new-form observation and inherited artifact path. Original failed observation and artifact retained. Native acceptance and full-suite verification remain separate.",
+      "observations": [
+        "OBS-tc-cli-slug-case-compatibility-649b7f61182d9e2cbf4c4c38"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793582437,
+      "text": "Focused rerun at committed production source 27c0964 passed with automatic allocation. Retains original failure and prior pass. Full-suite fixture gate remains separate.",
+      "observations": [
+        "OBS-tc-cli-slug-case-compatibility-a744b8da5fa92a132e471637"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793579580,
+  "updated_at_unix_seconds": 1793582437
+}

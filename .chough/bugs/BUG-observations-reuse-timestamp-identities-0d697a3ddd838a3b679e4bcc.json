@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "BUG-observations-reuse-timestamp-identities-0d697a3ddd838a3b679e4bcc",
+  "title": "Observations reuse timestamp identities",
+  "symptom": "Automatic observations use timestamps and local numeric suffixes instead of random slug identities.",
+  "trigger": "Run the same case repeatedly in one root and in two independent roots with identical starting records.",
+  "expected": "Every attempt receives a distinct OBS slug plus 24 lowercase hex ID and an inherited artifact path.",
+  "actual": "The direct test observed old-form ID tc-cli-0001-1793579540 and exited 101.",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-011",
+    "REQ-cli-017"
+  ],
+  "cases": [
+    "TC-cli-slug-observation-allocation"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "6800b2dadebec358ab1a6fdb18b5d78136eb6631",
+  "steps": [
+    "cargo test --locked --test cases -- --exact independent_roots_and_identical_repeated_runs_allocate_distinct_observations"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-slug-observation-allocation-6f0a2f94c38b11d27e45a901",
+    "OBS-tc-cli-slug-observation-allocation-fb841732389861bd071a5f13",
+    "OBS-tc-cli-slug-observation-allocation-f02d9d7cc4d216e577cfce37"
+  ],
+  "impact": "Independent roots and identical repeated runs do not receive the approved collision-resistant observation identities.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793579587,
+      "text": "Added despite similar reports: The existing bug covers validation run allocation; this defect is observation and artifact allocation in cases and evidence.",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793582114,
+      "text": "status: open -> verified. Takeover rerun passed the original focused regression with an automatically allocated new-form observation and inherited artifact path. Original failed observation and artifact retained. Native acceptance and full-suite verification remain separate.",
+      "observations": [
+        "OBS-tc-cli-slug-observation-allocation-fb841732389861bd071a5f13"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793582433,
+      "text": "Focused rerun at committed production source 27c0964 passed with automatic allocation. Retains original failure and prior pass. Full-suite fixture gate remains separate.",
+      "observations": [
+        "OBS-tc-cli-slug-observation-allocation-f02d9d7cc4d216e577cfce37"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793579587,
+  "updated_at_unix_seconds": 1793582433
+}
