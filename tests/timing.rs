@@ -1493,7 +1493,26 @@ fn a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown() {
                 .contains("budget"),
             "{change:#}"
         );
-        assert_eq!(change["approvals"][0]["standing"], "unknown");
+        // No status read and no local record read: every time is unknown.
+        for time in ["updated", "verification", "review", "finalization"] {
+            assert_eq!(
+                change[time]["unix_seconds"],
+                Value::Null,
+                "{time}: {change:#}"
+            );
+            assert!(
+                change[time]["unknown"].as_str().unwrap().contains("budget"),
+                "{time}: {change:#}"
+            );
+        }
+        assert_eq!(change["approvals"], json!([]));
+        assert_eq!(change["reopenings"], json!([]));
+        assert!(
+            change["approvals_unknown"]
+                .as_str()
+                .unwrap()
+                .contains("budget")
+        );
     }
     assert_eq!(native["history_selection"]["not_read_budget"], 10);
     assert_eq!(native["history_selection"]["read"], 0);

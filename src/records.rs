@@ -77,12 +77,30 @@ pub(super) fn trace_phase(name: &str, started: Instant) {
 }
 
 fn trace_native(section: &Section, started: Instant) {
-    trace(&format!(
-        "native {} state={} elapsed_ms={}",
-        section.source,
-        section.state,
-        started.elapsed().as_millis()
+    trace(&native_trace_line(
+        &section.source,
+        &section.state,
+        started.elapsed().as_millis(),
     ));
+}
+
+/// One native trace line: the mandatory state and elapsed fields come first, and only
+/// the command text after them is shortened, so the whole line (with its prefix) fits
+/// the trace bound and never loses its outcome.
+fn native_trace_line(source: &str, state: &str, elapsed_ms: u128) -> String {
+    let head = format!("native state={state} elapsed_ms={elapsed_ms} command=");
+    let room = TRACE_LINE_LIMIT
+        .saturating_sub("chough-trace: ".len() + head.len())
+        .saturating_sub(3);
+    let source = source.replace(['\n', '\r'], " ");
+    if source.len() <= room + 3 {
+        return format!("{head}{source}");
+    }
+    let mut cut = room;
+    while !source.is_char_boundary(cut) {
+        cut -= 1;
+    }
+    format!("{head}{}...", &source[..cut])
 }
 
 pub(super) fn print_json(value: &Value) -> Result<()> {
@@ -911,6 +929,30 @@ pub(super) fn record_names(root: &Path, directory: &str) -> Result<Vec<String>> 
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_long_native_command_keeps_the_trace_state_and_elapsed_fields_within_the_bound() {
+        let source = format!("specsync change status {} --json", "é".repeat(4_000));
+        let line = format!(
+            "chough-trace: {}",
+            super::native_trace_line(&source, "timed-out", 120_000)
+        );
+        assert!(
+            line.len() <= super::TRACE_LINE_LIMIT,
+            "{} bytes",
+            line.len()
+        );
+        assert!(
+            line.starts_with("chough-trace: native state=timed-out elapsed_ms=120000 command=specsync change status "),
+            "{line}"
+        );
+        assert!(line.ends_with("..."), "a shortened command is marked");
+        let short = super::native_trace_line("hi export", "observed", 7);
+        assert_eq!(
+            short,
+            "native state=observed elapsed_ms=7 command=hi export"
+        );
+    }
+
     use super::*;
 
     fn limits(cap: usize, seconds: u64) -> Limits {

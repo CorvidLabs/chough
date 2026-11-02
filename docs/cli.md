@@ -504,10 +504,14 @@ deadline above, and gates still refuse every unknown native state.
   invalid value is refused before any record or native read. Each read runs with the
   smaller of the per-read deadline and the remaining budget; a read cut by the budget
   is `timed-out` and names the budget. A change the budget leaves no time for has
-  `status_read` `not-read`, `not_read_reason` `budget-exhausted` and unknown times,
-  and is counted in `not_read_budget` and listed under `partial`.
-- **Trace.** `CHOUGH_TRACE=1` writes to stderr one `chough-trace: native <program
-  args> state=<state> elapsed_ms=<n>` line per bounded native read (in every command)
+  `status_read` `not-read` and `not_read_reason` `budget-exhausted`. Its record files
+  are not read either, so every time (created, updated, approvals, reopenings,
+  verification, review, finalization) is unknown with the budget as the reason. It is
+  counted in `not_read_budget` and listed under `partial`.
+- **Trace.** `CHOUGH_TRACE=1` writes to stderr one `chough-trace: native
+  state=<state> elapsed_ms=<n> command=<program args>` line per bounded native read
+  (in every command; the state and time come first, and only a command too long for
+  the bound is shortened, ending `...`)
   and, for timing, one `chough-trace: phase <name> elapsed_ms=<n>` line per phase
   (`transitions`, `tests`, `validation`, `native`, `render`). Lines are at most
   1024 bytes. Without it, stdout and stderr are unchanged; a trace never changes the

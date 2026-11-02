@@ -1069,6 +1069,24 @@ fn native_change(
     let approval_valid = status
         .and_then(|value| value.pointer("/summary/approval_valid"))
         .and_then(Value::as_bool);
+    // A change the budget left no time for is reported with every time unknown: its
+    // local record files are not read either, so nothing implies a status read.
+    if let Some(reason) = not_read_reason {
+        let unknown = Time::Unknown(unavailable.clone().unwrap_or_default()).to_json();
+        return json!({
+            "id": id,
+            "status_read": status_read,
+            "not_read_reason": reason,
+            "created": unknown,
+            "updated": unknown,
+            "approvals": [],
+            "approvals_unknown": unavailable,
+            "reopenings": [],
+            "verification": unknown,
+            "review": unknown,
+            "finalization": unknown,
+        });
+    }
     let Some(directory) = directory else {
         let missing = Time::Unknown("no native record".into()).to_json();
         return json!({
