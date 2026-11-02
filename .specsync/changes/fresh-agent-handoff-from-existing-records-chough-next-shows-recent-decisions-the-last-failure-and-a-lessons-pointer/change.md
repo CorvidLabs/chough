@@ -1,6 +1,6 @@
 ---
 id: fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer
-state: approved
+state: implementing
 type: feature
 base_commit: fb6e4871a802c55ba273cd9f5a6207f6e42be884
 ---
