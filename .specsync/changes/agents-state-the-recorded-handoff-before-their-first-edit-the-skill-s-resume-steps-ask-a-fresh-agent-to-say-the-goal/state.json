@@ -7,10 +7,10 @@
   "title": "Agents state the recorded handoff before their first edit: the skill's resume steps ask a fresh agent to say the goal, binding decisions with reasons, the last failure with its bug status, the applicable lessons and the next task in its own words",
   "description": "Agents state the recorded handoff before their first edit: the skill's resume steps ask a fresh agent to say the goal, binding decisions with reasons, the last failure with its bug status, the applicable lessons and the next task in its own words",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "118a895e6db179b1fbf7abeee9a9e7130cd7e399",
   "created_at": 1793594893,
-  "updated_at": 1793594944,
+  "updated_at": 1793596433,
   "affected_specs": [
     "cli"
   ],
