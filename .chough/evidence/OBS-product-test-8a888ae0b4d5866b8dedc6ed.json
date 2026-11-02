@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-8a888ae0b4d5866b8dedc6ed",
+  "criteria": [
+    "FLOW-3",
+    "FLOW-5",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-linux-x86_64",
+  "summary": "Issue #38 reproduced at 825a380: with an open awaiting-human gate, stage advance applied intent -> design and stage skip applied plan -> build (SDD off), both exit 0",
+  "artifacts": [
+    ".chough/artifacts/bug38-repro.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bug38-repro.log": "9d1679a4842f7e7b86241623772dd4033cb7a6400852c3acd1f9ed1ce280cff4"
+  },
+  "observed_at_unix_seconds": 1793637235,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "a314c1fad2425c78ad38c2413f30bdcdb7117473701f64a9bc2ecbbf8c52a24f",
+    "content": "e4258c3618153b18485f2910a9d0d2b8b32381dc5c4f19d9c01786f0a144de32"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Sample project with SDD off; REQ-cli-030 is not materialized yet, so the observation links REQ-cli-008 (stage routing)"
+  ]
+}

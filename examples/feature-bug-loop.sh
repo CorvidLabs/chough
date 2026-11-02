@@ -161,8 +161,10 @@ Acceptance Criteria
 | `shipping_fee` | Shipping fee in cents for an order total in cents |
 EOF
 commit "Draft the native change $id"
-$chough checkpoint --native-change "$id" --awaiting-human "Scope approval of $id" >/dev/null
+$chough checkpoint --native-change "$id" >/dev/null
 expect_refusal "entering build before scope approval" "refused:native-draft" $chough stage advance
+$chough checkpoint --awaiting-human "Scope approval of $id" >/dev/null
+expect_refusal "advancing while the scope decision is open" "refused:awaiting-human" $chough stage advance
 specsync change approve "$id" --actor "SIMULATED-sample-approver-not-a-human" >/dev/null
 $chough checkpoint --clear-awaiting-human \
     --decision "Scope of $id approved by a SIMULATED actor in this sample; not a human decision" >/dev/null

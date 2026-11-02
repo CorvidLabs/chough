@@ -829,7 +829,7 @@ pub(super) fn assess(
     } else if !session.awaiting_human.is_empty() {
         Action {
             action: format!(
-                "Waiting for a human decision: {}. Do not record it on their behalf; continue only independent work within scope.",
+                "Waiting for a human decision: {}. Do not record it on their behalf; continue only independent work within scope. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
                 session.awaiting_human.join("; ")
             ),
             reason: "Only a person can close these gates.".into(),
@@ -1151,6 +1151,27 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
     Ok(())
 }
 
+/// An open human gate holds advance and skip (REQ-cli-030); no reason bypasses it.
+fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
+    let gates = &session.awaiting_human;
+    if gates.is_empty() {
+        return Ok(());
+    }
+    let more = match gates.len().saturating_sub(3) {
+        0 => String::new(),
+        rest => format!(" (and {rest} more)"),
+    };
+    bail!(
+        "{kind} refused (refused:awaiting-human): waiting for a human decision: {}{more}; record the decision, then clear it with `chough checkpoint --clear-awaiting-human` (re-pass gates still waiting with --awaiting-human)",
+        gates
+            .iter()
+            .take(3)
+            .map(String::as_str)
+            .collect::<Vec<_>>()
+            .join("; ")
+    )
+}
+
 /// Leaving test needs every case referenced in the checkpoint to have a latest
 /// observation, by recorded time and then ID, that did not fail, or one that a local
 /// bug of any status links (issue #39). Describes the first such failure by case ID.
@@ -1203,6 +1224,7 @@ fn move_forward(
 ) -> Result<Value> {
     ensure_active(session)?;
     ensure_main(session, kind)?;
+    ensure_no_open_human_gate(session, kind)?;
     let from = session.stage.current.clone();
     let to = if from == "release" {
         "done".to_string()

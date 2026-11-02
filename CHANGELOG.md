@@ -54,6 +54,12 @@ All notable changes to Chough are recorded here. The format follows
 - History retention normalizes directory aliases in frozen plaintext artifacts as
   well as structured references, preserving cycles named with Windows separators,
   case differences, repeated separators and dot components.
+- `chough stage advance` and `chough stage skip` (and release → done) are refused as
+  `refused:awaiting-human` while the checkpoint has an open awaiting-human gate, so an
+  agent can no longer leave intent, design or plan before the human answers. The
+  message names up to 3 gates and the clearing command; `next` and `status` say the
+  moves are refused until the gate is cleared (#38).
+
 - Leaving test for accept, by `stage advance` or `stage skip`, is refused with
   `refused:unlinked-failure` while the latest executed (passed or failed) observation
   of a case referenced in the checkpoint failed and no local bug links it; a later

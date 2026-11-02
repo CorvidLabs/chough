@@ -148,7 +148,7 @@ writes remain visible in `chough history show`; they do not prove a completed st
 Only parent links on the selected lineage order current work. Native gates still
 decide lifecycle transitions.
 
-Recent guidance follows at most 128 events and 512 KiB. A cycle holds at most 4,096
+Recent guidance follows at most 128 events and 512 KiB. Local appends to a new cycle allow at most 4,096
 events and 16 MiB; a capacity refusal preserves the checkpoint, and a reasoned
 `chough stage reset` can begin a new cycle without deleting the old proof. Timing
 bounds transition content at 4,096 events / 16 MiB and keeps other tips separate
@@ -170,3 +170,7 @@ references and retained hashes. If new proof references removed content, restore
 the exact bytes from Git before accepting integration; a pruned or unavailable
 reference is not passing evidence. The one-owner live checkpoint and maintenance
 rule still applies; arbitrary external filesystem writers are not serialized.
+
+Git may combine independently written event sets above that local capacity. Retain
+all imported proof, refuse further ordinary appends to the full cycle, and use a
+reasoned reset for new work. The limit never silently discards merged events.

@@ -1,0 +1,13 @@
+# Issue #38 gate tests before the fix
+revision: 825a3805530456005e361dfa6d96d93eee52cd09 + working tree (tests only)
+platform: Linux 6.12.94+ x86_64
+date: 2026-11-02T16:34:41Z
+command: cargo test --test stages open_human_gates
+test open_human_gates_refuse_advance_and_skip ... FAILED
+test open_human_gates_leave_other_moves_and_agree_in_next ... FAILED
+thread 'open_human_gates_refuse_advance_and_skip' (3633258) panicked at tests/common/mod.rs:69:9:
+["stage", "advance"] unexpectedly succeeded: {
+thread 'open_human_gates_leave_other_moves_and_agree_in_next' (3633257) panicked at tests/stages.rs:2527:5:
+    open_human_gates_leave_other_moves_and_agree_in_next
+    open_human_gates_refuse_advance_and_skip
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.02s

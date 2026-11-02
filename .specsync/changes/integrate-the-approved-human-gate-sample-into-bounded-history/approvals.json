@@ -1,0 +1,36 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793661711,
+      "digest": "2f5b8276203ab960b12d7db9b7c660a81f073640fc6a2b8e6e5b791ab84d5277",
+      "note": "Actual authority: 0xLeif standing chat permission for changes through PRs, plus 2026-11-02 instruction \"Can you finish up all these?\" following presented PR status. Bounded scope: import approved main sample/walkthrough and qualify PR37; no merge, live adoption, cleanup or release authority is inferred.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-the-approved-human-gate-sample-into-bounded-history",
+        "title": "Integrate the approved human gate sample into bounded history",
+        "description": "Integrate the approved human gate sample into bounded history",
+        "kind": "documentation",
+        "affected_specs": [],
+        "affected_paths": [
+          "docs/walkthrough.md",
+          "examples/feature-bug-loop.sh"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Import unchanged already approved main sample/docs for the human-gate guard while integrating PR37. No new product semantics or criterion IDs; active history and reference scopes own other integration paths.",
+        "acceptance_criteria": [
+          "Retain the approved main human-gate sample and walkthrough exactly, preserve all existing proof, and pass combined-source verification and the disposable CLI exercise."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

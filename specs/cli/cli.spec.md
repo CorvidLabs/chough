@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 20
+version: 21
 status: active
 files:
   - src/main.rs
@@ -225,4 +225,5 @@ provider, runtime or hosted service.
 | 17 | 2026-11-02 | case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the: Case recording order: the shipped skill keeps running and recording Chough cases out of tasks.md checkboxes and runs the scoped specsync change check first, so a case can link a requirement an approved change adds (BUG-0017, issue 11) |
 | 18 | 2026-11-02 | unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links: Unlinked failure gate: leaving test refuses while a checkpoint case's latest observation failed and no local bug links it (issue 39) |
 | 19 | 2026-11-02 | unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation: Unlinked failure ignores not-run: leaving test keeps refusing when a referenced case's latest executed observation failed and a later observation is only not-run (PR 43 review) |
-| 20 | 2026-11-02 | bound-transition-history-and-preserve-referenced-proof: Bound transition history and preserve referenced proof |
+| 20 | 2026-11-02 | human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38: Human-gate hold: stage advance and skip refuse while the checkpoint has an open awaiting-human gate (issue 38) |
+| 21 | 2026-11-02 | bound-transition-history-and-preserve-referenced-proof: Bound transition history and preserve referenced proof |
