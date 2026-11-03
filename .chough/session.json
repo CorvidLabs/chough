@@ -7,12 +7,12 @@
     "history"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
+  "native_change": "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies",
   "references": {
     "criteria": [
       "FLOW-1",
