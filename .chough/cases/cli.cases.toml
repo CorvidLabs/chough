@@ -2692,3 +2692,40 @@ expected = ["tests/stages.rs::a_configured_project_with_sdd_off_says_to_run_spec
 adapter = "cargo-test"
 test_target = "stages"
 test = "a_configured_project_with_sdd_off_says_to_run_specsync_change_adopt"
+
+[[case]]
+id = "TC-cli-same-second-runs-in-two-git-roots-stay-distinct"
+title = "Same-second runs of one case in two Git roots stay distinct and valid after merging"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-2"]
+requirements = ["REQ-cli-023"]
+paths = ["src/records.rs", "src/main.rs", "src/identity.rs", "src/cases.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["src/main.rs::tests::same_second_runs_in_two_git_roots_keep_distinct_identities_after_merge passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "tests::same_second_runs_in_two_git_roots_keep_distinct_identities_after_merge"]
+expect_output = ["test tests::same_second_runs_in_two_git_roots_keep_distinct_identities_after_merge ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 1800
+
+[[case]]
+id = "TC-cli-independently-added-records-merge-cleanly"
+title = "Records added independently on two branches merge without conflict, replacement or duplicate identity"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-2"]
+requirements = ["REQ-cli-023"]
+paths = ["src/identity.rs", "src/cases.rs", "src/evidence.rs", "src/bugs.rs", "tests/cases.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::independently_added_records_merge_without_conflict_or_replacement passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "independently_added_records_merge_without_conflict_or_replacement"

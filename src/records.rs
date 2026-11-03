@@ -109,7 +109,38 @@ pub(super) fn print_json(value: &Value) -> Result<()> {
 }
 
 pub(super) fn now() -> Result<u64> {
+    #[cfg(test)]
+    if let Some(seconds) = PINNED_CLOCK.with(std::cell::Cell::get) {
+        return Ok(seconds);
+    }
     Ok(SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs())
+}
+
+#[cfg(test)]
+thread_local! {
+    static PINNED_CLOCK: std::cell::Cell<Option<u64>> = const { std::cell::Cell::new(None) };
+    static NATIVE_STDOUT: std::cell::RefCell<Vec<(String, String)>> =
+        const { std::cell::RefCell::new(Vec::new()) };
+}
+
+/// Runs `run` with `now()` pinned to `seconds` on this thread. Test builds only, so no
+/// runtime switch can forge an observation time (issue #30).
+#[cfg(test)]
+pub(super) fn with_pinned_clock<T>(seconds: u64, run: impl FnOnce() -> T) -> T {
+    let previous = PINNED_CLOCK.with(|slot| slot.replace(Some(seconds)));
+    let result = run();
+    PINNED_CLOCK.with(|slot| slot.set(previous));
+    result
+}
+
+/// Runs `run` with `native()` answering `program` with `stdout` on this thread instead of
+/// spawning it, so unit tests do not depend on a host install. Test builds only.
+#[cfg(test)]
+pub(super) fn with_native_stdout<T>(program: &str, stdout: &str, run: impl FnOnce() -> T) -> T {
+    NATIVE_STDOUT.with(|slot| slot.borrow_mut().push((program.into(), stdout.into())));
+    let result = run();
+    NATIVE_STDOUT.with(|slot| slot.borrow_mut().pop());
+    result
 }
 
 pub(super) fn valid_name(value: &str) -> bool {
@@ -766,6 +797,20 @@ fn native_capture(
 }
 
 pub(super) fn native(root: &Path, program: &str, arguments: &[&str]) -> Section {
+    #[cfg(test)]
+    if let Some(content) = NATIVE_STDOUT.with(|slot| {
+        slot.borrow()
+            .iter()
+            .rev()
+            .find(|(name, _)| name == program)
+            .map(|(_, stdout)| stdout.clone())
+    }) {
+        return Section {
+            source: format!("{} {}", program, arguments.join(" ")),
+            state: "observed".into(),
+            content,
+        };
+    }
     let started = Instant::now();
     let section = native_section(root, program, arguments);
     trace_native(&section, started);

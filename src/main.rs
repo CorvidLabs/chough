@@ -1021,6 +1021,7 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs;
 
     /// Every cut string fits STRING_LIMIT both raw and escaped in JSON, so the next view
     /// stays within its cap whatever characters a record holds.
@@ -1041,5 +1042,148 @@ mod tests {
             assert!(kept.ends_with(CUT), "{kept:?}");
         }
         assert_eq!(cut("short \u{1}"), "short \u{1}");
+    }
+
+    fn git_in(root: &Path, args: &[&str]) {
+        let output = std::process::Command::new("git")
+            .current_dir(root)
+            .args([
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.invalid",
+            ])
+            .args([
+                "-c",
+                "commit.gpgsign=false",
+                "-c",
+                "init.defaultBranch=main",
+            ])
+            .args(["-c", "core.autocrlf=false", "-c", "merge.ff=false"])
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "git {args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    /// Issue #30: the same bound case run in two independent Git roots on separate
+    /// branches at the same pinned second keeps distinct identities and valid artifacts
+    /// after the branches merge.
+    #[test]
+    fn same_second_runs_in_two_git_roots_keep_distinct_identities_after_merge() {
+        const SECOND: u64 = 1_800_000_000;
+        const HI: &str =
+            r#"{"hi":1,"export":1,"files":[{"criteria":[{"id":"LIFE-1"}],"retired":[]}]}"#;
+        let first = tempfile::tempdir().unwrap();
+        let second = tempfile::tempdir().unwrap();
+        let a = first.path().canonicalize().unwrap();
+        for (path, text) in [
+            ("specs/cli/cli.spec.md", "# CLI\n"),
+            (
+                "specs/cli/requirements.md",
+                "### REQ-cli-001\nPreserve files.\n",
+            ),
+            ("src/input.txt", "input\n"),
+            (
+                ".chough/cases/cli.cases.toml",
+                "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Shared\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\npaths = [\"src/\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"git prints its version\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"git\", \"--version\"]\nexpect_output = [\"git version\"]\n",
+            ),
+        ] {
+            fs::create_dir_all(a.join(path).parent().unwrap()).unwrap();
+            fs::write(a.join(path), text).unwrap();
+        }
+        git_in(&a, &["init", "-q"]);
+        init(
+            &a,
+            "Same-second runs".into(),
+            String::new(),
+            vec!["cli".into()],
+            vec![],
+        )
+        .unwrap();
+        git_in(&a, &["add", "-A"]);
+        git_in(&a, &["commit", "-q", "-m", "base"]);
+        let b = second.path().canonicalize().unwrap().join("b");
+        git_in(
+            second.path(),
+            &[
+                "clone",
+                "-q",
+                "--config",
+                "core.autocrlf=false",
+                a.to_str().unwrap(),
+                "b",
+            ],
+        );
+        git_in(&a, &["checkout", "-q", "-b", "a"]);
+        git_in(&b, &["checkout", "-q", "-b", "b"]);
+
+        let (run_a, run_b) = records::with_native_stdout("hi", HI, || {
+            records::with_pinned_clock(SECOND, || {
+                (
+                    cases::run_case(&a, "TC-cli-0001", "local", None).unwrap(),
+                    cases::run_case(&b, "TC-cli-0001", "local", None).unwrap(),
+                )
+            })
+        });
+        assert_ne!(run_a.observation, run_b.observation);
+        let record = |root: &Path, id: &str| {
+            let path = root.join(format!(".chough/evidence/{id}.json"));
+            let text = fs::read(&path).unwrap();
+            let evidence: evidence::Evidence = serde_json::from_slice(&text).unwrap();
+            (text, evidence)
+        };
+        let (text_a, evidence_a) = record(&a, &run_a.observation);
+        let (text_b, evidence_b) = record(&b, &run_b.observation);
+        assert_eq!(evidence_a.observed_at_unix_seconds, SECOND);
+        assert_eq!(evidence_b.observed_at_unix_seconds, SECOND);
+        assert_eq!(evidence_a.artifacts.len(), 1);
+        assert_eq!(evidence_b.artifacts.len(), 1);
+        assert_ne!(evidence_a.artifacts, evidence_b.artifacts);
+        let artifact_a = fs::read(a.join(&evidence_a.artifacts[0])).unwrap();
+        let artifact_b = fs::read(b.join(&evidence_b.artifacts[0])).unwrap();
+
+        git_in(&a, &["add", "-A"]);
+        git_in(&a, &["commit", "-q", "-m", "run a"]);
+        git_in(&b, &["add", "-A"]);
+        git_in(&b, &["commit", "-q", "-m", "run b"]);
+        git_in(
+            &a,
+            &[
+                "pull",
+                "-q",
+                "--no-rebase",
+                "--no-edit",
+                b.to_str().unwrap(),
+                "b",
+            ],
+        );
+
+        // Both sides survive byte for byte under their own names, and still read current.
+        assert_eq!(record(&a, &run_a.observation).0, text_a);
+        assert_eq!(record(&a, &run_b.observation).0, text_b);
+        assert_eq!(
+            fs::read(a.join(&evidence_a.artifacts[0])).unwrap(),
+            artifact_a
+        );
+        assert_eq!(
+            fs::read(a.join(&evidence_b.artifacts[0])).unwrap(),
+            artifact_b
+        );
+        let merged = evidence::load_all(&a).unwrap();
+        assert_eq!(merged.len(), 2);
+        let current = evidence::snapshot(&a);
+        for evidence in &merged {
+            assert_eq!(
+                evidence::freshness(&a, evidence, &current, Some("local")).unwrap(),
+                "current-observation",
+                "{}",
+                evidence.id
+            );
+        }
     }
 }

@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Implement issue #31: bounded transition history and protected retention with explicit adoption and preserved proof",
+  "objective": "Issue #30 acceptance evidence: same-second two-root test with a pinned clock, and a real Git fixture for independently added generated records",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "bound-transition-history-and-preserve-referenced-proof",
+  "native_change": "identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -100,7 +100,9 @@
       "TC-cli-history-closing-reset-age",
       "TC-cli-history-stale-receipt-age",
       "TC-cli-history-post-prune-reference",
-      "TC-cli-sdd-off-names-specsync-change-adopt"
+      "TC-cli-sdd-off-names-specsync-change-adopt",
+      "TC-cli-same-second-runs-in-two-git-roots-stay-distinct",
+      "TC-cli-independently-added-records-merge-cleanly"
     ],
     "design": [],
     "files": [
@@ -291,7 +293,8 @@
     "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
     "PR37 final main d839fef repair passes233 tests on Rust 1.95/1.88, ten bound cases and all nine Fledge steps. Both original reproductions now report missing referenced proof and partial restoration cannot hide a separate cycle reference. All parent proof bytes are preserved; independent scoped rereview found no remaining issue.",
     "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.",
-    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved."
+    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved.",
+    "Added cfg(test) clock and native-output hooks, the same-second two-root unit test, the real Git integration fixture test, two cases and a CHANGELOG note"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -459,5 +462,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "This session merges PR37 after current-head Grok approval and all checks pass, then resynchronizes and qualifies PR44 and PR46 before merging each. Check main afterward. Source: 0xLeif chat instruction to merge approved, green PRs and resynchronize."
+  "next_action": "Run the two cases and fledge lanes run verify"
 }
