@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "context-knowledge-directory-knowledge-by-default-with-the-librarian-on-and-an-opt-out-one-regenerated-summary-per",
+  "implementation_commit": "eae6f44de070763357b3811ca6e771a325fc3ee7",
+  "implementation_tree": "d225e9c9f5e68fb15c0e38499f5018f23759b67a",
+  "contract_digest": "a13cb483c1d6de9be7c6aa39f5fd8c0abd224f787bc009dcda4e00c7d4063d1d",
+  "workspace_digest": "304a7863a84678bd2c893d1ef1b17025ec46b0b5291715d667102686301935ca",
+  "closing_digest": "7b688973a5fa0353a156c5fec32e29122adfa38145e3d27e85c2b4ca500fc9df",
+  "review_digest": "0a87aab119f6d434742e58b4230140a9ce4f41274532cd4253991f4c8ace5b1d",
+  "finalization_digest": "92efe56506870a7ac9d5251f602b43acfcafd571484633ce77b269e83e83774c",
+  "timestamp": 1793735760
+}

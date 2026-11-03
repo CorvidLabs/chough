@@ -1,6 +1,6 @@
 ---
 id: context-knowledge-directory-knowledge-by-default-with-the-librarian-on-and-an-opt-out-one-regenerated-summary-per
-state: implementing
+state: archived
 type: feature
 base_commit: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
 ---

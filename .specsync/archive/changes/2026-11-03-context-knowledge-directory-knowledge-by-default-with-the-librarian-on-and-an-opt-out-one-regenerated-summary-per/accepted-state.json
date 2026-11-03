@@ -7,11 +7,11 @@
   "title": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
   "description": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "0363d4af368bb07cc07f16c2f5fff7645c1c05bc",
   "created_at": 1793721186,
-  "updated_at": 1793735687,
+  "updated_at": 1793735760,
   "affected_specs": [
     "cli"
   ],
