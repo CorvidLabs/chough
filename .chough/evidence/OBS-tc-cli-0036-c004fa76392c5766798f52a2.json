@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0036-c004fa76392c5766798f52a2",
+  "criteria": [
+    "FLOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test optional -- --exact snapshotting_a_symlink_is_refused for TC-cli-0036: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-0036-c004fa76392c5766798f52a2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-0036-c004fa76392c5766798f52a2.log": "51cd7a9c4cd7696ee6435a66ad5f14737a3ad8b8337356f8ac1082cd713bb3f1"
+  },
+  "observed_at_unix_seconds": 1793726635,
+  "snapshot": {
+    "revision": "4b1f810da9712e169be2b7d0a9eb80b948acb6e5",
+    "dirty": false,
+    "fingerprint": "893fded850c501043a0472b3e9e5155556d31999eed87e568c308734a6e52f8c",
+    "content": "350583989f68e0700d287756a505fd36fa023d8267145c36635d116c8c3c8ba6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0036",
+      "digest": "57f25325003542d0e6560599e8c1bd121ff72be7d63c23793db8053ea68c67a8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "snapshotting_a_symlink_is_refused"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
