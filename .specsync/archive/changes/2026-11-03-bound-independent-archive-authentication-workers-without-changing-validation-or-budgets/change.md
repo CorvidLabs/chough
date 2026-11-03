@@ -1,6 +1,6 @@
 ---
 id: bound-independent-archive-authentication-workers-without-changing-validation-or-budgets
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 9af1921a3bb1f7092d364a18489cb3028e97ff26
 ---
