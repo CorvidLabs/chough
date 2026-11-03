@@ -1,6 +1,6 @@
 ---
 id: integrate-the-approved-case-ordering-and-native-authority-workflow-changes
-state: verifying
+state: archived
 type: refactor
 base_commit: 6fde285473f3fa3b6efd45bc0582b3826ec8775d
 ---
