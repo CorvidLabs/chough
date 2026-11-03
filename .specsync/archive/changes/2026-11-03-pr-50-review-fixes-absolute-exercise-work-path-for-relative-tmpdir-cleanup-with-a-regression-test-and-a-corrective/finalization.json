@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective",
+  "implementation_commit": "5b11aae4f14c63d3de6471273b2b84e85243927b",
+  "implementation_tree": "27940167b0c33e34e4d9a52b318c0a7f6f129550",
+  "contract_digest": "edc8772231874de310f038d4757bb1ffa84113c0dd59e0a7b9a009005c781649",
+  "workspace_digest": "4026627f5a627178dab1e141e6c59d5bf9e8581999a716da22d4db531f4ad846",
+  "closing_digest": "e7320cc2455ea06c6d04264f2f76effe68e70e13ec42a51366d483c2b85b77e5",
+  "review_digest": "a0f90215dcc35ae1b80b1980830b15e99253382bdb29479745384506ffb78db6",
+  "finalization_digest": "d341547599ca39ed717f1a54c34554b7cbad409fb3c5ba0d74b581515f75d569",
+  "timestamp": 1793675552
+}

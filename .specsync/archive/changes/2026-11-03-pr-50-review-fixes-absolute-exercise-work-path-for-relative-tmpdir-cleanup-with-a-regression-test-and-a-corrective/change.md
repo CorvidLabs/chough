@@ -1,6 +1,6 @@
 ---
 id: pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 250d6378614e9872ee0d55d493f4c2a7a920c87a
 ---
