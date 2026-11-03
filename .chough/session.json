@@ -7,7 +7,7 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -634,5 +634,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Independent review of the PR head (arranged by the parent agent); then specsync change review, ship, accept and done"
+  "next_action": "Merged after green hosted checks; then re-merge main into #55"
 }
