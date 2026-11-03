@@ -7,11 +7,11 @@
   "title": "CLI cleanups for issue 49: hyphen values in bug add, no repeated native next action in the next main line, ISO times in next text, help text, cli.md drift and exercise temp dir cleanup",
   "description": "CLI cleanups for issue 49: hyphen values in bug add, no repeated native next action in the next main line, ISO times in next text, help text, cli.md drift and exercise temp dir cleanup",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "a788869b32b8442cbc8d7be2bf19c19a922954a8",
   "created_at": 1793671728,
-  "updated_at": 1793671881,
+  "updated_at": 1793671938,
   "affected_specs": [
     "cli"
   ],

@@ -1,6 +1,6 @@
 ---
 id: cli-cleanups-for-issue-49-hyphen-values-in-bug-add-no-repeated-native-next-action-in-the-next-main-line-iso-times-in
-state: implementing
+state: archived
 type: bug_fix
 base_commit: a788869b32b8442cbc8d7be2bf19c19a922954a8
 ---
