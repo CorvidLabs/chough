@@ -1,0 +1,22 @@
+[
+  {
+    "task": "audit",
+    "exit_code": 0,
+    "seconds": 2.4364707497879863
+  },
+  {
+    "task": "cases",
+    "exit_code": 0,
+    "seconds": 1.7078425418585539
+  },
+  {
+    "task": "exercise",
+    "exit_code": 0,
+    "seconds": 36.58276337501593
+  },
+  {
+    "task": "build",
+    "exit_code": 0,
+    "seconds": 0.07821649988181889
+  }
+]

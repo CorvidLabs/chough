@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-history-post-prune-reference",
+  "observation": "OBS-tc-cli-history-post-prune-reference-8a9168225f609f95bb5e8be7",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test history -- --exact real_git_post_prune_references_report_unavailable_until_exact_restoration for TC-cli-history-post-prune-reference: passed (exit 0, tests run 1)."
+}

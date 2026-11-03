@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "read-report-case-definitions-once-per-request-and-expose-local-phase-costs",
+  "implementation_commit": "f6dcd4417c574e11781c04a846a4ee52722ce970",
+  "implementation_tree": "a8896da781bd177cae36fb2bbc2607c8124d769c",
+  "contract_digest": "08d57a36d3c90bb397aff96d262cc9638a1928624dca228a1c14fe9dfbdb2939",
+  "workspace_digest": "d918c010ab8134f831aa66ea832031b477c8834f1539b1724693cedfc2b54ac5",
+  "closing_digest": "1531f4661a49d7e2ec75323de01816919ed74bebd0781b2fb7ad6f66baca28c6",
+  "review_digest": "7afff2cc74e581d138b02299c222948f32c6a89bc9b5459e3fc3a1a12cd8b3dd",
+  "finalization_digest": "c2ebbf8ffab6a961652022950799ff620c6c9a796087f06fd85392fd34e76177",
+  "timestamp": 1793659915
+}

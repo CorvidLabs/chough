@@ -1,0 +1,66 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793668313,
+      "digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+      "note": "SOURCE: 0xLeif instructed in chat 'Merge approved, green PRs and resynchronize', covering this concrete bounded integration of accepted PR37 history and accepted PR44 workflow with existing PR46 report reads. Earlier standing through-PR authorization: 'And I already gave it some approval and told it can do any changes. It just needs a PR.' Actor corvid-agent labels the project operation, not human authentication. No new product policy or requirement; native implementation review and ship remain root's separate closeout.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-accepted-history-and-workflow-changes-into-pr-46-report-reads",
+        "title": "Integrate accepted history and workflow changes into PR 46 report reads",
+        "description": "Integrate accepted history and workflow changes into PR 46 report reads",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow",
+          ".chough/cases/cli.cases.toml",
+          ".chough/session.json",
+          ".chough/transitions.jsonl",
+          ".claude/skills/chough-workflow",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "skills/chough-workflow",
+          "specs/cli/cli.spec.md",
+          "specs/cli/context.md",
+          "specs/cli/requirements.md",
+          "specs/cli/testing.md",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/common/mod.rs",
+          "tests/evidence.rs",
+          "tests/next.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Integrate already accepted and archived PR 37 history and PR 44 workflow into PR 46 report reads without changing approved behavior or requirements. Reconcile overlapping source, companions, canonical version metadata, checkpoint collections and qualification only; preserve all immutable proof.",
+        "acceptance_criteria": [
+          "Accepted history and workflow behavior and all approved requirements coexist with request-local report reads and typed error diagnostics. Preserve immutable proof, the PR46 atomic current-cycle group, additive collections and real transition occurrences. Reconcile monotonic canonical version metadata. On final combined source, required Fledge verification, Rust1.95 and Rust1.88 tests and applicable history, report and workflow cases pass. Actual merged44 source identity is checked before closeout; native verification is current and root alone records review and ship."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Use existing approved requirements and archived source lineages, preserve every immutable archive/evidence/artifact/cold-start blob, keep PR46's current-cycle group atomic and merge additive collections and transition occurrences without loss or transport duplicates. No persistent cache or new runtime, force push, rebase, PR merge, release or deployment. Root alone records native implementation review and ship. Human SOURCE: 0xLeif instructed 'Merge approved, green PRs and resynchronize' and previously 'And I already gave it some approval and told it can do any changes. It just needs a PR.' The operating actor corvid-agent is a label, not authenticated human identity. Hold full qualification until final accepted44 source is integrated; check actual44 main source identity before closeout.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793672650,
+      "digest": "18bdbbd44e2c7775c77559976b351b094dfede2646ac1b5daa41144f7f99d0f1",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

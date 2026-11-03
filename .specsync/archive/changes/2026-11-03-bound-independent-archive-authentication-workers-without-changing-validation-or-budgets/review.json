@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "bound-independent-archive-authentication-workers-without-changing-validation-or-budgets",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "e8cafc4353915f2eaab94f1c5d4dd7cc6e6a0067",
+  "contract_digest": "970957550d82fe4a9976ba7cbc222fc2a24ec2d20cc3c9aa1702187e97a234d4",
+  "execution_digest": "d1e9542d6e940beda06bec4b96f44f5c73fe886532189ef7eb2e5a792c87e3f6",
+  "workspace_digest": "c7ca72622355f95b9e12b8cb3551314cde3fab76db9dfc18cef61e9500abd332",
+  "timestamp": 1793677890
+}

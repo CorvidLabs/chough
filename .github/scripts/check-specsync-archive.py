@@ -2,6 +2,7 @@
 """Read native lifecycle evidence; never approve, verify, or finalize a change."""
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
@@ -157,6 +158,39 @@ def fingerprint(root):
     return (git(root, "status", "--porcelain=v1", "--untracked-files=all"), digest.hexdigest())
 
 
+def authenticate_archive(binary, root, change_id):
+    value, _ = native(binary, root, "status", change_id)
+    change = value.get("change") if isinstance(value, dict) else None
+    summary = value.get("summary") if isinstance(value, dict) else None
+    if (
+        not isinstance(change, dict)
+        or not isinstance(summary, dict)
+        or change.get("id") != change_id
+        or summary.get("id") != change_id
+        or change.get("state") != "archived"
+        or summary.get("state") != "archived"
+        or summary.get("terminal_evidence", {}).get("validity") != "authenticated-history"
+    ):
+        raise GateError(f"Native archive {change_id} does not authenticate: {summary}")
+
+
+def authenticate_archives(binary, root, obligations, current_archives):
+    change_ids = sorted(obligations)
+    for change_id in change_ids:
+        if change_id not in current_archives:
+            raise GateError(f"Native change {change_id} was omitted instead of archived")
+    # Only independent reads of the fixed current root overlap. The context
+    # drains every submitted read, including on error, before the final fingerprint.
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        pending = [
+            executor.submit(authenticate_archive, binary, root, change_id)
+            for change_id in change_ids
+        ]
+        # Keep failure reporting in ID order regardless of completion order.
+        for result in pending:
+            result.result()
+
+
 def inspect(root, base, binary):
     if git(root, "rev-parse", "--show-toplevel") != str(root):
         raise GateError("Run Archive at the repository root")
@@ -220,22 +254,7 @@ def inspect(root, base, binary):
             obligations.update(roster(binary, snapshot, historical=True))
             obligations.update(archives(snapshot))
 
-    for change_id in sorted(obligations):
-        if change_id not in current_archives:
-            raise GateError(f"Native change {change_id} was omitted instead of archived")
-        value, _ = native(binary, root, "status", change_id)
-        change = value.get("change") if isinstance(value, dict) else None
-        summary = value.get("summary") if isinstance(value, dict) else None
-        if (
-            not isinstance(change, dict)
-            or not isinstance(summary, dict)
-            or change.get("id") != change_id
-            or summary.get("id") != change_id
-            or change.get("state") != "archived"
-            or summary.get("state") != "archived"
-            or summary.get("terminal_evidence", {}).get("validity") != "authenticated-history"
-        ):
-            raise GateError(f"Native archive {change_id} does not authenticate: {summary}")
+    authenticate_archives(binary, root, obligations, current_archives)
     print(f"All native changes are archived; {len(obligations)} archive(s) authenticated by SpecSync.")
     print("Other checks and genuine human review remain required before merge.")
 

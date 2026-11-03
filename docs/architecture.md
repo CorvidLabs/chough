@@ -203,6 +203,22 @@ status and trust limits, and contributes context or evidence references. It neve
 allocates a second change identity or turns a degraded or unknown state into success.
 See [integrations](integrations.md) for what is qualified, deferred or unavailable.
 
+
+## Request-local report reads
+
+Report freshness uses one root-bound ephemeral case index. Its first bound-case
+lookup runs the existing structural loader, including file bounds, shape and global
+uniqueness checks. Later lookups in that request reuse the parsed suite and the same
+case-digest representation. Status shares it between its all-observation and
+reference-label passes. Existing label owners also keep one index for their own
+request. Missing/retired cases and malformed suites retain their explicit outcomes.
+
+The index owns no native result, artifact result, checkpoint or persistent cache.
+Every later request starts fresh. Source snapshots, artifact bytes, requested
+environment and native gates keep their existing semantics. Opt-in stderr phases
+and load/lookup counts expose local work without changing report schemas or records.
+Native wait remains independently bounded and reported by the native reader.
+
 ## Immutable history and maintenance
 
 REQ-cli-025 to REQ-cli-027 add explicit adoption for existing projects and event

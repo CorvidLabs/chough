@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance",
+  "implementation_commit": "3cb53d6e6c8d2065aa4e5a73c721ea19dfc8ccb7",
+  "implementation_tree": "e270d11658164f91c442ccc98f33e3c77275a9ea",
+  "contract_digest": "4cf1308030115ea081f22da25061be42985be4448ad8306e0fe81bf38b1b37b2",
+  "workspace_digest": "a4ccb480bca67b6f9e3a418acb68e422002a055c4c4c5dd74a92c4673bef1c6b",
+  "closing_digest": "cdb22b077a202fbf623ac3599edde64214aed95b05a8a1bb7716e385320734d1",
+  "review_digest": "8b505c3ad18598f16da7e23144dfa66adb82ca3e8c7f977861501ea1d3213917",
+  "finalization_digest": "7825ddccc72afb9fcafd09a772974d7b0e4f44fdd7be783c2a237948b4cc52ad",
+  "timestamp": 1793663884
+}

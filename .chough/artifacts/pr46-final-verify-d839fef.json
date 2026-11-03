@@ -1,0 +1,23 @@
+{
+  "command": [
+    "fledge",
+    "lanes",
+    "run",
+    "verify"
+  ],
+  "head": "bb9853641040af6bd29dba37ceba55b1c671d713",
+  "main": "d839fef0820bf63a736a37d805265d7d6d362486",
+  "rust": "1.95.0",
+  "environment": "local-macos-arm64",
+  "exit_code": 0,
+  "elapsed_seconds": 101.56880366592668,
+  "log": "/tmp/chough-pr46-d839-verify.log",
+  "tests": {
+    "passed": 209,
+    "failed": 0,
+    "ignored": 0,
+    "suites": 10
+  },
+  "binary": "/private/tmp/chough-tickets-20261102-JAIhPp/target/debug/chough",
+  "binary_sha256": "7ef1c2afefc7af9f475473a4fe0316e8f1c0222a2c83724a11499c4dd786ffbf"
+}

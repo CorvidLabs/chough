@@ -1,0 +1,25 @@
+from pathlib import Path
+import json,hashlib,shutil,subprocess,tempfile
+r=Path('/tmp/chough-tickets-20261102-JAIhPp');raw=Path('/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-pr46-final44-integration-0xv1qm_z');data=json.loads(Path('/tmp/chough-pr46-ref-candidates.json').read_text());retired=data['candidates'];assert len(retired)==24
+out=Path(tempfile.mkdtemp(prefix='chough-pr46-bounded-refs-'));derived=out/'derived';derived.mkdir(); index='.chough/artifacts/pr46-checkpoint-reference-index/policy.json';record_paths=[x['record'] for x in retired];ids={x['id'] for x in retired};parents={}
+for name,file in [('base','base.session.json'),('ours','ours.session.json'),('theirs','theirs44.owner-selected.session.json')]:
+ original=json.loads((raw/file).read_text());assert ids <=set(original['observations']);v=json.loads(json.dumps(original));v['observations']=[i for i in v['observations'] if i not in ids]
+ for p in record_paths+[index]:
+  if p not in v['references']['files']:v['references']['files'].append(p)
+ (derived/f'{name}.json').write_text(json.dumps(v,indent=2)+'\n');parents[name]={'original':str(raw/file),'original_sha256':hashlib.sha256((raw/file).read_bytes()).hexdigest(),'original_observations':len(original['observations']),'derived_observations':len(v['observations'])}
+binary=r/'target/debug/chough';p=subprocess.run([str(binary),'checkpoint','--merge',str(derived/'base.json'),str(derived/'ours.json'),str(derived/'theirs.json')],cwd=r,capture_output=True,text=True);(out/'merge.stdout').write_text(p.stdout);(out/'merge.stderr').write_text(p.stderr);assert p.returncode==0,(p.stdout,p.stderr)
+merged=json.loads((derived/'ours.json').read_text());assert len(merged['observations'])==178;assert all(p in merged['references']['files'] for p in record_paths);assert not ids.intersection(merged['observations']);additive=set(json.loads((raw/'all-additive-observation-ids.json').read_text()));assert additive <=set(merged['observations'])
+fixture=out/'fixture';(fixture/'.chough/evidence').mkdir(parents=True);(fixture/'.chough/session.json').write_text(json.dumps(merged,indent=2)+'\n')
+for row in retired:
+ for name in [row['record'],*row['artifacts']]:
+  src=r/name;dst=fixture/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
+def inventory(root):return {str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file()}
+before=inventory(fixture);p=subprocess.run([str(binary),'--root',str(fixture),'evidence','prune'],capture_output=True,text=True);(out/'retention-preview.stdout').write_text(p.stdout);(out/'retention-preview.stderr').write_text(p.stderr);assert p.returncode==0,(p.stdout,p.stderr)
+preview=json.loads(p.stdout);rows={v['id']:v for v in preview['protected']};assert ids<=set(rows),(ids-set(rows),preview)
+for i in ids:assert 'checkpoint' in rows[i]['reasons'],rows[i]
+assert inventory(fixture)==before
+for row in retired:
+ assert hashlib.sha256((r/row['record']).read_bytes()).hexdigest()==row['sha256']
+ for p,h in row['artifacts'].items():assert hashlib.sha256((r/p).read_bytes()).hexdigest()==h
+policy={'schema_version':1,'owner':'root closing session, under user-authorized merge and resynchronization','reason':'The exact parent union has202active observation IDs and MAX_ITEMS is200. Move24superseded common-base passed automated pointers from the active observation index to explicit protected record-file references. Preserve all65parent-additive IDs and leave22slots for final qualification.','bounds_unchanged':True,'retired_from_active_index':retired,'active_observations_before':202,'active_observations_after':178,'final_qualification_slots':22,'all_additive_observation_ids_retained':True,'preserved_nonpassed_manual_bug_validation_and_newest_three_groups':True,'protection':'Each retired observation record path remains directly in checkpoint.references.files, which protects the record and its artifact set. The immutable original parent operands and this index retain the mapping.','original_parent_inputs':parents,'index_path':index,'merged_candidate':str(derived/'ours.json'),'retention_preview':{'fixture':'isolated copy without native configuration; proves direct checkpoint record-path protection only','protected_records':len(rows),'every_retired_set_has_checkpoint_reason':True,'read_only_exact':True},'record_and_artifact_hashes_still_exact':True,'new_source_or_product_behavior':False,'max_items':200}
+(out/'policy.json').write_text(json.dumps(policy,indent=2)+'\n');(out/'summary.json').write_text(json.dumps({k:v for k,v in policy.items() if k not in ['retired_from_active_index','original_parent_inputs']},indent=2)+'\n');shutil.copy2('/tmp/chough-pr46-build-ref-policy.py',out/'reproduce.py');Path('/tmp/chough-pr46-bounded-ref-output.txt').write_text(str(out)+'\n');print(json.dumps({'output':str(out),'retired':len(ids),'active_count':178,'file_refs':len(merged['references']['files']),'all65additive_retained':True,'checkpoint_protected_sets':len(rows),'original_hashes_exact':True},indent=2))

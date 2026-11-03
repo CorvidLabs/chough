@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-dry-run-0e4dd668cbac148ce76e0974",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-021",
+    "REQ-cli-024"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "dry-run",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Historical clean-main #32 diagnostic execution at825a380: freshly built debug binary, first-process and repeated next/status/timing/retention previews. All bounded reporting commands completed but capped native reads timed out. Separate unwrapped SpecSync archived status completed in22.912s with authenticated history.",
+  "artifacts": [
+    ".chough/artifacts/report-reads-before.tar.gz",
+    ".chough/artifacts/report-reads-before-metadata.json",
+    ".chough/artifacts/report-reads-before-results.json",
+    ".chough/artifacts/report-reads-before-direct-native-result.json",
+    ".chough/artifacts/report-reads-before-interpretation.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/report-reads-before-direct-native-result.json": "ae03464737df66c91c2f3d3a9fd8c708d4c338763ad307ebca9da41c682d0af3",
+    ".chough/artifacts/report-reads-before-interpretation.json": "3d009f46db5edf6a8b7ec68638a540d8c68d070795d4ef58bf39d56e855a910c",
+    ".chough/artifacts/report-reads-before-metadata.json": "036f81a8c2fda9a5d8067e43b0a73d6cda7d5e7be42f3b2434aa999fbf046010",
+    ".chough/artifacts/report-reads-before-results.json": "aa924f3873aea1dd67ac2ee29bfa0f7d41161db75c879a09689a3c1a00cbbd88",
+    ".chough/artifacts/report-reads-before.tar.gz": "f430e73cbc13545cd68836cda84b8923be01f8dd9e06730679cd998b75a02ca0"
+  },
+  "observed_at_unix_seconds": 1793636778,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": false,
+    "fingerprint": "d44f849a915741321e24a97c7ba7fb6e6296fb8263ef154b0f0ffaec15171479",
+    "content": "8a4794f7365470dfadfed4e2abd4aa5c3be53c78c51e50011d950868bb887f8f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Benchmark execution evidence only. Native timeout results are incomplete qualification; first-process does not mean OS cache eviction. This observation is recorded against the exact unchanged main source fixture, not the later request-read implementation."
+  ]
+}

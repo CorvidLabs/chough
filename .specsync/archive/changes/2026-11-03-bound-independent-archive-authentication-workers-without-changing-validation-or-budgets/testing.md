@@ -1,0 +1,3 @@
+# Verification plan
+
+Run the existing 12 real-native fixture tests unchanged. Add unit tests for bounded overlap, exactly-once complete ID coverage, wrong-ID/invalid archive refusal, native errors/timeouts and draining outstanding reads before return. Keep historical snapshots serial. Run Fledge verify and the dedicated archive fixture task, plus independent source review. Measure the full checker on this branch and require hosted success inside the existing 10-minute job budget. A unit fixture is not native archive authentication. Earlier product evidence retains its original content identity; no old record is relabeled current.

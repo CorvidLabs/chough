@@ -1,0 +1,11 @@
+COMMAND ["cargo", "test", "--locked", "--test", "timing", "legacy_timing_"]
+   Compiling chough v0.1.0 (/private/tmp/chough-tickets-20261102-JAIhPp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.04s
+     Running tests/timing.rs (target/debug/deps/timing-cc323ea283cd8edb)
+
+running 2 tests
+test legacy_timing_counts_unreadable_and_unknown_lines_toward_the_event_bound ... ok
+test legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 2.05s
+

@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-78623c6bbd991426e1aa5281",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-6",
+    "LIFE-7",
+    "LIFE-10",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-008",
+    "REQ-cli-016",
+    "REQ-cli-028",
+    "REQ-cli-030"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64-rust-1.88.0",
+  "summary": "Final PR 46 integration with main 9d02: all 208 Rust tests passed on Rust 1.88 offline in a separate target",
+  "artifacts": [
+    ".chough/artifacts/pr46-final-msrv-9d02fbf.log",
+    ".chough/artifacts/pr46-final-msrv-9d02fbf.json",
+    ".chough/artifacts/pr46-final-main-preservation-9d02fbf.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr46-final-main-preservation-9d02fbf.json": "f2be7f9823db768f15f1c7053a807b859475581583911431cee68bacdb91305e",
+    ".chough/artifacts/pr46-final-msrv-9d02fbf.json": "79dd85e288edfcf261a5fab6d05b20958f1bfe83e60148716a1222ee689503b7",
+    ".chough/artifacts/pr46-final-msrv-9d02fbf.log": "7b2a4a1d71172291bbe5d12b7fcc8109e9ca049b433ea0814d33d86c8e42d8a1"
+  },
+  "observed_at_unix_seconds": 1793662138,
+  "snapshot": {
+    "revision": "cb7dad29fc253698fc074b1a0268d04b8badf5c1",
+    "dirty": true,
+    "fingerprint": "57708542c6c5fd9c22cef061dba842995f75f9b3acbd4a830d3332f448cd97a9",
+    "content": "264f18fa9e687ea281c10ccf1b497446444fcb0392c23d0f27b4d5777962e940"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Local macOS arm64 qualification; hosted platform results and native closeout remain separate. No live adoption or cleanup or new cold-start proof ran."
+  ]
+}

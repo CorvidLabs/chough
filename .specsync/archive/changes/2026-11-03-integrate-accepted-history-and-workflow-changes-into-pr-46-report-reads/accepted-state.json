@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "integrate-accepted-history-and-workflow-changes-into-pr-46-report-reads",
+  "slug": "integrate-accepted-history-and-workflow-changes-into-pr-46-report-reads",
+  "title": "Integrate accepted history and workflow changes into PR 46 report reads",
+  "description": "Integrate accepted history and workflow changes into PR 46 report reads",
+  "kind": "operations",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "d23ef42534b8d1d59229d4e84d8274072dbd6f74",
+  "created_at": 1793668227,
+  "updated_at": 1793672650,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/evidence.rs",
+    "src/skill.rs",
+    "tests/evidence.rs",
+    "tests/next.rs",
+    "tests/package.rs",
+    "tests/common/mod.rs",
+    ".chough/cases/cli.cases.toml",
+    ".chough/session.json",
+    ".chough/transitions.jsonl",
+    "CHANGELOG.md",
+    "docs/FRD.md",
+    "docs/ROADMAP.md",
+    "docs/architecture.md",
+    "docs/cli.md",
+    "skills/chough-workflow",
+    ".agents/skills/chough-workflow",
+    ".claude/skills/chough-workflow",
+    "specs/cli/cli.spec.md",
+    "specs/cli/context.md",
+    "specs/cli/requirements.md",
+    "specs/cli/testing.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Integrate already accepted and archived PR 37 history and PR 44 workflow into PR 46 report reads without changing approved behavior or requirements. Reconcile overlapping source, companions, canonical version metadata, checkpoint collections and qualification only; preserve all immutable proof.",
+  "acceptance_criteria": [
+    "Accepted history and workflow behavior and all approved requirements coexist with request-local report reads and typed error diagnostics. Preserve immutable proof, the PR46 atomic current-cycle group, additive collections and real transition occurrences. Reconcile monotonic canonical version metadata. On final combined source, required Fledge verification, Rust1.95 and Rust1.88 tests and applicable history, report and workflow cases pass. Actual merged44 source identity is checked before closeout; native verification is current and root alone records review and ship."
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Use existing approved requirements and archived source lineages, preserve every immutable archive/evidence/artifact/cold-start blob, keep PR46's current-cycle group atomic and merge additive collections and transition occurrences without loss or transport duplicates. No persistent cache or new runtime, force push, rebase, PR merge, release or deployment. Root alone records native implementation review and ship. Human SOURCE: 0xLeif instructed 'Merge approved, green PRs and resynchronize' and previously 'And I already gave it some approval and told it can do any changes. It just needs a PR.' The operating actor corvid-agent is a label, not authenticated human identity. Hold full qualification until final accepted44 source is integrated; check actual44 main source identity before closeout.",
+    "public_contract": "no"
+  }
+}

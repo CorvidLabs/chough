@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 23
+version: 24
 status: active
 files:
   - src/main.rs
@@ -232,3 +232,4 @@ provider, runtime or hosted service.
 | 21 | 2026-11-02 | new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project: New-project setup path and SDD-off hint: document HI, specsync init/scaffold and specsync change adopt for a new project, and have chough next say to run specsync change adopt when SpecSync is configured but SDD is off (issue 40) |
 | 22 | 2026-11-02 | bound-transition-history-and-preserve-referenced-proof: Bound transition history and preserve referenced proof |
 | 23 | 2026-11-02 | Integrate merged bounded history (main version22) with the agent-operated native workflow (approved on parallel version17, previously integrated as parallel version22), preserving both accepted meanings, ordering and gates. |
+| 24 | 2026-11-02 | read-report-case-definitions-once-per-request-and-expose-local-phase-costs: Read report case definitions once per request and expose local phase costs |

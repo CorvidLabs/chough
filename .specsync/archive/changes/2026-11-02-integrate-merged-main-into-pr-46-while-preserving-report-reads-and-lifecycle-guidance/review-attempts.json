@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "3cb53d6e6c8d2065aa4e5a73c721ea19dfc8ccb7",
+      "contract_digest": "4cf1308030115ea081f22da25061be42985be4448ad8306e0fe81bf38b1b37b2",
+      "execution_digest": "a76f1bb0de86490e39c84b62398bd9bc25ea6616a898655ebdf7cebd05155a61",
+      "workspace_digest": "a4ccb480bca67b6f9e3a418acb68e422002a055c4c4c5dd74a92c4673bef1c6b",
+      "timestamp": 1793663863
+    }
+  ]
+}

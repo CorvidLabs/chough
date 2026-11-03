@@ -2,6 +2,8 @@
 """Exercise Archive with real native evidence in disposable Git repositories."""
 
 import hashlib
+import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -9,7 +11,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
+from contextlib import redirect_stderr
+from unittest import mock
 
 GATE = Path(__file__).with_name("check-specsync-archive.py")
 ENV = {
@@ -44,6 +49,209 @@ def native_hash(root):
         elif path.is_file():
             digest.update(path.read_bytes())
     return digest.hexdigest()
+
+
+class ArchiveExecutorTests(unittest.TestCase):
+    def setUp(self):
+        spec = importlib.util.spec_from_file_location("archive_gate_under_test", GATE)
+        self.gate = importlib.util.module_from_spec(spec)
+        with mock.patch.object(sys, "dont_write_bytecode", True):
+            spec.loader.exec_module(self.gate)
+
+    @staticmethod
+    def response(change_id):
+        return {
+            "change": {"id": change_id, "state": "archived"},
+            "summary": {
+                "id": change_id, "state": "archived",
+                "terminal_evidence": {"validity": "authenticated-history"},
+            },
+        }
+
+    @staticmethod
+    def start(call):
+        returned = threading.Event()
+        result = {}
+
+        def invoke():
+            try:
+                result["value"] = call()
+            except Exception as error:
+                result["error"] = error
+            finally:
+                returned.set()
+
+        thread = threading.Thread(target=invoke, daemon=True)
+        thread.start()
+        return thread, returned, result
+
+    def test_two_workers_overlap_and_read_every_id_once(self):
+        ids = {f"change-{number}" for number in range(6)}
+        release, two_started, third_started = (threading.Event() for _ in range(3))
+        lock = threading.Lock()
+        calls = []
+        active = peak = 0
+
+        def read(binary, root, action, change_id):
+            nonlocal active, peak
+            self.assertEqual((binary, root, action), ("specsync", Path("."), "status"))
+            with lock:
+                calls.append(change_id)
+                active += 1
+                peak = max(peak, active)
+                if len(calls) == 2:
+                    two_started.set()
+                if len(calls) > 2:
+                    third_started.set()
+            try:
+                self.assertTrue(release.wait(5), "worker was not released")
+                return self.response(change_id), 0
+            finally:
+                with lock:
+                    active -= 1
+
+        with mock.patch.object(self.gate, "native", side_effect=read):
+            thread, _, result = self.start(
+                lambda: self.gate.authenticate_archives("specsync", Path("."), ids, ids)
+            )
+            try:
+                self.assertTrue(two_started.wait(5), "native reads never overlapped")
+                self.assertFalse(third_started.wait(0.1), "more than two native reads started")
+            finally:
+                release.set()
+                thread.join(5)
+        self.assertFalse(thread.is_alive())
+        self.assertNotIn("error", result)
+        self.assertEqual(sorted(calls), sorted(ids))
+        self.assertEqual(peak, 2)
+
+    def test_errors_are_reported_in_id_order_not_completion_order(self):
+        release, beta_failed = threading.Event(), threading.Event()
+        calls = []
+
+        def read(binary, root, action, change_id):
+            calls.append(change_id)
+            if change_id == "alpha":
+                self.assertTrue(release.wait(5))
+                raise self.gate.GateError("alpha failed")
+            if change_id == "beta":
+                beta_failed.set()
+                raise self.gate.GateError("beta failed first")
+            return self.response(change_id), 0
+
+        ids = {"gamma", "beta", "alpha"}
+        with mock.patch.object(self.gate, "native", side_effect=read):
+            thread, returned, result = self.start(
+                lambda: self.gate.authenticate_archives("specsync", Path("."), ids, ids)
+            )
+            try:
+                self.assertTrue(beta_failed.wait(5))
+                self.assertFalse(returned.wait(0.1))
+            finally:
+                release.set()
+                thread.join(5)
+        self.assertFalse(thread.is_alive())
+        self.assertIsInstance(result.get("error"), self.gate.GateError)
+        self.assertEqual(str(result["error"]), "alpha failed")
+        self.assertEqual(sorted(calls), sorted(ids))
+
+    def test_invalid_archive_results_block(self):
+        invalid = [None, [], {}, {"change": [], "summary": {}},
+                   {"change": {}, "summary": []}]
+        for section, key, value in [
+            ("change", "id", "wrong"), ("summary", "id", "wrong"),
+            ("change", "state", "accepted"), ("summary", "state", "accepted"),
+            ("summary", "terminal_evidence", {}),
+            ("summary", "terminal_evidence", {"validity": "exact"}),
+            ("summary", "terminal_evidence", {"validity": "successor-covered"}),
+        ]:
+            result = self.response("alpha")
+            result[section][key] = value
+            invalid.append(result)
+        for result in invalid:
+            with self.subTest(result=result):
+                with mock.patch.object(self.gate, "native", return_value=(result, 0)) as read:
+                    with self.assertRaises(self.gate.GateError):
+                        self.gate.authenticate_archives("specsync", Path("."), {"alpha"}, {"alpha"})
+                    read.assert_called_once_with("specsync", Path("."), "status", "alpha")
+
+    def test_native_errors_timeouts_and_output_bound_block(self):
+        valid = json.dumps(self.response("alpha"))
+        oversized = valid + " " * (8 * 1024 * 1024 + 1 - len(valid))
+        results = [
+            subprocess.CompletedProcess([], 0, "{}{}", ""),
+            subprocess.CompletedProcess([], 7, valid, "native refused"),
+            subprocess.TimeoutExpired("specsync", 90),
+            OSError("native unavailable"),
+            subprocess.CompletedProcess([], 0, oversized, ""),
+        ]
+        for number, result in enumerate(results):
+            with self.subTest(result=number):
+                kwargs = {"side_effect": result} if isinstance(result, Exception) else {"return_value": result}
+                with mock.patch.object(self.gate.subprocess, "run", **kwargs) as run:
+                    with self.assertRaises(self.gate.GateError) as error:
+                        self.gate.authenticate_archives("specsync", Path("."), {"alpha"}, {"alpha"})
+                    if number == 4:
+                        self.assertEqual(str(error.exception), "Inspection output exceeds 8388608 bytes")
+                    self.assertEqual(run.call_count, 1)
+                    self.assertEqual(run.call_args.kwargs["timeout"], 90)
+
+    def test_failure_drains_running_and_queued_reads_before_final_fingerprint(self):
+        ids = {"alpha", "beta", "gamma", "omega"}
+        release, beta_started, alpha_failed = (threading.Event() for _ in range(3))
+        completed = []
+        fingerprints = []
+
+        def read(binary, root, action, change_id):
+            try:
+                if change_id == "alpha":
+                    self.assertTrue(beta_started.wait(5))
+                    alpha_failed.set()
+                    raise self.gate.GateError("alpha refused")
+                if change_id == "beta":
+                    beta_started.set()
+                    self.assertTrue(release.wait(5))
+                return self.response(change_id), 0
+            finally:
+                completed.append(change_id)
+
+        def fingerprint(root):
+            if fingerprints:
+                self.assertEqual(sorted(completed), sorted(ids), "fingerprinted before reads drained")
+            fingerprints.append(root)
+            return "clean", "unchanged"
+
+        with (
+            mock.patch.object(self.gate, "native", side_effect=read),
+            mock.patch.object(self.gate, "inspect", side_effect=lambda root, base, binary:
+                              self.gate.authenticate_archives(binary, root, ids, ids)),
+            mock.patch.object(self.gate, "fingerprint", side_effect=fingerprint),
+            mock.patch.object(self.gate, "safe_native_tree"),
+            mock.patch.object(self.gate.shutil, "which", return_value="specsync"),
+            mock.patch.object(self.gate, "execute", return_value=subprocess.CompletedProcess(
+                [], 0, self.gate.VERSION + "\n", "")),
+            mock.patch.object(sys, "argv", [str(GATE), "--base", "fixture-base"]),
+            redirect_stderr(io.StringIO()),
+        ):
+            thread, returned, result = self.start(self.gate.main)
+            try:
+                self.assertTrue(alpha_failed.wait(5))
+                self.assertFalse(returned.wait(0.1), "returned while a native read was running")
+                self.assertEqual(len(fingerprints), 1)
+            finally:
+                release.set()
+                thread.join(5)
+        self.assertFalse(thread.is_alive())
+        self.assertNotIn("error", result)
+        self.assertEqual(result.get("value"), 1)
+        self.assertEqual(sorted(completed), sorted(ids))
+        self.assertEqual(len(fingerprints), 2)
+
+    def test_missing_archive_blocks_before_native_reads(self):
+        with mock.patch.object(self.gate, "native") as read:
+            with self.assertRaisesRegex(self.gate.GateError, "omitted instead of archived"):
+                self.gate.authenticate_archives("specsync", Path("."), {"alpha", "missing"}, {"alpha"})
+            read.assert_not_called()
 
 
 class ArchiveFixtures(unittest.TestCase):
