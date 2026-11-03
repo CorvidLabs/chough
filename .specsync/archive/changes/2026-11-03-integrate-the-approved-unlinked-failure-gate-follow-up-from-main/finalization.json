@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-the-approved-unlinked-failure-gate-follow-up-from-main",
+  "implementation_commit": "7b63a415088a9bbc1263854cfa4d4e3d3f7eb9b2",
+  "implementation_tree": "bb8dc4031a8118b90afe56e215c9a9a07dce8b1c",
+  "contract_digest": "6e2bb78e8cdcd77398faae23096892aad58eaf3871e691726cdf1103f93a6101",
+  "workspace_digest": "29c1b8b7ca0b88618bb5a34a7bd72d77bd112191d851f1234b42b20395bfb62e",
+  "closing_digest": "f39dfb48f0336b0e51cb9066f2691be9495139baebcfaa018520353d320fd739",
+  "review_digest": "a7afcc133b5410c6e85227a73193616297fe92f5b64add453d7c65b764127688",
+  "finalization_digest": "29ee071364d4d1a5b01596af9fca11aab678a8fe2efa186041d61a39df1b9b20",
+  "timestamp": 1793664865
+}

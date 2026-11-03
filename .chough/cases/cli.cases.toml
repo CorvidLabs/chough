@@ -2417,6 +2417,43 @@ expected = [
   "chough skill status reports both host copies current",
 ]
 
+
+[[case]]
+id = "TC-cli-agent-native-workflow-upgrade"
+title = "Native workflow guidance upgrades unchanged shipped copies and preserves edits"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "FLOW-5", "LIFE-4", "LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-016", "REQ-cli-029"]
+paths = ["skills/chough-workflow/SKILL.md", "skills/chough-workflow/references/lifecycle.md", "src/skill.rs", "tests/workflow_authority.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["The exact independent 825a380 digests match frozen fixtures; real skill status/update upgrades unchanged copies and preserves edited bytes and the checkpoint"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "workflow_authority"
+test = "workflow_guidance_from_main_825a380_updates_and_preserves_edits"
+
+
+[[case]]
+id = "TC-cli-native-workflow-bundle-consistency"
+title = "Native writer examples and installed workflows consistently use agent accounts"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "FLOW-13", "LIFE-4", "LIFE-6", "LIFE-7"]
+requirements = ["REQ-cli-029"]
+paths = ["skills/chough-workflow", "README.md", "docs/cli.md", "docs/walkthrough.md", "docs/NEXT_CHANGE.md", "tests/workflow_authority.rs", ".agents/skills/chough-workflow", ".claude/skills/chough-workflow"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["Native approve/review examples in the canonical skill, README and three user docs use agent actor/reviewer arguments; all four target guidance files in both installed host copies match canonical bytes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "workflow_authority"
+test = "native_writer_examples_and_installed_workflows_are_consistent"
 [[case]]
 id = "TC-cli-history-adoption"
 title = "Explicit history adoption preserves legacy bytes"

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "align-native-actor-examples-in-user-documentation",
+  "implementation_commit": "b24c881bd2b8f662a9a1b08d4a1fa11a0ae7a6c5",
+  "implementation_tree": "2823c3451f875aec7ade8e43a867856366b56305",
+  "contract_digest": "9a686a661cc2b1b2db6ae149dfd0db64bad44d74ba8aabadd0b790218d43291d",
+  "workspace_digest": "fe528a5bfa2f82640b722306147cee14016dd735247b980b8497129e274453c6",
+  "closing_digest": "dbb0837c7652c62443706cccac98f199d0282db110891810b856bc1b06b86bd4",
+  "review_digest": "ff1c62bcabd4d5d49408efb0c02b63003e31c75cf71708b15039189052e67fc0",
+  "finalization_digest": "c98061de333e460194efd20c7d783f2902392fec779ce2a360d0f71a189b031f",
+  "timestamp": 1793659885
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-3a457c6c1ccc8b7f17ec9336",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-4",
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-019",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64-rust-1.88.0",
+  "summary": "All 197 Rust tests across 11 suites passed on Rust 1.88.0 offline, with no failures or ignored tests, including the unchanged 6144-byte handoff assertion and real old-skill upgrade/edit-preservation regression.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-qualified-msrv.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-qualified-msrv.log": "e3b3a38afca802dbd1f245f8448c875f2b4b3fa779dc5a3309e7fce7d9dfd36c"
+  },
+  "observed_at_unix_seconds": 1793637307,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "02fda6a2f766b8e2fcfff176ad9f5b2eb0948e08a33284ca6d3f90390bc9d505",
+    "content": "edab4e7975b1796103eb01080c1078e454038024c48bbed49453ff0a88dd1469"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Source, package and local integration verification only; no fresh-agent cold-start experiment, hosted platform pass, human implementation acceptance, merge, release or deployment is inferred."
+  ]
+}
