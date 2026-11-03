@@ -1,8 +1,8 @@
 //! The single canonical checkpoint: `.chough/session.json`.
 
 use crate::records::{
-    CHANGE_ID_LIMIT, ensure_text, local_path, print_json, read_bounded_record, valid_change_id,
-    valid_name, write_new_bytes, write_replace_bounded,
+    CHANGE_ID_LIMIT, ensure_text, local_path, native_json, print_json, read_bounded_record,
+    valid_change_id, valid_name, write_new_bytes, write_replace_bounded,
 };
 use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
@@ -676,6 +676,28 @@ fn push_unique(list: &mut Vec<String>, values: Vec<String>) {
     }
 }
 
+/// Refuse to record a native change SpecSync does not report (issue 63). With SpecSync
+/// configured, `specsync change status <id> --json` must succeed with a JSON response;
+/// a missing change (SpecSync exits non-zero), a failed or timed-out read, or output
+/// that is not JSON refuses before anything is written. What the state means stays
+/// with the stage gates. Without a configuration there is nothing to ask.
+fn ensure_native_change_known(root: &Path, change: &str) -> Result<()> {
+    if !stage::native_configured(root)? {
+        return Ok(());
+    }
+    let response = native_json(root, "specsync", &["change", "status", change, "--json"]);
+    if response.value.is_none() {
+        let section = &response.section;
+        bail!(
+            "refused:native-change-unknown: SpecSync did not report native change {change}, so it was not recorded and the checkpoint is unchanged.\n{} ({}): {}\nRun `specsync change status {change}` or create the change with `specsync change new`.",
+            section.source,
+            section.state,
+            section.content.trim_end()
+        );
+    }
+    Ok(())
+}
+
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
     if let Some(operands) = args.merge {
         return merge_checkpoints(&operands);
@@ -700,7 +722,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             valid_change_id(&change),
             "invalid native change ID: up to {CHANGE_ID_LIMIT} bytes of letters, digits, - and _"
         );
-        stage::ensure_native_change_known(root, &change)?;
+        ensure_native_change_known(root, &change)?;
         session.native_change = Some(change);
         changed = true;
     }
