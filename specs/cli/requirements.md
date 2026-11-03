@@ -308,6 +308,18 @@ Acceptance Criteria
 - Shared artifacts remain present and byte-identical; missing/changed candidates, malformed sources, path traversal and symlinks cannot broaden deletion or be reported as a successful complete cleanup.
 - Fault injection around publication/removal yields an actionable partial outcome and leaves active state and protected bytes intact. No existing observation, artifact fingerprint or evidence-ledger schema is rewritten.
 
+### REQ-cli-028
+
+Request-local reporting reads. Within one report request, the helper SHALL structurally load the case-definition suite at most once, and SHALL not load it when no bound-case digest is requested. It SHALL reuse the existing case-digest representation and failure semantics across observation and reference-label checks, with an ephemeral context bound to one project root. No result SHALL be reused by a later request. Source, artifact, environment and case changes SHALL retain their freshness effects, and native reads and lifecycle gates SHALL remain authoritative and unchanged. Trace: LIFE-3, LIFE-6, LIFE-7, LIFE-10, FLOW-13.
+
+Opt-in CHOUGH_TRACE=1 diagnostics SHALL report bounded stderr-only local phase durations and exact case-suite load/lookup counts while preserving standard output, record bytes and exit results. Measurements SHALL identify the revision, freshly built binary, environment, inputs and deadlines, distinguish first-process from repeated runs without assuming OS caches were purged, and distinguish completed native reads from timed-out or unavailable work. No persistent cache, new runtime or duplicate lifecycle state SHALL be introduced.
+
+Acceptance Criteria
+- Multiple observations and referenced labels in one next/status request cause at most one structural suite load; no bound cases cause zero loads. Legacy numeric and current slug digests remain unchanged.
+- Malformed, duplicate, retired, missing and unsafe case definitions retain explicit existing outcomes. A later request observes changed source, case definitions, artifacts and environment rather than reusing an earlier result.
+- Trace on and off preserve stdout, exit results and every project record, including refusal paths. Existing native call counts, deadlines and invalid-evidence gate refusals remain enforced.
+- Before/after measurements use the same input root and explicit binary identities, report local work separately from native wait, and retain incomplete reads as partial or unknown. Native slowness is not reported fixed by a local optimization.
+
 ### REQ-cli-029
 
 Agent-operated native workflow. Chough's current agent SHALL execute HI, SpecSync and Fledge operations internally for authorized work, keeping each tool as the owner of its records. It SHALL use an applicable explicit prior or standing human authorization for a concrete scope instead of asking the human to repeat permission merely to run or record an internal tool operation. Before recording native scope approval it SHALL identify the actual human instruction, its source, covered scope and limits in the checkpoint and native change context, and record the acting agent account as the native actor while citing the human instruction as the authority source. A general continue instruction without applicable authority, an agent label, a bot review or a passing check SHALL NOT manufacture human approval. Fresh native checks, scope integrity and separate human implementation acceptance and delivery authority SHALL remain required. The user-facing guidance SHALL describe giving Chough the goal and authorization and reviewing the resulting PR, with native commands assigned to the agent. Unedited known predecessor skill copies SHALL update safely, and edited copies SHALL remain preserved. Trace: FLOW-1, FLOW-2, FLOW-5, FLOW-13, LIFE-1, LIFE-6, LIFE-7.
@@ -318,6 +330,7 @@ Acceptance Criteria
 - Native status/check, frozen scope, evidence freshness, human implementation acceptance and separate merge/release/deployment boundaries are preserved; no additional lifecycle ledger or runtime is introduced.
 - Independently hashed exact predecessor fixtures exercise real install/status/update, replacing only known unchanged copies and preserving edited bytes. Package hygiene remains enforced.
 - Qualification distinguishes source/package verification from a fresh-agent cold-start run, and no skipped cold-start proof is promoted to a pass.
+
 ### REQ-cli-030
 
 Open human gates hold forward moves. While the checkpoint's `awaiting_human` list is not empty, `chough stage advance` and `chough stage skip` SHALL be refused with `refused:awaiting-human` from every main stage and from release, before any native read; the refusal SHALL name at most 3 open gates, in checkpoint order, with the count of the rest, and SHALL say to record the human's decision and clear the gate with `chough checkpoint --clear-awaiting-human`, re-passing gates still waiting with `--awaiting-human`. No flag or reason SHALL bypass it. Iterate, back, reset, pause, resume and side-stage enter and return SHALL NOT be refused by it. Once the list is empty the same move SHALL be applied and gated as before. While a gate is open, the waiting next action in `chough next` and `chough status` SHALL also say that advance and skip are refused until it is cleared. Trace: FLOW-3, FLOW-5, FLOW-13, FLOW-2.
@@ -336,4 +349,3 @@ Acceptance Criteria
 - With SpecSync configured and `.specsync/sdd.json` absent or `enabled: false`, `chough next` (JSON and text) shows the adopt hint on the approved-delta line, and the `ungated:sdd-disabled` gate detail in `next` and `status` names `specsync change adopt`.
 - Without a SpecSync configuration the line stays `not checked: no native lifecycle` with no hint, and an invalid policy still reads `not checked: SDD policy invalid` with no hint.
 - The walkthrough begins with the new-project setup path.
-

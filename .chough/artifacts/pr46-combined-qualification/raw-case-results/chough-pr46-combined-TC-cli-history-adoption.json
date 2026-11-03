@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-history-adoption",
+  "observation": "OBS-tc-cli-history-adoption-bde5b8cef41548a15907038b",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test history -- --exact adoption_preview_preserves_legacy_bytes_and_apply_is_explicit for TC-cli-history-adoption: passed (exit 0, tests run 1)."
+}

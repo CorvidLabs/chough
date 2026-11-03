@@ -1,0 +1,16 @@
+{
+  "head": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+  "command": [
+    "python3",
+    ".github/scripts/check-specsync-archive.py",
+    "--base",
+    "16fe55da9ee900edf34a4d3ded517f36854a46d9"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 465.88372800010256,
+  "checker_sha256": "8b1b4cf9b5ab71269915d93d0b2f3769dd3f99bec61aec48013862eb6d996d44",
+  "specsync_path": "/Users/leif/.cargo/bin/specsync",
+  "specsync_version": "specsync 6.1.2",
+  "worktree_clean": true,
+  "limits": "Local macOS diagnostic of unchanged checker/source; no hosted qualification substitution."
+}

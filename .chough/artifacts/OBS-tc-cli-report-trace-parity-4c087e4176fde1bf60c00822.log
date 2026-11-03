@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test report_traces_preserve_stdout_exit_results_and_managed_records ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 1.35s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/next.rs (/tmp/chough-report-reads-target/debug/deps/next-d63fcaecc58d60d6)

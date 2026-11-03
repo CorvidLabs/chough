@@ -1,0 +1,17 @@
+{
+  "protected_committed_parent_blobs": 2157,
+  "mismatches": 0,
+  "source_test_skill_case_identities_unchanged": true,
+  "canonical_version": 24,
+  "active_observations": 196,
+  "checkpoint_bytes": 63100,
+  "file_references": 36,
+  "retired_record_pins": 24,
+  "retired_record_and_artifact_hashes_unchanged": true,
+  "retained_prequalification_transition_occurrences": 218,
+  "new_legitimate_stage_occurrences": 2,
+  "current_transition_occurrences": 220,
+  "all18_new_observations_current_in_their_recorded_environments": true,
+  "no_live_adoption_or_cleanup": true,
+  "no_release_deployment_or_hosted_new_tip_claim": true
+}

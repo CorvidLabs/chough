@@ -1,0 +1,1041 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1793671065,
+      "commit": "b04a8d517837c28e0912bb8af832845fc9a5bfaa",
+      "contract_digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+      "execution_digest": "0d38095ba587a346fe380db15477151462dd4ffefcfe20242423548b4ec3c434",
+      "workspace_digest": "9157f884b3a31c6ba2fa93062a4830675f0de824c29da87f5b6b809131fd98f9",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793671499,
+      "commit": "b050046ea6a7f530f618a7f190ac9ca5a143e41e",
+      "contract_digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+      "execution_digest": "0d38095ba587a346fe380db15477151462dd4ffefcfe20242423548b4ec3c434",
+      "workspace_digest": "6815bd5cb286cf37da08adb61d3ae7ab104a10a7243225b921d95b9015a2502b",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793672240,
+      "commit": "c75f23e3fb420f4db44dc050b59078bf737475ab",
+      "contract_digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+      "execution_digest": "0d38095ba587a346fe380db15477151462dd4ffefcfe20242423548b4ec3c434",
+      "workspace_digest": "47f8e3b50c366d66af69895e823d6aded6309358325e5248f9558f1742238e13",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793672248,
+      "commit": "482f6f7967b63e8ed5ae845dc4c07d26503be44c",
+      "contract_digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+      "execution_digest": "0d38095ba587a346fe380db15477151462dd4ffefcfe20242423548b4ec3c434",
+      "workspace_digest": "47f8e3b50c366d66af69895e823d6aded6309358325e5248f9558f1742238e13",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793672248,
+      "commit": "9bea9ddf2f1abdba0426abdbc815792b1a5f94dc",
+      "contract_digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+      "execution_digest": "0d38095ba587a346fe380db15477151462dd4ffefcfe20242423548b4ec3c434",
+      "workspace_digest": "47f8e3b50c366d66af69895e823d6aded6309358325e5248f9558f1742238e13",
+      "acceptance_input_digest": "8e986a71f9dd34f7172d0cc5ae7087bacd53a25cecc7b9837eff5a69d4630fd5",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": ".agents/skills/chough-workflow",
+            "kind": "non_file",
+            "mode": 0,
+            "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "entry_digest": "375e81c3ebf8c51dcdaf96ac7031c09ec84fa704e5254d9bddccac806df47fc9",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/SKILL.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0b2c166176af684901005b230da159a4ce4cb926e57a59bf3f6b11d3debfdb3f",
+            "entry_digest": "5301ad73c77ea575d9d5bb3bb7da2980cb9e1b8b3f916f0dd120882524e32df6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/agents/openai.yaml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0",
+            "entry_digest": "539af7fef2e51fa5dba9394d46b1f88718f75b983b704dd629a0cc43c63eba2d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/accept.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c",
+            "entry_digest": "f2650ecbf46429602c28b69c5fb92487a015ee1aa28445dff4526c483d459c36",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/bugs.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102",
+            "entry_digest": "7db0df6f5591f0ac6a2699560511394fdb319f91ea198d7364aa34bc04444141",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/build.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a",
+            "entry_digest": "1fe0835841e9f1f51052d21091c321c3edfb552c857d9b617303a9b4fa2bfef3",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/checkpoint.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d",
+            "entry_digest": "10f300f5892c7936521e12d1466ee3479b3513c26b48a812f3b3dc9f455ce450",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/design.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908",
+            "entry_digest": "9564c44a877d1247d7c6a8144bc98f2e23b164b555d95b49e36478259ab80056",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/intent.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069",
+            "entry_digest": "30562a77468e095951e3b66a3c69761f66b461cc3daeaafcc8776514114257df",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/librarian.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0d06962f4048d1d18d77d0e7f4131d47eff0ee82c76c152588865898369ecd27",
+            "entry_digest": "81ce62f53830471c7eace32ccf90ceac0f9baef52805be2cf3bb5ddc5c9d3c81",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/lifecycle.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711",
+            "entry_digest": "2caf4c4ddc404616faf4b7d28f2364d8472b516b0e2738bfe8544e4b774d5d62",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/plan.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f",
+            "entry_digest": "c6042cec53c17e43f1571502fc23e16f4f040c3c6238f87c78b7dc56ac4d09d3",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/release.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed",
+            "entry_digest": "e3920c67f42564e552659bbbff981dc18ea46e31613ab4ce8b36f66532bb9633",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/roles.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d",
+            "entry_digest": "fdacfc608b2e491a7c9dcaf2ffd61258a1ab8a9431873f22d7186636679432e5",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/stages.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f",
+            "entry_digest": "2ae3006e30f1284449ec06f3ef9bcaaf5da3410d88a55639624b579a773bf566",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4",
+            "entry_digest": "8dba786d61ec58e33aa578bfefa5557b7648358a5c2681c2a469c1a876445518",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/references/validate.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5",
+            "entry_digest": "4fb1e9415da6f9b769fb9e03f07fc2e17ba4aab2a0a3c74e387c1a1dfe70fc3c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/brief.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8",
+            "entry_digest": "53d94b1a3529e13669e969c227fcefa0f328fd1c7ad35ddf044a50c991b2b193",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/bug-report.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a",
+            "entry_digest": "aad6087394ba3320096a18eb2bbb13d18243dc747569995cde29f106ed135a3d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421",
+            "entry_digest": "62390966e6dd49492e827e856f9d899ff9e90aa2a6d708773b2d13c8f22daf7e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/frd.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf",
+            "entry_digest": "e8013d8fddb73d3e66230723d5a9efac11e5a7984c3193fe261926fc5f4ee49d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/prototype/COMPANION.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83",
+            "entry_digest": "64dbd2079cb9735a442b65e93ced2c772505ca5ae96076c2fe37e33ae4e8e101",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/prototype/index.html",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3",
+            "entry_digest": "40a429d499a9765ecb9e76e8d4ddbb25bf367c638555efc949d5ddda4ec56767",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/prototype/styles.css",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239",
+            "entry_digest": "f4b38da3fe57eae584a618e769e3e03c77d5cee1d7dd352f045b30fe893081b6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".agents/skills/chough-workflow/templates/review-findings.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4",
+            "entry_digest": "475bc2220df171b947c3c84d810c797088ddb5702e1f7ba5a05fb4376d544b57",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".chough/cases/cli.cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "70e029e02ffc1377867162aafbfa41e437f702ed379c32aea1cb2fe377b26479",
+            "entry_digest": "7e99824e4d0812dd797ab89e3b89ccd93098bc7e154d16bf28e83f0c6d7e1ae4",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".chough/session.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5ffa108ba08ff51f6fb56c51473b26332d36a1059b6a2d1faf0d5547c084c262",
+            "entry_digest": "910133456e2170b11a23b4d603511e70970a7fd97253a7f872b1381f225a4258",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".chough/transitions.jsonl",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3be2a6e27394189d7bdf52f984087ccd13e801c575f58e5d1a17f240e7c8baac",
+            "entry_digest": "653254ce2ea16e90623ec4124c6c31f57a38f0739c1470cf98bb7023bfcbbdb1",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow",
+            "kind": "non_file",
+            "mode": 0,
+            "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "entry_digest": "54e4370c64b8656f79eb3458afd968ad186e9a3dc20b878f985e39b6459584ff",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/SKILL.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0b2c166176af684901005b230da159a4ce4cb926e57a59bf3f6b11d3debfdb3f",
+            "entry_digest": "5c62167c9a3a0eb1428fc93a2424e6f9be47eb0076f5f1d2c182374d270dff57",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/agents/openai.yaml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0",
+            "entry_digest": "d2d0ac3e13604687f73f9c174f362a60b731f9695a8ae60b40b5fe33df8d8291",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/accept.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c",
+            "entry_digest": "8fa4a70d6ffb31d2bdb89f019acd0673220355ca4e3965637a15f15f70855c53",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/bugs.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102",
+            "entry_digest": "97f9d10201eb2be55acf683ca8dde954da8fbcb03603a620fe216d13c480deac",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/build.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a",
+            "entry_digest": "7c93b628851b52aea917217fdd3ff24871fd18713e36ba9efab4ce438b93e79b",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/checkpoint.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d",
+            "entry_digest": "6e070b316d473d9cf51eca807527ba908d4b3963cdd9ef832207a22a69d047d1",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/design.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908",
+            "entry_digest": "463b01a73117ab6a88a6db1ef9ddb8543c1e23d6b1211c41659d9721c170412d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/intent.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069",
+            "entry_digest": "46930799544db36650c62da2b2ecfbe2c11e097ae5b18b78370f9580b94f6a12",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/librarian.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0d06962f4048d1d18d77d0e7f4131d47eff0ee82c76c152588865898369ecd27",
+            "entry_digest": "c8b23e7cff6f71a3172a6587272c276a0af98bbd7c093f42dd6b60e1207a55de",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/lifecycle.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711",
+            "entry_digest": "5756657f2b13f753e98b4112519225901ac04840ce0751e7dbb28fb1a65e2b49",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/plan.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f",
+            "entry_digest": "33228926c6736c9a3071d91b348c37e0fd7dacb7fa7df85342e4afd52116d672",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/release.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed",
+            "entry_digest": "fae57bc9a4dd8b371a436cd56ebf7dbc6d8adfaa1b811be866f9b994c1d58b6f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/roles.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d",
+            "entry_digest": "0dec6f0a3bdd17840e4189f4949e15399b227aaf02a405e0e952de960149c15e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/stages.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f",
+            "entry_digest": "8d6f9848c660a6d111793fa9dccabf74b284c3f3b9714c3119ceeda1890f87a6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4",
+            "entry_digest": "d8a4193623d6947fec5e364bb1514a2a3bdb4701bd76cada9716c8354b0dc32e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/references/validate.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5",
+            "entry_digest": "1135f90469f01ca9c02bff8b77e28367b72e5c5ccb88379b310c266d47667c66",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/brief.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8",
+            "entry_digest": "7bc5f94d2fb96675f7499e99fad3a336ee4818cf61c4ec0dfbf7895420744162",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/bug-report.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a",
+            "entry_digest": "055f008935e28895c9dd845e772a6aa0285dfbaeba5f2389a55b9145a0cd8c39",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421",
+            "entry_digest": "3a139b1cea6bcd88b11bc7422fbfdb4cd97ddfebae7f0273d0d8a94b21707499",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/frd.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf",
+            "entry_digest": "fa18d3f7070ed28ede5d237dc2bb64cbc7a5d6c6a065b5fa4a928962ed666910",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/prototype/COMPANION.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83",
+            "entry_digest": "561473ba95796be30e3bae19fe4d002ff0141bd3870795a52f531f2e5b3136c7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/prototype/index.html",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3",
+            "entry_digest": "2a2b51ff1a72f6a0f01c3b1d9d1784fbfc91e9c2843189dc09c72a2356576c8b",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/prototype/styles.css",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239",
+            "entry_digest": "658d6c1f22031aa6d715f1bcf0d6babb6abc9096ee88a4c9d0c819e1ce4ac897",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".claude/skills/chough-workflow/templates/review-findings.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4",
+            "entry_digest": "84b0c023b89eb607923fff32209fd2ae379d058e9cadfbaa2f0ac6506c5c017e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "be343dd16c5f9165765706ae946cd76c78e2cad008b4e52dbec3c4a480490615",
+            "entry_digest": "4ac7949d1a74f9ecb2c955914ecefb84ac67f85444b201f7bec786a8fe59ca80",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "docs/FRD.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "70f2e6f4c022e819a13b72359298b356b5cd7ac8a98b1bd95a69ccfe031dad03",
+            "entry_digest": "0709c7645a49acd7b0bc4d0a76afe148e1c8f1d66cbbdb025b2afac134e3b79c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "docs/ROADMAP.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8802d918c243047c0b9e3a918e1a2e7dbc74151282cdf99df601f6e0a6e9c366",
+            "entry_digest": "8b1291632eda9433c482c14f3415cd75ef48a3118e08370cfcb1353e45def6f2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "docs/architecture.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5f40b5bcec82c57ec9487382c03ee2ec9f13a50063638b059e9599344e808306",
+            "entry_digest": "940be9c8dca165e1b32bb095abcb451e72d88e7c1602157d44a4500f6590f6c8",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "docs/cli.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "11f5076ca1c3e039c2cf04bff72c525af4d039e1ff73215215a8b374e1bd86be",
+            "entry_digest": "cb9e7227fe0514e8f32e234f29ad29bf178d21ebd5918938c0dcef3929069d44",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow",
+            "kind": "non_file",
+            "mode": 0,
+            "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "entry_digest": "abbb7af371ddbb538cc10776e4c423dced4a4fa4f9295cb74e0651fa089b2243",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/SKILL.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0b2c166176af684901005b230da159a4ce4cb926e57a59bf3f6b11d3debfdb3f",
+            "entry_digest": "d4d2fb83891831e8888fa6c69e94fe45de12142c2406f2fa8efcbb439dd7d32e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/agents/openai.yaml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0",
+            "entry_digest": "88d72a2bf752e65b45a21585cc0da3b929e89875843817c7f92a51d02279fe1e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/accept.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c",
+            "entry_digest": "5d3e73337051de3fdcb730b374fbabda50ddb07740d49ceec61aad84579eb781",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/bugs.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102",
+            "entry_digest": "80f2be0d5438e460d353ac4578293cb2acb201317df8128c884363bfb26d6f61",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/build.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a",
+            "entry_digest": "4d53a5468f5562ab0128c6ab7b662aa5d0d0d26f9ce4b0df0d9efd736c4b6d43",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/checkpoint.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d",
+            "entry_digest": "b7763759bb27459a6aab31c4384fd6e079c132d8a8aeea4e770f48d01a16629a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/design.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908",
+            "entry_digest": "14d8f1e208b1ba7ba1a9793f5a3793f0497cbf980a03e37ad002ce510e2c7ca5",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/intent.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069",
+            "entry_digest": "3bdcf07fa889b92d04896383fc18b689755e373522dd0ab17bae5a16b81f9429",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/librarian.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0d06962f4048d1d18d77d0e7f4131d47eff0ee82c76c152588865898369ecd27",
+            "entry_digest": "8b81dff1ba08a040fdc1bab0725ece10f104257fdebd5aeb72fd46506d28fa79",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/lifecycle.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711",
+            "entry_digest": "76974cec12657e2825a1f4fcec8bc8ebe1fca9cb3525a66615318f0c5b9b1633",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/plan.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f",
+            "entry_digest": "bb65255fd9a82d0ca069f50a1f6e72260fc295acbab91fa00e41dc8c35de6c68",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/release.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed",
+            "entry_digest": "68d2cace6a036fc8ec61afed6b36842f68f58af98d9d3011f3e0312387bbebe2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/roles.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d",
+            "entry_digest": "048980b87964ede0e5546a38ae2ae163918e0e1ec6b78a82c10922370309ca23",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/stages.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f",
+            "entry_digest": "b5615764ee0de6e657a782b10c524e30f93c8a10c17bb4ba3b691bdf918d6597",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4",
+            "entry_digest": "42d7cd4d3eab37180e89b6455612a07661227515ebdb29d215fea44531384764",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/references/validate.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5",
+            "entry_digest": "3e872c21f63fb9eaba16786bc15fb0ce5f1b4ca3f3abf701f6389c9176a1e778",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/brief.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8",
+            "entry_digest": "021ce06cf408c2f7ef32774c6e9984cb9ccb820fa7449ff074f69546e16accde",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/bug-report.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a",
+            "entry_digest": "959f7ff9f3b149a2ecda2fc321273c575d7e5938f13b769c199ee0cfd0f6212a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421",
+            "entry_digest": "94cf653b50b520b1742ab56e4faf8e2f3ba4dc4acb2b2fc23cf2132dc59748e0",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/frd.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf",
+            "entry_digest": "f227ea41407110396cf4d7bad8e740a8fc93d237a178d52cf00443fdbe038575",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/prototype/COMPANION.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83",
+            "entry_digest": "e4f77e5aad6aef62074a3b0057083e821e460b58785bab730220e5079db6e5a1",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/prototype/index.html",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3",
+            "entry_digest": "e08031e57f27dc45ee7b726031dc2841cca3b3bc4c7263ec03c4769578b773c7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/prototype/styles.css",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239",
+            "entry_digest": "b2723fd9f81e5b74662b9cee8122ad25f043f8e24a7c2dcf1a56352b124604e8",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "skills/chough-workflow/templates/review-findings.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4",
+            "entry_digest": "cca00ba2432019fe652c4ea8958c07e28113bd3bf58b891cce2d6aebbc3280e7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "specs/cli/cli.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "26514509335b7f0e966ccb6291157cd042bbb0e6e350bd3141995cf70edaf237",
+            "entry_digest": "1ad20cff9194391254cccdcec44ca955b9be9845e5c42969cb1d33b96897b635",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/context.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7f54438bf4337f41aeba62b1bbb943411b5446027601b756742d92a006a45d4d",
+            "entry_digest": "5112350b39e062aa7306a30b414ec9fd7753ed1df5744d4e933d7ed30c82a90f",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "17e29e3fdb31925b4b5f15ee8427eae87e01499013e3f32929b8efa6a7d5f4c6",
+            "entry_digest": "8015f9354532b0cd26a0dc0d6f8eeeed4aa074c5b73cb5dc42f4b04654d704a9",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/tasks.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b985579a811edb2a6bc0e0c910b3f740ecddbe3c9bbe13889df3189be5cbcf71",
+            "entry_digest": "f443b79834aa52dc9bf3ae6c1b2ab31250d78580365f5f65241823cb752e1d0e",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bb65a0e3622e0d0a63945e99e292e45f35474d3b882c24e111e3df13c0f2aa33",
+            "entry_digest": "7ef0505f6d31839c68c071c973e269723708fa8fc1b9f93dc92bc142f1b781f3",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "src/evidence.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1b0d49d00880219b53a565edd5d4bf2e25e7eae8b060b63840bc7c4e901b5f67",
+            "entry_digest": "805f47999d0c6ea3a8b4c443e479613ae8231357fbbd83ead64f76f5d31321b9",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "src/main.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3c9ba61e77c8ff824708e0daa89ac0f91690fa934008be8460cbb68b6ea57c6b",
+            "entry_digest": "22d389a3c9f914046d3661e79e3c928b43bdfc5931feab99eaa9040fc394409f",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "src/skill.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4b662adff56d743d0235c2c0f625db917b25c8a36745ee32a6c4f083493c3c61",
+            "entry_digest": "a2055b6181ad98b68e17cbf1879c14c7f3d4aa16a2ad6abf1dd2a7abd1a3482b",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "tests/common/mod.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d529f23c0acf3eaa8dc3c949089cace9681b948fddcb089ec47dc0639492cc2b",
+            "entry_digest": "11d5e46e0f795c4ce641399f57e0e37c54a323e134e66eaed75b359921219f63",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/evidence.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b73d8e92788bf25b82c9d0f5272608d803c9bece651775d03c2a993495a7f0e8",
+            "entry_digest": "c28eb1366729f92315d11c7ddb24ad66c1806a3bca79e1d338963a4c02ad7cc4",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/next.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a36f803a9285e6d191a62ee06e54a977dac64c274a3212269404d91b3ad78f0c",
+            "entry_digest": "5c42fed62d619367cb9312281d52e5fdcd0700b2a97ceb11c088e014010a27ae",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/package.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e322803cdcdd10c89b30ba011afb19f1c7f0e8684bc227d3dd9db129f921649a",
+            "entry_digest": "1fa997d1d507a07b19606f47ece335a8c0e1848b74b6c64ae4c6c4d5ff5b8f1a",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}

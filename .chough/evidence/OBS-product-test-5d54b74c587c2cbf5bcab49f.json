@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-5d54b74c587c2cbf5bcab49f",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-6",
+    "LIFE-7",
+    "LIFE-8",
+    "FLOW-6"
+  ],
+  "requirements": [
+    "REQ-cli-025",
+    "REQ-cli-026",
+    "REQ-cli-027",
+    "REQ-cli-028",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64-rust-1.88.0",
+  "summary": "Final combined37/44/46 MSRV qualification: all240tests passed on Rust1.88.0 in a separate target. Actual44main import preserves the exact qualified source/test/skill/case identities. Version-specific fixture binaries are identified separately.",
+  "artifacts": [
+    ".chough/artifacts/pr46-combined-qualification/msrv.log",
+    ".chough/artifacts/pr46-combined-qualification/msrv-result.json",
+    ".chough/artifacts/pr46-combined-qualification/binary-identities.json",
+    ".chough/artifacts/pr46-actual44-main-import/equivalence-and-preservation.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr46-actual44-main-import/equivalence-and-preservation.json": "b24ff886873e3195fa36e14a3819bd9623461db64d8e2429c2b3e95536161409",
+    ".chough/artifacts/pr46-combined-qualification/binary-identities.json": "471815aded6d4121f271f63300191f85d7561cc31290ac85697331e650ae73de",
+    ".chough/artifacts/pr46-combined-qualification/msrv-result.json": "5d5ffdb2c3975b0e577cb96d2fd6d764e1eea57dd752bd1fed33fa2daf56c989",
+    ".chough/artifacts/pr46-combined-qualification/msrv.log": "8ba2d01991c9a16a01a1cdfd6649c00701ed9b88af6ba1e8f981768382db869e"
+  },
+  "observed_at_unix_seconds": 1793671936,
+  "snapshot": {
+    "revision": "b050046ea6a7f530f618a7f190ac9ca5a143e41e",
+    "dirty": false,
+    "fingerprint": "7121969603f32d5d0aae741aa447aa9b767e699c1719c702667bc287c2dcc93a",
+    "content": "277fddc1cfd14f893619834b7cce035d6471d67152d99a3dd2a75d9de4691b55"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Local macOS qualification. Hosted checks at the final PR46tip, human implementation acceptance and native review/ship are separate. No external-agent cold-start run, release, deployment, live adoption or cleanup."
+  ]
+}

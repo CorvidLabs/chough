@@ -1256,3 +1256,292 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(text(&fixture, &["next"]), shown);
     assert_eq!(fixture.native_calls(), 4, "one native read per run");
 }
+
+/// A portable report fixture with both legacy and slug case definitions. The
+/// observations are synthetic records, so no product test or native approval is
+/// implied by their passed outcome.
+fn read_budget_fixture(with_cases: bool) -> Fixture {
+    use sha2::{Digest, Sha256};
+    let fixture = Fixture::new();
+    fixture.init();
+    if with_cases {
+        let mut definitions = "profile = \"chough-testing/1\"\nmodule = \"cli\"\n".to_string();
+        for id in ["TC-cli-0001", "TC-cli-report-slug"] {
+            definitions.push_str(&format!(
+                r#"
+[[case]]
+id = "{id}"
+title = "A case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-001"]
+environments = ["local"]
+artifacts = ["test-log"]
+expected = ["reported"]
+[case.bind]
+adapter = "command"
+argv = ["unused-test-fixture"]
+expect_output = ["reported"]
+"#
+            ));
+        }
+        fixture.write(".chough/cases/cli.cases.toml", &definitions);
+    }
+    fixture.write(".chough/artifacts/report-input.log", "artifact\n");
+    fixture.write(
+        ".specsync/changes/observed/plan.md",
+        "A native source artifact, without configured native tools.\n",
+    );
+    fixture.commit("fixed report inputs");
+    let cases = if with_cases {
+        fixture.ok(&["cases", "list"])["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|case| json!({"id": case["id"], "digest": case["digest"]}))
+            .collect::<Vec<_>>()
+    } else {
+        vec![]
+    };
+    let snapshot = fixture.ok(&["status"])["snapshot"].clone();
+    let fingerprint = format!("{:x}", Sha256::digest(b"artifact\n"));
+    let mut refs = vec!["checkpoint".to_string()];
+    for index in 0..12 {
+        let id = format!("report-observation-{index}");
+        let record = json!({
+            "schema_version": 2,
+            "id": id,
+            "criteria": ["LIFE-3"],
+            "requirements": ["REQ-cli-001"],
+            "contracts": ["specs/cli/cli.spec.md"],
+            "kind": "dry-run",
+            "outcome": "passed",
+            "environment": "local",
+            "summary": "Synthetic report input, not an executed product check",
+            "artifacts": [".chough/artifacts/report-input.log"],
+            "artifact_fingerprints": {".chough/artifacts/report-input.log": fingerprint},
+            "observed_at_unix_seconds": 1,
+            "snapshot": snapshot,
+            "provenance": "synthetic test record",
+            "cases": cases,
+        });
+        fixture.write(&format!(".chough/evidence/{id}.json"), &record.to_string());
+        refs.extend(["--observation".to_string(), id]);
+    }
+    fixture.ok(&refs.iter().map(String::as_str).collect::<Vec<_>>());
+    fixture
+}
+
+fn traced_report(fixture: &Fixture, args: &[&str], trace: bool) -> std::process::Output {
+    std::process::Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args(args)
+        .env("CHOUGH_TRACE", if trace { "1" } else { "0" })
+        .output()
+        .unwrap()
+}
+
+fn report_records(fixture: &Fixture) -> std::collections::BTreeMap<String, Vec<u8>> {
+    fn collect(
+        root: &std::path::Path,
+        path: &std::path::Path,
+        records: &mut std::collections::BTreeMap<String, Vec<u8>>,
+    ) {
+        if path.is_dir() {
+            for entry in std::fs::read_dir(path).unwrap() {
+                collect(root, &entry.unwrap().path(), records);
+            }
+        } else if path.is_file() {
+            records.insert(
+                path.strip_prefix(root)
+                    .unwrap()
+                    .to_string_lossy()
+                    .into_owned(),
+                std::fs::read(path).unwrap(),
+            );
+        }
+    }
+    let mut records = std::collections::BTreeMap::new();
+    for name in [".chough", ".specsync"] {
+        collect(fixture.root(), &fixture.root().join(name), &mut records);
+    }
+    records
+}
+
+#[test]
+fn report_case_reads_are_shared_across_observations_and_references() {
+    let fixture = read_budget_fixture(true);
+    for (args, lookups) in [
+        (vec!["status", "--environment", "local"], 48),
+        (vec!["next", "--environment", "local", "--json"], 24),
+    ] {
+        let before = report_records(&fixture);
+        let output = traced_report(&fixture, &args, true);
+        assert!(output.status.success());
+        let trace = String::from_utf8(output.stderr).unwrap();
+        assert_eq!(trace.matches("case-suite loads=").count(), 1, "{trace}");
+        assert!(
+            trace.contains(&format!(
+                "case-suite loads=1 lookups={lookups} unique_ids=2"
+            )),
+            "{trace}"
+        );
+        assert_eq!(trace.matches("phase case-suite ").count(), 1, "{trace}");
+        let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+        if args[0] == "status" {
+            assert!(
+                report["observations"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .all(|row| { row["freshness"] == "current-observation" })
+            );
+            assert!(
+                report["observation_references"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .all(|row| { row["label"] == "current" })
+            );
+        } else {
+            assert_eq!(report["observations"]["referenced_current"], 12);
+        }
+        assert_eq!(before, report_records(&fixture));
+    }
+}
+
+#[test]
+fn report_case_reads_are_lazy_when_observations_have_no_case_binding() {
+    let fixture = read_budget_fixture(false);
+    // A malformed unrelated definition must remain unconsulted without a binding.
+    fixture.write(".chough/cases/cli.cases.toml", "not TOML");
+    for command in ["status", "next"] {
+        let output = traced_report(&fixture, &[command, "--environment", "local"], true);
+        assert!(output.status.success());
+        let trace = String::from_utf8(output.stderr).unwrap();
+        assert!(
+            trace.contains("case-suite loads=0 lookups=0 unique_ids=0"),
+            "{trace}"
+        );
+        assert!(!trace.contains("phase case-suite "), "{trace}");
+    }
+}
+
+fn report_freshness(fixture: &Fixture, environment: &str) -> String {
+    let report = fixture.ok(&["status", "--environment", environment]);
+    let records = report["observations"].as_array().unwrap();
+    let state = records[0]["freshness"].as_str().unwrap();
+    assert!(records.iter().all(|row| row["freshness"] == state));
+    state.to_string()
+}
+
+#[test]
+fn report_read_context_does_not_survive_the_next_request() {
+    let fixture = read_budget_fixture(true);
+    let original = fixture.read(".chough/cases/cli.cases.toml");
+    assert_eq!(report_freshness(&fixture, "local"), "current-observation");
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &original.replace("reported", "changed"),
+    );
+    assert_eq!(report_freshness(&fixture, "local"), "stale-case-definition");
+    fixture.write(".chough/cases/cli.cases.toml", &original);
+    assert_eq!(report_freshness(&fixture, "local"), "current-observation");
+    fixture.write(".chough/artifacts/report-input.log", "changed\n");
+    assert_eq!(report_freshness(&fixture, "local"), "stale-artifact");
+    fixture.write(".chough/artifacts/report-input.log", "artifact\n");
+    assert_eq!(report_freshness(&fixture, "another"), "stale-environment");
+    fixture.write("src/input.txt", "changed\n");
+    assert_eq!(
+        report_freshness(&fixture, "local"),
+        "stale-revision-or-inputs"
+    );
+    fixture.write("src/input.txt", "first version\n");
+    assert_eq!(report_freshness(&fixture, "local"), "current-observation");
+    fixture.write(".specsync/changes/observed/plan.md", "changed\n");
+    assert_eq!(
+        report_freshness(&fixture, "local"),
+        "stale-revision-or-inputs"
+    );
+}
+
+#[test]
+fn report_traces_preserve_stdout_exit_results_and_managed_records() {
+    let fixture = read_budget_fixture(true);
+    for args in [
+        vec!["status", "--environment", "local"],
+        vec!["next", "--environment", "local"],
+        vec!["next", "--environment", "local", "--json"],
+    ] {
+        let before = report_records(&fixture);
+        let quiet = traced_report(&fixture, &args, false);
+        let traced = traced_report(&fixture, &args, true);
+        assert!(quiet.status.success());
+        assert_eq!(quiet.status.code(), traced.status.code());
+        assert_eq!(quiet.stdout, traced.stdout);
+        assert_eq!(quiet.stderr, b"");
+        let trace = String::from_utf8(traced.stderr).unwrap();
+        for phase in [
+            "snapshot.git-enumeration",
+            "snapshot.hash",
+            "snapshot.git-status",
+            "freshness.artifacts",
+        ] {
+            assert!(trace.contains(&format!("phase {phase} ")), "{trace}");
+        }
+        assert!(trace.lines().all(|line| line.len() <= 1024));
+        assert_eq!(before, report_records(&fixture));
+    }
+    fixture.write(".chough/cases/cli.cases.toml", "broken case file");
+    let loader_error = traced_report(&fixture, &["cases", "list"], false);
+    for command in ["status", "next"] {
+        let before = report_records(&fixture);
+        let quiet = traced_report(&fixture, &[command], false);
+        let traced = traced_report(&fixture, &[command], true);
+        assert!(!quiet.status.success());
+        assert_eq!(
+            quiet.stderr, loader_error.stderr,
+            "preserve the original loader error chain"
+        );
+        assert_eq!(quiet.status.code(), traced.status.code());
+        assert_eq!(quiet.stdout, traced.stdout);
+        let traced_error = String::from_utf8(traced.stderr)
+            .unwrap()
+            .split_inclusive('\n')
+            .filter(|line| !line.starts_with("chough-trace: "))
+            .collect::<String>();
+        assert_eq!(traced_error, String::from_utf8(quiet.stderr).unwrap());
+        assert_eq!(before, report_records(&fixture));
+    }
+}
+
+#[test]
+fn report_read_context_preserves_missing_retired_and_duplicate_case_outcomes() {
+    let fixture = read_budget_fixture(true);
+    let path = ".chough/cases/cli.cases.toml";
+    let original = fixture.read(path);
+    fixture.write(
+        path,
+        &original.replace("status = \"active\"", "status = \"retired\""),
+    );
+    assert_eq!(report_freshness(&fixture, "local"), "stale-case-definition");
+    std::fs::remove_file(fixture.root().join(path)).unwrap();
+    assert_eq!(report_freshness(&fixture, "local"), "stale-case-definition");
+    fixture.write(path, &original.replace("TC-cli-report-slug", "TC-cli-0001"));
+    let before = report_records(&fixture);
+    for command in ["next", "status"] {
+        let output = traced_report(&fixture, &[command], true);
+        assert!(!output.status.success());
+        assert!(
+            String::from_utf8(output.stderr)
+                .unwrap()
+                .contains("duplicate case ID TC-cli-0001")
+        );
+        assert_eq!(before, report_records(&fixture));
+    }
+    fixture.write(path, &original);
+    assert_eq!(report_freshness(&fixture, "local"), "current-observation");
+}

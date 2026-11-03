@@ -1,0 +1,22 @@
+{
+  "ours_head": "cb478ba5e70c4d7ed7fa21c13d7209afc4bd64c8",
+  "incoming44": "122b8e9e8b913b49e618c59c2906e9e26613fd7e",
+  "qualified44_source": "769b5269b87d2f822a1b41a4276eccd7d0fa3770",
+  "proof_blobs": 2104,
+  "proof_mismatches": 0,
+  "atomic_cycle_preserved": true,
+  "all65additive_observation_ids_retained": true,
+  "root_selected_retired_pointers": 24,
+  "direct_protected_record_references": 24,
+  "active_observations_before_final_runs": 178,
+  "checkpoint_files": 36,
+  "checkpoint_bytes": 61569,
+  "base_transition_occurrences": 180,
+  "ours_added_occurrences": 16,
+  "incoming44_added_occurrences": 22,
+  "merged_transition_occurrences": 218,
+  "transition_order_note": "Existing ours order retained and unmatched incoming occurrences appended with explicit source mapping. No global causal ordering is inferred.",
+  "canonical_version": 24,
+  "case_count": 152,
+  "predecessor_hash_union_preserved": true
+}

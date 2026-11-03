@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-eed7c8236164fee33d58226f",
+  "criteria": [
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "PR46 archive executor: fixed2independent reads, unchanged native predicates/history replay/version/deadlines/read-only guard. All240Rust tests, all9Fledge tasks,12unchanged native fixtures and6corrected scheduler/protocol units passed; independent review has no remaining finding. Exact input hashes and original run distinctions are retained.",
+  "artifacts": [
+    ".chough/artifacts/pr46-archive-executor-performance/qualification.json",
+    ".chough/artifacts/pr46-archive-executor-performance/original-full-18-fixtures.log",
+    ".chough/artifacts/pr46-archive-executor-performance/six-units-output-bound-fixed.log",
+    ".chough/artifacts/pr46-archive-executor-performance/peer-review-final.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr46-archive-executor-performance/original-full-18-fixtures.log": "5b1fc52e949db4d39b0021e7741ff3cf071c3a5c5f08639f168071fe5eff37da",
+    ".chough/artifacts/pr46-archive-executor-performance/peer-review-final.json": "547e2632684edff7fd48e89be3ec12f78469ff7c3b89d7877bf1e5d5b8301155",
+    ".chough/artifacts/pr46-archive-executor-performance/qualification.json": "55f2c281cab097bccf48988a37df4f1ee49dce1d8ead7b4700828477e82bdb66",
+    ".chough/artifacts/pr46-archive-executor-performance/six-units-output-bound-fixed.log": "cdf3a1e1c3338cc6d7cac63176f2b66945ef4425e68aeef37167274987effcd1"
+  },
+  "observed_at_unix_seconds": 1793677749,
+  "snapshot": {
+    "revision": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+    "dirty": true,
+    "fingerprint": "10eddbdbf7ac32e8919a1e0b8327fe75c44b9f82e15a1dfba13abe5cebf17797",
+    "content": "803d9ddf3c143f69174b955bfb51ad3f25c6a35a0246e8288224eca610191763"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Full18run preceded the tightened output-bound test oracle; corrected6units passed separately at final test bytes. Hosted duration and final-head authentication remain pending. Earlier16case observations retain their prior content identity."
+  ]
+}

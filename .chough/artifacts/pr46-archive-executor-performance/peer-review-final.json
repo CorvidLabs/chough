@@ -1,0 +1,65 @@
+{
+  "reviewer": "legacy_timing_fix independent read-only peer review",
+  "scope": [
+    ".github/scripts/check-specsync-archive.py",
+    ".github/scripts/test-specsync-archive.py"
+  ],
+  "checker_sha256": "0426dab6c3e9554d03ebcd59faaa680f1f22f0806dc390bc4cbe2d2f77f65eb7",
+  "test_sha256": "e41969ab360254bac8383f060cfe557641c9d6b7fe161e9490ad9890550d2e4d",
+  "baseline_commit": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+  "remaining_findings": [],
+  "executor_review": {
+    "fixed_max_workers": 2,
+    "only_current_root_archive_status_reads_overlap": true,
+    "every_obligation_prechecked_for_archive_presence": true,
+    "all_future_results_required_before_success": true,
+    "errors_selected_in_sorted_id_order": true,
+    "executor_context_joins_running_and_queued_reads_before_final_fingerprint": true,
+    "history_checkout_and_inventory_remain_serial": true
+  },
+  "guard_parity": {
+    "core_reader_version_timeout_output_fingerprint_functions_ast_identical": true,
+    "archive_authentication_predicates_ast_identical": true,
+    "history_inventory_ast_identical": true,
+    "original12real_native_fixture_methods_byte_identical": true,
+    "native_version": "6.1.2",
+    "per_command_timeout_seconds": 90,
+    "per_command_output_limit": 8388608,
+    "hosted_job_budget_minutes_unchanged": 10
+  },
+  "independent_execution": {
+    "focused_units": 6,
+    "passed": 6,
+    "failed": 0,
+    "elapsed_seconds": 0.344,
+    "log": "/tmp/chough46-archive-peer-focused-final.log",
+    "real_native_fixture_reruns": 0
+  },
+  "resolved_test_finding": {
+    "severity": "P3",
+    "initial_test_sha256": "4576cc3516f8297371d38cdb0cff3ac6e92dd37056b688487c0dbf6412137603",
+    "issue": "Oversized invalid JSON allowed the output-bound test to pass after MAX_OUTPUT was weakened because JSON parsing supplied GateError.",
+    "before_probe": "/tmp/chough46-archive-peer-output-bound-probe.log",
+    "resolution": "Worker replaced it with a valid authenticated response padded to exactly8MiB+1 and asserts the bound diagnostic.",
+    "after_probe": "/tmp/chough46-archive-peer-output-bound-probe-after.log",
+    "after_probe_result": "An isolated in-memory16MiB cap causes exactly the oversized-result subtest to fail with GateError not raised; no other failures/errors. Repository source unchanged by the probe."
+  },
+  "native_coverage_diagnosis": {
+    "cause": "Approved native changes deliberately do not provide active-file coverage; explicit paths become delivering coverage in Implementing or later.",
+    "recovery_owner": "root uses ordinary native check after actual implementation tasks complete",
+    "canonical_owner_correction_needed": false,
+    "metadata_or_approval_rewrite_performed": false
+  },
+  "limits": [
+    "Focused scheduler/protocol tests use fake native responses; unchanged real-native fixtures were run by the implementation worker.",
+    "Actual hosted archive duration remains to be observed by root before merge.",
+    "No human acceptance or native review/archive is implied by this peer review."
+  ],
+  "writes": {
+    "repository": false,
+    "native": false,
+    "checkpoint": false,
+    "git_or_github": false
+  },
+  "review_state": "complete; all reviewer readers/writers stopped"
+}

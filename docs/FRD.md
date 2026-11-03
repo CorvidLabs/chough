@@ -198,6 +198,17 @@ coordination, universal slash-command parser, replacement native change state,
 automatic human authentication, or deployment engine is included. The
 [roadmap](ROADMAP.md) records proposed extensions separately.
 
+
+## Request-local reporting work (REQ-cli-028)
+
+For LIFE-3, LIFE-6, LIFE-7, LIFE-10 and FLOW-13, reports share at most one structural
+case-suite load per request, using the existing case digests and validation errors.
+An unbound report loads none, and later requests re-read inputs. Source, artifact,
+environment and native checks remain authoritative. Opt-in stderr-only phases and
+load counters support comparable measurements with explicit binary/input identity
+and incomplete-native outcomes. This is local read reuse, with no persistent cache,
+new runtime, alternate lifecycle state or promise to eliminate native latency.
+
 ## REQ-cli-029: Agent-operated native workflow
 
 The current agent runs native tools inside the Chough conversation and uses

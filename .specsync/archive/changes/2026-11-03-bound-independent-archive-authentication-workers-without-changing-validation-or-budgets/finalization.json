@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "bound-independent-archive-authentication-workers-without-changing-validation-or-budgets",
+  "implementation_commit": "e8cafc4353915f2eaab94f1c5d4dd7cc6e6a0067",
+  "implementation_tree": "c47995ecc07ee88eaa8de7c4869b51f56f9c2646",
+  "contract_digest": "970957550d82fe4a9976ba7cbc222fc2a24ec2d20cc3c9aa1702187e97a234d4",
+  "workspace_digest": "c7ca72622355f95b9e12b8cb3551314cde3fab76db9dfc18cef61e9500abd332",
+  "closing_digest": "28f7fea1560d3433bd42efb3aea56f48a037c3ce9092946d610cd77261d64243",
+  "review_digest": "f668cbd5c651d14f14b852860104e31333149efeeb13e5389e2153e42281bd43",
+  "finalization_digest": "0dc831fd8960f4e3638a4a0a6bf723c2aebde386deae88d073f776f65e1de5e7",
+  "timestamp": 1793677915
+}

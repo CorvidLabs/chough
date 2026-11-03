@@ -14,11 +14,13 @@ use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, File};
 use std::io::Read;
 use std::path::{Component, Path};
 use std::process::{Command, Output};
+use std::time::{Duration, Instant};
 
 pub(super) const EVIDENCE_DIR: &str = ".chough/evidence";
 pub(super) const PROVENANCE: &str =
@@ -299,6 +301,7 @@ fn hash_input(
 }
 
 pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
+    let phase = Instant::now();
     let actual_root = git(root, &["rev-parse", "--show-toplevel"])?;
     ensure!(
         Path::new(std::str::from_utf8(&actual_root.stdout)?.trim()).canonicalize()? == root,
@@ -317,6 +320,8 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
             "-z",
         ],
     )?;
+    crate::records::trace_phase("snapshot.git-enumeration", phase);
+    let phase = Instant::now();
     let mut files = BTreeSet::new();
     for bytes in list
         .stdout
@@ -360,11 +365,14 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
         // An absent tracked path contributes nothing, as after its deletion is committed.
         hash_input(&mut content, root, name, Some((*domain, key)), *change_md)?;
     }
+    crate::records::trace_phase("snapshot.hash", phase);
+    let phase = Instant::now();
     let dirty_output = git(root, &["status", "--porcelain", "--untracked-files=all"])?;
     let dirty = String::from_utf8(dirty_output.stdout)?.lines().any(|line| {
         line.get(3..)
             .is_some_and(|name| fingerprint_key(name) != Key::Skip)
     });
+    crate::records::trace_phase("snapshot.git-status", phase);
     Ok(Snapshot {
         revision,
         dirty,
@@ -706,6 +714,7 @@ pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
 }
 
 pub(super) fn load_all(root: &Path) -> Result<Vec<Evidence>> {
+    let phase = Instant::now();
     let mut records = vec![];
     for name in record_names(root, EVIDENCE_DIR)? {
         let path = local_path(root, &format!("{EVIDENCE_DIR}/{name}"))?;
@@ -714,6 +723,7 @@ pub(super) fn load_all(root: &Path) -> Result<Vec<Evidence>> {
         validate_record(&evidence, &name)?;
         records.push(evidence);
     }
+    crate::records::trace_phase("evidence.load", phase);
     Ok(records)
 }
 
@@ -739,55 +749,93 @@ fn same_inputs(current: &Snapshot, recorded: &Evidence) -> bool {
     }
 }
 
-pub(super) fn freshness(
-    root: &Path,
-    evidence: &Evidence,
-    current: &Result<Snapshot>,
-    environment: Option<&str>,
-) -> Result<&'static str> {
-    let mut artifacts_current = true;
-    for artifact in &evidence.artifacts {
-        local_path(root, artifact)?;
-        let expected = evidence
-            .artifact_fingerprints
-            .get(artifact)
-            .context("missing artifact binding")?;
-        ensure!(is_digest(expected), "invalid artifact digest");
-        if file_digest(root, artifact).as_ref().ok() != Some(expected) {
-            artifacts_current = false;
-        }
-    }
-    let mut cases_current = true;
-    for case in &evidence.cases {
-        if cases::current_digest(root, &case.id)?.as_deref() != Some(case.digest.as_str()) {
-            cases_current = false;
-        }
-    }
-    Ok(match current {
-        Err(_) => "unknown-revision",
-        Ok(snapshot) if !same_inputs(snapshot, evidence) => "stale-revision-or-inputs",
-        Ok(_) if !artifacts_current => "stale-artifact",
-        Ok(_) if !cases_current => "stale-case-definition",
-        Ok(_) if environment.is_none() => "environment-unchecked",
-        Ok(_) if environment != Some(evidence.environment.as_str()) => "stale-environment",
-        Ok(_) => "current-observation",
-    })
+/// One report's root-bound freshness reads. It shares only case definitions;
+/// artifact bytes and environment checks are still evaluated for every observation.
+pub(super) struct Reads<'a> {
+    root: &'a Path,
+    cases: cases::Digests<'a>,
+    artifact_time: Cell<Duration>,
 }
 
-/// Observations with freshness, for status and next.
-pub(super) fn observations(
-    root: &Path,
-    current: &Result<Snapshot>,
-    environment: Option<&str>,
-) -> Result<Vec<Value>> {
-    let mut values = vec![];
-    for evidence in load_all(root)? {
-        let state = freshness(root, &evidence, current, environment)?;
-        values.push(
-            json!({"record": evidence, "freshness": state, "label": label_for(state, environment)}),
-        );
+impl<'a> Reads<'a> {
+    pub(super) fn new(root: &'a Path) -> Self {
+        Self {
+            root,
+            cases: cases::Digests::new(root),
+            artifact_time: Cell::new(Duration::ZERO),
+        }
     }
-    Ok(values)
+
+    fn artifacts_current(&self, evidence: &Evidence) -> Result<bool> {
+        let started = Instant::now();
+        let result = (|| {
+            let mut current = true;
+            for artifact in &evidence.artifacts {
+                local_path(self.root, artifact)?;
+                let expected = evidence
+                    .artifact_fingerprints
+                    .get(artifact)
+                    .context("missing artifact binding")?;
+                ensure!(is_digest(expected), "invalid artifact digest");
+                if file_digest(self.root, artifact).as_ref().ok() != Some(expected) {
+                    current = false;
+                }
+            }
+            Ok(current)
+        })();
+        self.artifact_time
+            .set(self.artifact_time.get() + started.elapsed());
+        result
+    }
+
+    fn freshness(
+        &self,
+        evidence: &Evidence,
+        current: &Result<Snapshot>,
+        environment: Option<&str>,
+    ) -> Result<&'static str> {
+        let artifacts_current = self.artifacts_current(evidence)?;
+        let mut cases_current = true;
+        for case in &evidence.cases {
+            if self.cases.current(&case.id)?.as_deref() != Some(case.digest.as_str()) {
+                cases_current = false;
+            }
+        }
+        Ok(match current {
+            Err(_) => "unknown-revision",
+            Ok(snapshot) if !same_inputs(snapshot, evidence) => "stale-revision-or-inputs",
+            Ok(_) if !artifacts_current => "stale-artifact",
+            Ok(_) if !cases_current => "stale-case-definition",
+            Ok(_) if environment.is_none() => "environment-unchecked",
+            Ok(_) if environment != Some(evidence.environment.as_str()) => "stale-environment",
+            Ok(_) => "current-observation",
+        })
+    }
+
+    /// Observations with freshness, sharing this request's case definitions.
+    pub(super) fn observations(
+        &self,
+        current: &Result<Snapshot>,
+        environment: Option<&str>,
+    ) -> Result<Vec<Value>> {
+        let mut values = vec![];
+        for evidence in load_all(self.root)? {
+            let state = self.freshness(&evidence, current, environment)?;
+            values.push(
+                json!({"record": evidence, "freshness": state, "label": label_for(state, environment)}),
+            );
+        }
+        Ok(values)
+    }
+}
+
+impl Drop for Reads<'_> {
+    fn drop(&mut self) {
+        crate::records::trace(&format!(
+            "phase freshness.artifacts elapsed_ms={}",
+            self.artifact_time.get().as_millis()
+        ));
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -888,14 +936,16 @@ pub(super) fn ledger_entries(root: &Path) -> Result<BTreeMap<String, PrunedEntry
 }
 
 /// Labels observation references current, historical, pruned or unavailable.
-pub(super) struct Labels {
+pub(super) struct Labels<'a> {
+    reads: Reads<'a>,
     snapshot: Result<Snapshot>,
     pruned: BTreeSet<String>,
 }
 
-impl Labels {
-    pub(super) fn new(root: &Path) -> Self {
+impl<'a> Labels<'a> {
+    pub(super) fn new(root: &'a Path) -> Self {
         Self {
+            reads: Reads::new(root),
             snapshot: snapshot(root),
             // An unreadable ledger leaves absent observations unavailable, never current.
             pruned: read_ledger(root).unwrap_or_default(),
@@ -909,29 +959,36 @@ impl Labels {
         id: &str,
         environment: Option<&str>,
     ) -> Result<&'static str> {
-        label_reference(root, id, &self.snapshot, environment, &self.pruned)
+        ensure!(
+            root == self.reads.root,
+            "observation labels belong to another project root"
+        );
+        self.reads
+            .label_reference(id, &self.snapshot, environment, &self.pruned)
     }
 }
 
-fn label_reference(
-    root: &Path,
-    id: &str,
-    current: &Result<Snapshot>,
-    environment: Option<&str>,
-    pruned: &BTreeSet<String>,
-) -> Result<&'static str> {
-    if !is_present(root, id)? {
-        return Ok(if pruned.contains(id) {
-            "pruned"
-        } else {
-            "unavailable"
-        });
+impl Reads<'_> {
+    fn label_reference(
+        &self,
+        id: &str,
+        current: &Result<Snapshot>,
+        environment: Option<&str>,
+        pruned: &BTreeSet<String>,
+    ) -> Result<&'static str> {
+        if !is_present(self.root, id)? {
+            return Ok(if pruned.contains(id) {
+                "pruned"
+            } else {
+                "unavailable"
+            });
+        }
+        let evidence = load(self.root, id)?;
+        Ok(label_for(
+            self.freshness(&evidence, current, environment)?,
+            environment,
+        ))
     }
-    let evidence = load(root, id)?;
-    Ok(label_for(
-        freshness(root, &evidence, current, environment)?,
-        environment,
-    ))
 }
 
 /// Files named directly, keyed by [`file_key`], with what names them: bug fixtures of
@@ -988,19 +1045,21 @@ fn references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     Ok(map)
 }
 
-/// Referenced observations with their labels, for status and next.
-pub(super) fn reference_labels(
-    root: &Path,
-    current: &Result<Snapshot>,
-    environment: Option<&str>,
-) -> Result<Vec<Value>> {
-    let pruned = read_ledger(root).unwrap_or_default();
-    let mut values = vec![];
-    for (id, sources) in references(root)? {
-        let label = label_reference(root, &id, current, environment, &pruned)?;
-        values.push(json!({"id": id, "label": label, "referenced_by": sources}));
+impl Reads<'_> {
+    /// Referenced labels share the same case index as this request's observations.
+    pub(super) fn reference_labels(
+        &self,
+        current: &Result<Snapshot>,
+        environment: Option<&str>,
+    ) -> Result<Vec<Value>> {
+        let pruned = read_ledger(self.root).unwrap_or_default();
+        let mut values = vec![];
+        for (id, sources) in references(self.root)? {
+            let label = self.label_reference(&id, current, environment, &pruned)?;
+            values.push(json!({"id": id, "label": label, "referenced_by": sources}));
+        }
+        Ok(values)
     }
-    Ok(values)
 }
 
 /// Native manifests that protect observation sets, or why they could not be read.

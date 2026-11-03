@@ -1,0 +1,9 @@
+{
+  "parent": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+  "counts": {
+    "runtime_contract_skill_test": 74,
+    "protected_prior_proof": 2260
+  },
+  "changed_or_missing": [],
+  "comparison": "Git blob identity, preserving symlink target bytes"
+}

@@ -1,0 +1,46 @@
+{
+  "hosted-first-timeout.log": {
+    "source": "/tmp/chough46-archive-first-timeout.log",
+    "sha256": "13bd9e79ebf47f03ac85cf0a5bdd6e5d0f115edfe0f48a788988cd8a9e850881"
+  },
+  "hosted-second-timeout.log": {
+    "source": "/tmp/chough46-archive-second-timeout.log",
+    "sha256": "b720cc7e57157c6dbe249b1147228000c4967981d065d50269ec93929b842c62"
+  },
+  "prior-local-command-timeout.log": {
+    "source": "/tmp/chough46-identical-local-archive-v2.log",
+    "sha256": "19df10abf062873816fd168b94ddb5f1799fbdff497e56d60996b46f16af7480"
+  },
+  "prior-local-command-timeout.json": {
+    "source": "/tmp/chough46-identical-local-archive-v2.json",
+    "sha256": "db6a1d520708bcc751978dfe23c3ebc28580a84e20a2b6e60f8fac4bfac8a53d"
+  },
+  "fledge-first-five-and-audit-prerequisite.log": {
+    "source": "/tmp/chough46-archive-workers-fledge-verify.log",
+    "sha256": "56984725cf208f4fcf9c31c1f4d0b62ad59b5a4a5c0f6989436a37a2c9af1d4d"
+  },
+  "original-full-18-fixtures.log": {
+    "source": "/tmp/chough46-archive-fixtures-after.log",
+    "sha256": "5b1fc52e949db4d39b0021e7741ff3cf071c3a5c5f08639f168071fe5eff37da"
+  },
+  "original-six-units.log": {
+    "source": "/tmp/chough46-archive-executor-unit.log",
+    "sha256": "e1e691ce67d27747460ec2f3f542da152fe8fb6963245d943b572ca5abd42409"
+  },
+  "prior-proof-preservation.json": {
+    "source": "/tmp/chough46-archive-workers-preservation.json",
+    "sha256": "7f3b08a8c9f5eb40a620a4a5b1db591c3ad39817ef958468a14c61be91c888a8"
+  },
+  "performance-source-analysis.json": {
+    "source": "/tmp/chough46-archive-performance-9af-plan.json",
+    "sha256": "52a53b2a6c488cf94799ebeea507e26bac7211e5b772d31126c6a891486d6dac"
+  },
+  "peer-initial-output-bound-mutation.log": {
+    "source": "/tmp/chough46-archive-peer-output-bound-probe.log",
+    "sha256": "ea75f8eec0cb35ee67216a803bf7048c124433ada6ade8c69cece8b322bafa39"
+  },
+  "implementation-task-ordering-before.md": {
+    "source": "/private/tmp/chough-tickets-20261102-JAIhPp/.specsync/changes/bound-independent-archive-authentication-workers-without-changing-validation-or-budgets/tasks.md",
+    "sha256": "9ec5d7bd2848ce75ce33af0f2ceac5c3c96b1787216bf05284d9c950418f72b8"
+  }
+}

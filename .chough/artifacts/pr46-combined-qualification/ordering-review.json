@@ -1,0 +1,43 @@
+{
+  "method": "agent-assisted",
+  "environment": "repository-text",
+  "case": "TC-cli-skill-orders-the-change-check-before-new-requirement-cases",
+  "checks": [
+    {
+      "expected_index": 1,
+      "verdict": "pass",
+      "observed": "Plan keeps case execution/recording out of task checkboxes and describes requirement materialization."
+    },
+    {
+      "expected_index": 2,
+      "verdict": "pass",
+      "observed": "Testing orders completed implementation tasks, scoped native check, then new-requirement cases."
+    },
+    {
+      "expected_index": 3,
+      "verdict": "pass",
+      "observed": "Acceptance step1 names unchecked-task refusal and excludes case recording from task boxes."
+    },
+    {
+      "expected_index": 4,
+      "verdict": "pass",
+      "observed": "The three affected guidance files contain neither em nor en dash."
+    },
+    {
+      "expected_index": 5,
+      "verdict": "pass",
+      "observed": "Real skill status reports every file in both installed host copies current; exact file comparisons agree."
+    }
+  ],
+  "canonical_sha256": {
+    "skills/chough-workflow/references/plan.md": "a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f",
+    "skills/chough-workflow/references/testing.md": "ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4",
+    "skills/chough-workflow/references/accept.md": "d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c"
+  },
+  "managed_records_unchanged_by_read": true,
+  "managed_record_count": 2236,
+  "limits": [
+    "Static repository-text and installed-copy consistency only.",
+    "No external agent or cold-start run; no human approval or compliance result inferred."
+  ]
+}

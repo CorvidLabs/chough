@@ -186,7 +186,10 @@ fn main() -> Result<()> {
             }
         }
         Commands::Status { environment, .. } => {
-            print_json(&status(&root, environment.as_deref())?)?;
+            let report = status(&root, environment.as_deref())?;
+            let phase = std::time::Instant::now();
+            print_json(&report)?;
+            records::trace_phase("status.render", phase);
         }
         Commands::Next {
             environment,
@@ -368,11 +371,18 @@ fn not_configured() -> records::Section {
 }
 
 fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
+    let phase = std::time::Instant::now();
     let assessment = assess(root)?;
+    records::trace_phase("status.assess", phase);
     let session = &assessment.session;
     let current = evidence::snapshot(root);
-    let observations = evidence::observations(root, &current, environment)?;
-    let observation_references = evidence::reference_labels(root, &current, environment)?;
+    let reads = evidence::Reads::new(root);
+    let phase = std::time::Instant::now();
+    let observations = reads.observations(&current, environment)?;
+    records::trace_phase("status.observations", phase);
+    let phase = std::time::Instant::now();
+    let observation_references = reads.reference_labels(&current, environment)?;
+    records::trace_phase("status.references", phase);
     let stage_report = match session {
         Session::V1(_) => {
             json!({"schema": 1, "migration": "Run `chough migrate` to adopt the schema 2 checkpoint; the original bytes are kept."})
@@ -630,7 +640,9 @@ fn lessons(root: &Path, modules: &[String]) -> Result<Value> {
 
 /// The focused next view (REQ-cli-021): text by default, compact JSON with `--json`.
 fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String> {
+    let phase = std::time::Instant::now();
     let assessment = assess(root)?;
+    records::trace_phase("next.assess", phase);
     let session = &assessment.session;
     let checkpoint = match session {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
@@ -655,7 +667,10 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     });
 
     let current = evidence::snapshot(root);
-    let references = evidence::reference_labels(root, &current, environment)?;
+    let reads = evidence::Reads::new(root);
+    let phase = std::time::Instant::now();
+    let references = reads.reference_labels(&current, environment)?;
+    records::trace_phase("next.references", phase);
     let referenced: std::collections::BTreeSet<&str> = references
         .iter()
         .filter_map(|entry| entry["id"].as_str())
@@ -721,11 +736,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "full_view": "chough status",
         "truncated": false,
     });
-    Ok(if as_json {
+    let phase = std::time::Instant::now();
+    let output = if as_json {
         fit(view, |view| format!("{view}\n"))
     } else {
         fit(view, next_text)
-    })
+    };
+    records::trace_phase("next.render", phase);
+    Ok(output)
 }
 
 /// Render the view, dropping the last entry of the longest list until it fits.
