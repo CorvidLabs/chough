@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-archive-summary-protection-during-check-baa83cddf481b7c16e20d78a",
+  "criteria": [
+    "KNOW-8"
+  ],
+  "requirements": [
+    "REQ-cli-033"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check for TC-cli-archive-summary-protection-during-check: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-archive-summary-protection-during-check-baa83cddf481b7c16e20d78a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-archive-summary-protection-during-check-baa83cddf481b7c16e20d78a.log": "726d59d8dcc57c8749c5a8c5bec9ca056ee00c12bb0689a3a2801e30b606e924"
+  },
+  "observed_at_unix_seconds": 1793731565,
+  "snapshot": {
+    "revision": "80400ac33e106eee37a6e08cc448188fb496a003",
+    "dirty": false,
+    "fingerprint": "831cdf91d7040dc31af04f1ee83a4ebec1f490349dd3b83718c0b50cb7ac8455",
+    "content": "4e24dbf0d0aa6750cdd9733c3277e548de63fdeac535ed841c507bf560785715"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-archive-summary-protection-during-check",
+      "digest": "b877e7d37d6b1a6580547be8dd8704b4b0730bc156fdfb184cf785d502d43ea3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
