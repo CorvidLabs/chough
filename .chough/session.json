@@ -186,7 +186,8 @@
     "decided: project agent actor corvid-agent is recorded separately from actual human authorization, because the acting account and the authority source have different provenance roles; renewed native scope approval preserves the original event and all product proof",
     "human: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status was presented.",
     "agent owner choice: retain the complete PR37 current-cycle group while importing all additive checkpoint/history records, because this branch continues its active bounded-history work. The finish-all instruction authorizes bounded integration and native closeout; merge and live adoption/cleanup remain separate.",
-    "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: complete the reviewed PRs, safety repairs, native closeout and current-head qualification under his standing through-PR authority. His later instruction permits resynchronization as merges continue; GitHub merge remains his."
+    "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: complete the reviewed PRs, safety repairs, native closeout and current-head qualification under his standing through-PR authority. His later instruction permits resynchronization as merges continue; GitHub merge remains his.",
+    "human: 0xLeif explicitly authorized this session to \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02. This supersedes the earlier user-only merge boundary for PRs 37, 44 and 46; current-head approval, all checks and branch protection still apply. No release, deployment, live adoption or cleanup is authorized."
   ],
   "open_questions": [],
   "completed": [
@@ -458,5 +459,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif merges PR37 after every hosted check passes on this final head and Grok refreshes its review. If main changes first, integrate it and requalify. No live adoption, cleanup, release or deployment."
+  "next_action": "This session merges PR37 after current-head Grok approval and all checks pass, then resynchronizes and qualifies PR44 and PR46 before merging each. Check main afterward. Source: 0xLeif chat instruction to merge approved, green PRs and resynchronize."
 }
