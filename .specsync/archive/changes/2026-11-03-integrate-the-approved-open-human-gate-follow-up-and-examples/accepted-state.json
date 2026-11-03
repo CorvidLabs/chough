@@ -7,11 +7,11 @@
   "title": "Integrate the approved open-human-gate follow-up and examples",
   "description": "Integrate the approved open-human-gate follow-up and examples",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "4f82d3c235545eb7ea32c9413ee971ceae527644",
   "created_at": 1793661825,
-  "updated_at": 1793664650,
+  "updated_at": 1793664788,
   "affected_specs": [],
   "affected_paths": [
     "examples/feature-bug-loop.sh",
