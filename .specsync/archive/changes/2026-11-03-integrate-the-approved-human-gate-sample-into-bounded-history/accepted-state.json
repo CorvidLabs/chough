@@ -7,11 +7,11 @@
   "title": "Integrate the approved human gate sample into bounded history",
   "description": "Integrate the approved human gate sample into bounded history",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "ceb8192621a18c146255d753499389b3c5a47118",
   "created_at": 1793661704,
-  "updated_at": 1793666852,
+  "updated_at": 1793667125,
   "affected_specs": [],
   "affected_paths": [
     "examples/feature-bug-loop.sh",

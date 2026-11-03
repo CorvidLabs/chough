@@ -144,6 +144,48 @@
         }
       ],
       "requirement_ids": []
+    },
+    {
+      "timestamp": 1793666850,
+      "commit": "1810c6bfdf3fa82d2836397c7c94db4b27fc72da",
+      "contract_digest": "2f5b8276203ab960b12d7db9b7c660a81f073640fc6a2b8e6e5b791ab84d5277",
+      "execution_digest": "e33262a012f3e3cd8ec5074103f9ee97a8a673b46ba5cedc52b633c6b7528bb4",
+      "workspace_digest": "649f06b3319afdc56e46ca23ba4e5a1762ee2f8cf0fd1d5e57714da3b717cd53",
+      "acceptance_input_digest": "b43f0623951000abcfaf2305e3e800bc2ca5de3727ff2c2da09394eb45fcf405",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "docs/walkthrough.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fb8e47aeda10dab76eba49faa6d3a9244e7ce22a3b691ecaa0f6ce12a2c85874",
+            "entry_digest": "de54a2f02dedb413ed922c03d30e6661b85d3402f3b70c2c95b9cbf480fd3451",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "examples/feature-bug-loop.sh",
+            "kind": "file",
+            "mode": 33261,
+            "payload_digest": "352a37538dabf989872c1190b131710a30497b54f2e6af4df94533701d75cad6",
+            "entry_digest": "b75b231c8ee41e13eabbf7c4cc72468a1132de95547370fdacbecdf89d7fb49d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
     }
   ]
 }

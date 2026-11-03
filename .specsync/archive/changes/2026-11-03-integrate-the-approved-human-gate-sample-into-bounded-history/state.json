@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "integrate-the-approved-human-gate-sample-into-bounded-history",
+  "slug": "integrate-the-approved-human-gate-sample-into-bounded-history",
+  "title": "Integrate the approved human gate sample into bounded history",
+  "description": "Integrate the approved human gate sample into bounded history",
+  "kind": "documentation",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "ceb8192621a18c146255d753499389b3c5a47118",
+  "created_at": 1793661704,
+  "updated_at": 1793667172,
+  "affected_specs": [],
+  "affected_paths": [
+    "examples/feature-bug-loop.sh",
+    "docs/walkthrough.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Import unchanged already approved main sample/docs for the human-gate guard while integrating PR37. No new product semantics or criterion IDs; active history and reference scopes own other integration paths.",
+  "acceptance_criteria": [
+    "Retain the approved main human-gate sample and walkthrough exactly, preserve all existing proof, and pass combined-source verification and the disposable CLI exercise."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}
