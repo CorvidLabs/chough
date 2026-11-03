@@ -1,0 +1,41 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793732377,
+      "digest": "72ec644215792867c49af2492e091cfa60d4daa5296adb35df6a987a3fe55b18",
+      "note": "Approved as corvid-agent (agent account, not a human approval) under Leif's 2026-11-03 7:49 AM MT standing authority for bounded fixes to Chough bug tickets and his 11:48 AM MT instruction to fix Kimi's round-2 findings on local branches; scope is issue #63 only: refuse an unknown --native-change before saving, no schema, output-key, gate or dependency change",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+        "title": "Refuse a native change ID that SpecSync does not know (issue 63)",
+        "description": "Refuse a native change ID that SpecSync does not know (issue 63)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Checkpoint native-change validation within REQ-cli traceability as written: the helper already must validate references against native records before recording; no requirement or criterion text changes; docs/cli.md states the refusal",
+        "acceptance_criteria": [
+          "With SpecSync configured chough checkpoint --native-change for an ID that specsync change status does not report exits non-zero with refused:native-change-unknown naming the ID and the status command and .chough/session.json stays byte-identical even when other updates are in the same call, A failed or timed-out SpecSync read also refuses with nothing saved, An ID that SpecSync reports is saved as before, Without a SpecSync configuration only the existing ID format check applies, docs/cli.md states the refusal and the new test fails on main 4daf861 and fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 63 only: no new dependency or schema or output-key change and no change to stage gates or to next/status native reads; no PR until a corvid-agent PR slot is free",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
