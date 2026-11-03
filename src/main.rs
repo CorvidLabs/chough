@@ -1108,6 +1108,8 @@ mod tests {
         git_in(&a, &["add", "-A"]);
         git_in(&a, &["commit", "-q", "-m", "base"]);
         let b = second.path().canonicalize().unwrap().join("b");
+        // Git gets the plain temporary paths: it cannot read Windows `\\?\` verbatim
+        // paths, which `canonicalize` returns there.
         git_in(
             second.path(),
             &[
@@ -1115,7 +1117,7 @@ mod tests {
                 "-q",
                 "--config",
                 "core.autocrlf=false",
-                a.to_str().unwrap(),
+                first.path().to_str().unwrap(),
                 "b",
             ],
         );
@@ -1158,7 +1160,7 @@ mod tests {
                 "-q",
                 "--no-rebase",
                 "--no-edit",
-                b.to_str().unwrap(),
+                second.path().join("b").to_str().unwrap(),
                 "b",
             ],
         );

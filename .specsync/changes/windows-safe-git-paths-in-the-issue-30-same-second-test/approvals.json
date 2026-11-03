@@ -1,0 +1,40 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793671138,
+      "digest": "3e48499114dc5d7ca8123c3bddcd346855fa90787768329233022c8289f23127",
+      "note": "Scope approved by corvid-agent under Leif's standing authorization (2026-11-02 9:14 AM MT: 'Use corvid-agent for all approvals for all things!! You are corvid-agent'): test-only Windows path fix for PR #48",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "windows-safe-git-paths-in-the-issue-30-same-second-test",
+        "title": "Windows-safe git paths in the issue 30 same-second test",
+        "description": "Windows-safe git paths in the issue 30 same-second test",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          "src/main.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Test-only fix: the REQ-cli-023 acceptance text is unchanged; only the test's git invocation paths change",
+        "acceptance_criteria": [
+          "The same-second two-root unit test passes git plain temporary paths, never Windows verbatim canonical paths, and still asserts the same identities, times, bytes and freshness",
+          "fledge lanes run verify passes locally; hosted Windows Product CI is reported as observed"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Test-only change in src/main.rs; no assertion weakened",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
