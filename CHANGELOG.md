@@ -84,7 +84,8 @@ All notable changes to Chough are recorded here. The format follows
   keeps `observed_at_unix_seconds`); every `bug add` and `cases run` option has help
   text; `docs/cli.md` lists `history` and says SpecSync 6.1.2 flags an edited
   approved delta; `examples/feature-bug-loop.sh` removes the temporary directory it
-  created after a passing full run.
+  created after a passing full run, including under a relative `TMPDIR` (the path
+  is made absolute before the script changes directory).
 
 - Skill guidance for case recording order (#11, BUG-0017): the plan, testing and
   accept references say that a requirement an approved change adds is linkable only

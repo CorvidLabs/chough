@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective",
+  "slug": "pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective",
+  "title": "PR 50 review fixes: absolute exercise work path for relative TMPDIR cleanup with a regression test, and a corrective agent-assisted observation",
+  "description": "PR 50 review fixes: absolute exercise work path for relative TMPDIR cleanup with a regression test, and a corrective agent-assisted observation",
+  "kind": "bug_fix",
+  "state": "verifying",
+  "canonical_applied": true,
+  "base_commit": "250d6378614e9872ee0d55d493f4c2a7a920c87a",
+  "created_at": 1793675186,
+  "updated_at": 1793675367,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "examples/feature-bug-loop.sh",
+    "tests/cli.rs",
+    ".chough/cases/",
+    ".chough/evidence/",
+    ".chough/artifacts/",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Example script and evidence-record fixes; no requirement or criterion text changes",
+  "acceptance_criteria": [
+    "With a relative TMPDIR (for example TMPDIR=.), a directory the exercise creates is made absolute before any cd, so a passing full run removes it",
+    "A passed-in directory, a prepare-cold-start directory and a failed run's directory are still kept",
+    "A focused regression test runs the script's exact setup and cleanup source with TMPDIR=. and proves both",
+    "OBS-human-observation-174caaa1021cfdf5a553f7a3 stays byte-identical, and a corrective agent-assisted observation states the agent command check without claiming a human witness",
+    "fledge lanes run verify passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leave PR #48's branch alone; do not edit the existing OBS-human-observation record; merge main without rebase",
+    "public_contract": "no"
+  }
+}

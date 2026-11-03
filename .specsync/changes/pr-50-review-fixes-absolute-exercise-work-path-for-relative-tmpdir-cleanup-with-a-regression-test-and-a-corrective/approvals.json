@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793675211,
+      "digest": "edc8772231874de310f038d4757bb1ffa84113c0dd59e0a7b9a009005c781649",
+      "note": "Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective",
+        "title": "PR 50 review fixes: absolute exercise work path for relative TMPDIR cleanup with a regression test, and a corrective agent-assisted observation",
+        "description": "PR 50 review fixes: absolute exercise work path for relative TMPDIR cleanup with a regression test, and a corrective agent-assisted observation",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/artifacts/",
+          ".chough/cases/",
+          ".chough/evidence/",
+          "CHANGELOG.md",
+          "examples/feature-bug-loop.sh",
+          "tests/cli.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Example script and evidence-record fixes; no requirement or criterion text changes",
+        "acceptance_criteria": [
+          "A focused regression test runs the script's exact setup and cleanup source with TMPDIR=. and proves both",
+          "A passed-in directory, a prepare-cold-start directory and a failed run's directory are still kept",
+          "OBS-human-observation-174caaa1021cfdf5a553f7a3 stays byte-identical, and a corrective agent-assisted observation states the agent command check without claiming a human witness",
+          "With a relative TMPDIR (for example TMPDIR=.), a directory the exercise creates is made absolute before any cd, so a passing full run removes it",
+          "fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leave PR #48's branch alone; do not edit the existing OBS-human-observation record; merge main without rebase",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

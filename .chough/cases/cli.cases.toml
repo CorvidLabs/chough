@@ -2749,6 +2749,24 @@ test_target = "stages"
 test = "native_next_action_is_shown_once_and_does_not_cut_the_next_line"
 
 [[case]]
+id = "TC-cli-exercise-cleanup-handles-a-relative-tmpdir"
+title = "The exercise removes its own work directory under a relative TMPDIR and keeps every other one"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-6"]
+requirements = ["REQ-cli-011"]
+paths = ["examples/feature-bug-loop.sh", "tests/cli.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::exercise_cleanup_handles_a_relative_tmpdir passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "exercise_cleanup_handles_a_relative_tmpdir"
+
+[[case]]
 id = "TC-cli-sdd-off-names-specsync-change-adopt"
 title = "A configured project with SDD off says to run specsync change adopt"
 status = "active"

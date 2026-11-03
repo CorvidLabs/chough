@@ -11,10 +11,14 @@
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
+# work-dir setup: begin
 if [ -n "${1:-}" ]; then
     work=$1 created=""
 else
     work=$(mktemp -d "${TMPDIR:-/tmp}/chough-exercise.XXXXXX") created=yes
+    # mktemp returns a relative path for a relative TMPDIR; make it absolute before any
+    # cd so the exit cleanup removes the directory it created.
+    work=$(cd "$work" && pwd)
 fi
 mode=${2:-full}
 # A directory this script created is removed after a passing full run; a passed-in
@@ -28,6 +32,7 @@ cleanup() {
     fi
 }
 trap cleanup EXIT
+# work-dir setup: end
 chough=${CHOUGH:-chough}
 env_name=${CHOUGH_ENVIRONMENT:-exercise-local}
 last_observation=""

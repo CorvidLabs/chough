@@ -1370,3 +1370,61 @@ fn evidence_add_names_the_contract_for_another_modules_requirement() {
         String::from_utf8_lossy(&output.stderr)
     );
 }
+
+/// The exercise's exact work-directory setup and exit cleanup, run with a relative TMPDIR:
+/// a created directory is removed only after a passing full run, and every other directory is kept.
+#[cfg(unix)]
+#[test]
+fn exercise_cleanup_handles_a_relative_tmpdir() {
+    let script = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
+    )
+    .unwrap();
+    let begin = script.find("# work-dir setup: begin").unwrap();
+    let end = script.find("# work-dir setup: end").unwrap();
+    let setup = &script[begin..end];
+    let run = |args: &[&str], status: i32| {
+        let cwd = TempDir::new().unwrap();
+        let body = format!("set -eu\n{setup}cd \"$work\"\nexit {status}\n");
+        let out = Command::new("sh")
+            .arg("-c")
+            .arg(body)
+            .arg("feature-bug-loop.sh")
+            .args(args)
+            .current_dir(cwd.path())
+            .env("TMPDIR", ".")
+            .output()
+            .unwrap();
+        assert_eq!(out.status.code(), Some(status), "{out:?}");
+        let left: Vec<String> = fs::read_dir(cwd.path())
+            .unwrap()
+            .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
+            .collect();
+        (cwd, left, String::from_utf8_lossy(&out.stderr).into_owned())
+    };
+    let created = |left: &[String]| left.iter().any(|n| n.starts_with("chough-exercise."));
+
+    let (_cwd, left, _) = run(&[], 0);
+    assert!(left.is_empty(), "a passing full run left {left:?}");
+
+    let (_cwd, left, err) = run(&[], 1);
+    assert!(created(&left) && err.contains("Kept /"), "{left:?} {err}");
+
+    let (_cwd, left, err) = run(&["", "prepare-cold-start"], 0);
+    assert!(created(&left) && err.contains("Kept /"), "{left:?} {err}");
+
+    let cwd = TempDir::new().unwrap();
+    fs::create_dir(cwd.path().join("given")).unwrap();
+    let body = format!("set -eu\n{setup}cd \"$work\"\nexit 0\n");
+    let out = Command::new("sh")
+        .args(["-c", &body, "feature-bug-loop.sh", "given"])
+        .current_dir(cwd.path())
+        .env("TMPDIR", ".")
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "{out:?}");
+    assert!(
+        cwd.path().join("given").is_dir(),
+        "a passed-in directory was removed"
+    );
+}
