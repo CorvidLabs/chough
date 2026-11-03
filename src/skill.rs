@@ -249,17 +249,29 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "426c2df68e8d25bfbdee4bf81b4deaa06eac4525b6dfad3c771311e0d6a4ac99",
     ),
+    // Main 0363d4a; superseded when the claude host began sharing `.agents/skills`
+    // (LIFE-12) and the separate `.claude/skills` copy became legacy.
+    (
+        "SKILL.md",
+        "0b2c166176af684901005b230da159a4ce4cb926e57a59bf3f6b11d3debfdb3f",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.
 pub(super) const HOSTS: &[(&str, &str)] = &[
     ("openai", ".agents/skills"),
-    ("claude", ".claude/skills"),
+    // Claude shares the one `.agents/skills` copy (LIFE-12). Claude Code 2.1.316 was
+    // observed not to discover `.agents/skills` alone; CLAUDE.md routes it instead.
+    ("claude", ".agents/skills"),
     ("codex", ".codex/skills"),
     ("cursor", ".cursor/skills"),
     ("gemini", ".gemini/skills"),
     ("grok", ".grok/skills"),
 ];
+
+/// Host directories that earlier helpers wrote and this one no longer installs. A copy
+/// found there is reported as legacy and removed only by `skill remove-legacy` (LIFE-13).
+const LEGACY: &[(&str, &str)] = &[("claude", ".claude/skills")];
 
 pub(super) fn host_names() -> Vec<&'static str> {
     HOSTS.iter().map(|(name, _)| *name).collect()
@@ -290,12 +302,188 @@ pub(super) enum SkillCommand {
         #[arg(long = "host")]
         hosts: Vec<String>,
     },
+    /// Remove unedited files of a legacy host copy, such as `.claude/skills`, keeping edits.
+    RemoveLegacy {
+        #[arg(long = "host")]
+        hosts: Vec<String>,
+    },
+}
+
+/// Requested hosts with duplicates of an already listed directory dropped, so hosts
+/// that share a directory get one copy.
+fn distinct(hosts: &[String]) -> Result<Vec<String>> {
+    let mut seen = vec![];
+    let mut kept = vec![];
+    for host in hosts {
+        let base = directory(host)?;
+        if !seen.contains(&base) {
+            seen.push(base);
+            kept.push(host.clone());
+        }
+    }
+    Ok(kept)
+}
+
+fn legacy_directory(host: &str) -> Result<String> {
+    LEGACY
+        .iter()
+        .find(|(name, _)| *name == host)
+        .map(|(_, path)| format!("{path}/chough-workflow"))
+        .ok_or_else(|| {
+            let names: Vec<&str> = LEGACY.iter().map(|(name, _)| *name).collect();
+            anyhow::anyhow!(
+                "no legacy copy is known for host {host}; legacy hosts: {}",
+                names.join(", ")
+            )
+        })
+}
+
+/// Relative paths of every file under a directory, `/`-separated and sorted.
+fn files_under(root: &Path, base: &str) -> Result<Vec<String>> {
+    fn walk(path: &Path, prefix: &str, out: &mut Vec<String>) -> Result<()> {
+        for entry in fs::read_dir(path)? {
+            let entry = entry?;
+            let name = entry.file_name().to_string_lossy().into_owned();
+            let relative = if prefix.is_empty() {
+                name
+            } else {
+                format!("{prefix}/{name}")
+            };
+            let kind = entry.file_type()?;
+            if kind.is_dir() {
+                walk(&entry.path(), &relative, out)?;
+            } else {
+                out.push(relative);
+            }
+        }
+        Ok(())
+    }
+    let mut out = vec![];
+    walk(&local_path(root, base)?, "", &mut out)?;
+    out.sort();
+    Ok(out)
+}
+
+/// The state of each file present in a legacy copy: current, known-outdated, edited
+/// or unknown (not a bundle file).
+fn legacy_files(root: &Path, base: &str) -> Result<Vec<(String, &'static str)>> {
+    let mut states = vec![];
+    for name in files_under(root, base)? {
+        let state = match BUNDLE.iter().find(|(bundled, _)| *bundled == name) {
+            Some((_, content)) => file_state(root, base, &name, content)?,
+            None => "unknown",
+        };
+        states.push((name, state));
+    }
+    Ok(states)
+}
+
+fn legacy_hosts(root: &Path, requested: &[String]) -> Result<Vec<String>> {
+    if !requested.is_empty() {
+        for host in requested {
+            legacy_directory(host)?;
+        }
+        return Ok(requested.to_vec());
+    }
+    let mut hosts = vec![];
+    for (host, _) in LEGACY {
+        if local_path(root, &legacy_directory(host)?)?.is_dir() {
+            hosts.push((*host).to_string());
+        }
+    }
+    Ok(hosts)
+}
+
+/// Installed legacy copies, reported and never written.
+fn legacy_report(root: &Path) -> Result<Vec<Value>> {
+    let mut reports = vec![];
+    for host in legacy_hosts(root, &[])? {
+        let base = legacy_directory(&host)?;
+        let files: Vec<Value> = legacy_files(root, &base)?
+            .into_iter()
+            .map(|(file, state)| json!({"file": file, "state": state}))
+            .collect();
+        reports.push(json!({
+            "host": host,
+            "directory": base,
+            "shared": directory(&host)?,
+            "files": files,
+            "remove": format!("chough skill remove-legacy --host {host} removes current and known-outdated files and keeps edited or unknown ones"),
+        }));
+    }
+    Ok(reports)
+}
+
+/// Remove a legacy copy's unedited bundle files, then directories left empty.
+fn remove_legacy(root: &Path, requested: &[String]) -> Result<Value> {
+    let hosts = legacy_hosts(root, requested)?;
+    ensure!(!hosts.is_empty(), "no legacy skill copy found");
+    for host in &hosts {
+        let shared = format!("{}/SKILL.md", directory(host)?);
+        ensure!(
+            local_path(root, &shared)?.is_file(),
+            "the shared copy {} is missing; install it with `chough skill update --host {host}` (or `chough init --host {host}`) before removing the legacy copy; nothing was removed",
+            directory(host)?
+        );
+    }
+    let mut reports = vec![];
+    for host in &hosts {
+        let base = legacy_directory(host)?;
+        if !local_path(root, &base)?.is_dir() {
+            reports.push(json!({"host": host, "directory": base, "removed": [], "kept": []}));
+            continue;
+        }
+        let mut removed = vec![];
+        let mut kept = vec![];
+        for (file, state) in legacy_files(root, &base)? {
+            if matches!(state, "current" | "known-outdated") {
+                fs::remove_file(local_path(root, &format!("{base}/{file}"))?)?;
+                removed.push(file);
+            } else {
+                kept.push(file);
+            }
+        }
+        // Remove directories left empty, deepest first, up to the host directory.
+        let top = base.split('/').next().unwrap_or_default().to_string();
+        let mut directories: Vec<String> = vec![];
+        for file in &removed {
+            let mut parts: Vec<&str> = file.split('/').collect();
+            parts.pop();
+            while !parts.is_empty() {
+                directories.push(format!("{base}/{}", parts.join("/")));
+                parts.pop();
+            }
+        }
+        let mut parent = base.clone();
+        while parent != top {
+            directories.push(parent.clone());
+            match parent.rfind('/') {
+                Some(index) => parent.truncate(index),
+                None => break,
+            }
+        }
+        directories.push(top);
+        directories.sort_by_key(|path| std::cmp::Reverse(path.matches('/').count()));
+        directories.dedup();
+        for path in directories {
+            let full = local_path(root, &path)?;
+            if full.is_dir() && fs::read_dir(&full)?.next().is_none() {
+                fs::remove_dir(&full)?;
+            }
+        }
+        reports.push(json!({"host": host, "directory": base, "removed": removed, "kept": kept}));
+    }
+    Ok(json!({
+        "schema_version": 1,
+        "legacy": reports,
+        "note": "Only files byte-identical to the current or a known earlier bundle were removed; edited and unknown files were kept.",
+    }))
 }
 
 /// Paths the installation would create, validated before any file is written.
 pub(super) fn planned_files(hosts: &[String]) -> Result<Vec<(String, &'static str)>> {
     let mut files = vec![];
-    for host in hosts {
+    for host in &distinct(hosts)? {
         let base = directory(host)?;
         for (name, content) in BUNDLE {
             files.push((format!("{base}/{name}"), *content));
@@ -327,10 +515,7 @@ fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'st
 
 fn installed_hosts(root: &Path, requested: Vec<String>) -> Result<Vec<String>> {
     if !requested.is_empty() {
-        for host in &requested {
-            directory(host)?;
-        }
-        return Ok(requested);
+        return distinct(&requested);
     }
     let mut hosts = vec![];
     for (host, _) in HOSTS {
@@ -338,7 +523,7 @@ fn installed_hosts(root: &Path, requested: Vec<String>) -> Result<Vec<String>> {
             hosts.push((*host).to_string());
         }
     }
-    Ok(hosts)
+    distinct(&hosts)
 }
 
 fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {
@@ -362,12 +547,19 @@ fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {
             };
             files.push(json!({"file": name, "state": before, "action": action}));
         }
-        reports.push(json!({"host": host, "directory": base, "files": files}));
+        let sharing: Vec<&str> = HOSTS
+            .iter()
+            .filter(|(_, path)| format!("{path}/chough-workflow") == base)
+            .map(|(name, _)| *name)
+            .collect();
+        reports
+            .push(json!({"host": host, "directory": base, "shared_by": sharing, "files": files}));
     }
     Ok(json!({
         "schema_version": 1,
         "bundle_files": BUNDLE.len(),
         "hosts": reports,
+        "legacy": legacy_report(root)?,
         "note": "Edited files are never replaced. A host directory is a convention; check that the host actually discovers it.",
     }))
 }
@@ -386,5 +578,6 @@ pub(super) fn run(root: &Path, command: SkillCommand) -> Result<()> {
             );
             print_json(&report(root, &hosts, true)?)
         }
+        SkillCommand::RemoveLegacy { hosts } => print_json(&remove_legacy(root, &hosts)?),
     }
 }

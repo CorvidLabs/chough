@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 27
+version: 28
 status: active
 files:
   - src/main.rs
@@ -236,3 +236,4 @@ provider, runtime or hosted service.
 | 25 | 2026-11-03 | identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration: Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records |
 | 26 | 2026-11-03 | raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400: Raise the checkpoint session byte limit to 131072 and the observation pointer limit to 400 |
 | 27 | 2026-11-03 | approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to: Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name |
+| 28 | 2026-11-03 | claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit: Claude host installs the shared .agents skill copy, legacy .claude copies are reported and removed only on an explicit command, and this repository drops its .claude copy |

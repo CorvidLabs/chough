@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test claude_host_installs_the_shared_agents_copy_once ... FAILED
+
+failures:
+
+---- claude_host_installs_the_shared_agents_copy_once stdout ----
+
+thread 'claude_host_installs_the_shared_agents_copy_once' (701608) panicked at tests/optional.rs:979:5:
+init --host claude created .claude/
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    claude_host_installs_the_shared_agents_copy_once
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.01s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/optional.rs (target/debug/deps/optional-9a6defdf0ca3078a)
+error: test failed, to rerun pass `--test optional`
