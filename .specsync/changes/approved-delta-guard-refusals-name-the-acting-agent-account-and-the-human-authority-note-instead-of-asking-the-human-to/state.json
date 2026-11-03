@@ -7,10 +7,11 @@
   "title": "Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name",
   "description": "Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "8300b584e6e76c676d3da2f21aab9eb7e89b311a",
   "created_at": 1793717579,
-  "updated_at": 1793717645,
+  "updated_at": 1793717720,
   "affected_specs": [
     "cli"
   ],
