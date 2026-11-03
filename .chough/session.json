@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -374,7 +374,8 @@
     "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved.",
     "PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured.",
     "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit.",
-    "Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed"
+    "Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed",
+    "fledge lanes run verify passed all 9 steps (253 tests, 0 failed) on local Linux x86_64 with hi 0.8.0, fledge 1.8.0, specsync 6.1.2 after the scoped check"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -617,5 +618,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Complete tasks, check --commit, verify, then open the PR for independent review"
+  "next_action": "Await genuine independent review of the PR head; then record native review and ship with no write in between, push the archive tip, and merge after all hosted checks pass"
 }
