@@ -219,7 +219,7 @@ pub(super) fn validate_v1(session: &SessionV1) -> Result<()> {
 }
 
 fn ensure_ids(label: &str, values: &[String], limit: usize) -> Result<()> {
-    ensure!(values.len() <= limit, "too many {label}");
+    ensure!(values.len() <= limit, "too many {label} (limit {limit})");
     for value in values {
         ensure!(valid_name(value), "invalid {label} ID: {value}");
     }

@@ -153,7 +153,9 @@
       ".chough/evidence/OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56.json",
       ".chough/evidence/OBS-product-test-c15c11e67b8c42a50a4cf835.json",
       ".chough/artifacts/pr46-checkpoint-reference-index/policy.json",
-      ".chough/artifacts/pr46-archive-executor-performance"
+      ".chough/artifacts/pr46-archive-executor-performance",
+      ".chough/evidence/OBS-product-test-f070b3954a220492de975d64.json",
+      ".chough/evidence/OBS-product-test-19fbf7ce1563d5f4dd78801d.json"
     ]
   },
   "decisions": [
@@ -612,7 +614,8 @@
     "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc",
     "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
     "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
-    "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b"
+    "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b",
+    "BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5"
   ],
   "blockers": [],
   "awaiting_human": [],
