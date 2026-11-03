@@ -607,7 +607,9 @@
     "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Explicit exception requested after automatic approval review twice rejected corvid-agent native review under its interpretation of AGENTS.md; PR51 source and proof are published and independently reviewed."
+  ],
   "run_consents": [],
-  "next_action": "Commit all settled source and new proof, then current native check --commit, review immediately followed by ship, done checkpoint, normal push and exact-head hosted qualification."
+  "next_action": "Wait for the explicit one-scope native review exception; keep PR51 unmerged. Verify accepted main and provide the ready overnight Grok prompt meanwhile."
 }
