@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9",
+  "criteria": [
+    "LIFE-12",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test optional -- --exact claude_host_installs_the_shared_agents_copy_once for TC-cli-claude-host-shares-agents-copy: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9.log": "803715bc7de5b07ab0c25395f3cce30cec0b03e294c0bdbb8f96783fe640d80e"
+  },
+  "observed_at_unix_seconds": 1793722535,
+  "snapshot": {
+    "revision": "0bc8e76a3e746acb1e9444a65dcd1bb8e506f9e2",
+    "dirty": true,
+    "fingerprint": "1074ca51587738884335f52dd44dc4402d038b939259d033b91a57940a807c27",
+    "content": "10dded8df1d95c1e1ab9023447c67fb37c6b9629e5cc52b835b6f66bbc8f1197"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-claude-host-shares-agents-copy",
+      "digest": "9a5b6004723e38b528704af375242bd36c4d4f4a690382eb8c72d5c45737fa8b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "claude_host_installs_the_shared_agents_copy_once"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

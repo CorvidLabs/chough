@@ -77,8 +77,9 @@ chough next --environment local
 `init` never overwrites existing files. It writes the checkpoint
 `.chough/session.json` and copies the skill bundle into each requested host's
 project skill directory (`openai`, the default, → `.agents/skills`, a shared skills
-directory, which `claude` shares (Claude Code reaches it through `CLAUDE.md`, since
-2.1.316 did not discover `.agents/skills` alone); `gemini` → `.gemini/skills`, which no run has
+directory, which `claude` shares (Claude Code 2.1.316 did not discover `.agents/skills` alone, so
+add a `CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init`
+does not write it, see [integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which no run has
 exercised; also `codex`, `cursor`, `grok`). Kimi Code CLI uses the existing `openai`
 installer value and discovered `.agents/skills/chough-workflow/SKILL.md` in one
 observed run. Google Antigravity read the skill from `.agents/skills` in one run

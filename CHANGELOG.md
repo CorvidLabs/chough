@@ -13,7 +13,9 @@ All notable changes to Chough are recorded here. The format follows
   --host claude` removes only its unedited files and keeps edits (LIFE-13). Chough's
   own repository drops its `.claude` copy (LIFE-14). Tradeoff: Claude Code 2.1.316
   was observed not to discover `.agents/skills` alone, so it reaches the workflow
-  through `CLAUDE.md` and `AGENTS.md`. Leif chose this on 2026-11-03.
+  through `CLAUDE.md` and `AGENTS.md`. Leif chose this on 2026-11-03. `init` does not
+  write `CLAUDE.md`; add a line pointing at `.agents/skills/chough-workflow/SKILL.md`
+  (docs/integrations.md).
 
 - Approved-delta guard refusals that need a new definition approval now name the
   acting agent account and a human authority note, matching docs/cli.md, instead of

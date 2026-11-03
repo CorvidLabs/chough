@@ -14,6 +14,7 @@ guided by the skill or kept as a qualified, deferred or unavailable adapter.
 | Google Antigravity | `.agents/skills/chough-workflow/` (openai mapping, the default; a shared skills directory) | One run on 2026-11-01 reported listing the skill from this directory; the report is narrative, written by the agent itself in closed PR #20 with no event log or transcript, and not independently verified (see [the cold-start record](exercises/cold-start.md)) |
 | `--host gemini` | `.gemini/skills/chough-workflow/` | Mapping from the CorvidLabs skills installer; no run has exercised it |
 | Cursor, Grok | `.cursor/skills`, `.grok/skills` | Mapping from the CorvidLabs skills installer; not exercised |
+| Any host | Give the agent `skills/chough-workflow/SKILL.md` | The skill reads as plain Markdown |
 
 ### Claude Code and the single shared copy
 
@@ -29,7 +30,13 @@ as `legacy` by `chough skill status` and `skill update`; neither command writes 
 deletes it. `chough skill remove-legacy --host claude` removes only files that are
 byte-identical to the current or a known earlier bundle, keeps edited and unknown
 files, and refuses, removing nothing, while the shared copy is missing.
-| Any host | Give the agent `skills/chough-workflow/SKILL.md` | The skill reads as plain Markdown |
+
+`chough init` does not write or edit `CLAUDE.md`. In a project you use with Claude
+Code, add this line to `CLAUDE.md` yourself (create the file if it has none):
+
+```markdown
+Read and follow `.agents/skills/chough-workflow/SKILL.md` for the Chough workflow.
+```
 
 A directory name is a convention, not proof of support. `chough skill status` shows
 whether an installed copy is current, edited or outdated.
