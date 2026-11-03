@@ -7,7 +7,8 @@ All notable changes to Chough are recorded here. The format follows
 ## [Unreleased]
 
 - The checkpoint `.chough/session.json` is bounded at 128 KiB (131,072 bytes) and
-  its `observations` list at 400 pointers, per Leif's 2026-11-02 decision (LIFE-11).
+  its `observations` list at 400 pointers (LIFE-11). Leif approved raising these
+  limits on 2026-11-02; corvid-agent proposed the values, pending his confirmation.
   Every other record keeps 64 KiB and every other checkpoint list 200 items. Older
   Chough releases refuse a checkpoint over 64 KiB, so upgrade before it grows past it.
 

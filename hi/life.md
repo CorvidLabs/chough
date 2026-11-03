@@ -24,4 +24,4 @@ slice, with the remaining work in the roadmap.
 - **LIFE-8**  Routine reruns do not keep raw test logs forever, while the proof behind active work, open and fixed bugs, and accepted or released baselines stays, and anything removed is shown as removed rather than as passed.
 - **LIFE-9**  I can install Chough into another project and get the helper and skills without Chough's own backlog or run history.
 - **LIFE-10**  I can see how long each stage, test, bug fix and human decision actually took, so I can estimate future work from real history.
-- **LIFE-11**  "Do your agent's cleanup and raise the progress file and test-result limits."
+- **LIFE-11**  My progress file (the checkpoint `.chough/session.json`) and test-result limit (its `observations` pointer list) are raised above 65,536 bytes and 200 pointers, so current work fits without dropping evidence I still need. Source: Leif in chat, 2026-11-02 9:40 PM MT, "Do your agent's cleanup and raise the progress file and test-result limits." The values 131,072 bytes and 400 pointers are corvid-agent's proposal, pending his confirmation. The cleanup half is done in #50.

@@ -616,5 +616,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Open the limits PR, merge on green CI, then merge main into #50"
+  "next_action": "Await Leif's confirmation of the proposed values and his review of #51; then merge main into #50 with the cleanup"
 }

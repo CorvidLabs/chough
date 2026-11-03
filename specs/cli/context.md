@@ -144,11 +144,14 @@ each could not be built, and the tested fixture fills the bound instead. Source:
 choice. Limits: checkpoint-backed lists. Future use: check record-size bounds when
 writing a criterion's fixture, before approval.
 
-2026-11-02, checkpoint capacity (decided): Leif decided in chat, 9:40 PM MT, "Do your
-agent's cleanup and raise the progress file and test-result limits." PR #50's
-three-way merge of main 747a12c reached 68,737 bytes with 200 observation pointers.
-The checkpoint bound is now 131,072 bytes and the `observations` bound 400; every
-other record and list bound is unchanged. Source: native change
+2026-11-02, checkpoint capacity (decided, values pending): Leif approved raising the
+limits in chat, 9:40 PM MT: "Do your agent's cleanup and raise the progress file and
+test-result limits." He did not give values. PR #50's three-way merge of main 747a12c
+reached 68,737 bytes with 200 observation pointers, so corvid-agent proposed a
+131,072-byte checkpoint bound and a 400-entry `observations` bound, pending his
+confirmation. "Test-result limits" means the observation pointer list, not the 1 MiB
+captured-output bound, which is unchanged; every other record and list bound is also
+unchanged. The cleanup half is done in #50. Source: native change
 raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400.
 Future use: compact superseded agent notes before the checkpoint nears the new bound.
 
