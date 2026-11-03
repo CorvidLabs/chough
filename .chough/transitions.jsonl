@@ -216,3 +216,5 @@
 {"schema_version":1,"at_unix_seconds":1793668808,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"769b5269b87d2f822a1b41a4276eccd7d0fa3770","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793669249,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"769b5269b87d2f822a1b41a4276eccd7d0fa3770","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793669854,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"ea9b765d3d8367457aa801a39853bb8c6169a00e","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793671940,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"b050046ea6a7f530f618a7f190ac9ca5a143e41e","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793671943,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"b050046ea6a7f530f618a7f190ac9ca5a143e41e","refresh":[]}

@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-history-frozen-reference-aliases",
+  "observation": "OBS-tc-cli-history-frozen-reference-aliases-1367c858e3cf361a14a2c821",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test history -- --exact frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply for TC-cli-history-frozen-reference-aliases: passed (exit 0, tests run 1)."
+}
