@@ -1,0 +1,104 @@
+{
+  "applied": true,
+  "complete": true,
+  "eligible": [
+    {
+      "bytes": 352,
+      "cycle": "CYC-09bf4b69d75da18f298e9199",
+      "files": [
+        {
+          "bytes": 352,
+          "digest": "d12a5a2d4ba00f3f7b9183c2edacab78061174d22be4d99953438213627656d7",
+          "path": ".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json"
+        }
+      ],
+      "interrupted": false,
+      "plan_files": [
+        {
+          "bytes": 352,
+          "digest": "d12a5a2d4ba00f3f7b9183c2edacab78061174d22be4d99953438213627656d7",
+          "path": ".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json"
+        }
+      ],
+      "planned_bytes": 352
+    },
+    {
+      "bytes": 522,
+      "cycle": "CYC-3f65cd11c98de3cea0f1c8fd",
+      "files": [
+        {
+          "bytes": 522,
+          "digest": "9525e31808ab6d7823a914caf616ad2c432f56f2b06b3e6218b5153460a85507",
+          "path": ".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json"
+        }
+      ],
+      "interrupted": false,
+      "plan_files": [
+        {
+          "bytes": 522,
+          "digest": "9525e31808ab6d7823a914caf616ad2c432f56f2b06b3e6218b5153460a85507",
+          "path": ".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json"
+        }
+      ],
+      "planned_bytes": 522
+    },
+    {
+      "bytes": 522,
+      "cycle": "CYC-7bb2b9178ab230aabdb4833b",
+      "files": [
+        {
+          "bytes": 522,
+          "digest": "3ba7816eb1a54ffc18b442cc026476ba378ef5674209287945370ac2297cc235",
+          "path": ".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json"
+        }
+      ],
+      "interrupted": false,
+      "plan_files": [
+        {
+          "bytes": 522,
+          "digest": "3ba7816eb1a54ffc18b442cc026476ba378ef5674209287945370ac2297cc235",
+          "path": ".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json"
+        }
+      ],
+      "planned_bytes": 522
+    }
+  ],
+  "note": "protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed",
+  "protected": [
+    {
+      "cycle": "CYC-00f2785159cc0c928fbab0ad",
+      "reasons": [
+        "active checkpoint cycle",
+        "referenced by .chough/session.json",
+        "unselected orphan or unresolved cycle closure"
+      ]
+    },
+    {
+      "cycle": "CYC-3873638cda1f325197082908",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    },
+    {
+      "cycle": "CYC-707261dbd854002f806921d5",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    },
+    {
+      "cycle": "CYC-d1712728fa5a873cd0f37a45",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    }
+  ],
+  "reclaimable_bytes": 1396,
+  "reclaimed_bytes": 1396,
+  "removed": [
+    ".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json",
+    ".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json",
+    ".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json"
+  ],
+  "schema_version": 1,
+  "skipped": []
+}

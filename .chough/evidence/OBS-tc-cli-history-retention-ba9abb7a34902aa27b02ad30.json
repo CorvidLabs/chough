@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-retention-ba9abb7a34902aa27b02ad30",
+  "criteria": [
+    "LIFE-7",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test history -- --exact cycle_retention_is_read_only_until_authorized_and_revalidates_new_references for TC-cli-history-retention: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-history-retention-ba9abb7a34902aa27b02ad30.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-history-retention-ba9abb7a34902aa27b02ad30.log": "7e6a3f7a72f10629ebe522dad2275244013a0427c0a323ee467d78ea3d275120"
+  },
+  "observed_at_unix_seconds": 1793630158,
+  "snapshot": {
+    "revision": "9a8b9b11e16bedac4808c56d48307fa29ad9cfe3",
+    "dirty": true,
+    "fingerprint": "6dc778f23db4040aa981b14f31df78b988ff9c2f03cdce3de83539a79571af35",
+    "content": "9ad75a7aa3809ce37f3be40fe6e6f635a64931bab97908017d237b20af5e266b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-retention",
+      "digest": "6433b47c3e3b3d92b0ab11b4ae1bc907457b6a50ea34773d4e8bdf7be79c1231"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "history",
+    "--",
+    "--exact",
+    "cycle_retention_is_read_only_until_authorized_and_revalidates_new_references"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

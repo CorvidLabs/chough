@@ -1,0 +1,5 @@
+COMMAND ["fledge", "run", "lint"]
+▶️ Running task: lint
+    Checking chough v0.1.0 (/private/tmp/chough-tickets-20261102-JAIhPp)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.78s
+✅ lint (3.9s)

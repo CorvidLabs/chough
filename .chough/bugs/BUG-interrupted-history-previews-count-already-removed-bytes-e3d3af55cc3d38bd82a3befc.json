@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc",
+  "title": "Interrupted history previews count already removed bytes",
+  "symptom": "An interrupted-cycle preview overstates remaining reclaimable files and bytes",
+  "trigger": "Publish a valid cycle removal receipt, remove one planned file, then preview resumed cleanup",
+  "expected": "Preview reports only still-present candidate files and their measured bytes while preserving the original receipt plan separately",
+  "actual": "Preview reported 847 bytes when the remaining file held 494 bytes in the controlled fixture",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "9a8b9b11e16bedac4808c56d48307fa29ad9cfe3",
+  "steps": [],
+  "fixture": "tests/history.rs",
+  "observations": [
+    "OBS-product-test-c2b42eee72403d04f8705539",
+    "OBS-product-test-fca5c5e603111f6dc31f5f4d"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Current-source exact-byte assertion before the reporting fix",
+  "notes": [
+    {
+      "at_unix_seconds": 1793631730,
+      "text": "status: open -> verified. The later full lane passes the exact remaining-byte assertion; current files/bytes and original receipt plan are reported separately.",
+      "observations": [
+        "OBS-product-test-fca5c5e603111f6dc31f5f4d"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793631112,
+  "updated_at_unix_seconds": 1793631730
+}

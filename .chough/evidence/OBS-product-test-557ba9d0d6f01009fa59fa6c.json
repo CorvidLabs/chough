@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-557ba9d0d6f01009fa59fa6c",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Independent bounds review reproduced legacy timing exceeding the approved 4096-event limit: 5000 valid transitions in 714100 bytes produced 5000 records and no partial warning at clean 6fa45db.",
+  "artifacts": [
+    ".chough/artifacts/history-legacy-timing-overflow-before.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-legacy-timing-overflow-before.log": "a99db52e29c35401c28cf6ae48804ea54b3e24f6a55ae20a60eacb8dee2abcdb"
+  },
+  "observed_at_unix_seconds": 1793632950,
+  "snapshot": {
+    "revision": "6fa45db5d78dfcc1a1176d6a37fe7da36cf4bf90",
+    "dirty": false,
+    "fingerprint": "bc362c3223d1f48d8d8ac40e4c5fb404e8bd3b50d9eb64cdb358babbd0b834e9",
+    "content": "0706650c13e025a3e3af738b2b3a63ed9e32dcdf22d03c217ee27d913c34e031"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "This is a disposable legacy-checkpoint fixture and existing binary at 6fa45db; no live project history was changed."
+  ]
+}

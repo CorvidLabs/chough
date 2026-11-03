@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-adoption-b8147b0b44224077038a22bb",
+  "criteria": [
+    "LIFE-7",
+    "LIFE-8",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-025",
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Final main9d02 integration passes all232tests, allnineFledge steps and ten bound cases; main human/failed-case guards, allrequirements and proof are preserved.",
+  "artifacts": [
+    ".chough/artifacts/history-integrated-main-final-verify.log",
+    ".chough/artifacts/history-integrated-main-final-metadata.json",
+    ".chough/artifacts/history-integrated-main-final-cases.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-integrated-main-final-cases.json": "519b62c0af06d893c6d26b2dd84c696689b1b8c39fd032d7597f0e7a1e16dd94",
+    ".chough/artifacts/history-integrated-main-final-metadata.json": "14f4547c32c201d3a726569e4c0a54ebdb8994eba8e8330764fc5e462fc67255",
+    ".chough/artifacts/history-integrated-main-final-verify.log": "0d305be013ebe64c21e1afdc319affad1bddae3b96d46c053567daf8dc01ef9f"
+  },
+  "observed_at_unix_seconds": 1793662363,
+  "snapshot": {
+    "revision": "19d6174b784d2c5895441c036f70fea8afe29fe1",
+    "dirty": true,
+    "fingerprint": "ea50f2ba43d00ca99b1a04f3480653e598e0827ce171fbcc1d0828cbd71c761e",
+    "content": "c31c4dd65d59e73bbd4268ef8b6f4b3ecfed94f70a3528a7dc9568cc079f5e89"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-adoption",
+      "digest": "b05d1faad38150e1d51f5d216716b57dae8e7c84272563b14978cf669cb7da45"
+    },
+    {
+      "id": "TC-cli-history-branches",
+      "digest": "ff026a031c9844283eda3e2ffe51b46797ae11a898f12fa638c68a27a13155d9"
+    },
+    {
+      "id": "TC-cli-history-bounds",
+      "digest": "cf09ecd349f48a97c423a292baaedf9d06312fb841dc3c802222dc10db080dd9"
+    },
+    {
+      "id": "TC-cli-history-retention",
+      "digest": "6433b47c3e3b3d92b0ab11b4ae1bc907457b6a50ea34773d4e8bdf7be79c1231"
+    },
+    {
+      "id": "TC-cli-retention-revalidation",
+      "digest": "3c3c2b18d3326086b8da0a8c3bf681aec6a1b5756347bec38810d09e0557aaad"
+    },
+    {
+      "id": "TC-cli-history-legacy-timing-bounds",
+      "digest": "d47818ce55befa53e58fdeccfa8f75eb6a2e855e31cf62e34a41c4c7f1d26943"
+    },
+    {
+      "id": "TC-cli-history-frozen-reference-aliases",
+      "digest": "f72e27378ccb41e66aa47400992a3a8593863b15934b5c5d5da3363341ddbebd"
+    },
+    {
+      "id": "TC-cli-history-closing-reset-age",
+      "digest": "f9e260fc525daf6243813bc88c81884eaad590d8f94f6d96b10a2cafb36c497b"
+    },
+    {
+      "id": "TC-cli-history-stale-receipt-age",
+      "digest": "00deb7bf7fdde72e459c26e95a92da6e5e0d3510d892e9cbc3c58d009eefaa5a"
+    },
+    {
+      "id": "TC-cli-history-post-prune-reference",
+      "digest": "3ef923ac45f6cad06f785ee57a323cfcbf5b4d9aa3e2686342434afbdb28fd28"
+    }
+  ],
+  "method": "automated",
+  "limitations": [
+    "Local combined-source qualification; no live adoption, cleanup, release, deployment or cold-start rerun. Native/hosted archive qualification remains next."
+  ]
+}

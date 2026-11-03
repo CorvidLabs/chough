@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-adoption-27a4e447dfac32a4f2baebc2",
+  "criteria": [
+    "LIFE-7",
+    "LIFE-8",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-025",
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64-rust1.88",
+  "summary": "All 225 tests across 11 suites passed on Rust1.88 with no failures or ignored tests after both retention peer-review repairs.",
+  "artifacts": [
+    ".chough/artifacts/history-peer-final-msrv.log",
+    ".chough/artifacts/history-peer-final-metadata.json",
+    ".chough/artifacts/history-peer-final-cases.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-peer-final-cases.json": "2dd1ec9bb705e22fc80777eab49d612a88c0501f588cd46d8001431d31a97141",
+    ".chough/artifacts/history-peer-final-metadata.json": "725688dab585cc1a86120cdc12787b8f904adf3d3747f1d849ef20640dfb8f51",
+    ".chough/artifacts/history-peer-final-msrv.log": "cc037f2bfd1cd2d6c62cebd244d1c16389a80a155b11308a264b0bd114649f87"
+  },
+  "observed_at_unix_seconds": 1793643307,
+  "snapshot": {
+    "revision": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+    "dirty": true,
+    "fingerprint": "7b9ce92233fde658ef2cbef8225e89d6297be7afccf72ec25851a9312fdc77ca",
+    "content": "9fe40085660dc33fbcca4fe27ee091587762e75a578a0aebe9699b2d94a81bef"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-adoption",
+      "digest": "b05d1faad38150e1d51f5d216716b57dae8e7c84272563b14978cf669cb7da45"
+    },
+    {
+      "id": "TC-cli-history-branches",
+      "digest": "ff026a031c9844283eda3e2ffe51b46797ae11a898f12fa638c68a27a13155d9"
+    },
+    {
+      "id": "TC-cli-history-bounds",
+      "digest": "cf09ecd349f48a97c423a292baaedf9d06312fb841dc3c802222dc10db080dd9"
+    },
+    {
+      "id": "TC-cli-history-retention",
+      "digest": "6433b47c3e3b3d92b0ab11b4ae1bc907457b6a50ea34773d4e8bdf7be79c1231"
+    },
+    {
+      "id": "TC-cli-retention-revalidation",
+      "digest": "3c3c2b18d3326086b8da0a8c3bf681aec6a1b5756347bec38810d09e0557aaad"
+    },
+    {
+      "id": "TC-cli-history-legacy-timing-bounds",
+      "digest": "d47818ce55befa53e58fdeccfa8f75eb6a2e855e31cf62e34a41c4c7f1d26943"
+    },
+    {
+      "id": "TC-cli-history-frozen-reference-aliases",
+      "digest": "f72e27378ccb41e66aa47400992a3a8593863b15934b5c5d5da3363341ddbebd"
+    },
+    {
+      "id": "TC-cli-history-closing-reset-age",
+      "digest": "f9e260fc525daf6243813bc88c81884eaad590d8f94f6d96b10a2cafb36c497b"
+    },
+    {
+      "id": "TC-cli-history-stale-receipt-age",
+      "digest": "00deb7bf7fdde72e459c26e95a92da6e5e0d3510d892e9cbc3c58d009eefaa5a"
+    },
+    {
+      "id": "TC-cli-history-post-prune-reference",
+      "digest": "22eee74f6f4b9b0188517bd252f11f94b02e06c2bf0eba8f9917d91f610dd46a"
+    }
+  ],
+  "method": "automated",
+  "limitations": [
+    "Disposable fixtures and local macOS qualification; no real-project adoption or cleanup, human implementation acceptance, archive or new cold-start run."
+  ]
+}

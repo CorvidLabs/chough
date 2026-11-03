@@ -215,3 +215,62 @@ remove diagnostic trace lines without normalizing the underlying output, and kee
 capped native timing separate from completed native qualification.
 
 2026-11-02, request-local error reuse (verified): storing a failed structural case load as a formatted string changed its original multiline cause diagnostics. The strengthened loader/report parity regression failed before typed shared error ownership restored identical diagnostics, and all five focused read-context regressions then passed. Sources: BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b, OBS-product-test-553ec9b0ffe80fd46a96145d and OBS-product-test-4e2d19e426e48d18085f0b50. Limits: local macOS arm64; final platform and product qualification is separate. Future use: preserve typed source chains when sharing fallible reads and compare the cached path against its original loader, rather than only comparing trace on/off within the new path.
+
+2026-11-02, immutable-history cleanup ordering (observation): a development retention fixture caught newer-first deletion hiding the ancestry needed to revalidate older candidates. Source: .chough/artifacts/history-retention-ordering-development.log and tests/history.rs. Limits: the intermediate failed source identity was not retained; the log is not historical native qualification. Future use: remove eligible selected ancestors oldest first, retain immutable receipts, and keep independent/orphan tips out of current timing. Revisit this ordering if the history format changes.
+
+2026-11-02, legacy history request bounds (observation): an independent read-only
+bounds review reproduced 5,000 legacy transitions being processed by one timing
+request with no partial warning, despite the approved 4,096-event request limit.
+Source: OBS-product-test-557ba9d0d6f01009fa59fa6c and
+BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a,
+at 6fa45db on local macOS arm64. Limits: legacy checkpoints without a history cursor;
+the immutable-event traversal was already bounded. Future use: apply shared request
+limits to every compatible storage path and test the exact limit and one record
+beyond it, including malformed input counted against the read budget.
+
+2026-11-02, frozen reference aliases (verified): structured checkpoint paths were
+normalized but frozen artifact text was not. A retained Windows-style cycles
+directory reference made three protected fixture cycles eligible for deletion.
+Sources: OBS-product-test-063bada1f0797d7f9fc3d83e and
+BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3,
+with exact binary hash and commands under .chough/artifacts/history-frozen-reference-before/.
+The failure-first regression now covers four aliases under two quote styles and
+asserts byte-identical preview/apply fixtures. Future use: apply reference path
+normalization to every protection source, including raw frozen text, and verify
+equivalent paths preserve identical protected sets. Limits: synthetic local fixtures;
+no live project cleanup or new cold-start proof is implied.
+
+2026-11-02, retention review boundaries (observation): independent peer review
+reproduced two gaps at 489ecf50. An idle cycle was aged from its last activity,
+so a reset that closed it moments ago did not receive fourteen-day protection.
+Separately, a branch added a reference after another branch pruned the target;
+Git merged cleanly but history inspection incorrectly claimed completeness.
+Sources: OBS-product-test-4d5f09a757e2e50d651abef4 and
+OBS-product-test-f59a8fa906c43f699940f33c, with exact source, binary, commands and
+fixture inventories under .chough/artifacts/history-idle-closure-before/ and
+.chough/artifacts/history-post-prune-reference-before/.
+Future use: measure closure from its causal successor event, and inspect merged
+references against removal receipts. Do not infer that a clean Git merge restores
+proof or that old event activity establishes an old closure. Limits: disposable
+local fixtures; no live proof was removed and no automatic restoration is implied.
+
+2026-11-02, directory reference classification (observation): incremental review
+reproduced bare and single-quoted cycle-directory references being protected but
+omitted from missing-reference diagnostics after a clean Git integration. Source:
+OBS-tc-cli-history-post-prune-reference-23f4f23b82735a0a21fc1aab and the exact
+clean-tip inputs under .chough/artifacts/history-cycle-directory-references-before/.
+Future use: reuse normalized token boundaries and one whole-cycle classification
+for both protection and availability; retain a separate exact-file restoration
+case alongside all four directory quote forms. Limits: disposable local fixtures;
+no live proof was removed and this does not define every external path grammar.
+
+2026-11-02, reference occurrence classification (observation): punctuation and mixed
+file/directory references exposed another availability gap after the earlier quote
+repair. Source: OBS-tc-cli-history-post-prune-reference-8e61ca8d5022c39e4631183c,
+with the original capture and failure-first regressions retained under
+.chough/artifacts/history-protected-reference-punctuation-proof/ and
+.chough/artifacts/history-reference-classification-followup/. Future use: classify
+each normalized cycle occurrence once; only occurrences inside known exact file
+paths are file-specific. Check both pre-prune protection and post-prune
+availability, including partial restoration. Limits: disposable local fixtures;
+no live proof was removed and external path grammars remain outside this proof.

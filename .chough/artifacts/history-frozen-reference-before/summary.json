@@ -1,0 +1,14 @@
+{
+  "repo": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate",
+  "head": "76da6287c145240ce580ddf35fedb71aac53acc4",
+  "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+  "binary_sha256": "a644c2af17d3f8e270ec74be95ca14945493e76495344e202e0d2d2b5160d154",
+  "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-peer-retention-alias-u7hz4wdn/fixture",
+  "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-peer-retention-alias-u7hz4wdn",
+  "slash_eligible": 0,
+  "alias_eligible": 3,
+  "removed_count": 3,
+  "complete": true,
+  "artifact_content": "`.CHOUGH\\history\\CYCLES`\n",
+  "binary_sha256_after": "a644c2af17d3f8e270ec74be95ca14945493e76495344e202e0d2d2b5160d154"
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-stale-receipt-age-16cb4450e3e4d2330d7af5eb",
+  "criteria": [
+    "LIFE-7",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test history -- --exact stale_receipt_age_cannot_override_a_recent_selected_closure for TC-cli-history-stale-receipt-age: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-history-stale-receipt-age-16cb4450e3e4d2330d7af5eb.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-history-stale-receipt-age-16cb4450e3e4d2330d7af5eb.log": "ebb0a55720f48dc08816c2d15f6bfa9b3419ac43c06f8f6de7bdb6bd05949abf"
+  },
+  "observed_at_unix_seconds": 1793662235,
+  "snapshot": {
+    "revision": "19d6174b784d2c5895441c036f70fea8afe29fe1",
+    "dirty": true,
+    "fingerprint": "ea50f2ba43d00ca99b1a04f3480653e598e0827ce171fbcc1d0828cbd71c761e",
+    "content": "c31c4dd65d59e73bbd4268ef8b6f4b3ecfed94f70a3528a7dc9568cc079f5e89"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-stale-receipt-age",
+      "digest": "00deb7bf7fdde72e459c26e95a92da6e5e0d3510d892e9cbc3c58d009eefaa5a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "history",
+    "--",
+    "--exact",
+    "stale_receipt_age_cannot_override_a_recent_selected_closure"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

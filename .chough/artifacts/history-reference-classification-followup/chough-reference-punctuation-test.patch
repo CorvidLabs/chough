@@ -1,0 +1,96 @@
+diff --git a/tests/history.rs b/tests/history.rs
+index e0452b5..f7882de 100644
+--- a/tests/history.rs
++++ b/tests/history.rs
+@@ -815,7 +815,14 @@ fn frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply()
+         r".CHOUGH\\history\\CYCLES",
+         r".CHOUGH//history/./CYCLES\",
+     ] {
+-        for quote in ['`', '"'] {
++        for (open, close) in [
++            ("`", "`"),
++            ("\"", "\""),
++            ("", ""),
++            ("", "."),
++            ("(", ")"),
++            ("(", ")."),
++        ] {
+             let f = closed_cycles();
+             assert!(
+                 !f.ok(&["history", "prune"])["eligible"]
+@@ -826,7 +833,7 @@ fn frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply()
+             let artifact = ".chough/artifacts/frozen-path-reference.log";
+             f.write(
+                 artifact,
+-                &format!("Frozen reference: preserve {quote}{alias}{quote}.\n"),
++                &format!("Frozen reference: preserve {open}{alias}{close}\n"),
+             );
+             let before = saved_files(f.root());
+             let preview = f.ok(&["history", "prune"]);
+@@ -1011,7 +1018,18 @@ fn stale_receipt_age_cannot_override_a_recent_selected_closure() {
+ 
+ #[test]
+ fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
+-    for quote in [None, Some(""), Some("'"), Some("`"), Some("\"")] {
++    for (quote, close, mixed, cycle_mention) in [
++        (None, "", false, false),
++        (Some(""), "", false, false),
++        (Some("'"), "'", false, false),
++        (Some("`"), "`", false, false),
++        (Some("\""), "\"", false, false),
++        (Some(""), ".", true, false),
++        (Some(""), ".", false, false),
++        (Some("("), ")", false, false),
++        (Some("("), ").", true, false),
++        (Some(""), "", false, true),
++    ] {
+         let f = closed_cycles();
+         let preview = f.ok(&["history", "prune"]);
+         let target = preview["eligible"][0]["files"][0]["path"]
+@@ -1069,10 +1087,18 @@ fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
+         git_ok(&f, &["checkout", "-b", "new-reference", "baseline"]);
+         assert_eq!(f.read(&target), target_bytes);
+         if let Some(quote) = quote {
+-            f.write(
+-                artifact,
+-                &format!("Retain {quote}{cycle_directory}{quote}\n"),
+-            );
++            let directory_reference = if cycle_mention {
++                // The candidate path span would cut through a multibyte prefix.
++                format!("{}{}{}", "é".repeat(16), cycle, "é".repeat(100))
++            } else {
++                format!("Retain {quote}{cycle_directory}{close}\n")
++            };
++            let reference = if mixed {
++                format!("Retain {target}\n{directory_reference}")
++            } else {
++                directory_reference
++            };
++            f.write(artifact, &reference);
+             git_ok(&f, &["add", artifact]);
+         } else {
+             f.ok(&["checkpoint", "--file", &target]);
+@@ -1109,6 +1135,23 @@ fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
+         assert_eq!(f.read(&receipt_path), receipt);
+         assert_eq!(git(&f, &["status", "--porcelain"]).stdout, before);
+         assert!(!f.exists(&target));
++        if mixed {
++            git_ok(&f, &["restore", "--source", "baseline", "--", &target]);
++            assert_eq!(f.read(&target), target_bytes);
++            let before_partial_restore = git(&f, &["status", "--porcelain"]).stdout;
++            for report in [f.ok(&["history", "show"]), f.ok(&["history", "prune"])] {
++                assert_eq!(report["complete"], false, "{report}");
++                assert!(report["partial"].as_array().unwrap().iter().any(|entry| {
++                    entry["path"] != target
++                        && entry["sources"].as_array().unwrap().iter()
++                            .any(|source| source == reference_source)
++                }), "{report}");
++            }
++            assert!(f.fails(&["history", "prune", "--apply"]).contains("referenced history"));
++            assert_eq!(f.read(&target), target_bytes);
++            assert_eq!(f.read(&receipt_path), receipt);
++            assert_eq!(git(&f, &["status", "--porcelain"]).stdout, before_partial_restore);
++        }
+         let restore_path = if quote.is_some() {
+             &cycle_directory
+         } else {

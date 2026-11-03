@@ -981,3 +981,59 @@ fn bug_show_labels_note_observations_once() {
         "{shown:#}"
     );
 }
+
+#[test]
+fn retention_revalidation_keeps_changed_missing_and_newly_referenced_proof() {
+    fn setup() -> Fixture {
+        let fixture = Fixture::new();
+        fixture.init();
+        for index in 0..4 {
+            let id = format!("revalidate-{index}");
+            let path = format!(".chough/artifacts/revalidate-{index}.log");
+            write_obs(
+                &fixture,
+                &Obs::run(&id, "TC-cli-0001", "passed", 40).with_log(&path, "original proof"),
+            );
+        }
+        fixture.ok(&[
+            "consent",
+            "grant",
+            "retention",
+            "--source",
+            "fixture authorization",
+        ]);
+        assert_eq!(fixture.ok(&["evidence", "prune"])["totals"]["eligible"], 1);
+        fixture
+    }
+    let f = setup();
+    let original = f.read(".chough/evidence/revalidate-0.json");
+    f.write(
+        ".chough/artifacts/revalidate-0.log",
+        "changed proof retained",
+    );
+    let report = f.ok(&["evidence", "prune", "--apply"]);
+    assert!(report["pruned"].as_array().unwrap().is_empty());
+    assert_eq!(report["skipped"][0]["id"], "revalidate-0");
+    assert_eq!(f.read(".chough/evidence/revalidate-0.json"), original);
+    assert_eq!(
+        f.read(".chough/artifacts/revalidate-0.log"),
+        "changed proof retained"
+    );
+
+    let f = setup();
+    f.ok(&["checkpoint", "--observation", "revalidate-0"]);
+    assert!(
+        f.ok(&["evidence", "prune", "--apply"])["pruned"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    assert!(f.exists(".chough/artifacts/revalidate-0.log"));
+
+    let f = setup();
+    fs::remove_file(f.root().join(".chough/artifacts/revalidate-0.log")).unwrap();
+    let report = f.ok(&["evidence", "prune", "--apply"]);
+    assert!(report["pruned"].as_array().unwrap().is_empty());
+    assert_eq!(report["skipped"][0]["id"], "revalidate-0");
+    assert!(f.exists(".chough/evidence/revalidate-0.json"));
+}

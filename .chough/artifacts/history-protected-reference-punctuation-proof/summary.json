@@ -1,0 +1,94 @@
+{
+  "before": {
+    "head": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "source_sha256": "3472ad2d0d3ee0e021cfd8cb0c12bf6b007dde7e33888525ef72e9bb55288f39",
+    "binary_path": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "a45b43a4f1367f72cca81ad08ab67d8188e965d709fa46820a357d186396f1a8"
+  },
+  "after": {
+    "head": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "source_sha256": "3472ad2d0d3ee0e021cfd8cb0c12bf6b007dde7e33888525ef72e9bb55288f39",
+    "binary_path": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "a45b43a4f1367f72cca81ad08ab67d8188e965d709fa46820a357d186396f1a8"
+  },
+  "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-mggq0fk9",
+  "results": [
+    {
+      "variant": "terminal-period",
+      "input_reference": "Retain .chough/history/cycles/CYC-1ee187dde75c009ed2ad7d60.\n",
+      "target": ".chough/history/cycles/CYC-1ee187dde75c009ed2ad7d60/EVT-bac6d07eab796ec267e80f9a.json",
+      "target_exists": false,
+      "merge_exit_code": 0,
+      "complete": true,
+      "partial": [],
+      "target_cycle": {
+        "bytes": 0,
+        "events": 0,
+        "id": "CYC-1ee187dde75c009ed2ad7d60",
+        "interrupted": false,
+        "planned_bytes": 522,
+        "protected": [
+          "already pruned",
+          "referenced by .chough/artifacts/post-prune-punctuation.log"
+        ],
+        "tips": [
+          "EVT-bac6d07eab796ec267e80f9a"
+        ],
+        "unselected_tips": [
+          "EVT-bac6d07eab796ec267e80f9a"
+        ]
+      },
+      "plain_control_complete": false,
+      "plain_control_partial": [
+        {
+          "path": ".chough/history/cycles/CYC-1ee187dde75c009ed2ad7d60/EVT-bac6d07eab796ec267e80f9a.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-mggq0fk9/terminal-period/fixture",
+      "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-mggq0fk9/terminal-period"
+    },
+    {
+      "variant": "parenthesized",
+      "input_reference": "Retain (.chough/history/cycles/CYC-43461aef57fac1ce4937c375)\n",
+      "target": ".chough/history/cycles/CYC-43461aef57fac1ce4937c375/EVT-d4229e8152999ebf9bb2c980.json",
+      "target_exists": false,
+      "merge_exit_code": 0,
+      "complete": true,
+      "partial": [],
+      "target_cycle": {
+        "bytes": 0,
+        "events": 0,
+        "id": "CYC-43461aef57fac1ce4937c375",
+        "interrupted": false,
+        "planned_bytes": 352,
+        "protected": [
+          "already pruned",
+          "referenced by .chough/artifacts/post-prune-punctuation.log",
+          "unselected orphan or unresolved cycle closure"
+        ],
+        "tips": [
+          "EVT-d4229e8152999ebf9bb2c980"
+        ],
+        "unselected_tips": [
+          "EVT-d4229e8152999ebf9bb2c980"
+        ]
+      },
+      "plain_control_complete": false,
+      "plain_control_partial": [
+        {
+          "path": ".chough/history/cycles/CYC-43461aef57fac1ce4937c375/EVT-d4229e8152999ebf9bb2c980.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-mggq0fk9/parenthesized/fixture",
+      "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-mggq0fk9/parenthesized"
+    }
+  ]
+}

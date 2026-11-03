@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "repo": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate",
+    "before": {
+      "head": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+      "history_source_sha256": "9e9ed8bd149a728a0da626fb39de1e70022466f25550720fc2909c3fec850a15",
+      "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "binary_sha256": "27e34fa4b167c2a5e4fae75d24c8d6bfdee9f326502129a37dc76c2e9f6ae608"
+    },
+    "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+    "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi"
+  },
+  "after": {
+    "head": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+    "history_source_sha256": "9e9ed8bd149a728a0da626fb39de1e70022466f25550720fc2909c3fec850a15",
+    "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "27e34fa4b167c2a5e4fae75d24c8d6bfdee9f326502129a37dc76c2e9f6ae608"
+  },
+  "target": ".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json",
+  "target_sha256": "d12a5a2d4ba00f3f7b9183c2edacab78061174d22be4d99953438213627656d7",
+  "target_exists_after_merge": false,
+  "checkpoint_references_target": true,
+  "merge_exit_code": 0,
+  "history_show_complete": true,
+  "target_cycle_show": {
+    "bytes": 0,
+    "events": 0,
+    "id": "CYC-09bf4b69d75da18f298e9199",
+    "interrupted": false,
+    "planned_bytes": 352,
+    "protected": [
+      "already pruned",
+      "referenced by .chough/session.json",
+      "unselected orphan or unresolved cycle closure"
+    ],
+    "tips": [
+      "EVT-5eacb44e50f084edc9e2b95a"
+    ],
+    "unselected_tips": [
+      "EVT-5eacb44e50f084edc9e2b95a"
+    ]
+  },
+  "timing_partial": [
+    {
+      "reason": "pruned or interrupted history EVT-35bccd8bffbe1c667e0c6266: unavailable .chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json",
+      "source": ".chough/history"
+    }
+  ]
+}

@@ -660,7 +660,7 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     print_json(&json!({"schema_version": 1, "recorded": name, "provenance": evidence.provenance}))
 }
 
-fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
+pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
     ensure!(
         matches!(evidence.schema_version, 1 | 2),
         "unsupported evidence schema_version: {name}"
@@ -1206,6 +1206,34 @@ fn native_manifests(root: &Path) -> Result<Native> {
     })
 }
 
+/// Native acceptance paths shared with history retention. Unavailable native
+/// protection is an error, so a maintenance preview cannot invent eligibility.
+pub(super) fn retention_protection(root: &Path) -> Result<Vec<String>> {
+    if !local_path(root, ".specsync/config.toml")?.is_file()
+        && !local_path(root, ".specsync/config.json")?.is_file()
+    {
+        return Ok(vec![]);
+    }
+    let mut ids: BTreeSet<String> = change_dirs(root, ".specsync/changes")
+        .map_err(anyhow::Error::msg)?
+        .into_iter()
+        .collect();
+    for directory in change_dirs(root, ".specsync/archive/changes").map_err(anyhow::Error::msg)? {
+        let path = format!(".specsync/archive/changes/{directory}/finalization.json");
+        let value: Value = serde_json::from_str(&read_record(&local_path(root, &path)?)?)?;
+        let id = value["change_id"]
+            .as_str()
+            .filter(|id| directory.ends_with(id))
+            .context("unavailable archived manifest identity")?;
+        ids.insert(id.to_string());
+    }
+    let mut paths = BTreeSet::new();
+    for id in ids {
+        paths.extend(manifest(root, &id).map_err(anyhow::Error::msg)?);
+    }
+    Ok(paths.into_iter().collect())
+}
+
 /// Why a record is not a routine automated run, if it is not.
 fn non_routine(evidence: &Evidence) -> Option<String> {
     if !matches!(
@@ -1472,6 +1500,7 @@ fn policy(authority: Option<&str>) -> Value {
 
 /// Classify, and with an authority remove eligible sets, appending each to the ledger.
 fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
+    let _budget = authority.map(|_| crate::history::maintenance_budget());
     let at = now()?;
     let classification = classify(root, at)?;
     let mut eligible = vec![];
@@ -1511,6 +1540,7 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
         )
     });
     let mut pruned = vec![];
+    let mut skipped = vec![];
     if let Some(authority) = authority {
         let head = head_revision(root);
         for set in classification
@@ -1519,7 +1549,29 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
             .filter(|set| set.reasons.is_empty())
         {
             let evidence = &set.evidence;
+            let fresh = classify(root, now()?)?;
+            if !fresh.sets.iter().any(|current| {
+                current.evidence.id == evidence.id
+                    && current.reasons.is_empty()
+                    && current.removable == set.removable
+            }) {
+                skipped.push(json!({"id":evidence.id,"reason":"protection or shared artifact references changed"}));
+                continue;
+            }
+            let mut candidate_changed = false;
+            for (artifact, expected) in &evidence.artifact_fingerprints {
+                if !file_digest(root, artifact).is_ok_and(|actual| actual == *expected) {
+                    candidate_changed = true;
+                    break;
+                }
+            }
+            if candidate_changed {
+                skipped.push(json!({"id":evidence.id,"reason":"artifact is changed, missing or unsafe; observation retained"}));
+                continue;
+            }
+            let protection = crate::history::protection_fingerprint(root)?;
             let record_path = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
+            let record_digest = file_digest(root, &record_path)?;
             let mut removed = vec![record_path.clone()];
             removed.extend(set.removable.iter().cloned());
             let entry = json!({
@@ -1532,7 +1584,7 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
                 "revision": evidence.snapshot.revision,
                 "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
                 "artifacts": evidence.artifact_fingerprints,
-                "record_digest": file_digest(root, &record_path)?,
+                "record_digest": record_digest,
                 "removed": removed,
                 "reason": ELIGIBLE_REASON,
                 "policy": policy(Some(authority)),
@@ -1542,9 +1594,25 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
             // The ledger line comes first, so a removal is never unexplained.
             append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
             for artifact in &set.removable {
-                remove_if_present(root, artifact)?;
+                ensure!(
+                    crate::history::protection_fingerprint(root)? == protection,
+                    "references changed during cleanup; remaining files retained; inspect the partial ledger entry for {}",
+                    evidence.id
+                );
+                ensure!(
+                    file_digest(root, artifact)? == evidence.artifact_fingerprints[artifact],
+                    "artifact changed during cleanup; remaining files retained"
+                );
+                remove_if_present(root, artifact).context("partial evidence cleanup; observation retained and ledger explains attempted removals")?;
             }
-            remove_if_present(root, &record_path)?;
+            ensure!(
+                crate::history::protection_fingerprint(root)? == protection
+                    && file_digest(root, &record_path)? == record_digest,
+                "observation or protection changed during cleanup; remaining files retained"
+            );
+            remove_if_present(root, &record_path).context(
+                "partial evidence cleanup; inspect the existing record and retention ledger",
+            )?;
             pruned.push(evidence.id.clone());
         }
     }
@@ -1565,6 +1633,7 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
         },
         "warning": warning,
         "pruned": pruned,
+        "skipped": skipped,
         "ledger": LEDGER,
         "note": "Files are removed from the working tree only; committed bytes stay recoverable from Git history. Native archives, ignore rules and history are never changed.",
     }))
