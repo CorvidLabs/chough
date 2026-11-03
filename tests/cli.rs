@@ -275,8 +275,125 @@ fn invalid_modules_and_future_schemas_are_rejected() {
 fn oversized_records_fail_explicitly() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.write(".chough/session.json", &" ".repeat(65_537));
+    fixture.write(".chough/session.json", &" ".repeat(131_073));
     let output = fixture.run(&["context", "--json"]);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("131072"));
+}
+
+fn session_padded_to(fixture: &Fixture, session: &Value, bytes: usize) -> String {
+    let compact = serde_json::to_string(session).unwrap();
+    assert!(compact.len() <= bytes, "{}", compact.len());
+    let padded = format!("{compact}{}", " ".repeat(bytes - compact.len()));
+    fixture.write(".chough/session.json", &padded);
+    padded
+}
+
+#[test]
+fn checkpoint_byte_bound_is_exactly_131072() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let path = fixture.root().join(".chough/session.json");
+    let session: Value = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
+
+    session_padded_to(&fixture, &session, 131_072);
+    let output = fixture.run(&["context", "--json"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let over = session_padded_to(&fixture, &session, 131_073);
+    let output = fixture.run(&["context", "--json"]);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("131072"));
+    assert_eq!(fs::read_to_string(&path).unwrap(), over);
+
+    // A checkpoint whose content (not padding) exceeds the bound is refused too.
+    let mut large = session.clone();
+    large["decisions"] = json!(
+        (0..40)
+            .map(|index| format!("decided: {index} {}", "d".repeat(3_400)))
+            .collect::<Vec<_>>()
+    );
+    assert!(serde_json::to_vec(&large).unwrap().len() > 131_072);
+    fixture.write(
+        ".chough/session.json",
+        &serde_json::to_string(&large).unwrap(),
+    );
+    let output = fixture.run(&["context", "--json"]);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("131072"));
+}
+
+#[test]
+fn observation_pointer_bound_is_400_and_other_lists_stay_at_200() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let path = fixture.root().join(".chough/session.json");
+    let session: Value = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
+    let observations = |count: usize| {
+        json!(
+            (0..count)
+                .map(|index| format!("OBS-bound-{index:03}"))
+                .collect::<Vec<_>>()
+        )
+    };
+
+    let mut at_bound = session.clone();
+    at_bound["observations"] = observations(400);
+    fixture.write(
+        ".chough/session.json",
+        &serde_json::to_string(&at_bound).unwrap(),
+    );
+    let output = fixture.run(&["context", "--json"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let mut over = session.clone();
+    over["observations"] = observations(401);
+    fixture.write(
+        ".chough/session.json",
+        &serde_json::to_string(&over).unwrap(),
+    );
+    let output = fixture.run(&["context", "--json"]);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("too many observation"));
+
+    for list in ["decisions", "completed", "bugs"] {
+        let mut other = session.clone();
+        other[list] = json!(
+            (0..201)
+                .map(|index| format!("BUG-bound-{index:03}"))
+                .collect::<Vec<_>>()
+        );
+        fixture.write(
+            ".chough/session.json",
+            &serde_json::to_string(&other).unwrap(),
+        );
+        let output = fixture.run(&["context", "--json"]);
+        assert!(!output.status.success(), "{list} accepted 201 entries");
+        assert!(String::from_utf8_lossy(&output.stderr).contains("too many"));
+    }
+}
+
+#[test]
+fn records_other_than_the_checkpoint_keep_the_65536_byte_bound() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(
+        ".chough/preferences.json",
+        &format!(
+            "{}{}",
+            r#"{"schema_version":1,"preferences":[]}"#,
+            " ".repeat(65_536)
+        ),
+    );
+    let output = fixture.run(&["pref", "show"]);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("65536"));
 }
@@ -286,7 +403,7 @@ fn init_rejects_unreadable_session_sizes_before_writing() {
     let fixture = Fixture::new();
     // JSON escapes each control character to six bytes. Keep the actual argument
     // below Windows' process limit while still exceeding the serialized record cap.
-    let objective = "\u{0001}".repeat(12_000);
+    let objective = "\u{0001}".repeat(22_000);
     assert!(
         !fixture
             .run(&["init", "--objective", &objective])

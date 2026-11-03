@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The checkpoint `.chough/session.json` is bounded at 128 KiB (131,072 bytes) and
+  its `observations` list at 400 pointers, per Leif's 2026-11-02 decision (LIFE-11).
+  Every other record keeps 64 KiB and every other checkpoint list 200 items. Older
+  Chough releases refuse a checkpoint over 64 KiB, so upgrade before it grows past it.
+
 - Reports lazily share one structural case-definition read per request, preserving
   case digests, freshness checks and native gate reads. No lookup loads no suite;
   later requests start fresh. `CHOUGH_TRACE=1` adds bounded stderr local phases and

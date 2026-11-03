@@ -91,9 +91,12 @@ human operations, not consequences of scope approval or implementation closeout.
 
 ## Records and limits
 
-Managed JSON is bounded to 64 KiB, case files to 256 KiB, captured output to 1 MiB,
-context to 16 KiB per section and 128 KiB in total, sessions to 16 modules, each
-checkpoint list to 200 items and side-stage nesting to 4 levels.
+Managed JSON is bounded to 64 KiB, except the checkpoint `.chough/session.json`,
+which is bounded to 128 KiB (131,072 bytes). Case files are bounded to 256 KiB,
+captured output to 1 MiB, context to 16 KiB per section and 128 KiB in total,
+sessions to 16 modules, the checkpoint `observations` list to 400 items, every other
+checkpoint list to 200 items and side-stage nesting to 4 levels. Chough releases
+before this bound refuse a checkpoint over 64 KiB.
 Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
 up to 16 KiB; `status` carries the parsed state and next action in `native_summary`
 and `next` in `native`. Larger output is reported as `oversized` and refuses gated
@@ -219,8 +222,9 @@ versions, malformed JSON, wrong types and unknown fields at any level refuse. Sc
 1 live writes still require the explicit backup-preserving `chough migrate` command;
 merge never migrates it or creates a schema 1 backup.
 
-Every input and the emitted result stay within the existing 65536-byte checkpoint
-bound and 200-item collection bound, with all existing field validation enforced. A
+Every input and the emitted result stay within the 131072-byte checkpoint bound,
+the 400-item `observations` bound and the 200-item bound of every other collection,
+with all existing field validation enforced. A
 compatible merge atomically replaces only `<ours>` after the complete result passes
 validation. `<base>` and `<theirs>` remain byte-identical. Every refusal leaves all
 three inputs byte-identical and creates no checkpoint, transition, gate, consent,

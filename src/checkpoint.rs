@@ -1,8 +1,8 @@
 //! The single canonical checkpoint: `.chough/session.json`.
 
 use crate::records::{
-    CHANGE_ID_LIMIT, RECORD_LIMIT, ensure_text, local_path, print_json, read_record,
-    valid_change_id, valid_name, write_new_bytes, write_replace,
+    CHANGE_ID_LIMIT, ensure_text, local_path, print_json, read_bounded_record, valid_change_id,
+    valid_name, write_new_bytes, write_replace_bounded,
 };
 use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
@@ -17,6 +17,10 @@ pub(super) const SESSION: &str = ".chough/session.json";
 pub(super) const SESSION_V1_BACKUP: &str = ".chough/session.v1.json";
 const MAX_CALLERS: usize = 4;
 const MAX_ITEMS: usize = 200;
+/// Byte bound of the canonical checkpoint (128 KiB); other records keep the 64 KiB bound.
+pub(super) const SESSION_LIMIT: u64 = 131_072;
+/// Bound of the checkpoint `observations` list; other checkpoint lists keep `MAX_ITEMS`.
+const MAX_OBSERVATIONS: usize = 400;
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -208,14 +212,14 @@ pub(super) fn validate_v1(session: &SessionV1) -> Result<()> {
     );
     validate_common(&session.objective, &session.modules)?;
     ensure!(
-        serde_json::to_vec(session)?.len() as u64 <= RECORD_LIMIT,
-        "session exceeds 65536 bytes"
+        serde_json::to_vec(session)?.len() as u64 <= SESSION_LIMIT,
+        "session exceeds {SESSION_LIMIT} bytes"
     );
     Ok(())
 }
 
-fn ensure_ids(label: &str, values: &[String]) -> Result<()> {
-    ensure!(values.len() <= MAX_ITEMS, "too many {label}");
+fn ensure_ids(label: &str, values: &[String], limit: usize) -> Result<()> {
+    ensure!(values.len() <= limit, "too many {label}");
     for value in values {
         ensure!(valid_name(value), "invalid {label} ID: {value}");
     }
@@ -277,11 +281,11 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
             "invalid native change ID: {change}"
         );
     }
-    ensure_ids("criterion", &session.references.criteria)?;
-    ensure_ids("requirement", &session.references.requirements)?;
-    ensure_ids("case", &session.references.cases)?;
-    ensure_ids("observation", &session.observations)?;
-    ensure_ids("bug", &session.bugs)?;
+    ensure_ids("criterion", &session.references.criteria, MAX_ITEMS)?;
+    ensure_ids("requirement", &session.references.requirements, MAX_ITEMS)?;
+    ensure_ids("case", &session.references.cases, MAX_ITEMS)?;
+    ensure_ids("observation", &session.observations, MAX_OBSERVATIONS)?;
+    ensure_ids("bug", &session.bugs, MAX_ITEMS)?;
     ensure_paths("design", &session.references.design)?;
     ensure_paths("file", &session.references.files)?;
     for list in [
@@ -301,8 +305,8 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
         ensure!(valid_name(&consent.key), "invalid consent key");
     }
     ensure!(
-        serde_json::to_vec(session)?.len() as u64 <= RECORD_LIMIT,
-        "session exceeds 65536 bytes"
+        serde_json::to_vec(session)?.len() as u64 <= SESSION_LIMIT,
+        "session exceeds {SESSION_LIMIT} bytes"
     );
     Ok(())
 }
@@ -328,7 +332,7 @@ fn parse(content: &str) -> Result<Session> {
 
 pub(super) fn read_session(root: &Path) -> Result<Session> {
     let path = local_path(root, SESSION)?;
-    parse(&read_record(&path).context("run chough init first")?)
+    parse(&read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?)
 }
 
 /// Read a schema 2 checkpoint for a command that changes workflow state.
@@ -343,10 +347,11 @@ pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {
 
 pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
     validate_v2(session)?;
-    write_replace(
+    write_replace_bounded(
         root,
         SESSION,
         &(serde_json::to_string_pretty(session)? + "\n"),
+        SESSION_LIMIT,
     )
 }
 
@@ -356,7 +361,7 @@ pub(super) fn migrate(root: &Path, initial_stage: &str) -> Result<()> {
         "migration stage must be a main stage"
     );
     let path = local_path(root, SESSION)?;
-    let original = read_record(&path).context("run chough init first")?;
+    let original = read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?;
     let session = match parse(&original)? {
         Session::V2(_) => {
             return print_json(
@@ -401,7 +406,7 @@ fn read_merge_operand(path: &Path) -> Result<(PathBuf, Checkpoint)> {
         path.display()
     );
     let resolved = path.canonicalize()?;
-    let content = read_record(path)?;
+    let content = read_bounded_record(path, SESSION_LIMIT)?;
     match parse(&content)? {
         Session::V2(session) => Ok((resolved, *session)),
         Session::V1(_) => bail!(
@@ -537,8 +542,8 @@ fn merge_checkpoints(operands: &[PathBuf]) -> Result<()> {
     validate_v2(&merged)?;
     let serialized = serde_json::to_string_pretty(&merged)? + "\n";
     ensure!(
-        serialized.len() as u64 <= RECORD_LIMIT,
-        "merged session exceeds 65536 bytes"
+        serialized.len() as u64 <= SESSION_LIMIT,
+        "merged session exceeds {SESSION_LIMIT} bytes"
     );
     match parse(&serialized)? {
         Session::V2(_) => {}

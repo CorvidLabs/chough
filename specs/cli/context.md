@@ -144,6 +144,14 @@ each could not be built, and the tested fixture fills the bound instead. Source:
 choice. Limits: checkpoint-backed lists. Future use: check record-size bounds when
 writing a criterion's fixture, before approval.
 
+2026-11-02, checkpoint capacity (decided): Leif decided in chat, 9:40 PM MT, "Do your
+agent's cleanup and raise the progress file and test-result limits." PR #50's
+three-way merge of main 747a12c reached 68,737 bytes with 200 observation pointers.
+The checkpoint bound is now 131,072 bytes and the `observations` bound 400; every
+other record and list bound is unchanged. Source: native change
+raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400.
+Future use: compact superseded agent notes before the checkpoint nears the new bound.
+
 2026-11-01, closeout order (verified): SpecSync 6.1.2 `change check` refuses while the
 closeout box is open, so closeout runs before the scoped check and is extended, not
 reopened, after later runs. Source: this change's first scoped check. Limits: changes

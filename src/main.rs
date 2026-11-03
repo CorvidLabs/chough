@@ -16,7 +16,9 @@ mod validate;
 use anyhow::{Context, Result, ensure};
 use checkpoint::{SESSION, Session, new_checkpoint, read_session};
 use clap::{Parser, Subcommand};
-use records::{NativeJson, local_path, native_json, print_json, valid_name, write_new};
+use records::{
+    NativeJson, local_path, native_json, print_json, valid_name, write_new, write_new_bounded,
+};
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 
@@ -267,7 +269,12 @@ fn init(
     let mut created = vec![];
     let mut preserved = vec![];
     for (name, content) in files {
-        if write_new(root, &name, &content)? {
+        let written = if name == SESSION {
+            write_new_bounded(root, &name, &content, checkpoint::SESSION_LIMIT)?
+        } else {
+            write_new(root, &name, &content)?
+        };
+        if written {
             created.push(name);
         } else {
             preserved.push(name);

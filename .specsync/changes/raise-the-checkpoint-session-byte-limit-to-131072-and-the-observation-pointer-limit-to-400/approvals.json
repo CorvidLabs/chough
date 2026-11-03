@@ -1,0 +1,51 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793681059,
+      "digest": "2ec4469979fde9664dc54dfd9b3299a16b05ca1e04722d0ed2e595c3b9069a60",
+      "note": "Scope approved by corvid-agent. Human decision: Leif (0xLeif), chat 2026-11-02 9:40 PM MT: 'Do your agent's cleanup and raise the progress file and test-result limits.' Approvals recorded as corvid-agent under his 2026-11-02 9:14 AM MT instruction 'Use corvid-agent for all approvals for all things!! You are corvid-agent'. Scope: checkpoint byte bound 131072 and observation pointer bound 400 only",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400",
+        "title": "Raise the checkpoint session byte limit to 131072 and the observation pointer limit to 400",
+        "description": "Raise the checkpoint session byte limit to 131072 and the observation pointer limit to 400",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "docs/cli.md",
+          "hi/",
+          "specs/cli/",
+          "src/checkpoint.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Existing refusal tests keep their assertions with only the limit value updated; fledge lanes run verify passes; hosted CI is reported only as observed",
+          "The checkpoint (.chough/session.json) bound is 131072 bytes for reading, validating, writing, init and checkpoint --merge inputs and output; a checkpoint at exactly 131072 bytes is accepted and one over it is refused with a message naming 131072, leaving records byte-identical",
+          "The checkpoint observations list accepts 400 pointers and refuses 401; every other checkpoint list keeps its 200-item bound and every other record keeps its 65536-byte bound"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Human decision: Leif (0xLeif), 2026-11-02 9:40 PM MT chat: 'Do your agent's cleanup and raise the progress file and test-result limits.' Raise only the checkpoint byte bound and the observation pointer bound; keep every other record, list, history, case and context bound; never weaken tests or gates; no history pruning; no rebase or force-push",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "702fd1a7ec1d7e4751fae9610e9cc08980cf5a7006dd0c63edb53ffa783d8fb1"
+      }
+    }
+  ],
+  "reopenings": []
+}
