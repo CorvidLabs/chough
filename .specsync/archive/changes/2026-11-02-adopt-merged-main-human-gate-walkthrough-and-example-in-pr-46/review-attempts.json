@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "adopt-merged-main-human-gate-walkthrough-and-example-in-pr-46",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "0df1cd971acf4588491d9a3c97fe701b9c4b5f59",
+      "contract_digest": "2289091653b41e65863ec989b5c0536d44854ccec623f51b7d7d87f44ecd6eba",
+      "execution_digest": "1a38d039497330d170fbbf51217d8f39adbe6f9bda5c7f8855892b96c4409868",
+      "workspace_digest": "ae53dff7c9dbed7710f3c005ef035c7d7ccb7ead36c662562985442103d82592",
+      "timestamp": 1793662787
+    }
+  ]
+}

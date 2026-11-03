@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-report-case-read-budget-29364ae83848a0c4007edd4c",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7",
+    "LIFE-10",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-028"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact report_case_reads_are_shared_across_observations_and_references for TC-cli-report-case-read-budget: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-report-case-read-budget-29364ae83848a0c4007edd4c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-report-case-read-budget-29364ae83848a0c4007edd4c.log": "a0063d0951f39bd13b1a3ad33b10ce10f52fe37983b4f7b793b1fb57b601120d"
+  },
+  "observed_at_unix_seconds": 1793638012,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "c52816cd408a7979d42d366563ad92edcea58a8face3823fea096ba1c5efa117",
+    "content": "874bc41e485fa21177f556478ee2a7d4ab5642cc96a8a95abe0f6b28ad907124"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-report-case-read-budget",
+      "digest": "bfe5d7b3061d185ecb2f5261f08a996819c2ba71fabbfd07e55eca33a87e3270"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "report_case_reads_are_shared_across_observations_and_references"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 15
+}

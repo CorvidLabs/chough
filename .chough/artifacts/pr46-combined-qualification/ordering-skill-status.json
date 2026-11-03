@@ -1,0 +1,259 @@
+{
+  "bundle_files": 24,
+  "hosts": [
+    {
+      "directory": ".agents/skills/chough-workflow",
+      "files": [
+        {
+          "action": "none",
+          "file": "SKILL.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "agents/openai.yaml",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/accept.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/bugs.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/build.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/checkpoint.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/design.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/intent.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/librarian.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/lifecycle.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/plan.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/release.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/roles.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/stages.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/testing.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/validate.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/brief.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/bug-report.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/cases.toml",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/frd.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/prototype/COMPANION.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/prototype/index.html",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/prototype/styles.css",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/review-findings.md",
+          "state": "current"
+        }
+      ],
+      "host": "openai"
+    },
+    {
+      "directory": ".claude/skills/chough-workflow",
+      "files": [
+        {
+          "action": "none",
+          "file": "SKILL.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "agents/openai.yaml",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/accept.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/bugs.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/build.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/checkpoint.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/design.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/intent.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/librarian.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/lifecycle.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/plan.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/release.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/roles.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/stages.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/testing.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "references/validate.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/brief.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/bug-report.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/cases.toml",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/frd.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/prototype/COMPANION.md",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/prototype/index.html",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/prototype/styles.css",
+          "state": "current"
+        },
+        {
+          "action": "none",
+          "file": "templates/review-findings.md",
+          "state": "current"
+        }
+      ],
+      "host": "claude"
+    }
+  ],
+  "note": "Edited files are never replaced. A host directory is a convention; check that the host actually discovers it.",
+  "schema_version": 1
+}

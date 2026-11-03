@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration",
+  "implementation_commit": "600851caae7cdc191ddd3cebd0bdd90240679d3e",
+  "implementation_tree": "8791339220aa1cf43ffefa85b088575fadbae349",
+  "contract_digest": "23c8f53d837275c6f91ba0a3a49ca8a33947f30166795a5689ee8c7260fcdcae",
+  "workspace_digest": "b8d3286f4c4c45778a95628e22e7c3bbffb14da2eeca7c3e6d274b4f5b52c6af",
+  "closing_digest": "7a56f58c0f827545b21ceeea0801c4a8e9bfda282498f0ff517f8eceb57fb1fe",
+  "review_digest": "20c41d6b80dda825ca2a6d0e2f068cbc9779d50e72528dcee3980582d8ca3018",
+  "finalization_digest": "c709926002a532c942d5e03c87b2b79ec7147c95934728c148e8ab8281a75b2f",
+  "timestamp": 1793670728
+}

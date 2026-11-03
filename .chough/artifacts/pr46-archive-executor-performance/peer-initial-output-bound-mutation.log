@@ -1,0 +1,4 @@
+Test under isolated mutant MAX_OUTPUT=16MiB: PASS
+testsRun 1 failures 0 errors 0
+Reason: 8MiB+1 invalid JSON still raises GateError from JSON parsing when output bound is bypassed.
+Repository files unchanged: checker 0426dab6c3e9554d03ebcd59faaa680f1f22f0806dc390bc4cbe2d2f77f65eb7 tests 4576cc3516f8297371d38cdb0cff3ac6e92dd37056b688487c0dbf6412137603

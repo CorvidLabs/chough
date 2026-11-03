@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "bound-independent-archive-authentication-workers-without-changing-validation-or-budgets",
+  "slug": "bound-independent-archive-authentication-workers-without-changing-validation-or-budgets",
+  "title": "Bound independent archive authentication workers without changing validation or budgets",
+  "description": "Bound independent archive authentication workers without changing validation or budgets",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+  "created_at": 1793676429,
+  "updated_at": 1793677915,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".github/scripts/check-specsync-archive.py",
+    ".github/scripts/test-specsync-archive.py"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "CI execution scheduling only. Every native history inventory and authenticated-history obligation, exact SpecSync version, before/after read-only guard, 90-second command timeout and 10-minute job budget remain unchanged. No runtime contract or evidence rewrite.",
+  "acceptance_criteria": [
+    "Every historical roster snapshot and archive obligation is retained. Independent current-root archive status reads use a fixed maximum of two workers. Every result must match its requested ID, archived state and authenticated-history validity; no success until all finish. Native errors, invalid archives and command deadlines fail closed. SpecSync 6.1.2, 90-second subprocess timeout, output bounds, read-only fingerprints and the 10-minute hosted job budget stay unchanged. Existing native fixtures plus concurrency/failure/drain tests pass. Actual hosted duration is observed before merge."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Preserve all historical/native obligations and validations, serial history checkout, exact published SpecSync 6.1.2, existing 90-second subprocess/output bounds and 10-minute hosted job budget, join current-root reads before the final readonly fingerprint, no evidence/archive rewrites, no changes outside the two declared Python files plus native/Chough lifecycle records.",
+    "public_contract": "no"
+  }
+}

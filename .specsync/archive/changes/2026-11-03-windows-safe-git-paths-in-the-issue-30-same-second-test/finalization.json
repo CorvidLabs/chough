@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "windows-safe-git-paths-in-the-issue-30-same-second-test",
+  "implementation_commit": "7dedd3fb718b507bbd174b75b6f765fc031eec21",
+  "implementation_tree": "4a32ca11af50fa9bd49a40f665bfcf511f63c00e",
+  "contract_digest": "3e48499114dc5d7ca8123c3bddcd346855fa90787768329233022c8289f23127",
+  "workspace_digest": "833ab404d25a2fe95d3750c518021b69b9600f07a7c78e688be77c3174c1c5f4",
+  "closing_digest": "4468ab211b5147f2dfbf7709c9c6e024d1f2d945e4eeb6d7cbcc1abe135414ce",
+  "review_digest": "8657eb7cfeec39abf2d586a4b8b64642d1249bb4e4a2771148773b1f5c04966a",
+  "finalization_digest": "a6185f67fcd80bfd3306876cc9fd85d87d3f19ba8f1809de4cb65758dc65745a",
+  "timestamp": 1793671227
+}

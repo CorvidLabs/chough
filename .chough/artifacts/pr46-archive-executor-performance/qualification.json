@@ -1,0 +1,77 @@
+{
+  "parent_head": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+  "current_source": "working tree; runtime/contract/test/skill inputs unchanged from parent; only declared Python files changed",
+  "scripts_sha256": {
+    ".github/scripts/check-specsync-archive.py": "0426dab6c3e9554d03ebcd59faaa680f1f22f0806dc390bc4cbe2d2f77f65eb7",
+    ".github/scripts/test-specsync-archive.py": "e41969ab360254bac8383f060cfe557641c9d6b7fe161e9490ad9890550d2e4d"
+  },
+  "tools": {
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "cargo": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)",
+    "fledge": "fledge 1.8.0",
+    "hi": "hi 0.8.0",
+    "specsync": "specsync 6.1.2"
+  },
+  "rust_tests": {
+    "passed": 240,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "suites": 12,
+    "toolchain": "1.95.0",
+    "log": "fledge-first-five-and-audit-prerequisite.log"
+  },
+  "fledge": {
+    "first_five_passed": [
+      "fmt",
+      "lint",
+      "test",
+      "intent",
+      "spec"
+    ],
+    "initial_audit_refusal": "scope still approved; ordinary native check entered verifying, then audit passed unchanged",
+    "remaining_four": [
+      {
+        "task": "audit",
+        "exit_code": 0,
+        "seconds": 2.4364707497879863
+      },
+      {
+        "task": "cases",
+        "exit_code": 0,
+        "seconds": 1.7078425418585539
+      },
+      {
+        "task": "exercise",
+        "exit_code": 0,
+        "seconds": 36.58276337501593
+      },
+      {
+        "task": "build",
+        "exit_code": 0,
+        "seconds": 0.07821649988181889
+      }
+    ]
+  },
+  "native_fixtures": {
+    "passed": 12,
+    "method_bytes_unchanged": true,
+    "production_checker_sha256": "0426dab6c3e9554d03ebcd59faaa680f1f22f0806dc390bc4cbe2d2f77f65eb7",
+    "full18_log": "original-full-18-fixtures.log",
+    "full18_initial_test_sha256": "4576cc3516f8297371d38cdb0cff3ac6e92dd37056b688487c0dbf6412137603"
+  },
+  "corrected_units": {
+    "passed": 6,
+    "worker_log": "six-units-output-bound-fixed.log",
+    "peer_log": "peer-six-units-final.log",
+    "final_test_sha256": "e41969ab360254bac8383f060cfe557641c9d6b7fe161e9490ad9890550d2e4d"
+  },
+  "peer_review": "peer-review-final.json",
+  "prior_proof": "prior-proof-preservation.json",
+  "limits": [
+    "Hosted final-head duration and native authentication are pending.",
+    "Earlier16case qualification retains its exact prior working content; it is not relabelled current after this CI-only change.",
+    "No new Kimi cold-start run, release, deployment or live cleanup.",
+    "Performance design retains all obligations, predicate ASTs, serial historical inventory, exact6.1.2pin,90-second command deadline,8MiBoutputcap,10-minute job budget and final readonly fingerprint."
+  ]
+}

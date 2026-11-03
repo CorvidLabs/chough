@@ -1,0 +1,110 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793635595,
+      "digest": "08d57a36d3c90bb397aff96d262cc9638a1928624dca228a1c14fe9dfbdb2939",
+      "note": "Standing scope and implementation authorization from 0xLeif in chat on 2026-11-02: \"And I already gave it some approval and told it can do any changes. It just needs a PR.\" Applied to this completed concrete #32 definition; relay https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . Human implementation acceptance, native review/ship and merge remain separate.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "read-report-case-definitions-once-per-request-and-expose-local-phase-costs",
+        "title": "Read report case definitions once per request and expose local phase costs",
+        "description": "Read report case definitions once per request and expose local phase costs",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.cases.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/timing.rs",
+          "tests/cases.rs",
+          "tests/cli.rs",
+          "tests/next.rs",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "One request reads and validates the case suite at most once while preserving legacy/current case digests, report output, artifact and environment checks, native read counts and genuine lifecycle refusal; a later request observes changed source/case/artifact/native inputs and never reuses stale results; opt-in local phase traces preserve stdout and exit behavior; before/after first-process and repeated measurements record the exact revision, freshly built binary, input sizes, toolchain and censored versus completed native work with no unobserved speedup claim."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Preserve native authority, fresh gate reads, unknown/timed-out states, existing digests and all proof. Request-local reuse only, with no persistent cache, service, runtime, schema changes, retention/identity changes, or verification exclusions. Existing lessons in specs/cli/context.md require materializing new requirement IDs before linked cases and completing source plus Chough records before native committed verification. Scope approval and human implementation acceptance are separate; this definition has neither. PR37 owns history storage and retention; proposed REQ-cli-028 avoids its reserved IDs. Capped native runs are censored diagnostics, and the direct unwrapped native completion is separate evidence. No Kimi cold-start grade, live adoption, cleanup, native approval/review/ship or merge is implied.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "dc9bd9b83f91424fd470122d24c1e999f80094c139f048a89e391d8ac9ac5c9f"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793638616,
+      "digest": "08d57a36d3c90bb397aff96d262cc9638a1928624dca228a1c14fe9dfbdb2939",
+      "note": "Project agent operation under existing human standing scope/implementation authorization. SOURCE: 0xLeif in chat on2026-11-02 said \"And I already gave it some approval and told it can do any changes. It just needs a PR.\" Relay: https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . The actor is the project agent recording the operation; the authorizing human is the source. This renews the same concrete definition and scope, preserves the previous portable record unchanged, and does not record human implementation acceptance, native review/ship or merge.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "read-report-case-definitions-once-per-request-and-expose-local-phase-costs",
+        "title": "Read report case definitions once per request and expose local phase costs",
+        "description": "Read report case definitions once per request and expose local phase costs",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.cases.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/timing.rs",
+          "tests/cases.rs",
+          "tests/cli.rs",
+          "tests/next.rs",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "One request reads and validates the case suite at most once while preserving legacy/current case digests, report output, artifact and environment checks, native read counts and genuine lifecycle refusal; a later request observes changed source/case/artifact/native inputs and never reuses stale results; opt-in local phase traces preserve stdout and exit behavior; before/after first-process and repeated measurements record the exact revision, freshly built binary, input sizes, toolchain and censored versus completed native work with no unobserved speedup claim."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Preserve native authority, fresh gate reads, unknown/timed-out states, existing digests and all proof. Request-local reuse only, with no persistent cache, service, runtime, schema changes, retention/identity changes, or verification exclusions. Existing lessons in specs/cli/context.md require materializing new requirement IDs before linked cases and completing source plus Chough records before native committed verification. Scope approval and human implementation acceptance are separate; this definition has neither. PR37 owns history storage and retention; proposed REQ-cli-028 avoids its reserved IDs. Capped native runs are censored diagnostics, and the direct unwrapped native completion is separate evidence. No Kimi cold-start grade, live adoption, cleanup, native approval/review/ship or merge is implied.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "dc9bd9b83f91424fd470122d24c1e999f80094c139f048a89e391d8ac9ac5c9f"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793659915,
+      "digest": "1531f4661a49d7e2ec75323de01816919ed74bebd0781b2fb7ad6f66baca28c6",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

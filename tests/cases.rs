@@ -1496,3 +1496,155 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
     assert!(!fixture.exists(&format!(".chough/evidence/{id}.json")));
     assert!(std::fs::read_dir(fixture.root().join(".chough/evidence")).is_err());
 }
+
+/// Generated records under `dir` in a fixture: relative path to bytes.
+fn generated(fixture: &Fixture) -> std::collections::BTreeMap<String, Vec<u8>> {
+    let mut files = std::collections::BTreeMap::new();
+    for dir in [".chough/evidence", ".chough/artifacts", ".chough/bugs"] {
+        let Ok(entries) = std::fs::read_dir(fixture.root().join(dir)) else {
+            continue;
+        };
+        for entry in entries {
+            let entry = entry.unwrap();
+            let name = format!("{dir}/{}", entry.file_name().to_string_lossy());
+            files.insert(name, std::fs::read(entry.path()).unwrap());
+        }
+    }
+    files
+}
+
+/// Issue #30: records generated independently on two branches in two roots integrate
+/// through a real Git merge without add/add conflicts, silent replacement or duplicate
+/// identity, and the merged tree still validates.
+#[test]
+fn independently_added_records_merge_without_conflict_or_replacement() {
+    let a = Fixture::new();
+    a.hi_stand_in();
+    // Keep the bytes Git checks out identical to the bytes recorded on every host.
+    a.write(".gitattributes", "* -text\n");
+    let command =
+        "adapter = \"command\"\nargv = [\"git\", \"--version\"]\nexpect_output = [\"git version\"]";
+    a.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{}", bound("TC-cli-0001", command, "")),
+    );
+    a.init();
+    a.commit("base");
+    let b = Fixture::new();
+    for entry in std::fs::read_dir(b.root()).unwrap() {
+        let path = entry.unwrap().path();
+        if path.is_dir() {
+            std::fs::remove_dir_all(path).unwrap();
+        } else {
+            std::fs::remove_file(path).unwrap();
+        }
+    }
+    b.git(&["clone", "-q", a.root().to_str().unwrap(), "."]);
+    a.git(&["checkout", "-q", "-b", "a"]);
+    b.git(&["checkout", "-q", "-b", "b"]);
+
+    let mut ids = vec![];
+    for (fixture, side, bug) in [
+        (&a, "a", "Version check flakes"),
+        (&b, "b", "Version check is slow"),
+    ] {
+        let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+        ids.push(run["observation"].as_str().unwrap().to_string());
+        fixture.write(
+            &format!(".chough/artifacts/{side}-proof.log"),
+            &format!("proof from {side}\n"),
+        );
+        let mut args = vec![
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--case",
+            "TC-cli-0001",
+            "--summary",
+        ];
+        let summary = format!("Reviewed on branch {side}");
+        let artifact = format!(".chough/artifacts/{side}-proof.log");
+        args.extend([summary.as_str(), "--artifact", artifact.as_str()]);
+        ids.push(recorded_id(&fixture.run(&args)));
+        let added = fixture.ok(&[
+            "bug",
+            "add",
+            "--title",
+            bug,
+            "--symptom",
+            "The check misbehaves",
+            "--trigger",
+            "Running the version check",
+            "--expected",
+            "A steady check",
+            "--actual",
+            "An unsteady check",
+            "--environment",
+            "local",
+            "--requirement",
+            "REQ-cli-001",
+        ]);
+        ids.push(added["id"].as_str().unwrap().to_string());
+        fixture.commit(&format!("records from {side}"));
+    }
+    let unique: std::collections::BTreeSet<_> = ids.iter().collect();
+    assert_eq!(unique.len(), ids.len(), "{ids:?}");
+    let (from_a, from_b) = (generated(&a), generated(&b));
+    assert!(
+        from_a.keys().all(|name| !from_b.contains_key(name)),
+        "shared record names"
+    );
+
+    // A plain merge: an add/add conflict or a rename would fail or show up below.
+    a.git(&[
+        "pull",
+        "-q",
+        "--no-rebase",
+        "--no-ff",
+        "--no-edit",
+        b.root().to_str().unwrap(),
+        "b",
+    ]);
+    let mut expected = from_a.clone();
+    expected.extend(from_b.clone());
+    assert_eq!(
+        generated(&a),
+        expected,
+        "a record was lost or rewritten in the merge"
+    );
+    assert_eq!(a.read(".chough/artifacts/b-proof.log"), "proof from b\n");
+
+    a.ok(&["cases", "check"]);
+    let status = a.ok(&["status", "--environment", "local", "--json"]);
+    let observations = status["observations"].as_array().unwrap();
+    assert_eq!(observations.len(), 4, "{observations:?}");
+    for observation in observations {
+        assert_eq!(
+            observation["freshness"], "current-observation",
+            "{observation}"
+        );
+    }
+    let bugs: Vec<_> = status["open_bugs"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|bug| bug["id"].as_str().unwrap())
+        .collect();
+    assert_eq!(bugs.len(), 2);
+    assert!(
+        ids.iter()
+            .filter(|id| id.starts_with("BUG-"))
+            .all(|id| bugs.contains(&id.as_str()))
+    );
+}

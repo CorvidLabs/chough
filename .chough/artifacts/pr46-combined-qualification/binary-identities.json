@@ -1,0 +1,11 @@
+{
+  "rust1.95": {
+    "path": "/tmp/chough-tickets-20261102-JAIhPp/target/debug/chough",
+    "sha256": "e3891fb35993aa77912e6115c460ca128063738929f4d38568c29407340a9b85"
+  },
+  "rust1.88": {
+    "path": "/tmp/chough-pr46-final-combined-msrv-target/debug/chough",
+    "sha256": "83199619f8c4f562c816b0b3460bb37101a38da40cf7051976c810f1ce254331"
+  },
+  "note": "Each cargo test suite used its version-specific CARGO_BIN_EXE_chough fixture binary. The qualification runner input.binary_sha256 describes the ambient1.95CLI; this manifest separately identifies the MSRV fixture binary."
+}

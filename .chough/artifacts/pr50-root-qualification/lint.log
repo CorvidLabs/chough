@@ -1,0 +1,4 @@
+▶️ Running task: lint
+    Checking chough v0.1.0 (/private/tmp/chough-pr50-finish-xJlJtK)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.20s
+✅ lint (3.3s)

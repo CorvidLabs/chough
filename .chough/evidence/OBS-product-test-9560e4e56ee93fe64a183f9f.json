@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-9560e4e56ee93fe64a183f9f",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-004",
+    "REQ-cli-021",
+    "REQ-cli-024",
+    "REQ-cli-028"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Final mandatory Fledge lane passed all9steps after typed case-loader error preservation:201Rusttests across10suites, no failures or ignored tests, format/lint/HI/strictstructure/nativeaudit/casedefinitions/disposableCLIexercise/build.",
+  "artifacts": [
+    ".chough/artifacts/report-reads-final-verify.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/report-reads-final-verify.log": "f50aa3994582b8d49b507ff3751c885c4b8e86ed91ecba0fd4b586480de76d00"
+  },
+  "observed_at_unix_seconds": 1793638288,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "87b697d29f67c8886dfeed34c1f46be1ede7f2fbca3d693e1aae25bf09869537",
+    "content": "874bc41e485fa21177f556478ee2a7d4ab5642cc96a8a95abe0f6b28ad907124"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Local macOS arm64 only. Hosted Linux/Windows product results are separate and remain gated while the native change is open. This does not record human implementation acceptance, archive, merge or release."
+  ]
+}

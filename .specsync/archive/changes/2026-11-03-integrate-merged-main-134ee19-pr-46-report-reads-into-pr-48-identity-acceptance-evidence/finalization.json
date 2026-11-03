@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence",
+  "implementation_commit": "5c0f57f8e1cb227b6ad48356bc237ab12f9f4fe3",
+  "implementation_tree": "2fbe8ccaf8c0b63574207d3dff61fe859a2d0d02",
+  "contract_digest": "d5d17da213f9c8b3f20a2ab034d2d2745f5680232e2cab33a65313cd7b03899d",
+  "workspace_digest": "ce28cac4ad18047ee7df16d4d4e3373ca45489f4df5e0074bd7000fa110d16e6",
+  "closing_digest": "692c17437a118095c35e5d67e43cc01b4191959895ac813548dcbfc58140b5b5",
+  "review_digest": "e8f1c4f6d0d12389413dbc96377941e418464b839402cf8d70404cc457bee965",
+  "finalization_digest": "bc5507c82d920f705ee514b90b551a02f80e145b90c9656bea2050e8334c5ca4",
+  "timestamp": 1793679430
+}

@@ -11,10 +11,12 @@ use anyhow::{Context, Result, bail, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use std::cell::{Cell, OnceCell, RefCell};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, File};
 use std::io::Read;
 use std::path::{Component, Path};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 pub(super) const CASES_DIR: &str = ".chough/cases";
@@ -521,6 +523,87 @@ pub(super) fn current_digest(root: &Path, id: &str) -> Result<Option<String>> {
         }
     }
     Ok(None)
+}
+
+/// Digests requested by one report. The suite and its errors live only as long as
+/// this root-bound value; a later report starts with a fresh structural read.
+pub(super) struct Digests<'a> {
+    root: &'a Path,
+    suite: OnceCell<std::result::Result<BTreeMap<String, Located>, Arc<anyhow::Error>>>,
+    values: RefCell<BTreeMap<String, Option<String>>>,
+    loads: Cell<usize>,
+    lookups: Cell<usize>,
+}
+
+/// Share a failed read without flattening its original context/source chain.
+#[derive(Debug)]
+struct SharedLoadError(Arc<anyhow::Error>);
+
+impl std::fmt::Display for SharedLoadError {
+    fn fmt(&self, output: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.0.as_ref(), output)
+    }
+}
+
+impl std::error::Error for SharedLoadError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        let original: &(dyn std::error::Error + 'static) = self.0.as_ref().as_ref();
+        original.source()
+    }
+}
+
+impl<'a> Digests<'a> {
+    pub(super) fn new(root: &'a Path) -> Self {
+        Self {
+            root,
+            suite: OnceCell::new(),
+            values: RefCell::new(BTreeMap::new()),
+            loads: Cell::new(0),
+            lookups: Cell::new(0),
+        }
+    }
+
+    pub(super) fn current(&self, id: &str) -> Result<Option<String>> {
+        self.lookups.set(self.lookups.get() + 1);
+        if let Some(value) = self.values.borrow().get(id) {
+            return Ok(value.clone());
+        }
+        let suite = self.suite.get_or_init(|| {
+            self.loads.set(self.loads.get() + 1);
+            let started = Instant::now();
+            let result = load(self.root).map(|cases| {
+                cases
+                    .into_iter()
+                    .map(|located| (located.case.id.clone(), located))
+                    .collect()
+            });
+            crate::records::trace_phase("case-suite", started);
+            result.map_err(Arc::new)
+        });
+        let suite = suite
+            .as_ref()
+            .map_err(|error| anyhow::Error::new(SharedLoadError(Arc::clone(error))))?;
+        let value = suite
+            .get(id)
+            .filter(|located| located.case.status == "active")
+            .map(Located::digest)
+            .transpose()?;
+        self.values
+            .borrow_mut()
+            .insert(id.to_string(), value.clone());
+        Ok(value)
+    }
+}
+
+impl Drop for Digests<'_> {
+    fn drop(&mut self) {
+        crate::records::trace(&format!(
+            "case-suite loads={} lookups={} unique_ids={}",
+            self.loads.get(),
+            self.lookups.get(),
+            self.values.get_mut().len()
+        ));
+    }
 }
 
 pub(super) fn find(root: &Path, id: &str) -> Result<Located> {

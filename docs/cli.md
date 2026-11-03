@@ -684,3 +684,31 @@ Gate records also take slots in the recent-transition windows of `chough context
 (20) and `stage show` (10), so those windows can show fewer stage moves than before.
 
 See the [walkthrough](walkthrough.md) and [exercises](exercises/feature-bug-loop.md).
+
+
+## Report read diagnostics
+
+A `next` or `status` request lazily loads the structural case suite once and shares
+its exact digests across observation and reference checks. No bound-case lookup
+means no suite load. The context belongs to one root and one request; the next
+request reads again. Artifact bytes, environment and source identities retain their
+existing checks. This does not cache native authorization or change lifecycle gates.
+
+`CHOUGH_TRACE=1` adds stderr-only local attribution. `snapshot.git-enumeration`,
+`snapshot.hash` and `snapshot.git-status` separate Git/source work; `evidence.load`
+marks observation parsing; `case-suite` marks a structural suite load;
+`freshness.artifacts` aggregates artifact-check time; `next.assess`,
+`next.references`, `next.render`, `status.assess`, `status.observations`,
+`status.references` and `status.render` identify report work. A line such as
+`case-suite loads=1 lookups=48 unique_ids=2` counts suite load attempts, digest
+lookups and distinct resolved IDs, not operating-system file opens. A no-case
+request reports zero loads. Trace lines remain bounded and leave stdout, records
+and exit results unchanged. Nested intervals overlap, so do not sum them as
+independent wall time. Existing native state/time and timing phase lines remain.
+
+Profile old/new freshly built binaries against identical frozen inputs. Record the
+revision, source patch if dirty, binary hash, build profile, input sizes, flags and
+native outcomes. A first process does not imply a purged OS cache. A native timeout
+is incomplete qualification even when the reporting command exits zero; a sum of
+zero completed native calls is not zero native work. Local read reuse does not fix
+or bypass expensive native authentication.

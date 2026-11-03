@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "adopt-merged-main-human-gate-walkthrough-and-example-in-pr-46",
+  "slug": "adopt-merged-main-human-gate-walkthrough-and-example-in-pr-46",
+  "title": "Adopt merged main human-gate walkthrough and example in PR 46",
+  "description": "Adopt merged main human-gate walkthrough and example in PR 46",
+  "kind": "operations",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "9dd30dd5d27720c33fab3fcf97dbce345fe3d482",
+  "created_at": 1793661675,
+  "updated_at": 1793662808,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "docs/walkthrough.md",
+    "examples/feature-bug-loop.sh"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Import the already approved main 9d02 human-gate walkthrough and disposable example without adding semantic behavior; companion code and canonical reconciliation remain owned by the first PR 46 integration change.",
+  "acceptance_criteria": [
+    "The main 9d02 walkthrough and feature-bug example remain byte-identical after integration; the full mandatory lane and Rust 1.88 tests pass with both preserved main gates and report reads"
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Preserve existing archive and evidence bytes; retain the main awaiting-human guard and examples; no new runtime or policy; actor corvid-agent uses actual 0xLeif through-PR and finish-all authorization; root alone records review and ship",
+    "public_contract": "no"
+  }
+}

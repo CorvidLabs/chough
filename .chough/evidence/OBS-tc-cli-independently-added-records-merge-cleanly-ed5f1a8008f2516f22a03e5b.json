@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-independently-added-records-merge-cleanly-ed5f1a8008f2516f22a03e5b",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-023"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test cases -- --exact independently_added_records_merge_without_conflict_or_replacement for TC-cli-independently-added-records-merge-cleanly: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-independently-added-records-merge-cleanly-ed5f1a8008f2516f22a03e5b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-independently-added-records-merge-cleanly-ed5f1a8008f2516f22a03e5b.log": "2f3bc3fd90190166ac2eb832e3d4757369e319b3222a4182d142735e3a56dc61"
+  },
+  "observed_at_unix_seconds": 1793670619,
+  "snapshot": {
+    "revision": "a788869b32b8442cbc8d7be2bf19c19a922954a8",
+    "dirty": true,
+    "fingerprint": "6a994cd62ba390a89e1d5b65e927571d8ff4668323abcb7feb137cdc82f1806f",
+    "content": "1676bdfb29962d2e75371db9fb1c2ffde2046d98f2f0d7ffe5a83b60ec502b10"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-independently-added-records-merge-cleanly",
+      "digest": "0a559e4647d3fb410bd47718d55643b8120cedcb1d8043acd6c986ed8613f06d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cases",
+    "--",
+    "--exact",
+    "independently_added_records_merge_without_conflict_or_replacement"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

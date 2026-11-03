@@ -1,0 +1,35 @@
+{
+  "fixture_revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "fixture": "/tmp/chough-report-reads-final-frozen-825a380",
+  "fixture_clean_before": true,
+  "source_revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+  "source_patch_sha256": "5ae58c8c3a62daae88de92c0ff096508f5c124ba058f715a96be807edbe7fdf6",
+  "binary_sha256": {
+    "before": "b93d3d0060c0986a99c0f177cf0b5b9b5e49277d0d3fdc91fd2fe95f61ff6680",
+    "after": "3bd7aec0ec39101e00ceabf288245cc5ce5fe4a84e88d8684a7d012279b71acb"
+  },
+  "profile": "fresh debug builds",
+  "utc": "2026-11-02T16:43:02.585009+00:00",
+  "native_timeout_seconds": 1,
+  "timing_budget_seconds": 3,
+  "command_timeout_seconds": 15,
+  "first_process_note": "New process; OS caches not evicted. Version order reversed for repeated runs.",
+  "inputs": {
+    ".chough/evidence": {
+      "files": 323,
+      "bytes": 520187
+    },
+    ".chough/artifacts": {
+      "files": 424,
+      "bytes": 7275362
+    },
+    ".chough/cases": {
+      "files": 1,
+      "bytes": 81220
+    },
+    ".specsync/archive/changes": {
+      "files": 368,
+      "bytes": 2883146
+    }
+  }
+}

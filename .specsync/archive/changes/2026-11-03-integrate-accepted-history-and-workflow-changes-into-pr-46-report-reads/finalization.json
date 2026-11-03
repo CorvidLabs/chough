@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-accepted-history-and-workflow-changes-into-pr-46-report-reads",
+  "implementation_commit": "9bea9ddf2f1abdba0426abdbc815792b1a5f94dc",
+  "implementation_tree": "d5e7eaac32b1cf96eef34179b3b07f7cecb07649",
+  "contract_digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+  "workspace_digest": "47f8e3b50c366d66af69895e823d6aded6309358325e5248f9558f1742238e13",
+  "closing_digest": "18bdbbd44e2c7775c77559976b351b094dfede2646ac1b5daa41144f7f99d0f1",
+  "review_digest": "04ff60820315c52d4ea7ca69dd044b98166b9f0ff76c8ca539c080bcc1c32ad9",
+  "finalization_digest": "ae7ea279651c2f20c7fe1f4649862cbffd984dad5b8e7cb70890a80ced5ba4bd",
+  "timestamp": 1793672650
+}
