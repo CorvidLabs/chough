@@ -1,0 +1,209 @@
+{
+  "head": "98a86bc14609c1c4cb68699b41ca9fa24665943b",
+  "findings": [],
+  "scope": "final local evidence, source freshness and protected proof only",
+  "no_tests_rerun": true,
+  "no_repo_native_git_github_writes": true,
+  "read_only_status": {
+    "path": "/tmp/chough51-atomic-evidence-status.json",
+    "native_timeout_seconds": 1,
+    "snapshot": {
+      "content": "927abca849c738bbbd1dbc1f4065676128a1532164dc1fd295cb40ecc49f394d",
+      "dirty": true,
+      "fingerprint": "5df407f7a6437482f7fa4bd46eaedbf1392dbc009195ba417ea340dc1241458a",
+      "revision": "98a86bc14609c1c4cb68699b41ca9fa24665943b"
+    },
+    "native_summary": null,
+    "native_authentication_established": false
+  },
+  "counts_from_actual_logs": {
+    "passed": 252,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "suites": 12
+  },
+  "fledge": {
+    "steps": [
+      "fmt",
+      "lint",
+      "test",
+      "intent",
+      "spec",
+      "audit",
+      "cases",
+      "exercise",
+      "build"
+    ],
+    "completed_step_numbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "lane_finished": true
+  },
+  "archive_fixtures": {
+    "test_count": 18,
+    "successful": true,
+    "executor_units": 6,
+    "real_native_fixtures": 12
+  },
+  "phase_log_identity": [
+    {
+      "argv": [
+        "fledge",
+        "lanes",
+        "run",
+        "verify"
+      ],
+      "exit_code": 0,
+      "copied_hash_matches": true,
+      "outside_original_exists": true,
+      "copied_matches_outside_original": true,
+      "sha256": "ef485454f54abf2447413c3403c82259160468822bfbe01cdeeddf07b188794c"
+    },
+    {
+      "argv": [
+        "fledge",
+        "run",
+        "ci-archive-fixtures"
+      ],
+      "exit_code": 0,
+      "copied_hash_matches": true,
+      "outside_original_exists": true,
+      "copied_matches_outside_original": true,
+      "sha256": "c1c78d8e08dbecbdbc29c33281a8cc792026e8de24499d36db4d12350a392267"
+    }
+  ],
+  "records": [
+    {
+      "id": "OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd",
+      "path": ".chough/evidence/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.json",
+      "sha256": "44b7e5700e26e8df98f67de94a14aa50cb93ab76521436a30ffe0515f467b41d",
+      "environment": "local-macos-arm64",
+      "outcome": "passed",
+      "snapshot_matches_current": true,
+      "freshness": "current-observation",
+      "direct_checkpoint_file_pin": true,
+      "artifact_checks": {
+        ".chough/artifacts/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.log": true
+      },
+      "case_digest_checks": {
+        "TC-cli-report-case-read-budget": true
+      },
+      "tests_run": 1,
+      "exit_code": 0
+    },
+    {
+      "id": "OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895",
+      "path": ".chough/evidence/OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895.json",
+      "sha256": "3f7715a5dad34bee58c3bf3f95941d4f3c0ed9ecd510b4d2d7b6be028a355683",
+      "environment": "local-macos-arm64",
+      "outcome": "passed",
+      "snapshot_matches_current": true,
+      "freshness": "current-observation",
+      "direct_checkpoint_file_pin": true,
+      "artifact_checks": {
+        ".chough/artifacts/OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895.log": true
+      },
+      "case_digest_checks": {
+        "TC-cli-report-read-invalidation": true
+      },
+      "tests_run": 1,
+      "exit_code": 0
+    },
+    {
+      "id": "OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759",
+      "path": ".chough/evidence/OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759.json",
+      "sha256": "351201de84c4d307652b8b8d1d51ad1221ef4f73c7af05d71d57251db1111532",
+      "environment": "local-macos-arm64",
+      "outcome": "passed",
+      "snapshot_matches_current": true,
+      "freshness": "current-observation",
+      "direct_checkpoint_file_pin": true,
+      "artifact_checks": {
+        ".chough/artifacts/OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759.log": true
+      },
+      "case_digest_checks": {
+        "TC-cli-report-trace-parity": true
+      },
+      "tests_run": 1,
+      "exit_code": 0
+    },
+    {
+      "id": "OBS-product-test-2f00d25a768981daf5bb6eb0",
+      "path": ".chough/evidence/OBS-product-test-2f00d25a768981daf5bb6eb0.json",
+      "sha256": "bed349f5a67c299e11fb49d8d3b79dfe0a383c0372ec677929f9c20c6c72907b",
+      "environment": "local-macos-arm64",
+      "outcome": "passed",
+      "snapshot_matches_current": true,
+      "freshness": "current-observation",
+      "direct_checkpoint_file_pin": true,
+      "artifact_checks": {
+        ".chough/artifacts/pr51-writer-atomicity/qualified/final-verify.log": true,
+        ".chough/artifacts/pr51-writer-atomicity/qualified/final-gate-fixtures.log": true,
+        ".chough/artifacts/pr51-writer-atomicity/qualified/final-qualification.json": true,
+        ".chough/artifacts/pr51-writer-atomicity/independent-source-review.json": true,
+        ".chough/artifacts/pr51-writer-atomicity/final-pair/result.json": true
+      },
+      "case_digest_checks": {},
+      "tests_run": null,
+      "exit_code": null
+    }
+  ],
+  "writer_bug": {
+    "path": ".chough/bugs/BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1.json",
+    "status": "verified",
+    "links_final_full_observation": true,
+    "all_observation_links": [
+      "OBS-product-test-2a7d7facc915bcf96b293641",
+      "OBS-product-test-d7d49ea83fedc7d95d30dba1",
+      "OBS-product-test-2f00d25a768981daf5bb6eb0"
+    ]
+  },
+  "protected_parent": {
+    "base": "9bd3d506b86cbb312a5a3e195697cd3138920039",
+    "files": 2602,
+    "expected_parent_paths": 2602,
+    "missing_from_manifest": [],
+    "extra_manifest_paths": [],
+    "changed_or_missing_files": []
+  },
+  "source_hashes": {
+    "src/checkpoint.rs": "b7a0aebc142380a47e38dca540bac9e2d1f17d8efeaf697271a0b92da5abde32",
+    "tests/cli.rs": "76920e63ab71efe4a5a877b317fb426cac2a018409821064bf12303cbbb22a88",
+    "src/history.rs": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8"
+  },
+  "earlier_failed_lane_retained": {
+    "path": ".chough/artifacts/pr51-writer-atomicity/final-verify.log",
+    "sha256": "64fbe5493c339bd1f930b9aa697fc7830c40c18b71ebc0f628b48a99193343d4",
+    "rust_passed": 252,
+    "rust_failed": 0,
+    "audit_tail": "Running task: audit\nAuditing active changes (1)\u2026\nerror: refuse-over-bound-checkpoint-candidates-before-publishing-gate-history: verification evidence is stale for the current commit or contract\n  Next: fix active workspace / living-spec issues above\nerror: Lane 'verify' failed at step 6 (audit) after 2.502s: Task 'audit' failed with exit code 1\n"
+  },
+  "checkpoint": {
+    "stage": {
+      "current": "accept",
+      "status": "active",
+      "callers": [],
+      "iteration": 1
+    },
+    "bytes": 63189,
+    "observation_count": 203,
+    "reference_files": 57,
+    "blockers": [],
+    "awaiting_human": []
+  },
+  "protection_reason": "Every new record is a direct checkpoint file reference; evidence.rs file_references/classify protects its record/artifact set on that named record path, independently of native unavailable fallback.",
+  "limits": [
+    "Local evidence does not establish native implementation review/archive authentication or hosted CI.",
+    "No new human grade, cold-start, release, deployment, adoption or pruning.",
+    "Linux/Windows and MSRV are not established by these macOS local logs."
+  ]
+}

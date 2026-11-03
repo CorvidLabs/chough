@@ -1,0 +1,26 @@
+{
+  "command": [
+    "fledge",
+    "run",
+    "test",
+    "--",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "observation_pointer_bound_is_400_and_other_lists_stay_at_200"
+  ],
+  "exit_code": 1,
+  "duration_seconds": 3.5259859561920166,
+  "sha256_before": {
+    "src/checkpoint.rs": "9a8322dbd392d5bf510d8607d264f8bd785a9b553e2c6259fcb1160cee50e155",
+    "tests/cli.rs": "91f7ca6df1e68caec223976a18bdcaf5b3dcbd320070645f3f2acd4b25a1bb95"
+  },
+  "sha256_after": {
+    "src/checkpoint.rs": "9a8322dbd392d5bf510d8607d264f8bd785a9b553e2c6259fcb1160cee50e155",
+    "tests/cli.rs": "91f7ca6df1e68caec223976a18bdcaf5b3dcbd320070645f3f2acd4b25a1bb95"
+  },
+  "same_inputs_after_run": true,
+  "log": "/tmp/chough51-named-observation-bound-before.log"
+}

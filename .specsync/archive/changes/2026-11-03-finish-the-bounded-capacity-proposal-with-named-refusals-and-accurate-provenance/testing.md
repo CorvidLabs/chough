@@ -1,0 +1,7 @@
+# Final verification
+
+Unchanged focused observation-bound assertion failed before the sole diagnostic repair and passed afterward, with genuine separate source/input/output records and linked local bug. Original archive/proof remains unchanged. That pair becomes historical after accepted PR50 integration; final Fledge9/allRust boundary and imported regressions plus3supported actualMac report cases provide new current proof. Other newly curated bounds/CLI/identity cases retain declared Linux/Windows environments, with genuine hosted qualification required. No Mac result is relabelled.
+
+Current agent-selected provenance, canonical capacity contract and task text settle before final execution. Verify the actual400/401diagnostic requirement,131072exact/overflow inputs and other-record/list/path/symlink/atomic invariants. Independent source review confirms unchanged isolation and preserved parent behavior. Independent metadata audit covers proper3way removals, all old literal proof,28incoming record pins and160whole case tables. Record exact source/case/artifact/env identities, pin each actual new record, and link a fresh final pass to the already reproduced diagnostic bug.
+
+Native check enters verifying before audit coverage. Commit all final records before check--commit and write no Chough record between that and consecutive root review/ship. Hosted success/independent current-head approval precede squash merge. No cold-start/humanPass/release/deployment/pruning claim.

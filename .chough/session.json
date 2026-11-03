@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Finish PR50 against accepted main with a bounded proof-preserving handoff",
+  "objective": "Refuse capacity-overflow checkpoint writes before gate history publication",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "finish-pr50-integration-with-accepted-main-and-preserve-the-bounded-handoff",
+  "native_change": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -32,7 +32,8 @@
       "FLOW-12",
       "LIFE-10",
       "FLOW-3",
-      "LIFE-8"
+      "LIFE-8",
+      "LIFE-11"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -54,7 +55,8 @@
       "REQ-cli-025",
       "REQ-cli-026",
       "REQ-cli-027",
-      "REQ-cli-028"
+      "REQ-cli-028",
+      "REQ-cli-032"
     ],
     "cases": [
       "TC-cli-0101",
@@ -104,13 +106,16 @@
       "TC-cli-history-closing-reset-age",
       "TC-cli-history-stale-receipt-age",
       "TC-cli-history-post-prune-reference",
-      "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
-      "TC-cli-native-next-action-is-not-repeated-in-the-next-line",
       "TC-cli-same-second-runs-in-two-git-roots-stay-distinct",
       "TC-cli-independently-added-records-merge-cleanly",
       "TC-cli-report-case-read-budget",
       "TC-cli-report-read-invalidation",
-      "TC-cli-report-trace-parity"
+      "TC-cli-report-trace-parity",
+      "TC-cli-checkpoint-byte-bound-is-131072",
+      "TC-cli-observation-pointer-bound-is-400",
+      "TC-cli-checkpoint-merge-enforces-the-raised-bounds",
+      "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
+      "TC-cli-native-next-action-is-not-repeated-in-the-next-line"
     ],
     "design": [],
     "files": [
@@ -125,7 +130,6 @@
       "src/skill.rs",
       "tests/package.rs",
       ".specsync/changes/make-native-workflow-stage-references-and-installed-copies-consistent/change.md",
-      ".chough/artifacts/pr50-checkpoint-coordination-index/policy.json",
       ".chough/evidence/tc-cli-0120-1793552331.json",
       ".chough/evidence/tc-cli-0121-1793552334.json",
       ".chough/evidence/tc-cli-0122-1793552336.json",
@@ -152,11 +156,27 @@
       ".chough/evidence/OBS-product-test-c15c11e67b8c42a50a4cf835.json",
       ".chough/artifacts/pr46-checkpoint-reference-index/policy.json",
       ".chough/artifacts/pr46-archive-executor-performance",
+      ".chough/evidence/OBS-product-test-f070b3954a220492de975d64.json",
+      ".chough/evidence/OBS-product-test-19fbf7ce1563d5f4dd78801d.json",
+      ".chough/artifacts/pr50-checkpoint-coordination-index/policy.json",
       ".chough/evidence/OBS-tc-cli-report-case-read-budget-2af9122b4596a360fdf87116.json",
       ".chough/evidence/OBS-tc-cli-report-read-invalidation-6352cd6b7a933e27a28d1bce.json",
       ".chough/evidence/OBS-tc-cli-report-trace-parity-4330cee0bcfefa49971754aa.json",
       ".chough/evidence/OBS-product-test-9d0fec683204719b7d77acc4.json",
-      ".chough/artifacts/pr50-root-qualification/final-freshness-peer.json"
+      ".chough/artifacts/pr50-root-qualification/final-freshness-peer.json",
+      ".chough/evidence/OBS-tc-cli-report-case-read-budget-115b6dcd869d4b061b985d12.json",
+      ".chough/evidence/OBS-tc-cli-report-read-invalidation-e13d4017cd8f17a34782547f.json",
+      ".chough/evidence/OBS-tc-cli-report-trace-parity-f63fb27141834a3f4710be95.json",
+      ".chough/evidence/OBS-product-test-e613f31740235919b76505d7.json",
+      ".chough/artifacts/pr51-root-qualification/final-freshness-peer.json",
+      ".chough/evidence/OBS-product-test-2a7d7facc915bcf96b293641.json",
+      ".chough/artifacts/pr51-writer-atomicity/protected-parent-manifest.json",
+      ".chough/evidence/OBS-product-test-d7d49ea83fedc7d95d30dba1.json",
+      ".chough/evidence/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.json",
+      ".chough/evidence/OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895.json",
+      ".chough/evidence/OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759.json",
+      ".chough/evidence/OBS-product-test-2f00d25a768981daf5bb6eb0.json",
+      ".chough/artifacts/pr51-writer-atomicity/independent-final-evidence-review.json"
     ]
   },
   "decisions": [
@@ -232,18 +252,22 @@
     "agent owner choice: retain the complete PR37 current-cycle group while importing all additive checkpoint/history records, because this branch continues its active bounded-history work. The finish-all instruction authorizes bounded integration and native closeout; merge and live adoption/cleanup remain separate.",
     "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: complete the reviewed PRs, safety repairs, native closeout and current-head qualification under his standing through-PR authority. His later instruction permits resynchronization as merges continue; GitHub merge remains his.",
     "human: 0xLeif explicitly authorized this session to \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02. This supersedes the earlier user-only merge boundary for PRs 37, 44 and 46; current-head approval, all checks and branch protection still apply. No release, deployment, live adoption or cleanup is authorized.",
-    "decided: corvid-agent records native approval, review and ship for PR #50 review fixes, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched)",
-    "decided: implementation review of the PR #50 review-fix change recorded pass as corvid-agent and the change shipped at 41f6fb7, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review of 5b11aae; Leif's own PR #50 approval is still his)",
-    "decided: corvid-agent records native approval, review and ship for the PR #50 evidence fix, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched)",
-    "decided: implementation review of the PR #50 evidence-fix change recorded pass as corvid-agent and the change shipped, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review; Leif's own PR #50 approval is still his)",
-    "Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit \"Merge approved, green PRs and resynchronize\" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates.",
     "human: 0xLeif authorized the ticket changes through PRs in chat on 2026-11-02: \"And I already gave it some approval and told it can do any changes. It just needs a PR.\" This completed #32 definition is covered by that standing scope/implementation authorization. Native implementation acceptance, review/ship and merge remain separate.",
     "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the PR closeout status was presented. This authorizes this session to finish native closeout for PR #46 under the existing through-PR authorization; acting native account is corvid-agent. Merge, release, deployment and live cleanup remain separate.",
     "human source: 0xLeif instructed 'Merge approved, green PRs and resynchronize'; this bounded integration preserves already accepted requirements and proof under standing through-PR authorization, with corvid-agent as the operating actor and root as sole native review/ship writer",
     "agent owner choice: retain24superseded observation records as direct protected file references because202active pointers exceeded200; reviewed policy and raw parents are frozen in pr46-checkpoint-reference-index",
     "Agent corvid-agent applies 0xLeif standing through-PR ticket permission and chat instruction \"Merge approved, green PRs and resynchronize\" to the PR46 archive executor performance fix. All native obligations, validation, 90-second commands and 10-minute job budget stay unchanged. No evidence rewrite, longer timeout, release or deployment is authorized.",
     "Agent corvid-agent records delegated native closeout of the bounded PR46 executor fix under 0xLeif standing through-PR authority and explicit finish/merge instruction. Peer review and local verification are retained. Exact-head GitHub approval and every hosted check still gate merge.",
-    "decided: corvid-agent approves, reviews and ships the #48 main integration, (because 0xLeif's through-PR authorization in #46's archived context and issuecomment-6595229360; scope: integration only; limits: no limit raise, pruning or merge)"
+    "decided: corvid-agent approves, reviews and ships the #48 main integration, (because 0xLeif's through-PR authorization in #46's archived context and issuecomment-6595229360; scope: integration only; limits: no limit raise, pruning or merge)",
+    "decided: raise only the checkpoint byte bound (131072) and the observation pointer bound (400), keeping every other bound, (because Human decision: Leif (0xLeif), chat 2026-11-02 9:40 PM MT: 'Do your agent's cleanup and raise the progress file and test-result limits.' Approvals recorded as corvid-agent under his 2026-11-02 9:14 AM MT instruction 'Use corvid-agent for all approvals for all things!! You are corvid-agent'; limits: no history pruning, no other bound changes)",
+    "Agent corvid-agent root selects the existing131072/400proposal as bounded implementation values under0xLeif standing through-PR permission and latest direct request to finish these PRs and merge. The numbers are agent-selected, not human-specified; ambiguous2is not an approval source. Preserve all other bounds and old proof. New native followup qualifies the diagnostic and current prose; root alone closes it.",
+    "decided: corvid-agent records native approval, review and ship for PR #50 review fixes, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched)",
+    "decided: implementation review of the PR #50 review-fix change recorded pass as corvid-agent and the change shipped at 41f6fb7, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review of 5b11aae; Leif's own PR #50 approval is still his)",
+    "decided: corvid-agent records native approval, review and ship for the PR #50 evidence fix, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched)",
+    "decided: implementation review of the PR #50 evidence-fix change recorded pass as corvid-agent and the change shipped, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review; Leif's own PR #50 approval is still his)",
+    "Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit \"Merge approved, green PRs and resynchronize\" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates.",
+    "Agent corvid-agent root applies actual standing through-PR permission and explicit Merge approved, green PRs and resynchronize plus latest finish-these-PRs request to repair existing REQ-cli-032 atomic refusal. Preserve every old record and bound; no new human as-is grade or numeric choice. Root alone closes this scope.",
+    "Human source: 0xLeif replied \"Yes I approve!\" in chat on 2026-11-03 to the explicit one-scope exception request for PR51: record native review as corvid-agent for refuse-over-bound-checkpoint-candidates-before-publishing-gate-history, immediately ship, then merge after fresh checks pass. This explicitly overrides the automatic reviewer interpretation of the AGENTS.md agent-label rule for this scope only. The acting account stays corvid-agent; no cold-start Pass grade, numeric choice, release, deployment or cleanup approval is inferred."
   ],
   "open_questions": [],
   "completed": [
@@ -325,12 +349,6 @@
     "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.",
     "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved.",
     "Integrated accepted bounded history and agent-operated native workflow at canonical23; all13affected history/authority/ordering cases passed with protected parent proof and both host bundles intact.",
-    "Implemented the six #49 cleanups with tests (bugs, stages, next) and two cases",
-    "SpecSync review (pass) and ship recorded as corvid-agent; change archived; PR #50 open for review",
-    "Exercise work path made absolute with setup markers; regression test tests/cli.rs::exercise_cleanup_handles_a_relative_tmpdir (fails without the fix); case TC-cli-exercise-cleanup-handles-a-relative-tmpdir; corrective agent-assisted OBS-product-test-035959f28aa76d052d48fe78 beside the untouched human-observation record; CHANGELOG",
-    "Native change shipped (archived at 41f6fb7)",
-    "Clean-tree verify at 380acffcc4240c346a789198eea003d7dc90da9a recorded as OBS-product-test-ba63e97a0304049db5437166 with .chough/artifacts/pr-50-clean-verify-380acff.log; old records unchanged",
-    "Native evidence-fix change shipped",
     "Added cfg(test) clock and native-output hooks, the same-second two-root unit test, the real Git integration fixture test, two cases and a CHANGELOG note",
     "SpecSync change reviewed (pass) and finalized as corvid-agent; archived for PR #48",
     "Same-second test passes git plain temporary paths (Windows verbatim path fix)",
@@ -343,7 +361,17 @@
     "Combined source passed 240 tests on each Rust version, nine Fledge steps and 16 cases; the integration is archived.",
     "Main 134ee19 integrated: 3-way checkpoint (197 obs, 37 files), test call fixed, #48 cases rerun",
     "Integration shipped as corvid-agent per #46 through-PR authority; Leif's PR approval still his",
-    "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged."
+    "Checkpoint bound 131072 bytes and observation bound 400 implemented with boundary tests (REQ-cli-032); three focused cases passed",
+    "Implemented the six #49 cleanups with tests (bugs, stages, next) and two cases",
+    "SpecSync review (pass) and ship recorded as corvid-agent; change archived; PR #50 open for review",
+    "Exercise work path made absolute with setup markers; regression test tests/cli.rs::exercise_cleanup_handles_a_relative_tmpdir (fails without the fix); case TC-cli-exercise-cleanup-handles-a-relative-tmpdir; corrective agent-assisted OBS-product-test-035959f28aa76d052d48fe78 beside the untouched human-observation record; CHANGELOG",
+    "Native change shipped (archived at 41f6fb7)",
+    "Clean-tree verify at 380acffcc4240c346a789198eea003d7dc90da9a recorded as OBS-product-test-ba63e97a0304049db5437166 with .chough/artifacts/pr-50-clean-verify-380acff.log; old records unchanged",
+    "Native evidence-fix change shipped",
+    "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged.",
+    "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved.",
+    "PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured.",
+    "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -501,9 +529,6 @@
     "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d92d1fdbd3e9be45faae3948",
     "OBS-product-test-2b032ca5a973b87da8dbf7d4",
     "OBS-product-test-4061f6a2dd934040d1ae3cca",
-    "OBS-human-observation-174caaa1021cfdf5a553f7a3",
-    "OBS-tc-cli-bug-add-accepts-values-that-start-with-two-hyphens-916110763b00ec6ddf3afb73",
-    "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b",
     "OBS-product-test-553ec9b0ffe80fd46a96145d",
     "OBS-product-test-9560e4e56ee93fe64a183f9f",
     "OBS-product-test-ee1f256b0f5ed2fc19c4eddc",
@@ -545,7 +570,13 @@
     "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-0778ba54ff9fb8195049264d",
     "OBS-product-test-aa419d1f9bdc110656237352",
     "OBS-product-test-5d54b74c587c2cbf5bcab49f",
-    "OBS-product-test-eed7c8236164fee33d58226f"
+    "OBS-product-test-eed7c8236164fee33d58226f",
+    "OBS-tc-cli-checkpoint-byte-bound-is-131072-c8dacf9568169583826b2d30",
+    "OBS-tc-cli-observation-pointer-bound-is-400-faf381593527d3c0c4be37b1",
+    "OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2",
+    "OBS-human-observation-174caaa1021cfdf5a553f7a3",
+    "OBS-tc-cli-bug-add-accepts-values-that-start-with-two-hyphens-916110763b00ec6ddf3afb73",
+    "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b"
   ],
   "bugs": [
     "BUG-0001",
@@ -573,10 +604,12 @@
     "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc",
     "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
     "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
-    "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b"
+    "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b",
+    "BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5",
+    "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR50 after final-head independent approval and all hosted checks; user authorized approved-green merges. Capacity51stays separate."
+  "next_action": "Require approval and all hosted checks at the final PR51 head, merge normally, verify actual main, then discuss Chough assessment, interview future priorities one multiple-choice question at a time, and prepare distinct Grok, Claude and Kimi prompts."
 }

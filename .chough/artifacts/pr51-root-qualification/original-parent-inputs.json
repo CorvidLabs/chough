@@ -1,0 +1,12 @@
+{
+  "parent": "dbb66d979e2c34e41926401641d58971c0d65f65",
+  "files": {
+    "CHANGELOG.md": "d0f1f873faf156359a4855f56f389b41d0c990656bec9ece009053e5b40f33fa",
+    "hi/life.md": "9f2cb7571e24ec58a1292f650663042c12b131d13464bd11f1aa01c24e273480",
+    "specs/cli/context.md": "b750765447b737c873645ab5b685e92f08e6ee4ba1bc1bf93dc73e6676e9ae87",
+    "specs/cli/requirements.md": "c55cd5deefbcdbcfb25086686d60f4c2e1ce8ad185539ea683b5995f4e291e72",
+    "src/checkpoint.rs": "9a8322dbd392d5bf510d8607d264f8bd785a9b553e2c6259fcb1160cee50e155",
+    "tests/cli.rs": "8627087ce6bc3bf37c7602bbb63af71351adc1ca61a9066fc760ab3aa6dff356"
+  },
+  "authority": "0xLeif standing through-PR authority and latest direct request to finish these PRs and merge;131072/400are agent-selected implementation values, not human-specified numbers."
+}

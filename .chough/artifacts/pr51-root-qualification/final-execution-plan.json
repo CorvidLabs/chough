@@ -1,0 +1,13 @@
+{
+  "environment": "local-macos-arm64",
+  "full_lane": "Fledge verify9, including all Rust boundary and imported CLI/identity regressions",
+  "formal_mac_cases": [
+    "TC-cli-report-case-read-budget",
+    "TC-cli-report-read-invalidation",
+    "TC-cli-report-trace-parity"
+  ],
+  "declared_linux_windows_cases": "Actual final hosted platform jobs qualify those unchanged case bindings; no environment relabelling.",
+  "values": "131072checkpoint bytes/400observation pointers are agent-selected implementation values; generic records65536,otherlists200,capture1MiB/historyunchanged.",
+  "main_input": "5568e5ed64ab947ce31a67cfa935de5b48fc7c6c",
+  "source_and_task_text_settled_before_final_execution": true
+}

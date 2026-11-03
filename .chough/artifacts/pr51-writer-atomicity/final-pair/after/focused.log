@@ -1,0 +1,13 @@
+▶️ Running task: test
+   Compiling chough v0.1.0 (/private/tmp/chough-pr51-finish-SLSKxX)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.48s
+     Running tests/cli.rs (target/debug/deps/cli-f87db1c6230f0e78)
+
+running 3 tests
+test checkpoint_writer_observation_overflow_preserves_all_managed_records ... ok
+test checkpoint_writer_byte_overflow_preserves_all_managed_records ... ok
+test checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 30 filtered out; finished in 0.74s
+
+✅ test (2.3s)

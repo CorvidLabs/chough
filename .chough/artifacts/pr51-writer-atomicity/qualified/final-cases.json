@@ -1,0 +1,53 @@
+[
+  {
+    "case": "TC-cli-report-case-read-budget",
+    "id": "OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd",
+    "path": ".chough/evidence/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.json",
+    "snapshot": {
+      "revision": "98a86bc14609c1c4cb68699b41ca9fa24665943b",
+      "dirty": true,
+      "fingerprint": "5df407f7a6437482f7fa4bd46eaedbf1392dbc009195ba417ea340dc1241458a",
+      "content": "927abca849c738bbbd1dbc1f4065676128a1532164dc1fd295cb40ecc49f394d"
+    },
+    "bindings": [
+      {
+        "id": "TC-cli-report-case-read-budget",
+        "digest": "bfe5d7b3061d185ecb2f5261f08a996819c2ba71fabbfd07e55eca33a87e3270"
+      }
+    ]
+  },
+  {
+    "case": "TC-cli-report-read-invalidation",
+    "id": "OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895",
+    "path": ".chough/evidence/OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895.json",
+    "snapshot": {
+      "revision": "98a86bc14609c1c4cb68699b41ca9fa24665943b",
+      "dirty": true,
+      "fingerprint": "5df407f7a6437482f7fa4bd46eaedbf1392dbc009195ba417ea340dc1241458a",
+      "content": "927abca849c738bbbd1dbc1f4065676128a1532164dc1fd295cb40ecc49f394d"
+    },
+    "bindings": [
+      {
+        "id": "TC-cli-report-read-invalidation",
+        "digest": "8d5bf4ed3ccf2d7c70dbb6c0ec89ca43a7778cf446cb958065c2ae4d8f688825"
+      }
+    ]
+  },
+  {
+    "case": "TC-cli-report-trace-parity",
+    "id": "OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759",
+    "path": ".chough/evidence/OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759.json",
+    "snapshot": {
+      "revision": "98a86bc14609c1c4cb68699b41ca9fa24665943b",
+      "dirty": true,
+      "fingerprint": "5df407f7a6437482f7fa4bd46eaedbf1392dbc009195ba417ea340dc1241458a",
+      "content": "927abca849c738bbbd1dbc1f4065676128a1532164dc1fd295cb40ecc49f394d"
+    },
+    "bindings": [
+      {
+        "id": "TC-cli-report-trace-parity",
+        "digest": "209338fdf963de963a1dece6932e22084a8fefaa47b59b8159b0949edd533591"
+      }
+    ]
+  }
+]

@@ -1,0 +1,51 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793684426,
+      "digest": "f6743177b599b074ddfb0ecf572f58f04d7fe6603206d92eddd082db6ab9fb78",
+      "note": "Actual human authority:0xLeif standing through-PR permission, explicit approved-green merge/resynchronize instruction, and latest direct request to finish these PRs and merge. Root retains the implemented131072/400proposal as agent-selected engineering values within the capacity goal, not human-specified numbers. Covered scope:named diagnostic/test, current provenance followup and accepted PR50 integration. Preserve every old archive/record and all other bounds; no release/deployment/forcedGit.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "finish-the-bounded-capacity-proposal-with-named-refusals-and-accurate-provenance",
+        "title": "Finish the bounded capacity proposal with named refusals and accurate provenance",
+        "description": "Finish the bounded capacity proposal with named refusals and accurate provenance",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "hi/life.md",
+          "specs/cli/context.md",
+          "specs/cli/requirements.md",
+          "src/checkpoint.rs",
+          "tests/cli.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Keep the existing proposal's131072checkpoint/400observation implementation values as agent-selected under the authorized capacity goal, satisfy its existing named-bound diagnostic requirement, and qualify current provenance text through a fresh native followup without rewriting any prior archive. No new capacity choice or other bound change.",
+        "acceptance_criteria": [
+          "The401-observation refusal explicitly names400 and preserves record bytes; strengthened test fails before repair and passes afterward unchanged. Current HI/contract/context/changelog accurately separate the actual human capacity goal and finish-through-PR instruction from the agent-selected131072/400values. Existing checkpoint-only/list-only isolation and all other bounds/path/symlink/atomic protections remain. Fresh final-source verification covers post-archive provenance edits, and every old record/archive stays byte-exact. Independent review and all exact-head checks precede authorized merge. Import final accepted PR50 before final committed qualification."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "No old archive/evidence edits, no invented human numeric approval or cold-start grade, no budget/output/history/otherrecord/list limit increases, no force/rebase, no release/deployment. Root owns native/checkpoint/evidence/review/ship; worker owns only assigned source/test edits. Prior ambiguous2is not an approval source.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793686441,
+      "digest": "069642daf7debec3e98d83caa25ad2e562b9543195e0d7b19aaec0cfa583a742",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

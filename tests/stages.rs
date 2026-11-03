@@ -1979,11 +1979,23 @@ fn checkpoint_merge_enforces_input_collection_and_output_byte_bounds() {
     let fixture = Fixture::new();
     fixture.init();
     let valid = merge_json(&merge_base());
-    let oversized = format!("{}{}", valid, " ".repeat(65_536));
+    let oversized = format!("{}{}", valid, " ".repeat(131_072));
     for position in 0..3 {
         let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
         inputs[position] = oversized.clone();
-        assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "65536");
+        assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "131072");
+    }
+    let exact = format!("{}{}", valid, " ".repeat(131_072 - valid.len()));
+    assert_eq!(exact.len(), 131_072);
+    for position in 0..3 {
+        let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
+        inputs[position] = exact.clone();
+        let output = run_merge_text(&fixture, &inputs[0], &inputs[1], &inputs[2]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
     }
 
     let base = merge_base();
@@ -2009,20 +2021,44 @@ fn checkpoint_merge_enforces_input_collection_and_output_byte_bounds() {
 
     ours["decisions"] = json!(
         (0..100)
-            .map(|index| format!("ours-{index}-{}", "o".repeat(320)))
+            .map(|index| format!("ours-{index}-{}", "o".repeat(680)))
             .collect::<Vec<_>>()
     );
     theirs["decisions"] = json!(
         (0..100)
-            .map(|index| format!("theirs-{index}-{}", "t".repeat(320)))
+            .map(|index| format!("theirs-{index}-{}", "t".repeat(680)))
             .collect::<Vec<_>>()
     );
+    assert!(merge_json(&ours).len() <= 131_072);
+    assert!(merge_json(&theirs).len() <= 131_072);
     assert_merge_refusal(
         &fixture,
         &merge_json(&base),
         &merge_json(&ours),
         &merge_json(&theirs),
-        "65536",
+        "131072",
+    );
+
+    let observations = |side: &str, count: usize| {
+        json!(
+            (0..count)
+                .map(|index| format!("OBS-{side}-{index:03}"))
+                .collect::<Vec<_>>()
+        )
+    };
+    let mut ours_obs = base.clone();
+    let mut theirs_obs = base.clone();
+    ours_obs["observations"] = observations("ours", 200);
+    theirs_obs["observations"] = observations("theirs", 200);
+    let merged = assert_merge_ok(&fixture, &base, &ours_obs, &theirs_obs);
+    assert_eq!(merged["observations"].as_array().unwrap().len(), 400);
+    theirs_obs["observations"] = observations("theirs", 201);
+    assert_merge_refusal(
+        &fixture,
+        &merge_json(&base),
+        &merge_json(&ours_obs),
+        &merge_json(&theirs_obs),
+        "too many observation",
     );
 
     ours["decisions"] = json!(

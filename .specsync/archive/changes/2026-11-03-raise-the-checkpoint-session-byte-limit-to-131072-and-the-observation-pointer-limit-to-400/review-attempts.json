@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "ac57e4c2338a793b85c3eaad8ea3154446ac296f",
+      "contract_digest": "2ec4469979fde9664dc54dfd9b3299a16b05ca1e04722d0ed2e595c3b9069a60",
+      "execution_digest": "9e5803a93dcf26db3c56f1fd50921cab578c35e82e0712714b80143441e070bb",
+      "workspace_digest": "853c2e8b02dc9d99a0150c9f1a8053e9c80f4d7787b8890fcd3ddc2e84a581dc",
+      "timestamp": 1793681361
+    }
+  ]
+}

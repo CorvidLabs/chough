@@ -2876,3 +2876,57 @@ expected = ["tests/cases.rs::independently_added_records_merge_without_conflict_
 adapter = "cargo-test"
 test_target = "cases"
 test = "independently_added_records_merge_without_conflict_or_replacement"
+
+[[case]]
+id = "TC-cli-checkpoint-byte-bound-is-131072"
+title = "A checkpoint of exactly 131072 bytes is read and one byte more is refused naming the bound"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-11", "LIFE-3"]
+requirements = ["REQ-cli-032"]
+paths = ["src/checkpoint.rs", "src/records.rs", "src/main.rs", "tests/cli.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::checkpoint_byte_bound_is_exactly_131072 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "checkpoint_byte_bound_is_exactly_131072"
+
+[[case]]
+id = "TC-cli-observation-pointer-bound-is-400"
+title = "The checkpoint keeps 400 observation pointers, refuses 401 and keeps other lists at 200"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-11", "LIFE-3"]
+requirements = ["REQ-cli-032"]
+paths = ["src/checkpoint.rs", "tests/cli.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::observation_pointer_bound_is_400_and_other_lists_stay_at_200 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "observation_pointer_bound_is_400_and_other_lists_stay_at_200"
+
+[[case]]
+id = "TC-cli-checkpoint-merge-enforces-the-raised-bounds"
+title = "Checkpoint merge accepts inputs at 131072 bytes and 400 merged observations and refuses one over either bound"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-11", "FLOW-13"]
+requirements = ["REQ-cli-032", "REQ-cli-007"]
+paths = ["src/checkpoint.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::checkpoint_merge_enforces_input_collection_and_output_byte_bounds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "checkpoint_merge_enforces_input_collection_and_output_byte_bounds"

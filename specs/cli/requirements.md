@@ -77,7 +77,7 @@ Acceptance Criteria
 - For a collection with base `[a, b, c]`, ours `[a, b, d, e]` and theirs `[b, c, d, f]`, the merged collection is `[b, d, e, f]`: the one-side removals of `a` and `c` survive, the shared addition `d` appears once, and base, ours and theirs ordering is preserved. The same rule passes for every history and reference collection named above.
 - Selecting base, one changed side or identical current-cycle groups produces that complete group. Differently changed groups refuse even when their edited fields do not overlap, and the diagnostic names the current-cycle conflict.
 - A successful explicit merge changes only ours, while base and theirs remain byte-identical. Every conflict or validation refusal leaves base, ours and theirs byte-identical and creates no checkpoint, transition, gate, consent, approval, review or other record.
-- Schema 1 in any position, mixed schema versions, malformed JSON or record content, unknown fields, unsupported versions and a result exceeding an existing item, caller or 65536-byte checkpoint bound fail closed.
+- Schema 1 in any position, mixed schema versions, malformed JSON or record content, unknown fields, unsupported versions and a result exceeding an existing item, caller or 131072-byte checkpoint bound fail closed.
 - A real Git fixture using the `.gitattributes` declaration and documented per-clone driver automatically merges compatible checkpoint edits and leaves a conflicting current-cycle merge unresolved with a nonzero driver result. Init leaves Git configuration byte-identical, and the explicit command performs the same compatible merge without driver configuration.
 - Real Git evidence first records the pre-implementation conflicting checkpoint merge failure and links it to a local bug, then records a strictly later pass after implementation. The evidence uses explicit readable IDs without allocating a new case number, and all non-checkpoint ID schemes remain unchanged.
 
@@ -349,3 +349,13 @@ Acceptance Criteria
 - With SpecSync configured and `.specsync/sdd.json` absent or `enabled: false`, `chough next` (JSON and text) shows the adopt hint on the approved-delta line, and the `ungated:sdd-disabled` gate detail in `next` and `status` names `specsync change adopt`.
 - Without a SpecSync configuration the line stays `not checked: no native lifecycle` with no hint, and an invalid policy still reads `not checked: SDD policy invalid` with no hint.
 - The walkthrough begins with the new-project setup path.
+
+### REQ-cli-032
+
+Checkpoint capacity. The helper SHALL bound the canonical checkpoint `.chough/session.json` at 131,072 bytes when it reads, validates, initializes, writes or merges it, including every `checkpoint --merge` input and the merged result, and SHALL bound its `observations` list at 400 entries. Every other checkpoint list SHALL keep its 200-item bound, and every other structured record, managed file, history event, case file, captured output and context section SHALL keep its existing bound. A checkpoint or observations list over its bound SHALL be refused with a message naming the bound, leaving every record byte-identical. Human decision: Leif (0xLeif), 2026-11-02 9:40 PM MT, approved raising the limits: "Do your agent's cleanup and raise the progress file and test-result limits." The values 131,072 bytes and 400 observation pointers are agent-selected implementation choices under that capacity goal, standing through-PR authority and the later direct instruction to finish these PRs and merge. They double the original bounded capacities and are not numbers specified by the human. "Test-result limits" means the `observations` pointer bound; the 1 MiB captured-output bound is unchanged. Trace: LIFE-11, LIFE-3, FLOW-13.
+
+Acceptance Criteria
+- A checkpoint of exactly 131,072 bytes is read and validated; one of 131,073 bytes is refused by `context`, by `checkpoint --merge` in each input position and as a merged result, with a message naming 131072, and every input stays byte-identical.
+- A checkpoint with 400 observation pointers validates and one with 401 is refused; a list other than `observations` with 201 entries is still refused.
+- A structured record other than the checkpoint over 65,536 bytes is still refused.
+

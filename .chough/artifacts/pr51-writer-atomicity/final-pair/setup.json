@@ -1,0 +1,39 @@
+{
+  "head": "15a3b2ebd7df287615f6fbf171d547732a334d60",
+  "tool_versions": {
+    "rustc": {
+      "resolved": "/Users/leif/.cargo/bin/rustc",
+      "version": "rustc 1.95.0 (59807616e 2026-04-14)"
+    },
+    "cargo": {
+      "resolved": "/Users/leif/.cargo/bin/cargo",
+      "version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)"
+    },
+    "clippy": {
+      "resolved": "/Users/leif/.cargo/bin/cargo",
+      "version": "clippy 0.1.95 (59807616e1 2026-04-14)"
+    },
+    "fledge": {
+      "resolved": "/Users/leif/.cargo/bin/fledge",
+      "version": "fledge 1.8.0"
+    }
+  },
+  "PATH_prefix": "/Users/leif/.cargo/bin",
+  "focused_argv": [
+    "fledge",
+    "run",
+    "test",
+    "--",
+    "--locked",
+    "--test",
+    "cli",
+    "checkpoint_writer_",
+    "--",
+    "--nocapture"
+  ],
+  "final_test_sha256": "76920e63ab71efe4a5a877b317fb426cac2a018409821064bf12303cbbb22a88",
+  "history_sha256": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+  "red_source_sha256": "f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750",
+  "green_source_sha256": "b7a0aebc142380a47e38dca540bac9e2d1f17d8efeaf697271a0b92da5abde32",
+  "phases": []
+}

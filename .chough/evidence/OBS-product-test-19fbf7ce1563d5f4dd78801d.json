@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-19fbf7ce1563d5f4dd78801d",
+  "criteria": [
+    "LIFE-11"
+  ],
+  "requirements": [
+    "REQ-cli-032"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Paired diagnostic regression: the SAME unchanged assertion now passes after the sole ensure_ids message repair. Actual refusal names limit400. Focused Fledge/Cargo exits0,1passed,0failed/ignored,28filtered; fmt/check/lint pass. Limits, path validation and atomic behavior are unchanged.",
+  "artifacts": [
+    ".chough/artifacts/pr51-root-qualification/named-bound-after.log",
+    ".chough/artifacts/pr51-root-qualification/named-bound-after.json",
+    ".chough/artifacts/pr51-root-qualification/repair-quality.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr51-root-qualification/named-bound-after.json": "5d4680b86c6b03879f3347b98eb43f5c832dfec65a8d650ebbdf693a821b2564",
+    ".chough/artifacts/pr51-root-qualification/named-bound-after.log": "c97065b518c01aa511f4248613f1917d11e7f9880128764761492891257651a7",
+    ".chough/artifacts/pr51-root-qualification/repair-quality.json": "3614ec1896f6628c5c8a2d3109a3047f49b15322fc8b52ceda37f089d48b2667"
+  },
+  "observed_at_unix_seconds": 1793685022,
+  "snapshot": {
+    "revision": "6822becf356d130bb3a2b6ac41c07eef8448eaba",
+    "dirty": true,
+    "fingerprint": "a3accb860b6ed7229394f1485ac4e2d506ce1922fc14abf8df7d2586e9aced5f",
+    "content": "f3c5c91b415e68a74818c19004716aadd86b3483b5bf638f0f0baf8bc40dcf8b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Focused genuine Mac pass, not the final integrated full-suite/hosted qualification. The earlier failed record and source are preserved at6822bec."
+  ]
+}

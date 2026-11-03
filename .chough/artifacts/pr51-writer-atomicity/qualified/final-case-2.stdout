@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-report-read-invalidation",
+  "observation": "OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test next -- --exact report_read_context_does_not_survive_the_next_request for TC-cli-report-read-invalidation: passed (exit 0, tests run 1)."
+}

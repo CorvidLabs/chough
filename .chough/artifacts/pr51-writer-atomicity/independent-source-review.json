@@ -1,0 +1,127 @@
+{
+  "reviewed_worktree": "/tmp/chough-pr51-finish-SLSKxX",
+  "base": "9bd3d506b86cbb312a5a3e195697cd3138920039",
+  "red_test_commit": "15a3b2ebd7df287615f6fbf171d547732a334d60",
+  "scope": "gate-event checkpoint capacity preflight source and regression tests",
+  "findings": [],
+  "tests_rerun": false,
+  "repo_or_native_edits": false,
+  "source_changed_vs_base": [
+    "src/checkpoint.rs"
+  ],
+  "tests_changed_vs_base": [
+    "tests/cli.rs"
+  ],
+  "production_diff_vs_red": "diff --git a/src/checkpoint.rs b/src/checkpoint.rs\nindex 47334d4..9519e60 100644\n--- a/src/checkpoint.rs\n+++ b/src/checkpoint.rs\n@@ -345,12 +345,21 @@ pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {\n     }\n }\n \n-pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {\n+fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {\n     validate_v2(session)?;\n+    let content = serde_json::to_string_pretty(session)? + \"\\n\";\n+    ensure!(\n+        content.len() as u64 <= SESSION_LIMIT,\n+        \"session exceeds {SESSION_LIMIT} bytes\"\n+    );\n+    Ok(content)\n+}\n+\n+pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {\n     write_replace_bounded(\n         root,\n         SESSION,\n-        &(serde_json::to_string_pretty(session)? + \"\\n\"),\n+        &serialize_checkpoint(session)?,\n         SESSION_LIMIT,\n     )\n }\n@@ -754,6 +763,17 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()\n             .filter(|gate| !open_before_additions.contains(gate))\n             .cloned()\n             .collect();\n+        let mut candidate = session.clone();\n+        if (!cleared.is_empty() || !opened.is_empty())\n+            && let Some(cursor) = candidate.history_cursor.as_mut()\n+            && cursor.head.is_none()\n+        {\n+            // Every gate event keeps the cycle and leaves a fixed-width head.\n+            // Size the final cursor before publishing any events; this ID is\n+            // only a serialization placeholder and is never allocated or saved.\n+            cursor.head = Some(\"EVT-000000000000000000000000\".into());\n+        }\n+        serialize_checkpoint(&candidate)?;\n         if session.history_cursor.is_some() {\n             for gate in &cleared {\n                 stage::log_gate(root, &mut session, stage::GATE_CLOSED, &current_stage, gate)?;\n",
+  "history_source_unchanged": true,
+  "reasoning": [
+    "The finalized candidate is cloned only after all clear/add/dedup operations and validated before any log_gate call.",
+    "Shared serialization validates all structure/list/compact limits and actual pretty JSON plus newline bytes used by the real save.",
+    "A valid fixed-width placeholder head is projected only if at least one pending close/open event exists and the immutable-history head was null. It adds exactly 26 serialized bytes and is never allocated, published or saved.",
+    "Existing selected heads have the same 28-byte shape as every real EVT ID; multiple events do not expand final checkpoint size further.",
+    "No-event null-head exact-capacity writes remain accepted; legacy cursor-free saves remain before legacy logging with no cursor or adoption added.",
+    "Clear events precede open events, including clearing and reopening the same gate. Actual event parent links and identities are unchanged.",
+    "No new all-or-nothing policy is claimed for subsequent I/O failures, storage-capacity refusals or identity collisions."
+  ],
+  "regression_quality": [
+    "All .chough record file paths and bytes are compared on refusal, including retained migration backup and artifact bytes.",
+    "400-to-401 observation update plus multiple close/open gates covers empty, selected and legacy histories.",
+    "Compact-valid but pretty-overflow candidates cover empty, selected and legacy histories.",
+    "Null-head exact-bound no-event success prevents an over-conservative placeholder check.",
+    "131072 final bytes succeed and reconstruct all four ordered gate events; 131073 final bytes refuse without record changes."
+  ],
+  "status": "clean scoped source and regression review",
+  "sha256": {
+    "src/checkpoint.rs": "b7a0aebc142380a47e38dca540bac9e2d1f17d8efeaf697271a0b92da5abde32",
+    "src/history.rs": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+    "tests/cli.rs": "76920e63ab71efe4a5a877b317fb426cac2a018409821064bf12303cbbb22a88"
+  },
+  "final_test_arithmetic_change": "Only an explicit initial_bytes local replaces the inline identical arithmetic/predicate. No lint allow; no assertion change.",
+  "final_exact_byte_pair": {
+    "proof_directory": "/tmp/chough51-checkpoint-writer-final-j7i61n21",
+    "red_inputs": {
+      "src/checkpoint.rs": "f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750",
+      "src/history.rs": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+      "tests/cli.rs": "76920e63ab71efe4a5a877b317fb426cac2a018409821064bf12303cbbb22a88"
+    },
+    "green_inputs": {
+      "src/checkpoint.rs": "b7a0aebc142380a47e38dca540bac9e2d1f17d8efeaf697271a0b92da5abde32",
+      "src/history.rs": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+      "tests/cli.rs": "76920e63ab71efe4a5a877b317fb426cac2a018409821064bf12303cbbb22a88"
+    },
+    "tests_identical_red_green": true,
+    "history_identical_red_green": true,
+    "live_matches_green": true,
+    "red_result": {
+      "passed": 0,
+      "failed": 3,
+      "ignored": 0,
+      "filtered": 30
+    },
+    "green_result": {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 30
+    },
+    "tool_versions": {
+      "rustc": {
+        "resolved": "/Users/leif/.cargo/bin/rustc",
+        "version": "rustc 1.95.0 (59807616e 2026-04-14)"
+      },
+      "cargo": {
+        "resolved": "/Users/leif/.cargo/bin/cargo",
+        "version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)"
+      },
+      "clippy": {
+        "resolved": "/Users/leif/.cargo/bin/cargo",
+        "version": "clippy 0.1.95 (59807616e1 2026-04-14)"
+      },
+      "fledge": {
+        "resolved": "/Users/leif/.cargo/bin/fledge",
+        "version": "fledge 1.8.0"
+      }
+    },
+    "phase_log_checks": [
+      {
+        "phase": "before",
+        "name": "focused",
+        "log_sha256_matches": true,
+        "exit_code": 1
+      },
+      {
+        "phase": "after",
+        "name": "focused",
+        "log_sha256_matches": true,
+        "exit_code": 0
+      },
+      {
+        "phase": "after",
+        "name": "fmt",
+        "log_sha256_matches": true,
+        "exit_code": 0
+      },
+      {
+        "phase": "after",
+        "name": "check",
+        "log_sha256_matches": true,
+        "exit_code": 0
+      },
+      {
+        "phase": "after",
+        "name": "lint",
+        "log_sha256_matches": true,
+        "exit_code": 0
+      }
+    ]
+  },
+  "protected_parent_check": {
+    "base": "9bd3d506b86cbb312a5a3e195697cd3138920039",
+    "manifest_files": 2602,
+    "actual_parent_protected_paths": 2602,
+    "manifest_missing_paths": [],
+    "manifest_extra_paths": [],
+    "live_changed_or_missing": []
+  },
+  "remaining_qualification": "Root final full-suite, actual Mac cases, final-source freshness and native/hosted qualification are outside this source-review result and remain to be inspected after settled execution."
+}

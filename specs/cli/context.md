@@ -144,6 +144,8 @@ each could not be built, and the tested fixture fills the bound instead. Source:
 choice. Limits: checkpoint-backed lists. Future use: check record-size bounds when
 writing a criterion's fixture, before approval.
 
+2026-11-02, checkpoint capacity (agent implementation decision): Leif's qualitative direction was "Do your agent's cleanup and raise the progress file and test-result limits." The later direct instruction was to finish these PRs and merge. Under that standing through-PR authority, root selects the existing proposal of131072checkpoint bytes and400observation pointers as bounded engineering values; these are not human-specified numbers. All other record/list/output/history bounds remain unchanged. PR50cleanup fits the old bounds and is separate. Preserve the original capacity archive and qualify final diagnostic/provenance bytes through the fresh followup; this records no new human Pass grade or numeric quote.
+
 2026-11-01, closeout order (verified): SpecSync 6.1.2 `change check` refuses while the
 closeout box is open, so closeout runs before the scoped check and is extended, not
 reopened, after later runs. Source: this change's first scoped check. Limits: changes
@@ -297,3 +299,16 @@ each normalized cycle occurrence once; only occurrences inside known exact file
 paths are file-specific. Check both pre-prune protection and post-prune
 availability, including partial restoration. Limits: disposable local fixtures;
 no live proof was removed and external path grammars remain outside this proof.
+
+2026-11-03, checkpoint refusal publication order (observation): writer-level
+regressions reproduced four orphan gate events after a rejected capacity update,
+while the saved checkpoint stayed unchanged. Source:
+OBS-product-test-2a7d7facc915bcf96b293641 and
+BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1,
+with stable tests and unchanged production source frozen in
+.chough/artifacts/pr51-writer-atomicity/before/. Future use: validate the complete
+serialized candidate before publishing side records, including the 26-byte growth
+from a null history head to its first fixed-width event ID. Test every managed
+record path and byte, exact-bound success and multiple clear/open gates. Limits:
+disposable macOS fixtures; this finding does not establish transactionality for
+later I/O errors, ID collisions or cycle-storage capacity failures.

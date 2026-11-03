@@ -280,3 +280,15 @@ REQ-cli-025 to REQ-cli-027 are exercised by the following curated automated case
 | TC-cli-retention-revalidation | Changed, missing and newly referenced evidence/artifacts are retained |
 
 The full Rust suites add unknown legacy payloads, migration, random/collision refusal, failed checkpoint saves and orphan visibility, unsafe/malformed receipts, interrupted cleanup/resume, separate timing tips, and real Git retention alongside another branch's new proof. Package regressions independently hash the prior checkpoint reference and preserve owner edits during skill updates. The mandatory Fledge verify lane also checks existing behavior, native structure, traceability and the real CLI exercise. Observations and current IDs live in the Chough checkpoint and evidence records; this plan does not invent a passing grade or hosted result. No cold-start rerun, real-project adoption or live cleanup is part of this qualification.
+
+## Checkpoint writer capacity refusals
+
+REQ-cli-032 writer regressions in tests/cli.rs exercise observation overflow,
+pretty-serialized byte overflow and the first history head's serialized growth.
+They snapshot every managed record and retain exact-bound successful controls,
+clear-before-open gate order, selected history and legacy cursor-free behavior.
+Run with `fledge run test -- --locked --test cli checkpoint_writer_ -- --nocapture`.
+The immutable failure-first inputs and logs are under
+.chough/artifacts/pr51-writer-atomicity/before/. Later executions and their actual
+source identities are separate observations in that followup's qualification
+package; they never restamp the original failure or historical archive.

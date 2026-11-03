@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-report-case-read-budget",
+  "observation": "OBS-tc-cli-report-case-read-budget-115b6dcd869d4b061b985d12",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test next -- --exact report_case_reads_are_shared_across_observations_and_references for TC-cli-report-case-read-budget: passed (exit 0, tests run 1)."
+}

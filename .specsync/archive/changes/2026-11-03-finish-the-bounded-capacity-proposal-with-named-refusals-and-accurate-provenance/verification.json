@@ -1,0 +1,122 @@
+{
+  "timestamp": 1793686408,
+  "commit": "5e90711d684049095ef34bbd9e13601cdd0393e1",
+  "contract_digest": "f6743177b599b074ddfb0ecf572f58f04d7fe6603206d92eddd082db6ab9fb78",
+  "execution_digest": "e11122e2bb69ac8b6de79926d2a6b11bd8d3f3144f6cb58106adb5394356664e",
+  "workspace_digest": "512ea553510c2f1890cc093aa4f089fbb0525f1aabe01384b65d2846ae10ccd8",
+  "acceptance_input_digest": "cfe9cda8b67893f3dfae07192e5db0d77278569b7fae12a68c1717cfdade36a6",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "daf396bd84f41cc3baac5e4d4c080e37e5a52945d49804ec3967ea7113d8c541",
+        "entry_digest": "94c2fbfaa936b667b8fcb001f603af5672c58c130c2e2c370800f3d6ec3c98a0",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/cli.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "dba9f9f7b1ab6e3dc8627a503f1fc50e11756d1bb90cdff5a6a0d1c9f3e7b94e",
+        "entry_digest": "f6a4a56cbef1395838dcdf127e79e9b14c505b1a05c9193807997daf407ae5d6",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "hi/life.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7e05a74bc8640013211fb3ad7fa72e8049c6fd31b3026df15e29f7dc7a02aa13",
+        "entry_digest": "4dde3133a454469e2b35e6c5d661a9e1cc8a593b21382a6c851cb12ddee3cf86",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "43531412cb044701a7548f2aad36ece97a39e54b0f268e2154ce3290c2901283",
+        "entry_digest": "089afd897506e3537d92d18574ffb59485e9c042100aa43c8191cde99eeb9cb6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c97b1d8d714868f2f9da0e0aa2506d5f3fc71ccf696b8a234f36edb36f1a174d",
+        "entry_digest": "d14265a0b1fadc2d045ac177bd2ad21891fbd685d5c33c84be6be5793b67f610",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3433babdf018a738ef0235ec72ae9a45692373704171ce72c0efb50539fade93",
+        "entry_digest": "7a04da01d9db3b599d615f135aa4e4b9e08192bc39fea3fc122bc31997767429",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b985579a811edb2a6bc0e0c910b3f740ecddbe3c9bbe13889df3189be5cbcf71",
+        "entry_digest": "f443b79834aa52dc9bf3ae6c1b2ab31250d78580365f5f65241823cb752e1d0e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "bb65a0e3622e0d0a63945e99e292e45f35474d3b882c24e111e3df13c0f2aa33",
+        "entry_digest": "7ef0505f6d31839c68c071c973e269723708fa8fc1b9f93dc92bc142f1b781f3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/checkpoint.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750",
+        "entry_digest": "cc3212aa1b669b195215b96675fe5e7fadef6d72f798090e3dd36aad57e51ef4",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/cli.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b01a09e83d93c7c8fc9099aa33f50bced40b351f73062652b244cf08d485eb82",
+        "entry_digest": "8654001ed162a88427c71a5bf1da114762ca6193592695a5fb73ec52de8e6f6f",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

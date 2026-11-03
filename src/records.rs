@@ -200,9 +200,19 @@ pub(super) fn local_path(root: &Path, relative: &str) -> Result<PathBuf> {
 
 /// Create a file only when it does not exist; returns false when it was preserved.
 pub(super) fn write_new(root: &Path, relative: &str, content: &str) -> Result<bool> {
+    write_new_bounded(root, relative, content, RECORD_LIMIT)
+}
+
+/// Create a file only when it does not exist, within an explicit byte bound.
+pub(super) fn write_new_bounded(
+    root: &Path,
+    relative: &str,
+    content: &str,
+    limit: u64,
+) -> Result<bool> {
     ensure!(
-        content.len() as u64 <= RECORD_LIMIT,
-        "managed file exceeds 65536 bytes: {relative}"
+        content.len() as u64 <= limit,
+        "managed file exceeds {limit} bytes: {relative}"
     );
     write_new_bytes(root, relative, content.as_bytes())
 }
@@ -226,9 +236,19 @@ pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Re
 
 /// Replace a managed record atomically: write a sibling temporary file, then rename.
 pub(super) fn write_replace(root: &Path, relative: &str, content: &str) -> Result<()> {
+    write_replace_bounded(root, relative, content, RECORD_LIMIT)
+}
+
+/// Replace a managed record atomically within an explicit byte bound.
+pub(super) fn write_replace_bounded(
+    root: &Path,
+    relative: &str,
+    content: &str,
+    limit: u64,
+) -> Result<()> {
     ensure!(
-        content.len() as u64 <= RECORD_LIMIT,
-        "managed file exceeds 65536 bytes: {relative}"
+        content.len() as u64 <= limit,
+        "managed file exceeds {limit} bytes: {relative}"
     );
     let path = local_path(root, relative)?;
     if path.exists() {
@@ -355,12 +375,17 @@ pub(super) fn read_log_full(path: &Path, limit: u64) -> Result<FullLog> {
 }
 
 pub(super) fn read_record(path: &Path) -> Result<String> {
+    read_bounded_record(path, RECORD_LIMIT)
+}
+
+/// Read a structured record within an explicit byte bound.
+pub(super) fn read_bounded_record(path: &Path, limit: u64) -> Result<String> {
     let file = File::open(path)?;
     let mut content = String::new();
-    file.take(RECORD_LIMIT + 1).read_to_string(&mut content)?;
+    file.take(limit + 1).read_to_string(&mut content)?;
     ensure!(
-        content.len() as u64 <= RECORD_LIMIT,
-        "structured record exceeds 65536 bytes: {}",
+        content.len() as u64 <= limit,
+        "structured record exceeds {limit} bytes: {}",
         path.display()
     );
     Ok(content)

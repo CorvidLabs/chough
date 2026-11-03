@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
+  "implementation_commit": "f8b99ff243d42248a3e73fa381030fd12a1f34b0",
+  "implementation_tree": "0aa6386a2068899d85c57d342213d90f70ab9e73",
+  "contract_digest": "d0f291d6a1a19f70dd87f5cfc1e81fb7b563fae7895b4b9eeaa77d1f56a0af5a",
+  "workspace_digest": "0b1ad2cb3c0df79be2f9bc808088aeef408fb94b860ae18830b933f17cd1456f",
+  "closing_digest": "af917c4b81a8b4712b2b51f8e169685fb6a269ede0af999d3562f5844f94b2dd",
+  "review_digest": "0b4d4f442462f84bfda18e91f87fc5377769330810a6ad248cc09f24cbde7501",
+  "finalization_digest": "206c4b1b778d811604c6dfaf106e57206a1959909088e4147c5c92e81c8ade51",
+  "timestamp": 1793714732
+}

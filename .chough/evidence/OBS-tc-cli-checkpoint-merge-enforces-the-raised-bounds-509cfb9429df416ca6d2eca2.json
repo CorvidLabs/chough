@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2",
+  "criteria": [
+    "LIFE-11",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-032",
+    "REQ-cli-007"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test stages -- --exact checkpoint_merge_enforces_input_collection_and_output_byte_bounds for TC-cli-checkpoint-merge-enforces-the-raised-bounds: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2.log": "d805e5ab0ecc2f3f60f3478b10be115c0950ac9fd89682464bd708676bfbe134"
+  },
+  "observed_at_unix_seconds": 1793681279,
+  "snapshot": {
+    "revision": "95d566b04196bf5d6a47bfdf0332eae22955ac88",
+    "dirty": false,
+    "fingerprint": "c59fb2a9220e4bca721456a0a2b46a3987e17b2be0755e5cc786c12b3c76ca28",
+    "content": "890bdffe188e63bded9305e4b800c0ff35b9eff4c6fe53ada089b7e6b9bc2550"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-checkpoint-merge-enforces-the-raised-bounds",
+      "digest": "bbfd5e2a56039eecba447322118d02a932852d52e8f55c45f053de5d26fc229d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "checkpoint_merge_enforces_input_collection_and_output_byte_bounds"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

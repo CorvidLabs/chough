@@ -1,0 +1,38 @@
+{
+  "base747-session.json": {
+    "ref": "747a12cc6fc396f0e8646fee1f2801e02b7d3035",
+    "path": ".chough/session.json",
+    "bytes": 64866,
+    "sha256": "b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf"
+  },
+  "base747-transitions.jsonl": {
+    "ref": "747a12cc6fc396f0e8646fee1f2801e02b7d3035",
+    "path": ".chough/transitions.jsonl",
+    "bytes": 82173,
+    "sha256": "c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16"
+  },
+  "root51-session.json": {
+    "ref": "f9b169944aa36cc09266623c517254dff6dc8e4c",
+    "path": ".chough/session.json",
+    "bytes": 66703,
+    "sha256": "c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30"
+  },
+  "root51-transitions.jsonl": {
+    "ref": "f9b169944aa36cc09266623c517254dff6dc8e4c",
+    "path": ".chough/transitions.jsonl",
+    "bytes": 84742,
+    "sha256": "f59a698df2f52f0d7a5f8787277ec8cbc12d96023f31e35989033c8d49dff9cf"
+  },
+  "accepted50-session.json": {
+    "ref": "5568e5ed64ab947ce31a67cfa935de5b48fc7c6c",
+    "path": ".chough/session.json",
+    "bytes": 59658,
+    "sha256": "137d0e425152b8d95b00f4a821410fb0d9b031092bb5772e62c9b4405388f9ee"
+  },
+  "accepted50-transitions.jsonl": {
+    "ref": "5568e5ed64ab947ce31a67cfa935de5b48fc7c6c",
+    "path": ".chough/transitions.jsonl",
+    "bytes": 91904,
+    "sha256": "77c559b278caed085b0521628f53e5ea27a29739a2c231d7b1c9a9f5406774c2"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "task": "fmt",
+      "exit_code": 0,
+      "log": "/tmp/chough51-named-observation-bound-fmt.log"
+    },
+    {
+      "task": "check",
+      "exit_code": 0,
+      "log": "/tmp/chough51-named-observation-bound-check.log"
+    },
+    {
+      "task": "lint",
+      "exit_code": 0,
+      "log": "/tmp/chough51-named-observation-bound-lint.log"
+    }
+  ],
+  "sha256": {
+    "src/checkpoint.rs": "f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750",
+    "tests/cli.rs": "91f7ca6df1e68caec223976a18bdcaf5b3dcbd320070645f3f2acd4b25a1bb95"
+  }
+}
