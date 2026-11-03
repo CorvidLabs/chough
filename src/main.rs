@@ -740,6 +740,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "decisions": decisions(checkpoint.map_or(&empty, |checkpoint| &checkpoint.decisions)),
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,
+        "knowledge": library::pointer(root),
         "environment": environment.map(cut),
         "full_view": "chough status",
         "truncated": false,
@@ -1031,6 +1032,17 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
             ));
         }
     }
+    let knowledge = &view["knowledge"];
+    lines.push(
+        match (knowledge["librarian"].as_str(), knowledge["index"].as_str()) {
+            (_, Some(index)) => format!("Knowledge index: {index}"),
+            (Some("on"), None) => format!(
+                "Knowledge index: not built; run `chough library init` to create {}/",
+                text(&knowledge["dir"])
+            ),
+            _ => "Knowledge index: off (librarian opted out)".into(),
+        },
+    );
     let bundles = &view["lessons"]["archived_bundles"];
     let shown = items(bundles);
     if total(bundles) == 0 {

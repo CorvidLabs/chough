@@ -1,9 +1,10 @@
-# Optional project librarian
+# Project librarian
 
-The librarian is a project-local knowledge folder, off by default. Turn it on only
-when the human wants it: `chough pref set librarian on --source "<their words>"`.
-The folder name defaults to `library` and can be changed with `chough pref set
-library-dir <name> --source …`. It is not a shared cross-project vault.
+The librarian is a project-local knowledge folder, on by default in `knowledge/` at
+the project root. Opt out when the human asks: `chough pref set librarian off --source
+"<their words>"`. The folder name can be changed with `chough pref set library-dir
+<name> --source …`. It is not a shared cross-project vault, not a ledger, and no gate
+reads it. `chough next` names its index.
 
 ## From any stage
 
@@ -27,6 +28,12 @@ chough stage return --note "Snapshot SNAP-approved-version-1-<24-lowercase-hex> 
   snapshots. Legacy `snapshots/<date>-<n>/` directories remain listed beside new
   SNAP directories without renaming or migration. Manifest timestamps determine
   chronology, never the snapshot ID or random suffix.
+- `library index` also writes one `archives/<change-id>.md` entry per archived
+  native change (newest 3 hot), a lessons index of pointers to each module's lesson
+  source and the archived lesson bundles, and lists an earlier `library/` folder as is.
+- `library archive` previews the post-archive summary: proof only cold archives list,
+  committed identically at HEAD, outside every retention protection. `--apply` needs
+  the human's retention consent and no open native change; never run it unasked.
 - Briefs in `briefs/` are focused next-session summaries written from
   [the brief template](../templates/brief.md), linking to originals.
 
@@ -34,7 +41,7 @@ chough stage return --note "Snapshot SNAP-approved-version-1-<24-lowercase-hex> 
 
 Closeout is one quiet skill pass inside the open native change, before `specsync
 change check <id> --commit` and finalize. It is a skill step, not a command or a gate,
-and it works with the librarian preference off (REQ-cli-015):
+and it works whether the librarian is on or off (REQ-cli-015):
 
 1. Write the supported lessons from this change into the module lesson source, each
    with its certainty label (`observation`, `hypothesis` or `verified`), source and

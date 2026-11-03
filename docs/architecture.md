@@ -17,7 +17,7 @@ flowchart TB
     agent --> fledge["Fledge + project tools: real checks"]
     agent --> proto["Prototype + companion: approved design"]
     agent --> chough["Chough checkpoint: stage, decisions, consents, next action"]
-    agent -.-> library["Optional librarian: index, snapshots, briefs"]
+    agent -.-> library["Librarian (on by default, knowledge/): index, archive entries, snapshots, briefs"]
     fledge --> evidence["Observations: revision, inputs, environment"]
     evidence --> chough
     spec -->|"native state gates stages"| chough
@@ -46,7 +46,7 @@ flowchart TB
 | `.chough/pruned.jsonl` | Append-only ledger of observation sets removed by retention; entries gain no new ID field |
 | `.chough/bugs/*.json` | Local bug backlog; its deterministic identity generator is unchanged |
 | `.chough/validation/VAL-*.json`, `.chough/validation/<legacy-id>.json`, `.chough/validation.stop` | Limits and progress of optional repeated runs, and the unchanged pending stop request |
-| `library/snapshots/SNAP-*/`, `library/snapshots/<date>-<n>/` (optional) | New and legacy snapshots, briefs and a generated index; never a second current source |
+| `knowledge/` (librarian, on by default; `library-dir` renames it, `librarian off` opts out) | Generated `INDEX.md` with a lessons index, one `archives/<change-id>.md` summary per archived native change, new and legacy snapshots and briefs; never a second current source and never read by a gate. An earlier `library/` folder is listed as is |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
 
 `.chough/` is plain project data, and the helper uploads nothing. By kind:

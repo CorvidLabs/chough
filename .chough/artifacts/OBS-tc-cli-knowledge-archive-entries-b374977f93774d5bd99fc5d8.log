@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test knowledge_entries_summarize_each_archive_deterministically ... FAILED
+
+failures:
+
+---- knowledge_entries_summarize_each_archive_deterministically stdout ----
+
+thread 'knowledge_entries_summarize_each_archive_deterministically' (1825608) panicked at tests/common/mod.rs:58:9:
+["library", "index"] failed: Error: the librarian is optional and off; enable it with `chough pref set librarian on --source <who asked>`
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    knowledge_entries_summarize_each_archive_deterministically
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.04s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/evidence.rs (target/debug/deps/evidence-2483c5316703d232)
+error: test failed, to rerun pass `--test evidence`

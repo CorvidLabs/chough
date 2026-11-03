@@ -1,0 +1,26 @@
+--- stdout ---
+
+running 1 test
+test the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off ... FAILED
+
+failures:
+
+---- the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off stdout ----
+
+thread 'the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off' (1825569) panicked at tests/optional.rs:973:5:
+assertion `left == right` failed
+  left: Null
+ right: "on"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.02s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/optional.rs (target/debug/deps/optional-9a6defdf0ca3078a)
+error: test failed, to rerun pass `--test optional`

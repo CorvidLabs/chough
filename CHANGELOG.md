@@ -6,6 +6,20 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The librarian is on by default in `knowledge/` at the project root, with a recorded
+  opt-out (`chough pref set librarian off --source ...`; KNOW-1, KNOW-5). `library
+  index` now writes one regenerated `knowledge/archives/<change-id>.md` entry per
+  archived native change and a lessons index of pointers, and lists an earlier
+  `library/` folder as is (KNOW-2, KNOW-4, KNOW-6, KNOW-12). `chough next` names the
+  index. Projects that relied on the old `off` default or the `library` folder name
+  should set `librarian off` or `library-dir library` explicitly.
+- New `chough library archive [--apply]` (REQ-cli-033; KNOW-7 to KNOW-11): a preview,
+  or with retention authority and no open native change, removal of observation proof
+  only cold archived changes list (outside the newest 3) and that is committed
+  identically at HEAD, after its summary is written and its ledger line appended. A
+  removal that changes any affected archive's terminal evidence validity is restored
+  and refused. It never runs on its own after finalize.
+
 - Approved-delta guard refusals that need a new definition approval now name the
   acting agent account and a human authority note, matching docs/cli.md, instead of
   asking the human to approve under their own name.

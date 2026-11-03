@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Approved-delta guard refusals name the acting agent account and the human authority note",
+  "objective": "One context knowledge directory: knowledge/ at the root, librarian on by default with an opt-out, one summary per archived change, and raw proof outside the newest 3 archived changes leaves the working tree only after an authorized, previewed, validity-checked step",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to",
+  "native_change": "context-knowledge-directory-knowledge-by-default-with-the-librarian-on-and-an-opt-out-one-regenerated-summary-per",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -33,7 +33,19 @@
       "LIFE-10",
       "FLOW-3",
       "LIFE-8",
-      "LIFE-11"
+      "LIFE-11",
+      "KNOW-1",
+      "KNOW-2",
+      "KNOW-3",
+      "KNOW-4",
+      "KNOW-5",
+      "KNOW-6",
+      "KNOW-7",
+      "KNOW-8",
+      "KNOW-9",
+      "KNOW-10",
+      "KNOW-11",
+      "KNOW-12"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -56,7 +68,9 @@
       "REQ-cli-026",
       "REQ-cli-027",
       "REQ-cli-028",
-      "REQ-cli-032"
+      "REQ-cli-032",
+      "REQ-cli-015",
+      "REQ-cli-033"
     ],
     "cases": [
       "TC-cli-0101",
@@ -116,7 +130,11 @@
       "TC-cli-checkpoint-merge-enforces-the-raised-bounds",
       "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
       "TC-cli-native-next-action-is-not-repeated-in-the-next-line",
-      "TC-cli-delta-guard-refusals-name-the-agent-actor"
+      "TC-cli-delta-guard-refusals-name-the-agent-actor",
+      "TC-cli-librarian-default-on-knowledge",
+      "TC-cli-knowledge-archive-entries",
+      "TC-cli-archive-summary-preview",
+      "TC-cli-archive-summary-apply"
     ],
     "design": [],
     "files": [
@@ -269,7 +287,11 @@
     "Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit \"Merge approved, green PRs and resynchronize\" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates.",
     "Agent corvid-agent root applies actual standing through-PR permission and explicit Merge approved, green PRs and resynchronize plus latest finish-these-PRs request to repair existing REQ-cli-032 atomic refusal. Preserve every old record and bound; no new human as-is grade or numeric choice. Root alone closes this scope.",
     "Human source: 0xLeif replied \"Yes I approve!\" in chat on 2026-11-03 to the explicit one-scope exception request for PR51: record native review as corvid-agent for refuse-over-bound-checkpoint-candidates-before-publishing-gate-history, immediately ship, then merge after fresh checks pass. This explicitly overrides the automatic reviewer interpretation of the AGENTS.md agent-label rule for this scope only. The acting account stays corvid-agent; no cold-start Pass grade, numeric choice, release, deployment or cleanup approval is inferred.",
-    "Agent corvid-agent applies Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged."
+    "Agent corvid-agent applies Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged.",
+    "Human (Leif, chat 2026-11-03 8:09-8:27 AM MT): Q1 'Keep only a summary; raw files stay recoverable from git', Q2 'Keep the newest 3 archived changes hot', Q3 'Librarian on everywhere with an opt-out', Q4 'Use knowledge/ at the project root', and yes to the drafted intent; captured as KNOW-1..12 in hi/knowledge.md",
+    "Agent: deferred, not captured: duplicate or contradicting lesson flags, scoped lessons in next, retired-lesson history, status hot-folder counts and outside artifact storage (#14 item 3)",
+    "Agent authority: corvid-agent acts under Leif's standing through-PR authority (7:49 AM MT) and his 8:27 AM MT intent answers; no release, deploy, live cleanup of this repository's .chough history or fabricated human acceptance",
+    "Repo dry run of chough library archive (preview only, nothing written): 52 archives (3 hot, 49 cold), 579 listed observation sets, 0 eligible, 0 reclaimable bytes. SpecSync verification manifests are cumulative, so the newest archive lists all 579 present records and every set is protected as hot; 83 are protected only by hot listings (about 614 KB). Leif decides whether hot should mean the archive that first listed a set; no live cleanup was run."
   ],
   "open_questions": [],
   "completed": [
@@ -376,7 +398,10 @@
     "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit.",
     "Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed",
     "fledge lanes run verify passed all 9 steps (253 tests, 0 failed) on local Linux x86_64 with hi 0.8.0, fledge 1.8.0, specsync 6.1.2 after the scoped check",
-    "chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy."
+    "chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy.",
+    "Failure-first: the default-on and archive-entry cases failed at 0363d4a (OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834, OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8); the two REQ-cli-033 tests failed at 0363d4a in cargo test (unrecognized subcommand / not authorized) but could not be recorded as cases before the requirement materialized. All four cases now pass.",
+    "Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).",
+    "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections)."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -583,7 +608,15 @@
     "OBS-tc-cli-bug-add-accepts-values-that-start-with-two-hyphens-916110763b00ec6ddf3afb73",
     "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b",
     "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0",
-    "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a"
+    "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a",
+    "OBS-tc-cli-archive-summary-apply-80a2a6e3c6ec8bc4e18a7a26",
+    "OBS-tc-cli-archive-summary-preview-1f2c89765aee431f36668db2",
+    "OBS-tc-cli-knowledge-archive-entries-794db939bed655f623b8a44b",
+    "OBS-tc-cli-librarian-default-on-knowledge-2dcb29dd56d16f75384484c1",
+    "OBS-tc-cli-archive-summary-apply-eb8be0166a59ac65618579ef",
+    "OBS-tc-cli-archive-summary-preview-b9b8f9d5b85bc0d07e74d888",
+    "OBS-tc-cli-knowledge-archive-entries-5f87ff8883f726e6614de2db",
+    "OBS-tc-cli-librarian-default-on-knowledge-12316a36b3c0df407410b76a"
   ],
   "bugs": [
     "BUG-0001",
@@ -619,5 +652,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Await genuine independent review of the PR head; then record native review and ship with no write in between, push the archive tip, and merge after all hosted checks pass"
+  "next_action": "Commit, specsync change check --commit, fledge lanes run verify, push and open the ready-for-review PR; the parent requests independent review."
 }

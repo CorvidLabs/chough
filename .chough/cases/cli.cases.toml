@@ -2948,3 +2948,75 @@ expected = ["tests/stages.rs::delta_guard_refusals_name_the_agent_actor_and_the_
 adapter = "cargo-test"
 test_target = "stages"
 test = "delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note"
+
+[[case]]
+id = "TC-cli-librarian-default-on-knowledge"
+title = "The librarian is on by default in knowledge/ and the opt-out is recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-5"]
+requirements = ["REQ-cli-015"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/optional.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off"
+
+[[case]]
+id = "TC-cli-knowledge-archive-entries"
+title = "Knowledge entries summarize each archive deterministically with a lessons index and the earlier library folder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-2", "KNOW-3", "KNOW-4", "KNOW-6", "KNOW-12"]
+requirements = ["REQ-cli-015"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::knowledge_entries_summarize_each_archive_deterministically passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "knowledge_entries_summarize_each_archive_deterministically"
+
+[[case]]
+id = "TC-cli-archive-summary-preview"
+title = "The archive summary preview lists cold-archive proof and keeps every protection"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7", "KNOW-8", "KNOW-11"]
+requirements = ["REQ-cli-033"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_previews_cold_archive_proof_and_keeps_protections passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_previews_cold_archive_proof_and_keeps_protections"
+
+[[case]]
+id = "TC-cli-archive-summary-apply"
+title = "The archive summary apply is authorized, ledgered and restored on a validity change"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7", "KNOW-9", "KNOW-10", "KNOW-11"]
+requirements = ["REQ-cli-033"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change"

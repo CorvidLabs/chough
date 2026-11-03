@@ -112,7 +112,7 @@ checks and your separate implementation acceptance and merge decision remain.
 An active stage can iterate or pause. An active main stage after intent can go back,
 and one before done, or release, can be skipped with a reason. A paused stage resumes,
 and reset works from any stage, including a paused or side stage.
-Side stages for bugs, optional repeated validation and the optional librarian return
+Side stages for bugs, optional repeated validation and the librarian (on by default) return
 to their caller. Stage gates read native SpecSync state, never a saved label:
 reaching build needs a valid scope approval, reaching test or accept needs a valid
 approval or an authenticated archive, and reaching done needs an authenticated native
@@ -133,7 +133,7 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
 | `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
-| `library init/snapshot/index` | Optional project-local librarian |
+| `library init/snapshot/index/archive` | Project librarian, on by default in `knowledge/`; post-archive summary preview and apply |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
 ## Record identities and compatibility

@@ -39,7 +39,8 @@ fn standing_preferences_need_a_source_and_stay_separate_from_consent() {
         ("monitoring", "ask"),
         ("release", "on-request"),
         ("monitor-initiation", "capture-only"),
-        ("librarian", "off"),
+        ("librarian", "on"),
+        ("library-dir", "knowledge"),
     ] {
         assert_eq!(defaults["effective"][key]["value"], value);
         assert_eq!(defaults["effective"][key]["origin"], "default");
@@ -432,7 +433,7 @@ fn snapshot_attempt(fixture: &Fixture) -> (String, String) {
         "Same source",
     ]);
     let base = snapshot["snapshot"].as_str().unwrap().to_string();
-    let id = base.strip_prefix("library/snapshots/").unwrap();
+    let id = base.strip_prefix("knowledge/snapshots/").unwrap();
     assert_random_record_id(id, "SNAP-", "same-source", 70);
     assert_eq!(snapshot["manifest"]["schema_version"], 1);
     assert!(snapshot["manifest"]["created_at_unix_seconds"].is_u64());
@@ -553,7 +554,7 @@ fn legacy_validation_runs_resume_with_their_ids_and_schema_unchanged() {
 #[test]
 fn snapshot_indexes_mix_legacy_and_new_ids_by_manifest_time() {
     let fixture = snapshot_fixture();
-    let legacy_base = "library/snapshots/2024-01-01-1";
+    let legacy_base = "knowledge/snapshots/2024-01-01-1";
     let legacy_copy = format!("{legacy_base}/files/src/input.txt");
     fixture.write(&legacy_copy, "first version\n");
     let legacy = serde_json::json!({
@@ -572,7 +573,7 @@ fn snapshot_indexes_mix_legacy_and_new_ids_by_manifest_time() {
     fixture.write(&format!("{legacy_base}/manifest.json"), &legacy_manifest);
     let (new_id, _) = snapshot_attempt(&fixture);
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("library/INDEX.md");
+    let index = fixture.read("knowledge/INDEX.md");
     assert!(index.contains("2024-01-01-1"));
     assert!(index.contains(&new_id));
     let new_position = index.find(&new_id).unwrap();
@@ -591,10 +592,18 @@ fn snapshot_indexes_mix_legacy_and_new_ids_by_manifest_time() {
 fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     let fixture = Fixture::new();
     fixture.init();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "Human: no library yet",
+    ]);
     assert!(
         fixture
             .fails(&["library", "init"])
-            .contains("optional and off")
+            .contains("librarian is off")
     );
     fixture.ok(&[
         "pref",
@@ -625,8 +634,8 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     );
     assert_eq!(fixture.read("design/prototype/index.html"), source);
     assert_eq!(entry["sha256"].as_str().unwrap().len(), 64);
-    assert!(base.starts_with("library/snapshots/"));
-    for bad in ["../outside.txt", "library/INDEX.md"] {
+    assert!(base.starts_with("knowledge/snapshots/"));
+    for bad in ["../outside.txt", "knowledge/INDEX.md"] {
         assert!(
             !fixture
                 .run(&["library", "snapshot", bad, "--reason", "x"])
@@ -656,13 +665,13 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     let id = added["id"].as_str().unwrap();
     assert_new_bug_id(id);
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("library/INDEX.md");
+    let index = fixture.read("knowledge/INDEX.md");
     assert!(index.contains(&format!("{id} Prototype focus ring missing")));
     assert!(index.contains("[design/prototype/](../design/prototype/) with COMPANION.md"));
     assert!(index.contains("Approved version 1"));
     assert!(
         fixture
-            .read("library/README.md")
+            .read("knowledge/README.md")
             .contains("Nothing here is a second current version")
     );
 
@@ -961,4 +970,38 @@ fn checkpoint_reference_updates_only_known_outdated_copies() {
     assert_eq!(state(&preserved)["state"], "edited");
     assert_eq!(state(&preserved)["action"], "preserved-edit");
     assert_eq!(fs::read_to_string(installed).unwrap(), edited);
+}
+
+#[test]
+fn the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off() {
+    // KNOW-1, KNOW-5, KNOW-6: on by default in `knowledge/`, with a recorded opt-out.
+    let fixture = Fixture::new();
+    fixture.init();
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["knowledge"]["librarian"], "on");
+    assert_eq!(next["knowledge"]["index"], serde_json::Value::Null);
+    fixture.ok(&["library", "init"]);
+    assert!(fixture.exists("knowledge/README.md"));
+    assert!(fixture.exists("knowledge/INDEX.md"));
+    assert!(!fixture.exists("library"));
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["knowledge"]["index"], "knowledge/INDEX.md");
+    let text = fixture.run(&["next"]);
+    assert!(
+        String::from_utf8_lossy(&text.stdout).contains("Knowledge index: knowledge/INDEX.md"),
+        "{}",
+        String::from_utf8_lossy(&text.stdout)
+    );
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "Human: no knowledge folder here",
+    ]);
+    assert!(fixture.fails(&["library", "index"]).contains("off"));
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["knowledge"]["librarian"], "off");
+    fixture.ok(&["status"]);
 }

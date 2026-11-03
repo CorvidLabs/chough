@@ -886,12 +886,16 @@ fn read_ledger(root: &Path) -> Result<BTreeSet<String>> {
             continue;
         }
         let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
-        ids.insert(
-            entry["id"]
-                .as_str()
-                .context("retention ledger line without an id")?
-                .to_string(),
-        );
+        let id = entry["id"]
+            .as_str()
+            .context("retention ledger line without an id")?
+            .to_string();
+        // A `restored` event puts a removed observation back; it is no longer pruned.
+        if entry["event"] == "restored" {
+            ids.remove(&id);
+        } else {
+            ids.insert(id);
+        }
     }
     Ok(ids)
 }
@@ -924,6 +928,10 @@ pub(super) fn ledger_entries(root: &Path) -> Result<BTreeMap<String, PrunedEntry
             .as_str()
             .context("retention ledger line without an id")?
             .to_string();
+        if entry["event"] == "restored" {
+            entries.remove(&id);
+            continue;
+        }
         entries.insert(
             id,
             PrunedEntry {
@@ -1637,6 +1645,411 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
         "ledger": LEDGER,
         "note": "Files are removed from the working tree only; committed bytes stay recoverable from Git history. Native archives, ignore rules and history are never changed.",
     }))
+}
+
+/// The newest ledger line per observation ID, with `restored` events undoing a removal.
+pub(super) fn ledger_records(root: &Path) -> Result<BTreeMap<String, Value>> {
+    let path = local_path(root, LEDGER)?;
+    if !path.exists() {
+        return Ok(BTreeMap::new());
+    }
+    ensure!(
+        path.is_file() && fs::metadata(&path)?.len() <= LEDGER_LIMIT,
+        "{LEDGER} must be a file within {LEDGER_LIMIT} bytes"
+    );
+    let mut records = BTreeMap::new();
+    for line in fs::read_to_string(&path)?.lines() {
+        if line.trim().is_empty() {
+            continue;
+        }
+        let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
+        let id = entry["id"]
+            .as_str()
+            .context("retention ledger line without an id")?
+            .to_string();
+        if entry["event"] == "restored" {
+            records.remove(&id);
+        } else {
+            records.insert(id, entry);
+        }
+    }
+    Ok(records)
+}
+
+/// Outcome, environment and cases of a present observation, for knowledge entries.
+pub(super) fn observation_summary(root: &Path, id: &str) -> Option<(String, String, Vec<String>)> {
+    if !is_present(root, id).ok()? {
+        return None;
+    }
+    let evidence = load(root, id).ok()?;
+    let outcome = serde_json::to_value(&evidence.outcome)
+        .ok()
+        .and_then(|value| value.as_str().map(str::to_string))
+        .unwrap_or_else(|| "unknown".into());
+    let cases = case_ids(&evidence)
+        .into_iter()
+        .map(str::to_string)
+        .collect();
+    Some((outcome, evidence.environment.clone(), cases))
+}
+
+/// One archived change as the post-archive summary sees it: its ID, whether it is one
+/// of the hot (newest) archives, and the paths its verification manifest lists.
+pub(super) struct ListedArchive {
+    pub(super) id: String,
+    pub(super) hot: bool,
+    pub(super) paths: BTreeSet<String>,
+}
+
+const SUMMARY_REASON: &str = "archived-summary: routine automated proof listed only by cold archived changes (outside the newest 3), summarized in the knowledge directory and committed identically at HEAD; bytes stay recoverable from Git";
+
+/// Eligible candidates, protected sets, sets not at HEAD, and the native read state.
+struct SummaryPlan {
+    eligible: Vec<SummaryCandidate>,
+    protected: Vec<Value>,
+    uncommitted: Vec<Value>,
+    native: Native,
+}
+
+struct SummaryCandidate {
+    id: String,
+    files: Vec<String>,
+    archives: Vec<String>,
+    bytes: u64,
+}
+
+/// Files whose working-tree bytes equal the blob tracked at HEAD.
+fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> {
+    let mut identical = BTreeSet::new();
+    for chunk in files.chunks(256) {
+        let mut arguments = vec!["ls-tree", "HEAD", "--"];
+        arguments.extend(chunk.iter().map(String::as_str));
+        let Ok(listed) = git(root, &arguments) else {
+            return Ok(identical);
+        };
+        let mut tracked = BTreeMap::new();
+        for line in String::from_utf8_lossy(&listed.stdout).lines() {
+            if let Some((meta, path)) = line.split_once('\t')
+                && let Some(blob) = meta.split_whitespace().nth(2)
+            {
+                tracked.insert(path.to_string(), blob.to_string());
+            }
+        }
+        let present: Vec<&String> = chunk
+            .iter()
+            .filter(|file| local_path(root, file).is_ok_and(|path| path.is_file()))
+            .collect();
+        if present.is_empty() {
+            continue;
+        }
+        let mut arguments = vec!["hash-object", "--"];
+        arguments.extend(present.iter().map(|file| file.as_str()));
+        let hashed = git(root, &arguments)?;
+        for (file, blob) in present
+            .iter()
+            .zip(String::from_utf8_lossy(&hashed.stdout).lines())
+        {
+            if tracked.get(file.as_str()).map(String::as_str) == Some(blob.trim()) {
+                identical.insert((*file).clone());
+            }
+        }
+    }
+    Ok(identical)
+}
+
+/// Classify observation sets that archived manifests list: candidates (listed only by
+/// cold archives, no protection left once age and the latest-archive reason are set
+/// aside, every file committed identically at HEAD), protected sets with reasons, and
+/// sets held back because their bytes are not at HEAD.
+fn summary_plan(root: &Path, archives: &[ListedArchive]) -> Result<SummaryPlan> {
+    let classification = classify(root, now()?)?;
+    let keyed: Vec<(&ListedArchive, BTreeSet<String>)> = archives
+        .iter()
+        .map(|archive| {
+            (
+                archive,
+                archive.paths.iter().map(|path| file_key(path)).collect(),
+            )
+        })
+        .collect();
+    let mut pending = vec![];
+    let mut protected = vec![];
+    for set in &classification.sets {
+        let evidence = &set.evidence;
+        let record_path = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
+        let mut keys = vec![file_key(&record_path)];
+        keys.extend(evidence.artifacts.iter().map(|artifact| file_key(artifact)));
+        let listing: Vec<&ListedArchive> = keyed
+            .iter()
+            .filter(|(_, paths)| keys.iter().any(|key| paths.contains(key)))
+            .map(|(archive, _)| *archive)
+            .collect();
+        if listing.is_empty() {
+            continue;
+        }
+        let mut reasons: Vec<String> = set
+            .reasons
+            .iter()
+            .filter(|reason| *reason != "recent" && !reason.starts_with("native archive "))
+            .cloned()
+            .collect();
+        reasons.extend(
+            listing
+                .iter()
+                .filter(|archive| archive.hot)
+                .map(|archive| format!("hot archive {}", archive.id)),
+        );
+        let cold: Vec<String> = listing
+            .iter()
+            .filter(|archive| !archive.hot)
+            .map(|archive| archive.id.clone())
+            .collect();
+        if reasons.is_empty() {
+            let mut files = vec![record_path];
+            files.extend(set.removable.iter().cloned());
+            pending.push(SummaryCandidate {
+                id: evidence.id.clone(),
+                files,
+                archives: cold,
+                bytes: set.bytes,
+            });
+        } else {
+            protected.push(json!({
+                "id": evidence.id,
+                "cases": case_ids(evidence),
+                "archives": cold,
+                "reasons": reasons,
+            }));
+        }
+    }
+    let all: Vec<String> = pending
+        .iter()
+        .flat_map(|candidate| candidate.files.iter().cloned())
+        .collect();
+    let identical = identical_at_head(root, &all)?;
+    let mut eligible = vec![];
+    let mut uncommitted = vec![];
+    for candidate in pending {
+        let differing: Vec<&String> = candidate
+            .files
+            .iter()
+            .filter(|file| !identical.contains(*file))
+            .collect();
+        if differing.is_empty() {
+            eligible.push(candidate);
+        } else {
+            uncommitted.push(json!({
+                "id": candidate.id,
+                "files": differing,
+                "reason": "not committed identically at HEAD; commit it before it can be summarized",
+            }));
+        }
+    }
+    Ok(SummaryPlan {
+        eligible,
+        protected,
+        uncommitted,
+        native: classification.native,
+    })
+}
+
+/// Terminal evidence validity of each archive, as `specsync change status` reports it.
+fn validity(root: &Path, ids: &BTreeSet<String>) -> BTreeMap<String, String> {
+    ids.iter()
+        .map(|id| {
+            let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
+            let state = response
+                .value
+                .as_ref()
+                .and_then(|value| value["summary"]["terminal_evidence"]["validity"].as_str())
+                .map_or_else(
+                    || format!("unreadable ({})", response.section.state),
+                    str::to_string,
+                );
+            (id.clone(), state)
+        })
+        .collect()
+}
+
+/// `chough library archive [--apply]`: preview the post-archive summary, or with an
+/// authority remove the eligible proof after `write_entries` summarized it. Ledger lines
+/// come first; a removal that changes any affected archive's validity is restored.
+pub(super) fn archive_summary(
+    root: &Path,
+    archives: &[ListedArchive],
+    knowledge_dir: &str,
+    authority: Option<&str>,
+    write_entries: &dyn Fn(&Path) -> Result<()>,
+) -> Result<Value> {
+    let _budget = authority.map(|_| crate::history::maintenance_budget());
+    let SummaryPlan {
+        eligible,
+        protected,
+        uncommitted,
+        native,
+    } = summary_plan(root, archives)?;
+    let entry_path = |archive: &str| format!("{knowledge_dir}/archives/{archive}.md");
+    let listed: Vec<Value> = eligible
+        .iter()
+        .map(|candidate| {
+            json!({
+                "id": candidate.id,
+                "files": candidate.files,
+                "archives": candidate.archives,
+                "bytes": candidate.bytes,
+                "knowledge": entry_path(&candidate.archives[0]),
+            })
+        })
+        .collect();
+    let reclaimable: u64 = eligible.iter().map(|candidate| candidate.bytes).sum();
+    let mut pruned = vec![];
+    if let Some(authority) = authority {
+        let open = change_dirs(root, ".specsync/changes").map_err(anyhow::Error::msg)?;
+        ensure!(
+            open.is_empty(),
+            "a native change is open ({}); summarize archived proof only between changes, after it is archived or abandoned",
+            open.join(", ")
+        );
+        ensure!(
+            native.state != "unavailable",
+            "native manifests are unavailable: {}",
+            native.detail
+        );
+        let affected: BTreeSet<String> = eligible
+            .iter()
+            .flat_map(|candidate| candidate.archives.iter().cloned())
+            .collect();
+        if !eligible.is_empty() {
+            let before = validity(root, &affected);
+            write_entries(root)?;
+            let head = head_revision(root);
+            let at = now()?;
+            let mut held: Vec<(String, Vec<u8>)> = vec![];
+            for candidate in &eligible {
+                let evidence = load(root, &candidate.id)?;
+                let entry = json!({
+                    "schema_version": 1,
+                    "id": candidate.id,
+                    "cases": case_ids(&evidence),
+                    "environment": evidence.environment,
+                    "outcome": evidence.outcome,
+                    "kind": evidence.kind,
+                    "revision": evidence.snapshot.revision,
+                    "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
+                    "artifacts": evidence.artifact_fingerprints,
+                    "record_digest": file_digest(root, &candidate.files[0])?,
+                    "removed": candidate.files,
+                    "archives": candidate.archives,
+                    "knowledge": entry_path(&candidate.archives[0]),
+                    "reason": SUMMARY_REASON,
+                    "policy": policy(Some(authority)),
+                    "head": head,
+                    "pruned_at_unix_seconds": at,
+                });
+                append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
+                for file in &candidate.files {
+                    let bytes = fs::read(local_path(root, file)?)?;
+                    remove_if_present(root, file)?;
+                    held.push((file.clone(), bytes));
+                }
+            }
+            let after = validity(root, &affected);
+            if after != before {
+                for (file, bytes) in &held {
+                    let path = local_path(root, file)?;
+                    if let Some(parent) = path.parent() {
+                        fs::create_dir_all(parent)?;
+                    }
+                    fs::write(&path, bytes).with_context(|| format!("restoring {file}"))?;
+                }
+                for candidate in &eligible {
+                    append_line(
+                        root,
+                        LEDGER,
+                        &serde_json::to_string(&json!({
+                            "schema_version": 1,
+                            "event": "restored",
+                            "id": candidate.id,
+                            "reason": "removal changed an affected archive's terminal evidence validity",
+                            "restored_at_unix_seconds": now()?,
+                        }))?,
+                    )?;
+                }
+                write_entries(root)?;
+                let changed: Vec<String> = before
+                    .iter()
+                    .filter(|(id, state)| after.get(*id) != Some(*state))
+                    .map(|(id, state)| {
+                        format!(
+                            "{id}: {state} -> {}",
+                            after.get(id).map_or("missing", String::as_str)
+                        )
+                    })
+                    .collect();
+                bail!(
+                    "removing archived proof changed terminal evidence validity ({}); restored {} files and recorded the restore in {LEDGER}",
+                    changed.join("; "),
+                    held.len()
+                );
+            }
+            pruned = eligible
+                .iter()
+                .map(|candidate| candidate.id.clone())
+                .collect();
+            write_entries(root)?;
+        }
+    }
+    let hot: Vec<&str> = archives
+        .iter()
+        .filter(|archive| archive.hot)
+        .map(|archive| archive.id.as_str())
+        .collect();
+    let cold: Vec<&str> = archives
+        .iter()
+        .filter(|archive| !archive.hot)
+        .map(|archive| archive.id.as_str())
+        .collect();
+    Ok(json!({
+        "schema_version": 1,
+        "applied": authority.is_some(),
+        "authority": authority,
+        "hot": hot,
+        "cold": cold,
+        "native": {"state": native.state, "detail": native.detail},
+        "eligible": listed,
+        "protected": protected,
+        "uncommitted": uncommitted,
+        "totals": {
+            "eligible": listed.len(),
+            "protected": protected.len(),
+            "uncommitted": uncommitted.len(),
+            "reclaimable_bytes": reclaimable,
+        },
+        "pruned": pruned,
+        "ledger": LEDGER,
+        "note": "Preview by default. Applying needs retention authority and no open native change; it keeps one knowledge entry per archive, removes only files committed identically at HEAD (recoverable from Git), and never edits native archives or Git history.",
+    }))
+}
+
+/// The retention authority for an apply, or the refusal a human must resolve.
+pub(super) fn retention_authority(root: &Path, command: &str) -> Result<String> {
+    let session = read_session(root)?;
+    let authorized = match &session {
+        Session::V2(checkpoint) => prefs::authorized(root, checkpoint, "retention")?,
+        Session::V1(_) => {
+            let (value, origin) = prefs::effective(root, "retention")?;
+            (value == "auto").then_some(origin)
+        }
+    };
+    match authorized {
+        Some(authority) => Ok(authority),
+        None => {
+            let (value, origin) = prefs::effective(root, "retention")?;
+            bail!(
+                "{command} is not authorized (retention = {value}, {origin}). Preview first, then ask the human; record their answer with `chough consent grant retention --source <their words>`"
+            )
+        }
+    }
 }
 
 fn remove_if_present(root: &Path, relative: &str) -> Result<()> {
