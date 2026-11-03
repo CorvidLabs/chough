@@ -1,6 +1,6 @@
 ---
 id: refuse-over-bound-checkpoint-candidates-before-publishing-gate-history
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 9bd3d506b86cbb312a5a3e195697cd3138920039
 ---

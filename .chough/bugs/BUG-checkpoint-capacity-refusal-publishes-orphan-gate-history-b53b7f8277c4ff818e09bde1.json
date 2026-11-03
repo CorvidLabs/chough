@@ -22,7 +22,8 @@
   "fixture": ".chough/artifacts/pr51-writer-atomicity/before/",
   "observations": [
     "OBS-product-test-2a7d7facc915bcf96b293641",
-    "OBS-product-test-d7d49ea83fedc7d95d30dba1"
+    "OBS-product-test-d7d49ea83fedc7d95d30dba1",
+    "OBS-product-test-2f00d25a768981daf5bb6eb0"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
@@ -39,8 +40,15 @@
       "observations": [
         "OBS-product-test-d7d49ea83fedc7d95d30dba1"
       ]
+    },
+    {
+      "at_unix_seconds": 1793688762,
+      "text": "Fresh full252-test pass after settled source tasks and18 real archive fixtures; writer regressions pass within the full suite, zero skipped or filtered. Historical failure and focused pair stay unchanged.",
+      "observations": [
+        "OBS-product-test-2f00d25a768981daf5bb6eb0"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793687843,
-  "updated_at_unix_seconds": 1793688210
+  "updated_at_unix_seconds": 1793688762
 }

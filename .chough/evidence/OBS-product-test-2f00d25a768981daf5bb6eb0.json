@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-2f00d25a768981daf5bb6eb0",
+  "criteria": [
+    "LIFE-11",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-032"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Final settled-source qualification: all252 Rust tests across12 suites pass with zero failed, ignored or filtered; all9 Fledge steps pass; all18 archive fixtures pass. Three formal Mac report cases also pass at the same source. The earlier log-path-induced stale audit and original failure-first logs are preserved separately.",
+  "artifacts": [
+    ".chough/artifacts/pr51-writer-atomicity/qualified/final-verify.log",
+    ".chough/artifacts/pr51-writer-atomicity/qualified/final-gate-fixtures.log",
+    ".chough/artifacts/pr51-writer-atomicity/qualified/final-qualification.json",
+    ".chough/artifacts/pr51-writer-atomicity/independent-source-review.json",
+    ".chough/artifacts/pr51-writer-atomicity/final-pair/result.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr51-writer-atomicity/final-pair/result.json": "e3b23a0a4863efec37ecef63854d7b7a1bc6108333cc63da2cca7c564329716a",
+    ".chough/artifacts/pr51-writer-atomicity/independent-source-review.json": "255f4c1070a5fecf80782a5f34e6154f7be4cfbe95f17dd563c134843ae6c29d",
+    ".chough/artifacts/pr51-writer-atomicity/qualified/final-gate-fixtures.log": "c1c78d8e08dbecbdbc29c33281a8cc792026e8de24499d36db4d12350a392267",
+    ".chough/artifacts/pr51-writer-atomicity/qualified/final-qualification.json": "91c6275883bb25af8dffd77045833e1f593ef9007b56ea0a9707cc38c82eec52",
+    ".chough/artifacts/pr51-writer-atomicity/qualified/final-verify.log": "ef485454f54abf2447413c3403c82259160468822bfbe01cdeeddf07b188794c"
+  },
+  "observed_at_unix_seconds": 1793688761,
+  "snapshot": {
+    "revision": "98a86bc14609c1c4cb68699b41ca9fa24665943b",
+    "dirty": true,
+    "fingerprint": "5df407f7a6437482f7fa4bd46eaedbf1392dbc009195ba417ea340dc1241458a",
+    "content": "927abca849c738bbbd1dbc1f4065676128a1532164dc1fd295cb40ecc49f394d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Actual local macOS execution; genuine final hosted jobs qualify Linux and Windows. No cold-start, new human grade, release, deployment or live cleanup. Earlier failed audit came from writing logs into managed records during verification, not a failed Rust assertion."
+  ]
+}

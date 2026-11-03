@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -171,7 +171,12 @@
       ".chough/artifacts/pr51-root-qualification/final-freshness-peer.json",
       ".chough/evidence/OBS-product-test-2a7d7facc915bcf96b293641.json",
       ".chough/artifacts/pr51-writer-atomicity/protected-parent-manifest.json",
-      ".chough/evidence/OBS-product-test-d7d49ea83fedc7d95d30dba1.json"
+      ".chough/evidence/OBS-product-test-d7d49ea83fedc7d95d30dba1.json",
+      ".chough/evidence/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.json",
+      ".chough/evidence/OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895.json",
+      ".chough/evidence/OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759.json",
+      ".chough/evidence/OBS-product-test-2f00d25a768981daf5bb6eb0.json",
+      ".chough/artifacts/pr51-writer-atomicity/independent-final-evidence-review.json"
     ]
   },
   "decisions": [
@@ -363,7 +368,8 @@
     "Clean-tree verify at 380acffcc4240c346a789198eea003d7dc90da9a recorded as OBS-product-test-ba63e97a0304049db5437166 with .chough/artifacts/pr-50-clean-verify-380acff.log; old records unchanged",
     "Native evidence-fix change shipped",
     "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged.",
-    "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved."
+    "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved.",
+    "PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -603,5 +609,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Independent source review, then settle task text before full final verification."
+  "next_action": "Commit all settled source and new proof, then current native check --commit, review immediately followed by ship, done checkpoint, normal push and exact-head hosted qualification."
 }
