@@ -1,0 +1,870 @@
+{
+  "diagnosis_only": true,
+  "no_native_authentication_rerun": true,
+  "range": {
+    "base": "16fe55da9ee900edf34a4d3ded517f36854a46d9",
+    "head": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+    "commits_in_range": 86,
+    "historical_snapshots": 87
+  },
+  "checker_sha256": "8b1b4cf9b5ab71269915d93d0b2f3769dd3f99bec61aec48013862eb6d996d44",
+  "checker_unchanged_from_base": true,
+  "native_source": {
+    "repository": "/Users/leif/Development/_CorvidLabs/spec-sync",
+    "tag": "v6.1.2",
+    "commit": "d08d2746f635bc26900601376d7392395d07faa9",
+    "working_tree_not_used": true
+  },
+  "unique_tree_counts": {
+    ".specsync": 80,
+    ".specsync/changes": 72,
+    ".specsync/archive/changes": 21,
+    ".specsync/config.toml": 1,
+    ".specsync/sdd.json": 1,
+    "specs": 13
+  },
+  "other_counts": {
+    "full_git_trees": 86,
+    "active_state_file_sets": 67,
+    "active_directory_name_sets": 15,
+    "empty_active_snapshots": 13,
+    "active_record_summary_requests": 138,
+    "active_terminal_snapshots": 0,
+    "archives_at_head": 40
+  },
+  "native_process_count_if_completed": {
+    "binary_version": 1,
+    "current_audit": 1,
+    "current_roster": 1,
+    "historical_rosters": 87,
+    "archive_status": 40,
+    "total": 130
+  },
+  "verified_dependencies": {
+    "list_roster": "list_changes_uncached reads active workspace directories, state.json and husk contents; validates record/id and workflow-version history. JSON presentation then computes full summaries and briefings.",
+    "workflow_history": "validate_workflow_version_history_uncached validates baseline, discovers active/archive state paths, walks rev-list --reverse --full-history HEAD with bounds, checks each parent transition and HEAD committed anchors. Git tree identity alone is insufficient.",
+    "json_summary": "effective definitions, approval/correction/verification/review currencies, policy/routing, canonical specs/config, project content and module principles/lessons; Git repository context is memoized only inside an invocation.",
+    "archive_status": "terminal_evidence_summary inside a read scope calls list_all_changes_checked and computes terminal evidence for the entire accepted/archived map, then selects the requested ID. Forty fresh processes repeat the same archive universe.",
+    "audit": "audit_project intentionally calls check_project_with_command_output(root,false), excluding archived terminal evidence. It cannot replace archive authentication."
+  },
+  "existing_batch_api": "None exposed in v6.1.2 CLI or MCP. Status without ID lists only active records; crate is binary-only with private mod change. Internal check_project/terminal_evidence_results_with_records contain reusable native batch machinery.",
+  "safe_reviewable_plan": [
+    {
+      "step": 1,
+      "change": "Add an upstream native compact batch archive-status endpoint using one unchanged read scope, existing loaders, workflow-history validation, terminal evidence validators and shared ArchivedIntegrityCache.",
+      "preserved_predicate": "For every obligation require native id/state archived and terminal validity authenticated-history. Missing, duplicate, malformed, corrupt, unexpected or incomplete results fail closed."
+    },
+    {
+      "step": 2,
+      "change": "After a reviewed native release, pin its binary and action exactly and consume the complete batch once at the current immutable head, retaining existing current audit/roster, before/after fingerprints and every historical obligation.",
+      "effect": "Replace 40 whole-universe status processes with 1 native batch. No proof skipping, archive edits or timeout exception."
+    },
+    {
+      "step": 3,
+      "change": "Add a native inventory-only roster projection that returns records and unreadable workspace IDs without full summaries/briefings; process all 87 historical revisions with fresh read context per Git snapshot.",
+      "effect": "Preserve every historical native obligation and degraded-roster semantics while avoiding 138 unneeded status/briefing calculations."
+    },
+    {
+      "step": 4,
+      "change": "Optionally memoize the pure archive-directory identity scan by validated full Git subtree identity and modes, retaining symlink/file-type checks. There are 21 archive subtree identities over 87 snapshots.",
+      "effect": "Reduce duplicate filesystem scans without replacing native archive authentication."
+    }
+  ],
+  "tree_cache_risks": [
+    "Caching native JSON only by .specsync or changes subtree can mask different workflow-version ancestry, committed anchors, comparison refs, project content or configured lessons.",
+    "There are 80 unique .specsync/native+spec states, so even an otherwise safe whole-native-tree cache removes only 7 of 87 historical native calls.",
+    "Thirteen empty active snapshots offer a narrow potential cache after native empty-result and complete validated-input equivalence proof; this saves only 12 calls and does not remove the dominant 40 repeated archive walks.",
+    "Do not group merely by the 15 directory-name sets, switch to first-parent history, prune historical revisions, replace native validation with Python JSON acceptance, use audit as archive proof, reuse stale output, raise the timeout, or alter frozen archives."
+  ],
+  "required_qualification": [
+    "Compare old per-ID native status predicates and new batch results on identical frozen positive repositories.",
+    "Refusal fixtures: omitted historical-only change, malformed/unreadable state, corrupt archive, symlink and non-directory entry, duplicate ID, workflow-v2 downgrade then same-tree restoration, ambiguous/deleted anchor, missing Git history, mutated proof/native input during read, partial/oversized output and timeouts.",
+    "Instrument command counts and source/native fingerprints on this exact 87-snapshot/40-archive repository; demonstrate every obligation retained and no write before evaluating runtime on the 10-minute CI budget."
+  ],
+  "authorization_boundary": "This is a reviewable plan only. No checker, workflow, pin, budget, source, native record or GitHub state was changed; the earlier no-weaken/no-check-change instruction remains binding.",
+  "revision_input_identities": [
+    {
+      "revision": "16fe55da9ee900edf34a4d3ded517f36854a46d9",
+      ".specsync": "26b67a48d215043e4142c829d3ede1d35dad9be3",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "5dde4b427929f68b6eb744b44bb9731ad3b79531",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "10f329a6c7888190f0d3dce6b71d3bc8ed8abb70"
+    },
+    {
+      "revision": "e4e6f8bab6de771b374b05e3f839882d7096d7eb",
+      ".specsync": "679976babf57ba81d0741632dc8f15cb76d1e848",
+      ".specsync/changes": "500c73008049ef3be9629296f36ac5a412aea1df",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de2b21f295262355453aa35a49b02649ffeb162a"
+    },
+    {
+      "revision": "d78947fba49df0a9b80e4fa9e5de403e9a774152",
+      ".specsync": "66ed497634c66d267428cb0d092a0d3a484d2849",
+      ".specsync/changes": "3baa898f0e4a9f8e08e5d67bbef9d485ca8e3cbf",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de2b21f295262355453aa35a49b02649ffeb162a"
+    },
+    {
+      "revision": "016075c4791ada78fe4bab743ecee49c060f9829",
+      ".specsync": "dac71afd9c24640b1b45bc4060a6bb94f9814545",
+      ".specsync/changes": "00943a491dd4de99b99fef93c36b2f577788c06c",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de2b21f295262355453aa35a49b02649ffeb162a"
+    },
+    {
+      "revision": "6e801f140a7cfe6e868639af2acad7fa3021d1b5",
+      ".specsync": "3fffaf4a1cd0213c9df22c8b4539f9924de82fdb",
+      ".specsync/changes": "480d3c583a528909119a961acfd35b927c029ee3",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "3fa550cfc9d74db059575c6e1619e5a7eacefbe0",
+      ".specsync": "d0e8f37523f831fc4681ad7df98a787f2d6a023c",
+      ".specsync/changes": "3ef952a901837ab2277c781bc3e0a73daf1ac4b5",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "8538087bb820368690b754c5bed4c50289eec44a",
+      ".specsync": "8dd66d696e0cbfe65b1dffc0864e63bd38edf545",
+      ".specsync/changes": "30a07acba03ebf694f06be0840f70955abefccb6",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "688d58e8362f4b37395660a560cc9cdfed6d4f1c",
+      ".specsync": "8dedf876a8163cde6a72f8b44b25edbde3e74b58",
+      ".specsync/changes": "2e8b8250fe4f3351f8d566cc9bb5670cc85b5755",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "84a52e83c5fd005208bd8f1ae353d132311f83e0",
+      ".specsync": "29be0ab3e73df657d03eea90a9e458b4bf94ed27",
+      ".specsync/changes": "45e028c19c56cdcda3b7849049cef9bda5f7c221",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "f6dcd4417c574e11781c04a846a4ee52722ce970",
+      ".specsync": "c2a162ad37d6dc56202e6706a17c0ed5329336a6",
+      ".specsync/changes": "d1ef4b533ea20b5edc120e7935d4dea35ce8e32e",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "a93e58d3f12f48b2dae09faf3df61980e65abfd7",
+      ".specsync": "cfb62b0a3c91b153c24fa2735159e88146b5443e",
+      ".specsync/changes": "e6924bc0ffdf143eb3c8267d83ec4ebc5152a79d",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "254fe26015c0b6135bb994652aabbf4609e86a25",
+      ".specsync": "0555ea7299ea490338220205e44baa7430455fa4",
+      ".specsync/changes": "4b753c81b2bd0549882efca66fa213658f90ff6b",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "7cd739219ff667dcf6d153a6f439d6c3661b1fce",
+      ".specsync": "89aad5f20af3f3bc5d4bd46f524c976fcc84a0f0",
+      ".specsync/changes": "17dba1fbe24a1effc46ebafe6d0bfd776ecd73ac",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "2a6d2e298aa6bba7bb1059426a7330771b2ae8e4",
+      ".specsync": "1c4df8e63c01464f06d00e98d22ffcc3c6ec8350",
+      ".specsync/changes": "20526044f5557d8c6250c4067817a932efeb3d01",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "028eff1a39b67b6ca2edd543c25d24cf94c34ee9",
+      ".specsync": "9babab8b0461e94d8cbb86c450a5e367d4ad5647",
+      ".specsync/changes": "b240ad8c17ba41c9fd8cf4128cc51d9c2ebee6b3",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "8be6b209a8e33e2ee2f10d562e8d6b52b8e5963b",
+      ".specsync": "03f27e1408139585d9641d878938aba621976179",
+      ".specsync/changes": "c9e0b611bb2bdb6b1abe937a42d6f56ff3a6761f",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "4c67f7fd215e6ab8da593b66bfd1ecd30af829ec",
+      ".specsync": "a19bfb899fbb4f81dfa8e6fa4432bf1bb91aa5f2",
+      ".specsync/changes": "6e51bf0ea70b91d271250afea29451b3b2f9a62c",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "9c41e95949adcb1009c986f97db50faa593d81b2",
+      ".specsync": "1cb53742702481960637a4734a76fca8108f99c8",
+      ".specsync/changes": "e9117c4802b0d71575d39d632a111cde758dfedc",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "de55cbfe1563524e4919b6579e31c4e3b79ed42d"
+    },
+    {
+      "revision": "7f67b243721fa4d19bb62a7c1bc44ce7663cf0c6",
+      ".specsync": "674e244b75ef885884a643011157e626788773ae",
+      ".specsync/changes": "c57d8a14e431c9253a19ffcb738b248f56cf94fc",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "fa9a2deb438bddbe0f1a7c4c198466bb7131aa3c",
+      ".specsync": "52595040af6ca541a0208cf36eb8c4019e323abd",
+      ".specsync/changes": "7744c404a9689b970a556959ad3fcc9d7e018029",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "50a7ee5cef8735b5d2ebd649605be60f24e251bd",
+      ".specsync": "43ff526fbb23f62e05746787ad57e6edb0413838",
+      ".specsync/changes": "04c87714641630e20c593a74df93a0358a4e0222",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "b170b3a87ab85f4e2f54b334c2f2b783c55a1bd5",
+      ".specsync": "5b7d8f26ddd446162a9f987fe652f68a488d197c",
+      ".specsync/changes": "9665d0302a825de4828bee016efeee47faeef685",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "ba60e5ba85bf7823f7d17537da4bc3fd80f2e9f1",
+      ".specsync": "4794f9721145114503582321dd8d4397ac90d627",
+      ".specsync/changes": "2a33f245a2bda828995a182cd22c38ca4b79fa0c",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "46e7a21973756abc56b6f6b3d35e1f59eee9722e",
+      ".specsync": "5e344e365adb9e9e679c915bd2b3f469cce72802",
+      ".specsync/changes": "5b8bc07c34896d8e00b6567734878824cfd7074f",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "b24c881bd2b8f662a9a1b08d4a1fa11a0ae7a6c5",
+      ".specsync": "aa37ccc2b4aa9488b1049c22bf4b5e8ef46ac4d3",
+      ".specsync/changes": "8245df898194107aaf5a0ad2233f0969f27d2802",
+      ".specsync/archive/changes": "48b94fbfceaa8240d51686439290df66722ba5da",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "9317ca938000b1b56e953b5ffe16f2b877e89297",
+      ".specsync": "0bb65c83f2d79471bcfd01dd4f0da1168e18752b",
+      ".specsync/changes": "c27b7a1f97969b26d8d29a584848fdcad1d0f877",
+      ".specsync/archive/changes": "38c7b41478ad9929c0b5e72d1455e2be71ee5a6c",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "be09e39075bd14a77172450b76dc9ed37af8fcd6",
+      ".specsync": "27e8cf587381489452573d05155c817e11be9fd3",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "86bc3a8769b209a1e01d3d0804d923cdfc269102",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "7b3d4fcab3b64088a1268eb11c5823cf06ac98f3",
+      ".specsync": "27e8cf587381489452573d05155c817e11be9fd3",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "86bc3a8769b209a1e01d3d0804d923cdfc269102",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "e2a3e5876d35d8ea7eeefb5787ced352190abd58",
+      ".specsync": "31835abbcffeb235d0ef20a7dd4f9e3cb4f4bef0",
+      ".specsync/changes": "6e5f2addd3bfc733b11fdb6320c92184f356f5ab",
+      ".specsync/archive/changes": "dada8878467ea2672f826a924d8aa682a0f9976c",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "55208bd1bc48cff3b6b1946fd20df77acf8f12b3",
+      ".specsync": "c704103489ef095874034e2eee24f531cbfd812e",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "292496e25e9fde0c7abf707d61e359c9706beb56",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "6fde285473f3fa3b6efd45bc0582b3826ec8775d",
+      ".specsync": "c704103489ef095874034e2eee24f531cbfd812e",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "292496e25e9fde0c7abf707d61e359c9706beb56",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "e4eadd817a38127a1ebf49815b599cd89cfbefd0",
+      ".specsync": "353c152fbab05d499cb7434bcf4d485c93f8affc",
+      ".specsync/changes": "2b5442a2de1ee25325bd2f158e295aaccb12480d",
+      ".specsync/archive/changes": "292496e25e9fde0c7abf707d61e359c9706beb56",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "7a8126781c64a906659f4b25ee4fd46b031d3b2a",
+      ".specsync": "c9614bc0142527caf483a4aebea2ef4ab76fa124",
+      ".specsync/changes": "c3394925e2a409f80ba82483c865faa84039c645",
+      ".specsync/archive/changes": "86bc3a8769b209a1e01d3d0804d923cdfc269102",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b9255b4fcdf72adcc73559ab49b8e0e549b68a82"
+    },
+    {
+      "revision": "f2a0c94e4938b1048a75e8bc85d95b0f9feedd22",
+      ".specsync": "6b79e5183fa263fad2147a9f093a53233e55a6ce",
+      ".specsync/changes": "2cbdb5e0267ad59f3866556f5e8ddefef5aff085",
+      ".specsync/archive/changes": "292496e25e9fde0c7abf707d61e359c9706beb56",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "580ca2385e8700dcba4b2ae3664b85eaa033f81f"
+    },
+    {
+      "revision": "9dd30dd5d27720c33fab3fcf97dbce345fe3d482",
+      ".specsync": "b781b367f79e724f056a508215a936687d4e0673",
+      ".specsync/changes": "6369a523a6b3467ac7084e4499a6fdcbcd770f8a",
+      ".specsync/archive/changes": "0e2364503d80ac20bd4ab9426aeceeadafcfc411",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "62cdd945a52ef640b922e43b21d0834623f7b520"
+    },
+    {
+      "revision": "7e758a4052b69591f18533cd334273db2ce25aea",
+      ".specsync": "88faf626528291b063423d429fa6a8a10db54d18",
+      ".specsync/changes": "37484f78541eb6cf1b90bbbb4f105be41b84d238",
+      ".specsync/archive/changes": "0e2364503d80ac20bd4ab9426aeceeadafcfc411",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "62cdd945a52ef640b922e43b21d0834623f7b520"
+    },
+    {
+      "revision": "4f82d3c235545eb7ea32c9413ee971ceae527644",
+      ".specsync": "e56cad9aae88574e0f2232de94cf05dfe6ba5933",
+      ".specsync/changes": "2cbdb5e0267ad59f3866556f5e8ddefef5aff085",
+      ".specsync/archive/changes": "d21a97629164b76481bfc11694080059f8896a26",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b7b02fb9dc9c8d9e77925579aad3d9b380b03d2e"
+    },
+    {
+      "revision": "cb7dad29fc253698fc074b1a0268d04b8badf5c1",
+      ".specsync": "9ac2529f7c48b76af4525e4d9611f822ead7f893",
+      ".specsync/changes": "885b8d0e9de9d3e1a222a660bd5554e0fd99d9f8",
+      ".specsync/archive/changes": "8743fd8f01c170b71580297284add7b7b25af62b",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "d59d66b80d5fe9b6d66c1feb92617434ea8a2483"
+    },
+    {
+      "revision": "f79d63d0cc054cfc79c59e50432d26cd2f15fc49",
+      ".specsync": "da458f20fa46a1a520f5d0d076db5fc1b3b76390",
+      ".specsync/changes": "c06dc9b1182466b31d2653beb8117a3a5e58d9fb",
+      ".specsync/archive/changes": "d21a97629164b76481bfc11694080059f8896a26",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "b7b02fb9dc9c8d9e77925579aad3d9b380b03d2e"
+    },
+    {
+      "revision": "571347572399fc0ad9b80b169621e437e7edc5cb",
+      ".specsync": "3a90905fe26b438c494b132654ae9fd4da2cdca7",
+      ".specsync/changes": "ba16746a82ea3f0c4a2dfdf2deff4b0799e74057",
+      ".specsync/archive/changes": "8743fd8f01c170b71580297284add7b7b25af62b",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "d59d66b80d5fe9b6d66c1feb92617434ea8a2483"
+    },
+    {
+      "revision": "48d62f0113adb4a3dca92824efd17f77bf8da767",
+      ".specsync": "20d124337b08daae356a82508cc858948fa137e5",
+      ".specsync/changes": "e189f06f51d832ee7eaa316f4b3ee62e423e64ae",
+      ".specsync/archive/changes": "8743fd8f01c170b71580297284add7b7b25af62b",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "d59d66b80d5fe9b6d66c1feb92617434ea8a2483"
+    },
+    {
+      "revision": "cb320fbae890ff01c1d6399987e48e698e1c73c6",
+      ".specsync": "03fd2091f302f9b04edfe04d0aaaefc3e3523cc7",
+      ".specsync/changes": "15468a730ba9f45d82461ace481880c910216123",
+      ".specsync/archive/changes": "8743fd8f01c170b71580297284add7b7b25af62b",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "d59d66b80d5fe9b6d66c1feb92617434ea8a2483"
+    },
+    {
+      "revision": "3e9ebc82cea73fe2b6c0ebfc81225cc21c9e8ba9",
+      ".specsync": "680f9b90227e4eaab0f3ffa721c6e9fb3eeb8dc6",
+      ".specsync/changes": "f5d616c19e755e52ebf6ded57e7f8281e25ce419",
+      ".specsync/archive/changes": "8743fd8f01c170b71580297284add7b7b25af62b",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "d59d66b80d5fe9b6d66c1feb92617434ea8a2483"
+    },
+    {
+      "revision": "0df1cd971acf4588491d9a3c97fe701b9c4b5f59",
+      ".specsync": "2cb482e9d0fc463843b1a40da9de4ab06e9007ba",
+      ".specsync/changes": "c18a2df453a54ac2e23f99e7be1c7d59dd14a354",
+      ".specsync/archive/changes": "8743fd8f01c170b71580297284add7b7b25af62b",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "d59d66b80d5fe9b6d66c1feb92617434ea8a2483"
+    },
+    {
+      "revision": "421e8ce2e7db86822c9a75c91bd9f977aca2c7af",
+      ".specsync": "2c39a1a0172f8cb858b9de2ca78757a6165b869f",
+      ".specsync/changes": "947f61d411d7b4a80c39d68cda57b38a4279248b",
+      ".specsync/archive/changes": "0c9f7099c63ce9c2aff95bbfe96e3d85a6a2ae83",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "4ac9e79763791df80283076f853af87ae75e0237"
+    },
+    {
+      "revision": "05d4ec15790869c240ebfc926e91bbce9d0dbb70",
+      ".specsync": "0bce85cfa459c80e447122ccedeab1e050c745c7",
+      ".specsync/changes": "6cd944313122f7e2d8c3e54f26e2a8004b5ea4c7",
+      ".specsync/archive/changes": "515f5022ff3fd46ac6770b4259b36bd15f22cd4a",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "d59d66b80d5fe9b6d66c1feb92617434ea8a2483"
+    },
+    {
+      "revision": "69976a4bf200087adb665906b32d63ed14877407",
+      ".specsync": "09ab69e99ec1cdfadb338013373d57e5fb2dea52",
+      ".specsync/changes": "e72b7b5890f3f10d31003974a38247fc41a371ea",
+      ".specsync/archive/changes": "0c9f7099c63ce9c2aff95bbfe96e3d85a6a2ae83",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "4ac9e79763791df80283076f853af87ae75e0237"
+    },
+    {
+      "revision": "bb9853641040af6bd29dba37ceba55b1c671d713",
+      ".specsync": "a604b40c954766f2842d2cca0d8eba02a172c862",
+      ".specsync/changes": "3b674521540b83eb4ecf76a4cd185605bd36769e",
+      ".specsync/archive/changes": "af9c0cac727a4d6bd8ab3e553d7bff0677129219",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "377cc9c4cd419c7ccd6cac9b8d2a09fd4ac45d51"
+    },
+    {
+      "revision": "04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9",
+      ".specsync": "d75f472ff770ffe73c0489e67abb85db0c082325",
+      ".specsync/changes": "e72b7b5890f3f10d31003974a38247fc41a371ea",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "a288b0679070ddbdfa91ace081136e196c4bc5b5",
+      ".specsync": "904a38b7141f2015a930ac525f9d1d1b8cb1cc6b",
+      ".specsync/changes": "9392b6a0b4ae918de57dc99df749abf39500c9b3",
+      ".specsync/archive/changes": "af9c0cac727a4d6bd8ab3e553d7bff0677129219",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "377cc9c4cd419c7ccd6cac9b8d2a09fd4ac45d51"
+    },
+    {
+      "revision": "2d428c4f063960aa0fbae3d2642b09f415090bf3",
+      ".specsync": "312abf117118b041301fc735600508b606596926",
+      ".specsync/changes": "4e52186338223c6db783ac24be7a89eaa224aad7",
+      ".specsync/archive/changes": "af9c0cac727a4d6bd8ab3e553d7bff0677129219",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "377cc9c4cd419c7ccd6cac9b8d2a09fd4ac45d51"
+    },
+    {
+      "revision": "3cb53d6e6c8d2065aa4e5a73c721ea19dfc8ccb7",
+      ".specsync": "31721db555b1558a3c9d36546b7800bdeec5d13e",
+      ".specsync/changes": "0de5c67e2c2f2ec00a47fcc8076d93539f90ed14",
+      ".specsync/archive/changes": "af9c0cac727a4d6bd8ab3e553d7bff0677129219",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "377cc9c4cd419c7ccd6cac9b8d2a09fd4ac45d51"
+    },
+    {
+      "revision": "651e1285dc0cd936eb4a9c3cebf7064d71bee663",
+      ".specsync": "f777147dfdedcbd003c2c68656ae0c41c53afa15",
+      ".specsync/changes": "b460d84d3d605404cdd875219b9f4f5698c306ea",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "b5701263127658a79a2f2d8dcf61e6506c19a706",
+      ".specsync": "0226169917ff99cf4d705f7e354c2e106d2cc427",
+      ".specsync/changes": "4b21ba127c105be5002e06f72fd85b6ce6e4bb28",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "4f57e37ed8899516b1ba646432e426e5e69dd3a1",
+      ".specsync": "0fafa4ed34b7f751e3c31721c0f45b6120ad19e3",
+      ".specsync/changes": "307db3df342e0cec5a235ab8eaeedbfdabf0c185",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "da02ed23112ae89d228c73c754d02b304d751d00",
+      ".specsync": "04443adccab68f486449feb3180c8119c4034d6d",
+      ".specsync/changes": "9559197b931fbf392b028c43b2697f03d4f6491e",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "372f563ba262449214b994134c57f07fc1b329d9",
+      ".specsync": "1d1511c36e89c33a04738385c51dec0cfdbf871c",
+      ".specsync/changes": "ec551e08d7f425eaf58ef3d813aa0e0871f0b35d",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "e4c71baf4393e82bc2badb239b95b18b34034f72",
+      ".specsync": "a03a773aefbad54905f74ce40c0d098f700e8f5d",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "524ce7d03c4d5cdc36db01c7525d90d1b46e51c2",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "377cc9c4cd419c7ccd6cac9b8d2a09fd4ac45d51"
+    },
+    {
+      "revision": "a2e70bff42f39f922a9fe13c34bda6b2e28b7a0b",
+      ".specsync": "8fa7b31886d1485f2093616dd69f847b044bcd47",
+      ".specsync/changes": "44c607b317d70f2f4a80fac738a4e68b77223bbf",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "2caacd527054a9690c24b093932743b67e480530",
+      ".specsync": "c967fe580cd9fbb07ee16d283b12926c1f9c2072",
+      ".specsync/changes": "cc3af122108b1f34091d6dee63476f0ebd802c7e",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "d23ef42534b8d1d59229d4e84d8274072dbd6f74",
+      ".specsync": "a03a773aefbad54905f74ce40c0d098f700e8f5d",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "524ce7d03c4d5cdc36db01c7525d90d1b46e51c2",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "377cc9c4cd419c7ccd6cac9b8d2a09fd4ac45d51"
+    },
+    {
+      "revision": "d87787a8b4c219b17bd88165ea912e3eb419853c",
+      ".specsync": "0fbd4595c79256a3c662e039315d006ccdc29d4e",
+      ".specsync/changes": "93ec1502bf92eb09bcbce5296634e8dd324113b6",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "28276f56958ca3151d07a89be9c74298a7e8027e",
+      ".specsync": "ca4bce4b3fa682d77888c1b5b6accd14e9ab0274",
+      ".specsync/changes": "6890173ecf5f95e6961daf3244652cd62998aa39",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "69d8afcf75b6b51029a0f80480332cfd23bf5700",
+      ".specsync": "ef994260c0b1b4fd5245e72135bcb143f7cf9ae1",
+      ".specsync/changes": "821e45962de02ec1751d245463a1e4faea699d08",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "a792054baa89e46740be74167e72f1413170e7fd",
+      ".specsync": "d748626dd5556fdd7e56ee261a3278022601f080",
+      ".specsync/changes": "d9053f54ae6d3e087474bba073a301ac34a2b034",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "3e2cd26b98588374e24d82b67ab1f2614ad5e054",
+      ".specsync": "c70530775004f4952f5f4a6584f4559ebf6996d7",
+      ".specsync/changes": "987a4a9214b00b5b7de2864e0e4bc868462bba9f",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "26a5acd72dc7b901d6f44e42f56bc1c1ab232d60",
+      ".specsync": "882bc49be100d86df38e7aaed8ab152fd3c65d7a",
+      ".specsync/changes": "e6570887fdf545ed42e3b5c0ebd41339d69af56c",
+      ".specsync/archive/changes": "709701bc680536ae53c39d1676866a10cacb12c5",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "e462f4a473cae8f82770cce6aef21f895668877c",
+      ".specsync": "9f88ae9950cfe9b4a1f85d6c66bf869ef7566d01",
+      ".specsync/changes": "30e02c0df1bae6873bbd7b0f9da42e1c066a5fb6",
+      ".specsync/archive/changes": "11df7184011100ff6fbd3578346b20e2574f3fd0",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "7b63a415088a9bbc1263854cfa4d4e3d3f7eb9b2",
+      ".specsync": "da3151ea2c9685b00e5febd7c7d5777db03d691e",
+      ".specsync/changes": "ba829ca59c1497ffd6af6fa681e0046ca3600a67",
+      ".specsync/archive/changes": "030cfa13c2c0595e24e35797e1c0eb330b430cda",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "9e8b1788815841697ca0a10153742a629e1dd859",
+      ".specsync": "8080c702bc0e91863c9cf2b1ed5169daef2fe4d2",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "1ece23b6e334b22662a8d621c3428fc192492675",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "3e25fb494c15cb64d4e9f3ef209729e96fc968a5",
+      ".specsync": "8080c702bc0e91863c9cf2b1ed5169daef2fe4d2",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "1ece23b6e334b22662a8d621c3428fc192492675",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "15baeececfb21e2e8fc413227b32581f6215cf6c",
+      ".specsync": "7e9ff10920de071051e4f094624c0be11bb98b6f",
+      ".specsync/changes": "f7e99441967dbaf803a9164314e4da1d7d886210",
+      ".specsync/archive/changes": "1ece23b6e334b22662a8d621c3428fc192492675",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "8da4eba312b8ca918623531b07138af1ba87e09e"
+    },
+    {
+      "revision": "ef4e192836ee369535c986b65e99797a8f24b091",
+      ".specsync": "6c14a23541fa8812a83f62c79cb347878802a32b",
+      ".specsync/changes": "d62e559888b3e9587a15ab5840c9d31649f2cf40",
+      ".specsync/archive/changes": "524ce7d03c4d5cdc36db01c7525d90d1b46e51c2",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "377cc9c4cd419c7ccd6cac9b8d2a09fd4ac45d51"
+    },
+    {
+      "revision": "769b5269b87d2f822a1b41a4276eccd7d0fa3770",
+      ".specsync": "1ea30ee294d84d3ae83a6b25eed35912a2f06f5c",
+      ".specsync/changes": "50798b4a646fe20da3079cff21abd694dde25e26",
+      ".specsync/archive/changes": "f4e246e82ac690b92000479d0e1181d7c73fab69",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "10f329a6c7888190f0d3dce6b71d3bc8ed8abb70"
+    },
+    {
+      "revision": "cb478ba5e70c4d7ed7fa21c13d7209afc4bd64c8",
+      ".specsync": "8db594e4947358f5f9830769fc1df88e231355e8",
+      ".specsync/changes": "d62e559888b3e9587a15ab5840c9d31649f2cf40",
+      ".specsync/archive/changes": "79ee6ad1d1f40604866038608c7150451eea52f3",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "bdd0fc3650a0991f6b0ef60da1bde46cdebf1938"
+    },
+    {
+      "revision": "c14c39db5b4f7e3d7edc7cedfd2c963a2ea30a19",
+      ".specsync": "49a7b0374d47b7773aa26636a40156da22ab1c7a",
+      ".specsync/changes": "4b390c38ddd9bbb9320c73f5ad2f626db9c21542",
+      ".specsync/archive/changes": "f4e246e82ac690b92000479d0e1181d7c73fab69",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "10f329a6c7888190f0d3dce6b71d3bc8ed8abb70"
+    },
+    {
+      "revision": "5d66cfa8810f565e54ab185d696fc4fad86a9cc4",
+      ".specsync": "2fbb68ce5d0f902d22c7af423c3a903256da60dc",
+      ".specsync/changes": "03a666972c94d03363e633017ce766511d12d188",
+      ".specsync/archive/changes": "f4e246e82ac690b92000479d0e1181d7c73fab69",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "10f329a6c7888190f0d3dce6b71d3bc8ed8abb70"
+    },
+    {
+      "revision": "f59bc0a7fe736268479f1a21104e68c97b4a4ef7",
+      ".specsync": "cafda79ae5494d514f8727975d829113d71224ba",
+      ".specsync/changes": "83fa828923720ed58914a156969cd6eeb2ee0338",
+      ".specsync/archive/changes": "f4e246e82ac690b92000479d0e1181d7c73fab69",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "10f329a6c7888190f0d3dce6b71d3bc8ed8abb70"
+    },
+    {
+      "revision": "ea9b765d3d8367457aa801a39853bb8c6169a00e",
+      ".specsync": "26b67a48d215043e4142c829d3ede1d35dad9be3",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "5dde4b427929f68b6eb744b44bb9731ad3b79531",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "10f329a6c7888190f0d3dce6b71d3bc8ed8abb70"
+    },
+    {
+      "revision": "122b8e9e8b913b49e618c59c2906e9e26613fd7e",
+      ".specsync": "26b67a48d215043e4142c829d3ede1d35dad9be3",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "5dde4b427929f68b6eb744b44bb9731ad3b79531",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "10f329a6c7888190f0d3dce6b71d3bc8ed8abb70"
+    },
+    {
+      "revision": "b04a8d517837c28e0912bb8af832845fc9a5bfaa",
+      ".specsync": "f4ac233b0c83b708eaaaf5931ed659c0fe5888f8",
+      ".specsync/changes": "1f32afa7a12a6eb98f8efd978b1c8d356acd7227",
+      ".specsync/archive/changes": "9799c0ea26d1104a7caecbe7824dd8bdfdfc2c77",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "ae831713f99c9fd52ec18607b55cf0693897cb68"
+    },
+    {
+      "revision": "b050046ea6a7f530f618a7f190ac9ca5a143e41e",
+      ".specsync": "c17b271597487cd5becccd433dfaf88d2fbae434",
+      ".specsync/changes": "8cab398aca3c46c1dee997e2c0a754a6e5bcbd4b",
+      ".specsync/archive/changes": "9799c0ea26d1104a7caecbe7824dd8bdfdfc2c77",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "ae831713f99c9fd52ec18607b55cf0693897cb68"
+    },
+    {
+      "revision": "c75f23e3fb420f4db44dc050b59078bf737475ab",
+      ".specsync": "1e1bc3683a764859665634889e76fa41b0b1cb73",
+      ".specsync/changes": "650b3f00c3a87cfc3ee117112f1a393b505e4271",
+      ".specsync/archive/changes": "9799c0ea26d1104a7caecbe7824dd8bdfdfc2c77",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "ae831713f99c9fd52ec18607b55cf0693897cb68"
+    },
+    {
+      "revision": "482f6f7967b63e8ed5ae845dc4c07d26503be44c",
+      ".specsync": "3ec1993a7baf7d9030388711bba2d8de6fed17a5",
+      ".specsync/changes": "4fb121c1a8b70effb3f49d3b7a81488b5cd5d1ba",
+      ".specsync/archive/changes": "9799c0ea26d1104a7caecbe7824dd8bdfdfc2c77",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "ae831713f99c9fd52ec18607b55cf0693897cb68"
+    },
+    {
+      "revision": "9bea9ddf2f1abdba0426abdbc815792b1a5f94dc",
+      ".specsync": "e228f671e1b3bce958f2a22d3225feb2f0a03c48",
+      ".specsync/changes": "c303ee661a24699b60ce1cb78e320eddf31c2afb",
+      ".specsync/archive/changes": "9799c0ea26d1104a7caecbe7824dd8bdfdfc2c77",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "ae831713f99c9fd52ec18607b55cf0693897cb68"
+    },
+    {
+      "revision": "3905b29c088f1d039eb74e313932c909dee38ea6",
+      ".specsync": "ac74c7fab7b1c7099c4a3a954c18cd25ce391a00",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "f1887624210eb58eea3d1fb6c9f7efcc23a1f186",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "ae831713f99c9fd52ec18607b55cf0693897cb68"
+    },
+    {
+      "revision": "9af1921a3bb1f7092d364a18489cb3028e97ff26",
+      ".specsync": "ac74c7fab7b1c7099c4a3a954c18cd25ce391a00",
+      ".specsync/changes": null,
+      ".specsync/archive/changes": "f1887624210eb58eea3d1fb6c9f7efcc23a1f186",
+      ".specsync/config.toml": "6d629e25a174796a8d1209c57922c6a802aef94a",
+      ".specsync/sdd.json": "82849b625bf23538a27e55a148bb6d03b3dd0cec",
+      "specs": "ae831713f99c9fd52ec18607b55cf0693897cb68"
+    }
+  ]
+}

@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "integrate-accepted-history-and-workflow-changes-into-pr-46-report-reads",
+  "native_change": "bound-independent-archive-authentication-workers-without-changing-validation-or-budgets",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -145,7 +145,8 @@
       ".chough/evidence/OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56.json",
       ".chough/evidence/OBS-product-test-c15c11e67b8c42a50a4cf835.json",
       ".chough/artifacts/pr46-checkpoint-reference-index/policy.json",
-      ".specsync/changes/make-native-workflow-stage-references-and-installed-copies-consistent/change.md"
+      ".specsync/changes/make-native-workflow-stage-references-and-installed-copies-consistent/change.md",
+      ".chough/artifacts/pr46-archive-executor-performance"
     ]
   },
   "decisions": [
@@ -234,7 +235,9 @@
     "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: finish the reviewed PRs through native closeout and current-head qualification under his standing through-PR authorization; merge remains his.",
     "Acting project agent: corvid-agent. Human source: 0xLeif explicitly said \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02, supplementing the standing through-PR permission relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 and \"Can you finish up all these?\". Scope: resynchronize PR44 with already squash-merged PR37 at main a788869b32b8442cbc8d7be2bf19c19a922954a8, preserve both accepted implementations and immutable proof, qualify and push normally. Root alone records native review/ship and done; this worker never merges. No new as-is human acceptance, release, deployment, live history adoption or cleanup is inferred.",
     "agent: root instructed that this worker holds the PR44 feature push after final committed verification. Root obtains independent local review, records native closeout and done, then publishes one fully closed head; origin remains3e25fb4 until that root push.",
-    "agent owner choice: retain24superseded observation records as direct protected file references because202active pointers exceeded200; reviewed policy and raw parents are frozen in pr46-checkpoint-reference-index"
+    "agent owner choice: retain24superseded observation records as direct protected file references because202active pointers exceeded200; reviewed policy and raw parents are frozen in pr46-checkpoint-reference-index",
+    "Agent corvid-agent applies 0xLeif standing through-PR ticket permission and chat instruction \"Merge approved, green PRs and resynchronize\" to the PR46 archive executor performance fix. All native obligations, validation, 90-second commands and 10-minute job budget stay unchanged. No evidence rewrite, longer timeout, release or deployment is authorized.",
+    "Agent corvid-agent records delegated native closeout of the bounded PR46 executor fix under 0xLeif standing through-PR authority and explicit finish/merge instruction. Peer review and local verification are retained. Exact-head GitHub approval and every hosted check still gate merge."
   ],
   "open_questions": [],
   "completed": [
@@ -560,7 +563,8 @@
     "OBS-tc-cli-history-stale-receipt-age-203b265586946389698fd05d",
     "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-0778ba54ff9fb8195049264d",
     "OBS-product-test-aa419d1f9bdc110656237352",
-    "OBS-product-test-5d54b74c587c2cbf5bcab49f"
+    "OBS-product-test-5d54b74c587c2cbf5bcab49f",
+    "OBS-product-test-eed7c8236164fee33d58226f"
   ],
   "bugs": [
     "BUG-0001",
@@ -593,5 +597,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR46 after current corvid-agent approval and all checks pass, then verify main. User authorized merge and resynchronization."
+  "next_action": "Record native verification and closeout, push final PR46 head, require exact-head review and green checks, merge, then verify main."
 }

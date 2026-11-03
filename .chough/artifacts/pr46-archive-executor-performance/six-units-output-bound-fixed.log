@@ -1,0 +1,13 @@
+▶️ Running task: ci-archive-fixtures
+test_errors_are_reported_in_id_order_not_completion_order (__main__.ArchiveExecutorTests.test_errors_are_reported_in_id_order_not_completion_order) ... ok
+test_failure_drains_running_and_queued_reads_before_final_fingerprint (__main__.ArchiveExecutorTests.test_failure_drains_running_and_queued_reads_before_final_fingerprint) ... ok
+test_invalid_archive_results_block (__main__.ArchiveExecutorTests.test_invalid_archive_results_block) ... ok
+test_missing_archive_blocks_before_native_reads (__main__.ArchiveExecutorTests.test_missing_archive_blocks_before_native_reads) ... ok
+test_native_errors_timeouts_and_output_bound_block (__main__.ArchiveExecutorTests.test_native_errors_timeouts_and_output_bound_block) ... ok
+test_two_workers_overlap_and_read_every_id_once (__main__.ArchiveExecutorTests.test_two_workers_overlap_and_read_every_id_once) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.347s
+
+OK
+✅ ci-archive-fixtures (0.5s)
