@@ -24,7 +24,11 @@ All notable changes to Chough are recorded here. The format follows
   detailed in the entry of the archive that first listed them, at most 100 rows), and
   `library init`, `index` and `snapshot` build everything before writing, so a refusal
   leaves no partial `knowledge/` folder.
-
+- The cli spec module is split so its requirements companion has headroom under the
+  65,536-byte record bound: REQ-cli-018 and REQ-cli-025 to REQ-cli-027 are now
+  REQ-history-001 to REQ-history-004 in the new `history` module, with wording
+  unchanged, and their 22 cases moved to `.chough/cases/history.cases.toml` as
+  `TC-history-` cases. The ID mappings are in docs/FRD.md and specs/history/.
 - `--host claude` now installs and updates the one shared `.agents/skills` copy instead
   of a second `.claude/skills` copy, and hosts that share a directory get it once
   (LIFE-12). `skill status` and `skill update` report an existing `.claude/skills`

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-split-keeps-requirement-wording-0f85c5fa642b0c61c2577206",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-001",
+    "REQ-history-002",
+    "REQ-history-003",
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test spec_split for TC-history-split-keeps-requirement-wording: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-split-keeps-requirement-wording-0f85c5fa642b0c61c2577206.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-split-keeps-requirement-wording-0f85c5fa642b0c61c2577206.log": "7b2fccc54741bb4b1d60817b0de00bfc60efa637fd0456f7cabee1d55c8c7c3e"
+  },
+  "observed_at_unix_seconds": 1793725061,
+  "snapshot": {
+    "revision": "fcf54362e9b2a32d6b989e296892164e98127695",
+    "dirty": false,
+    "fingerprint": "2abe1a57600bdaa89dcb4294e72dc6e168f65c67a83e99b6341563bc2cea6f7e",
+    "content": "bcbee24e42d92513f6a348e6ccc4356b109ad37513c0c8169fb5603bbd707400"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-split-keeps-requirement-wording",
+      "digest": "4b2c300269ea0b8a35ad22b1eca7c2479c4eee13b0ff7abf34b53aed5363b3dc"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "spec_split"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

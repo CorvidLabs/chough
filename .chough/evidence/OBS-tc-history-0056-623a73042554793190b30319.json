@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-0056-623a73042554793190b30319",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-history-001"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact native_manifests_protect_their_sets_and_a_failed_read_protects_everything for TC-history-0056: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-0056-623a73042554793190b30319.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-0056-623a73042554793190b30319.log": "f635a3e79f8de7f5758646f1927f0a1c7fbe4510556113aecf3eaa7d064add6e"
+  },
+  "observed_at_unix_seconds": 1793725021,
+  "snapshot": {
+    "revision": "fcf54362e9b2a32d6b989e296892164e98127695",
+    "dirty": false,
+    "fingerprint": "2abe1a57600bdaa89dcb4294e72dc6e168f65c67a83e99b6341563bc2cea6f7e",
+    "content": "bcbee24e42d92513f6a348e6ccc4356b109ad37513c0c8169fb5603bbd707400"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-0056",
+      "digest": "49915c1d78e638db23b5540c018f6959a618c26a6366b282a2115b57b070685b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "native_manifests_protect_their_sets_and_a_failed_read_protects_everything"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

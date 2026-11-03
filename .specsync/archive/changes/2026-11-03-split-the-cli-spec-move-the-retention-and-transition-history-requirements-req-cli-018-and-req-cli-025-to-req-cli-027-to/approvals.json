@@ -1,0 +1,110 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793724825,
+      "digest": "e5cf6ff3b66e9fa6ae5d5440e606da5d240e96fbb221fdf7e4b04ff604c064f3",
+      "note": "Agent account corvid-agent records definition approval under the parent agent's instruction of 2026-11-03 9:46 AM MT (option 1: split the cli spec module so specs/cli/requirements.md has headroom; keep wording and IDs stable or document an ID mapping SpecSync needs; weaken nothing; do not raise the limit), within corvid-agent's standing authority for structural refactors. No direct human scope approval is claimed. Limits: no wording, binding or test changes, no limit raise, archived changes, evidence and bug records untouched, no release or deployment. Independent review and final acceptance are arranged by the parent.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
+        "title": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
+        "description": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          ".specsync/registry.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/architecture.md",
+          "specs/cli/",
+          "specs/history/",
+          "src/evidence.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A test proves the move lost nothing: every moved requirement body has the SHA-256 it had at main 7bd1b62, every REQ-cli ID from 001 to 032 is either still in specs/cli or mapped, and a one-time before/after comparison of all 32 blocks is recorded",
+          "The ID mapping is documented in docs/FRD.md and the history module context, and the cases that link the moved requirements move to .chough/cases/history.cases.toml under a documented case ID mapping with their bindings unchanged",
+          "fmt, lint, the full tests, every moved case and fledge lanes run verify pass",
+          "specs/cli/requirements.md is at most 59000 bytes, the record limit stays 65536 and no requirement, case binding or test is weakened",
+          "specs/history is a new module that owns src/history.rs, tests/history.rs and tests/evidence.rs and holds REQ-history-001 to REQ-history-004, each with the exact wording of REQ-cli-018, REQ-cli-025, REQ-cli-026 and REQ-cli-027; the old IDs are removed from specs/cli and become tombstones"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "AGENTS.md: preserve existing files and records; never invent results. SpecSync requires REQ-<module>-<number> IDs per delta module and keeps removed IDs as permanent tombstones, so moved requirements get new history IDs with a documented mapping. Archived changes, evidence and bug records stay untouched. Parent agent instruction 2026-11-03 9:46 AM MT: split rather than raise the limit, keep wording, do not weaken anything",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "efd57eceb39562f050ab1fbf6e8b93c5194e5a7a4370ef33b3e0049e3428f67b",
+        "history": "d3be2f879a5ceb4e759e4c06e387d1749194bf46053694e163ad630fea27eb00"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793725746,
+      "digest": "e5cf6ff3b66e9fa6ae5d5440e606da5d240e96fbb221fdf7e4b04ff604c064f3",
+      "note": "Agent account corvid-agent re-records definition approval with the human authority source. Leif (0xLeif) in chat, 2026-11-03 10:05 AM MT: \"Ideally, we should have a guidance to try to keep stuff lean and not try to, you know, just have a single spec file for everything, and we should break stuff apart and decouple it if possible but if things need to be coupled, that's fine.\" The split was first instructed by the parent agent at 9:46 AM MT (option 1); this approval adds Leif's own words and does not change the approved scope. Limits unchanged: no wording, binding or test weakening, no limit raise, archives, evidence and bug records untouched, no release or deployment.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
+        "title": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
+        "description": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          ".specsync/registry.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/architecture.md",
+          "specs/cli/",
+          "specs/history/",
+          "src/evidence.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A test proves the move lost nothing: every moved requirement body has the SHA-256 it had at main 7bd1b62, every REQ-cli ID from 001 to 032 is either still in specs/cli or mapped, and a one-time before/after comparison of all 32 blocks is recorded",
+          "The ID mapping is documented in docs/FRD.md and the history module context, and the cases that link the moved requirements move to .chough/cases/history.cases.toml under a documented case ID mapping with their bindings unchanged",
+          "fmt, lint, the full tests, every moved case and fledge lanes run verify pass",
+          "specs/cli/requirements.md is at most 59000 bytes, the record limit stays 65536 and no requirement, case binding or test is weakened",
+          "specs/history is a new module that owns src/history.rs, tests/history.rs and tests/evidence.rs and holds REQ-history-001 to REQ-history-004, each with the exact wording of REQ-cli-018, REQ-cli-025, REQ-cli-026 and REQ-cli-027; the old IDs are removed from specs/cli and become tombstones"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "AGENTS.md: preserve existing files and records; never invent results. SpecSync requires REQ-<module>-<number> IDs per delta module and keeps removed IDs as permanent tombstones, so moved requirements get new history IDs with a documented mapping. Archived changes, evidence and bug records stay untouched. Parent agent instruction 2026-11-03 9:46 AM MT: split rather than raise the limit, keep wording, do not weaken anything",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "efd57eceb39562f050ab1fbf6e8b93c5194e5a7a4370ef33b3e0049e3428f67b",
+        "history": "d3be2f879a5ceb4e759e4c06e387d1749194bf46053694e163ad630fea27eb00"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793726056,
+      "digest": "7c966ee93ae80f99f6fdd96a12e388f017cf47a553349cd6fa43adb79eee16ac",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

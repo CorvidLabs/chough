@@ -67,13 +67,14 @@
       "REQ-cli-009",
       "REQ-cli-005",
       "REQ-cli-030",
-      "REQ-cli-025",
-      "REQ-cli-026",
-      "REQ-cli-027",
+      "REQ-history-002",
+      "REQ-history-003",
+      "REQ-history-004",
       "REQ-cli-028",
       "REQ-cli-032",
       "REQ-cli-015",
-      "REQ-cli-033"
+      "REQ-cli-033",
+      "REQ-history-001"
     ],
     "cases": [
       "TC-cli-0101",
@@ -113,16 +114,16 @@
       "TC-cli-sdd-off-names-specsync-change-adopt",
       "TC-cli-agent-native-workflow-upgrade",
       "TC-cli-native-workflow-bundle-consistency",
-      "TC-cli-history-adoption",
-      "TC-cli-history-branches",
-      "TC-cli-history-bounds",
-      "TC-cli-history-retention",
-      "TC-cli-retention-revalidation",
-      "TC-cli-history-legacy-timing-bounds",
-      "TC-cli-history-frozen-reference-aliases",
-      "TC-cli-history-closing-reset-age",
-      "TC-cli-history-stale-receipt-age",
-      "TC-cli-history-post-prune-reference",
+      "TC-history-adoption",
+      "TC-history-branches",
+      "TC-history-bounds",
+      "TC-history-retention",
+      "TC-history-retention-revalidation",
+      "TC-history-legacy-timing-bounds",
+      "TC-history-frozen-reference-aliases",
+      "TC-history-closing-reset-age",
+      "TC-history-stale-receipt-age",
+      "TC-history-post-prune-reference",
       "TC-cli-same-second-runs-in-two-git-roots-stay-distinct",
       "TC-cli-independently-added-records-merge-cleanly",
       "TC-cli-report-case-read-budget",
@@ -139,7 +140,8 @@
       "TC-cli-archive-summary-preview",
       "TC-cli-archive-summary-apply",
       "TC-cli-knowledge-entries-bounded",
-      "TC-cli-archive-summary-fails-closed"
+      "TC-cli-archive-summary-fails-closed",
+      "TC-history-split-keeps-requirement-wording"
     ],
     "design": [],
     "files": [
@@ -303,7 +305,8 @@
     "Agent corvid-agent assumption: only the claude host is remapped to .agents/skills; codex, cursor, gemini and grok keep their directories because Leif's 8:27 AM answer named .claude only",
     "Agent corvid-agent applies Human authority: Leif (0xLeif) chat 2026-11-03 8:09-8:27 AM MT interview answers 'Only the shared .agents copy' and 'Remove .claude entirely' (relayed intent approval; final acceptance is his next decision). Covered scope: claude->.agents mapping, legacy report, explicit remove-legacy, this repo's .claude removal, docs. Limits: other hosts unchanged, edited legacy files kept, no release",
     "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases",
-    "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's."
+    "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's.",
+    "Agent corvid-agent: chose the retention and transition-history group because it shares no case with a requirement that stays in cli and owns src/history.rs, tests/history.rs and tests/evidence.rs; SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: parent agent instruction 2026-11-03 9:46 AM MT)"
   ],
   "open_questions": [],
   "completed": [
@@ -414,7 +417,8 @@
     "Failure-first: the default-on and archive-entry cases failed at 0363d4a (OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834, OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8); the two REQ-cli-033 tests failed at 0363d4a in cargo test (unrecognized subcommand / not authorized) but could not be recorded as cases before the requirement materialized. All four cases now pass.",
     "Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).",
     "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections).",
-    "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb"
+    "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb",
+    "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -639,7 +643,8 @@
     "OBS-tc-cli-archive-summary-preview-8f893d16e89c4e10f42fdec2",
     "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
-    "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423"
+    "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
+    "OBS-structural-0ceefdd961ed75d53f1b3742"
   ],
   "bugs": [
     "BUG-0001",

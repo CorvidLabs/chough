@@ -88,7 +88,6 @@ updates and edited-copy preservation. No new case number was allocated.
 | REQ-cli-015 | Snapshots keep sources; index lists open bugs and mixed legacy/new snapshots; symlinks refused; random SNAP allocation and timestamp chronology; closeout works with the librarian off | TC-cli-0035, 0036, 0132, TC-cli-slug-snapshot-allocation |
 | REQ-cli-016 | Per-host install and safe updates preserve edits; Kimi mapping reviewed without a new host session; 2756dc2, fb6e487 and identity-main predecessors are known-outdated | TC-cli-0037, 0075, 0106, 0131 |
 | REQ-cli-017 | Schema 2 observations; schema 1 still read; optional content identity validated; mixed legacy/new IDs and exact artifact inheritance | TC-cli-0026, 0028, 0073, 0074, TC-cli-slug-observation-allocation |
-| REQ-cli-018 | Mixed-ID retention previews/apply, reference protection, pruning labels, byte accounting and unchanged ledger entries | Existing retention regressions and mixed-ID fixtures |
 | REQ-cli-020 | Mixed-ID timing from timestamps and stored durations, never lexical IDs or random suffixes; read-only validation resume accounting | Existing timing regressions and mixed-ID fixtures |
 | REQ-cli-021 | Focused next/status parity, bounded forms and one native read; archived-done and archived-not-done actions with precedence; reason-bearing reset/back; bounded decisions/failure/lesson blocks ordered by recorded fields; graded cold-start handoff | TC-cli-0105, 0120 to 0122, 0126 to 0130, 0133 |
 | REQ-cli-023 | Independent-root/repeated-run allocation; random-source/collision refusal; atomic preservation; legacy reads/resume; native manifests, retention, timing and unchanged non-ID shapes | All four slug cases plus cases, optional, evidence, bugs, CLI, timing and package suites |
@@ -266,20 +265,6 @@ corrected in the skill and default session guidance.
 All three Mermaid diagrams were rendered and visually inspected; the separate
 documentation record is docs/verification.md. No authentic human acceptance,
 full approved/archived native lifecycle, release or deployment was exercised.
-
-## Bounded transition history and protected retention
-
-REQ-cli-025 to REQ-cli-027 are exercised by the following curated automated cases:
-
-| Case | Direct bound regression |
-|---|---|
-| TC-cli-history-adoption | Explicit adoption preserves original log and migration bytes and repeats without duplication |
-| TC-cli-history-branches | Real Git branch events integrate while divergent checkpoint selection remains explicit |
-| TC-cli-history-bounds | One bound test executes exact event, cycle, recent-read and maintenance count/byte fixtures |
-| TC-cli-history-retention | Read-only preview, authorized apply and newly protected cycle references |
-| TC-cli-retention-revalidation | Changed, missing and newly referenced evidence/artifacts are retained |
-
-The full Rust suites add unknown legacy payloads, migration, random/collision refusal, failed checkpoint saves and orphan visibility, unsafe/malformed receipts, interrupted cleanup/resume, separate timing tips, and real Git retention alongside another branch's new proof. Package regressions independently hash the prior checkpoint reference and preserve owner edits during skill updates. The mandatory Fledge verify lane also checks existing behavior, native structure, traceability and the real CLI exercise. Observations and current IDs live in the Chough checkpoint and evidence records; this plan does not invent a passing grade or hosted result. No cold-start rerun, real-project adoption or live cleanup is part of this qualification.
 
 ## Checkpoint writer capacity refusals
 

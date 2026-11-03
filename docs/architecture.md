@@ -221,7 +221,7 @@ Native wait remains independently bounded and reported by the native reader.
 
 ## Immutable history and maintenance
 
-REQ-cli-025 to REQ-cli-027 add explicit adoption for existing projects and event
+REQ-history-002 to REQ-history-004 (formerly REQ-cli-025 to REQ-cli-027) add explicit adoption for existing projects and event
 history for new projects. The optional cursor stays in the single schema-2
 checkpoint and its atomic current-cycle merge group. Parent links order one
 lineage; different branch tips and unpublished-orphan outcomes never become one

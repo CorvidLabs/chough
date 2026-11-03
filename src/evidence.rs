@@ -839,7 +839,7 @@ impl Drop for Reads<'_> {
 }
 
 // ---------------------------------------------------------------------------
-// Observation labels and reference-aware retention (REQ-cli-018).
+// Observation labels and reference-aware retention (REQ-history-001).
 
 /// Append-only record of every pruned observation set.
 pub(super) const LEDGER: &str = ".chough/pruned.jsonl";

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
+  "slug": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
+  "title": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
+  "description": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
+  "kind": "refactor",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "7bd1b62dc8ac563c4100302088c89113977ffe7f",
+  "created_at": 1793724750,
+  "updated_at": 1793726056,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "specs/cli/",
+    "specs/history/",
+    ".specsync/registry.toml",
+    ".chough/cases/",
+    "docs/FRD.md",
+    "docs/architecture.md",
+    "src/evidence.rs",
+    "tests/",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "specs/history is a new module that owns src/history.rs, tests/history.rs and tests/evidence.rs and holds REQ-history-001 to REQ-history-004, each with the exact wording of REQ-cli-018, REQ-cli-025, REQ-cli-026 and REQ-cli-027; the old IDs are removed from specs/cli and become tombstones",
+    "A test proves the move lost nothing: every moved requirement body has the SHA-256 it had at main 7bd1b62, every REQ-cli ID from 001 to 032 is either still in specs/cli or mapped, and a one-time before/after comparison of all 32 blocks is recorded",
+    "The ID mapping is documented in docs/FRD.md and the history module context, and the cases that link the moved requirements move to .chough/cases/history.cases.toml under a documented case ID mapping with their bindings unchanged",
+    "specs/cli/requirements.md is at most 59000 bytes, the record limit stays 65536 and no requirement, case binding or test is weakened",
+    "fmt, lint, the full tests, every moved case and fledge lanes run verify pass"
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "AGENTS.md: preserve existing files and records; never invent results. SpecSync requires REQ-<module>-<number> IDs per delta module and keeps removed IDs as permanent tombstones, so moved requirements get new history IDs with a documented mapping. Archived changes, evidence and bug records stay untouched. Parent agent instruction 2026-11-03 9:46 AM MT: split rather than raise the limit, keep wording, do not weaken anything",
+    "public_contract": "no"
+  }
+}

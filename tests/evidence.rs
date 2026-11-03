@@ -1,4 +1,4 @@
-//! Reference-aware evidence retention and observation labels (REQ-cli-018).
+//! Reference-aware evidence retention and observation labels (REQ-history-001).
 //!
 //! Fixture observations are written with backdated `observed_at_unix_seconds` values so
 //! the age rules are exercised without waiting.
