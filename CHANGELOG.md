@@ -16,7 +16,10 @@ All notable changes to Chough are recorded here. The format follows
 - New `chough library archive [--apply]` (REQ-cli-033; KNOW-7 to KNOW-11): a preview,
   or with retention authority and no open native change, removal of observation proof
   only cold archived changes list (outside the newest 3) and that is committed
-  identically at HEAD, after its summary is written and its ledger line appended. A
+  byte-identically at HEAD (compared with `git hash-object --no-filters`, so
+  `core.autocrlf` cannot hide a difference; the exact bytes being removed are
+  checked again after the native validity check, and a file that changed is kept and
+  the apply refused), after its summary is written and its ledger line appended. A
   removal that changes any affected archive's terminal evidence validity, or that
   fails partway, is restored and refused, and an archive whose validity SpecSync cannot
   report refuses the apply before anything is removed. It never runs on its own after

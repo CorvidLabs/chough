@@ -2070,13 +2070,13 @@ track = "functional"
 method = "agent-assisted"
 criteria = ["FLOW-12", "LIFE-1"]
 requirements = ["REQ-cli-002", "REQ-cli-015"]
-paths = ["skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/checkpoint.md", "skills/chough-workflow/references/bugs.md", "skills/chough-workflow/references/librarian.md", "skills/chough-workflow/references/lifecycle.md", ".agents/skills/chough-workflow/", ".claude/skills/chough-workflow/"]
+paths = ["skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/checkpoint.md", "skills/chough-workflow/references/bugs.md", "skills/chough-workflow/references/librarian.md", "skills/chough-workflow/references/lifecycle.md", ".agents/skills/chough-workflow/"]
 environments = ["repository-text"]
 artifacts = ["reviewer-note"]
-setup = ["The canonical skill bundle and both host copies at the implementation tip"]
+setup = ["The canonical skill bundle and the shared .agents host copy (which the claude host also installs since #54) at the implementation tip"]
 steps = [
   "Read references/accept.md Compounding, checkpoint.md, bugs.md, librarian.md Closeout and lifecycle.md",
-  "Run chough skill status for both host copies",
+  "Run chough skill status",
 ]
 expected = [
   "accept.md gives the observation, hypothesis and verified labels, each lesson's source and limits, and that a project decision always outranks a lesson, which never changes it",
@@ -2084,7 +2084,7 @@ expected = [
   "bugs.md says a failing check fixed in the same pull request still gets a bug record or a lesson entry",
   "librarian.md describes closeout inside the open native change before specsync change check --commit, with at most 12 summary lines, no spec edits after archive, working with the librarian off and a brief only when it is on",
   "lifecycle.md and accept.md say SpecSync 6.1.2 ships verification_ignored_paths, that this repository has not adopted it, and why",
-  "chough skill status reports both host copies current",
+  "chough skill status reports the .agents host copy current and no .claude copy",
 ]
 
 [[case]]
@@ -2660,6 +2660,42 @@ expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_without_nativ
 adapter = "cargo-test"
 test_target = "evidence"
 test = "archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal"
+
+[[case]]
+id = "TC-cli-archive-summary-changed-during-check"
+title = "The archive summary apply refuses and keeps the bytes when a file changes during the native validity check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7", "KNOW-9"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check"
+
+[[case]]
+id = "TC-cli-archive-summary-unfiltered-head-compare"
+title = "Under core.autocrlf a CRLF file that differs from HEAD byte for byte is held back, not eligible"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf"
 
 [[case]]
 id = "TC-cli-claude-host-shares-agents-copy"

@@ -548,7 +548,9 @@ in Git (REQ-cli-033).
   records, the newest 3 and the newest failure per case and environment, and validation
   failures and first and last passes all still protect it.
 - Every file of an eligible set must be tracked at HEAD with identical bytes; a set
-  that is not is listed under `uncommitted` and kept.
+  that is not is listed under `uncommitted` and kept. Bytes are hashed with `git
+  hash-object --no-filters`, so `core.autocrlf` or a clean filter cannot make a file
+  that differs from HEAD look committed.
 - The preview writes nothing. `--apply` needs retention authority (`consent grant
   retention` or `pref set retention auto`), is refused while any native change is open,
   writes the knowledge entries first, appends each set's ledger line to
@@ -560,6 +562,10 @@ in Git (REQ-cli-033).
 - Validity must be read as a real value before anything is removed: when `specsync
   change status` fails or does not report an affected archive's terminal evidence
   validity, `--apply` refuses and removes and ledgers nothing.
+- Files can change while the validity check runs. After it, `--apply` checks the
+  exact bytes it holds for removal against HEAD again and refuses, removing and
+  ledgering nothing, if any differ. Each file is then moved aside and compared before
+  it is deleted, so bytes written after that check are kept rather than lost.
 - Removed observations referenced later read as `pruned`, never current or passed, and
   their entries show `Git <commit>` as the location. Native archives, ignore rules and
   Git history are never changed, and the step never runs on its own after finalize.

@@ -1041,6 +1041,8 @@ fn retention_revalidation_keeps_changed_missing_and_newly_referenced_proof() {
 /// Five archived changes (a5..a3 hot, a2 and a1 cold) whose verification manifests list
 /// observation records, with a SpecSync stand-in that reports terminal evidence validity.
 /// `.stub-break` names a file whose absence makes every archive read `unauthenticated`.
+/// `.stub-mutate` names a file (line 1) that the status call after the first N (line 2)
+/// appends bytes to, as an editor could while the native check runs.
 #[cfg(unix)]
 fn knowledge_fixture() -> Fixture {
     let fixture = Fixture::new();
@@ -1052,6 +1054,10 @@ id="$3"
 validity=authenticated-history
 if [ -f .stub-break ] && [ ! -f "$(cat .stub-break)" ]; then validity=unauthenticated; fi
 if [ -f .stub-fail ] && [ "$(cat .stub-fail)" = "$id" ]; then echo "status unavailable" >&2; exit 1; fi
+if [ -f .stub-mutate ]; then
+  calls=$(($(cat .stub-calls 2>/dev/null || echo 0) + 1)); echo "$calls" > .stub-calls
+  if [ "$calls" -gt "$(sed -n 2p .stub-mutate)" ]; then printf 'new uncommitted bytes\n' >> "$(sed -n 1p .stub-mutate)"; rm .stub-mutate .stub-calls; fi
+fi
 printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity":"%s"}},"acceptance_entries":[]}\n' "$id" "$validity"
 "#,
     );
@@ -1489,6 +1495,69 @@ fn archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_par
     assert_eq!(
         ids(&preview["eligible"]),
         set(["cold-a", "cold-b"]),
+        "{preview:#}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    // Planning reads the latest archive's manifest with one status call; the next one is
+    // the validity check that runs after the plan found every file identical at HEAD.
+    fixture.write(".stub-mutate", ".chough/artifacts/cold-a.log\n1\n");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(fixture.exists(".chough/artifacts/cold-a.log"), "{refused}");
+    assert!(refused.contains("changed"), "{refused}");
+    assert!(
+        refused.contains(".chough/artifacts/cold-a.log"),
+        "{refused}"
+    );
+    // The bytes written during the check were never committed; they are kept, and
+    // nothing else was removed or ledgered.
+    assert_eq!(
+        fixture.read(".chough/artifacts/cold-a.log"),
+        format!("{log}new uncommitted bytes\n")
+    );
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf() {
+    let fixture = knowledge_fixture();
+    let status = std::process::Command::new("git")
+        .args(["config", "core.autocrlf", "true"])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(status.success());
+    // Same text with CRLF endings: a clean filter would hash it to HEAD's LF blob.
+    let record = fixture.read(".chough/evidence/cold-b.json");
+    assert!(!record.contains('\r'));
+    fixture.write(
+        ".chough/evidence/cold-b.json",
+        &record.replace('\n', "\r\n"),
+    );
+    let preview = fixture.ok(&["library", "archive"]);
+    assert_eq!(ids(&preview["eligible"]), set(["cold-a"]), "{preview:#}");
+    assert!(
+        preview["uncommitted"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entry| entry["id"] == "cold-b"),
         "{preview:#}"
     );
 }

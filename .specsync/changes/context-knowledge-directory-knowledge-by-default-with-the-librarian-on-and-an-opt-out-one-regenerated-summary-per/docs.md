@@ -6,6 +6,6 @@ artifact: docs
 # Docs
 
 - docs/cli.md: the `library` rows and the `library archive` row.
-- skills/chough-workflow/references/librarian.md, plus the installed copy in `.agents` (with a KNOWN_PREVIOUS entry).
+- skills/chough-workflow/references/librarian.md, plus the installed copy in `.agents`.
 - README.md and docs/architecture.md: the knowledge directory.
 - CHANGELOG.md.

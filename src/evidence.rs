@@ -1718,16 +1718,15 @@ struct SummaryCandidate {
     bytes: u64,
 }
 
-/// Files whose working-tree bytes equal the blob tracked at HEAD.
-fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> {
-    let mut identical = BTreeSet::new();
+/// The blob each of `files` has in HEAD's tree; untracked files are absent.
+fn head_blobs(root: &Path, files: &[String]) -> Result<BTreeMap<String, String>> {
+    let mut tracked = BTreeMap::new();
     for chunk in files.chunks(256) {
         let mut arguments = vec!["ls-tree", "HEAD", "--"];
         arguments.extend(chunk.iter().map(String::as_str));
         let Ok(listed) = git(root, &arguments) else {
-            return Ok(identical);
+            return Ok(BTreeMap::new());
         };
-        let mut tracked = BTreeMap::new();
         for line in String::from_utf8_lossy(&listed.stdout).lines() {
             if let Some((meta, path)) = line.split_once('\t')
                 && let Some(blob) = meta.split_whitespace().nth(2)
@@ -1735,6 +1734,17 @@ fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> 
                 tracked.insert(path.to_string(), blob.to_string());
             }
         }
+    }
+    Ok(tracked)
+}
+
+/// Files whose working-tree bytes equal the blob tracked at HEAD. Hashing uses
+/// `--no-filters`, so the exact bytes on disk are compared: with `core.autocrlf` or
+/// other clean filters a file that differs from HEAD byte for byte is never identical.
+fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> {
+    let tracked = head_blobs(root, files)?;
+    let mut identical = BTreeSet::new();
+    for chunk in files.chunks(256) {
         let present: Vec<&String> = chunk
             .iter()
             .filter(|file| local_path(root, file).is_ok_and(|path| path.is_file()))
@@ -1742,7 +1752,7 @@ fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> 
         if present.is_empty() {
             continue;
         }
-        let mut arguments = vec!["hash-object", "--"];
+        let mut arguments = vec!["hash-object", "--no-filters", "--"];
         arguments.extend(present.iter().map(|file| file.as_str()));
         let hashed = git(root, &arguments)?;
         for (file, blob) in present
@@ -1755,6 +1765,62 @@ fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> 
         }
     }
     Ok(identical)
+}
+
+/// The Git blob ID of exactly `bytes`, with no filters applied.
+fn blob_of(root: &Path, bytes: &[u8]) -> Result<String> {
+    use std::io::Write;
+    let mut child = Command::new("git")
+        .args(["hash-object", "--no-filters", "--stdin"])
+        .current_dir(root)
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .context("git is required for evidence")?;
+    child
+        .stdin
+        .take()
+        .context("git hash-object stdin")?
+        .write_all(bytes)?;
+    let output = child.wait_with_output()?;
+    ensure!(
+        output.status.success(),
+        "git hash-object --no-filters --stdin failed: {}",
+        bounded(&output.stderr)
+    );
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+}
+
+/// Remove `relative` only while it still holds `expected`: the file is first renamed to
+/// a private sibling, so later writes to the path cannot be lost, then compared. Bytes
+/// that differ are renamed back and refused; nothing that was not verified is deleted.
+fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
+    let path = local_path(root, relative)?;
+    let name = path
+        .file_name()
+        .context("removal path has no file name")?
+        .to_string_lossy()
+        .into_owned();
+    let hold = path.with_file_name(format!(".{name}.chough-removing"));
+    ensure!(
+        !hold.exists(),
+        "{} already exists; nothing was removed",
+        hold.display()
+    );
+    fs::rename(&path, &hold).with_context(|| format!("removing {relative}"))?;
+    let actual = fs::read(&hold).with_context(|| format!("re-reading {relative}"))?;
+    if actual != expected {
+        if path.exists() {
+            bail!(
+                "{relative} changed during the apply and was written again; its changed bytes are kept at {}",
+                hold.display()
+            );
+        }
+        fs::rename(&hold, &path).with_context(|| format!("putting back {relative}"))?;
+        bail!("{relative} changed during the apply; its bytes were kept and it was not removed");
+    }
+    fs::remove_file(&hold).with_context(|| format!("removing {relative}"))
 }
 
 /// Classify observation sets that archived manifests list: candidates (listed only by
@@ -1945,6 +2011,27 @@ pub(super) fn archive_summary(
                 }
                 prepared.push((candidate, evidence, record_digest, bytes));
             }
+            // The native validity check runs external processes; a file may have changed
+            // since the plan found it identical at HEAD. Check the exact bytes held for
+            // removal against HEAD before anything is written, and refuse otherwise.
+            let files: Vec<String> = eligible
+                .iter()
+                .flat_map(|candidate| candidate.files.iter().cloned())
+                .collect();
+            let tracked = head_blobs(root, &files)?;
+            let mut changed = vec![];
+            for (_, _, _, bytes) in &prepared {
+                for (file, content) in bytes {
+                    if tracked.get(file) != Some(&blob_of(root, content)?) {
+                        changed.push(file.clone());
+                    }
+                }
+            }
+            ensure!(
+                changed.is_empty(),
+                "files changed after they were found committed identically at HEAD ({}); nothing was removed. Commit or restore them and preview again",
+                changed.join(", ")
+            );
             write_entries(root)?;
             let head = head_revision(root);
             let at = now()?;
@@ -1974,8 +2061,8 @@ pub(super) fn archive_summary(
                     append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
                     recorded.push(candidate.id.clone());
                     for (file, content) in bytes {
+                        remove_verified(root, file, content)?;
                         held.push((file.clone(), content.clone()));
-                        remove_if_present(root, file)?;
                     }
                 }
                 Ok(())
