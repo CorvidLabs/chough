@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,8 @@
       "FLOW-12",
       "LIFE-10",
       "FLOW-3",
-      "LIFE-8"
+      "LIFE-8",
+      "LIFE-11"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -54,7 +55,8 @@
       "REQ-cli-025",
       "REQ-cli-026",
       "REQ-cli-027",
-      "REQ-cli-028"
+      "REQ-cli-028",
+      "REQ-cli-032"
     ],
     "cases": [
       "TC-cli-0101",
@@ -108,7 +110,10 @@
       "TC-cli-independently-added-records-merge-cleanly",
       "TC-cli-report-case-read-budget",
       "TC-cli-report-read-invalidation",
-      "TC-cli-report-trace-parity"
+      "TC-cli-report-trace-parity",
+      "TC-cli-checkpoint-byte-bound-is-131072",
+      "TC-cli-observation-pointer-bound-is-400",
+      "TC-cli-checkpoint-merge-enforces-the-raised-bounds"
     ],
     "design": [],
     "files": [
@@ -375,7 +380,8 @@
     "Combined source:9Fledge steps and240tests on each Rust1.95/1.88, all16cases passed; actual44main imported with identical qualified inputs and0record replay.",
     "Combined source passed 240 tests on each Rust version, nine Fledge steps and 16 cases; the integration is archived.",
     "Main 134ee19 integrated: 3-way checkpoint (197 obs, 37 files), test call fixed, #48 cases rerun",
-    "Integration shipped as corvid-agent per #46 through-PR authority; Leif's PR approval still his"
+    "Integration shipped as corvid-agent per #46 through-PR authority; Leif's PR approval still his",
+    "Checkpoint bound 131072 bytes and observation bound 400 implemented with boundary tests (REQ-cli-032); three focused cases passed"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -574,7 +580,10 @@
     "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-0778ba54ff9fb8195049264d",
     "OBS-product-test-aa419d1f9bdc110656237352",
     "OBS-product-test-5d54b74c587c2cbf5bcab49f",
-    "OBS-product-test-eed7c8236164fee33d58226f"
+    "OBS-product-test-eed7c8236164fee33d58226f",
+    "OBS-tc-cli-checkpoint-byte-bound-is-131072-c8dacf9568169583826b2d30",
+    "OBS-tc-cli-observation-pointer-bound-is-400-faf381593527d3c0c4be37b1",
+    "OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2"
   ],
   "bugs": [
     "BUG-0001",
@@ -607,5 +616,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Approve the definition, implement, verify, archive, open PR"
+  "next_action": "Implementation review and archive as corvid-agent, then open the PR"
 }
