@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 25
+version: 26
 status: active
 files:
   - src/main.rs
@@ -234,3 +234,4 @@ provider, runtime or hosted service.
 | 23 | 2026-11-02 | Integrate merged bounded history (main version22) with the agent-operated native workflow (approved on parallel version17, previously integrated as parallel version22), preserving both accepted meanings, ordering and gates. |
 | 24 | 2026-11-02 | read-report-case-definitions-once-per-request-and-expose-local-phase-costs: Read report case definitions once per request and expose local phase costs |
 | 25 | 2026-11-03 | identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration: Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records |
+| 26 | 2026-11-03 | raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400: Raise the checkpoint session byte limit to 131072 and the observation pointer limit to 400 |

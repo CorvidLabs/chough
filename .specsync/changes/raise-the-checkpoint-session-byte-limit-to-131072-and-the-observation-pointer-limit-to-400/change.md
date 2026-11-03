@@ -1,6 +1,6 @@
 ---
 id: raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400
-state: approved
+state: implementing
 type: feature
 base_commit: 747a12cc6fc396f0e8646fee1f2801e02b7d3035
 ---

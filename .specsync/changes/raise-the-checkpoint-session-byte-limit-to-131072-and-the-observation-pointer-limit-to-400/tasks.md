@@ -5,9 +5,9 @@ artifact: tasks
 
 # Tasks
 
-- [ ] HI LIFE-11 captured
-- [ ] Spec delta REQ-cli-032 and REQ-cli-007
-- [ ] Bounded record helpers and checkpoint constants
-- [ ] Boundary tests and updated refusal tests
-- [ ] Docs, changelog and cases
-- [ ] `fledge lanes run verify` passes
+- [x] HI LIFE-11 captured
+- [x] Spec delta REQ-cli-032 and REQ-cli-007
+- [x] Bounded record helpers and checkpoint constants
+- [x] Boundary tests and updated refusal tests
+- [x] Docs, changelog and cases
+- [x] `fledge lanes run verify` steps fmt, clippy, tests, hi check and specsync check pass before materialization; the full lane reruns after it
