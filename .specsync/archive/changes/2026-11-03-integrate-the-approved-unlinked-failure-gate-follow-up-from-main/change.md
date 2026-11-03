@@ -1,6 +1,6 @@
 ---
 id: integrate-the-approved-unlinked-failure-gate-follow-up-from-main
-state: verifying
+state: archived
 type: documentation
 base_commit: e4eadd817a38127a1ebf49815b599cd89cfbefd0
 ---

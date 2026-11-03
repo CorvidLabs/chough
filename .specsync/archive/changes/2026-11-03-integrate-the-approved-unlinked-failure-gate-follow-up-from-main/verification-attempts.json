@@ -112,6 +112,58 @@
         }
       ],
       "requirement_ids": []
+    },
+    {
+      "timestamp": 1793664665,
+      "commit": "7b63a415088a9bbc1263854cfa4d4e3d3f7eb9b2",
+      "contract_digest": "6e2bb78e8cdcd77398faae23096892aad58eaf3871e691726cdf1103f93a6101",
+      "execution_digest": "eee2beaae4747ab925441418ce7df020bdd9a9b42ba96de336ec6ce40d19f6cf",
+      "workspace_digest": "29c1b8b7ca0b88618bb5a34a7bd72d77bd112191d851f1234b42b20395bfb62e",
+      "acceptance_input_digest": "7f7187a96ee19cc813a678727c614e5bb8f5d3ff00b9d3c3b492c195cc52b52b",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "docs/cli.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e52c09329e76fbcd13ea3a676ae175cb81a1ac49a6b6cc26d74b5dd7345c8b1d",
+            "entry_digest": "936fc02c69de09f9ee45e7347de7e4a5c2aeb55c77b98e49b1682d2f18cadb0f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "src/stage.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e4defd29179251c4af1701244d21b11ac70dcff0796471d8d2ec2158ed326c19",
+            "entry_digest": "96f73b7e0b5a2874ff9768fee868258dba7e51396b21868a93e3928ff803a2a5",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "tests/stages.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9289a6eea9a4fcd7c5a7e695ddf8b7d5911a4881b3f1b949d00cc60fb19f04b8",
+            "entry_digest": "0ba35adc4f7d7b783debfcd3fe70c51e819dd745e93d538adbb4446fd16e1cdc",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
     }
   ]
 }

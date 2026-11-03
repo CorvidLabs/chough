@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "integrate-the-approved-unlinked-failure-gate-follow-up-from-main",
+  "slug": "integrate-the-approved-unlinked-failure-gate-follow-up-from-main",
+  "title": "Integrate the approved unlinked-failure gate follow-up from main",
+  "description": "Integrate the approved unlinked-failure gate follow-up from main",
+  "kind": "documentation",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "e4eadd817a38127a1ebf49815b599cd89cfbefd0",
+  "created_at": 1793661169,
+  "updated_at": 1793664865,
+  "affected_specs": [],
+  "affected_paths": [
+    "src/stage.rs",
+    "tests/stages.rs",
+    "docs/cli.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Import the already approved and archived PR43 failure/not-run gate and its tests while integrating the now-current main into PR44. No new gate meaning, canonical requirement or source behavior is invented. The first integration scope continues to own shared metadata and bundle resolution.",
+  "acceptance_criteria": [
+    "Preserve the exact approved unlinked-failure and later-not-run gate behavior and its tests from pinned main3d00e44 while retaining PR44 user-doc actor/source guidance, with no proof/archive rewrite or native gate bypass; qualify the combined main result under Rust1.95/1.88 and required Fledge/cases before ordinary branch push, with native review/ship reserved for root."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "acceptance_owner_corrections": [
+    {
+      "schema_version": 1,
+      "sequence": 1,
+      "path": "src/stage.rs",
+      "module": "cli",
+      "actor": "corvid-agent",
+      "reason": "The accepted main stage guard source is canonically owned by cli. Record the missing exact source ownership for this active NoSpec integration through an append-only native correction, under the existing through-PR and finish-all authority. Preserve all original proof and approvals.",
+      "timestamp": 1793664430
+    }
+  ],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}
