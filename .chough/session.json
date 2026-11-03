@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -313,7 +313,8 @@
     "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.",
     "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved.",
     "Integrated accepted bounded history and agent-operated native workflow at canonical23; all13affected history/authority/ordering cases passed with protected parent proof and both host bundles intact.",
-    "Final integrated source769b526 passed all9Fledge steps and all235tests across12suites on Rust1.95 and Rust1.88, with0failed/ignored/filtered. All13affected managed cases passed; protected1909parent blobs,149case definitions,45predecessors and allparent history occurrences remain preserved."
+    "Final integrated source769b526 passed all9Fledge steps and all235tests across12suites on Rust1.95 and Rust1.88, with0failed/ignored/filtered. All13affected managed cases passed; protected1909parent blobs,149case definitions,45predecessors and allparent history occurrences remain preserved.",
+    "PR44 integration with main a788869 is qualified: all 235 tests on Rust 1.95/1.88, nine Fledge steps and 13 affected cases passed. All 1909 protected parent blobs are exact. Independent scoped integration review has no findings, and the new native integration scope is archived."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -526,5 +527,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Root obtains or uses the independent local source review of769b526, checks the current committed native verification, then alone records review/ship and done. Root publishes one fully closed feature head after live main/feature guards. This worker holds origin at3e25fb4 and performs no further Chough writes after final check."
+  "next_action": "This session merges PR44 after current-head corvid-agent approval and every hosted check passes, under 0xLeif chat permission to merge approved, green PRs and resynchronize. Then import actual main into PR46, preserve already included workflow records without duplication, qualify its final source and merge it before checking main."
 }
