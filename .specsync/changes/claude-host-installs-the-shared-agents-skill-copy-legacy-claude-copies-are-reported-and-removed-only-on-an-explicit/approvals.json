@@ -1,0 +1,58 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793720420,
+      "digest": "0271a1e0d88c358f61185c90e2645738442b24eabc7e4b1693fa3eabe8164f4f",
+      "note": "Human authority: Leif (0xLeif) in chat 2026-11-03 8:09-8:27 AM MT, interview answers 'Only the shared .agents copy' and 'Remove .claude entirely', relayed as his intent approval with final acceptance as his next decision; covered scope: claude host mapping to .agents/skills, legacy .claude reporting and explicit remove-legacy in src/skill.rs and src/main.rs, tests, REQ-cli-016, removing this repository's .claude copy, docs; limits: other hosts unchanged, no other project touched, edited legacy files never removed, no release or deployment",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit",
+        "title": "Claude host installs the shared .agents skill copy, legacy .claude copies are reported and removed only on an explicit command, and this repository drops its .claude copy",
+        "description": "Claude host installs the shared .agents skill copy, legacy .claude copies are reported and removed only on an explicit command, and this repository drops its .claude copy",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/",
+          ".chough/",
+          ".claude/",
+          "CHANGELOG.md",
+          "CLAUDE.md",
+          "INTENT.md",
+          "README.md",
+          "docs/",
+          "examples/",
+          "hi/",
+          "skills/",
+          "specs/cli/",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "This repository has no `.claude` skill copy, `CLAUDE.md` routes Claude Code to `AGENTS.md` and the shared copy, and `docs/integrations.md` states that Claude Code 2.1.316 did not discover `.agents/skills` alone",
+          "`chough init --host claude` and `chough skill update --host claude` write only the shared `.agents/skills/chough-workflow/` copy, and a request naming both claude and openai installs one copy, not two",
+          "`chough skill remove-legacy --host claude` removes only legacy files byte-identical to the current or a known earlier bundle, keeps edited or unknown files, and refuses with nothing removed when the shared `.agents` copy is missing",
+          "`chough skill status` and `chough skill update` report an installed `.claude/skills/chough-workflow/` copy as legacy and never delete, update or rewrite it; `chough init` never deletes it",
+          "codex, cursor, gemini and grok keep their existing directories; fmt, lint, the full test suite and `fledge lanes run verify` pass"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "AGENTS.md: preserve existing files and others' edits; never delete a user's edited copy. Leif 2026-11-03 8:27 AM MT chose 'Remove .claude entirely' knowing Claude Code 2.1.316 did not discover .agents/skills alone; only the claude host is remapped",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "292994ba881affbe0602405542a67d222478982faf6af186b4d90ba235b6501b"
+      }
+    }
+  ],
+  "reopenings": []
+}

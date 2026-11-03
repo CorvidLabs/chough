@@ -48,7 +48,7 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
 With no checkpoint, run `chough init --objective "<outcome>" --intent-scope <HI-family>
 --module <module>`; it never overwrites existing files. Without `--host` it installs
 the skill for `openai`; any `--host` replaces that default, so repeat it for each
-host you want, for example `--host openai --host claude`. A schema 1 session is migrated only with `chough migrate`.
+host you want, for example `--host openai --host codex`. A schema 1 session is migrated only with `chough migrate`.
 
 ## Stages
 
@@ -84,15 +84,15 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
 
 Chough runs in the current agent; no provider API or runtime is required. `chough init
 --host <openai|claude|codex|cursor|gemini|grok>` copies this bundle into that host's
-project skill directory: openai, the default, writes `.agents/skills`, a shared
-directory that more than one host may read, and gemini writes `.gemini/skills`, which
-no run has exercised. For Kimi Code CLI, use `chough init --host openai`. The existing
-`openai` mapping installs `.agents/skills/chough-workflow/`; there is no separate
-`kimi` host value. `chough skill status` shows whether a copy is current, edited or
-outdated. Which directory a host reads is the host's behavior: Claude Code was
-observed reading `.claude/skills`, Kimi Code CLI 0.41.0 was observed discovering
+project skill directory: openai, the default, and claude share one `.agents/skills`
+copy; gemini writes `.gemini/skills`, which no run has exercised. Kimi Code CLI uses
+`--host openai`; there is no `kimi` value. `chough skill status` shows whether a copy
+is current, edited or outdated and lists an old `.claude/skills` copy as legacy, which
+only `chough skill remove-legacy --host claude` removes. Discovery is the host's
+behavior: Claude Code 2.1.316 did not discover `.agents/skills` alone, so it reaches
+this skill through `CLAUDE.md` and `AGENTS.md`; Kimi Code CLI 0.41.0 discovered
 `.agents/skills/chough-workflow/SKILL.md` in one macOS session, and one run, reported
 narratively in closed PR #20 and not independently verified, said Google Antigravity
 read `.agents/skills`. Confirm that the host actually lists the skill; otherwise give
-it this file directly. Subagents are optional: [roles.md](references/roles.md) also
+it this file. Subagents are optional: [roles.md](references/roles.md) also
 works as sequential passes.

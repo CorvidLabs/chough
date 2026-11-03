@@ -59,7 +59,7 @@ flowchart TB
 | Examples: rehearsal samples and their case definitions | `examples/<sample>/` | Committed; exercises run in disposable copies whose output is not kept |
 | Frozen native archives: SpecSync's record of a closed change, authenticated from Git history | `.specsync/archive/changes/<date>-<id>/` | Committed once; never edited or pruned |
 | Canonical skill: the bundle the binary embeds; edit it here | `skills/chough-workflow/` | Committed and packaged |
-| Installed host copies written by `init` and `skill update` (byte-identical to the canonical bundle in this repository) | `<host>/skills/chough-workflow/`, here `.agents/` and `.claude/` | Committed in the project that uses them |
+| Installed host copies written by `init` and `skill update` (byte-identical to the canonical bundle in this repository) | `<host>/skills/chough-workflow/`, here only the shared `.agents/`; an older `.claude/` copy is reported as legacy and removed only by `skill remove-legacy` | Committed in the project that uses them |
 | Ignored build output and local caches | `/target`, `.fledge/cache/`, and under `.specsync/`: `hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
 | CI output | GitHub Actions run logs | Kept by the hosted run; no CI artifact is uploaded |
 

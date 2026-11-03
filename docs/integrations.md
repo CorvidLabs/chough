@@ -8,12 +8,27 @@ guided by the skill or kept as a qualified, deferred or unavailable adapter.
 
 | Host | Project skill directory | Observed support |
 |---|---|---|
-| Claude Code 2.1.316 | `.claude/skills/chough-workflow/` | Discovered in two fresh headless sessions; `.agents/skills` alone was not discovered (answer: NONE) |
+| Claude Code 2.1.316 | `.agents/skills/chough-workflow/` (`--host claude` shares the openai copy) | Two fresh headless sessions discovered a `.claude/skills` copy and did not discover `.agents/skills` alone (answer: NONE). Chough no longer installs `.claude/skills`, so Claude Code reaches the workflow through `CLAUDE.md` and `AGENTS.md` (see the tradeoff below); no run has re-checked a newer version |
 | Codex CLI 0.153.4 | `.agents/skills/chough-workflow/` (openai mapping) | A fresh session followed the `AGENTS.md` router to the installed skill and completed a cold start; native discovery of that directory was not tested separately |
 | Kimi Code CLI 0.41.0 | `.agents/skills/chough-workflow/` (openai mapping) | One macOS arm64 run on 2026-11-01 auto-discovered and loaded the skill and attempted a cold resume. It could not safely resume the archived work because of BUG-0024's stale archived-action defect; no fresh post-fix Kimi run was performed |
 | Google Antigravity | `.agents/skills/chough-workflow/` (openai mapping, the default; a shared skills directory) | One run on 2026-11-01 reported listing the skill from this directory; the report is narrative, written by the agent itself in closed PR #20 with no event log or transcript, and not independently verified (see [the cold-start record](exercises/cold-start.md)) |
 | `--host gemini` | `.gemini/skills/chough-workflow/` | Mapping from the CorvidLabs skills installer; no run has exercised it |
 | Cursor, Grok | `.cursor/skills`, `.grok/skills` | Mapping from the CorvidLabs skills installer; not exercised |
+
+### Claude Code and the single shared copy
+
+Chough keeps one skill copy per project, in `.agents/skills`, and `--host claude`
+installs or updates that copy instead of a second `.claude/skills` copy. The
+tradeoff: Claude Code 2.1.316 was observed not to discover `.agents/skills` on its
+own, so in that version the skill is not listed automatically. Claude Code reads
+`CLAUDE.md`, which points it at `AGENTS.md` and the skill file, and that is the
+supported route until a run of a newer version shows native discovery. If you
+need native listing, give the agent the skill file directly. A project that still
+has a `.claude/skills/chough-workflow/` copy from an earlier helper sees it reported
+as `legacy` by `chough skill status` and `skill update`; neither command writes or
+deletes it. `chough skill remove-legacy --host claude` removes only files that are
+byte-identical to the current or a known earlier bundle, keeps edited and unknown
+files, and refuses, removing nothing, while the shared copy is missing.
 | Any host | Give the agent `skills/chough-workflow/SKILL.md` | The skill reads as plain Markdown |
 
 A directory name is a convention, not proof of support. `chough skill status` shows

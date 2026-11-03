@@ -537,7 +537,11 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
         }
     }
 
-    for host in [".agents", ".claude"] {
+    // LIFE-14: this repository carries one shared `.agents` copy and no `.claude` copy.
+    if root.join(".claude").exists() {
+        problems.push(".claude: this repository carries no .claude skill copy (LIFE-14)".into());
+    }
+    for host in [".agents"] {
         for (file, _, _, _) in PRIOR_FILES {
             let source = fs::read(canonical.join(file)).unwrap();
             let installed_path = root.join(host).join("skills/chough-workflow").join(file);

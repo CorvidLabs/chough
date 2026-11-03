@@ -2948,3 +2948,39 @@ expected = ["tests/stages.rs::delta_guard_refusals_name_the_agent_actor_and_the_
 adapter = "cargo-test"
 test_target = "stages"
 test = "delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note"
+
+[[case]]
+id = "TC-cli-claude-host-shares-agents-copy"
+title = "The claude host installs the shared .agents copy once and no .claude copy"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-12", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "src/main.rs", "tests/optional.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::claude_host_installs_the_shared_agents_copy_once passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "claude_host_installs_the_shared_agents_copy_once"
+
+[[case]]
+id = "TC-cli-legacy-claude-copy-removed-only-explicitly"
+title = "A legacy .claude copy is reported, left unchanged and removed only by remove-legacy, keeping edits"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-13", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/optional.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::legacy_claude_copy_is_reported_and_removed_only_explicitly passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "legacy_claude_copy_is_reported_and_removed_only_explicitly"

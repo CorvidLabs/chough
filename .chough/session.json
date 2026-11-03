@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Approved-delta guard refusals name the acting agent account and the human authority note",
+  "objective": "One shared .agents skill copy: claude maps to .agents/skills, legacy .claude copies are reported and removed only on an explicit command, and this repository drops its .claude copy",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to",
+  "native_change": "claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -33,7 +33,10 @@
       "LIFE-10",
       "FLOW-3",
       "LIFE-8",
-      "LIFE-11"
+      "LIFE-11",
+      "LIFE-12",
+      "LIFE-13",
+      "LIFE-14"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -269,7 +272,11 @@
     "Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit \"Merge approved, green PRs and resynchronize\" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates.",
     "Agent corvid-agent root applies actual standing through-PR permission and explicit Merge approved, green PRs and resynchronize plus latest finish-these-PRs request to repair existing REQ-cli-032 atomic refusal. Preserve every old record and bound; no new human as-is grade or numeric choice. Root alone closes this scope.",
     "Human source: 0xLeif replied \"Yes I approve!\" in chat on 2026-11-03 to the explicit one-scope exception request for PR51: record native review as corvid-agent for refuse-over-bound-checkpoint-candidates-before-publishing-gate-history, immediately ship, then merge after fresh checks pass. This explicitly overrides the automatic reviewer interpretation of the AGENTS.md agent-label rule for this scope only. The acting account stays corvid-agent; no cold-start Pass grade, numeric choice, release, deployment or cleanup approval is inferred.",
-    "Agent corvid-agent applies Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged."
+    "Agent corvid-agent applies Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged.",
+    "decided: intent LIFE-12..14 approved because Leif (0xLeif) answered the interview 'Only the shared .agents copy' and on 2026-11-03 8:27 AM MT 'Remove .claude entirely', and the parent relayed his yes as intent approval; his next decision is final acceptance",
+    "Agent corvid-agent assumption: only the claude host is remapped to .agents/skills; codex, cursor, gemini and grok keep their directories because Leif's 8:27 AM answer named .claude only",
+    "Agent corvid-agent applies Human authority: Leif (0xLeif) chat 2026-11-03 8:09-8:27 AM MT interview answers 'Only the shared .agents copy' and 'Remove .claude entirely' (relayed intent approval; final acceptance is his next decision). Covered scope: claude->.agents mapping, legacy report, explicit remove-legacy, this repo's .claude removal, docs. Limits: other hosts unchanged, edited legacy files kept, no release",
+    "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases"
   ],
   "open_questions": [],
   "completed": [
@@ -619,5 +626,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Await genuine independent review of the PR head; then record native review and ship with no write in between, push the archive tip, and merge after all hosted checks pass"
+  "next_action": "Commit, run specsync change check --commit, push, open the PR ready for review; then independent implementation review and Leif's final acceptance before review, finalize and merge"
 }
