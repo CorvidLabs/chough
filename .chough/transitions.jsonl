@@ -245,3 +245,4 @@
 {"schema_version":1,"at_unix_seconds":1793681059,"kind":"advance","from":"plan","to":"build","reason":null,"gate":"native:approved","revision":"747a12cc6fc396f0e8646fee1f2801e02b7d3035","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793681278,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"95d566b04196bf5d6a47bfdf0332eae22955ac88","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793681350,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"36574fdde181138e56814bb23141db35584e81e7","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793681391,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"74e6a17f25da913ddfe9962acaacbdaf0da05e12","refresh":[]}
