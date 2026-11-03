@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
