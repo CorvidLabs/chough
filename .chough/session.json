@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -311,7 +311,9 @@
     "Integrated main9d02 (#41/#43/#45) with PR37 using one owner-selected current cycle and all additive records. All232tests on Rust1.95/Rust1.88, ten bound cases and nine Fledge steps pass; preserved all parent proof and clarified local append limits.",
     "PR37 final main d839fef repair passes233 tests on Rust 1.95/1.88, ten bound cases and all nine Fledge steps. Both original reproductions now report missing referenced proof and partial restoration cannot hide a separate cycle reference. All parent proof bytes are preserved; independent scoped rereview found no remaining issue.",
     "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.",
-    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved."
+    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved.",
+    "Integrated accepted bounded history and agent-operated native workflow at canonical23; all13affected history/authority/ordering cases passed with protected parent proof and both host bundles intact.",
+    "Final integrated source769b526 passed all9Fledge steps and all235tests across12suites on Rust1.95 and Rust1.88, with0failed/ignored/filtered. All13affected managed cases passed; protected1909parent blobs,149case definitions,45predecessors and allparent history occurrences remain preserved."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -477,7 +479,22 @@
     "OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56",
     "OBS-tc-cli-history-adoption-6cb6b66e612d1aa174aa9390",
     "OBS-tc-cli-history-adoption-9c0a346ae0344141170e9194",
-    "OBS-tc-cli-history-bounds-40ad3c6f4a4722ada4a57999"
+    "OBS-tc-cli-history-bounds-40ad3c6f4a4722ada4a57999",
+    "OBS-tc-cli-agent-native-workflow-upgrade-7308eea0a55781c8831ade51",
+    "OBS-tc-cli-native-workflow-bundle-consistency-2751d641ee34ec5669e80dd7",
+    "OBS-tc-cli-history-adoption-55a07b5d3b7fcaeb73024f67",
+    "OBS-tc-cli-history-branches-d7943501c417828e209b76c4",
+    "OBS-tc-cli-history-bounds-853995519f1c7f03f4ce14c8",
+    "OBS-tc-cli-history-retention-fe56e22216ccdb916c03cbb9",
+    "OBS-tc-cli-retention-revalidation-d71be76bcbfcc6dec32cc97e",
+    "OBS-tc-cli-history-legacy-timing-bounds-98c903ee915cdf531ac636da",
+    "OBS-tc-cli-history-frozen-reference-aliases-d9a06c26aa0da0cd8e6d0af9",
+    "OBS-tc-cli-history-closing-reset-age-cdec3993f9914bc67cefc3da",
+    "OBS-tc-cli-history-post-prune-reference-c85bad9f9661b7fa157092e9",
+    "OBS-tc-cli-history-stale-receipt-age-8834b610c174cbf174551b52",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d92d1fdbd3e9be45faae3948",
+    "OBS-product-test-2b032ca5a973b87da8dbf7d4",
+    "OBS-product-test-4061f6a2dd934040d1ae3cca"
   ],
   "bugs": [
     "BUG-0001",
@@ -509,5 +526,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge pinned main a788869 into the approved integration scope, preserve all proof, qualify on both Rust versions, then stop at accept with current committed verification and no feature push."
+  "next_action": "Root obtains or uses the independent local source review of769b526, checks the current committed native verification, then alone records review/ship and done. Root publishes one fully closed feature head after live main/feature guards. This worker holds origin at3e25fb4 and performs no further Chough writes after final check."
 }

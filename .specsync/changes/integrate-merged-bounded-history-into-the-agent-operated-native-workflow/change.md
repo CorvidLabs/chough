@@ -1,6 +1,6 @@
 ---
 id: integrate-merged-bounded-history-into-the-agent-operated-native-workflow
-state: approved
+state: implementing
 type: refactor
 base_commit: 3e25fb494c15cb64d4e9f3ef209729e96fc968a5
 ---

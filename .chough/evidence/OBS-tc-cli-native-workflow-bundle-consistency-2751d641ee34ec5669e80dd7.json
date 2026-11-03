@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-native-workflow-bundle-consistency-2751d641ee34ec5669e80dd7",
+  "criteria": [
+    "FLOW-5",
+    "FLOW-13",
+    "LIFE-4",
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test workflow_authority -- --exact native_writer_examples_and_installed_workflows_are_consistent for TC-cli-native-workflow-bundle-consistency: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-native-workflow-bundle-consistency-2751d641ee34ec5669e80dd7.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-native-workflow-bundle-consistency-2751d641ee34ec5669e80dd7.log": "adc70e0a1834d0f9c56a370fded07e68eff176face5c72e6eaeb04ef7381ab93"
+  },
+  "observed_at_unix_seconds": 1793668657,
+  "snapshot": {
+    "revision": "769b5269b87d2f822a1b41a4276eccd7d0fa3770",
+    "dirty": true,
+    "fingerprint": "64b15645b3dd4e0411daa2d5fb5d7eb7dbe207fa6728ce347a6a1d8ff28be18e",
+    "content": "2dcce19100c9af9398989281fa97f7e3fd1a8ca440e8cdba92cffbb01227276a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-native-workflow-bundle-consistency",
+      "digest": "67a251470a7a96da7ee1d8716e5b54ebe6f59ffc98825cbd612fad3af12cbd01"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "workflow_authority",
+    "--",
+    "--exact",
+    "native_writer_examples_and_installed_workflows_are_consistent"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
