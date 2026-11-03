@@ -101,9 +101,9 @@ checkpoint list to 200 items and side-stage nesting to 4 levels. Chough releases
 before this bound refuse a checkpoint over 64 KiB.
 Native SpecSync spec files under `specs/` are the project's contracts, not Chough
 records, and are read at any size; size is a composability hint, never a gate.
-Two readers are known exceptions until a later change lifts them: `next` searches a
-module's `context.md` for its Lessons heading only up to 4 MiB, and `library
-snapshot` refuses any file over 4 MiB (REQ-cli-034).
+`next` searches a module's `context.md` for its Lessons heading at any size. One
+reader is a known exception until a later change lifts it: `library snapshot`
+refuses any file over 4 MiB (REQ-cli-034).
 Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
 up to 16 KiB; `status` carries the parsed state and next action in `native_summary`
 and `next` in `native`. Larger output is reported as `oversized` and refuses gated
@@ -329,7 +329,7 @@ stage on that response, and shows:
 | `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest checkpoint decisions, newest first; see [Decision prefixes](#decision-prefixes) |
 | `last_failure` | `{"id", "observed_at_unix_seconds", "summary", "bugs": {"total", "items": [{"id", "status"}]}}` for the failed observation with the greatest recorded `observed_at_unix_seconds` (ties to the greater ID), with at most 3 bugs that link it by their observations, note observations or regression baseline, by bug ID; `null` when no observation failed. No freshness label is computed; run `chough status` or the case for that |
-| `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>]}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing`, `larger than 4194304 bytes, not searched` or `cannot be read: <error>`, for example for a symlinked module directory); and the `.specsync/archive/changes/*/lesson-bundle.md` files, newest first by archive directory name, at most 5 (a symlinked archive directory lists none) |
+| `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>]}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing` or `cannot be read: <error>`, for example for a symlinked module directory); and the `.specsync/archive/changes/*/lesson-bundle.md` files, newest first by archive directory name, at most 5 (a symlinked archive directory lists none) |
 | `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
 
 The text form (the default) carries the same fields as short lines. Each form is at
