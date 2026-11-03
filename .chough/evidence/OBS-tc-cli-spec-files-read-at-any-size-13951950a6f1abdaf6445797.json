@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-spec-files-read-at-any-size-13951950a6f1abdaf6445797",
+  "criteria": [
+    "LIFE-11"
+  ],
+  "requirements": [
+    "REQ-cli-034"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test cli -- --exact spec_requirements_companions_are_read_at_any_size for TC-cli-spec-files-read-at-any-size: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-spec-files-read-at-any-size-13951950a6f1abdaf6445797.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-spec-files-read-at-any-size-13951950a6f1abdaf6445797.log": "c94fc6f3a22fe7293e40f244702ef0327b24a5507217f844df57dc9445ce041e"
+  },
+  "observed_at_unix_seconds": 1793729213,
+  "snapshot": {
+    "revision": "9d6356db38d6e3b767e286208ebddd5136808426",
+    "dirty": false,
+    "fingerprint": "68f794ab909b505adc790dbc5c7bfa408816ef2e276aa8b77965aded291b47c1",
+    "content": "101aa10b327e49ee797eccc9940fd79fac0ebed42ecfb2eefa6725935a2ecb8b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-spec-files-read-at-any-size",
+      "digest": "55e8e623839190e040b25407c152f03ad01c986df8393db2fa68c21b40bbc630"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "spec_requirements_companions_are_read_at_any_size"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
