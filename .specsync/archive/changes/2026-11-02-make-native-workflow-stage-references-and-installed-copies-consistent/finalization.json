@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-native-workflow-stage-references-and-installed-copies-consistent",
+  "implementation_commit": "e2a3e5876d35d8ea7eeefb5787ced352190abd58",
+  "implementation_tree": "3702306d8ad9d180a7f6090150e5452a5bc3bd7a",
+  "contract_digest": "1f6a5f405a685548635c775f8ca8dff0bbcf791ae5c7733d5c948116d1996348",
+  "workspace_digest": "fe528a5bfa2f82640b722306147cee14016dd735247b980b8497129e274453c6",
+  "closing_digest": "b81cd6195d91966a886dfe8d29b495031c820c230759d1d1e0ab490f16297079",
+  "review_digest": "ab7136a3a7c74823db1eaf542323e3caf9142ad62cfaeaebd6c591b3f9cc2b07",
+  "finalization_digest": "de78663eddc99f6629914eb3fbfa4460da9262e813f2205f50d3a3da20b2bc34",
+  "timestamp": 1793660278
+}

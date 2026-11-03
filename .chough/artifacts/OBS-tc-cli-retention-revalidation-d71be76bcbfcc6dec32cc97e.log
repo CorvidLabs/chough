@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 1 test
+test retention_revalidation_keeps_changed_missing_and_newly_referenced_proof ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.79s
+
+
+--- stderr ---
+   Compiling chough v0.1.0 (/private/tmp/chough-native-workflow-Eh7gJL)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.54s
+     Running tests/evidence.rs (target/debug/deps/evidence-1f48c3c54e807b6e)

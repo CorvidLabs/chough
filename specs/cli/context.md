@@ -204,6 +204,29 @@ the lesson source in place of this section.
 
 verified: When another approved branch edits a bundled skill file during a learning change, register that integrated main predecessor as well as the original baseline. The exact identity-main librarian bytes were otherwise classified as edited and skipped. Sources: BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838, OBS-product-test-bfc159865a39075249fb6e40 and OBS-product-test-b0ea9516761a4e7adcf61406; the named package regression checks both safe update and edited-copy preservation. Limits: observed on macOS with Rust 1.99.1; this is bundle-upgrade evidence, not a fresh-agent cold-start grade.
 
+2026-11-02, shipped workflow predecessors (observation): the new skill-upgrade
+regression classified exact unchanged main 825a380 SKILL.md and lifecycle.md copies
+as edited until their exact predecessor hashes were registered; after registration,
+real updates and edited-copy preservation passed in three disposable projects.
+Sources: .chough/artifacts/native-workflow-upgrade-before.log,
+.chough/artifacts/native-workflow-upgrade-before-status.json and
+.chough/artifacts/native-workflow-upgrade-after.log. The pre-fix content identity was
+ec6b39de3f8acd0cba74b5290168f0d5965efdc4c52e20942ffb69a5ff460d06;
+its binary hash was not separately retained, so this is a development observation,
+not historical native qualification. Future use: register every changed shipped
+predecessor and verify unchanged upgrades and edited-copy preservation before
+publishing a bundle. This does not establish fresh-agent behavior or a cold-start
+result. The earlier exact-predecessor lesson remains applicable.
+
+2026-11-02, user-doc authority consistency (observation): extending the native
+writer check beyond the skill reproduced four human-actor examples across the
+CLI guide, walkthrough and next-change proposal. Source:
+OBS-product-test-4df13417a21256aaa3c5b151 and
+.chough/artifacts/native-workflow-user-docs-before/. Future use: check current
+writer examples in user documentation as well as installed bundles; preserve
+historical proposal status and separate the acting account from the actual human
+source. Limits: structural copy consistency, not fresh-agent compliance or human
+implementation acceptance. Existing approval history remains unchanged.
 2026-11-02, immutable-history cleanup ordering (observation): a development retention fixture caught newer-first deletion hiding the ancestry needed to revalidate older candidates. Source: .chough/artifacts/history-retention-ordering-development.log and tests/history.rs. Limits: the intermediate failed source identity was not retained; the log is not historical native qualification. Future use: remove eligible selected ancestors oldest first, retain immutable receipts, and keep independent/orphan tips out of current timing. Revisit this ordering if the history format changes.
 
 2026-11-02, legacy history request bounds (observation): an independent read-only

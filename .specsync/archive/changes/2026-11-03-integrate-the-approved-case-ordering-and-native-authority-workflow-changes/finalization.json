@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-the-approved-case-ordering-and-native-authority-workflow-changes",
+  "implementation_commit": "26a5acd72dc7b901d6f44e42f56bc1c1ab232d60",
+  "implementation_tree": "7a734629c76956cc0846fb1439554467eb895b1e",
+  "contract_digest": "ad653a61f76682dc3d600a7ad71e34b779ec320121a9a6d2179a860eca8d1c7f",
+  "workspace_digest": "29c1b8b7ca0b88618bb5a34a7bd72d77bd112191d851f1234b42b20395bfb62e",
+  "closing_digest": "01086890c8d04d45f0c4b2dbdb789d9245b5a40a5d17280133019de539a5df6b",
+  "review_digest": "3990943cf6871b741bfbd18dffd9c806330a5e058d32ed541df7f63f29f196f6",
+  "finalization_digest": "4257d53e072bb257856da9cc33e15558b11b2b418c523c333b8079a1e1d4dfc6",
+  "timestamp": 1793664696
+}

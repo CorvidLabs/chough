@@ -59,6 +59,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- User-facing native writer examples now use the acting agent account and cite
+  actual human authority separately, consistently with the workflow bundle.
 - Missing referenced history is reported consistently for bare, single-quoted,
   backtick and double-quoted cycle directories after Git integration.
 - History retention measures a reset-closed cycle's age from the closing reset,
@@ -95,6 +97,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Changed
 
+- The current agent drives HI, SpecSync and Fledge internally and reuses applicable
+  explicit prior or standing human scope authorization, recording its source and
+  limits instead of asking the operator to repeat a tool-specific approval. Native
+  checks and separate implementation acceptance and delivery authority remain.
+  Unchanged main 825a380 skill and lifecycle copies can update without replacing edits.
 - The skill now says SpecSync 6.1.2 ships `verification_ignored_paths` and why
   Chough's own repository has not adopted it.
 

@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-42eaa88e1ebc9f69e4d357b5",
+  "criteria": [
+    "FLOW-5",
+    "LIFE-4",
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-016",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "All9Fledgesteps and198tests across11suites pass for complete workflow consistency, including both bound workflow cases, all4predecessor upgrade/edit variants, native actor/reviewer argument checks and both managed host-copy comparisons.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-bundle-final-verify.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-bundle-final-verify.log": "f45811743624d8e31eb2eaf3121a6fb09592070dd10e0f088e10c5a3faee72ac"
+  },
+  "observed_at_unix_seconds": 1793641658,
+  "snapshot": {
+    "revision": "7cd739219ff667dcf6d153a6f439d6c3661b1fce",
+    "dirty": true,
+    "fingerprint": "f424960cdbc172fa061a65c61abd8d0824197a1512c1a95ca7f105d9a9665bda",
+    "content": "dac563ce07a09bd197690a74b94a9efba1e6355fbda2f90de28b878f6337ab13"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Source/package/local integration only; no new fresh-agent cold-start proof, human implementation acceptance, hosted product pass or merge is inferred. All old approval/evidence records remain preserved."
+  ]
+}

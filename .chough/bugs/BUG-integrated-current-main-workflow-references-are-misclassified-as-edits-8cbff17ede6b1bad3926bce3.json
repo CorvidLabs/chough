@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "id": "BUG-integrated-current-main-workflow-references-are-misclassified-as-edits-8cbff17ede6b1bad3926bce3",
+  "title": "Integrated current-main workflow references are misclassified as edits",
+  "symptom": "Exact unchanged plan and accept references from merged main3d00e44 are classified edited and cannot upgrade",
+  "trigger": "Merge PR41 case ordering with PR44 authority guidance without registering the integrated main predecessor bytes",
+  "expected": "Unchanged main predecessor references are known-outdated and safely upgrade, while edited copies remain preserved",
+  "actual": "The exact plan and accept copies report edited; the targeted integration regression fails",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-029"
+  ],
+  "cases": [
+    "TC-cli-agent-native-workflow-upgrade"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "f2a0c94e4938b1048a75e8bc85d95b0f9feedd22",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-agent-native-workflow-upgrade-629794b9905f71763493a1de",
+    "OBS-tc-cli-agent-native-workflow-upgrade-bb63e838fc5d8248a6d5e303"
+  ],
+  "impact": "Safe guidance upgrades from the newly merged main would be skipped",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "PR44 merge integration regression at pinned main3d00e44",
+  "notes": [
+    {
+      "at_unix_seconds": 1793661635,
+      "text": "Added despite similar reports: This concerns two new exact predecessor identities from merged main3d00e44; prior verified authority/copy bugs concern825 guidance and user examples, not these newer installed bytes.",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793661762,
+      "text": "status: open -> verified. Registered exact current-main plan/accept hashes and preserved both original825 and integrated-main fixture families; no existing assertion or frozen fixture changed.",
+      "observations": [
+        "OBS-tc-cli-agent-native-workflow-upgrade-bb63e838fc5d8248a6d5e303"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793661635,
+  "updated_at_unix_seconds": 1793661762
+}

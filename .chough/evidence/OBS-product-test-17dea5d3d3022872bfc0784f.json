@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-17dea5d3d3022872bfc0784f",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-019",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Required Fledge verification and Rust1.88 qualification both failed the unchanged existing package assertion: SKILL.md was7115bytes, exceeding its6144byte limit. The handoff step assertions and limit were not changed.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-verify-before-size-fix.log",
+    ".chough/artifacts/native-workflow-msrv-before-size-fix.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-msrv-before-size-fix.log": "2d180555cdcedd677f11b8feea5050e6134594ae5f7f2e5dd7eb8dc887e15c9a",
+    ".chough/artifacts/native-workflow-verify-before-size-fix.log": "e6e415a7f3bdeefc9555e0153407f9d143ac7cc666e5cd5461fa012e6e166b43"
+  },
+  "observed_at_unix_seconds": 1793636527,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "384a5a2071f0b703c082371360551ba8a1b0442194e8d2b8dc6915385901cc92",
+    "content": "e3fd39f88a024fa12257d83d3094f6877916766529fd4f5890f6cf072064f05d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "The lane stopped at step3 and cargo stopped at package tests, so later tests and lane steps were not run."
+  ]
+}

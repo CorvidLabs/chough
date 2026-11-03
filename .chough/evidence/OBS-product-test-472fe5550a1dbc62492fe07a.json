@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-472fe5550a1dbc62492fe07a",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-019",
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "The unchanged handoff/6144-byte package test and real bundle-upgrade regression both pass after the main skill was condensed to 6121 bytes. The handoff step, size assertion, native authority rules and edited-copy protection remain intact.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-size-fix-package.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-size-fix-package.log": "c6346b1082ae9b1957126a96db923c70bcc96ce78f2dd2ab9e4c126ec3f7d385"
+  },
+  "observed_at_unix_seconds": 1793636693,
+  "snapshot": {
+    "revision": "825a3805530456005e361dfa6d96d93eee52cd09",
+    "dirty": true,
+    "fingerprint": "56d8b73fdf24e858f6e9a579675ada4bfe67ed46ef4fdff0b3946d066c29abc0",
+    "content": "0144dd6eb3d9ce9a9265f74835a307d50f9702355f5c2f6cd65c9f1765980b94"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Focused source/package verification; fresh-agent behavior and a new cold-start run were not tested."
+  ]
+}

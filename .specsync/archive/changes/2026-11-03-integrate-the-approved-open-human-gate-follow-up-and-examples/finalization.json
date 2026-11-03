@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-the-approved-open-human-gate-follow-up-and-examples",
+  "implementation_commit": "e462f4a473cae8f82770cce6aef21f895668877c",
+  "implementation_tree": "8d7119834c50529c17610076f79521f80e9070a5",
+  "contract_digest": "2169ffeb5386a14b4c4a332aad2cc0222a55c44b396b2ee9446755c8743d8d87",
+  "workspace_digest": "29c1b8b7ca0b88618bb5a34a7bd72d77bd112191d851f1234b42b20395bfb62e",
+  "closing_digest": "b4a10e9c3bb246dab469f13047fa0e7b888265cd4cc74bbd70b8ca7f4917ace9",
+  "review_digest": "8e712198aebe77e938752eb6ade4cabad798cb0371e5c0ba072de23c7ac8e44c",
+  "finalization_digest": "187d287b7f8d232b605bb7e04c2f170183b2fd0bc50436d37f9c2a00651fd4a6",
+  "timestamp": 1793664788
+}

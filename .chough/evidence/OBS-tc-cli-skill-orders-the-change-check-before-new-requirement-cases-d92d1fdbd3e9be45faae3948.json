@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d92d1fdbd3e9be45faae3948",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-6",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass, 5=pass. Rechecked all5ordering outcomes on merged history/authority source769b526. Qualified ordering references remain exact, both complete host bundles are current, and no cold-start or human acceptance is inferred.",
+  "artifacts": [
+    ".chough/artifacts/pr44-a788-ordering-review.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr44-a788-ordering-review.md": "9c03506a7b1507b5f68d4b3c3a7a2ab1245e25d4babad5d41b2685c04d3acbdf"
+  },
+  "observed_at_unix_seconds": 1793668804,
+  "snapshot": {
+    "revision": "769b5269b87d2f822a1b41a4276eccd7d0fa3770",
+    "dirty": true,
+    "fingerprint": "64b15645b3dd4e0411daa2d5fb5d7eb7dbe207fa6728ce347a6a1d8ff28be18e",
+    "content": "2dcce19100c9af9398989281fa97f7e3fd1a8ca440e8cdba92cffbb01227276a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-skill-orders-the-change-check-before-new-requirement-cases",
+      "digest": "c95a3cb3f548d3bbbe233dfa84743012078e9a158875fbe0520b9aa8b32ff30e"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Agent-assisted source/package inspection only; no fresh-agent behavior, human acceptance or delivery is claimed."
+  ]
+}

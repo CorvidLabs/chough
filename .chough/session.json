@@ -102,7 +102,9 @@
       "TC-cli-history-post-prune-reference",
       "TC-cli-sdd-off-names-specsync-change-adopt",
       "TC-cli-same-second-runs-in-two-git-roots-stay-distinct",
-      "TC-cli-independently-added-records-merge-cleanly"
+      "TC-cli-independently-added-records-merge-cleanly",
+      "TC-cli-agent-native-workflow-upgrade",
+      "TC-cli-native-workflow-bundle-consistency"
     ],
     "design": [],
     "files": [
@@ -115,7 +117,8 @@
       "skills/chough-workflow/references/testing.md",
       "skills/chough-workflow/references/accept.md",
       "src/skill.rs",
-      "tests/package.rs"
+      "tests/package.rs",
+      ".specsync/changes/make-native-workflow-stage-references-and-installed-copies-consistent/change.md"
     ]
   },
   "decisions": [
@@ -189,7 +192,14 @@
     "human: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status was presented.",
     "agent owner choice: retain the complete PR37 current-cycle group while importing all additive checkpoint/history records, because this branch continues its active bounded-history work. The finish-all instruction authorizes bounded integration and native closeout; merge and live adoption/cleanup remain separate.",
     "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: complete the reviewed PRs, safety repairs, native closeout and current-head qualification under his standing through-PR authority. His later instruction permits resynchronization as merges continue; GitHub merge remains his.",
-    "human: 0xLeif explicitly authorized this session to \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02. This supersedes the earlier user-only merge boundary for PRs 37, 44 and 46; current-head approval, all checks and branch protection still apply. No release, deployment, live adoption or cleanup is authorized."
+    "human: 0xLeif explicitly authorized this session to \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02. This supersedes the earlier user-only merge boundary for PRs 37, 44 and 46; current-head approval, all checks and branch protection still apply. No release, deployment, live adoption or cleanup is authorized.",
+    "human: 0xLeif clarified in chat on 2026-11-02 that the agent can do any changes and it just needs a PR; Chough must handle SpecSync and other tools internally. This standing scope/implementation authorization applies to this concrete workflow fix and is relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . It is not implementation acceptance, merge, release or deployment authorization.",
+    "decided: native operations record project agent actor corvid-agent and cite actual human authorization separately, because the acting account and the authority source are different provenance roles; PR44 peer-review refinement is covered by the existing standing permission, and the original approval event is preserved",
+    "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status and remaining native closeout gate were presented. This authorizes this session to finish all three native scopes on PR #44 under the existing through-PR authorization; native acting account is corvid-agent. Merge, release, deployment and live cleanup remain separate.",
+    "agent: root selected the complete PR44 current-cycle group for integration. The native checkpoint helper first refused the original divergent inputs; a separate explicit selected-cycle operand preserved that group while merging additive collections. Original parent inputs and all transition occurrences remain retained. This is branch ownership, not approval or gate closure.",
+    "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: finish the reviewed PRs through native closeout and current-head qualification under his standing through-PR authorization; merge remains his.",
+    "Acting project agent: corvid-agent. Human source: 0xLeif explicitly said \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02, supplementing the standing through-PR permission relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 and \"Can you finish up all these?\". Scope: resynchronize PR44 with already squash-merged PR37 at main a788869b32b8442cbc8d7be2bf19c19a922954a8, preserve both accepted implementations and immutable proof, qualify and push normally. Root alone records native review/ship and done; this worker never merges. No new as-is human acceptance, release, deployment, live history adoption or cleanup is inferred.",
+    "agent: root instructed that this worker holds the PR44 feature push after final committed verification. Root obtains independent local review, records native closeout and done, then publishes one fully closed head; origin remains3e25fb4 until that root push."
   ],
   "open_questions": [],
   "completed": [
@@ -297,7 +307,20 @@
     "Added cfg(test) clock and native-output hooks, the same-second two-root unit test, the real Git integration fixture test, two cases and a CHANGELOG note",
     "SpecSync change reviewed (pass) and finalized as corvid-agent; archived for PR #48",
     "Same-second test passes git plain temporary paths (Windows verbatim path fix)",
-    "Windows path fix reviewed (pass) and finalized as corvid-agent"
+    "Windows path fix reviewed (pass) and finalized as corvid-agent",
+    "Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested.",
+    "PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass.",
+    "PR44 complete bundle consistency: plan/accept references apply existing authority and use acting agent accounts; both tracked hosts safely refreshed; four exact predecessors and every edited variant covered; structural writer/copy regression and both bound cases pass. All198tests on currentRust/Rust1.88 and all9Fledgesteps pass. Both native changes must close on thisPR.",
+    "PR44 user-doc guidance is consistent across CLI/walkthrough/next-change docs, canonical skill and installed bundles. All198tests on Rust1.95/Rust1.88, both bound cases and allnineFledge steps pass. Initial unrelated timing-budget MSRV failure is preserved with an open reliability bug; isolated/full unchanged reruns passed, cause unconfirmed. Three native scopes must close after actual implementation acceptance.",
+    "PR #44 completed all three native scoped reviews and archives in SpecSync required order under the human finish-all instruction. Original approval events and failed qualification proof remain intact; the checkpoint is done.",
+    "Intermediate main 9d02fbf source 421e8ce passed the full nine-step Fledge lane, all 205 Rust 1.95 and 1.88 tests and three applicable authority/ordering cases. Main 47 remains to be imported and qualified before final push.",
+    "The feature-only main47 merge is committed at04fa590, canonical version22. All1366protected parent blobs and139case identities survive. Only three explicit conflict paths were staged after verifying the imported archive objects; both main refs remain unchanged.",
+    "Integrated already-merged main d839 into PR44 at canonical version22, preserving main ordering, unlinked-failure and open-human-gate guards, setup guidance and native actor/source boundaries.",
+    "Final d839 qualification passed Fledge9 and all206tests on Rust1.95 and Rust1.88 with0failed,0ignored,0filtered; all3applicable cases passed; native audit0errors/0warnings. Protected1366parent blobs and alltransition occurrences remain intact.",
+    "PR44 includes main d839fef. All206tests passed on Rust1.95/1.88, allnineFledge steps and three affected cases passed. The original three scopes and allthreeintegration scopes are archived; native owner corrections are append-only. Earlier failures, original approvals and protected proof remain intact.",
+    "Integrated accepted bounded history and agent-operated native workflow at canonical23; all13affected history/authority/ordering cases passed with protected parent proof and both host bundles intact.",
+    "Final integrated source769b526 passed all9Fledge steps and all235tests across12suites on Rust1.95 and Rust1.88, with0failed/ignored/filtered. All13affected managed cases passed; protected1909parent blobs,149case definitions,45predecessors and allparent history occurrences remain preserved.",
+    "PR44 integration with main a788869 is qualified: all 235 tests on Rust 1.95/1.88, nine Fledge steps and 13 affected cases passed. All 1909 protected parent blobs are exact. Independent scoped integration review has no findings, and the new native integration scope is archived."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -436,7 +459,49 @@
     "OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56",
     "OBS-tc-cli-history-adoption-6cb6b66e612d1aa174aa9390",
     "OBS-tc-cli-history-adoption-9c0a346ae0344141170e9194",
-    "OBS-tc-cli-history-bounds-40ad3c6f4a4722ada4a57999"
+    "OBS-tc-cli-history-bounds-40ad3c6f4a4722ada4a57999",
+    "OBS-product-test-17dea5d3d3022872bfc0784f",
+    "OBS-product-test-472fe5550a1dbc62492fe07a",
+    "OBS-tc-cli-agent-native-workflow-upgrade-a7cd062c44c5685362a8adeb",
+    "OBS-tc-cli-agent-native-workflow-upgrade-edf66796f0c8d203c9710485",
+    "OBS-product-test-89d0bc200d842657b5c0c5dd",
+    "OBS-product-test-3a457c6c1ccc8b7f17ec9336",
+    "OBS-tc-cli-agent-native-workflow-upgrade-9ee6d6d2e80829306188c6b7",
+    "OBS-product-test-78bade59b97d61395419ccae",
+    "OBS-product-test-8c7a28bc8d391ad764019e99",
+    "OBS-product-test-ebe8dcc6161354afe79b4f95",
+    "OBS-product-test-fa1399785a5046d25484052c",
+    "OBS-product-test-42eaa88e1ebc9f69e4d357b5",
+    "OBS-product-test-01416b5b1b2d5274537def26",
+    "OBS-tc-cli-agent-native-workflow-upgrade-809454a22a0dcd22dac3987f",
+    "OBS-tc-cli-native-workflow-bundle-consistency-1de0a14c5139751b1ea7ffa4",
+    "OBS-tc-cli-agent-native-workflow-upgrade-629794b9905f71763493a1de",
+    "OBS-tc-cli-agent-native-workflow-upgrade-bb63e838fc5d8248a6d5e303",
+    "OBS-product-test-f307568459a1d29aa5369a74",
+    "OBS-product-test-506e8a6e02b6aa27262540b1",
+    "OBS-tc-cli-agent-native-workflow-upgrade-163aee4f748898deb7dee104",
+    "OBS-tc-cli-native-workflow-bundle-consistency-33824187f0d1e55af27bc01a",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d1140d9c201cc555471ac823",
+    "OBS-product-test-ad3e8cdd22f775f4c7f71412",
+    "OBS-product-test-4774c0494f82c6dbb144c977",
+    "OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe",
+    "OBS-tc-cli-native-workflow-bundle-consistency-1f667e9b8cbe3ee379930c77",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-b811635bcafdf40315b15950",
+    "OBS-tc-cli-agent-native-workflow-upgrade-7308eea0a55781c8831ade51",
+    "OBS-tc-cli-native-workflow-bundle-consistency-2751d641ee34ec5669e80dd7",
+    "OBS-tc-cli-history-adoption-55a07b5d3b7fcaeb73024f67",
+    "OBS-tc-cli-history-branches-d7943501c417828e209b76c4",
+    "OBS-tc-cli-history-bounds-853995519f1c7f03f4ce14c8",
+    "OBS-tc-cli-history-retention-fe56e22216ccdb916c03cbb9",
+    "OBS-tc-cli-retention-revalidation-d71be76bcbfcc6dec32cc97e",
+    "OBS-tc-cli-history-legacy-timing-bounds-98c903ee915cdf531ac636da",
+    "OBS-tc-cli-history-frozen-reference-aliases-d9a06c26aa0da0cd8e6d0af9",
+    "OBS-tc-cli-history-closing-reset-age-cdec3993f9914bc67cefc3da",
+    "OBS-tc-cli-history-post-prune-reference-c85bad9f9661b7fa157092e9",
+    "OBS-tc-cli-history-stale-receipt-age-8834b610c174cbf174551b52",
+    "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-d92d1fdbd3e9be45faae3948",
+    "OBS-product-test-2b032ca5a973b87da8dbf7d4",
+    "OBS-product-test-4061f6a2dd934040d1ae3cca"
   ],
   "bugs": [
     "BUG-0001",
@@ -460,7 +525,10 @@
     "BUG-history-allocation-runs-before-initialization-preflight-cd2ea3e4eb06d54d1bb019ba",
     "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc",
     "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
-    "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3"
+    "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
+    "BUG-native-workflow-guidance-exceeds-the-bounded-skill-entrypoint-0c432bf829e08bf33dfc41b9",
+    "BUG-stage-references-and-installed-workflows-contradict-agent-authority-gui-17c8cf5e8275ded08fcacc38",
+    "BUG-integrated-current-main-workflow-references-are-misclassified-as-edits-8cbff17ede6b1bad3926bce3"
   ],
   "blockers": [],
   "awaiting_human": [],

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "integrate-merged-bounded-history-into-the-agent-operated-native-workflow",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "f59bc0a7fe736268479f1a21104e68c97b4a4ef7",
+      "contract_digest": "f405d69528baae5d50a2778aab75c360550820f725236e42074820d2a203e353",
+      "execution_digest": "83e0f4599fe428ada69337d1ea965315e97529973ceb2362478a05ba4e0bb939",
+      "workspace_digest": "112cdf969e43d72ed3e4a811ce0f20286d87349b34d4a8d8e90bc53bafa2f790",
+      "timestamp": 1793669526
+    }
+  ]
+}
