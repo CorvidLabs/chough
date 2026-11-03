@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
+  "implementation_commit": "878c409732e761574897a3c46e24846d9bf80aa7",
+  "implementation_tree": "9ff4dd53d5cdd6a54cbecf037deb68359d790509",
+  "contract_digest": "e5cf6ff3b66e9fa6ae5d5440e606da5d240e96fbb221fdf7e4b04ff604c064f3",
+  "workspace_digest": "1f86607a9cd43ba5507ce1aab5f42b4583e25cac2b85e505ae1f3cc4d076e829",
+  "closing_digest": "7c966ee93ae80f99f6fdd96a12e388f017cf47a553349cd6fa43adb79eee16ac",
+  "review_digest": "c569229ed32f58c03c2c67913b98c70e3062c2990a59f7215e31417cb3f99808",
+  "finalization_digest": "921925d8a2e038f911ae511f6e9ff2e5225a8733bc811d5f5354d88009ea84d5",
+  "timestamp": 1793726056
+}

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 28
+version: 29
 status: active
 files:
   - src/main.rs
@@ -10,7 +10,6 @@ files:
   - src/context.rs
   - src/evidence.rs
   - src/identity.rs
-  - src/history.rs
   - src/library.rs
   - src/prefs.rs
   - src/records.rs
@@ -29,8 +28,6 @@ files:
   - tests/workflow_authority.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
-  - tests/history.rs
-  - tests/evidence.rs
   - tests/next.rs
 
 db_tables: []
@@ -237,3 +234,4 @@ provider, runtime or hosted service.
 | 26 | 2026-11-03 | raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400: Raise the checkpoint session byte limit to 131072 and the observation pointer limit to 400 |
 | 27 | 2026-11-03 | approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to: Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name |
 | 28 | 2026-11-03 | claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit: Claude host installs the shared .agents skill copy, legacy .claude copies are reported and removed only on an explicit command, and this repository drops its .claude copy |
+| 29 | 2026-11-03 | split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to: Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound |

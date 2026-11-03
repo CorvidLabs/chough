@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-retention-revalidation-e66770734a192d4be574b9cf",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact retention_revalidation_keeps_changed_missing_and_newly_referenced_proof for TC-history-retention-revalidation: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-retention-revalidation-e66770734a192d4be574b9cf.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-retention-revalidation-e66770734a192d4be574b9cf.log": "b70c4aca84473dbcdd660ec5951d15ef5156ba4119ad23f304e7f9bd6a74390a"
+  },
+  "observed_at_unix_seconds": 1793725051,
+  "snapshot": {
+    "revision": "fcf54362e9b2a32d6b989e296892164e98127695",
+    "dirty": false,
+    "fingerprint": "2abe1a57600bdaa89dcb4294e72dc6e168f65c67a83e99b6341563bc2cea6f7e",
+    "content": "bcbee24e42d92513f6a348e6ccc4356b109ad37513c0c8169fb5603bbd707400"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-retention-revalidation",
+      "digest": "ca5985b9e451df01418c2ee4269535fd891534e96e70a85ab36a660beeda85aa"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "retention_revalidation_keeps_changed_missing_and_newly_referenced_proof"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
