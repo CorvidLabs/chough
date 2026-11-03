@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance",
+  "native_change": "integrate-accepted-history-and-workflow-changes-into-pr-46-report-reads",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -173,7 +173,8 @@
     "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the PR closeout status was presented. This authorizes this session to finish native closeout for PR #46 under the existing through-PR authorization; acting native account is corvid-agent. Merge, release, deployment and live cleanup remain separate.",
     "routine integration choice: the checkpoint owner selected PR 46's complete current-cycle group over incoming main; Chough merged additive collections and every transition occurrence from both parents was preserved; native integration owns only reconciliation of previously approved behavior",
     "routine final-main integration choice: preserve the PR 46 current-cycle group atomically again while merging all incoming additive records and five appended transition occurrences; final main 9d02 awaiting-human and unlinked-failure behavior is unchanged",
-    "routine approved feature synchronization: import already merged PR 47 d839 into PR 46 without advancing main or merging a GitHub PR; preserve the PR 46 current-cycle group and all additive history; untouched setup documentation stays owned by archived PR 47"
+    "routine approved feature synchronization: import already merged PR 47 d839 into PR 46 without advancing main or merging a GitHub PR; preserve the PR 46 current-cycle group and all additive history; untouched setup documentation stays owned by archived PR 47",
+    "human source: 0xLeif instructed 'Merge approved, green PRs and resynchronize'; this bounded integration preserves already accepted requirements and proof under standing through-PR authorization, with corvid-agent as the operating actor and root as sole native review/ship writer"
   ],
   "open_questions": [],
   "completed": [
@@ -428,5 +429,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif merges PR #46 once current hosted checks are green; synchronize with main again if an earlier PR merges first"
+  "next_action": "Integrate actual merged PR37 main, run focused report/history checks, then wait for root's final qualified archived44 source before full qualification"
 }
