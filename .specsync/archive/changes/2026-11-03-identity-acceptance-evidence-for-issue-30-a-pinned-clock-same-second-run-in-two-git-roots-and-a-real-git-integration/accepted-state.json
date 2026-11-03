@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration",
+  "slug": "identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration",
+  "title": "Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records",
+  "description": "Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "a788869b32b8442cbc8d7be2bf19c19a922954a8",
+  "created_at": 1793670314,
+  "updated_at": 1793670728,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/main.rs",
+    "tests/cases.rs",
+    "specs/cli/",
+    "CHANGELOG.md",
+    ".chough/cases/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A deterministic test pins the clock (a cfg(test)-only hook, no runtime switch) and runs the same bound case in two independent Git roots on separate branches at the same second; after merging, the generated observation IDs and artifact paths are distinct, both records keep the pinned time, both artifacts keep their recorded bytes and fingerprints, and both observations read as current",
+    "A real Git fixture adds generated records independently on two branches in two roots (cases run observations and artifacts, evidence add with an artifact, bug add); the merge has no conflicts, every record from both sides is byte-identical to its branch version under a distinct ID, and cases check and status validate the merged tree with every observation current",
+    "No product behavior changes; fledge lanes run verify passes; hosted CI is reported only as observed"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Tests only plus cfg(test) hooks with no runtime switch; portable across Linux, macOS and Windows CI; out of scope: SKILL.md, references/lifecycle.md, next approval wording, and issue 30 criteria 2/4/5/6",
+    "public_contract": "no"
+  }
+}

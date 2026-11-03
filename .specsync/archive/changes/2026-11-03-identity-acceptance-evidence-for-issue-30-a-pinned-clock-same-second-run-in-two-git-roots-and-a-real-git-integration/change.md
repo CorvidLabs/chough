@@ -1,6 +1,6 @@
 ---
 id: identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration
-state: implementing
+state: archived
 type: feature
 base_commit: a788869b32b8442cbc8d7be2bf19c19a922954a8
 ---

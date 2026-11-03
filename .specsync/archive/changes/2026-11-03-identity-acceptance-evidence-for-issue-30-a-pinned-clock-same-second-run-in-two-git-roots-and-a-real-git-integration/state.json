@@ -7,11 +7,11 @@
   "title": "Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records",
   "description": "Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "a788869b32b8442cbc8d7be2bf19c19a922954a8",
   "created_at": 1793670314,
-  "updated_at": 1793670693,
+  "updated_at": 1793670734,
   "affected_specs": [
     "cli"
   ],
