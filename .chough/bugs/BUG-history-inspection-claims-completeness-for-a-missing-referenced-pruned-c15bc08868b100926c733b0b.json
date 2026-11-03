@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "BUG-history-inspection-claims-completeness-for-a-missing-referenced-pruned-c15bc08868b100926c733b0b",
+  "title": "History inspection claims completeness for a missing referenced pruned event",
+  "symptom": "The checkpoint reference remains, its file is absent, and history show reports complete true.",
+  "trigger": "Branch A prunes; branch B forked before pruning references the removed event; Git merges A into B cleanly.",
+  "expected": "History inspection explicitly reports partial missing referenced history and its source.",
+  "actual": "The checkpoint reference remains, its file is absent, and history show reports complete true.",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-027"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+  "steps": [],
+  "fixture": ".chough/artifacts/history-post-prune-reference-before",
+  "observations": [
+    "OBS-product-test-f59a8fa906c43f699940f33c",
+    "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763",
+    "OBS-tc-cli-history-post-prune-reference-23f4f23b82735a0a21fc1aab",
+    "OBS-tc-cli-history-adoption-7e242d1718d20b2678fe6af5",
+    "OBS-tc-cli-history-adoption-b8147b0b44224077038a22bb",
+    "OBS-tc-cli-history-post-prune-reference-8e61ca8d5022c39e4631183c",
+    "OBS-tc-cli-history-post-prune-reference-92a2a07272b35e93c3ece834",
+    "OBS-tc-cli-history-adoption-6cb6b66e612d1aa174aa9390",
+    "OBS-tc-cli-history-adoption-9c0a346ae0344141170e9194"
+  ],
+  "impact": "Acceptance blocker for proof-preserving history and retention.",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "corvid-agent PR37 review5740236776, independently reproduced by Codex",
+  "notes": [
+    {
+      "at_unix_seconds": 1793643308,
+      "text": "status: open -> verified. Both independently reproduced failures now have failure-first regressions, original-reproducer confirmation, ten passed bound cases, all225tests on currentRust/Rust1.88 and all nine Fledge steps. Failed proof remains unchanged.",
+      "observations": [
+        "OBS-tc-cli-history-adoption-99c96d4d9cfbb7322ae81763"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793659789,
+      "text": "status: verified -> open. Reopened from incremental PR37 review4446381376: exact-event restoration is fixed but bare and single-quoted cycle-directory references still bypass missing-reference diagnostics/refusal. Original passed and failed observations remain intact.",
+      "observations": [
+        "OBS-tc-cli-history-post-prune-reference-23f4f23b82735a0a21fc1aab"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793660742,
+      "text": "status: open -> verified. Bare and single-quoted directory gap now shares normalized whole-token classification with all other forms. All five real Git reference/restoration fixtures, all22historytests, all225tests on both Rust versions, ten cases and nine Fledge steps pass. Original failures remain intact.",
+      "observations": [
+        "OBS-tc-cli-history-adoption-7e242d1718d20b2678fe6af5"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793662364,
+      "text": "Final integrated main9d02 source retains the five-form directory/exact-file repair and passes all232tests on both Rust versions, ten cases and nine Fledge steps; no failure or old proof was rewritten.",
+      "observations": [
+        "OBS-tc-cli-history-adoption-b8147b0b44224077038a22bb"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793663949,
+      "text": "status: verified -> open. Independent incremental review confirmed protected punctuation forms still bypass missing-reference diagnostics. Repair must classify every recognized cycle mention consistently while preserving exact-file-only restoration. Older failures and passes remain intact.",
+      "observations": [
+        "OBS-tc-cli-history-post-prune-reference-8e61ca8d5022c39e4631183c"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793665072,
+      "text": "Independent review found a known event path followed by .bak still classified as the exact file. The bug remains open and blocking until complete path-boundary classification, red/green regressions and final combined-source qualification pass. Original raw failures remain intact.",
+      "observations": [
+        "OBS-tc-cli-history-post-prune-reference-92a2a07272b35e93c3ece834"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793665901,
+      "text": "status: open -> verified. Occurrence and both-edge path classification now cover17 real Git variants and24 frozen alias/punctuation fixtures. Both strengthened regressions failed before repair and pass afterward; all 233 tests on Rust 1.95/1.88, ten cases, all nine Fledge steps and both original reproducers pass. Independent scoped rereview has no remaining finding. All earlier failures and protected proof remain unchanged.",
+      "observations": [
+        "OBS-tc-cli-history-adoption-6cb6b66e612d1aa174aa9390",
+        "OBS-tc-cli-history-adoption-9c0a346ae0344141170e9194"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793642243,
+  "updated_at_unix_seconds": 1793665901
+}

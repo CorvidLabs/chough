@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "BUG-shared-transition-appends-collide-across-independent-branches-8bcc3168f918377ac434cd77",
+  "title": "Shared transition appends collide across independent branches",
+  "symptom": "Two branch-local stage events edit the same transition log and cannot integrate independently",
+  "trigger": "Run the real_git_branch_events_survive_while_checkpoint_selection_remains_explicit regression before the history implementation",
+  "expected": "Both immutable branch event files survive while any divergent checkpoint cursor requires explicit selection",
+  "actual": "Git reports .chough/transitions.jsonl as the unmerged path",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "9a8b9b11e16bedac4808c56d48307fa29ad9cfe3",
+  "steps": [],
+  "fixture": "tests/history.rs",
+  "observations": [
+    "OBS-product-test-41e7829d3ff0fdecd63a45ee",
+    "OBS-tc-cli-history-branches-af8a1be077b88571650a8232"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Observed failure-first regression for approved issue #31 scope",
+  "notes": [
+    {
+      "at_unix_seconds": 1793631730,
+      "text": "status: open -> verified. The later real Git case passes with preserved event paths and explicit coherent checkpoint selection.",
+      "observations": [
+        "OBS-tc-cli-history-branches-af8a1be077b88571650a8232"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793625097,
+  "updated_at_unix_seconds": 1793631730
+}

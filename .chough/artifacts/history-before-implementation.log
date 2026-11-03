@@ -1,0 +1,43 @@
+   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.17s
+     Running tests/history.rs (target/debug/deps/history-1508931fbdfeaff6)
+
+running 3 tests
+test new_projects_use_a_cursor_in_the_single_checkpoint ... FAILED
+test adoption_preview_preserves_legacy_bytes_and_apply_is_explicit ... FAILED
+test real_git_branch_events_survive_while_checkpoint_selection_remains_explicit ... FAILED
+
+failures:
+
+---- new_projects_use_a_cursor_in_the_single_checkpoint stdout ----
+
+thread 'new_projects_use_a_cursor_in_the_single_checkpoint' (323062134) panicked at tests/history.rs:29:5:
+assertion failed: f.session()["history_cursor"].is_object()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- adoption_preview_preserves_legacy_bytes_and_apply_is_explicit stdout ----
+
+thread 'adoption_preview_preserves_legacy_bytes_and_apply_is_explicit' (323062133) panicked at tests/common/mod.rs:58:9:
+["history", "adopt"] failed: error: unrecognized subcommand 'history'
+
+Usage: chough [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
+
+---- real_git_branch_events_survive_while_checkpoint_selection_remains_explicit stdout ----
+
+thread 'real_git_branch_events_survive_while_checkpoint_selection_remains_explicit' (323062135) panicked at tests/history.rs:76:5:
+assertion `left == right` failed: immutable event paths must merge; only the current-cycle checkpoint needs selection
+  left: ".chough/transitions.jsonl"
+ right: ".chough/session.json"
+
+
+failures:
+    adoption_preview_preserves_legacy_bytes_and_apply_is_explicit
+    new_projects_use_a_cursor_in_the_single_checkpoint
+    real_git_branch_events_survive_while_checkpoint_selection_remains_explicit
+
+test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s
+
+error: test failed, to rerun pass `--test history`

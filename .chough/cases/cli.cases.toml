@@ -615,60 +615,6 @@ test_target = "bugs"
 test = "an_open_blocking_bug_sends_work_back_to_build"
 
 [[case]]
-id = "TC-cli-leaving-test-refuses-an-unlinked-failed-case"
-title = "Leaving test refuses an unlinked failed case until it passes"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["FLOW-7", "LIFE-5", "FLOW-2"]
-requirements = ["REQ-cli-008"]
-paths = ["src/stage.rs", "tests/stages.rs"]
-environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/stages.rs::leaving_test_refuses_an_unlinked_failed_case_until_it_passes passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "stages"
-test = "leaving_test_refuses_an_unlinked_failed_case_until_it_passes"
-
-[[case]]
-id = "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
-title = "A later not-run observation keeps an unlinked failure refused"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["FLOW-7", "LIFE-5", "FLOW-5"]
-requirements = ["REQ-cli-008"]
-paths = ["src/stage.rs", "tests/stages.rs"]
-environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/stages.rs::a_later_not_run_keeps_an_unlinked_failure_refused passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "stages"
-test = "a_later_not_run_keeps_an_unlinked_failure_refused"
-
-[[case]]
-id = "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal"
-title = "A linking bug lifts the unlinked-failure refusal; other moves are unchanged"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["FLOW-7", "LIFE-5", "FLOW-8"]
-requirements = ["REQ-cli-008"]
-paths = ["src/stage.rs", "tests/stages.rs"]
-environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/stages.rs::a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "stages"
-test = "a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged"
-
-[[case]]
 id = "TC-cli-0033"
 title = "Standing preferences stay separate from consent"
 status = "active"
@@ -2508,6 +2454,240 @@ expected = ["Native approve/review examples in the canonical skill, README and t
 adapter = "cargo-test"
 test_target = "workflow_authority"
 test = "native_writer_examples_and_installed_workflows_are_consistent"
+[[case]]
+id = "TC-cli-history-adoption"
+title = "Explicit history adoption preserves legacy bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-3", "LIFE-7"]
+requirements = ["REQ-cli-025"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::adoption_preview_preserves_legacy_bytes_and_apply_is_explicit passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "adoption_preview_preserves_legacy_bytes_and_apply_is_explicit"
+
+[[case]]
+id = "TC-cli-history-branches"
+title = "Independent branch events survive with explicit checkpoint selection"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7"]
+requirements = ["REQ-cli-025"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::real_git_branch_events_survive_while_checkpoint_selection_remains_explicit passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "real_git_branch_events_survive_while_checkpoint_selection_remains_explicit"
+
+[[case]]
+id = "TC-cli-history-bounds"
+title = "History event, cycle, recent and maintenance limits are exercised"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-8", "LIFE-10"]
+requirements = ["REQ-cli-026"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::history_bounds_cover_all_resource_limits passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "history_bounds_cover_all_resource_limits"
+
+[[case]]
+id = "TC-cli-history-retention"
+title = "History retention revalidates new protection and preserves proof"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-026"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::cycle_retention_is_read_only_until_authorized_and_revalidates_new_references passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "cycle_retention_is_read_only_until_authorized_and_revalidates_new_references"
+
+[[case]]
+id = "TC-cli-retention-revalidation"
+title = "Evidence cleanup retains changed missing and newly referenced proof"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-027"]
+paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::retention_revalidation_keeps_changed_missing_and_newly_referenced_proof passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "retention_revalidation_keeps_changed_missing_and_newly_referenced_proof"
+
+[[case]]
+id = "TC-cli-history-legacy-timing-bounds"
+title = "Legacy timing retains at most 4096 input lines and reports omitted history"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8", "LIFE-10"]
+requirements = ["REQ-cli-026"]
+paths = ["src/history.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission passes at the exact event limit and one line beyond, preserving the chronological suffix and source bytes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission"
+
+[[case]]
+id = "TC-cli-history-frozen-reference-aliases"
+title = "Frozen artifact directory path aliases protect every referenced history cycle"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-026", "REQ-cli-027"]
+paths = ["src/history.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["Canonical, mixed-case backslash, repeated-separator and dot-component directory references in frozen text protect all cycles; preview and authorized fixture apply leave every .chough byte unchanged"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply"
+
+[[case]]
+id = "TC-cli-history-closing-reset-age"
+title = "History retention ages idle cycles from the selected closing reset"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-026", "REQ-cli-027"]
+paths = ["src/history.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["Recently closed idle cycles stay protected and new receipts retain the actual closing reset timestamp"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "idle_cycle_age_uses_the_selected_closure_and_receipts_record_it"
+
+[[case]]
+id = "TC-cli-history-post-prune-reference"
+title = "History inspection reports referenced proof missing after real Git integration"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-026", "REQ-cli-027"]
+paths = ["src/history.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["The real Git prune then independent-reference then clean-merge ordering covers exact event paths, four directory quote forms, terminal punctuation, parentheses, mixed file and cycle references, longer unknown paths containing known file prefixes or suffixes, and Unicode context; missing paths and sources are explicit, preview preserves bytes, apply refuses writes, restoring only an exact file cannot satisfy a separate whole-cycle reference, and exact restoration clears each diagnostic"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "real_git_post_prune_references_report_unavailable_until_exact_restoration"
+
+[[case]]
+id = "TC-cli-history-stale-receipt-age"
+title = "Stale receipt timestamps cannot age a recently closed history cycle"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-8"]
+requirements = ["REQ-cli-026", "REQ-cli-027"]
+paths = ["src/history.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["An older receipt cannot override the selected recent closing reset or make the protected cycle eligible for deletion"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "stale_receipt_age_cannot_override_a_recent_selected_closure"
+
+[[case]]
+id = "TC-cli-leaving-test-refuses-an-unlinked-failed-case"
+title = "Leaving test refuses an unlinked failed case until it passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::leaving_test_refuses_an_unlinked_failed_case_until_it_passes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "leaving_test_refuses_an_unlinked_failed_case_until_it_passes"
+
+[[case]]
+id = "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused"
+title = "A later not-run observation keeps an unlinked failure refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-5"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_later_not_run_keeps_an_unlinked_failure_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_later_not_run_keeps_an_unlinked_failure_refused"
+
+[[case]]
+id = "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal"
+title = "A linking bug lifts the unlinked-failure refusal; other moves are unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-5", "FLOW-8"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchanged"
+
 [[case]]
 id = "TC-cli-skill-orders-the-change-check-before-new-requirement-cases"
 title = "The skill runs the scoped change check before cases that link a new requirement and keeps case recording out of tasks.md checkboxes"

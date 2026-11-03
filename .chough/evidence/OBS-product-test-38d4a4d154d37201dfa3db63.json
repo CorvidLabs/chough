@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-38d4a4d154d37201dfa3db63",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-026"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64-rust-1.88.0",
+  "summary": "All 221 Rust tests across 11 suites passed on Rust 1.88.0 offline after the legacy timing overflow fix, with no failures or ignored tests.",
+  "artifacts": [
+    ".chough/artifacts/history-fanout-qualified-msrv.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-fanout-qualified-msrv.log": "595302682b2ba67326a47ca98982b7eb67d3a48a569903034e1e3d9b2c317743"
+  },
+  "observed_at_unix_seconds": 1793633451,
+  "snapshot": {
+    "revision": "6fa45db5d78dfcc1a1176d6a37fe7da36cf4bf90",
+    "dirty": true,
+    "fingerprint": "f2009c263c159d55f01d3c65a249e9a738e04af1e38f832c5da4bb42aba07dab",
+    "content": "84b7cd392431a504dc99aca3bb108d89429779d75e6d16c1ef5357001233b7c5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Local macOS arm64 only; hosted product jobs remain gated by the active native change. No human acceptance, live adoption, cleanup, archive or merge occurred."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "integrate-merged-case-ordering-guidance-with-bounded-history",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "b9e464d4daabd699a84f2c9a815437ba86f73ca8",
+      "contract_digest": "4bd906d0c6f936df4eaa4d837e0a1cc9eb3cbbf5edfe88496b509a7e86f7ee35",
+      "execution_digest": "737656a1cdd7b94cb6a55371e1eb9c8be367c28ac3b8079a282bd2e56dcc56fb",
+      "workspace_digest": "649f06b3319afdc56e46ca23ba4e5a1762ee2f8cf0fd1d5e57714da3b717cd53",
+      "timestamp": 1793666999
+    }
+  ]
+}

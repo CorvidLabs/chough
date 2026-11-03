@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-closing-reset-age-6cf7353fc9ca752e41894764",
+  "criteria": [
+    "LIFE-7",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test history -- --exact idle_cycle_age_uses_the_selected_closure_and_receipts_record_it for TC-cli-history-closing-reset-age: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-history-closing-reset-age-6cf7353fc9ca752e41894764.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-history-closing-reset-age-6cf7353fc9ca752e41894764.log": "e47e8259e48e50979ba5b258174cb93ba41732c5595ec6e8429b4580b5b944f9"
+  },
+  "observed_at_unix_seconds": 1793663182,
+  "snapshot": {
+    "revision": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "dirty": false,
+    "fingerprint": "303109c1b73bfe7a51dc9af9c8d80307f110e74998e18d367dbc5b97ddf2a092",
+    "content": "40889dd8caacc6d2b36c587da4bea5467c163eae64a5b9e2c81140c37295caba"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-closing-reset-age",
+      "digest": "f9e260fc525daf6243813bc88c81884eaad590d8f94f6d96b10a2cafb36c497b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "history",
+    "--",
+    "--exact",
+    "idle_cycle_age_uses_the_selected_closure_and_receipts_record_it"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

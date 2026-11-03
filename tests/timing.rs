@@ -1113,6 +1113,79 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
 }
 
 #[test]
+fn legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission() {
+    for count in [4_096_usize, 4_097] {
+        let lines: Vec<_> = (0..count)
+            .map(|index| {
+                transition(
+                    Some(T + index as u64),
+                    "iterate",
+                    "intent",
+                    "intent",
+                    "legacy boundary",
+                )
+            })
+            .collect();
+        let fixture = fixture_with(&lines);
+        let before = record_digests(fixture.root());
+        let report = timing(&fixture, &["--cycle", "current"]);
+        assert_eq!(
+            report["transitions"]["records"], 4_096,
+            "{}",
+            report["transitions"]
+        );
+        assert_eq!(report["transitions"]["skipped_bytes"], 0);
+        let retained = segments(&report, 0);
+        assert_eq!(retained.len(), 4_096);
+        assert_eq!(
+            at(&retained[0]["start"]),
+            Some(T + count.saturating_sub(4_096) as u64)
+        );
+        assert_eq!(
+            at(&retained.last().unwrap()["start"]),
+            Some(T + count as u64 - 1)
+        );
+        if count == 4_096 {
+            assert_eq!(report["partial"], json!([]));
+        } else {
+            assert!(
+                report["partial"].as_array().unwrap().iter().any(|entry| {
+                    entry["source"] == ".chough/transitions.jsonl"
+                        && entry["reason"].as_str().is_some_and(|reason| {
+                            reason.contains("1 lines") && reason.contains("4096-event")
+                        })
+                }),
+                "{}",
+                report["partial"]
+            );
+        }
+        assert_eq!(before, record_digests(fixture.root()));
+    }
+}
+
+#[test]
+fn legacy_timing_counts_unreadable_and_unknown_lines_toward_the_event_bound() {
+    let mut lines = vec![
+        transition(Some(T), "iterate", "intent", "intent", "omitted"),
+        "not JSON".into(),
+        transition(Some(T + 2), "future-kind", "intent", "intent", "unknown"),
+    ];
+    lines.extend(
+        (3..4_097)
+            .map(|index| transition(Some(T + index), "iterate", "intent", "intent", "retained")),
+    );
+    let fixture = fixture_with(&lines);
+    let before = record_digests(fixture.root());
+    let report = timing(&fixture, &["--cycle", "current"]);
+    assert_eq!(report["transitions"]["records"], 4_094);
+    assert_eq!(report["transitions"]["unreadable_lines"], 1);
+    assert_eq!(report["transitions"]["unrecognised_kinds"], 1);
+    assert_eq!(at(&segments(&report, 0)[0]["start"]), Some(T + 3));
+    assert!(report["partial"].to_string().contains("4096-event"));
+    assert_eq!(before, record_digests(fixture.root()));
+}
+
+#[test]
 fn transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical() {
     let fixture = Fixture::new();
     fixture.init();

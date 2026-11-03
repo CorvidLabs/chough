@@ -1,0 +1,42 @@
+{
+  "checkpoint": {
+    "awaiting_human": [],
+    "blockers": [],
+    "bugs": [],
+    "completed": [],
+    "decisions": [],
+    "history_cursor": {
+      "cycle": "CYC-00f2785159cc0c928fbab0ad",
+      "head": "EVT-053ac9d441e4eeaceb13205e",
+      "legacy": null
+    },
+    "intent_scope": "",
+    "modules": [
+      "cli"
+    ],
+    "native_change": null,
+    "next_action": "New cycle from intent after reset: close 5. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.",
+    "objective": "Disposable post-prune branch reference",
+    "observations": [],
+    "open_questions": [],
+    "references": {
+      "cases": [],
+      "criteria": [],
+      "design": [],
+      "files": [
+        ".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json"
+      ],
+      "requirements": []
+    },
+    "run_consents": [],
+    "schema_version": 2,
+    "stage": {
+      "callers": [],
+      "current": "intent",
+      "iteration": 1,
+      "status": "active"
+    }
+  },
+  "saved": true,
+  "schema_version": 1
+}

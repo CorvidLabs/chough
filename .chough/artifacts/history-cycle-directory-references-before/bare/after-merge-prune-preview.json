@@ -1,0 +1,61 @@
+{
+  "applied": false,
+  "complete": true,
+  "eligible": [],
+  "note": "protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed",
+  "partial": [],
+  "protected": [
+    {
+      "cycle": "CYC-00be681286d6f19b781161e9",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    },
+    {
+      "cycle": "CYC-2ce6389dadb3c871f69b4006",
+      "reasons": [
+        "already pruned",
+        "referenced by .chough/artifacts/post-prune-cycle-directory.log",
+        "unselected orphan or unresolved cycle closure"
+      ]
+    },
+    {
+      "cycle": "CYC-5488533228db199c34cf80c0",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    },
+    {
+      "cycle": "CYC-7de622800d1b4d11cd2177d9",
+      "reasons": [
+        "already pruned"
+      ]
+    },
+    {
+      "cycle": "CYC-92c802c86fc224e70e2f7aca",
+      "reasons": [
+        "active checkpoint cycle",
+        "referenced by .chough/session.json",
+        "unselected orphan or unresolved cycle closure"
+      ]
+    },
+    {
+      "cycle": "CYC-cdb65a2f3867c2261b307ab3",
+      "reasons": [
+        "already pruned",
+        "unselected orphan or unresolved cycle closure"
+      ]
+    },
+    {
+      "cycle": "CYC-eb32717a267a581b38de533c",
+      "reasons": [
+        "newest three closed cycles, including timestamp ties"
+      ]
+    }
+  ],
+  "reclaimable_bytes": 0,
+  "reclaimed_bytes": 0,
+  "removed": [],
+  "schema_version": 1,
+  "skipped": []
+}

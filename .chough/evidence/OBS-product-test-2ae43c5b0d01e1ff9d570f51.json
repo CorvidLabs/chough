@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-2ae43c5b0d01e1ff9d570f51",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Both legacy timing regressions failed before the fix and passed after it: exact 4096 and 4097 input lines, chronological suffix, explicit omission, malformed/unknown input consuming the limit, and byte-identical fixture state.",
+  "artifacts": [
+    ".chough/artifacts/history-legacy-timing-regression-before.log",
+    ".chough/artifacts/history-legacy-timing-regression-after.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-legacy-timing-regression-after.log": "425d7adbc76940c8ef5f71e8f7962bd396db7cbe4f5114085431aa679743d546",
+    ".chough/artifacts/history-legacy-timing-regression-before.log": "86a2cc590e1756d53ad48a8219b27fa1e6402d98e677c406abee5e4a3da797d5"
+  },
+  "observed_at_unix_seconds": 1793633150,
+  "snapshot": {
+    "revision": "6fa45db5d78dfcc1a1176d6a37fe7da36cf4bf90",
+    "dirty": true,
+    "fingerprint": "4fa2916a02abc909ff90974758cbc274ec089e9ef052fcae02d94774048c6b52",
+    "content": "84b7cd392431a504dc99aca3bb108d89429779d75e6d16c1ef5357001233b7c5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Focused local macOS arm64 regression evidence; full refreshed qualification is recorded separately."
+  ]
+}

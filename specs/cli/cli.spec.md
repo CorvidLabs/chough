@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 22
+version: 23
 status: active
 files:
   - src/main.rs
@@ -10,6 +10,7 @@ files:
   - src/context.rs
   - src/evidence.rs
   - src/identity.rs
+  - src/history.rs
   - src/library.rs
   - src/prefs.rs
   - src/records.rs
@@ -28,6 +29,9 @@ files:
   - tests/workflow_authority.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
+  - tests/history.rs
+  - tests/evidence.rs
+  - tests/next.rs
 
 db_tables: []
 depends_on: []
@@ -50,7 +54,7 @@ requirements.md and docs/FRD.md.
 
 The binary exposes CLI commands; it does not export a Rust library API. The
 observable command contract is `chough --help`, docs/cli.md and README.md. The
-command groups are init, context, status, next, migrate, checkpoint, stage, cases,
+command groups are init, context, status, next, migrate, checkpoint, stage, history, cases,
 evidence, bug, pref, consent, validate, library, skill and timing.
 
 Internal modules under src/ make their entry points visible to the crate root only.
@@ -226,4 +230,5 @@ provider, runtime or hosted service.
 | 19 | 2026-11-02 | unlinked-failure-ignores-not-run-leaving-test-keeps-refusing-when-a-referenced-case-s-latest-executed-observation: Unlinked failure ignores not-run: leaving test keeps refusing when a referenced case's latest executed observation failed and a later observation is only not-run (PR 43 review) |
 | 20 | 2026-11-02 | human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38: Human-gate hold: stage advance and skip refuse while the checkpoint has an open awaiting-human gate (issue 38) |
 | 21 | 2026-11-02 | new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project: New-project setup path and SDD-off hint: document HI, specsync init/scaffold and specsync change adopt for a new project, and have chough next say to run specsync change adopt when SpecSync is configured but SDD is off (issue 40) |
-| 22 | 2026-11-02 | Integrate main versions 17 to 21 with let-chough-drive-native-tools-and-reuse-existing-human-authorization (approved on the parallel version 17), preserving ordering, setup hints, human/failure gates and native authority. |
+| 22 | 2026-11-02 | bound-transition-history-and-preserve-referenced-proof: Bound transition history and preserve referenced proof |
+| 23 | 2026-11-02 | Integrate merged bounded history (main version22) with the agent-operated native workflow (approved on parallel version17, previously integrated as parallel version22), preserving both accepted meanings, ordering and gates. |

@@ -1,0 +1,394 @@
+[
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "init",
+      "--objective",
+      "Disposable post-prune branch reference",
+      "--module",
+      "cli"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"created\": [\n    \".chough/session.json\",\n    \".agents/skills/chough-workflow/SKILL.md\",\n    \".agents/skills/chough-workflow/agents/openai.yaml\",\n    \".agents/skills/chough-workflow/references/accept.md\",\n    \".agents/skills/chough-workflow/references/bugs.md\",\n    \".agents/skills/chough-workflow/references/build.md\",\n    \".agents/skills/chough-workflow/references/checkpoint.md\",\n    \".agents/skills/chough-workflow/references/design.md\",\n    \".agents/skills/chough-workflow/references/intent.md\",\n    \".agents/skills/chough-workflow/references/librarian.md\",\n    \".agents/skills/chough-workflow/references/lifecycle.md\",\n    \".agents/skills/chough-workflow/references/plan.md\",\n    \".agents/skills/chough-workflow/references/release.md\",\n    \".agents/skills/chough-workflow/references/roles.md\",\n    \".agents/skills/chough-workflow/references/stages.md\",\n    \".agents/skills/chough-workflow/references/testing.md\",\n    \".agents/skills/chough-workflow/references/validate.md\",\n    \".agents/skills/chough-workflow/templates/brief.md\",\n    \".agents/skills/chough-workflow/templates/bug-report.md\",\n    \".agents/skills/chough-workflow/templates/cases.toml\",\n    \".agents/skills/chough-workflow/templates/frd.md\",\n    \".agents/skills/chough-workflow/templates/prototype/COMPANION.md\",\n    \".agents/skills/chough-workflow/templates/prototype/index.html\",\n    \".agents/skills/chough-workflow/templates/prototype/styles.css\",\n    \".agents/skills/chough-workflow/templates/review-findings.md\"\n  ],\n  \"hosts\": [\n    \"openai\"\n  ],\n  \"preserved\": [],\n  \"schema_version\": 1\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "stage",
+      "iterate",
+      "--note",
+      "initial"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"iteration\": 2,\n    \"kind\": \"iterate\",\n    \"stage\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"initial\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 2,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "close 0"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"initial\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "close 1"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"initial\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "close 2"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"initial\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 2\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "close 3"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"initial\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 2\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 3\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "close 4"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"initial\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 2\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 3\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 4\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "stage",
+      "reset",
+      "--to",
+      "intent",
+      "--reason",
+      "close 5"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": {\n    \"from\": \"intent\",\n    \"kind\": \"reset\",\n    \"refresh\": [\n      \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n    ],\n    \"to\": \"intent\"\n  },\n  \"authority\": \"Native SpecSync status decides lifecycle gates; Chough never records human approval or review.\",\n  \"awaiting_human\": [],\n  \"native_change\": null,\n  \"recent_transitions\": [\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"iterate\",\n      \"reason\": \"initial\",\n      \"refresh\": [],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 0\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 1\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 2\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 3\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 4\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    },\n    {\n      \"at_unix_seconds\": 1793642161,\n      \"from\": \"intent\",\n      \"gate\": null,\n      \"kind\": \"reset\",\n      \"reason\": \"close 5\",\n      \"refresh\": [\n        \"intent: HI criteria and FRD; append new criteria, never rewrite approved ones\"\n      ],\n      \"revision\": null,\n      \"schema_version\": 1,\n      \"to\": \"intent\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"stage\": {\n    \"callers\": [],\n    \"current\": \"intent\",\n    \"iteration\": 1,\n    \"status\": \"active\"\n  },\n  \"stages\": [\n    {\n      \"kind\": \"main\",\n      \"name\": \"intent\"\n    },\n    {\n      \"kind\": \"conditional\",\n      \"name\": \"design\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"plan\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"build\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"test\"\n    },\n    {\n      \"kind\": \"main\",\n      \"name\": \"accept\"\n    },\n    {\n      \"kind\": \"terminal\",\n      \"name\": \"done\"\n    },\n    {\n      \"kind\": \"optional\",\n      \"name\": \"release\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"bugs\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"validate\"\n    },\n    {\n      \"kind\": \"side\",\n      \"name\": \"librarian\"\n    }\n  ],\n  \"transitions_partial\": false,\n  \"valid_transitions\": [\n    \"chough stage advance  (intent -> design)\",\n    \"chough stage skip --reason <why not applicable>\",\n    \"chough stage iterate --note <what changed>\",\n    \"chough stage reset [--to <stage>] --reason <why>\",\n    \"chough stage pause --reason <why>\",\n    \"chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]\"\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "history",
+      "prune"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": false,\n  \"complete\": true,\n  \"eligible\": [\n    {\n      \"bytes\": 352,\n      \"cycle\": \"CYC-09bf4b69d75da18f298e9199\",\n      \"files\": [\n        {\n          \"bytes\": 352,\n          \"digest\": \"d12a5a2d4ba00f3f7b9183c2edacab78061174d22be4d99953438213627656d7\",\n          \"path\": \".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 352,\n          \"digest\": \"d12a5a2d4ba00f3f7b9183c2edacab78061174d22be4d99953438213627656d7\",\n          \"path\": \".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\"\n        }\n      ],\n      \"planned_bytes\": 352\n    },\n    {\n      \"bytes\": 522,\n      \"cycle\": \"CYC-3f65cd11c98de3cea0f1c8fd\",\n      \"files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"9525e31808ab6d7823a914caf616ad2c432f56f2b06b3e6218b5153460a85507\",\n          \"path\": \".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"9525e31808ab6d7823a914caf616ad2c432f56f2b06b3e6218b5153460a85507\",\n          \"path\": \".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\"\n        }\n      ],\n      \"planned_bytes\": 522\n    },\n    {\n      \"bytes\": 522,\n      \"cycle\": \"CYC-7bb2b9178ab230aabdb4833b\",\n      \"files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"3ba7816eb1a54ffc18b442cc026476ba378ef5674209287945370ac2297cc235\",\n          \"path\": \".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"3ba7816eb1a54ffc18b442cc026476ba378ef5674209287945370ac2297cc235\",\n          \"path\": \".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\"\n        }\n      ],\n      \"planned_bytes\": 522\n    }\n  ],\n  \"note\": \"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed\",\n  \"protected\": [\n    {\n      \"cycle\": \"CYC-00f2785159cc0c928fbab0ad\",\n      \"reasons\": [\n        \"active checkpoint cycle\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-3873638cda1f325197082908\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-707261dbd854002f806921d5\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-d1712728fa5a873cd0f37a45\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    }\n  ],\n  \"reclaimable_bytes\": 1396,\n  \"reclaimed_bytes\": 0,\n  \"removed\": [],\n  \"schema_version\": 1,\n  \"skipped\": []\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "init"
+    ],
+    "exit_code": 0,
+    "stdout": "Initialized empty Git repository in /private/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture/.git/\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "config",
+      "merge.chough-session.driver",
+      "'/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough' checkpoint --merge %O %A %B"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "checkout",
+      "-b",
+      "baseline"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "Switched to a new branch 'baseline'\n"
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "add",
+      "."
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "commit",
+      "-m",
+      "shared pre-prune history"
+    ],
+    "exit_code": 0,
+    "stdout": "[baseline (root-commit) 1062a45] shared pre-prune history\n 33 files changed, 1401 insertions(+)\n create mode 100644 .agents/skills/chough-workflow/SKILL.md\n create mode 100644 .agents/skills/chough-workflow/agents/openai.yaml\n create mode 100644 .agents/skills/chough-workflow/references/accept.md\n create mode 100644 .agents/skills/chough-workflow/references/bugs.md\n create mode 100644 .agents/skills/chough-workflow/references/build.md\n create mode 100644 .agents/skills/chough-workflow/references/checkpoint.md\n create mode 100644 .agents/skills/chough-workflow/references/design.md\n create mode 100644 .agents/skills/chough-workflow/references/intent.md\n create mode 100644 .agents/skills/chough-workflow/references/librarian.md\n create mode 100644 .agents/skills/chough-workflow/references/lifecycle.md\n create mode 100644 .agents/skills/chough-workflow/references/plan.md\n create mode 100644 .agents/skills/chough-workflow/references/release.md\n create mode 100644 .agents/skills/chough-workflow/references/roles.md\n create mode 100644 .agents/skills/chough-workflow/references/stages.md\n create mode 100644 .agents/skills/chough-workflow/references/testing.md\n create mode 100644 .agents/skills/chough-workflow/references/validate.md\n create mode 100644 .agents/skills/chough-workflow/templates/brief.md\n create mode 100644 .agents/skills/chough-workflow/templates/bug-report.md\n create mode 100644 .agents/skills/chough-workflow/templates/cases.toml\n create mode 100644 .agents/skills/chough-workflow/templates/frd.md\n create mode 100644 .agents/skills/chough-workflow/templates/prototype/COMPANION.md\n create mode 100644 .agents/skills/chough-workflow/templates/prototype/index.html\n create mode 100644 .agents/skills/chough-workflow/templates/prototype/styles.css\n create mode 100644 .agents/skills/chough-workflow/templates/review-findings.md\n create mode 100644 .chough/history/cycles/CYC-00f2785159cc0c928fbab0ad/EVT-053ac9d441e4eeaceb13205e.json\n create mode 100644 .chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\n create mode 100644 .chough/history/cycles/CYC-3873638cda1f325197082908/EVT-c41dc3a414f4e3dc27f40e1f.json\n create mode 100644 .chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\n create mode 100644 .chough/history/cycles/CYC-707261dbd854002f806921d5/EVT-984501511174459e338eb502.json\n create mode 100644 .chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\n create mode 100644 .chough/history/cycles/CYC-d1712728fa5a873cd0f37a45/EVT-95b3e8a1c32191c5c8e34836.json\n create mode 100644 .chough/session.json\n create mode 100644 .gitattributes\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "checkout",
+      "-b",
+      "branch-a-prune"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "Switched to a new branch 'branch-a-prune'\n"
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "consent",
+      "grant",
+      "retention",
+      "--source",
+      "Disposable fixture authorization only"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"objective\": \"Disposable post-prune branch reference\",\n  \"run_consents\": [\n    {\n      \"granted_at_unix_seconds\": 1793642162,\n      \"key\": \"retention\",\n      \"objective\": \"Disposable post-prune branch reference\",\n      \"source\": \"Disposable fixture authorization only\"\n    }\n  ],\n  \"schema_version\": 1\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "history",
+      "prune",
+      "--apply"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": true,\n  \"complete\": true,\n  \"eligible\": [\n    {\n      \"bytes\": 352,\n      \"cycle\": \"CYC-09bf4b69d75da18f298e9199\",\n      \"files\": [\n        {\n          \"bytes\": 352,\n          \"digest\": \"d12a5a2d4ba00f3f7b9183c2edacab78061174d22be4d99953438213627656d7\",\n          \"path\": \".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 352,\n          \"digest\": \"d12a5a2d4ba00f3f7b9183c2edacab78061174d22be4d99953438213627656d7\",\n          \"path\": \".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\"\n        }\n      ],\n      \"planned_bytes\": 352\n    },\n    {\n      \"bytes\": 522,\n      \"cycle\": \"CYC-3f65cd11c98de3cea0f1c8fd\",\n      \"files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"9525e31808ab6d7823a914caf616ad2c432f56f2b06b3e6218b5153460a85507\",\n          \"path\": \".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"9525e31808ab6d7823a914caf616ad2c432f56f2b06b3e6218b5153460a85507\",\n          \"path\": \".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\"\n        }\n      ],\n      \"planned_bytes\": 522\n    },\n    {\n      \"bytes\": 522,\n      \"cycle\": \"CYC-7bb2b9178ab230aabdb4833b\",\n      \"files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"3ba7816eb1a54ffc18b442cc026476ba378ef5674209287945370ac2297cc235\",\n          \"path\": \".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\"\n        }\n      ],\n      \"interrupted\": false,\n      \"plan_files\": [\n        {\n          \"bytes\": 522,\n          \"digest\": \"3ba7816eb1a54ffc18b442cc026476ba378ef5674209287945370ac2297cc235\",\n          \"path\": \".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\"\n        }\n      ],\n      \"planned_bytes\": 522\n    }\n  ],\n  \"note\": \"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed\",\n  \"protected\": [\n    {\n      \"cycle\": \"CYC-00f2785159cc0c928fbab0ad\",\n      \"reasons\": [\n        \"active checkpoint cycle\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-3873638cda1f325197082908\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-707261dbd854002f806921d5\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-d1712728fa5a873cd0f37a45\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    }\n  ],\n  \"reclaimable_bytes\": 1396,\n  \"reclaimed_bytes\": 1396,\n  \"removed\": [\n    \".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\",\n    \".chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\",\n    \".chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\"\n  ],\n  \"schema_version\": 1,\n  \"skipped\": []\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "add",
+      ".chough"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "commit",
+      "-m",
+      "prune eligible old cycles"
+    ],
+    "exit_code": 0,
+    "stdout": "[branch-a-prune 9305858] prune eligible old cycles\n 7 files changed, 11 insertions(+), 4 deletions(-)\n delete mode 100644 .chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\n delete mode 100644 .chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\n delete mode 100644 .chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\n create mode 100644 .chough/history/pruned/CYC-09bf4b69d75da18f298e9199.json\n create mode 100644 .chough/history/pruned/CYC-3f65cd11c98de3cea0f1c8fd.json\n create mode 100644 .chough/history/pruned/CYC-7bb2b9178ab230aabdb4833b.json\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "checkout",
+      "-b",
+      "branch-b-reference",
+      "baseline"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "Switched to a new branch 'branch-b-reference'\n"
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "checkpoint",
+      "--file",
+      ".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"checkpoint\": {\n    \"awaiting_human\": [],\n    \"blockers\": [],\n    \"bugs\": [],\n    \"completed\": [],\n    \"decisions\": [],\n    \"history_cursor\": {\n      \"cycle\": \"CYC-00f2785159cc0c928fbab0ad\",\n      \"head\": \"EVT-053ac9d441e4eeaceb13205e\",\n      \"legacy\": null\n    },\n    \"intent_scope\": \"\",\n    \"modules\": [\n      \"cli\"\n    ],\n    \"native_change\": null,\n    \"next_action\": \"New cycle from intent after reset: close 5. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.\",\n    \"objective\": \"Disposable post-prune branch reference\",\n    \"observations\": [],\n    \"open_questions\": [],\n    \"references\": {\n      \"cases\": [],\n      \"criteria\": [],\n      \"design\": [],\n      \"files\": [\n        \".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\"\n      ],\n      \"requirements\": []\n    },\n    \"run_consents\": [],\n    \"schema_version\": 2,\n    \"stage\": {\n      \"callers\": [],\n      \"current\": \"intent\",\n      \"iteration\": 1,\n      \"status\": \"active\"\n    }\n  },\n  \"saved\": true,\n  \"schema_version\": 1\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "add",
+      ".chough/session.json"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "commit",
+      "-m",
+      "reference retained pre-prune event"
+    ],
+    "exit_code": 0,
+    "stdout": "[branch-b-reference 95f6a1c] reference retained pre-prune event\n 1 file changed, 3 insertions(+), 1 deletion(-)\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "user.name=Disposable peer review",
+      "-c",
+      "user.email=peer@example.invalid",
+      "merge",
+      "branch-a-prune",
+      "--no-edit"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"checkpoint\":{\"awaiting_human\":[],\"blockers\":[],\"bugs\":[],\"completed\":[],\"decisions\":[],\"history_cursor\":{\"cycle\":\"CYC-00f2785159cc0c928fbab0ad\",\"head\":\"EVT-053ac9d441e4eeaceb13205e\",\"legacy\":null},\"intent_scope\":\"\",\"modules\":[\"cli\"],\"native_change\":null,\"next_action\":\"New cycle from intent after reset: close 5. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.\",\"objective\":\"Disposable post-prune branch reference\",\"observations\":[],\"open_questions\":[],\"references\":{\"cases\":[],\"criteria\":[],\"design\":[],\"files\":[\".chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\"],\"requirements\":[]},\"run_consents\":[{\"granted_at_unix_seconds\":1793642162,\"key\":\"retention\",\"objective\":\"Disposable post-prune branch reference\",\"source\":\"Disposable fixture authorization only\"}],\"schema_version\":2,\"stage\":{\"callers\":[],\"current\":\"intent\",\"iteration\":1,\"status\":\"active\"}},\"merged\":true,\"schema_version\":1}\nAuto-merging .chough/session.json\nMerge made by the 'ort' strategy.\n .../EVT-5eacb44e50f084edc9e2b95a.json                            | 1 -\n .../EVT-35bccd8bffbe1c667e0c6266.json                            | 1 -\n .../EVT-31eb81ba80c9cfdef75d76e0.json                            | 1 -\n .chough/history/pruned/CYC-09bf4b69d75da18f298e9199.json         | 1 +\n .chough/history/pruned/CYC-3f65cd11c98de3cea0f1c8fd.json         | 1 +\n .chough/history/pruned/CYC-7bb2b9178ab230aabdb4833b.json         | 1 +\n .chough/session.json                                             | 9 ++++++++-\n 7 files changed, 11 insertions(+), 4 deletions(-)\n delete mode 100644 .chough/history/cycles/CYC-09bf4b69d75da18f298e9199/EVT-5eacb44e50f084edc9e2b95a.json\n delete mode 100644 .chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\n delete mode 100644 .chough/history/cycles/CYC-7bb2b9178ab230aabdb4833b/EVT-31eb81ba80c9cfdef75d76e0.json\n create mode 100644 .chough/history/pruned/CYC-09bf4b69d75da18f298e9199.json\n create mode 100644 .chough/history/pruned/CYC-3f65cd11c98de3cea0f1c8fd.json\n create mode 100644 .chough/history/pruned/CYC-7bb2b9178ab230aabdb4833b.json\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "history",
+      "show"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"authority\": \"checkpoint cursor selects current lineage; unselected events are not completed transitions\",\n  \"complete\": true,\n  \"cursor\": {\n    \"cycle\": \"CYC-00f2785159cc0c928fbab0ad\",\n    \"head\": \"EVT-053ac9d441e4eeaceb13205e\",\n    \"legacy\": null\n  },\n  \"cycles\": [\n    {\n      \"bytes\": 522,\n      \"events\": 1,\n      \"id\": \"CYC-00f2785159cc0c928fbab0ad\",\n      \"interrupted\": false,\n      \"planned_bytes\": 522,\n      \"protected\": [\n        \"active checkpoint cycle\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ],\n      \"tips\": [\n        \"EVT-053ac9d441e4eeaceb13205e\"\n      ],\n      \"unselected_tips\": []\n    },\n    {\n      \"bytes\": 0,\n      \"events\": 0,\n      \"id\": \"CYC-09bf4b69d75da18f298e9199\",\n      \"interrupted\": false,\n      \"planned_bytes\": 352,\n      \"protected\": [\n        \"already pruned\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ],\n      \"tips\": [\n        \"EVT-5eacb44e50f084edc9e2b95a\"\n      ],\n      \"unselected_tips\": [\n        \"EVT-5eacb44e50f084edc9e2b95a\"\n      ]\n    },\n    {\n      \"bytes\": 522,\n      \"events\": 1,\n      \"id\": \"CYC-3873638cda1f325197082908\",\n      \"interrupted\": false,\n      \"planned_bytes\": 522,\n      \"protected\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ],\n      \"tips\": [\n        \"EVT-c41dc3a414f4e3dc27f40e1f\"\n      ],\n      \"unselected_tips\": [\n        \"EVT-c41dc3a414f4e3dc27f40e1f\"\n      ]\n    },\n    {\n      \"bytes\": 0,\n      \"events\": 0,\n      \"id\": \"CYC-3f65cd11c98de3cea0f1c8fd\",\n      \"interrupted\": false,\n      \"planned_bytes\": 522,\n      \"protected\": [\n        \"already pruned\"\n      ],\n      \"tips\": [\n        \"EVT-35bccd8bffbe1c667e0c6266\"\n      ],\n      \"unselected_tips\": [\n        \"EVT-35bccd8bffbe1c667e0c6266\"\n      ]\n    },\n    {\n      \"bytes\": 522,\n      \"events\": 1,\n      \"id\": \"CYC-707261dbd854002f806921d5\",\n      \"interrupted\": false,\n      \"planned_bytes\": 522,\n      \"protected\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ],\n      \"tips\": [\n        \"EVT-984501511174459e338eb502\"\n      ],\n      \"unselected_tips\": [\n        \"EVT-984501511174459e338eb502\"\n      ]\n    },\n    {\n      \"bytes\": 0,\n      \"events\": 0,\n      \"id\": \"CYC-7bb2b9178ab230aabdb4833b\",\n      \"interrupted\": false,\n      \"planned_bytes\": 522,\n      \"protected\": [\n        \"already pruned\",\n        \"unselected orphan or unresolved cycle closure\"\n      ],\n      \"tips\": [\n        \"EVT-31eb81ba80c9cfdef75d76e0\"\n      ],\n      \"unselected_tips\": [\n        \"EVT-31eb81ba80c9cfdef75d76e0\"\n      ]\n    },\n    {\n      \"bytes\": 522,\n      \"events\": 1,\n      \"id\": \"CYC-d1712728fa5a873cd0f37a45\",\n      \"interrupted\": false,\n      \"planned_bytes\": 522,\n      \"protected\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ],\n      \"tips\": [\n        \"EVT-95b3e8a1c32191c5c8e34836\"\n      ],\n      \"unselected_tips\": [\n        \"EVT-95b3e8a1c32191c5c8e34836\"\n      ]\n    }\n  ],\n  \"limits\": {\n    \"cycle_bytes\": 16777216,\n    \"cycle_events\": 4096,\n    \"event_bytes\": 65536,\n    \"recent_bytes\": 524288,\n    \"recent_events\": 128\n  },\n  \"schema_version\": 1\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "timing",
+      "--cycle",
+      "all",
+      "--json"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"before_first_record\": {\n    \"active\": {\n      \"label\": \"unknown\",\n      \"reason\": \"no transition before the first record\",\n      \"seconds\": null\n    },\n    \"elapsed\": {\n      \"label\": \"unknown\",\n      \"reason\": \"no transition before the first record\",\n      \"seconds\": null\n    },\n    \"end\": {\n      \"unix_seconds\": 1791050164,\n      \"unknown\": null,\n      \"utc\": \"2026-10-03T17:56:04Z\"\n    },\n    \"entered_by\": null,\n    \"iteration\": 1,\n    \"ongoing\": false,\n    \"side\": false,\n    \"stage\": \"intent\",\n    \"start\": {\n      \"unix_seconds\": null,\n      \"unknown\": \"no transition before the first record\",\n      \"utc\": null\n    },\n    \"state\": \"active\",\n    \"visit\": 1,\n    \"waiting\": {\n      \"label\": \"unknown\",\n      \"reason\": \"no transition before the first record\",\n      \"seconds\": null\n    }\n  },\n  \"bugs\": [],\n  \"cycles\": [\n    {\n      \"completed\": true,\n      \"end\": {\n        \"unix_seconds\": 1791050165,\n        \"unknown\": null,\n        \"utc\": \"2026-10-03T17:56:05Z\"\n      },\n      \"idle\": {\n        \"label\": \"elapsed wall-clock\",\n        \"reason\": null,\n        \"seconds\": 0\n      },\n      \"iterations\": 0,\n      \"number\": 1,\n      \"segments\": [\n        {\n          \"active\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"elapsed\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"end\": {\n            \"unix_seconds\": 1791050165,\n            \"unknown\": null,\n            \"utc\": \"2026-10-03T17:56:05Z\"\n          },\n          \"entered_by\": \"reset\",\n          \"iteration\": 1,\n          \"ongoing\": false,\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"start\": {\n            \"unix_seconds\": 1791050164,\n            \"unknown\": null,\n            \"utc\": \"2026-10-03T17:56:04Z\"\n          },\n          \"state\": \"active\",\n          \"visit\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"side_visits\": 0,\n      \"stages\": [\n        {\n          \"active\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"iterations\": 0,\n          \"paused\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          },\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"stage_time\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"visits\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"start\": {\n        \"unix_seconds\": 1791050164,\n        \"unknown\": null,\n        \"utc\": \"2026-10-03T17:56:04Z\"\n      }\n    },\n    {\n      \"completed\": true,\n      \"end\": {\n        \"unix_seconds\": 1791050166,\n        \"unknown\": null,\n        \"utc\": \"2026-10-03T17:56:06Z\"\n      },\n      \"idle\": {\n        \"label\": \"elapsed wall-clock\",\n        \"reason\": null,\n        \"seconds\": 0\n      },\n      \"iterations\": 0,\n      \"number\": 2,\n      \"segments\": [\n        {\n          \"active\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"elapsed\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"end\": {\n            \"unix_seconds\": 1791050166,\n            \"unknown\": null,\n            \"utc\": \"2026-10-03T17:56:06Z\"\n          },\n          \"entered_by\": \"reset\",\n          \"iteration\": 1,\n          \"ongoing\": false,\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"start\": {\n            \"unix_seconds\": 1791050165,\n            \"unknown\": null,\n            \"utc\": \"2026-10-03T17:56:05Z\"\n          },\n          \"state\": \"active\",\n          \"visit\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"side_visits\": 0,\n      \"stages\": [\n        {\n          \"active\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"iterations\": 0,\n          \"paused\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          },\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"stage_time\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"visits\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"start\": {\n        \"unix_seconds\": 1791050165,\n        \"unknown\": null,\n        \"utc\": \"2026-10-03T17:56:05Z\"\n      }\n    },\n    {\n      \"completed\": true,\n      \"end\": {\n        \"unix_seconds\": 1791050167,\n        \"unknown\": null,\n        \"utc\": \"2026-10-03T17:56:07Z\"\n      },\n      \"idle\": {\n        \"label\": \"elapsed wall-clock\",\n        \"reason\": null,\n        \"seconds\": 0\n      },\n      \"iterations\": 0,\n      \"number\": 3,\n      \"segments\": [\n        {\n          \"active\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"elapsed\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"end\": {\n            \"unix_seconds\": 1791050167,\n            \"unknown\": null,\n            \"utc\": \"2026-10-03T17:56:07Z\"\n          },\n          \"entered_by\": \"reset\",\n          \"iteration\": 1,\n          \"ongoing\": false,\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"start\": {\n            \"unix_seconds\": 1791050166,\n            \"unknown\": null,\n            \"utc\": \"2026-10-03T17:56:06Z\"\n          },\n          \"state\": \"active\",\n          \"visit\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"side_visits\": 0,\n      \"stages\": [\n        {\n          \"active\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"iterations\": 0,\n          \"paused\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          },\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"stage_time\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 1\n          },\n          \"visits\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"start\": {\n        \"unix_seconds\": 1791050166,\n        \"unknown\": null,\n        \"utc\": \"2026-10-03T17:56:06Z\"\n      }\n    },\n    {\n      \"completed\": false,\n      \"end\": null,\n      \"idle\": {\n        \"label\": \"elapsed wall-clock\",\n        \"reason\": null,\n        \"seconds\": 0\n      },\n      \"iterations\": 0,\n      \"number\": 4,\n      \"segments\": [\n        {\n          \"active\": {\n            \"label\": \"ongoing\",\n            \"reason\": null,\n            \"seconds\": 2591995\n          },\n          \"elapsed\": {\n            \"label\": \"ongoing\",\n            \"reason\": null,\n            \"seconds\": 2591995\n          },\n          \"end\": {\n            \"unix_seconds\": 1793642162,\n            \"unknown\": null,\n            \"utc\": \"2026-11-02T17:56:02Z\"\n          },\n          \"entered_by\": \"reset\",\n          \"iteration\": 1,\n          \"ongoing\": true,\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"start\": {\n            \"unix_seconds\": 1791050167,\n            \"unknown\": null,\n            \"utc\": \"2026-10-03T17:56:07Z\"\n          },\n          \"state\": \"active\",\n          \"visit\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"side_visits\": 0,\n      \"stages\": [\n        {\n          \"active\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 2591995\n          },\n          \"iterations\": 0,\n          \"paused\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          },\n          \"side\": false,\n          \"stage\": \"intent\",\n          \"stage_time\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 2591995\n          },\n          \"visits\": 1,\n          \"waiting\": {\n            \"label\": \"elapsed wall-clock\",\n            \"reason\": null,\n            \"seconds\": 0\n          }\n        }\n      ],\n      \"start\": {\n        \"unix_seconds\": 1791050167,\n        \"unknown\": null,\n        \"utc\": \"2026-10-03T17:56:07Z\"\n      }\n    }\n  ],\n  \"estimates\": {\n    \"bug_fixes\": {\n      \"label\": \"too few to estimate (0 recorded bug fix times; at least 3 needed)\",\n      \"max\": null,\n      \"median\": null,\n      \"min\": null,\n      \"samples\": 0\n    },\n    \"gates\": {\n      \"label\": \"too few to estimate (0 recorded human gate waiting times; at least 3 needed)\",\n      \"max\": null,\n      \"median\": null,\n      \"min\": null,\n      \"samples\": 0\n    },\n    \"stages\": [\n      {\n        \"label\": \"estimate from 3 recorded intent stage times; not a target\",\n        \"max\": 1,\n        \"median\": 1,\n        \"min\": 1,\n        \"samples\": 3,\n        \"stage\": \"intent\"\n      }\n    ]\n  },\n  \"filters\": {\n    \"bug\": null,\n    \"case\": null,\n    \"cycle\": \"all\",\n    \"stage\": null\n  },\n  \"gates\": [],\n  \"generated_at\": {\n    \"unix_seconds\": 1793642162,\n    \"unknown\": null,\n    \"utc\": \"2026-11-02T17:56:02Z\"\n  },\n  \"labels\": {\n    \"durations\": \"Every duration is elapsed wall-clock time, not effort.\",\n    \"estimates\": \"Estimates come from recorded history and are not targets; fewer than 3 samples are too few to estimate.\",\n    \"idle\": \"Time in done until the next reset is idle between cycles: not stage time and not an estimate sample.\",\n    \"recorded_together\": \"Start and end share a second, usually records written together; not instant work.\",\n    \"unknown\": \"A time no record holds is unknown (null in JSON), never zero.\",\n    \"validation\": \"Validation run time is the total run wall-clock, including intervals and resumes, not per-test time.\",\n    \"waiting\": \"Waiting on a human is the time a recorded awaiting-human gate was open; it never says who decided or what.\"\n  },\n  \"native\": {\n    \"current\": null,\n    \"detail\": \"No native SpecSync configuration; native lifecycle times are unknown.\",\n    \"history\": [],\n    \"history_selection\": {\n      \"filters\": [],\n      \"state\": \"not-configured\"\n    },\n    \"skipped_archived\": 0,\n    \"state\": \"not-configured\"\n  },\n  \"partial\": [\n    {\n      \"reason\": \"pruned or interrupted history EVT-35bccd8bffbe1c667e0c6266: unavailable .chough/history/cycles/CYC-3f65cd11c98de3cea0f1c8fd/EVT-35bccd8bffbe1c667e0c6266.json\",\n      \"source\": \".chough/history\"\n    }\n  ],\n  \"schema_version\": 1,\n  \"tests\": [],\n  \"transition_lineages\": [\n    {\n      \"cycle\": \"CYC-00f2785159cc0c928fbab0ad\",\n      \"durations\": \"derived only along the selected parent chain\",\n      \"selection\": \"checkpoint-selected\",\n      \"tip\": \"EVT-053ac9d441e4eeaceb13205e\"\n    }\n  ],\n  \"transitions\": {\n    \"bound_bytes\": 16777216,\n    \"lineage_selection\": \"Only the checkpoint-selected parent chain is derived; unselected branch timelines remain separate and their durations are unknown. Inspect chough history show for other tips.\",\n    \"records\": 4,\n    \"selected_cursor\": {\n      \"cycle\": \"CYC-00f2785159cc0c928fbab0ad\",\n      \"head\": \"EVT-053ac9d441e4eeaceb13205e\",\n      \"legacy\": null\n    },\n    \"skipped_bytes\": 0,\n    \"unreadable_lines\": 0,\n    \"unrecognised_kinds\": 0\n  },\n  \"validation_runs\": []\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "--root",
+      "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-81ilulwi/fixture",
+      "history",
+      "prune"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"applied\": false,\n  \"complete\": true,\n  \"eligible\": [],\n  \"note\": \"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed\",\n  \"protected\": [\n    {\n      \"cycle\": \"CYC-00f2785159cc0c928fbab0ad\",\n      \"reasons\": [\n        \"active checkpoint cycle\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-09bf4b69d75da18f298e9199\",\n      \"reasons\": [\n        \"already pruned\",\n        \"referenced by .chough/session.json\",\n        \"unselected orphan or unresolved cycle closure\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-3873638cda1f325197082908\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-3f65cd11c98de3cea0f1c8fd\",\n      \"reasons\": [\n        \"already pruned\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-707261dbd854002f806921d5\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-7bb2b9178ab230aabdb4833b\",\n      \"reasons\": [\n        \"already pruned\",\n        \"unselected orphan or unresolved cycle closure\"\n      ]\n    },\n    {\n      \"cycle\": \"CYC-d1712728fa5a873cd0f37a45\",\n      \"reasons\": [\n        \"newest three closed cycles, including timestamp ties\"\n      ]\n    }\n  ],\n  \"reclaimable_bytes\": 0,\n  \"reclaimed_bytes\": 0,\n  \"removed\": [],\n  \"schema_version\": 1,\n  \"skipped\": []\n}\n",
+    "stderr": ""
+  }
+]

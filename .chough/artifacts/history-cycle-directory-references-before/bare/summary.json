@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "repo": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate",
+    "before": {
+      "head": "40d2d114d2a484b2ff84679cbee0847fbe9d7284",
+      "history_source_sha256": "cb6c661475eaece3068f13673fe77eb12345eca2b17e090d4eeaa19afd014de1",
+      "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+      "binary_sha256": "1b84d7716da950b85a9849eab8bba70f0c6fcc499e6c066cc86d4bfdcb7e2d2e"
+    },
+    "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cycle-directory-before-bare-hvx7srwd/fixture",
+    "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cycle-directory-before-bare-hvx7srwd"
+  },
+  "after": {
+    "head": "40d2d114d2a484b2ff84679cbee0847fbe9d7284",
+    "history_source_sha256": "cb6c661475eaece3068f13673fe77eb12345eca2b17e090d4eeaa19afd014de1",
+    "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "1b84d7716da950b85a9849eab8bba70f0c6fcc499e6c066cc86d4bfdcb7e2d2e"
+  },
+  "target": ".chough/history/cycles/CYC-2ce6389dadb3c871f69b4006/EVT-adedadb0287ac2187591eb83.json",
+  "target_sha256": "72a19075392955bf1edca8a24c95473a80fd55029d96231620dba6677eab7faa",
+  "target_exists_after_merge": false,
+  "frozen_reference": "Retain .chough/history/cycles/CYC-2ce6389dadb3c871f69b4006\n",
+  "apply_exit_code": 0,
+  "merge_exit_code": 0,
+  "history_show_complete": true,
+  "target_cycle_show": {
+    "bytes": 0,
+    "events": 0,
+    "id": "CYC-2ce6389dadb3c871f69b4006",
+    "interrupted": false,
+    "planned_bytes": 352,
+    "protected": [
+      "already pruned",
+      "referenced by .chough/artifacts/post-prune-cycle-directory.log",
+      "unselected orphan or unresolved cycle closure"
+    ],
+    "tips": [
+      "EVT-adedadb0287ac2187591eb83"
+    ],
+    "unselected_tips": [
+      "EVT-adedadb0287ac2187591eb83"
+    ]
+  },
+  "timing_partial": [
+    {
+      "reason": "pruned or interrupted history EVT-74cb55d6f12937e56e520e20: unavailable .chough/history/cycles/CYC-7de622800d1b4d11cd2177d9/EVT-74cb55d6f12937e56e520e20.json",
+      "source": ".chough/history"
+    }
+  ]
+}

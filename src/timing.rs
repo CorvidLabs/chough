@@ -211,16 +211,43 @@ struct Transitions {
     skipped_bytes: u64,
     unreadable: usize,
     unrecognised: usize,
+    history_partial: Vec<String>,
+    lineages: Vec<Value>,
 }
 
 /// Read transitions leniently: a line that is not a transition is counted and skipped,
 /// and a missing or non-numeric time is unknown.
-fn read_transitions(root: &Path) -> Result<Transitions> {
-    let log = read_log_full(&local_path(root, stage::TRANSITIONS)?, TRANSITIONS_LIMIT)?;
+fn read_transitions(root: &Path, session: &Session, all: bool) -> Result<Transitions> {
+    let (lines, skipped_bytes, history_partial, lineages) = if let Session::V2(checkpoint) = session
+        && let Some(cursor) = &checkpoint.history_cursor
+    {
+        let read = crate::history::timing(root, cursor, all);
+        (
+            read.records
+                .iter()
+                .map(Value::to_string)
+                .collect::<Vec<_>>(),
+            0,
+            read.partial,
+            read.lineages,
+        )
+    } else {
+        let mut log = read_log_full(&local_path(root, stage::TRANSITIONS)?, TRANSITIONS_LIMIT)?;
+        let omitted = log.lines.len().saturating_sub(crate::history::CYCLE_EVENTS);
+        let mut partial = vec![];
+        if omitted > 0 {
+            log.lines.drain(..omitted);
+            partial.push(format!(
+                "earliest {omitted} lines skipped beyond the {}-event timing bound",
+                crate::history::CYCLE_EVENTS
+            ));
+        }
+        (log.lines, log.skipped_bytes, partial, vec![])
+    };
     let mut records = vec![];
     let mut unreadable = 0;
     let mut unrecognised = 0;
-    for line in &log.lines {
+    for line in &lines {
         let Ok(value) = serde_json::from_str::<Value>(line) else {
             unreadable += 1;
             continue;
@@ -250,9 +277,11 @@ fn read_transitions(root: &Path) -> Result<Transitions> {
     }
     Ok(Transitions {
         records,
-        skipped_bytes: log.skipped_bytes,
+        skipped_bytes,
         unreadable,
         unrecognised,
+        history_partial,
+        lineages,
     })
 }
 
@@ -1390,7 +1419,14 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     let session = read_session(root)?;
     let at = now()?;
     let mut partial: Vec<Value> = vec![];
-    let transitions = read_transitions(root)?;
+    let transitions = read_transitions(root, &session, args.cycle == "all")?;
+    let history_source = match &session {
+        Session::V2(checkpoint) if checkpoint.history_cursor.is_some() => crate::history::ROOT,
+        _ => stage::TRANSITIONS,
+    };
+    for reason in &transitions.history_partial {
+        partial.push(json!({"source":history_source,"reason":reason}));
+    }
     if transitions.skipped_bytes > 0 {
         partial.push(json!({"source": stage::TRANSITIONS, "reason": format!("earliest {} bytes skipped beyond the {TRANSITIONS_LIMIT}-byte bound", transitions.skipped_bytes)}));
     }
@@ -1521,7 +1557,10 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
             "unreadable_lines": transitions.unreadable,
             "unrecognised_kinds": transitions.unrecognised,
             "bound_bytes": TRANSITIONS_LIMIT,
+            "selected_cursor": match &session { Session::V2(checkpoint) => serde_json::to_value(&checkpoint.history_cursor)?, Session::V1(_) => Value::Null },
+            "lineage_selection": "Only the checkpoint-selected parent chain is derived; unselected branch timelines remain separate and their durations are unknown. Inspect chough history show for other tips.",
         },
+        "transition_lineages": transitions.lineages,
         "before_first_record": before_first.map(Segment::to_json),
         "cycles": shown.iter().map(|cycle| cycle_json(cycle)).collect::<Vec<_>>(),
         "gates": gate_rows,

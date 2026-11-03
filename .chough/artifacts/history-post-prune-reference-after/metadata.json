@@ -1,0 +1,11 @@
+{
+  "repo": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate",
+  "before": {
+    "head": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+    "history_source_sha256": "cb6c661475eaece3068f13673fe77eb12345eca2b17e090d4eeaa19afd014de1",
+    "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "1b84d7716da950b85a9849eab8bba70f0c6fcc499e6c066cc86d4bfdcb7e2d2e"
+  },
+  "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-50zk386t/fixture",
+  "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-reference-50zk386t"
+}
