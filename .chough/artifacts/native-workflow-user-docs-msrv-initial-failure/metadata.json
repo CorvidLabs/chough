@@ -1,0 +1,7 @@
+{
+  "head": "9c41e95949adcb1009c986f97db50faa593d81b2",
+  "command": "PATH=/Users/leif/.cargo/bin:$PATH RUSTUP_TOOLCHAIN=1.88.0 CARGO_TARGET_DIR=/tmp/chough-workflow-user-docs-msrv-target fledge run test",
+  "exit_code": 1,
+  "observed_failure": "tests/timing.rs:1475 expected stub calls [cur-change], observed []; no assertions changed",
+  "cause": "Not established; scheduling/startup sensitivity under concurrent qualification is a hypothesis."
+}

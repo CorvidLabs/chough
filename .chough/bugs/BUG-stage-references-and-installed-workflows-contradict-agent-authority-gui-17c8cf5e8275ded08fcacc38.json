@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "BUG-stage-references-and-installed-workflows-contradict-agent-authority-gui-17c8cf5e8275ded08fcacc38",
+  "title": "Stage references and installed workflows contradict agent authority guidance",
+  "symptom": "The same shipped workflow has conflicting native actor and approval instructions",
+  "trigger": "Loading plan or accept references or a tracked host installation after reading the updated main skill",
+  "expected": "All native-writer examples use the acting agent account and installed copies match canonical guidance while preserving edits",
+  "actual": "Human actor/reviewer placeholders and stale installed SKILL/lifecycle copies fail the cross-bundle regression",
+  "criteria": [
+    "FLOW-5",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-029"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "7cd739219ff667dcf6d153a6f439d6c3661b1fce",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-ebe8dcc6161354afe79b4f95",
+    "OBS-product-test-fa1399785a5046d25484052c",
+    "OBS-product-test-42eaa88e1ebc9f69e4d357b5"
+  ],
+  "impact": "Blocks the requested conversation-to-PR workflow consistency",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "PR44 peer review and failing structural package regression",
+  "notes": [
+    {
+      "at_unix_seconds": 1793641252,
+      "text": "status: open -> verified. Plan applies existing authority before asking; native examples use agent accounts; exact old copies update and all tracked target host files match canonical bytes. Structural regression catches the earlier conflicting argument and stale-copy wiring.",
+      "observations": [
+        "OBS-product-test-fa1399785a5046d25484052c"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793641659,
+      "text": "Complete198test verification and both bound cases pass after the cross-bundle reference and installed-copy correction.",
+      "observations": [
+        "OBS-product-test-42eaa88e1ebc9f69e4d357b5"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793640843,
+  "updated_at_unix_seconds": 1793641659
+}

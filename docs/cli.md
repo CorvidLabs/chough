@@ -386,11 +386,17 @@ module), computed with SpecSync 6.1.1's `specsync.approved-delta.v1` framing: SH
 over the length-framed domain, module name and body, the body with CRLF normalized to
 LF.
 
+The current agent performs the recovery operations below. It records its acting
+account in the native actor field and the actual human authorization source,
+covered scope and limits in the note. Apply existing authority when it covers the
+repair; ask only for an actual missing or exceeded scope decision. Scope approval
+does not supply implementation acceptance or delivery authority.
+
 | Label | When | Next native action |
 |---|---|---|
-| `refused:native-delta-changed` | A delta differs from its approved digest, is deleted, or belongs to a module not in the approval | Restore the approved delta, or ask the human for a new scope approval (`specsync change approve <id> --actor "<their name>"`) and then run `specsync change check <id>` |
+| `refused:native-delta-changed` | A delta differs from its approved digest, is deleted, or belongs to a module not in the approval | Restore the approved delta, or resolve authority for the changed scope and record `specsync change approve <id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"`, then run `specsync change check <id>` |
 | `refused:native-delta-unverifiable` | The ledger is missing, unreadable, over 4 MiB or malformed; it has no definition approval; status reports no `change.affected_specs`; a module name is not one SpecSync 6.1.1 accepts; a delta cannot be read | Run `specsync change status <id>` |
-| `refused:native-delta-unverifiable` | A change with deltas has an approval without `approved_delta_digests` | Ask the human for a new scope approval (`specsync change approve <id> --actor "<their name>"`), which records the digests, and then run `specsync change check <id>`; a status read cannot clear it |
+| `refused:native-delta-unverifiable` | A change with deltas has an approval without `approved_delta_digests` | Under applicable human authority, record `specsync change approve <id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"` to record the digests, then run `specsync change check <id>`; a status read cannot clear it |
 
 A no-spec-change approval with no deltas and an empty or absent digest map passes. The
 guard starts no process and copies nothing; no gate runs `specsync change check`,

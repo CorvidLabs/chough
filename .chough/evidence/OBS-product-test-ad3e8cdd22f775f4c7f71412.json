@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-ad3e8cdd22f775f4c7f71412",
+  "criteria": [
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008",
+    "REQ-cli-009",
+    "REQ-cli-029",
+    "REQ-cli-030",
+    "REQ-cli-031"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Integrated source04fa590 with already-merged main d839 passed all9Fledge verify steps and206Rust1.95 tests across11suites, zero failures, ignored or filtered tests. Cases and native audit passed on the same source; raw final logs and exact integration invariants are retained.",
+  "artifacts": [
+    ".chough/artifacts/pr44-d839-final-verify.log",
+    ".chough/artifacts/pr44-d839-final-integration-proof.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr44-d839-final-integration-proof.json": "f0a3e6009f9b2b859264a4479b1d55f36070e713e0fc2761243bdf5276bcce92",
+    ".chough/artifacts/pr44-d839-final-verify.log": "9ec7cb0050f518449cac37bca6adee1836a31ff3df2a67a0ce32472ce6a56be4"
+  },
+  "observed_at_unix_seconds": 1793663837,
+  "snapshot": {
+    "revision": "04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9",
+    "dirty": false,
+    "fingerprint": "3a964a7273107942f2f81a630a18a37e3ed02ae6db90c7edce4595a61425cb0d",
+    "content": "1748d4d746d459e23d32461774503e646af81dd4afd7007c4c9d132153161959"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Local macOS arm64 only. Source/package proof is not a fresh-agent cold-start run; Kimi was not run. Hosted CI, root-only native review and ship, PR merge, release and deployment are separate. Existing timing-budget flake remains open."
+  ]
+}

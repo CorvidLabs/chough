@@ -208,3 +208,14 @@ environment and native checks remain authoritative. Opt-in stderr-only phases an
 load counters support comparable measurements with explicit binary/input identity
 and incomplete-native outcomes. This is local read reuse, with no persistent cache,
 new runtime, alternate lifecycle state or promise to eliminate native latency.
+
+## REQ-cli-029: Agent-operated native workflow
+
+The current agent runs native tools inside the Chough conversation and uses
+applicable explicit prior or standing human authorization for a concrete scope,
+recording the human authority source and limits separately from the acting agent
+account. The human gives the goal and reviews the PR instead of managing individual
+native commands. Missing authority still
+requires a real decision, and native checks and separate implementation acceptance
+and delivery authority remain intact. Safe skill upgrades preserve edited copies.
+Trace: FLOW-1, FLOW-2, FLOW-5, FLOW-13, LIFE-1, LIFE-6, LIFE-7.

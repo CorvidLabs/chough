@@ -1,0 +1,8 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running tests/timing.rs (/tmp/chough-workflow-user-docs-msrv-target/debug/deps/timing-2eecdf8530cfd5d6)
+
+running 1 test
+test a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 5.33s
+

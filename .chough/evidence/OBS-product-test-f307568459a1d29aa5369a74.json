@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-f307568459a1d29aa5369a74",
+  "criteria": [
+    "LIFE-6",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-008",
+    "REQ-cli-029",
+    "REQ-cli-030"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64-rust-1.88.0",
+  "summary": "Intermediate main9d02fbf integration at421e8ce passed all205Rust1.88 tests across11suites offline, with no failures, ignored or filtered tests. This is intermediate proof before main47 integration, not the final-main result.",
+  "artifacts": [
+    ".chough/artifacts/pr44-main9d-intermediate-msrv.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr44-main9d-intermediate-msrv.log": "1bd0602c4d362190368135a6aa8d58312f79c5c4018eb432da36f4c9950eb4d1"
+  },
+  "observed_at_unix_seconds": 1793662929,
+  "snapshot": {
+    "revision": "421e8ce2e7db86822c9a75c91bd9f977aca2c7af",
+    "dirty": true,
+    "fingerprint": "3f180b4f9aef947ffd9ace877887a6f39893cbf4c3c52c02df3a882b8f313d2a",
+    "content": "757c837036dd43576b66f1e9655eadb9e698f5f09db73616f35d71c7b23bdcd0"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Local macOS arm64 qualification on frozen9d inputs. Native review/ship, hosted checks and PR merge are separate. Existing timing-budget flake did not recur and remains an open historical issue."
+  ]
+}

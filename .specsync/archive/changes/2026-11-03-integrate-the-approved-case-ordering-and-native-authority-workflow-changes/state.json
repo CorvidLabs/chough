@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "integrate-the-approved-case-ordering-and-native-authority-workflow-changes",
+  "slug": "integrate-the-approved-case-ordering-and-native-authority-workflow-changes",
+  "title": "Integrate the approved case ordering and native authority workflow changes",
+  "description": "Integrate the approved case ordering and native authority workflow changes",
+  "kind": "refactor",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "6fde285473f3fa3b6efd45bc0582b3826ec8775d",
+  "created_at": 1793660876,
+  "updated_at": 1793664738,
+  "affected_specs": [],
+  "affected_paths": [
+    "skills/chough-workflow/references/plan.md",
+    "skills/chough-workflow/references/accept.md",
+    "skills/chough-workflow/references/testing.md",
+    ".agents/skills/chough-workflow/",
+    ".claude/skills/chough-workflow/",
+    "src/skill.rs",
+    "tests/package.rs",
+    "tests/workflow_authority.rs",
+    "specs/cli/cli.spec.md",
+    "specs/cli/requirements.md",
+    "specs/cli/testing.md",
+    "specs/cli/context.md",
+    "CHANGELOG.md",
+    "docs/ROADMAP.md",
+    ".chough/cases/cli.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Reconcile independently approved and archived PR41 ordering and PR44 authority changes on one merge result. Preserve both existing requirement meanings, native records and all proof; canonical version advancement and combined files/metadata introduce no new requirement, helper behavior or lifecycle state.",
+  "acceptance_criteria": [
+    "Merge main8fb0ea7 into PR44 without rebase or force, preserve case-ordering and acting-agent/human-source guidance across canonical and both host bundles, retain all existing predecessor identities/tests and both approved requirement effects with monotonic canonical version, select the complete PR44 checkpoint current-cycle group while preserving additive collections and every transition occurrence, leave existing archives/cold-start/observations/artifacts byte-identical, and pass all required Fledge steps, relevant bound cases and complete Rust1.95/1.88 tests before normal push. Native review/ship remains with the root closing session."
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks",
+    "docs"
+  ],
+  "dependencies": [],
+  "acceptance_owner_corrections": [
+    {
+      "schema_version": 1,
+      "sequence": 1,
+      "path": "src/skill.rs",
+      "module": "cli",
+      "actor": "corvid-agent",
+      "reason": "The already approved integration changes src/skill.rs, which is deterministically owned by specs/cli/cli.spec.md; the NoSpec definition omitted an affected module. Append this exact owner binding through the native guided correction, preserving the existing definition/approval events. Actual authority is 0xLeif standing through-PR permission and finish-all instruction; no new product semantics.",
+      "timestamp": 1793664427
+    }
+  ],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

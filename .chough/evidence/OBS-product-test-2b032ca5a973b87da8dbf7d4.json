@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-2b032ca5a973b87da8dbf7d4",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-6",
+    "LIFE-7",
+    "LIFE-8",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-008",
+    "REQ-cli-009",
+    "REQ-cli-025",
+    "REQ-cli-026",
+    "REQ-cli-027",
+    "REQ-cli-029",
+    "REQ-cli-030",
+    "REQ-cli-031"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Merged source769b526 integrating maina788869 passed all9Fledge steps and235Rust1.95 tests across12suites with0failed,0ignored and0filtered. All13affected managed cases passed on their declared environments; exact source/package, protected-proof and checkpoint integration invariants are retained.",
+  "artifacts": [
+    ".chough/artifacts/pr44-a788-final-verify.log",
+    ".chough/artifacts/pr44-a788-final-integration-proof.json",
+    ".chough/artifacts/pr44-a788-final-cases.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr44-a788-final-cases.json": "b15d76e0ff0a065c35594356fb940afba1eeec99fbe6e573528e45ba670a0179",
+    ".chough/artifacts/pr44-a788-final-integration-proof.json": "fb92f93d3c36e3cf3087a7da5b2fa74909027967cd962f5eec1aa89647f1e7ad",
+    ".chough/artifacts/pr44-a788-final-verify.log": "51bc860825cc486b3e762d670526f3d8eca9070360ef2f25cb57927e331e02dd"
+  },
+  "observed_at_unix_seconds": 1793669245,
+  "snapshot": {
+    "revision": "769b5269b87d2f822a1b41a4276eccd7d0fa3770",
+    "dirty": true,
+    "fingerprint": "d35dc5a2c16ff81ef279622c915f9d25a5177940bd6a0aa49c97e1fb824c483b",
+    "content": "2dcce19100c9af9398989281fa97f7e3fd1a8ca440e8cdba92cffbb01227276a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Local macOS arm64 only; hosted CI is separate. Source/package inspection is not fresh-agent behavior; Kimi was not run. Fixture adoption/cleanup is not live adoption/cleanup. Existing timing flake remains open. Root alone reviews/ships/done and publishes; this worker holds the branch push."
+  ]
+}

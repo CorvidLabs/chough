@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-merged-bounded-history-into-the-agent-operated-native-workflow",
+  "implementation_commit": "f59bc0a7fe736268479f1a21104e68c97b4a4ef7",
+  "implementation_tree": "6bf3b4350e94df19bb07fe17a31934afba7c4b78",
+  "contract_digest": "f405d69528baae5d50a2778aab75c360550820f725236e42074820d2a203e353",
+  "workspace_digest": "112cdf969e43d72ed3e4a811ce0f20286d87349b34d4a8d8e90bc53bafa2f790",
+  "closing_digest": "8e5d57f8f32e844525eb7173afc200e9001e5174f515f05e6ae3bd99cecb8b8a",
+  "review_digest": "cce4eadc2e496f897127a72b32d209bfeaf8cf15afa0b79392904ebff66eed7a",
+  "finalization_digest": "a34bc4cace3533ab32020470dd53dd8ef7feda8aafaca80a4de2dd517f241ea9",
+  "timestamp": 1793669555
+}

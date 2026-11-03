@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "let-chough-drive-native-tools-and-reuse-existing-human-authorization",
+  "implementation_commit": "9317ca938000b1b56e953b5ffe16f2b877e89297",
+  "implementation_tree": "f48caeb083a5e50fb1d3553315991196f5fb3718",
+  "contract_digest": "1cd8a0ca38870368b4e62c85b2193d699dd224e40a6a3869204c468fa95c1f7f",
+  "workspace_digest": "fe528a5bfa2f82640b722306147cee14016dd735247b980b8497129e274453c6",
+  "closing_digest": "c1f932a648e3059426eda1e8ace49abe408ef01bfe11af84bfb8b51774a20ed3",
+  "review_digest": "5103e5d52c221438cfdbf58dfb58027d054baf1ada324028a1e37dc926c97613",
+  "finalization_digest": "9bbfd603bd1ab831c2e11cc3b8d6e71da9831e4564dd270f0e4b7c3c82130abc",
+  "timestamp": 1793660068
+}

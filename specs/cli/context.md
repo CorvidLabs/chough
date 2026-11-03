@@ -216,6 +216,29 @@ capped native timing separate from completed native qualification.
 
 2026-11-02, request-local error reuse (verified): storing a failed structural case load as a formatted string changed its original multiline cause diagnostics. The strengthened loader/report parity regression failed before typed shared error ownership restored identical diagnostics, and all five focused read-context regressions then passed. Sources: BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b, OBS-product-test-553ec9b0ffe80fd46a96145d and OBS-product-test-4e2d19e426e48d18085f0b50. Limits: local macOS arm64; final platform and product qualification is separate. Future use: preserve typed source chains when sharing fallible reads and compare the cached path against its original loader, rather than only comparing trace on/off within the new path.
 
+2026-11-02, shipped workflow predecessors (observation): the new skill-upgrade
+regression classified exact unchanged main 825a380 SKILL.md and lifecycle.md copies
+as edited until their exact predecessor hashes were registered; after registration,
+real updates and edited-copy preservation passed in three disposable projects.
+Sources: .chough/artifacts/native-workflow-upgrade-before.log,
+.chough/artifacts/native-workflow-upgrade-before-status.json and
+.chough/artifacts/native-workflow-upgrade-after.log. The pre-fix content identity was
+ec6b39de3f8acd0cba74b5290168f0d5965efdc4c52e20942ffb69a5ff460d06;
+its binary hash was not separately retained, so this is a development observation,
+not historical native qualification. Future use: register every changed shipped
+predecessor and verify unchanged upgrades and edited-copy preservation before
+publishing a bundle. This does not establish fresh-agent behavior or a cold-start
+result. The earlier exact-predecessor lesson remains applicable.
+
+2026-11-02, user-doc authority consistency (observation): extending the native
+writer check beyond the skill reproduced four human-actor examples across the
+CLI guide, walkthrough and next-change proposal. Source:
+OBS-product-test-4df13417a21256aaa3c5b151 and
+.chough/artifacts/native-workflow-user-docs-before/. Future use: check current
+writer examples in user documentation as well as installed bundles; preserve
+historical proposal status and separate the acting account from the actual human
+source. Limits: structural copy consistency, not fresh-agent compliance or human
+implementation acceptance. Existing approval history remains unchanged.
 2026-11-02, immutable-history cleanup ordering (observation): a development retention fixture caught newer-first deletion hiding the ancestry needed to revalidate older candidates. Source: .chough/artifacts/history-retention-ordering-development.log and tests/history.rs. Limits: the intermediate failed source identity was not retained; the log is not historical native qualification. Future use: remove eligible selected ancestors oldest first, retain immutable receipts, and keep independent/orphan tips out of current timing. Revisit this ordering if the history format changes.
 
 2026-11-02, legacy history request bounds (observation): an independent read-only

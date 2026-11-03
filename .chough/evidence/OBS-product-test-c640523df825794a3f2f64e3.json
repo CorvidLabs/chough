@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-c640523df825794a3f2f64e3",
+  "criteria": [
+    "LIFE-7",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-024"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64-rust1.88",
+  "summary": "Initial final-docs MSRV run failed in unchanged timing native-budget regression: no stub call recorded within the two-second whole-report budget; cause not yet established.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-user-docs-msrv-initial-failure/msrv.log",
+    ".chough/artifacts/native-workflow-user-docs-msrv-initial-failure/metadata.json"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-user-docs-msrv-initial-failure/metadata.json": "89592621d7b488d6c0cb8b9c75f3c03c1317794e048eec856fcb560a189937df",
+    ".chough/artifacts/native-workflow-user-docs-msrv-initial-failure/msrv.log": "4a5c9f45852786e0237b6f3dbba1be09a594c6db406d2f5c074a795473a72239"
+  },
+  "observed_at_unix_seconds": 1793643139,
+  "snapshot": {
+    "revision": "9c41e95949adcb1009c986f97db50faa593d81b2",
+    "dirty": true,
+    "fingerprint": "2a0a6b1fa2efc41a9b5469b814bcde181dbe203552d270fe40c40551e6a6ffe8",
+    "content": "983bb9f01666418f7e9163725d5ea41c30d271448c4b62b07d35b16604616a60"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Concurrent qualification was active. Load sensitivity is a hypothesis, not a diagnosed cause. The assertion, budget and evidence remain unchanged."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-agent-native-workflow-upgrade-bb63e838fc5d8248a6d5e303",
+  "criteria": [
+    "LIFE-4",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Both workflow authority tests pass after registering the exact merged-main plan/accept identities. Original825 and incoming3d00e44 copies upgrade safely; every edited variant and checkpoint is preserved, canonical actors and both host copies remain consistent.",
+  "artifacts": [
+    ".chough/artifacts/pr44-main-integration-upgrade-after.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr44-main-integration-upgrade-after.log": "0684d642073baedfc5817a0c46d1b0d20b1f894325e4107ac237395aaf5b72c8"
+  },
+  "observed_at_unix_seconds": 1793661761,
+  "snapshot": {
+    "revision": "f2a0c94e4938b1048a75e8bc85d95b0f9feedd22",
+    "dirty": true,
+    "fingerprint": "d5830747210f6ee29f612dca276bdeda424c2462c60cd0af50f3a0b2f0b1d8f3",
+    "content": "07fd515f61956a6f468e4ccacf703311ea092433fc0dca18fd236aa650b4023b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-agent-native-workflow-upgrade",
+      "digest": "df58494ed355c0121e0e12514d3a6b539bec2588121efa437b06a3f2bc9238fd"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Focused local macOS install/source tests; full final-main qualification follows after the last pinned merge."
+  ]
+}
