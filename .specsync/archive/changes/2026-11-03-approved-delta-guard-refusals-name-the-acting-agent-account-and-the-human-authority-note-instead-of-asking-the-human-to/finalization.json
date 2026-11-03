@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to",
+  "implementation_commit": "31119bebbff17573128e4c81920917d74eab4b11",
+  "implementation_tree": "f31921f611739d59bc0b62c1da735320244adcde",
+  "contract_digest": "9ea85f7daf77c4d108cddb4c5beac138131f8b9cde1d6654e4a3c65a556e4a3a",
+  "workspace_digest": "262d77efe3afc67346e1cdc32f07aae019cf99ccb255b727e8d0efde1386aebb",
+  "closing_digest": "4937e3c01784f843a84b663857974029aa604d3befbb3fb9223ffaca00bfe1d6",
+  "review_digest": "fb8aa509ea06cd8f148f4c8d0e3718766025a330c63d4cff11e3255b63c2baa1",
+  "finalization_digest": "d4c3511791a048b21c36b90ffce896a7d92988d4435eaa71b222e094fb539209",
+  "timestamp": 1793719245
+}

@@ -1,6 +1,6 @@
 ---
 id: approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 8300b584e6e76c676d3da2f21aab9eb7e89b311a
 ---
