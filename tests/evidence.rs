@@ -1669,6 +1669,12 @@ fn a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply() {
         json!([".chough/removing/0123456789abcdef01234567.hold"]),
         "{status:#}"
     );
+    // Every other reader of the record directories still works with the hold present.
+    fixture.ok(&["next", "--json"]);
+    fixture.ok(&["context", "--json"]);
+    fixture.ok(&["timing", "--json"]);
+    fixture.ok(&["bug", "list"]);
+    fixture.ok(&["evidence", "prune"]);
     let preview = fixture.ok(&["library", "archive"]);
     assert_eq!(preview["stale_holds"], status["removal_holds"]);
     let refused = fixture.fails(&["library", "archive", "--apply"]);

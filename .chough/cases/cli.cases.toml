@@ -2744,7 +2744,7 @@ requirements = ["REQ-cli-033"]
 paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
 environments = ["local-linux-x86_64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/evidence.rs::a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply passes"]
+expected = ["tests/evidence.rs::a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply passes: with a hold in .chough/removing, status, next, context, timing, bug list, the evidence prune preview and the library archive preview succeed, and apply is refused until the hold is resolved"]
 
 [case.bind]
 adapter = "cargo-test"

@@ -1829,6 +1829,16 @@ fn put_back(hold: &Path, path: &Path) -> std::io::Result<()> {
     fs::remove_file(hold)
 }
 
+/// Where [`remove_verified`] holds `relative` while it compares the bytes: always a file
+/// directly in [`HOLD_DIR`], named by a digest of the path, never beside the record, so a
+/// hold left behind cannot sit in a directory that readers list.
+fn hold_path(relative: &str) -> String {
+    format!(
+        "{HOLD_DIR}/{}.hold",
+        &crate::records::digest_bytes(relative.as_bytes())[..24]
+    )
+}
+
 /// Remove `relative` only while it still holds `expected`. The file is first moved into
 /// [`HOLD_DIR`], so later writes to its path cannot be lost, then compared and deleted at
 /// once. Bytes that differ are put back without replacing anything and refused.
@@ -1836,10 +1846,7 @@ fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
     let path = local_path(root, relative)?;
     let holds = local_path(root, HOLD_DIR)?;
     fs::create_dir_all(&holds)?;
-    let hold = holds.join(format!(
-        "{}.hold",
-        &crate::records::digest_bytes(relative.as_bytes())[..24]
-    ));
+    let hold = local_path(root, &hold_path(relative))?;
     ensure!(
         !hold.exists(),
         "{} already exists; nothing was removed",
@@ -2354,6 +2361,30 @@ pub(super) fn auto_prune(root: &Path) -> Value {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_hold_never_sits_in_the_removed_file_directory() {
+        let records = [
+            ".chough/evidence/a.json",
+            ".chough/artifacts/x.log",
+            ".chough/artifacts/nested/deep/y.log",
+            ".chough/library/snapshots/SNAP-a/manifest.json",
+        ];
+        let mut seen = std::collections::BTreeSet::new();
+        for record in records {
+            let hold = hold_path(record);
+            let hold = Path::new(&hold);
+            assert_eq!(hold.parent(), Some(Path::new(HOLD_DIR)), "{record}");
+            assert_ne!(hold.parent(), Path::new(record).parent(), "{record}");
+            let name = Path::new(record).file_name().unwrap().to_str().unwrap();
+            assert!(
+                !hold.to_str().unwrap().contains(name),
+                "{record}: {}",
+                hold.display()
+            );
+            assert!(seen.insert(hold.to_path_buf()), "{record}");
+        }
+    }
 
     #[test]
     fn remove_verified_puts_changed_bytes_back_and_leaves_no_hold() {
