@@ -2999,3 +2999,50 @@ fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
     let detail = status["checkpoint"]["gate"]["detail"].as_str().unwrap();
     assert!(detail.contains(&native_next), "{detail}");
 }
+
+#[cfg(unix)]
+#[test]
+fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
+    // The approval remedy in both refusals records the acting agent account as the
+    // native actor and the human authority in the note (lifecycle.md Approval,
+    // docs/cli.md); it never asks the human to approve under their own name.
+    let agent = "--actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\"";
+    let check_refusal = |refused: &str, id: &str| {
+        let approve = format!("specsync change approve {id} {agent}");
+        assert!(refused.contains(&approve), "missing {approve:?}: {refused}");
+        assert!(
+            refused.contains(&format!("specsync change check {id}")),
+            "{refused}"
+        );
+        for stale in ["ask the human", "<their name>"] {
+            assert!(!refused.contains(stale), "stale {stale:?}: {refused}");
+        }
+    };
+
+    let id = "guarded-change";
+    let fixture = approved_delta(id);
+    fixture.write(
+        &format!(".specsync/changes/{id}/deltas/cli.md"),
+        &format!("{DELTA}\n### REQUIREMENT REQ-cli-091\n\nMore.\n"),
+    );
+    let before = records(&fixture);
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("refused:native-delta-changed"), "{refused}");
+    check_refusal(&refused, id);
+    assert_eq!(records(&fixture), before);
+
+    let id = "unverifiable-change";
+    let fixture = approved_delta(id);
+    fixture.write(
+        &format!(".specsync/changes/{id}/approvals.json"),
+        &json!({"approvals": [{"gate": "definition"}]}).to_string(),
+    );
+    let before = records(&fixture);
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("refused:native-delta-unverifiable"),
+        "{refused}"
+    );
+    check_refusal(&refused, id);
+    assert_eq!(records(&fixture), before);
+}

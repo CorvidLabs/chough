@@ -1,0 +1,44 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793717645,
+      "digest": "9ea85f7daf77c4d108cddb4c5beac138131f8b9cde1d6654e4a3c65a556e4a3a",
+      "note": "Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to",
+        "title": "Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name",
+        "description": "Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/",
+          "specs/cli/",
+          "src/stage.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Each approved-delta guard refusal that names a native approval says to record it as the acting agent account with the human authority source, covered scope and limits in the note, matching docs/cli.md, and no longer says to ask the human or to use their name as the actor",
+          "The refusal labels, refused moves leaving records byte-identical, and the status-read guidance for other unverifiable comparisons are unchanged"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "skills/chough-workflow/references/lifecycle.md Approval: the acting agent account is the native actor and the human instruction supplies the authority; do not use the human's name merely because they authorized the work, and do not ask the operator to execute native commands",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "ba62cb3a1d28944645047a01a3967a390c38c1b9c878bf75acbcd68259849ea7"
+      }
+    }
+  ],
+  "reopenings": []
+}
