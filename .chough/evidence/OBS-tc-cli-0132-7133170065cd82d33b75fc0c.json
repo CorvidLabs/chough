@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0132-7133170065cd82d33b75fc0c",
+  "criteria": [
+    "FLOW-12",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-002",
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass, 5=pass, 6=pass. Verdicts 1=pass, 2=pass, 3=pass, 4=pass, 5=pass, 6=pass. Same independent agent-assisted review by the Chough bot (review 5757616772, 6/6 pass at 204581b; skills unchanged since), re-recorded because the record now says the review shows on GitHub as posted by the corvid-agent account; skill status re-run at this head",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0132/independent-review-5757616772.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0132/independent-review-5757616772.md": "e129379254a1795cdd6126f66b32d18e7da59ef9ec7d6e5815dbd7dbe9975066"
+  },
+  "observed_at_unix_seconds": 1793733680,
+  "snapshot": {
+    "revision": "ec7daea266cceb11520457bacdbb0b9809d3c2ed",
+    "dirty": false,
+    "fingerprint": "592a87f49d3155cae90b34ec315f95e28cb642d6eb0ff8f5b99dced54b808bcd",
+    "content": "bd1b9de8e5329c9aff59991b5481e1fb7a6d8cf2dcb7e2673e6c23937ceea0d2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0132",
+      "digest": "e2467f253be5cd9c0130dd881b9f559f511f89bb61bab39e95f3352bfdb6f6de"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Agent-assisted, not human acceptance; does not replace Leif's scoped review",
+    "Checks wording, not agent behavior"
+  ]
+}
