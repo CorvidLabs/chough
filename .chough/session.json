@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -361,7 +361,8 @@
     "Integrated accepted bounded history and agent-operated native workflow at canonical23; all13affected history/authority/ordering cases passed with protected parent proof and both host bundles intact.",
     "Final integrated source769b526 passed all9Fledge steps and all235tests across12suites on Rust1.95 and Rust1.88, with0failed/ignored/filtered. All13affected managed cases passed; protected1909parent blobs,149case definitions,45predecessors and allparent history occurrences remain preserved.",
     "PR44 integration with main a788869 is qualified: all 235 tests on Rust 1.95/1.88, nine Fledge steps and 13 affected cases passed. All 1909 protected parent blobs are exact. Independent scoped integration review has no findings, and the new native integration scope is archived.",
-    "Combined source:9Fledge steps and240tests on each Rust1.95/1.88, all16cases passed; actual44main imported with identical qualified inputs and0record replay."
+    "Combined source:9Fledge steps and240tests on each Rust1.95/1.88, all16cases passed; actual44main imported with identical qualified inputs and0record replay.",
+    "Combined source passed 240 tests on each Rust version, nine Fledge steps and 16 cases; the integration is archived."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -592,5 +593,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Root records authorized native review/ship and done, then pushes and observes current CI before merge."
+  "next_action": "Merge PR46 after current corvid-agent approval and all checks pass, then verify main. User authorized merge and resynchronization."
 }
