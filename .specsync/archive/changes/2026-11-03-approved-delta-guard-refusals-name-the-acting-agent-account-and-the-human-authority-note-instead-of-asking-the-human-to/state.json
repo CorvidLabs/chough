@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to",
+  "slug": "approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to",
+  "title": "Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name",
+  "description": "Approved-delta guard refusals name the acting agent account and the human authority note instead of asking the human to approve under their name",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "8300b584e6e76c676d3da2f21aab9eb7e89b311a",
+  "created_at": 1793717579,
+  "updated_at": 1793719255,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/stage.rs",
+    "tests/",
+    "specs/cli/",
+    ".chough/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Each approved-delta guard refusal that names a native approval says to record it as the acting agent account with the human authority source, covered scope and limits in the note, matching docs/cli.md, and no longer says to ask the human or to use their name as the actor",
+    "The refusal labels, refused moves leaving records byte-identical, and the status-read guidance for other unverifiable comparisons are unchanged"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "skills/chough-workflow/references/lifecycle.md Approval: the acting agent account is the native actor and the human instruction supplies the authority; do not use the human's name merely because they authorized the work, and do not ask the operator to execute native commands",
+    "public_contract": "yes"
+  }
+}

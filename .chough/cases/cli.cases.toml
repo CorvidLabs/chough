@@ -2930,3 +2930,21 @@ expected = ["tests/stages.rs::checkpoint_merge_enforces_input_collection_and_out
 adapter = "cargo-test"
 test_target = "stages"
 test = "checkpoint_merge_enforces_input_collection_and_output_byte_bounds"
+
+[[case]]
+id = "TC-cli-delta-guard-refusals-name-the-agent-actor"
+title = "Approved-delta guard refusals name the acting agent account and the human authority note"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "LIFE-1"]
+requirements = ["REQ-cli-022"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note"

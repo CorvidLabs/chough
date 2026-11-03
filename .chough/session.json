@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Refuse capacity-overflow checkpoint writes before gate history publication",
+  "objective": "Approved-delta guard refusals name the acting agent account and the human authority note",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
+  "native_change": "approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -115,7 +115,8 @@
       "TC-cli-observation-pointer-bound-is-400",
       "TC-cli-checkpoint-merge-enforces-the-raised-bounds",
       "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
-      "TC-cli-native-next-action-is-not-repeated-in-the-next-line"
+      "TC-cli-native-next-action-is-not-repeated-in-the-next-line",
+      "TC-cli-delta-guard-refusals-name-the-agent-actor"
     ],
     "design": [],
     "files": [
@@ -267,7 +268,8 @@
     "decided: implementation review of the PR #50 evidence-fix change recorded pass as corvid-agent and the change shipped, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review; Leif's own PR #50 approval is still his)",
     "Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit \"Merge approved, green PRs and resynchronize\" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates.",
     "Agent corvid-agent root applies actual standing through-PR permission and explicit Merge approved, green PRs and resynchronize plus latest finish-these-PRs request to repair existing REQ-cli-032 atomic refusal. Preserve every old record and bound; no new human as-is grade or numeric choice. Root alone closes this scope.",
-    "Human source: 0xLeif replied \"Yes I approve!\" in chat on 2026-11-03 to the explicit one-scope exception request for PR51: record native review as corvid-agent for refuse-over-bound-checkpoint-candidates-before-publishing-gate-history, immediately ship, then merge after fresh checks pass. This explicitly overrides the automatic reviewer interpretation of the AGENTS.md agent-label rule for this scope only. The acting account stays corvid-agent; no cold-start Pass grade, numeric choice, release, deployment or cleanup approval is inferred."
+    "Human source: 0xLeif replied \"Yes I approve!\" in chat on 2026-11-03 to the explicit one-scope exception request for PR51: record native review as corvid-agent for refuse-over-bound-checkpoint-candidates-before-publishing-gate-history, immediately ship, then merge after fresh checks pass. This explicitly overrides the automatic reviewer interpretation of the AGENTS.md agent-label rule for this scope only. The acting account stays corvid-agent; no cold-start Pass grade, numeric choice, release, deployment or cleanup approval is inferred.",
+    "Agent corvid-agent applies Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged."
   ],
   "open_questions": [],
   "completed": [
@@ -371,7 +373,10 @@
     "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged.",
     "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved.",
     "PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured.",
-    "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit."
+    "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit.",
+    "Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed",
+    "fledge lanes run verify passed all 9 steps (253 tests, 0 failed) on local Linux x86_64 with hi 0.8.0, fledge 1.8.0, specsync 6.1.2 after the scoped check",
+    "chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -576,7 +581,9 @@
     "OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2",
     "OBS-human-observation-174caaa1021cfdf5a553f7a3",
     "OBS-tc-cli-bug-add-accepts-values-that-start-with-two-hyphens-916110763b00ec6ddf3afb73",
-    "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b"
+    "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b",
+    "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0",
+    "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a"
   ],
   "bugs": [
     "BUG-0001",
@@ -606,10 +613,11 @@
     "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
     "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b",
     "BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5",
-    "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1"
+    "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1",
+    "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Require approval and all hosted checks at the final PR51 head, merge normally, verify actual main, then discuss Chough assessment, interview future priorities one multiple-choice question at a time, and prepare distinct Grok, Claude and Kimi prompts."
+  "next_action": "Await genuine independent review of the PR head; then record native review and ship with no write in between, push the archive tip, and merge after all hosted checks pass"
 }

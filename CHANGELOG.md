@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Approved-delta guard refusals that need a new definition approval now name the
+  acting agent account and a human authority note, matching docs/cli.md, instead of
+  asking the human to approve under their own name.
+
 - The checkpoint `.chough/session.json` is bounded at 128 KiB (131,072 bytes) and
   its `observations` list at 400 pointers (LIFE-11). Leif approved raising these
   limits on 2026-11-02; corvid-agent selected the implementation values under the standing through-PR authority and the later instruction to finish these PRs and merge.

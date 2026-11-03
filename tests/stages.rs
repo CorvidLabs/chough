@@ -1392,7 +1392,7 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
     }
     let refused = fixture.fails(&["stage", "advance"]);
     for part in [
-        "specsync change approve guarded-change --actor \"<their name>\"",
+        "specsync change approve guarded-change --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\"",
         "specsync change check guarded-change",
         "specsync.approved-delta.v1",
     ] {
@@ -1494,7 +1494,9 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     let digest = delta_digest("cli", DELTA.as_bytes());
     // An approval without digests can only be cleared by a new approval, so its
     // refusal names that rather than a status read.
-    let approve = format!("specsync change approve {id} --actor \"<their name>\"");
+    let approve = format!(
+        "specsync change approve {id} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\""
+    );
     let cases: Vec<(&str, String, &str)> = vec![
         ("malformed", "{\"approvals\": [".into(), &status),
         ("malformed", "{\"approvals\": \"none\"}".into(), &status),
@@ -2998,4 +3000,54 @@ fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
     let status = fixture.ok(&["status", "--json"]);
     let detail = status["checkpoint"]["gate"]["detail"].as_str().unwrap();
     assert!(detail.contains(&native_next), "{detail}");
+}
+
+#[cfg(unix)]
+#[test]
+fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
+    // The approval remedy in both refusals records the acting agent account as the
+    // native actor and the human authority in the note (lifecycle.md Approval,
+    // docs/cli.md); it never asks the human to approve under their own name.
+    let agent = "--actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\"";
+    let check_refusal = |refused: &str, id: &str| {
+        let approve = format!("specsync change approve {id} {agent}");
+        assert!(refused.contains(&approve), "missing {approve:?}: {refused}");
+        assert!(
+            refused.contains(&format!("specsync change check {id}")),
+            "{refused}"
+        );
+        for stale in ["ask the human", "<their name>"] {
+            assert!(!refused.contains(stale), "stale {stale:?}: {refused}");
+        }
+    };
+
+    let id = "guarded-change";
+    let fixture = approved_delta(id);
+    fixture.write(
+        &format!(".specsync/changes/{id}/deltas/cli.md"),
+        &format!("{DELTA}\n### REQUIREMENT REQ-cli-091\n\nMore.\n"),
+    );
+    let before = records(&fixture);
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("refused:native-delta-changed"),
+        "{refused}"
+    );
+    check_refusal(&refused, id);
+    assert_eq!(records(&fixture), before);
+
+    let id = "unverifiable-change";
+    let fixture = approved_delta(id);
+    fixture.write(
+        &format!(".specsync/changes/{id}/approvals.json"),
+        &json!({"approvals": [{"gate": "definition"}]}).to_string(),
+    );
+    let before = records(&fixture);
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("refused:native-delta-unverifiable"),
+        "{refused}"
+    );
+    check_refusal(&refused, id);
+    assert_eq!(records(&fixture), before);
 }

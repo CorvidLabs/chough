@@ -479,7 +479,7 @@ fn native_gate(
             return refused(
                 "refused:native-delta-changed".into(),
                 format!(
-                    "{purpose} needs the approved semantic deltas; the delta for {} changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or ask the human for a new scope approval (specsync change approve {change} --actor \"<their name>\") and then run specsync change check {change}. Digests use SpecSync 6.1.1's {DELTA_DOMAIN} framing.",
+                    "{purpose} needs the approved semantic deltas; the delta for {} changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or resolve authority for the changed scope and record specsync change approve {change} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\", then run specsync change check {change}. Digests use SpecSync 6.1.1's {DELTA_DOMAIN} framing.",
                     modules.join(", ")
                 ),
             );
@@ -496,7 +496,7 @@ fn native_gate(
             return refused(
                 "refused:native-delta-unverifiable".into(),
                 format!(
-                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. Native next action: ask the human for a new scope approval (specsync change approve {change} --actor \"<their name>\"), which records the digests, and then run specsync change check {change}; a status read cannot clear this."
+                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. Native next action: under applicable human authority, record specsync change approve {change} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\" to record the digests, then run specsync change check {change}; a status read cannot clear this."
                 ),
             );
         }
