@@ -1,0 +1,42 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793676170,
+      "digest": "a5d60a99448aa2bed0d747b25063dc974040458c7b9b5b013e8ff9477fac11ac",
+      "note": "Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis",
+        "title": "PR 50 evidence fix: record a fresh clean-tree verify run as the current agent-assisted proof in place of the mis-snapshotted corrective observation",
+        "description": "PR 50 evidence fix: record a fresh clean-tree verify run as the current agent-assisted proof in place of the mis-snapshotted corrective observation",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/artifacts/",
+          ".chough/evidence/"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Evidence records only; no requirement, criterion or code change",
+        "acceptance_criteria": [
+          "A new agent-assisted product-test observation cites that log and is bound to a clean snapshot at that revision",
+          "Its limitation says OBS-product-test-035959f28aa76d052d48fe78 wrongly carried the 250d637 snapshot for the a788869 log and that the new record replaces it as current proof",
+          "OBS-human-observation-174caaa1021cfdf5a553f7a3, OBS-product-test-035959f28aa76d052d48fe78 and issue-49-verify.log stay byte-identical",
+          "fledge lanes run verify passes on a clean tree at a named committed revision, and a small new artifact log header names that exact revision"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Never edit or delete old records; no rebase or force-push",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
