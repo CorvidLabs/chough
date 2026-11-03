@@ -1,6 +1,6 @@
 ---
 id: pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis
-state: implementing
+state: archived
 type: bug_fix
 base_commit: ba3691cd54b8f776abdd3f9dde9c2fd023b04a50
 ---
