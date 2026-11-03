@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -272,7 +272,8 @@
     "Integrated final main 9d02 into PR 46; 1300 immutable files from both parents preserved with no mismatches; main gate, package, skill, walkthrough and example files remain byte-identical; canonical version 21 preserves every changelog entry",
     "Final main 9d02 integration qualified: all 9 Fledge steps and all 208 tests passed on Rust 1.95 and Rust 1.88; all three report cases passed; 1300 immutable parent files unchanged; no semantic code drift from the approved parents",
     "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
-    "Final d839 feature synchronization qualified: all 9 Fledge steps and all 209 tests passed on Rust 1.95 and Rust 1.88; three report cases passed; 1352 parent proof files remain unchanged; report implementation and main setup/gates/guidance remain exact"
+    "Final d839 feature synchronization qualified: all 9 Fledge steps and all 209 tests passed on Rust 1.95 and Rust 1.88; three report cases passed; 1352 parent proof files remain unchanged; report implementation and main setup/gates/guidance remain exact",
+    "PR46 final main d839 integration passed 209 tests on Rust1.95/Rust1.88, all nine Fledge steps and three report cases; all native changes are archived under the actual finish-all instruction. Original proof and approval history remain intact."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -427,5 +428,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Root alone records review and ship for the remaining active PR 46 main integration; after hosted checks pass Leif may merge. Do not advance main or merge a GitHub PR during the hold."
+  "next_action": "0xLeif merges PR #46 once current hosted checks are green; synchronize with main again if an earlier PR merges first"
 }
