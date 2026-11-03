@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -276,7 +276,8 @@
     "decided: intent LIFE-12..14 approved because Leif (0xLeif) answered the interview 'Only the shared .agents copy' and on 2026-11-03 8:27 AM MT 'Remove .claude entirely', and the parent relayed his yes as intent approval; his next decision is final acceptance",
     "Agent corvid-agent assumption: only the claude host is remapped to .agents/skills; codex, cursor, gemini and grok keep their directories because Leif's 8:27 AM answer named .claude only",
     "Agent corvid-agent applies Human authority: Leif (0xLeif) chat 2026-11-03 8:09-8:27 AM MT interview answers 'Only the shared .agents copy' and 'Remove .claude entirely' (relayed intent approval; final acceptance is his next decision). Covered scope: claude->.agents mapping, legacy report, explicit remove-legacy, this repo's .claude removal, docs. Limits: other hosts unchanged, edited legacy files kept, no release",
-    "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases"
+    "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases",
+    "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's."
   ],
   "open_questions": [],
   "completed": [
@@ -383,7 +384,8 @@
     "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit.",
     "Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed",
     "fledge lanes run verify passed all 9 steps (253 tests, 0 failed) on local Linux x86_64 with hi 0.8.0, fledge 1.8.0, specsync 6.1.2 after the scoped check",
-    "chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy."
+    "chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy.",
+    "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -626,5 +628,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit, run specsync change check --commit, push, open the PR ready for review; then independent implementation review and Leif's final acceptance before review, finalize and merge"
+  "next_action": "Squash-merge PR #54 with --match-head-commit after all hosted checks on the archive tip are green; then merge main into PR #55 and open the src/skill.rs librarian-guide follow-up"
 }
