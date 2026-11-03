@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-accepted-history-and-workflow-changes-into-pr-46-report-reads",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "9bea9ddf2f1abdba0426abdbc815792b1a5f94dc",
+  "contract_digest": "c9060653de2522a9bdef641cdfd3bef8923490fc56752d6ebb3b91b2b407a1d2",
+  "execution_digest": "0d38095ba587a346fe380db15477151462dd4ffefcfe20242423548b4ec3c434",
+  "workspace_digest": "47f8e3b50c366d66af69895e823d6aded6309358325e5248f9558f1742238e13",
+  "timestamp": 1793672623
+}

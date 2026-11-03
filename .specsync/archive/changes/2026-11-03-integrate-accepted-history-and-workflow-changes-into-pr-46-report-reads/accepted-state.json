@@ -7,11 +7,11 @@
   "title": "Integrate accepted history and workflow changes into PR 46 report reads",
   "description": "Integrate accepted history and workflow changes into PR 46 report reads",
   "kind": "operations",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "d23ef42534b8d1d59229d4e84d8274072dbd6f74",
   "created_at": 1793668227,
-  "updated_at": 1793672250,
+  "updated_at": 1793672650,
   "affected_specs": [
     "cli"
   ],
