@@ -1880,6 +1880,46 @@ fn summary_plan(
     archives: &[ListedArchive],
     native: Option<Native>,
 ) -> Result<SummaryPlan> {
+    let (pending, protected, native) = summary_protections(root, archives, native)?;
+    let all: Vec<String> = pending
+        .iter()
+        .flat_map(|candidate| candidate.files.iter().cloned())
+        .collect();
+    let identical = identical_at_head(root, &all)?;
+    let mut eligible = vec![];
+    let mut uncommitted = vec![];
+    for candidate in pending {
+        let differing: Vec<&String> = candidate
+            .files
+            .iter()
+            .filter(|file| !identical.contains(*file))
+            .collect();
+        if differing.is_empty() {
+            eligible.push(candidate);
+        } else {
+            uncommitted.push(json!({
+                "id": candidate.id,
+                "files": differing,
+                "reason": "not committed identically at HEAD; commit it before it can be summarized",
+            }));
+        }
+    }
+    Ok(SummaryPlan {
+        eligible,
+        protected,
+        uncommitted,
+        native,
+    })
+}
+
+/// The protection rules of [`summary_plan`], from local state and the given manifests:
+/// sets listed only by cold archives with no protection left (pending the HEAD check),
+/// and protected sets with their reasons.
+fn summary_protections(
+    root: &Path,
+    archives: &[ListedArchive],
+    native: Option<Native>,
+) -> Result<(Vec<SummaryCandidate>, Vec<Value>, Native)> {
     let classification = classify_with(root, now()?, native)?;
     let keyed: Vec<(&ListedArchive, BTreeSet<String>)> = archives
         .iter()
@@ -1940,35 +1980,49 @@ fn summary_plan(
             }));
         }
     }
-    let all: Vec<String> = pending
-        .iter()
-        .flat_map(|candidate| candidate.files.iter().cloned())
-        .collect();
-    let identical = identical_at_head(root, &all)?;
-    let mut eligible = vec![];
-    let mut uncommitted = vec![];
-    for candidate in pending {
-        let differing: Vec<&String> = candidate
-            .files
-            .iter()
-            .filter(|file| !identical.contains(*file))
-            .collect();
-        if differing.is_empty() {
-            eligible.push(candidate);
-        } else {
-            uncommitted.push(json!({
-                "id": candidate.id,
-                "files": differing,
-                "reason": "not committed identically at HEAD; commit it before it can be summarized",
-            }));
-        }
+    Ok((pending, protected, classification.native))
+}
+
+/// Re-apply the protection rules right before removing one of `candidate`'s files: no
+/// native change is open, and the set is still unprotected with no file beyond the plan. The
+/// bytes themselves are checked against the plan by [`remove_verified`].
+fn still_unprotected(
+    root: &Path,
+    archives: &[ListedArchive],
+    native: &Native,
+    candidate: &SummaryCandidate,
+) -> Result<()> {
+    let open = change_dirs(root, ".specsync/changes").map_err(anyhow::Error::msg)?;
+    ensure!(
+        open.is_empty(),
+        "a native change opened during removal ({}); {} was not removed",
+        open.join(", "),
+        candidate.id
+    );
+    let (pending, protected, _) = summary_protections(root, archives, Some(native.clone()))?;
+    // The record is removed last, so it is still present here; artifacts this apply
+    // already removed drop out of the current set, which may list no file beyond the plan.
+    if pending.iter().any(|current| {
+        current.id == candidate.id
+            && current.files.first() == candidate.files.first()
+            && current
+                .files
+                .iter()
+                .all(|file| candidate.files.contains(file))
+    }) {
+        return Ok(());
     }
-    Ok(SummaryPlan {
-        eligible,
-        protected,
-        uncommitted,
-        native: classification.native,
-    })
+    let now = protected
+        .iter()
+        .find(|entry| entry["id"] == candidate.id.as_str())
+        .map_or_else(
+            || "its files changed".to_string(),
+            |entry| format!("now protected by {}", entry["reasons"]),
+        );
+    bail!(
+        "protections changed during removal ({}: {now}); its files were not removed",
+        candidate.id
+    )
 }
 
 fn one_line_bounded(text: &str) -> String {
@@ -2159,7 +2213,12 @@ pub(super) fn archive_summary(
                     });
                     append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
                     recorded.push(candidate.id.clone());
-                    for (file, content) in bytes {
+                    // Artifacts first and the record last, so the set stays classifiable.
+                    for (file, content) in bytes.iter().skip(1).chain(bytes.iter().take(1)) {
+                        // Protections can change at any point in the apply (another agent
+                        // updating the checkpoint, a bug link, an open change), so they are
+                        // checked again right before every removal.
+                        still_unprotected(root, archives, &native, candidate)?;
                         remove_verified(root, file, content)?;
                         held.push((file.clone(), content.clone()));
                     }

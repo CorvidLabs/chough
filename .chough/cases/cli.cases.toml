@@ -2716,6 +2716,24 @@ test_target = "evidence"
 test = "archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check"
 
 [[case]]
+id = "TC-cli-archive-summary-protection-before-each-removal"
+title = "The archive summary apply re-checks protections right before each removal and keeps the files when one appears after the validity check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-8"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check"
+
+[[case]]
 id = "TC-cli-archive-summary-no-clobber-restore"
 title = "An archive summary rollback keeps a file recreated during the apply instead of overwriting it"
 status = "active"

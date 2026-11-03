@@ -30,6 +30,7 @@ All four fail at 0363d4a. The last two were added after review 5756934010 and fa
 - TC-cli-archive-summary-changed-during-check
 - TC-cli-archive-summary-unfiltered-head-compare
 - TC-cli-archive-summary-protection-during-check
+- TC-cli-archive-summary-protection-before-each-removal (review thread 4459066056: a checkpoint reference to cold-a added on the first `git hash-object --no-filters --stdin`, after the validity check and its re-plan; at 30bb9f0 the apply exited 0 and removed cold-a.json and cold-a.log, and it now refuses with every file kept)
 - TC-cli-archive-summary-no-clobber-restore
 - TC-cli-archive-summary-stale-holds
 

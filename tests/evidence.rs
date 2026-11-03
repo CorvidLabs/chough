@@ -1605,6 +1605,62 @@ fn archive_summary_apply_fails_closed_when_a_protection_appears_during_the_nativ
 
 #[cfg(unix)]
 #[test]
+fn archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // The checkpoint as it would read once it references cold-a.
+    let session = fixture.read(".chough/session.json");
+    fixture.ok(&["checkpoint", "--observation", "cold-a"]);
+    fixture.write(".stub-session", &fixture.read(".chough/session.json"));
+    fixture.write(".chough/session.json", &session);
+    // A Git stand-in that forwards to Git and, on the first unfiltered stdin hash (the
+    // HEAD check of the bytes held for removal, after the validity check and its
+    // re-plan), makes the checkpoint reference cold-a: another agent's update that
+    // changes neither archive validity nor the candidate's bytes.
+    let real_git = String::from_utf8(
+        std::process::Command::new("sh")
+            .args(["-c", "command -v git"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ \"$1 $2 $3\" = \"hash-object --no-filters --stdin\" ] && [ -f .stub-session ]; then\n  cp .stub-session .chough/session.json && rm .stub-session\nfi\nexec '{}' \"$@\"\n",
+            real_git.trim()
+        ),
+    );
+    fixture.executable("bin/git");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    let other = fixture.read(".chough/evidence/cold-b.json");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(
+        !fixture.exists(".stub-session"),
+        "the hook did not run: {refused}"
+    );
+    assert!(
+        refused.contains("protections changed during removal") && refused.contains("cold-a"),
+        "{refused}"
+    );
+    // The checkpoint references cold-a, and every file of every set is still there.
+    assert!(fixture.read(".chough/session.json").contains("cold-a"));
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert_eq!(fixture.read(".chough/artifacts/cold-a.log"), log);
+    assert_eq!(fixture.read(".chough/evidence/cold-b.json"), other);
+    assert!(!fixture.exists(".chough/removing"));
+}
+
+#[cfg(unix)]
+#[test]
 fn archive_summary_restore_keeps_a_file_recreated_during_the_apply() {
     let fixture = knowledge_fixture();
     fixture.ok(&[
