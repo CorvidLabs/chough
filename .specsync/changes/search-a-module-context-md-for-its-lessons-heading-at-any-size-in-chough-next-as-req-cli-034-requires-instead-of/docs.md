@@ -5,5 +5,8 @@ artifact: docs
 
 # Docs
 
-docs/cli.md `lessons` row: the `larger than 4194304 bytes, not searched` note is
-gone and `context.md` is searched at any size (covered by the REQ-cli-034 change).
+- docs/cli.md: the known-exceptions paragraph names only `library snapshot`, and the
+  `lessons` row no longer mentions a `larger than 4194304 bytes, not searched` note.
+- CHANGELOG.md: the REQ-cli-034 entry says `chough next` finds the Lessons heading of
+  a `context.md` over 4 MiB, and that only `chough library snapshot` keeps its 4 MiB
+  limit.

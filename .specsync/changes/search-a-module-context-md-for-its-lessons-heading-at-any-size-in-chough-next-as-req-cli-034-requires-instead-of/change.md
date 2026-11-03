@@ -5,15 +5,15 @@ type: bug_fix
 base_commit: 45f7012197e0aa5c2ffdb163cc0025fd09b37b1a
 ---
 
-# Search a module context.md for its Lessons heading at any size in chough next, as REQ-cli-034 requires, instead of skipping one over 4 MiB
+# Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays
 
 ## Intent
 
-Search a module context.md for its Lessons heading at any size in chough next, as REQ-cli-034 requires, instead of skipping one over 4 MiB
+Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays
 
 ## Affected Canonical Specs
 
-- None
+- `cli`
 
 ## Acceptance Criteria
 
@@ -22,4 +22,4 @@ Search a module context.md for its Lessons heading at any size in chough next, a
 
 ## No-spec Rationale
 
-REQ-cli-034, added by change read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies on the same pull request, already states this behavior; this change only covers src/main.rs, which that change's approved paths did not list
+Not applicable
