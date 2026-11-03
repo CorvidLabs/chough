@@ -7,11 +7,11 @@
   "title": "Raise the checkpoint session byte limit to 131072 and the observation pointer limit to 400",
   "description": "Raise the checkpoint session byte limit to 131072 and the observation pointer limit to 400",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "747a12cc6fc396f0e8646fee1f2801e02b7d3035",
   "created_at": 1793680964,
-  "updated_at": 1793681360,
+  "updated_at": 1793681376,
   "affected_specs": [
     "cli"
   ],

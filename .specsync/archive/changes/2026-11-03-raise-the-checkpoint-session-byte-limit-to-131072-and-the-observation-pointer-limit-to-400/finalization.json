@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400",
+  "implementation_commit": "ac57e4c2338a793b85c3eaad8ea3154446ac296f",
+  "implementation_tree": "81352d39b4e36896d324ad93fbab9bd58194edbe",
+  "contract_digest": "2ec4469979fde9664dc54dfd9b3299a16b05ca1e04722d0ed2e595c3b9069a60",
+  "workspace_digest": "853c2e8b02dc9d99a0150c9f1a8053e9c80f4d7787b8890fcd3ddc2e84a581dc",
+  "closing_digest": "7bba79c30d37e6ad268aa69427fd521da657bd31b7570ca0f327417649ab3c40",
+  "review_digest": "8818a9ea6f676231b846fe903a1c75c5ab4d76f38ac747e2b117720cdecae2be",
+  "finalization_digest": "9f2beb801d8c46022ce98ba7a2f9dbd5ac58a8ee6f167339c0813835e35feb2e",
+  "timestamp": 1793681367
+}
