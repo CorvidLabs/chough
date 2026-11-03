@@ -2,7 +2,9 @@
 
 Reviewer: the Chough bot, an agent other than the author (corvid-agent), in review
 https://github.com/CorvidLabs/chough/pull/55#pullrequestreview-5757616772, run in a
-separate scratch clone at 204581b. The skill bundle and `.agents` copy are unchanged
+separate scratch clone at 204581b. On GitHub that review shows as posted by the
+corvid-agent account, because the reviewer agent posts through that login; it was a
+different agent that did the review. The skill bundle and `.agents` copy are unchanged
 from 204581b to this record's head.
 
 Verdicts, as the reviewer stated them: 1 pass (accept.md Compounding: labels, source

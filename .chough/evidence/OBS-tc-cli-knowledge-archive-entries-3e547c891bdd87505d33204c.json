@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-knowledge-archive-entries-3e547c891bdd87505d33204c",
+  "criteria": [
+    "KNOW-2",
+    "KNOW-3",
+    "KNOW-4",
+    "KNOW-6",
+    "KNOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact knowledge_entries_summarize_each_archive_deterministically for TC-cli-knowledge-archive-entries: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-knowledge-archive-entries-3e547c891bdd87505d33204c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-knowledge-archive-entries-3e547c891bdd87505d33204c.log": "59bb33c2fe11b05f76dccaf94b800888f5659ebc53b83bb3c761311acea1b180"
+  },
+  "observed_at_unix_seconds": 1793733663,
+  "snapshot": {
+    "revision": "ec7daea266cceb11520457bacdbb0b9809d3c2ed",
+    "dirty": false,
+    "fingerprint": "592a87f49d3155cae90b34ec315f95e28cb642d6eb0ff8f5b99dced54b808bcd",
+    "content": "bd1b9de8e5329c9aff59991b5481e1fb7a6d8cf2dcb7e2673e6c23937ceea0d2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-knowledge-archive-entries",
+      "digest": "d205fd6daa3b6f65f018321d4c7313c484a56ee7934cb9f31a415aea73bc1b37"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "knowledge_entries_summarize_each_archive_deterministically"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
