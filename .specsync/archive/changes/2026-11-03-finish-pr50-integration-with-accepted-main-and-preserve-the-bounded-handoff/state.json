@@ -7,11 +7,11 @@
   "title": "Finish PR50 integration with accepted main and preserve the bounded handoff",
   "description": "Finish PR50 integration with accepted main and preserve the bounded handoff",
   "kind": "operations",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "6715944ff6c4d0423f59e38d76a9cba6ea89e708",
   "created_at": 1793682784,
-  "updated_at": 1793684570,
+  "updated_at": 1793684660,
   "affected_specs": [
     "cli"
   ],

@@ -1,6 +1,6 @@
 ---
 id: finish-pr50-integration-with-accepted-main-and-preserve-the-bounded-handoff
-state: implementing
+state: archived
 type: operations
 base_commit: 6715944ff6c4d0423f59e38d76a9cba6ea89e708
 ---
