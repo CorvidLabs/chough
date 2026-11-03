@@ -11,4 +11,4 @@ artifact: tasks
 - [x] Move the 22 cases with the documented ID mapping
 - [x] Document the mappings and update cited IDs
 - [x] Add tests/spec_split.rs
-- [ ] Materialize, run moved cases, verify and record the before/after comparison
+- [x] Confirm the history delta bodies match the 7bd1b62 digests before materializing (materialize, the moved cases, verify and the before/after comparison are in testing.md)
