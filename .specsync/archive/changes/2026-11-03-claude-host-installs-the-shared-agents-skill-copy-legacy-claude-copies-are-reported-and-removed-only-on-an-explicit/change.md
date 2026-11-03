@@ -1,6 +1,6 @@
 ---
 id: claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit
-state: implementing
+state: archived
 type: feature
 base_commit: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
 ---
