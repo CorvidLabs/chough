@@ -7,10 +7,11 @@
   "title": "PR 50 evidence fix: record a fresh clean-tree verify run as the current agent-assisted proof in place of the mis-snapshotted corrective observation",
   "description": "PR 50 evidence fix: record a fresh clean-tree verify run as the current agent-assisted proof in place of the mis-snapshotted corrective observation",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "ba3691cd54b8f776abdd3f9dde9c2fd023b04a50",
   "created_at": 1793676154,
-  "updated_at": 1793676170,
+  "updated_at": 1793676239,
   "affected_specs": [
     "cli"
   ],

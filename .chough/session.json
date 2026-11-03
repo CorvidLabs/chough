@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -323,7 +323,8 @@
     "Final integrated source769b526 passed all9Fledge steps and all235tests across12suites on Rust1.95 and Rust1.88, with0failed/ignored/filtered. All13affected managed cases passed; protected1909parent blobs,149case definitions,45predecessors and allparent history occurrences remain preserved.",
     "PR44 integration with main a788869 is qualified: all 235 tests on Rust 1.95/1.88, nine Fledge steps and 13 affected cases passed. All 1909 protected parent blobs are exact. Independent scoped integration review has no findings, and the new native integration scope is archived.",
     "Exercise work path made absolute with setup markers; regression test tests/cli.rs::exercise_cleanup_handles_a_relative_tmpdir (fails without the fix); case TC-cli-exercise-cleanup-handles-a-relative-tmpdir; corrective agent-assisted OBS-product-test-035959f28aa76d052d48fe78 beside the untouched human-observation record; CHANGELOG",
-    "Native change shipped (archived at 41f6fb7)"
+    "Native change shipped (archived at 41f6fb7)",
+    "Clean-tree verify at 380acffcc4240c346a789198eea003d7dc90da9a recorded as OBS-product-test-ba63e97a0304049db5437166 with .chough/artifacts/pr-50-clean-verify-380acff.log; old records unchanged"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -537,7 +538,9 @@
     "BUG-integrated-current-main-workflow-references-are-misclassified-as-edits-8cbff17ede6b1bad3926bce3"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis"
+  ],
   "run_consents": [],
   "next_action": "Approve, commit the definition, run verify on the clean tree, record the new observation"
 }
