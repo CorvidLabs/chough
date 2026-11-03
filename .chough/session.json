@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -598,5 +598,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Final native verification and closeout after committed fresh proof; publish for all current hosted checks and independent review, then authorized merge."
+  "next_action": "Merge PR51 after independent approval of the actual final head and every hosted check passes, then verify merged main and deliver the overnight Grok handoff."
 }
