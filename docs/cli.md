@@ -562,10 +562,20 @@ in Git (REQ-cli-033).
 - Validity must be read as a real value before anything is removed: when `specsync
   change status` fails or does not report an affected archive's terminal evidence
   validity, `--apply` refuses and removes and ledgers nothing.
-- Files can change while the validity check runs. After it, `--apply` checks the
-  exact bytes it holds for removal against HEAD again and refuses, removing and
-  ledgering nothing, if any differ. Each file is then moved aside and compared before
-  it is deleted, so bytes written after that check are kept rather than lost.
+- Files and protections can change while the validity check runs. After it,
+  `--apply` re-plans from local state (the checkpoint, bugs, named files, open native
+  changes and HEAD, reusing the native manifests it already read) and refuses,
+  removing and ledgering nothing, unless every eligible set is still eligible with the
+  same files. It then checks the exact bytes it holds against HEAD again.
+- Each file is moved into `.chough/removing/`, compared and deleted at once. Bytes that
+  differ are put back with a hard link, which never replaces a file written there
+  meanwhile; only if one was, the changed bytes stay in `.chough/removing/` and the
+  command names them. A rollback restores with create-new, so a file recreated
+  meanwhile is kept as written (the removed bytes are recoverable from HEAD) and the
+  failure names it.
+- Holds left by an interrupted apply never break record listings: `chough status`
+  lists them under `removal_holds`, the preview under `stale_holds`, and `--apply`
+  refuses until they are moved back or deleted.
 - Removed observations referenced later read as `pruned`, never current or passed, and
   their entries show `Git <commit>` as the location. Native archives, ignore rules and
   Git history are never changed, and the step never runs on its own after finalize.

@@ -1041,8 +1041,8 @@ fn retention_revalidation_keeps_changed_missing_and_newly_referenced_proof() {
 /// Five archived changes (a5..a3 hot, a2 and a1 cold) whose verification manifests list
 /// observation records, with a SpecSync stand-in that reports terminal evidence validity.
 /// `.stub-break` names a file whose absence makes every archive read `unauthenticated`.
-/// `.stub-mutate` names a file (line 1) that the status call after the first N (line 2)
-/// appends bytes to, as an editor could while the native check runs.
+/// `.stub-hook` is a script the status call after the first N (`.stub-hook-after`) runs
+/// once, as an editor or another agent could act while the native check runs.
 #[cfg(unix)]
 fn knowledge_fixture() -> Fixture {
     let fixture = Fixture::new();
@@ -1054,9 +1054,9 @@ id="$3"
 validity=authenticated-history
 if [ -f .stub-break ] && [ ! -f "$(cat .stub-break)" ]; then validity=unauthenticated; fi
 if [ -f .stub-fail ] && [ "$(cat .stub-fail)" = "$id" ]; then echo "status unavailable" >&2; exit 1; fi
-if [ -f .stub-mutate ]; then
+if [ -f .stub-hook ]; then
   calls=$(($(cat .stub-calls 2>/dev/null || echo 0) + 1)); echo "$calls" > .stub-calls
-  if [ "$calls" -gt "$(sed -n 2p .stub-mutate)" ]; then printf 'new uncommitted bytes\n' >> "$(sed -n 1p .stub-mutate)"; rm .stub-mutate .stub-calls; fi
+  if [ "$calls" -gt "$(cat .stub-hook-after)" ]; then sh .stub-hook; rm .stub-hook .stub-hook-after .stub-calls; fi
 fi
 printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity":"%s"}},"acceptance_entries":[]}\n' "$id" "$validity"
 "#,
@@ -1514,7 +1514,11 @@ fn archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_stat
     let log = fixture.read(".chough/artifacts/cold-a.log");
     // Planning reads the latest archive's manifest with one status call; the next one is
     // the validity check that runs after the plan found every file identical at HEAD.
-    fixture.write(".stub-mutate", ".chough/artifacts/cold-a.log\n1\n");
+    fixture.write(
+        ".stub-hook",
+        "printf 'new uncommitted bytes\\n' >> .chough/artifacts/cold-a.log\n",
+    );
+    fixture.write(".stub-hook-after", "1\n");
     let refused = fixture.fails(&["library", "archive", "--apply"]);
     assert!(fixture.exists(".chough/artifacts/cold-a.log"), "{refused}");
     assert!(refused.contains("changed"), "{refused}");
@@ -1560,4 +1564,129 @@ fn archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_au
             .any(|entry| entry["id"] == "cold-b"),
         "{preview:#}"
     );
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // The checkpoint as it would read once it references cold-a.
+    let session = fixture.read(".chough/session.json");
+    fixture.ok(&["checkpoint", "--observation", "cold-a"]);
+    fixture.write(".stub-session", &fixture.read(".chough/session.json"));
+    fixture.write(".chough/session.json", &session);
+    assert_eq!(
+        ids(&fixture.ok(&["library", "archive"])["eligible"]),
+        set(["cold-a", "cold-b"])
+    );
+    // It starts referencing cold-a during the first validity call, after planning.
+    fixture.write(".stub-hook", "cp .stub-session .chough/session.json\n");
+    fixture.write(".stub-hook-after", "1\n");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(
+        refused.contains("protections or committed bytes changed"),
+        "{refused}"
+    );
+    assert!(refused.contains("cold-a"), "{refused}");
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert!(fixture.exists(".chough/artifacts/cold-a.log"));
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+    assert!(!fixture.exists(".chough/removing"));
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_restore_keeps_a_file_recreated_during_the_apply() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // Removing cold-a.json changes validity, so the apply restores; before it does, a
+    // writer recreates cold-a.json with new bytes during the re-read of validity.
+    fixture.write(".stub-break", ".chough/evidence/cold-a.json");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let recreated = format!("{record}\n  \n");
+    fixture.write(".stub-recreated", &recreated);
+    fixture.write(
+        ".stub-hook",
+        "cp .stub-recreated .chough/evidence/cold-a.json\n",
+    );
+    // Planning reads one manifest and the first validity check reads a1 and a2.
+    fixture.write(".stub-hook-after", "3\n");
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    let failed = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(failed.contains("validity"), "{failed}");
+    assert!(
+        failed.contains("not restored because a file was written there meanwhile")
+            && failed.contains(".chough/evidence/cold-a.json"),
+        "{failed}"
+    );
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), recreated);
+    assert_eq!(fixture.read(".chough/artifacts/cold-a.log"), log);
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    assert!(!fixture.exists(".chough/removing"));
+    let ledger = fixture.read(".chough/pruned.jsonl");
+    assert!(
+        ledger
+            .lines()
+            .any(|line| line.contains("\"restored\"") && line.contains("written there meanwhile")),
+        "{ledger}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // A hold an interrupted apply left behind sits outside every record directory.
+    fixture.write(
+        ".chough/removing/0123456789abcdef01234567.hold",
+        "held bytes\n",
+    );
+    let status = fixture.ok(&["status"]);
+    assert_eq!(
+        status["removal_holds"],
+        json!([".chough/removing/0123456789abcdef01234567.hold"]),
+        "{status:#}"
+    );
+    let preview = fixture.ok(&["library", "archive"]);
+    assert_eq!(preview["stale_holds"], status["removal_holds"]);
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(refused.contains(".chough/removing"), "{refused}");
+    assert!(fixture.exists(".chough/evidence/cold-a.json"));
+    assert_eq!(
+        fixture.read(".chough/removing/0123456789abcdef01234567.hold"),
+        "held bytes\n"
+    );
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+    // Once the holds are resolved, the apply runs and leaves no hold behind.
+    fs::remove_dir_all(fixture.root().join(".chough/removing")).unwrap();
+    let applied = fixture.ok(&["library", "archive", "--apply"]);
+    assert_eq!(
+        applied["pruned"],
+        json!(["cold-a", "cold-b"]),
+        "{applied:#}"
+    );
+    assert!(!fixture.exists(".chough/removing"));
+    assert_eq!(fixture.ok(&["status"])["removal_holds"], json!([]));
 }

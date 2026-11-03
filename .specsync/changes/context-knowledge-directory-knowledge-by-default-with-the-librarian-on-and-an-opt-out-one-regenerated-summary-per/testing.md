@@ -15,8 +15,11 @@ artifact: testing
 | REQ-cli-033, KNOW-7, KNOW-9, KNOW-10, KNOW-11 | `tests/evidence.rs::archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change` |
 | REQ-cli-033, KNOW-7, KNOW-9 | `tests/evidence.rs::archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check` |
 | REQ-cli-033, KNOW-7 | `tests/evidence.rs::archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf` |
+| REQ-cli-033, KNOW-8 | `tests/evidence.rs::archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check` |
+| REQ-cli-033, KNOW-7, KNOW-10 | `tests/evidence.rs::archive_summary_restore_keeps_a_file_recreated_during_the_apply` |
+| REQ-cli-033, KNOW-9 | `tests/evidence.rs::a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply` |
 
-All four fail at 0363d4a. The last two were added after review 5756934010 and fail at d5fabf5 (the apply removes bytes written during the validity check; the CRLF file is listed as eligible).
+All four fail at 0363d4a. The last two were added after review 5756934010 and fail at d5fabf5 (the apply removes bytes written during the validity check; the CRLF file is listed as eligible). The three after them were added after review 5757166239 and fail at 5cd0ead (the apply removes a set the checkpoint started referencing; the rollback overwrites a recreated file; a stale hold makes `status` fail). Unit tests `remove_verified_puts_changed_bytes_back_and_leaves_no_hold` and `put_back_never_replaces_a_file_written_meanwhile` cover the hold itself.
 
 ## Cases
 
@@ -26,6 +29,9 @@ All four fail at 0363d4a. The last two were added after review 5756934010 and fa
 - TC-cli-archive-summary-apply
 - TC-cli-archive-summary-changed-during-check
 - TC-cli-archive-summary-unfiltered-head-compare
+- TC-cli-archive-summary-protection-during-check
+- TC-cli-archive-summary-no-clobber-restore
+- TC-cli-archive-summary-stale-holds
 
 ## Focused and full checks
 

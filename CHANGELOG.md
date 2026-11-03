@@ -18,8 +18,10 @@ All notable changes to Chough are recorded here. The format follows
   only cold archived changes list (outside the newest 3) and that is committed
   byte-identically at HEAD (compared with `git hash-object --no-filters`, so
   `core.autocrlf` cannot hide a difference; the exact bytes being removed are
-  checked again after the native validity check, and a file that changed is kept and
-  the apply refused), after its summary is written and its ledger line appended. A
+  checked again after the native validity check, protections are re-evaluated
+  then too, and a file or protection that changed refuses the apply with nothing
+  removed; files are held in `.chough/removing/`, put back and restored without
+  replacing a file written meanwhile, and `chough status` reports any stale hold), after its summary is written and its ledger line appended. A
   removal that changes any affected archive's terminal evidence validity, or that
   fails partway, is restored and refused, and an archive whose validity SpecSync cannot
   report refuses the apply before anything is removed. It never runs on its own after

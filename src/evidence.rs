@@ -1071,6 +1071,7 @@ impl Reads<'_> {
 }
 
 /// Native manifests that protect observation sets, or why they could not be read.
+#[derive(Clone)]
 struct Native {
     state: &'static str,
     detail: String,
@@ -1322,10 +1323,19 @@ struct Classification {
 }
 
 fn classify(root: &Path, at: u64) -> Result<Classification> {
+    classify_with(root, at, None)
+}
+
+/// [`classify`], optionally reusing native manifests already read, so a re-check after
+/// native probes reads every local protection without starting another process.
+fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classification> {
     let records = load_all(root)?;
     let references = references(root)?;
     let named_files = file_references(root)?;
-    let native = native_manifests(root)?;
+    let native = match native {
+        Some(native) => native,
+        None => native_manifests(root)?,
+    };
     let manifest_keys: Vec<(&String, BTreeSet<String>)> = native
         .manifests
         .iter()
@@ -1792,43 +1802,78 @@ fn blob_of(root: &Path, bytes: &[u8]) -> Result<String> {
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }
 
-/// Remove `relative` only while it still holds `expected`: the file is first renamed to
-/// a private sibling, so later writes to the path cannot be lost, then compared. Bytes
-/// that differ are renamed back and refused; nothing that was not verified is deleted.
+/// Where `--apply` holds a file between moving it out of place and deleting it. Holds sit
+/// outside every listed record directory, so a stale one never breaks a record listing.
+pub(super) const HOLD_DIR: &str = ".chough/removing";
+
+/// Holds left in [`HOLD_DIR`] by an apply that stopped partway or found a conflict.
+pub(super) fn stale_holds(root: &Path) -> Result<Vec<String>> {
+    let mut names = vec![];
+    let path = local_path(root, HOLD_DIR)?;
+    if path.is_dir() {
+        for entry in fs::read_dir(path)? {
+            names.push(format!(
+                "{HOLD_DIR}/{}",
+                entry?.file_name().to_string_lossy()
+            ));
+        }
+    }
+    names.sort();
+    Ok(names)
+}
+
+/// Put `hold` back at `path` only if nothing is there: a hard link fails when the target
+/// exists, so a file a writer recreated meanwhile is never replaced.
+fn put_back(hold: &Path, path: &Path) -> std::io::Result<()> {
+    fs::hard_link(hold, path)?;
+    fs::remove_file(hold)
+}
+
+/// Remove `relative` only while it still holds `expected`. The file is first moved into
+/// [`HOLD_DIR`], so later writes to its path cannot be lost, then compared and deleted at
+/// once. Bytes that differ are put back without replacing anything and refused.
 fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
     let path = local_path(root, relative)?;
-    let name = path
-        .file_name()
-        .context("removal path has no file name")?
-        .to_string_lossy()
-        .into_owned();
-    let hold = path.with_file_name(format!(".{name}.chough-removing"));
+    let holds = local_path(root, HOLD_DIR)?;
+    fs::create_dir_all(&holds)?;
+    let hold = holds.join(format!(
+        "{}.hold",
+        &crate::records::digest_bytes(relative.as_bytes())[..24]
+    ));
     ensure!(
         !hold.exists(),
         "{} already exists; nothing was removed",
         hold.display()
     );
     fs::rename(&path, &hold).with_context(|| format!("removing {relative}"))?;
-    let actual = fs::read(&hold).with_context(|| format!("re-reading {relative}"))?;
-    if actual != expected {
-        if path.exists() {
-            bail!(
-                "{relative} changed during the apply and was written again; its changed bytes are kept at {}",
-                hold.display()
-            );
-        }
-        fs::rename(&hold, &path).with_context(|| format!("putting back {relative}"))?;
-        bail!("{relative} changed during the apply; its bytes were kept and it was not removed");
+    let actual = fs::read(&hold).with_context(|| format!("re-reading {relative}"));
+    if actual.as_deref().ok() == Some(expected) {
+        fs::remove_file(&hold).with_context(|| format!("removing {relative}"))?;
+        let _ = fs::remove_dir(&holds);
+        return Ok(());
     }
-    fs::remove_file(&hold).with_context(|| format!("removing {relative}"))
+    match put_back(&hold, &path) {
+        Ok(()) => {
+            let _ = fs::remove_dir(&holds);
+            bail!("{relative} changed during the apply; its bytes were kept and it was not removed")
+        }
+        Err(error) => bail!(
+            "{relative} changed during the apply and could not be put back without replacing a file written meanwhile ({error}); its changed bytes are kept at {}",
+            hold.display()
+        ),
+    }
 }
 
 /// Classify observation sets that archived manifests list: candidates (listed only by
 /// cold archives, no protection left once age and the latest-archive reason are set
 /// aside, every file committed identically at HEAD), protected sets with reasons, and
 /// sets held back because their bytes are not at HEAD.
-fn summary_plan(root: &Path, archives: &[ListedArchive]) -> Result<SummaryPlan> {
-    let classification = classify(root, now()?)?;
+fn summary_plan(
+    root: &Path,
+    archives: &[ListedArchive],
+    native: Option<Native>,
+) -> Result<SummaryPlan> {
+    let classification = classify_with(root, now()?, native)?;
     let keyed: Vec<(&ListedArchive, BTreeSet<String>)> = archives
         .iter()
         .map(|archive| {
@@ -1966,7 +2011,7 @@ pub(super) fn archive_summary(
         protected,
         uncommitted,
         native,
-    } = summary_plan(root, archives)?;
+    } = summary_plan(root, archives, None)?;
     let entry_path = |archive: &str| format!("{knowledge_dir}/archives/{archive}.md");
     let listed: Vec<Value> = eligible
         .iter()
@@ -1983,6 +2028,12 @@ pub(super) fn archive_summary(
     let reclaimable: u64 = eligible.iter().map(|candidate| candidate.bytes).sum();
     let mut pruned = vec![];
     if let Some(authority) = authority {
+        let holds = stale_holds(root)?;
+        ensure!(
+            holds.is_empty(),
+            "an earlier apply left files in {HOLD_DIR} ({}); inspect them and move each back or delete it before applying again",
+            holds.join(", ")
+        );
         let open = change_dirs(root, ".specsync/changes").map_err(anyhow::Error::msg)?;
         ensure!(
             open.is_empty(),
@@ -2000,6 +2051,47 @@ pub(super) fn archive_summary(
             .collect();
         if !eligible.is_empty() {
             let before = validity(root, &affected)?;
+            // The validity probes run external processes, so protections may have
+            // changed meanwhile (a checkpoint reference, a bug, an open change). Re-plan
+            // from local state only, reusing the manifests already read, and refuse
+            // unless every eligible set is still eligible with the same files.
+            let open = change_dirs(root, ".specsync/changes").map_err(anyhow::Error::msg)?;
+            ensure!(
+                open.is_empty(),
+                "a native change opened during the validity check ({}); nothing was removed",
+                open.join(", ")
+            );
+            let fresh = summary_plan(root, archives, Some(native.clone()))?;
+            let gained: Vec<String> = eligible
+                .iter()
+                .filter(|candidate| {
+                    !fresh.eligible.iter().any(|current| {
+                        current.id == candidate.id && current.files == candidate.files
+                    })
+                })
+                .map(|candidate| {
+                    let now = fresh
+                        .protected
+                        .iter()
+                        .chain(&fresh.uncommitted)
+                        .find(|entry| entry["id"] == candidate.id.as_str());
+                    match now {
+                        Some(entry) if !entry["reasons"].is_null() => {
+                            format!("{}: now protected by {}", candidate.id, entry["reasons"])
+                        }
+                        Some(entry) => format!(
+                            "{}: no longer committed identically at HEAD {}",
+                            candidate.id, entry["files"]
+                        ),
+                        None => format!("{}: its files changed", candidate.id),
+                    }
+                })
+                .collect();
+            ensure!(
+                gained.is_empty(),
+                "protections or committed bytes changed during the native validity check ({}); nothing was removed. Preview again",
+                gained.join("; ")
+            );
             // Read everything removal needs before the first ledger line is written.
             let mut prepared = vec![];
             for candidate in &eligible {
@@ -2089,13 +2181,41 @@ pub(super) fn archive_summary(
                 },
             };
             if let Some(failure) = failure {
+                // Restore with create-new: a file a writer recreated meanwhile is kept, and
+                // the removed bytes stay recoverable from HEAD, where they were verified.
+                let mut kept = vec![];
                 for (file, bytes) in &held {
                     let path = local_path(root, file)?;
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent)?;
                     }
-                    fs::write(&path, bytes).with_context(|| format!("restoring {file}"))?;
+                    match fs::OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .open(&path)
+                    {
+                        Ok(mut target) => {
+                            use std::io::Write;
+                            target
+                                .write_all(bytes)
+                                .with_context(|| format!("restoring {file}"))?;
+                        }
+                        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                            kept.push(file.clone());
+                        }
+                        Err(error) => {
+                            return Err(error).with_context(|| format!("restoring {file}"));
+                        }
+                    }
                 }
+                let failure = if kept.is_empty() {
+                    failure
+                } else {
+                    format!(
+                        "{failure}; not restored because a file was written there meanwhile, kept as written, removed bytes recoverable from Git HEAD: {}",
+                        kept.join(", ")
+                    )
+                };
                 for id in &recorded {
                     append_line(
                         root,
@@ -2142,6 +2262,7 @@ pub(super) fn archive_summary(
         "eligible": listed,
         "protected": protected,
         "uncommitted": uncommitted,
+        "stale_holds": stale_holds(root)?,
         "totals": {
             "eligible": listed.len(),
             "protected": protected.len(),
@@ -2233,6 +2354,41 @@ pub(super) fn auto_prune(root: &Path) -> Value {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn remove_verified_puts_changed_bytes_back_and_leaves_no_hold() {
+        let root = tempfile::tempdir().unwrap();
+        fs::create_dir_all(root.path().join(EVIDENCE_DIR)).unwrap();
+        let file = format!("{EVIDENCE_DIR}/a.json");
+        fs::write(root.path().join(&file), "changed\n").unwrap();
+        let error = remove_verified(root.path(), &file, b"verified\n").unwrap_err();
+        assert!(error.to_string().contains("not removed"), "{error:#}");
+        assert_eq!(
+            fs::read_to_string(root.path().join(&file)).unwrap(),
+            "changed\n"
+        );
+        assert!(!root.path().join(HOLD_DIR).exists());
+        remove_verified(root.path(), &file, b"changed\n").unwrap();
+        assert!(!root.path().join(&file).exists());
+        assert!(!root.path().join(HOLD_DIR).exists());
+    }
+
+    #[test]
+    fn put_back_never_replaces_a_file_written_meanwhile() {
+        let root = tempfile::tempdir().unwrap();
+        let hold = root.path().join("hold");
+        let path = root.path().join("path");
+        fs::write(&hold, "held\n").unwrap();
+        fs::write(&path, "written meanwhile\n").unwrap();
+        let error = put_back(&hold, &path).unwrap_err();
+        assert_eq!(error.kind(), std::io::ErrorKind::AlreadyExists);
+        assert_eq!(fs::read_to_string(&path).unwrap(), "written meanwhile\n");
+        assert_eq!(fs::read_to_string(&hold).unwrap(), "held\n");
+        fs::remove_file(&path).unwrap();
+        put_back(&hold, &path).unwrap();
+        assert_eq!(fs::read_to_string(&path).unwrap(), "held\n");
+        assert!(!hold.exists());
+    }
 
     fn observation(id: String) -> Evidence {
         Evidence {
