@@ -1,0 +1,20 @@
+# Issue #49 local verification excerpt (2026-11-02 19:10 MST, a788869 + working tree; specsync 6.1.2, fledge 1.8.0)
+## fledge lanes run verify
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; 
+1 specs checked: 1 passed, 0 warning(s), 0 failed
+✓ audit passed (1 active)
+EXERCISE PASSED (removing /tmp/chough-exercise.nSzpTk)
+✅ Lane verify completed (9 steps in 47.970s)
+## exercise temp dir
+full run, no dir argument: exit=0 before=4 after=4 (/tmp/chough-exercise.* count unchanged; its own dir was removed)
+failing run (CHOUGH=/bin/false): exit 1, printed 'Kept /tmp/chough-exercise.JqVn52', dir present, then removed by hand

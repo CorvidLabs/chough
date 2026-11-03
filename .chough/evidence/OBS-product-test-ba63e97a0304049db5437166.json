@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-ba63e97a0304049db5437166",
+  "criteria": [
+    "FLOW-6"
+  ],
+  "requirements": [
+    "REQ-cli-011"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "corvid-agent (an agent) ran fledge lanes run verify on a clean tree at 380acffcc4240c346a789198eea003d7dc90da9a and it passed (exercise lane included); the log header names that revision",
+  "artifacts": [
+    ".chough/artifacts/pr-50-clean-verify-380acff.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr-50-clean-verify-380acff.log": "66b97a735ee31165c24b0edb4723cdeae9f7089662f1280a7c5daed7afebbad7"
+  },
+  "observed_at_unix_seconds": 1793676232,
+  "snapshot": {
+    "revision": "380acffcc4240c346a789198eea003d7dc90da9a",
+    "dirty": false,
+    "fingerprint": "3087fb5ca7ca4b60d70fc18e44df2c20d598e342866149678731980bac5f911d",
+    "content": "ae06f1aaca1b00f49fc1677d72f1c93c377030480e75a2a7b6f25fad5486af08"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "limitations": [
+    "Agent-run command check, not a human observation; no human witnessed it",
+    "OBS-product-test-035959f28aa76d052d48fe78 wrongly carried the 250d637 snapshot for the a788869 issue-49-verify.log; this record replaces it as current proof, and the old records are kept unchanged"
+  ]
+}

@@ -712,3 +712,76 @@ fn independent_roots_at_the_same_high_water_mark_get_distinct_ids_without_breaki
     assert!(manual_left.exists(".chough/bugs/BUG-0019.json"));
     assert!(manual_left.exists(&format!(".chough/bugs/{manual_left_id}.json")));
 }
+
+#[test]
+fn bug_text_values_may_start_with_two_hyphens() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let output = fixture.run(&[
+        "bug",
+        "add",
+        "--title",
+        "--name prints nothing",
+        "--symptom",
+        "--name exits 0 with no output",
+        "--trigger",
+        "chough --name",
+        "--expected",
+        "-- a usage error",
+        "--actual",
+        "--- nothing",
+        "--environment",
+        "test-local",
+        "--step",
+        "--run chough --name",
+        "--requirement",
+        "REQ-cli-001",
+    ]);
+    let added = json(&output);
+    let id = added["id"].as_str().unwrap();
+    let record: Value =
+        serde_json::from_str(&fixture.read(&format!(".chough/bugs/{id}.json"))).unwrap();
+    assert_eq!(record["title"], "--name prints nothing");
+    assert_eq!(record["symptom"], "--name exits 0 with no output");
+    assert_eq!(record["expected"], "-- a usage error");
+    assert_eq!(record["actual"], "--- nothing");
+    assert_eq!(record["steps"], json!(["--run chough --name"]));
+}
+
+/// Every option of `bug add` and `cases run` carries a description in `--help`.
+#[test]
+fn bug_add_and_cases_run_options_have_help_text() {
+    let fixture = Fixture::new();
+    for command in [
+        &["bug", "add", "--help"][..],
+        &["cases", "run", "--help"][..],
+    ] {
+        let output = fixture.run(command);
+        assert!(output.status.success());
+        let help = String::from_utf8(output.stdout).unwrap();
+        let lines: Vec<&str> = help.lines().collect();
+        let mut options = 0;
+        for (index, line) in lines.iter().enumerate() {
+            let trimmed = line.trim_start();
+            if !trimmed.starts_with('-') && !trimmed.starts_with('<') {
+                continue;
+            }
+            options += 1;
+            // Clap puts the description after the flag on the same line, or on the
+            // next, more indented line when the descriptions are long.
+            let flag_end = trimmed.find("  ").map(|at| trimmed[at..].trim());
+            let same_line = flag_end.is_some_and(|rest| !rest.is_empty() && !rest.starts_with('['));
+            let next_line = lines.get(index + 1).is_some_and(|next| {
+                let indent = next.len() - next.trim_start().len();
+                indent > line.len() - trimmed.len()
+                    && !next.trim_start().starts_with('-')
+                    && !next.trim_start().starts_with('[')
+            });
+            assert!(
+                same_line || next_line,
+                "{command:?}: no help text for {trimmed:?} in:\n{help}"
+            );
+        }
+        assert!(options >= 4, "{help}");
+    }
+}

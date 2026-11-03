@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "cli-cleanups-for-issue-49-hyphen-values-in-bug-add-no-repeated-native-next-action-in-the-next-main-line-iso-times-in",
+  "implementation_commit": "63db2b6b08990d0d18fe28a9ed92a3acd0c151f1",
+  "implementation_tree": "2775a189c66cb5e73be7793f8978be0f99d30b8c",
+  "contract_digest": "fca64678a48f23c3ef5434f8aec6e059839f78ab6700485aa445fd4f07ed208d",
+  "workspace_digest": "8e254065eb36c46d06fd5c9a50438b790b04ccb7d1d53ac064216fed8b0fbfb2",
+  "closing_digest": "4c0f85858c7dba384028c165ae559d9512b845c6f1406ac7798d8c97711b5170",
+  "review_digest": "b090476738da00997f7d3b3fb8c74b087b6acf3a4d7ef86292205693e14751e4",
+  "finalization_digest": "d761ddd5d4d41bf5daec5b3e844fc4a045486da38613839f6ad2c392f77cdc92",
+  "timestamp": 1793671932
+}
