@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793670371,
+      "digest": "23c8f53d837275c6f91ba0a3a49ca8a33947f30166795a5689ee8c7260fcdcae",
+      "note": "Scope approved by corvid-agent under Leif's standing authorization (2026-11-02 9:14 AM MT: 'Use corvid-agent for all approvals for all things!! You are corvid-agent'): tests-only acceptance evidence for issue #30 criteria 1 and 3, cfg(test) hooks only",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration",
+        "title": "Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records",
+        "description": "Identity acceptance evidence for issue 30: a pinned-clock same-second run in two Git roots and a real Git integration fixture for generated records",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          "CHANGELOG.md",
+          "specs/cli/",
+          "src/main.rs",
+          "src/records.rs",
+          "tests/cases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A deterministic test pins the clock (a cfg(test)-only hook, no runtime switch) and runs the same bound case in two independent Git roots on separate branches at the same second; after merging, the generated observation IDs and artifact paths are distinct, both records keep the pinned time, both artifacts keep their recorded bytes and fingerprints, and both observations read as current",
+          "A real Git fixture adds generated records independently on two branches in two roots (cases run observations and artifacts, evidence add with an artifact, bug add); the merge has no conflicts, every record from both sides is byte-identical to its branch version under a distinct ID, and cases check and status validate the merged tree with every observation current",
+          "No product behavior changes; fledge lanes run verify passes; hosted CI is reported only as observed"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Tests only plus cfg(test) hooks with no runtime switch; portable across Linux, macOS and Windows CI; out of scope: SKILL.md, references/lifecycle.md, next approval wording, and issue 30 criteria 2/4/5/6",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "6f028c443008f3b295f149ad661fed555def7de29b8e9ef03a0e8e2ac4b482e7"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793670728,
+      "digest": "7a56f58c0f827545b21ceeea0801c4a8e9bfda282498f0ff517f8eceb57fb1fe",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

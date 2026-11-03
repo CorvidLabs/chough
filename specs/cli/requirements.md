@@ -261,6 +261,8 @@ Acceptance Criteria
 - A forced same-ID different-content creation refuses atomically, leaves every pre-existing record byte-identical and creates no overwrite, numeric, timestamp or digest fallback, regenerated suffix or replacement record. Random-source and write failures preserve existing records.
 - Mixed legacy and new IDs work through case and bug links, checkpoint references, status and next, timing, retention and pruning, native manifests, validation resume and librarian indexes without migration or schema rewrite. Old-style IDs supplied for new automatic writes fail with an omit-ID remedy, and documentation gives the old-version upgrade boundary.
 - Bug known-answer vectors and generated IDs are unchanged, and transition, preference, consent, stop-marker and pruning-ledger entry shapes gain no IDs.
+- A test with a test-only pinned clock runs the same bound case in two independent Git roots on separate branches at the same second; after the branches merge, the observation IDs and artifact paths are distinct, both records keep the pinned time, and both artifacts keep their recorded bytes and fingerprints, so both observations read as current.
+- In a real Git fixture, two roots on separate branches independently add case-run observations with artifacts, `evidence add` observations and bugs; the merge has no conflicts, every record from both sides is byte-identical to its branch version under a distinct ID, and `cases check` and `status` validate the merged tree.
 
 ### REQ-cli-024
 

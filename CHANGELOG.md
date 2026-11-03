@@ -11,6 +11,13 @@ All notable changes to Chough are recorded here. The format follows
   later requests start fresh. `CHOUGH_TRACE=1` adds bounded stderr local phases and
   exact suite-load/lookup counts without changing stdout or record schemas.
 
+### Tests
+
+- Issue #30 acceptance evidence: a same-second run of one case in two Git roots
+  (pinned by a test-only clock) and a real Git merge of independently added
+  observations, artifacts and bugs both keep distinct identities, byte-identical
+  records and current observations. No behavior change.
+
 ### History and protected retention
 
 - Immutable transition events for new projects, explicit byte-preserving adoption

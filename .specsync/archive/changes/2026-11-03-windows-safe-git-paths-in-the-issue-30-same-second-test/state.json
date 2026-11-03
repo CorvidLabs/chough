@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "windows-safe-git-paths-in-the-issue-30-same-second-test",
+  "slug": "windows-safe-git-paths-in-the-issue-30-same-second-test",
+  "title": "Windows-safe git paths in the issue 30 same-second test",
+  "description": "Windows-safe git paths in the issue 30 same-second test",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "46ca7a4407ebad831ee05f8fc580822190b36b74",
+  "created_at": 1793671125,
+  "updated_at": 1793671233,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    ".chough/cases/"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Test-only fix: the REQ-cli-023 acceptance text is unchanged; only the test's git invocation paths change",
+  "acceptance_criteria": [
+    "The same-second two-root unit test passes git plain temporary paths, never Windows verbatim canonical paths, and still asserts the same identities, times, bytes and freshness",
+    "fledge lanes run verify passes locally; hosted Windows Product CI is reported as observed"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Test-only change in src/main.rs; no assertion weakened",
+    "public_contract": "no"
+  }
+}
