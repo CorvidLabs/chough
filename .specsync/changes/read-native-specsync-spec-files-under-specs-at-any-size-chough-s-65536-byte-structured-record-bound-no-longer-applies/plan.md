@@ -9,9 +9,11 @@ artifact: plan
 
 Add `records::read_spec_file`, an unbounded reader for native spec files, and use it
 for the two `requirements.md` reads in `src/evidence.rs`. `chough next`'s
-`context.md` search and `chough library snapshot`'s spec-file refusal move to the
-dependent change's follow-up PR (review 5757165977), because src/main.rs and
-src/library.rs are outside this change's paths.
+`context.md` search and `chough library snapshot`'s spec-file refusal stay as
+they are, named in REQ-cli-034 as known exceptions (review 5757495438), and a later
+native change on a follow-up PR lifts them, because src/main.rs and src/library.rs
+are outside this change's paths. The unstarted dependent change for `next` was
+removed from this pull request (review 5757495438).
 `chough context` keeps its display budgets for spec text. Every Chough record keeps
 `read_record` and its bounds. Add advisory composability guidance to the workflow
 skill's build reference and register main's previous build reference digest so

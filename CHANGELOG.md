@@ -8,7 +8,8 @@ All notable changes to Chough are recorded here. The format follows
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes (REQ-cli-034).
-  Every Chough record keeps its bound. The workflow skill's build reference gains
+  Every Chough record keeps its bound. Until a later change, `chough next`'s
+  `context.md` Lessons search and `chough library snapshot` keep their 4 MiB limit. The workflow skill's build reference gains
   advisory "Keep it composable" guidance; size is a hint, never a gate. Leif decided
   this on 2026-11-03.
 

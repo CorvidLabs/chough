@@ -101,6 +101,9 @@ checkpoint list to 200 items and side-stage nesting to 4 levels. Chough releases
 before this bound refuse a checkpoint over 64 KiB.
 Native SpecSync spec files under `specs/` are the project's contracts, not Chough
 records, and are read at any size; size is a composability hint, never a gate.
+Two readers are known exceptions until a later change lifts them: `next` searches a
+module's `context.md` for its Lessons heading only up to 4 MiB, and `library
+snapshot` refuses any file over 4 MiB (REQ-cli-034).
 Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
 up to 16 KiB; `status` carries the parsed state and next action in `native_summary`
 and `next` in `native`. Larger output is reported as `oversized` and refuses gated
