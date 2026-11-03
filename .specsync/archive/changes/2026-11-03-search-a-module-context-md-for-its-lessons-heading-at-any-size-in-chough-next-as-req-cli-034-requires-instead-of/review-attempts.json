@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "0df760fb7354821ad841fa3756d52e7fd628b8d9",
+      "contract_digest": "72370913855a69985ec956309b2836a30856148159cf0048c4938cb48e18f7c3",
+      "execution_digest": "eb84d9d9684ff69260a52aca7aafef32057dd313fcc17ceb5d4bd5e3f1e03d68",
+      "workspace_digest": "e234eb13fc5389a91bfd59b6670cdda27a9a4508df44510b9af1ccee63001082",
+      "timestamp": 1793749252
+    }
+  ]
+}
