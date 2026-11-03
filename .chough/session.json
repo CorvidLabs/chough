@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -115,7 +115,8 @@
       "TC-cli-observation-pointer-bound-is-400",
       "TC-cli-checkpoint-merge-enforces-the-raised-bounds",
       "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
-      "TC-cli-native-next-action-is-not-repeated-in-the-next-line"
+      "TC-cli-native-next-action-is-not-repeated-in-the-next-line",
+      "TC-cli-delta-guard-refusals-name-the-agent-actor"
     ],
     "design": [],
     "files": [
@@ -372,7 +373,8 @@
     "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged.",
     "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved.",
     "PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured.",
-    "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit."
+    "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit.",
+    "Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -577,7 +579,9 @@
     "OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2",
     "OBS-human-observation-174caaa1021cfdf5a553f7a3",
     "OBS-tc-cli-bug-add-accepts-values-that-start-with-two-hyphens-916110763b00ec6ddf3afb73",
-    "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b"
+    "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b",
+    "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0",
+    "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a"
   ],
   "bugs": [
     "BUG-0001",
@@ -607,10 +611,11 @@
     "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
     "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b",
     "BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5",
-    "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1"
+    "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1",
+    "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Record the failing regression, then fix src/stage.rs"
+  "next_action": "Complete tasks, check --commit, verify, then open the PR for independent review"
 }
