@@ -312,3 +312,13 @@ from a null history head to its first fixed-width event ID. Test every managed
 record path and byte, exact-bound success and multiple clear/open gates. Limits:
 disposable macOS fixtures; this finding does not establish transactionality for
 later I/O errors, ID collisions or cycle-storage capacity failures.
+
+2026-11-03, refusal remedies drift from the actor rule (observation): after
+lifecycle.md, plan.md and docs/cli.md moved to the acting-agent actor with a human
+authority note, two approved-delta guard refusals in src/stage.rs still told agents
+to ask the human and approve under their name, and tests quoted that text. Source:
+OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0 (failed
+at main 8300b58) and its bug. Limits: one search of src/, skills/ and docs/ for this
+wording; frozen old-skill fixtures were not changed. Future use: when guidance wording
+changes, search runtime refusal and next-action strings in src/ as well as the
+skill and docs, and assert the remedy text in a test.

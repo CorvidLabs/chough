@@ -1392,7 +1392,7 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
     }
     let refused = fixture.fails(&["stage", "advance"]);
     for part in [
-        "specsync change approve guarded-change --actor \"<their name>\"",
+        "specsync change approve guarded-change --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\"",
         "specsync change check guarded-change",
         "specsync.approved-delta.v1",
     ] {
@@ -1494,7 +1494,9 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     let digest = delta_digest("cli", DELTA.as_bytes());
     // An approval without digests can only be cleared by a new approval, so its
     // refusal names that rather than a status read.
-    let approve = format!("specsync change approve {id} --actor \"<their name>\"");
+    let approve = format!(
+        "specsync change approve {id} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\""
+    );
     let cases: Vec<(&str, String, &str)> = vec![
         ("malformed", "{\"approvals\": [".into(), &status),
         ("malformed", "{\"approvals\": \"none\"}".into(), &status),
@@ -3027,7 +3029,10 @@ fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
     );
     let before = records(&fixture);
     let refused = fixture.fails(&["stage", "advance"]);
-    assert!(refused.contains("refused:native-delta-changed"), "{refused}");
+    assert!(
+        refused.contains("refused:native-delta-changed"),
+        "{refused}"
+    );
     check_refusal(&refused, id);
     assert_eq!(records(&fixture), before);
 
