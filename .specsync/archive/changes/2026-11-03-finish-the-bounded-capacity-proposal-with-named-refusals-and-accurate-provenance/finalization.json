@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "finish-the-bounded-capacity-proposal-with-named-refusals-and-accurate-provenance",
+  "implementation_commit": "5e90711d684049095ef34bbd9e13601cdd0393e1",
+  "implementation_tree": "6306f08083f2d154942b718dd145e4fd86cdf5f8",
+  "contract_digest": "f6743177b599b074ddfb0ecf572f58f04d7fe6603206d92eddd082db6ab9fb78",
+  "workspace_digest": "512ea553510c2f1890cc093aa4f089fbb0525f1aabe01384b65d2846ae10ccd8",
+  "closing_digest": "069642daf7debec3e98d83caa25ad2e562b9543195e0d7b19aaec0cfa583a742",
+  "review_digest": "a45ef1bb54b7fbb556058dd2344077c704ea67586bffd6318187adcc965e24b2",
+  "finalization_digest": "73fac69ea072b4aa43d351ff7394c589264d1e5d164c40a27299ba55f96220a8",
+  "timestamp": 1793686441
+}

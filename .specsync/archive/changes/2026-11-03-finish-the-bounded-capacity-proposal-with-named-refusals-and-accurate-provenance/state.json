@@ -7,11 +7,11 @@
   "title": "Finish the bounded capacity proposal with named refusals and accurate provenance",
   "description": "Finish the bounded capacity proposal with named refusals and accurate provenance",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "dbb66d979e2c34e41926401641d58971c0d65f65",
   "created_at": 1793684345,
-  "updated_at": 1793686410,
+  "updated_at": 1793686489,
   "affected_specs": [
     "cli"
   ],

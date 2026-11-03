@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "finish-the-bounded-capacity-proposal-with-named-refusals-and-accurate-provenance",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "5e90711d684049095ef34bbd9e13601cdd0393e1",
+  "contract_digest": "f6743177b599b074ddfb0ecf572f58f04d7fe6603206d92eddd082db6ab9fb78",
+  "execution_digest": "e11122e2bb69ac8b6de79926d2a6b11bd8d3f3144f6cb58106adb5394356664e",
+  "workspace_digest": "512ea553510c2f1890cc093aa4f089fbb0525f1aabe01384b65d2846ae10ccd8",
+  "timestamp": 1793686417
+}
