@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "bound-transition-history-and-preserve-referenced-proof",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "70421962a477ad39423031414ad4cc892b28b4ec",
+  "contract_digest": "1413ace27e0672a01fc40e3a68bd99fed33fefa065aa8e5adba771a51891c905",
+  "execution_digest": "c157ebcc8bf0012048c32f01e82036bcbdb030e1fe972dfe78c8172ff7d86540",
+  "workspace_digest": "649f06b3319afdc56e46ca23ba4e5a1762ee2f8cf0fd1d5e57714da3b717cd53",
+  "timestamp": 1793666862
+}

@@ -1,0 +1,4 @@
+▶️ Running task: lint
+    Checking chough v0.1.0 (/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.16s
+✅ lint (2.2s)

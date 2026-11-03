@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Issue #40: new-project setup docs and a chough next hint to run specsync change adopt when SDD is off",
+  "objective": "Implement issue #31: bounded transition history and protected retention with explicit adoption and preserved proof",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "new-project-setup-path-and-sdd-off-hint-document-hi-specsync-init-scaffold-and-specsync-change-adopt-for-a-new-project",
+  "native_change": "bound-transition-history-and-preserve-referenced-proof",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -31,7 +31,8 @@
       "LIFE-1",
       "FLOW-12",
       "LIFE-10",
-      "FLOW-3"
+      "FLOW-3",
+      "LIFE-8"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -49,7 +50,10 @@
       "REQ-cli-024",
       "REQ-cli-009",
       "REQ-cli-005",
-      "REQ-cli-030"
+      "REQ-cli-030",
+      "REQ-cli-025",
+      "REQ-cli-026",
+      "REQ-cli-027"
     ],
     "cases": [
       "TC-cli-0101",
@@ -86,6 +90,16 @@
       "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused",
       "TC-cli-open-human-gates-refuse-advance-and-skip",
       "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next",
+      "TC-cli-history-adoption",
+      "TC-cli-history-branches",
+      "TC-cli-history-bounds",
+      "TC-cli-history-retention",
+      "TC-cli-retention-revalidation",
+      "TC-cli-history-legacy-timing-bounds",
+      "TC-cli-history-frozen-reference-aliases",
+      "TC-cli-history-closing-reset-age",
+      "TC-cli-history-stale-receipt-age",
+      "TC-cli-history-post-prune-reference",
       "TC-cli-sdd-off-names-specsync-change-adopt"
     ],
     "design": [],
@@ -165,7 +179,15 @@
     "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #39 change recorded with actor corvid-agent on that instruction",
     "human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif",
     "Proposed on #38 and approved in scope: refuse advance and skip with refused:awaiting-human, no reason override, other moves unaffected, next and status say so; new REQ-cli-030 since #43 modifies REQ-cli-008",
-    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #38 change recorded with actor corvid-agent"
+    "human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT \"Use corvid-agent for all approvals for all things!! You are corvid-agent\"; scope approval of the #38 change recorded with actor corvid-agent",
+    "human: 0xLeif said \"Ok continue\" after the proposed sequence of reconciling stale tracking and preparing issue #31 scope; this authorizes definition work, not native scope approval or implementation acceptance",
+    "agent proposal: explicit history adoption, immutable transition events and a cursor inside the sole checkpoint, because a shared append-only log cannot keep independent branch timelines separate; all storage policy and limits remain proposed until scope approval",
+    "human: 0xLeif approved the complete issue #31 scope in draft PR #37 by replying \"Yes\" in chat on 2026-11-02; recorded with specsync change approve --actor 0xLeif; implementation acceptance, live adoption, live cleanup and merge remain separate decisions",
+    "decided: project agent actor corvid-agent is recorded separately from actual human authorization, because the acting account and the authority source have different provenance roles; renewed native scope approval preserves the original event and all product proof",
+    "human: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status was presented.",
+    "agent owner choice: retain the complete PR37 current-cycle group while importing all additive checkpoint/history records, because this branch continues its active bounded-history work. The finish-all instruction authorizes bounded integration and native closeout; merge and live adoption/cleanup remain separate.",
+    "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: complete the reviewed PRs, safety repairs, native closeout and current-head qualification under his standing through-PR authority. His later instruction permits resynchronization as merges continue; GitHub merge remains his.",
+    "human: 0xLeif explicitly authorized this session to \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02. This supersedes the earlier user-only merge boundary for PRs 37, 44 and 46; current-head approval, all checks and branch protection still apply. No release, deployment, live adoption or cleanup is authorized."
   ],
   "open_questions": [],
   "completed": [
@@ -257,7 +279,19 @@
     "Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated",
     "fledge lanes run verify passed after the #38 fix (.chough/artifacts/bug38-verify.log)",
     "Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45",
-    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG"
+    "Prepared issue #31 native requirements, design, research, plan, verification cases and sequential role findings; reconciled roadmap delivery and cold-start limits; native audit and HI intent validation passed",
+    "Published definition-only draft PR #37 at https://github.com/CorvidLabs/chough/pull/37; reconciled issues #30, #31 and #32 with dated status sections while preserving their original bodies and keeping unmet criteria open",
+    "Core implementation: new-project cursor, explicit byte-preserving adoption, event-backed stage/gate writes and coherent cursor merge selection. All three retained history regressions now pass, including the real Git branch event fixture; retention safety and full qualification remain in progress.",
+    "Implemented the approved PR #37 scope and qualified the final source: all five bound cases passed, the mandatory Fledge verify lane passed all nine steps with 219 tests, and all 219 tests passed on Rust 1.88.0. Three reproduced in-scope bugs have later passing evidence and are verified. No live adoption or cleanup ran.",
+    "Independent branch and bounds reviews completed; the reproduced legacy timing overflow has failure-first tests and is verified fixed. All six affected cases, the nine-step Fledge lane and all 221 tests on Rust 1.88 passed. Grok is assigned independent retention/proof review when the human starts it; human implementation acceptance remains pending.",
+    "PR37 protected-reference blocker is fixed: frozen plaintext aliases share normalization with structured paths, all7affectedcases and all222tests on currentRust/Rust1.88 passed, as did all9Fledgesteps. The independently reproduced deletion failure and strictly later passing evidence are preserved. No live cleanup occurred.",
+    "PR37 peer safety repairs qualified: actual closing reset age and explicit missing referenced history, all 225 tests on Rust1.95/Rust1.88, ten exact bound cases, nine Fledge steps and original reproductions. Initial filter-only binding recorded not-run and was corrected to exact names; no test assertion was relaxed.",
+    "Final directory reference repair passed 225 tests on Rust1.95/Rust1.88, ten exact cases and nine Fledge steps. This is pre-integration evidence; main8fb0ea7 has now merged and the integrated source needs fresh qualification.",
+    "Integrated main9d02 (#41/#43/#45) with PR37 using one owner-selected current cycle and all additive records. All232tests on Rust1.95/Rust1.88, ten bound cases and nine Fledge steps pass; preserved all parent proof and clarified local append limits.",
+    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
+    "PR37 final main d839fef repair passes233 tests on Rust 1.95/1.88, ten bound cases and all nine Fledge steps. Both original reproductions now report missing referenced proof and partial restoration cannot hide a separate cycle reference. All parent proof bytes are preserved; independent scoped rereview found no remaining issue.",
+    "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.",
+    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -365,7 +399,38 @@
     "OBS-product-test-61a4a912f4e142a100dd919e",
     "OBS-product-test-694fad65ec7621ab2e3e2b32",
     "OBS-tc-cli-skill-orders-the-change-check-before-new-requirement-cases-f2fe3e74105b6b50775d28cd",
-    "OBS-tc-cli-0094-b36b0ba7e05a14833ddbe65f"
+    "OBS-tc-cli-0094-b36b0ba7e05a14833ddbe65f",
+    "OBS-tc-cli-history-adoption-c4f32d29bd66502a82da2f41",
+    "OBS-tc-cli-history-branches-af8a1be077b88571650a8232",
+    "OBS-tc-cli-history-bounds-dd01913f7046f56559fbd7c0",
+    "OBS-tc-cli-history-retention-5dec264cea1663509a5fbf11",
+    "OBS-tc-cli-retention-revalidation-74543f11e9867427a7c29af2",
+    "OBS-product-test-fca5c5e603111f6dc31f5f4d",
+    "OBS-product-test-7336e2f0d0bfb795cb731d93",
+    "OBS-product-test-557ba9d0d6f01009fa59fa6c",
+    "OBS-product-test-1c2f57107e6cf177a3b9e449",
+    "OBS-product-test-38d4a4d154d37201dfa3db63",
+    "OBS-tc-cli-history-adoption-bfa908357161a9b521969842",
+    "OBS-tc-cli-history-branches-1d4d6f604b568061203b425a",
+    "OBS-tc-cli-history-bounds-781c22fe65091afac3bd216f",
+    "OBS-tc-cli-history-retention-a53d75159357634fc3653085",
+    "OBS-tc-cli-retention-revalidation-d4cb9e37cf11becf209c48f0",
+    "OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922",
+    "OBS-product-test-2ae43c5b0d01e1ff9d570f51",
+    "OBS-product-test-063bada1f0797d7f9fc3d83e",
+    "OBS-product-test-4ca251f7695567122f3b2bcd",
+    "OBS-product-test-ba4c86bbf0c00f16f5636082",
+    "OBS-product-test-c15c11e67b8c42a50a4cf835",
+    "OBS-tc-cli-history-adoption-40b0753b89cbc28fd20232fb",
+    "OBS-tc-cli-history-branches-df08dbceeb00e4ad0a17e062",
+    "OBS-tc-cli-history-bounds-40e498cd99373968597f550e",
+    "OBS-tc-cli-history-retention-0884ced5b5b7c5bc4964c170",
+    "OBS-tc-cli-retention-revalidation-2a910a07f6d3ffdc73fdf2fb",
+    "OBS-tc-cli-history-legacy-timing-bounds-4fd40efecc92433cfdb1554c",
+    "OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56",
+    "OBS-tc-cli-history-adoption-6cb6b66e612d1aa174aa9390",
+    "OBS-tc-cli-history-adoption-9c0a346ae0344141170e9194",
+    "OBS-tc-cli-history-bounds-40ad3c6f4a4722ada4a57999"
   ],
   "bugs": [
     "BUG-0001",
@@ -384,10 +449,15 @@
     "BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75",
     "BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca",
     "BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838",
-    "BUG-0017"
+    "BUG-0017",
+    "BUG-shared-transition-appends-collide-across-independent-branches-8bcc3168f918377ac434cd77",
+    "BUG-history-allocation-runs-before-initialization-preflight-cd2ea3e4eb06d54d1bb019ba",
+    "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc",
+    "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
+    "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for hosted CI on the #40 PR; 0xLeif owns merge"
+  "next_action": "This session merges PR37 after current-head Grok approval and all checks pass, then resynchronizes and qualifies PR44 and PR46 before merging each. Check main afterward. Source: 0xLeif chat instruction to merge approved, green PRs and resynchronize."
 }

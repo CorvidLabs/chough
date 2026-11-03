@@ -43,6 +43,11 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Main 9a8b9b1 checkpoint guidance, before immutable history adoption.
+    (
+        "references/checkpoint.md",
+        "c21ddc44653079aaa61553c2a31389b4b942925267d4d9c847b09646e90fcf8b",
+    ),
     (
         "SKILL.md",
         "6eb4980c784757c2898ce871551282fe251a5c0715dd625e95806cff2be7f06a",

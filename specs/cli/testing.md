@@ -265,3 +265,17 @@ corrected in the skill and default session guidance.
 All three Mermaid diagrams were rendered and visually inspected; the separate
 documentation record is docs/verification.md. No authentic human acceptance,
 full approved/archived native lifecycle, release or deployment was exercised.
+
+## Bounded transition history and protected retention
+
+REQ-cli-025 to REQ-cli-027 are exercised by the following curated automated cases:
+
+| Case | Direct bound regression |
+|---|---|
+| TC-cli-history-adoption | Explicit adoption preserves original log and migration bytes and repeats without duplication |
+| TC-cli-history-branches | Real Git branch events integrate while divergent checkpoint selection remains explicit |
+| TC-cli-history-bounds | One bound test executes exact event, cycle, recent-read and maintenance count/byte fixtures |
+| TC-cli-history-retention | Read-only preview, authorized apply and newly protected cycle references |
+| TC-cli-retention-revalidation | Changed, missing and newly referenced evidence/artifacts are retained |
+
+The full Rust suites add unknown legacy payloads, migration, random/collision refusal, failed checkpoint saves and orphan visibility, unsafe/malformed receipts, interrupted cleanup/resume, separate timing tips, and real Git retention alongside another branch's new proof. Package regressions independently hash the prior checkpoint reference and preserve owner edits during skill updates. The mandatory Fledge verify lane also checks existing behavior, native structure, traceability and the real CLI exercise. Observations and current IDs live in the Chough checkpoint and evidence records; this plan does not invent a passing grade or hosted result. No cold-start rerun, real-project adoption or live cleanup is part of this qualification.

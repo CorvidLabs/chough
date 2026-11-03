@@ -79,6 +79,8 @@ pub(super) struct Consent {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Checkpoint {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) history_cursor: Option<crate::history::Cursor>,
     pub(super) schema_version: u32,
     pub(super) objective: String,
     #[serde(default)]
@@ -158,6 +160,7 @@ pub(super) fn new_checkpoint(
     modules: Vec<String>,
 ) -> Checkpoint {
     Checkpoint {
+        history_cursor: None,
         schema_version: 2,
         objective,
         intent_scope,
@@ -240,6 +243,9 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
         "unsupported session schema_version"
     );
     validate_common(&session.objective, &session.modules)?;
+    if let Some(cursor) = &session.history_cursor {
+        crate::history::validate_cursor(cursor)?;
+    }
     ensure!(
         stage::is_stage(&session.stage.current),
         "unknown stage: {}",
@@ -429,7 +435,7 @@ fn merge_strings(base: &[String], ours: &[String], theirs: &[String]) -> Vec<Str
     merged
 }
 
-const CURRENT_CYCLE_FIELDS: [&str; 9] = [
+const CURRENT_CYCLE_FIELDS: [&str; 10] = [
     "objective",
     "intent_scope",
     "modules",
@@ -439,10 +445,12 @@ const CURRENT_CYCLE_FIELDS: [&str; 9] = [
     "run_consents",
     "blockers",
     "awaiting_human",
+    "history_cursor",
 ];
 
 fn current_cycle(session: &Checkpoint) -> Value {
     json!({
+        "history_cursor": session.history_cursor,
         "objective": session.objective,
         "intent_scope": session.intent_scope,
         "modules": session.modules,
@@ -734,16 +742,28 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         push_unique(list, values);
     }
     if changed {
-        save_checkpoint(root, &session)?;
-        // Gate records follow a successful save, so a failed save writes none: closed
-        // first (clears run before additions), then each gate that was not open.
-        let stage = session.stage.current.as_str();
-        for gate in &cleared {
-            stage::log_gate(root, stage::GATE_CLOSED, stage, gate)?;
-        }
-        for gate in &session.awaiting_human {
-            if !open_before_additions.contains(gate) {
-                stage::log_gate(root, stage::GATE_OPENED, stage, gate)?;
+        let current_stage = session.stage.current.clone();
+        let opened: Vec<String> = session
+            .awaiting_human
+            .iter()
+            .filter(|gate| !open_before_additions.contains(gate))
+            .cloned()
+            .collect();
+        if session.history_cursor.is_some() {
+            for gate in &cleared {
+                stage::log_gate(root, &mut session, stage::GATE_CLOSED, &current_stage, gate)?;
+            }
+            for gate in &opened {
+                stage::log_gate(root, &mut session, stage::GATE_OPENED, &current_stage, gate)?;
+            }
+            save_checkpoint(root, &session)?;
+        } else {
+            save_checkpoint(root, &session)?;
+            for gate in &cleared {
+                stage::log_gate(root, &mut session, stage::GATE_CLOSED, &current_stage, gate)?;
+            }
+            for gate in &opened {
+                stage::log_gate(root, &mut session, stage::GATE_OPENED, &current_stage, gate)?;
             }
         }
     }

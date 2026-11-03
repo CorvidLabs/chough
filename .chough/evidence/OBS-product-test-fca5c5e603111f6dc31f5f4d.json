@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-fca5c5e603111f6dc31f5f4d",
+  "criteria": [
+    "LIFE-3",
+    "LIFE-4",
+    "LIFE-7",
+    "LIFE-8",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-001",
+    "REQ-cli-019",
+    "REQ-cli-025",
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "The mandatory Fledge verify lane passed all 9 steps on the final implementation: 219 Rust tests passed with no failures or exclusions, format/lint/HI/structural/native audit/case definitions passed, and the disposable real CLI feature-and-bug exercise passed. The log includes the initialization preflight and interrupted-byte-count regressions.",
+  "artifacts": [
+    ".chough/artifacts/history-qualified-verify.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-qualified-verify.log": "38778d7538086fb1b8d4fe3e3089014191c33964209ce1668a2e5cb6b33e51d5"
+  },
+  "observed_at_unix_seconds": 1793631729,
+  "snapshot": {
+    "revision": "9a8b9b11e16bedac4808c56d48307fa29ad9cfe3",
+    "dirty": true,
+    "fingerprint": "3826dcacb6dbd321aa38f23d4b300696410cd1bd9edfd254b9bb78f3c4f77a42",
+    "content": "0706650c13e025a3e3af738b2b3a63ed9e32dcdf22d03c217ee27d913c34e031"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Local macOS arm64 qualification; hosted Linux and Windows product jobs remain gated by the active native change. The exercise uses disposable fixtures and does not record project implementation acceptance."
+  ]
+}

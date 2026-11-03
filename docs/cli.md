@@ -30,6 +30,65 @@ their JSON.
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
 
+## Transition history
+
+`history show` inspects the checkpoint-selected cursor and separate stored tips.
+Unselected tips can be branches or orphan writes; their completion is unknown.
+`history adopt` previews conversion of a legacy project. `history adopt --apply`
+adds a cursor to the existing schema-2 checkpoint, retaining the legacy log and
+migration bytes exactly. Repeated adoption verifies the anchor without duplicating
+history. Unexpected legacy changes refuse event writes. Older helpers may reject
+an adopted checkpoint instead of silently dropping its cursor.
+
+`history prune` previews complete closed-cycle candidates, exact files/digests/bytes
+and protection reasons. `history prune --apply` additionally requires human
+retention authorization and revalidates the plan. It never removes the legacy log,
+migration backup, cases, observations or native archives. Keep active/referenced
+cycles, unresolved tips/orphans, the newest three closed cycles including ties and
+cycles younger than 14 days, measured from the reset that closed the selected
+lineage rather than its last activity. Protected-only storage produces an honest no-op.
+Existing evidence auto-retention does not invoke history pruning.
+
+| History limit | Bound |
+|---|---|
+| Event content | 65,536 bytes |
+| Recent selected-parent traversal | 128 events and 512 KiB; no event-directory scan |
+| New cycle storage | 4,096 event files and 16 MiB; refuse before checkpoint mutation at capacity |
+| Timing transition content | 4,096 events and 16 MiB across inspected lineages |
+| Maintenance, including repeated protection checks | 16,384 source reads and 64 MiB of metadata; incomplete apply is refused |
+| Immutable removal receipt | 1 MiB |
+
+A reasoned stage reset can start a fresh bounded cycle without deleting old proof.
+Git can combine independently written event sets above a cycle's local append
+capacity. Imported proof stays; further ordinary appends refuse, and a reasoned
+reset starts a new cycle. The limit does not discard merged events.
+There is no global disk-size guarantee when proof must stay. Current state remains
+in the checkpoint; immutable events are history, and native SpecSync still gates
+lifecycle moves. Divergent checkpoint cursors require one coherent current-cycle
+selection. Full timing derives only the selected parent chain and reports other
+tips separately with unknown completion/durations.
+
+For interrupted plans, preview `files` and `bytes` count only remaining content;
+`plan_files` and `planned_bytes` retain the original receipt plan. Apply's
+`reclaimed_bytes` counts only files it actually removed.
+
+Removal receipts distinguish absent receipted files from present/interrupted
+content and missing unlisted files. A resumed apply must match its receipt and
+fresh protections; unsafe paths, malformed sources and changed candidates refuse
+or retain data. A maintenance budget exhausted during cleanup is an explicit
+partial failure. Arbitrary external filesystem writers are not serialized.
+
+If another branch adds a reference after a cycle was pruned, integration can leave
+the reference without its event. History inspection and prune preview report
+`complete: false` with the missing receipted paths and reference sources; apply
+refuses further removal. Restore the exact referenced bytes from Git and inspect
+again. Ordinary unreferenced pruned history remains a completed removal.
+
+Before integrating pruning with new branch references, validate retained hashes
+and restore exact referenced bytes from Git when needed. Missing or pruned content
+never becomes current or passed. Adoption and real-project cleanup are explicit
+human operations, not consequences of scope approval or implementation closeout.
+
 ## Records and limits
 
 Managed JSON is bounded to 64 KiB, case files to 256 KiB, captured output to 1 MiB,
@@ -554,7 +613,7 @@ reads (above).
 
 | Section | Derived from |
 |---|---|
-| Stages | `.chough/transitions.jsonl`, read in full up to 16 MiB. Each `advance`, `iterate`, `back`, `reset`, `skip`, `pause`, `resume`, `enter` and `return` record ends the open segment and starts the next; `gate-opened` and `gate-closed` records start or end none. Every `reset` starts a new cycle and `back` never does; the first cycle starts at the first record. The segment before it has an unknown start, because `init` and `migrate` write no transition. Time in `done` until the next reset is idle between cycles. Iterations, side-stage visits and paused time are shown separately; active time is stage time minus waiting on a human, and paused segments are not stage time. The open segment ends now and is `ongoing`. |
+| Stages | The checkpoint-selected immutable parent chain, or the legacy `.chough/transitions.jsonl` up to 16 MiB. Separate unselected tips have unknown completion and are never joined to the selected timeline. Each `advance`, `iterate`, `back`, `reset`, `skip`, `pause`, `resume`, `enter` and `return` record ends the open segment and starts the next; `gate-opened` and `gate-closed` records start or end none. Every `reset` starts a new cycle and `back` never does; the first cycle starts at the first record. The segment before it has an unknown start, because `init` and `migrate` write no transition. Time in `done` until the next reset is idle between cycles. Iterations, side-stage visits and paused time are shown separately; active time is stage time minus waiting on a human, and paused segments are not stage time. The open segment ends now and is `ongoing`. |
 | Human gates | `gate-opened` and `gate-closed` records paired by gate text and reconciled with the checkpoint's `awaiting_human`: opened and still listed is open (elapsed so far); opened, never closed and no longer listed was `cleared without a gate record` (close time unknown); listed with no record, or closed with no opening, was `opened before gate records or record missing`. A second `gate-opened` for a gate already open means it was cleared in between without a record: the earlier opening is closed at an unknown time and a new gate starts. A gate whose close is before its open (or that is open with an open time after now) has one wrong time, so every segment it could overlap under either reading has unknown waiting and active time. Overlapping gates are merged, so waiting time is never counted twice; a gate with an unknown end leaves the affected segments' active time unknown. A gate record says when, never who decided or what. |
 | Tests | Observations per case and environment: time, outcome and run time. `cases run` records `duration_seconds` in whole seconds, and a run under one second is `recorded together`, not a measured zero; manual records and earlier runs have no run time, shown unknown. |
 | Validation runs | Started, completed, failures, not run, recorded attempts and `elapsed_seconds`, labelled total run wall-clock, including intervals and resumes: it is never a per-test time. |

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "bound-transition-history-and-preserve-referenced-proof",
+  "implementation_commit": "70421962a477ad39423031414ad4cc892b28b4ec",
+  "implementation_tree": "47b5975debbc608a91585078960db8ac8a07faf9",
+  "contract_digest": "1413ace27e0672a01fc40e3a68bd99fed33fefa065aa8e5adba771a51891c905",
+  "workspace_digest": "649f06b3319afdc56e46ca23ba4e5a1762ee2f8cf0fd1d5e57714da3b717cd53",
+  "closing_digest": "c534b9d471be92b69e9730024cd5504398e3d5637254dd83502a67171fb53619",
+  "review_digest": "6757922cb5c183de5b5ae4040e4268e67bfd15c08bb1a5b25b8e1d85dd3a95bd",
+  "finalization_digest": "1df53e64160bc28eb9f1abbbc48d62037ca6d73d1ca5ba8deb03becfdd322db8",
+  "timestamp": 1793666915
+}

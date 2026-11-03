@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test real_git_post_prune_references_report_unavailable_until_exact_restoration ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 21 filtered out; finished in 4.91s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/history.rs (target/debug/deps/history-1508931fbdfeaff6)

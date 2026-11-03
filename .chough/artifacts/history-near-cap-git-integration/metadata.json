@@ -1,0 +1,17 @@
+{
+  "binary_frozen": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cap-fork-proof-_6f31swx/bin/chough",
+  "binary_original": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+  "binary_sha256": "1795e921589a2fdc6f20e84fea9989f30b1e753f0d36316c3e86ed75593cbb51",
+  "command_count": 35,
+  "construction": "Synthetic deterministic valid event-envelope files, like tests/history.rs::chain; real Git integration and real CLI reads/refusal/reset. This is not 8190 real CLI appends.",
+  "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cap-fork-proof-_6f31swx/fixture",
+  "frozen_binary_sha256_after": "1795e921589a2fdc6f20e84fea9989f30b1e753f0d36316c3e86ed75593cbb51",
+  "history_source_sha256": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+  "machine": "arm64",
+  "observed_worktree_head": "43a23503e774de9d8f811381c4c31fc1030b3ebb",
+  "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cap-fork-proof-_6f31swx",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "qualified_source_commit": "998fcd5978d4c020ebbdc3a7b2ad327fd1334966",
+  "runtime_source_changes_since_qualified": "",
+  "started_at_unix_seconds": 1793666606
+}

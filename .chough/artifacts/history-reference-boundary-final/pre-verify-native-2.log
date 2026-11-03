@@ -1,0 +1,4 @@
+Checking integrate-the-approved-human-gate-sample-into-bounded-history…
+✓ integrate-the-approved-human-gate-sample-into-bounded-history verified
+  Next: run `specsync change check integrate-the-approved-human-gate-sample-into-bounded-history --commit` if needed, then `specsync change ship-status integrate-the-approved-human-gate-sample-into-bounded-history` (or `ship integrate-the-approved-human-gate-sample-into-bounded-history`) — scoped review then finalize before merging; merging first orphans verification evidence and blocks earlier accepted changes sharing a delivery input from archiving
+  Handoff: safe — verification is current for this working tree; a fresh session here resumes at the independent review

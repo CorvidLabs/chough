@@ -3,6 +3,7 @@ mod cases;
 mod checkpoint;
 mod context;
 mod evidence;
+mod history;
 mod identity;
 mod library;
 mod prefs;
@@ -83,6 +84,11 @@ enum Commands {
         #[command(subcommand)]
         command: stage::StageCommand,
     },
+    /// Immutable transition history adoption, inspection and protected retention.
+    History {
+        #[command(subcommand)]
+        command: history::HistoryCommand,
+    },
     /// Validate, select and run test-case definitions.
     Cases {
         #[command(subcommand)]
@@ -153,7 +159,14 @@ fn main() -> Result<()> {
         } => init(&root, objective, intent_scope, modules, hosts)?,
         Commands::Context { json: as_json } => {
             let session = read_session(&root)?;
-            let sections = context::context(&root, &session)?;
+            let mut sections = context::context(&root, &session)?;
+            if matches!(&session, Session::V2(checkpoint) if checkpoint.history_cursor.is_some()) {
+                for section in &mut sections {
+                    if section.source == stage::TRANSITIONS {
+                        section.source = history::ROOT.into();
+                    }
+                }
+            }
             let session_value = session.to_value()?;
             if as_json {
                 print_json(
@@ -182,6 +195,7 @@ fn main() -> Result<()> {
         Commands::Migrate { stage } => checkpoint::migrate(&root, &stage)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
+        Commands::History { command } => history::run(&root, command)?,
         Commands::Cases { command } => {
             if let Some(code) = cases::run(&root, command)? {
                 std::process::exit(code);
@@ -219,7 +233,18 @@ fn init(
     } else {
         hosts
     };
-    let session = new_checkpoint(objective, intent_scope, modules);
+    let mut session = new_checkpoint(objective, intent_scope, modules);
+    let initialize_history =
+        !local_path(root, SESSION)?.exists() && !local_path(root, stage::TRANSITIONS)?.exists();
+    if initialize_history {
+        // A valid same-size placeholder permits the complete checkpoint and all
+        // destination paths to be checked before randomness or directory writes.
+        session.history_cursor = Some(history::Cursor {
+            cycle: "CYC-000000000000000000000000".into(),
+            head: None,
+            legacy: None,
+        });
+    }
     checkpoint::validate_v2(&session)?;
     let mut files = vec![(
         SESSION.to_string(),
@@ -230,6 +255,11 @@ fn init(
     }
     for (name, _) in &files {
         local_path(root, name)?;
+    }
+    if initialize_history {
+        local_path(root, &format!("{}/cycles", history::ROOT))?;
+        session.history_cursor = Some(history::new_cursor(root)?);
+        files[0].1 = serde_json::to_string_pretty(&session)? + "\n";
     }
     let mut created = vec![];
     let mut preserved = vec![];
@@ -263,6 +293,7 @@ struct Assessment {
     native: Option<NativeJson>,
     gate: Option<(String, stage::Gate)>,
     action: stage::Action,
+    history: Option<Value>,
     /// The approved-delta result (REQ-cli-022); None for a schema 1 session.
     deltas: Option<String>,
     open_bugs: Vec<Value>,
@@ -279,7 +310,19 @@ fn assess(root: &Path) -> Result<Assessment> {
     let native = native_read(root, change)?;
     let open_bugs = bugs::open_backlog(root)?;
     let blocking = bugs::open_blocking(root)?;
-    let (gate, action, deltas) = match checkpoint {
+    let history_read = checkpoint
+        .and_then(|checkpoint| checkpoint.history_cursor.as_ref())
+        .map(|cursor| {
+            history::selected(
+                root,
+                cursor,
+                history::RECENT_EVENTS,
+                history::RECENT_BYTES,
+                cursor.head.is_none(),
+            )
+        });
+    let history = history_read.as_ref().map(|read| json!({"partial":read.partial,"events_read":read.records.len(),"bytes_read":read.bytes,"source":history::ROOT}));
+    let (gate, mut action, deltas) = match checkpoint {
         None => (
             None,
             stage::Action {
@@ -291,11 +334,21 @@ fn assess(root: &Path) -> Result<Assessment> {
         ),
         Some(checkpoint) => {
             let state = stage::native_state_from(root, change, native.as_ref())?;
-            let (gate, action) = stage::assess(root, checkpoint, &state, &blocking);
+            let (gate, action) = stage::assess(root, checkpoint, &state, &blocking, history_read.as_ref());
             (gate, action, Some(stage::delta_summary(root, change, &state)))
         }
     };
+    if let Some(read) = &history_read
+        && !read.partial.is_empty()
+    {
+        action.reason = format!(
+            "History partial or unknown: {}. {}",
+            read.partial.join("; "),
+            action.reason
+        );
+    }
     Ok(Assessment {
+        history,
         session,
         native,
         gate,
@@ -354,6 +407,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "session_next_action": session.next_action(),
         "next_valid_action": assessment.action.action,
         "checkpoint": stage_report,
+        "transition_history": assessment.history,
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
         "native_summary": native_summary,

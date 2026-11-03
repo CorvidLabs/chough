@@ -1,0 +1,33 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-c08495b2fd395eecff258213",
+  "criteria": [
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-001"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Both existing before-write initialization regressions failed after immutable history integration: a history directory was created before rejecting an oversized checkpoint and an unsafe installed-skill path. Rust source is unchanged since this targeted run.",
+  "artifacts": [
+    ".chough/artifacts/history-init-preflight-failure.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-init-preflight-failure.log": "9a32de1925d03b7e300a1d8c9e14ea4404108b63b070871433571a353a053bf4"
+  },
+  "observed_at_unix_seconds": 1793629065,
+  "snapshot": {
+    "revision": "9a8b9b11e16bedac4808c56d48307fa29ad9cfe3",
+    "dirty": true,
+    "fingerprint": "a989d633ff7e6a584696f285fc51f5916cef4d3582a74a5b82d7bb594aee39ab",
+    "content": "356655434f611fd57fc7291dd802120b1fd6bb233e31a718a677fd9dd1851e96"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional"
+}

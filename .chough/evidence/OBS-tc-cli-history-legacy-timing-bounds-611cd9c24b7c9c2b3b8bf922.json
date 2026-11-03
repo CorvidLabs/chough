@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-026"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test timing -- --exact legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission for TC-cli-history-legacy-timing-bounds: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922.log": "2127b67d8f20b640fe71716b9af5fc65d9fb7d2ac868157835526fc9a04d21ba"
+  },
+  "observed_at_unix_seconds": 1793633192,
+  "snapshot": {
+    "revision": "6fa45db5d78dfcc1a1176d6a37fe7da36cf4bf90",
+    "dirty": true,
+    "fingerprint": "095a1d5d30b68056ce636f6d6a1c30a381543cef7ff6671d4d2e50859ec9319c",
+    "content": "84b7cd392431a504dc99aca3bb108d89429779d75e6d16c1ef5357001233b7c5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-legacy-timing-bounds",
+      "digest": "d47818ce55befa53e58fdeccfa8f75eb6a2e855e31cf62e34a41c4c7f1d26943"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

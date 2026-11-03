@@ -1,0 +1,40 @@
+COMMAND ["/Users/leif/.cargo/bin/cargo", "test", "--test", "history", "real_git_post_prune_references_report_unavailable_until_exact_restoration", "--", "--exact", "--nocapture"]\n   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.14s
+     Running tests/history.rs (target/debug/deps/history-8d338b86ffd9a43a)
+
+running 1 test
+
+thread 'real_git_post_prune_references_report_unavailable_until_exact_restoration' (329844073) panicked at tests/history.rs:1143:17:
+assertion `left == right` failed: {"authority":"checkpoint cursor selects current lineage; unselected events are not completed transitions","complete":true,"cursor":{"cycle":"CYC-72d4b2f34fd5431dfb2d5cb7","head":"EVT-82d6141c54dd2f6fb17a930d","legacy":null},"cycles":[{"bytes":324,"events":1,"id":"CYC-6f9804f882be4db885747d8b","interrupted":true,"planned_bytes":674,"protected":["referenced by .chough/artifacts/post-prune-cycle-directory.log","unselected orphan or unresolved cycle closure"],"tips":["EVT-f8b5c0093b561d21a91307dc"],"unselected_tips":["EVT-f8b5c0093b561d21a91307dc"]},{"bytes":847,"events":2,"id":"CYC-72d4b2f34fd5431dfb2d5cb7","interrupted":false,"planned_bytes":847,"protected":["active checkpoint cycle","referenced by .chough/session.json","unselected orphan or unresolved cycle closure"],"tips":["EVT-82d6141c54dd2f6fb17a930d"],"unselected_tips":[]},{"bytes":847,"events":2,"id":"CYC-786278861d080cffe9528d94","interrupted":false,"planned_bytes":847,"protected":["newest three closed cycles, including timestamp ties"],"tips":["EVT-3d7e547cf053fc6596b8b2bc"],"unselected_tips":["EVT-3d7e547cf053fc6596b8b2bc"]},{"bytes":847,"events":2,"id":"CYC-9b21cd42244087089099e6fc","interrupted":false,"planned_bytes":847,"protected":["newest three closed cycles, including timestamp ties"],"tips":["EVT-72134c8bab6d454b1155146a"],"unselected_tips":["EVT-72134c8bab6d454b1155146a"]},{"bytes":847,"events":2,"id":"CYC-a1f0abcdcb16344c278016ae","interrupted":false,"planned_bytes":847,"protected":["newest three closed cycles, including timestamp ties"],"tips":["EVT-cc527dd5a295db481577e2eb"],"unselected_tips":["EVT-cc527dd5a295db481577e2eb"]},{"bytes":0,"events":0,"id":"CYC-ca8efb9fd92b87f4804bfb6d","interrupted":false,"planned_bytes":847,"protected":["already pruned"],"tips":["EVT-fd4cfb2a34eac484eaaa4033"],"unselected_tips":["EVT-fd4cfb2a34eac484eaaa4033"]},{"bytes":0,"events":0,"id":"CYC-d613a797585afa797cbd0fec","interrupted":false,"planned_bytes":847,"protected":["already pruned","unselected orphan or unresolved cycle closure"],"tips":["EVT-b2c3cb589431f877d187241c"],"unselected_tips":["EVT-b2c3cb589431f877d187241c"]}],"limits":{"cycle_bytes":16777216,"cycle_events":4096,"event_bytes":65536,"recent_bytes":524288,"recent_events":128},"partial":[],"schema_version":1}
+  left: Bool(true)
+ right: false
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test real_git_post_prune_references_report_unavailable_until_exact_restoration ... FAILED
+
+failures:
+
+failures:
+    real_git_post_prune_references_report_unavailable_until_exact_restoration
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 21 filtered out; finished in 5.80s
+
+error: test failed, to rerun pass `--test history`
+EXIT 101\nCOMMAND ["/Users/leif/.cargo/bin/cargo", "test", "--test", "history", "frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply", "--", "--exact", "--nocapture"]\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/history.rs (target/debug/deps/history-8d338b86ffd9a43a)
+
+running 1 test
+
+thread 'frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply' (329845734) panicked at tests/history.rs:842:13:
+.chough/history/cycles: {"applied":false,"complete":true,"eligible":[{"bytes":674,"cycle":"CYC-045593ecb9bd4f29add20e0c","files":[{"bytes":324,"digest":"a1cff4d48f12cc782e967b1f656b0eeb96baf03c03f58adabf8a62d6a6a273c7","path":".chough/history/cycles/CYC-045593ecb9bd4f29add20e0c/EVT-0001d5743b6d23f6babcb00a.json"},{"bytes":350,"digest":"cd29ea10b3490f8de887c430a93b5fc5021520f8b7262a0d956830d946f341cc","path":".chough/history/cycles/CYC-045593ecb9bd4f29add20e0c/EVT-7bc258edf6061d7d1c09690b.json"}],"interrupted":false,"plan_files":[{"bytes":324,"digest":"a1cff4d48f12cc782e967b1f656b0eeb96baf03c03f58adabf8a62d6a6a273c7","path":".chough/history/cycles/CYC-045593ecb9bd4f29add20e0c/EVT-0001d5743b6d23f6babcb00a.json"},{"bytes":350,"digest":"cd29ea10b3490f8de887c430a93b5fc5021520f8b7262a0d956830d946f341cc","path":".chough/history/cycles/CYC-045593ecb9bd4f29add20e0c/EVT-7bc258edf6061d7d1c09690b.json"}],"planned_bytes":674},{"bytes":847,"cycle":"CYC-a1f3388b2cbae033d99777c6","files":[{"bytes":494,"digest":"dd497c3bef93b444dab6d97c79fc90d3f1e42ee48fda21e2d41275850c5afeaf","path":".chough/history/cycles/CYC-a1f3388b2cbae033d99777c6/EVT-3664b508da83a983b02af311.json"},{"bytes":353,"digest":"3f414328c57709ca60d480a3504ebc2dc9461009924535a9a44e049dad7065f2","path":".chough/history/cycles/CYC-a1f3388b2cbae033d99777c6/EVT-e75dd97c3b893607e30a54f1.json"}],"interrupted":false,"plan_files":[{"bytes":494,"digest":"dd497c3bef93b444dab6d97c79fc90d3f1e42ee48fda21e2d41275850c5afeaf","path":".chough/history/cycles/CYC-a1f3388b2cbae033d99777c6/EVT-3664b508da83a983b02af311.json"},{"bytes":353,"digest":"3f414328c57709ca60d480a3504ebc2dc9461009924535a9a44e049dad7065f2","path":".chough/history/cycles/CYC-a1f3388b2cbae033d99777c6/EVT-e75dd97c3b893607e30a54f1.json"}],"planned_bytes":847},{"bytes":847,"cycle":"CYC-d02f3a759284ee40ccdb8c37","files":[{"bytes":494,"digest":"dce3b73adfb1437cd722e5f50bacbec0bfd3bb2aec2d5a56e2eb8a1105fbaaa1","path":".chough/history/cycles/CYC-d02f3a759284ee40ccdb8c37/EVT-0e5d30d6ed20be9b55184231.json"},{"bytes":353,"digest":"2ece092ebd82554297349e3096b11b2ce43e72b4ab941fc1c0c0dae06f638ad4","path":".chough/history/cycles/CYC-d02f3a759284ee40ccdb8c37/EVT-cea95d50876644854b03e0bc.json"}],"interrupted":false,"plan_files":[{"bytes":494,"digest":"dce3b73adfb1437cd722e5f50bacbec0bfd3bb2aec2d5a56e2eb8a1105fbaaa1","path":".chough/history/cycles/CYC-d02f3a759284ee40ccdb8c37/EVT-0e5d30d6ed20be9b55184231.json"},{"bytes":353,"digest":"2ece092ebd82554297349e3096b11b2ce43e72b4ab941fc1c0c0dae06f638ad4","path":".chough/history/cycles/CYC-d02f3a759284ee40ccdb8c37/EVT-cea95d50876644854b03e0bc.json"}],"planned_bytes":847}],"note":"protected proof can prevent reclamation; legacy logs, migration bytes and native archives are never removed","partial":[],"protected":[{"cycle":"CYC-39fbb66e5b5743a76b32a774","reasons":["newest three closed cycles, including timestamp ties"]},{"cycle":"CYC-475a82a3aed4d73608dba579","reasons":["newest three closed cycles, including timestamp ties"]},{"cycle":"CYC-5fe148088f13236bcbd4583f","reasons":["newest three closed cycles, including timestamp ties"]},{"cycle":"CYC-db333f476f83210618d002a6","reasons":["active checkpoint cycle","referenced by .chough/session.json","unselected orphan or unresolved cycle closure"]}],"reclaimable_bytes":2368,"reclaimed_bytes":0,"removed":[],"schema_version":1,"skipped":[]}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply ... FAILED
+
+failures:
+
+failures:
+    frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 21 filtered out; finished in 2.29s
+
+error: test failed, to rerun pass `--test history`
+EXIT 101\n

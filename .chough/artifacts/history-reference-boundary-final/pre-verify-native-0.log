@@ -1,0 +1,4 @@
+Checking bound-transition-history-and-preserve-referenced-proof…
+✓ bound-transition-history-and-preserve-referenced-proof verified
+  Next: run `specsync change check bound-transition-history-and-preserve-referenced-proof --commit` if needed, then `specsync change ship-status bound-transition-history-and-preserve-referenced-proof` (or `ship bound-transition-history-and-preserve-referenced-proof`) — scoped review then finalize before merging; merging first orphans verification evidence and blocks earlier accepted changes sharing a delivery input from archiving
+  Handoff: conditional — uncommitted edits sit under this change's paths, and nothing on disk records why they were made. Before clearing: commit the work in progress; or write its intent and open ends into `.specsync/changes/bound-transition-history-and-preserve-referenced-proof/change.md`

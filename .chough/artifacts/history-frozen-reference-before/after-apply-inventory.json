@@ -1,0 +1,134 @@
+{
+  ".agents/skills/chough-workflow/SKILL.md": {
+    "bytes": 5403,
+    "sha256": "6b81882bc2e8305dc1ae0181b1eb52ad9d586c0a9a6990e03e865d0de4149198"
+  },
+  ".agents/skills/chough-workflow/agents/openai.yaml": {
+    "bytes": 334,
+    "sha256": "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0"
+  },
+  ".agents/skills/chough-workflow/references/accept.md": {
+    "bytes": 4130,
+    "sha256": "80f71366ad81e1720bdc5f91d51c5428cd6a60729c9d1675977e284f7b08e398"
+  },
+  ".agents/skills/chough-workflow/references/bugs.md": {
+    "bytes": 3968,
+    "sha256": "86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102"
+  },
+  ".agents/skills/chough-workflow/references/build.md": {
+    "bytes": 1483,
+    "sha256": "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a"
+  },
+  ".agents/skills/chough-workflow/references/checkpoint.md": {
+    "bytes": 9188,
+    "sha256": "87f5f43b49ca2da96994842fdcdd8b0e231f66301d74dff5f94cd66b1cf84088"
+  },
+  ".agents/skills/chough-workflow/references/design.md": {
+    "bytes": 2114,
+    "sha256": "bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908"
+  },
+  ".agents/skills/chough-workflow/references/intent.md": {
+    "bytes": 2424,
+    "sha256": "10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069"
+  },
+  ".agents/skills/chough-workflow/references/librarian.md": {
+    "bytes": 2825,
+    "sha256": "0d06962f4048d1d18d77d0e7f4131d47eff0ee82c76c152588865898369ecd27"
+  },
+  ".agents/skills/chough-workflow/references/lifecycle.md": {
+    "bytes": 5113,
+    "sha256": "14fd2277d5e3f97f24fe6b995b1815eff1cfcd7b49d03669919bdcc7290c2200"
+  },
+  ".agents/skills/chough-workflow/references/plan.md": {
+    "bytes": 2365,
+    "sha256": "1022db57d0c114effc8669ede9ebb453f932109f608f883712725e57ba53551d"
+  },
+  ".agents/skills/chough-workflow/references/release.md": {
+    "bytes": 1375,
+    "sha256": "b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed"
+  },
+  ".agents/skills/chough-workflow/references/roles.md": {
+    "bytes": 1690,
+    "sha256": "4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d"
+  },
+  ".agents/skills/chough-workflow/references/stages.md": {
+    "bytes": 7221,
+    "sha256": "658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f"
+  },
+  ".agents/skills/chough-workflow/references/testing.md": {
+    "bytes": 6779,
+    "sha256": "426c2df68e8d25bfbdee4bf81b4deaa06eac4525b6dfad3c771311e0d6a4ac99"
+  },
+  ".agents/skills/chough-workflow/references/validate.md": {
+    "bytes": 3009,
+    "sha256": "4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5"
+  },
+  ".agents/skills/chough-workflow/templates/brief.md": {
+    "bytes": 619,
+    "sha256": "fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8"
+  },
+  ".agents/skills/chough-workflow/templates/bug-report.md": {
+    "bytes": 1094,
+    "sha256": "2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a"
+  },
+  ".agents/skills/chough-workflow/templates/cases.toml": {
+    "bytes": 2646,
+    "sha256": "8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421"
+  },
+  ".agents/skills/chough-workflow/templates/frd.md": {
+    "bytes": 760,
+    "sha256": "1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf"
+  },
+  ".agents/skills/chough-workflow/templates/prototype/COMPANION.md": {
+    "bytes": 788,
+    "sha256": "a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83"
+  },
+  ".agents/skills/chough-workflow/templates/prototype/index.html": {
+    "bytes": 2060,
+    "sha256": "366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3"
+  },
+  ".agents/skills/chough-workflow/templates/prototype/styles.css": {
+    "bytes": 1356,
+    "sha256": "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239"
+  },
+  ".agents/skills/chough-workflow/templates/review-findings.md": {
+    "bytes": 681,
+    "sha256": "8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4"
+  },
+  ".chough/artifacts/frozen-path-reference.log": {
+    "bytes": 25,
+    "sha256": "1de3369b5f13e5cd7200a2e203af6a08fdf817009a9685d381de1e49635fa084"
+  },
+  ".chough/history/cycles/CYC-30df982e26f957b9c82f4d80/EVT-ce0fb50d4e8a889b548b5d0a.json": {
+    "bytes": 522,
+    "sha256": "c567cf73e5664134b566646ec0d19f0e285659605e175001cbf2167f4ccad2fc"
+  },
+  ".chough/history/cycles/CYC-ea9ae3fec8e80ea13382feb9/EVT-a00de9b480fc459c6963b21a.json": {
+    "bytes": 522,
+    "sha256": "846fb74b26d5d728855c9fb086ee364633b2ed273024eba7bf6ba4ee9f8a27a9"
+  },
+  ".chough/history/cycles/CYC-eb84f23843300f2b7bd97754/EVT-da636c82a76fa3dc04e01d6a.json": {
+    "bytes": 522,
+    "sha256": "f339f3e970b2e5e31626d7796753624e20adf0f6b37ccbff7770b9ac1faa7c6c"
+  },
+  ".chough/history/cycles/CYC-f891362baa7e70af52f8521d/EVT-c6623affaf652f45fc2880d7.json": {
+    "bytes": 522,
+    "sha256": "4b2e72b9436b799faaf5a978043ddd92988661fdd8b4eaeca4663f172488ba01"
+  },
+  ".chough/history/pruned/CYC-22c9e62f830979af4c8ae0ec.json": {
+    "bytes": 476,
+    "sha256": "995823f141c34abcfb2a9f5db5ba0372642c21947521689b838d7b5380d3f4f7"
+  },
+  ".chough/history/pruned/CYC-3716f93c3d6b8fc915f91f37.json": {
+    "bytes": 476,
+    "sha256": "8470c9fde4bc5e8398593aff0ea6c0f11031fddba37d0664d64ff25a758eaa14"
+  },
+  ".chough/history/pruned/CYC-986ccc356b4aba5f3bf34323.json": {
+    "bytes": 476,
+    "sha256": "468f5601ab8923971c563fa547dffe5a6a28f483461eac3cdba19ec28e26b9cc"
+  },
+  ".chough/session.json": {
+    "bytes": 1037,
+    "sha256": "094e3e82ecdc8cd90c2b1f620532793c56e74415edd8adc43c2a06af088592e9"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-92c802c86fc224e70e2f7aca",
+    "head": "EVT-ce0d4d8ecc06d9ffc463afb7",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Disposable post-prune branch reference",
+  "intent_scope": "",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": null,
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [
+    {
+      "key": "retention",
+      "source": "Disposable fixture authorization only",
+      "objective": "Disposable post-prune branch reference",
+      "granted_at_unix_seconds": 1793659698
+    }
+  ],
+  "next_action": "New cycle from intent after reset: close 5. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-post-prune-reference-8e61ca8d5022c39e4631183c",
+  "criteria": [
+    "LIFE-7",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026",
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "At b257317, protected cycle-directory mentions with terminal punctuation or parentheses report complete:true after real Git prune/reference integration. Plain-path controls report incomplete; exact source/binary identities, commands and raw results are retained before repair.",
+  "artifacts": [
+    ".chough/artifacts/history-protected-reference-punctuation-proof/summary.json",
+    ".chough/artifacts/history-protected-reference-punctuation-proof/reproduce.py",
+    ".chough/artifacts/history-protected-reference-punctuation-proof/complete-capture.tar.gz",
+    ".chough/artifacts/history-protected-reference-punctuation-proof/capture-note.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-protected-reference-punctuation-proof/capture-note.md": "c4267205fb9cd5739b706eb0891713767389b4965591ea67917ce7806f916cf7",
+    ".chough/artifacts/history-protected-reference-punctuation-proof/complete-capture.tar.gz": "8af12ec90707b87ed436291be25352b7615ca6fdbbd6ec49c04b6c1228162c01",
+    ".chough/artifacts/history-protected-reference-punctuation-proof/reproduce.py": "a6f8a74a84962f8c13218df11a05cf9becd65cdd672d9ae78a65a8c7cb4574a8",
+    ".chough/artifacts/history-protected-reference-punctuation-proof/summary.json": "3fd16fa92590f575de0bb66ff9684c29cd9d32dbe604a69e2157cbcc5d41576a"
+  },
+  "observed_at_unix_seconds": 1793663949,
+  "snapshot": {
+    "revision": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "dirty": false,
+    "fingerprint": "303109c1b73bfe7a51dc9af9c8d80307f110e74998e18d367dbc5b97ddf2a092",
+    "content": "40889dd8caacc6d2b36c587da4bea5467c163eae64a5b9e2c81140c37295caba"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-post-prune-reference",
+      "digest": "3ef923ac45f6cad06f785ee57a323cfcbf5b4d9aa3e2686342434afbdb28fd28"
+    }
+  ],
+  "method": "automated",
+  "limitations": [
+    "Independent disposable-fixture reproduction, not live cleanup. Existing passing suite did not cover these forms. A prior oversized observation was refused without publication; the record bound was not changed."
+  ]
+}

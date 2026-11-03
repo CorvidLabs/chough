@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+### History and protected retention
+
+- Immutable transition events for new projects, explicit byte-preserving adoption
+  for existing projects, and a history cursor in the sole checkpoint/current-cycle
+  merge group. Unselected branch/orphan events remain separate.
+- Bounded recent and timing reads, per-cycle storage capacity, and explicit
+  whole-cycle retention preview/apply with protected proof, immutable receipts and
+  conservative interruption handling. Evidence auto-retention stays separate.
+- Evidence cleanup revalidates references and artifact identity before removal.
+
 ### Added
 
 - New-project setup path: `docs/walkthrough.md` now opens with a minimal HI file,
@@ -42,6 +52,15 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Fixed
 
+- Missing referenced history is reported consistently for bare, single-quoted,
+  backtick and double-quoted cycle directories after Git integration.
+- History retention measures a reset-closed cycle's age from the closing reset,
+  preserving recently closed cycles even after long inactivity.
+- History inspection reports missing referenced pruned events after branch
+  integration, and cleanup refuses until the referenced proof is restored.
+- History retention normalizes directory aliases in frozen plaintext artifacts as
+  well as structured references, preserving cycles named with Windows separators,
+  case differences, repeated separators and dot components.
 - `chough stage advance` and `chough stage skip` (and release → done) are refused as
   `refused:awaiting-human` while the checkpoint has an open awaiting-human gate, so an
   agent can no longer leave intent, design or plan before the human answers. The
@@ -80,8 +99,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [0.1.0] - 2026-11-01
 
-First release. Nothing in this entry is tagged or published yet; the release steps
-are in [docs/releasing.md](docs/releasing.md).
+First release, published on 2026-11-01 as `v0.1.0` and crates.io `chough` 0.1.0.
+Release steps are in [docs/releasing.md](docs/releasing.md).
 
 ### Added
 

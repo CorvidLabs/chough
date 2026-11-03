@@ -1,0 +1,55 @@
+{
+  "head": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+  "tool_versions": {
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "hi": "hi 0.8.0",
+    "fledge": "fledge 1.8.0",
+    "specsync": "specsync 6.1.2"
+  },
+  "source_sha256": {
+    "src/history.rs": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+    "tests/history.rs": "2e13f852eee408e3691d31c1c4bf496cd1aad5376f1f0e482043d7d00105cd97",
+    ".chough/cases/cli.cases.toml": "3e35f05d89080333dbf6948504640c756f261cb2b3c04a56ba58a36cd4b4a86e",
+    "specs/cli/context.md": "7bad94c1ebd431daf73ae67a6b7c91e84f99a0d1110f0b0416e1b864e720afd6"
+  },
+  "protected_parent_checks": [
+    {
+      "base": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+      "protected_paths": 1583,
+      "all_exact": true
+    },
+    {
+      "base": "d839fef0820bf63a736a37d805265d7d6d362486",
+      "protected_paths": 1250,
+      "all_exact": true
+    }
+  ],
+  "tests": {
+    "verify": {
+      "passed": 233,
+      "result_groups": 11,
+      "failed": 0,
+      "ignored": 0
+    },
+    "msrv": {
+      "passed": 233,
+      "result_groups": 11,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "case_count": 10,
+  "case_outcomes": [
+    "passed",
+    "passed",
+    "passed",
+    "passed",
+    "passed",
+    "passed",
+    "passed",
+    "passed",
+    "passed",
+    "passed"
+  ],
+  "limits": "Local product/integration proof; no live project cleanup, adoption, release, deployment or cold-start rerun. Native committed verification and archival remain next."
+}

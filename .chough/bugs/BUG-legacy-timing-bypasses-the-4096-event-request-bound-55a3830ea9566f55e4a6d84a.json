@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
+  "title": "Legacy timing bypasses the 4096-event request bound",
+  "symptom": "Legacy timing consumes more than 4096 transition records without a partial warning",
+  "trigger": "A checkpoint without history_cursor and more than 4096 valid JSONL transitions below the 16 MiB byte limit",
+  "expected": "Every timing request processes at most 4096 events and explicitly reports omitted earlier history",
+  "actual": "5000 records and segments are processed with partial empty",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-026"
+  ],
+  "cases": [
+    "TC-cli-history-bounds"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "6fa45db5d78dfcc1a1176d6a37fe7da36cf4bf90",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-557ba9d0d6f01009fa59fa6c",
+    "OBS-product-test-2ae43c5b0d01e1ff9d570f51"
+  ],
+  "impact": "P2: approved request work bound is not enforced for legacy projects",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "independent history_bounds_review at 6fa45db",
+  "notes": [
+    {
+      "at_unix_seconds": 1793633151,
+      "text": "status: open -> verified. Shared history event limit now applies before parsing legacy transitions; independent failing input and exact boundary regressions are retained. Dedicated executable case: TC-cli-history-legacy-timing-bounds.",
+      "observations": [
+        "OBS-product-test-2ae43c5b0d01e1ff9d570f51"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793632962,
+  "updated_at_unix_seconds": 1793633151
+}

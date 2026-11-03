@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-the-approved-human-gate-sample-into-bounded-history",
+  "implementation_commit": "1810c6bfdf3fa82d2836397c7c94db4b27fc72da",
+  "implementation_tree": "7dd3b90dd0d9199996ce7530363d773087a2b58f",
+  "contract_digest": "2f5b8276203ab960b12d7db9b7c660a81f073640fc6a2b8e6e5b791ab84d5277",
+  "workspace_digest": "649f06b3319afdc56e46ca23ba4e5a1762ee2f8cf0fd1d5e57714da3b717cd53",
+  "closing_digest": "40db28f01aa198a1478c911139d68e248c9959ffa16ae200d3d21a4ec046469c",
+  "review_digest": "04786752f3fa9727dbd987c09943baf0dddf04a77af91a87a7f93b1257012f8f",
+  "finalization_digest": "49e058461f3223fe6bad178752cf422d8ff693bfc21710f759fd2e2b5fd69f0e",
+  "timestamp": 1793667125
+}
