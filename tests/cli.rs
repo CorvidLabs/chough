@@ -10,6 +10,12 @@ use tempfile::TempDir;
 
 struct Fixture(TempDir);
 
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        common::remove_checkpoint_lock(self.root());
+    }
+}
+
 impl Fixture {
     fn new() -> Self {
         let fixture = Self(tempfile::tempdir().unwrap());
@@ -1758,5 +1764,296 @@ fn exercise_cleanup_handles_a_relative_tmpdir() {
     assert!(
         cwd.path().join("given").is_dir(),
         "a passed-in directory was removed"
+    );
+}
+
+// Issues 62 and 64 (Kimi lab round 2): concurrent checkpoint writers and temp files
+// left by a writer killed mid-write.
+
+const LOCK_HOLDER_MODE: &str = "CHOUGH_TEST_LOCK_HOLDER";
+const LOCK_HOLDER_ROOT: &str = "CHOUGH_TEST_LOCK_ROOT";
+const LOCK_HOLDER_READY: &str = "chough-test-lock-holder-ready";
+const HOLDER_DECISION: &str = "Written by the lock holder";
+
+/// The lock file Chough uses for this project (see `common::checkpoint_lock_path`).
+fn checkpoint_lock_path(root: &Path) -> PathBuf {
+    common::checkpoint_lock_path(root).expect("the project has a .chough directory")
+}
+
+fn session_temps(root: &Path) -> Vec<String> {
+    let mut names: Vec<String> = fs::read_dir(root.join(".chough"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .filter(|name| name.starts_with(".session.json.") && name.ends_with(".tmp"))
+        .collect();
+    names.sort();
+    names
+}
+
+fn chough_command(root: &Path, args: &[&str]) -> Command {
+    let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
+    command
+        .arg("--root")
+        .arg(root)
+        .args(args)
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+    command
+}
+
+/// Not a check on its own. The writer-lock tests below re-run this test binary with
+/// `CHOUGH_TEST_LOCK_HOLDER` set, so this runs as a separate process that takes the
+/// checkpoint writer lock the way a Chough writer does, writes its temp file (and, in
+/// `after-rename` mode, renames it over the session), then waits to be killed.
+#[test]
+fn checkpoint_writer_lock_holder_process() {
+    let Ok(mode) = std::env::var(LOCK_HOLDER_MODE) else {
+        return;
+    };
+    use std::io::Write;
+    let root = PathBuf::from(std::env::var(LOCK_HOLDER_ROOT).unwrap());
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(checkpoint_lock_path(&root))
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let session_path = root.join(".chough/session.json");
+    let mut session: Value = serde_json::from_slice(&fs::read(&session_path).unwrap()).unwrap();
+    session["decisions"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!(HOLDER_DECISION));
+    let temp = root.join(format!(".chough/.session.json.{}.tmp", std::process::id()));
+    fs::write(
+        &temp,
+        serde_json::to_string_pretty(&session).unwrap() + "\n",
+    )
+    .unwrap();
+    if mode == "after-rename" {
+        fs::rename(&temp, &session_path).unwrap();
+    }
+    let mut stdout = std::io::stdout();
+    writeln!(stdout, "{LOCK_HOLDER_READY}").unwrap();
+    stdout.flush().unwrap();
+    std::thread::sleep(std::time::Duration::from_secs(120));
+}
+
+/// Start the lock holder in `mode` and return once it holds the lock.
+fn start_lock_holder(root: &Path, mode: &str) -> std::process::Child {
+    use std::io::BufRead;
+    let mut holder = Command::new(std::env::current_exe().unwrap())
+        .args([
+            "checkpoint_writer_lock_holder_process",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1",
+        ])
+        .env(LOCK_HOLDER_MODE, mode)
+        .env(LOCK_HOLDER_ROOT, root)
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .unwrap();
+    let mut lines = std::io::BufReader::new(holder.stdout.take().unwrap()).lines();
+    loop {
+        let line = lines
+            .next()
+            .expect("lock holder exited before it was ready")
+            .unwrap();
+        if line.contains(LOCK_HOLDER_READY) {
+            break;
+        }
+    }
+    holder
+}
+
+#[test]
+fn checkpoint_writers_in_parallel_keep_every_update() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let lanes = 3;
+    for round in 0..8 {
+        let children: Vec<_> = (1..=lanes)
+            .map(|lane| {
+                let decision = format!("Parallel lane {lane} round {round}");
+                let observation = format!("OBS-lane-{lane}-round-{round}");
+                let bug = format!("BUG-lane-{lane}-round-{round}");
+                let change = format!("parallel-lane-{lane}");
+                chough_command(
+                    fixture.root(),
+                    &[
+                        "checkpoint",
+                        "--decision",
+                        &decision,
+                        "--observation",
+                        &observation,
+                        "--bug",
+                        &bug,
+                        "--native-change",
+                        &change,
+                    ],
+                )
+                .spawn()
+                .unwrap()
+            })
+            .collect();
+        for child in children {
+            let output = child.wait_with_output().unwrap();
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let response: Value = serde_json::from_slice(&output.stdout).unwrap();
+            assert_eq!(response["saved"], true);
+        }
+        let session: Value = serde_json::from_str(
+            &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
+        )
+        .unwrap();
+        for lane in 1..=lanes {
+            for (list, value) in [
+                ("decisions", format!("Parallel lane {lane} round {round}")),
+                ("observations", format!("OBS-lane-{lane}-round-{round}")),
+                ("bugs", format!("BUG-lane-{lane}-round-{round}")),
+            ] {
+                assert!(
+                    session[list]
+                        .as_array()
+                        .unwrap()
+                        .contains(&Value::from(value.clone())),
+                    "round {round}: a successful writer's {value} was lost from {list}"
+                );
+            }
+        }
+        let change = session["native_change"].as_str().unwrap();
+        assert!(
+            (1..=lanes).any(|lane| change == format!("parallel-lane-{lane}")),
+            "{change}"
+        );
+        assert!(session_temps(fixture.root()).is_empty());
+    }
+}
+
+#[test]
+fn checkpoint_writer_killed_before_rename_leaves_a_temp_the_next_writer_removes() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let before = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+    let mut holder = start_lock_holder(fixture.root(), "before-rename");
+    let temps = session_temps(fixture.root());
+    assert_eq!(temps.len(), 1, "{temps:?}");
+
+    // While the writer is alive, the next writer waits and leaves its temp alone.
+    let mut next = chough_command(
+        fixture.root(),
+        &["checkpoint", "--decision", "After the killed writer"],
+    )
+    .spawn()
+    .unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(700));
+    assert!(
+        next.try_wait().unwrap().is_none(),
+        "the next writer did not wait for the live writer"
+    );
+    assert_eq!(session_temps(fixture.root()), temps);
+    assert_eq!(
+        fs::read(fixture.root().join(".chough/session.json")).unwrap(),
+        before
+    );
+
+    // SIGKILL (TerminateProcess on Windows) before the rename: the lock is released,
+    // the temp stays behind, and the waiting writer removes it and saves its own update.
+    holder.kill().unwrap();
+    holder.wait().unwrap();
+    let output = next.wait_with_output().unwrap();
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(stderr.contains(&temps[0]), "{stderr}");
+    assert!(stderr.contains("removed"), "{stderr}");
+    assert!(session_temps(fixture.root()).is_empty());
+    let session: Value = serde_json::from_str(
+        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
+    )
+    .unwrap();
+    let decisions = session["decisions"].as_array().unwrap();
+    assert!(decisions.contains(&json!("After the killed writer")));
+    assert!(!decisions.contains(&json!(HOLDER_DECISION)));
+}
+
+#[test]
+fn checkpoint_writer_killed_after_rename_keeps_its_saved_update() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let mut holder = start_lock_holder(fixture.root(), "after-rename");
+    assert!(session_temps(fixture.root()).is_empty());
+    holder.kill().unwrap();
+    holder.wait().unwrap();
+    let output = chough_command(
+        fixture.root(),
+        &["checkpoint", "--decision", "After the renamed write"],
+    )
+    .output()
+    .unwrap();
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(!stderr.contains("removed"), "{stderr}");
+    let session: Value = serde_json::from_str(
+        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
+    )
+    .unwrap();
+    let decisions = session["decisions"].as_array().unwrap();
+    assert!(decisions.contains(&json!(HOLDER_DECISION)));
+    assert!(decisions.contains(&json!("After the renamed write")));
+    assert!(session_temps(fixture.root()).is_empty());
+}
+
+#[test]
+fn checkpoint_writer_removes_only_orphaned_session_temps() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let before = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+    fixture.write(".chough/.session.json.4194304.tmp", "{\"partial\":");
+    fixture.write(".chough/.session.json.notapid.tmp", "kept\n");
+    fixture.write(".chough/.preferences.json.4194304.tmp", "kept\n");
+    // Reading does not take the writer lock and changes nothing.
+    fixture.ok(&["status"]);
+    assert!(
+        fixture
+            .root()
+            .join(".chough/.session.json.4194304.tmp")
+            .exists()
+    );
+    assert_eq!(
+        fs::read(fixture.root().join(".chough/session.json")).unwrap(),
+        before
+    );
+    let output = fixture.run(&["checkpoint", "--decision", "After an orphan"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(
+        stderr.contains(".chough/.session.json.4194304.tmp"),
+        "{stderr}"
+    );
+    assert!(
+        !fixture
+            .root()
+            .join(".chough/.session.json.4194304.tmp")
+            .exists()
+    );
+    assert!(
+        fixture
+            .root()
+            .join(".chough/.session.json.notapid.tmp")
+            .exists()
+    );
+    assert!(
+        fixture
+            .root()
+            .join(".chough/.preferences.json.4194304.tmp")
+            .exists()
     );
 }

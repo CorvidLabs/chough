@@ -8,13 +8,22 @@ use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use sha2::{Digest, Sha256};
 use std::collections::HashSet;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::sync::{Mutex, PoisonError};
+use std::time::{Duration, Instant};
 
 pub(super) const SESSION: &str = ".chough/session.json";
 pub(super) const SESSION_V1_BACKUP: &str = ".chough/session.v1.json";
+/// How long a writer waits for another Chough command to release the checkpoint.
+#[cfg(not(test))]
+const LOCK_WAIT: Duration = Duration::from_secs(30);
+#[cfg(test)]
+const LOCK_WAIT: Duration = Duration::from_millis(300);
+const LOCK_POLL: Duration = Duration::from_millis(25);
 const MAX_CALLERS: usize = 4;
 const MAX_ITEMS: usize = 200;
 /// Byte bound of the canonical checkpoint (128 KiB); other records keep the 64 KiB bound.
@@ -335,8 +344,123 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
     parse(&read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?)
 }
 
-/// Read a schema 2 checkpoint for a command that changes workflow state.
+/// The checkpoint writer lock file for a project (issue 62): an empty, never-replaced
+/// file in the system temporary directory named for the SHA-256 of the project's
+/// canonical `.chough` path. It lives outside the project so it never becomes a
+/// managed record or a source change; every Chough process that resolves the same
+/// project and temporary directory uses the same file.
+fn checkpoint_lock_path(root: &Path) -> Result<PathBuf> {
+    let session = local_path(root, SESSION)?;
+    let directory = session.parent().context("session has no parent")?;
+    let canonical = fs::canonicalize(directory)
+        .with_context(|| format!("resolving {} for the checkpoint lock", directory.display()))?;
+    let digest = Sha256::digest(canonical.to_string_lossy().as_bytes());
+    let name: String = digest[..16]
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    Ok(std::env::temp_dir().join(format!("chough-checkpoint-{name}.lock")))
+}
+
+/// Locks this process holds, by lock path; each is released when the process exits or
+/// is killed, so a killed writer never leaves a stale lock.
+static HELD_LOCKS: Mutex<Vec<(PathBuf, fs::File)>> = Mutex::new(Vec::new());
+
+/// Take the checkpoint writer lock for the rest of this process (issue 62), so every
+/// read-modify-write of `.chough/session.json` applies its change to the latest
+/// checkpoint. A repeated call is a no-op. After waiting `LOCK_WAIT` it refuses with
+/// nothing saved. Once the lock is held, session temps left by killed writers are
+/// removed (issue 64). `init` takes it too, so a new project has the lock file from
+/// the start.
+pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
+    let path = checkpoint_lock_path(root)?;
+    let mut held = HELD_LOCKS.lock().unwrap_or_else(PoisonError::into_inner);
+    if held.iter().any(|(locked, _)| *locked == path) {
+        return Ok(());
+    }
+    let file = match OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&path)
+    {
+        // Another account may own the lock file; a shared read handle still locks.
+        Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => {
+            OpenOptions::new().read(true).open(&path)
+        }
+        opened => opened,
+    }
+    .with_context(|| format!("opening the checkpoint lock {}", path.display()))?;
+    let started = Instant::now();
+    loop {
+        match <fs::File as fs4::FileExt>::try_lock(&file) {
+            Ok(()) => break,
+            Err(fs4::TryLockError::WouldBlock) if started.elapsed() < LOCK_WAIT => {
+                std::thread::sleep(LOCK_POLL);
+            }
+            Err(fs4::TryLockError::WouldBlock) => bail!(
+                "refused:checkpoint-busy: another Chough command is changing {SESSION} and did not finish within {} seconds; nothing was saved. Rerun when it finishes.",
+                LOCK_WAIT.as_secs()
+            ),
+            Err(fs4::TryLockError::Error(error)) => {
+                return Err(error)
+                    .with_context(|| format!("locking the checkpoint lock {}", path.display()));
+            }
+        }
+    }
+    held.push((path, file));
+    remove_orphaned_session_temps(root)
+}
+
+/// Remove `.chough/.session.json.<pid>.tmp` files: the temps `save_checkpoint` writes
+/// before its rename. Every writer holds the checkpoint lock through that rename, so a
+/// temp seen while holding the lock was left by a writer that was killed before it
+/// saved (issue 64). Its update was never saved or reported, so the session is not
+/// changed. Only regular files with exactly that name directly in `.chough/` go.
+fn remove_orphaned_session_temps(root: &Path) -> Result<()> {
+    let session = local_path(root, SESSION)?;
+    let directory = session.parent().context("session has no parent")?;
+    let entries = match fs::read_dir(directory) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(error.into()),
+    };
+    for entry in entries {
+        let entry = entry?;
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else {
+            continue;
+        };
+        let orphan = name
+            .strip_prefix(".session.json.")
+            .and_then(|rest| rest.strip_suffix(".tmp"))
+            .is_some_and(|pid| !pid.is_empty() && pid.bytes().all(|byte| byte.is_ascii_digit()));
+        if !orphan || !entry.file_type()?.is_file() {
+            continue;
+        }
+        let bytes = entry.metadata().map_or(0, |metadata| metadata.len());
+        fs::remove_file(entry.path()).with_context(|| format!("removing .chough/{name}"))?;
+        eprintln!(
+            "chough: removed .chough/{name} ({bytes} bytes), left by a checkpoint write that was stopped before it saved; {SESSION} was not changed by it"
+        );
+    }
+    Ok(())
+}
+
+/// Read a schema 2 checkpoint for a command that changes workflow state, holding the
+/// checkpoint writer lock from before the read until the process exits.
 pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {
+    if local_path(root, SESSION)?.is_file() {
+        lock_checkpoint(root)?;
+    }
+    read_checkpoint_unlocked(root)
+}
+
+/// Read a schema 2 checkpoint without taking the writer lock, for a command that only
+/// reads workflow state and may run for a long time (a repeated validation run checks
+/// for a pause between attempts and must not block writers while it waits).
+pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
     match read_session(root)? {
         Session::V2(session) => Ok(*session),
         Session::V1(_) => bail!(
@@ -356,6 +480,7 @@ fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
 }
 
 pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
+    lock_checkpoint(root)?;
     write_replace_bounded(
         root,
         SESSION,
@@ -370,6 +495,9 @@ pub(super) fn migrate(root: &Path, initial_stage: &str) -> Result<()> {
         "migration stage must be a main stage"
     );
     let path = local_path(root, SESSION)?;
+    if path.is_file() {
+        lock_checkpoint(root)?;
+    }
     let original = read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?;
     let session = match parse(&original)? {
         Session::V2(_) => {
@@ -793,4 +921,37 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         }
     }
     print_json(&json!({"schema_version": 1, "saved": changed, "checkpoint": session}))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_held_checkpoint_lock_refuses_as_busy_after_the_wait() {
+        let root = tempfile::tempdir().unwrap();
+        fs::create_dir_all(root.path().join(".chough")).unwrap();
+        let other = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(checkpoint_lock_path(root.path()).unwrap())
+            .unwrap();
+        <fs::File as fs4::FileExt>::lock(&other).unwrap();
+        let started = Instant::now();
+        let error = lock_checkpoint(root.path()).unwrap_err().to_string();
+        assert!(error.starts_with("refused:checkpoint-busy"), "{error}");
+        assert!(started.elapsed() >= LOCK_WAIT);
+        drop(other);
+        lock_checkpoint(root.path()).unwrap();
+        lock_checkpoint(root.path()).unwrap();
+        let records: Vec<_> = fs::read_dir(root.path().join(".chough"))
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect();
+        assert!(records.is_empty(), "the lock added {records:?} to .chough");
+        // Leave no lock file behind in the system temporary directory.
+        fs::remove_file(checkpoint_lock_path(root.path()).unwrap()).unwrap();
+    }
 }

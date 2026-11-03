@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Checkpoint writers in parallel in one clone no longer lose updates (#62): commands
+  that change `.chough/session.json` take an exclusive lock (an empty file in the
+  system temporary directory, named for the project) for their whole
+  read-modify-write, waiting up to 30 seconds before refusing as
+  `refused:checkpoint-busy` with nothing saved. A `.chough/.session.json.<pid>.tmp`
+  left by a writer killed before its rename is now removed by the next writer, with a
+  stderr notice (#64). New dependency: `fs4` 1.1.0, for a cross-platform file lock
+  within MSRV 1.88.
 - The cli spec module is split so its requirements companion has headroom under the
   65,536-byte record bound: REQ-cli-018 and REQ-cli-025 to REQ-cli-027 are now
   REQ-history-001 to REQ-history-004 in the new `history` module, with wording
