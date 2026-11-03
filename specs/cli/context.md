@@ -328,7 +328,8 @@ read `specs/<module>/requirements.md` through the 65,536-byte structured-record
 reader, so a growing cli companion blocked #55 and forced the #59 split, although
 SpecSync sets no spec-file cap. The #61 reviews then found `chough next` skipping a
 module `context.md` over 4 MiB and `chough library snapshot` refusing files over
-4 MiB; both are fixed in a follow-up PR. Source: the failing-first run of
+4 MiB; REQ-cli-034 names both as
+known exceptions, lifted by a later native change. Source: the failing-first run of
 `spec_requirements_companions_are_read_at_any_size` ("structured record exceeds
 65536 bytes"), and Leif's 2026-11-03 10:05 AM MT decision that spec files have no size
 limit. Limits: Chough reads spec files in `evidence add` (`requirements.md`, whole),
