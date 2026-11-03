@@ -7,10 +7,11 @@
   "title": "Serialize checkpoint writers with an inter-process lock and remove session temps left by killed writers (issues 62 and 64)",
   "description": "Serialize checkpoint writers with an inter-process lock and remove session temps left by killed writers (issues 62 and 64)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "4daf861509b70c14282ac16b5d0547d701e385b2",
   "created_at": 1793734063,
-  "updated_at": 1793734091,
+  "updated_at": 1793734099,
   "affected_specs": [
     "cli"
   ],
