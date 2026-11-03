@@ -3051,3 +3051,83 @@ fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
     check_refusal(&refused, id);
     assert_eq!(records(&fixture), before);
 }
+
+/// Issue 63 (Kimi lab round 2): with SpecSync configured, `checkpoint --native-change`
+/// asks SpecSync for the change before saving and refuses an ID it does not know,
+/// leaving the checkpoint byte-identical, even when other updates ride along.
+#[cfg(unix)]
+#[test]
+fn checkpoint_refuses_a_native_change_specsync_does_not_know() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    // SpecSync 6.1.2 exits non-zero for an unknown change; the stub knows every other ID.
+    fs::rename(
+        fixture.root().join("bin/specsync"),
+        fixture.root().join("bin/specsync-known"),
+    )
+    .unwrap();
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nif [ \"$3\" = does-not-exist ]; then\n  echo 'change does-not-exist was not found' >&2; exit 1\nfi\nexec \"$(dirname \"$0\")/specsync-known\" \"$@\"\n",
+    );
+    fixture.executable("bin/specsync");
+    let before = fixture.read(".chough/session.json");
+
+    let refused = fixture.fails(&["checkpoint", "--native-change", "does-not-exist"]);
+    assert!(
+        refused.contains("refused:native-change-unknown"),
+        "{refused}"
+    );
+    assert!(refused.contains("does-not-exist"), "{refused}");
+    assert!(
+        refused.contains("specsync change status does-not-exist"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/session.json"), before);
+
+    let refused = fixture.fails(&[
+        "checkpoint",
+        "--native-change",
+        "does-not-exist",
+        "--decision",
+        "Rides along with a bad change",
+    ]);
+    assert!(
+        refused.contains("refused:native-change-unknown"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/session.json"), before);
+
+    // A SpecSync failure is not proof the change exists: refused, nothing saved.
+    fixture.write(".stub-fail", "");
+    let refused = fixture.fails(&["checkpoint", "--native-change", "add-thing"]);
+    assert!(
+        refused.contains("refused:native-change-unknown"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/session.json"), before);
+    fs::remove_file(fixture.root().join(".stub-fail")).unwrap();
+
+    let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    assert_eq!(saved["saved"], true);
+    assert_eq!(fixture.session()["native_change"], "add-thing");
+}
+
+/// Without a SpecSync configuration there is nothing to ask, so the format check alone
+/// still decides (issue 63 leaves non-native projects unchanged).
+#[test]
+fn checkpoint_native_change_without_specsync_keeps_the_format_check() {
+    let fixture = Fixture::new();
+    fixture.init();
+    assert_eq!(
+        fixture.ok(&["checkpoint", "--native-change", "any-change"])["saved"],
+        true
+    );
+    assert!(
+        fixture
+            .fails(&["checkpoint", "--native-change", "bad id"])
+            .contains("invalid native change ID")
+    );
+}

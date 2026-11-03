@@ -253,6 +253,32 @@ pub(super) fn native_state(root: &Path, change: Option<&str>) -> Result<NativeSt
     })
 }
 
+/// Refuse to record a native change SpecSync does not report (issue 63). With SpecSync
+/// configured, `specsync change status <id> --json` must succeed with a JSON response;
+/// a missing change (SpecSync exits non-zero), a failed or timed-out read, or output
+/// that is not JSON refuses before anything is written. What the state means stays
+/// with the stage gates. Without a configuration there is nothing to ask.
+pub(super) fn ensure_native_change_known(root: &Path, change: &str) -> Result<()> {
+    if !native_configured(root)? {
+        return Ok(());
+    }
+    let response = native_json(root, "specsync", &["change", "status", change, "--json"]);
+    if response.value.is_none() {
+        let section = &response.section;
+        let reason = format!(
+            "{} ({}): {}",
+            section.source,
+            section.state,
+            section.content.trim_end()
+        );
+        bail!(
+            "refused:native-change-unknown: SpecSync did not report native change {change}, so it was not recorded and the checkpoint is unchanged.\n{reason}\nRun `{}` or create the change with `specsync change new`.",
+            status_command(Some(change))
+        );
+    }
+    Ok(())
+}
+
 /// Native state from a status response already read, so one read serves a whole report.
 /// `response` is the `specsync change status` read made whenever SpecSync is configured.
 pub(super) fn native_state_from(

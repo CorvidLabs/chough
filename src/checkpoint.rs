@@ -700,6 +700,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             valid_change_id(&change),
             "invalid native change ID: up to {CHANGE_ID_LIMIT} bytes of letters, digits, - and _"
         );
+        stage::ensure_native_change_known(root, &change)?;
         session.native_change = Some(change);
         changed = true;
     }

@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough checkpoint --native-change <id>` asks SpecSync for the change before saving and
+  refuses an ID SpecSync does not report (`refused:native-change-unknown`), leaving the
+  checkpoint unchanged (#63, found in Kimi's second lab review).
 - The cli spec module is split so its requirements companion has headroom under the
   65,536-byte record bound: REQ-cli-018 and REQ-cli-025 to REQ-cli-027 are now
   REQ-history-001 to REQ-history-004 in the new `history` module, with wording
