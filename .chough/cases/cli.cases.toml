@@ -2624,21 +2624,3 @@ expected = ["tests/cli.rs::build_reference_from_main_4daf861_is_known_outdated p
 adapter = "cargo-test"
 test_target = "cli"
 test = "build_reference_from_main_4daf861_is_known_outdated"
-
-[[case]]
-id = "TC-cli-next-searches-large-context-md"
-title = "next finds the Lessons heading of a module context.md larger than 4 MiB"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-11"]
-requirements = ["REQ-cli-034"]
-paths = ["src/main.rs", "tests/next.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/next.rs::next_searches_a_context_md_larger_than_4_mib passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "next"
-test = "next_searches_a_context_md_larger_than_4_mib"

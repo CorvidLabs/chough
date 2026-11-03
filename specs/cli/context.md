@@ -326,14 +326,14 @@ skill and docs, and assert the remedy text in a test.
 2026-11-03, spec size bounded by Chough readers (verified): `chough evidence add`
 read `specs/<module>/requirements.md` through the 65,536-byte structured-record
 reader, so a growing cli companion blocked #55 and forced the #59 split, although
-SpecSync sets no spec-file cap. The #61 review then found `chough next` skipping a
-module `context.md` over 4 MiB when pointing at its Lessons heading. Source: the
-failing-first runs of `spec_requirements_companions_are_read_at_any_size`
-("structured record exceeds 65536 bytes") and
-`next_searches_a_context_md_larger_than_4_mib` ("larger than 4194304 bytes, not
-searched"), and Leif's 2026-11-03 10:05 AM MT decision that spec files have no size
+SpecSync sets no spec-file cap. The #61 reviews then found `chough next` skipping a
+module `context.md` over 4 MiB and `chough library snapshot` refusing files over
+4 MiB; both are fixed in a follow-up PR. Source: the failing-first run of
+`spec_requirements_companions_are_read_at_any_size` ("structured record exceeds
+65536 bytes"), and Leif's 2026-11-03 10:05 AM MT decision that spec files have no size
 limit. Limits: Chough reads spec files in `evidence add` (`requirements.md`, whole),
-`next` (the `context.md` Lessons heading, streamed), `context` (display-budgeted
+`next` (the `context.md` Lessons heading, still 4 MiB until the follow-up),
+`library snapshot` (4 MiB until the follow-up), `context` (display-budgeted
 sections that mark their cut) and evidence snapshots (streamed digests). Future use:
 when removing a bound for a kind of file, search every reader of that path, not only
 the one that failed; read files under `specs/` with `records::read_spec_file` or a

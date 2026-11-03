@@ -7,7 +7,7 @@ artifact: tasks
 
 - [x] Failing test first ("structured record exceeds 65536 bytes")
 - [x] `read_spec_file` and its use in src/evidence.rs
-- [x] `chough next` searches `context.md` for its Lessons heading at any size (review finding on #61; failed first with "larger than 4194304 bytes, not searched")
+- [x] Moved out after review 5757165977: `chough next` searching `context.md` at any size goes to the dependent change's follow-up PR
 - [x] Composability guidance in both skill copies
 - [x] KNOWN_PREVIOUS entry for main's build.md and its test (failed first as `edited`)
 - [x] REQ-cli-034 delta, docs/cli.md, CHANGELOG, cases and lesson
