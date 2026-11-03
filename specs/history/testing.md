@@ -1,0 +1,40 @@
+# History testing
+
+Product checks run through `fledge run test`; structural checks through `fledge run
+spec`; case definitions through `fledge run cases`. Stable case definitions for this
+module are in `.chough/cases/history.cases.toml`. TC-history-0050 to TC-history-0061
+bind the reference-aware retention integration tests in tests/evidence.rs; the
+curated `TC-history-` slug cases bind tests/history.rs and tests/evidence.rs, and
+TC-history-legacy-timing-bounds binds tests/timing.rs.
+tests/spec_split.rs proves the 2026-11-03 split from cli kept every moved
+requirement's wording.
+
+| Requirement | Verification responsibility | Cases |
+|-------------|-----------------------------|-------|
+| REQ-history-001 (formerly REQ-cli-018) | Mixed-ID retention previews/apply, reference protection, pruning labels, byte accounting and unchanged ledger entries | Existing retention regressions and mixed-ID fixtures |
+| REQ-history-002 to REQ-history-004 (formerly REQ-cli-025 to REQ-cli-027) | Adoption, events and cursor; exact bounds and protected whole-cycle retention; revalidated evidence cleanup | See the table below |
+
+## Bounded transition history and protected retention
+
+REQ-history-002 to REQ-history-004 (formerly REQ-cli-025 to REQ-cli-027) are exercised by the following curated automated cases:
+
+| Case | Direct bound regression |
+|---|---|
+| TC-history-adoption | Explicit adoption preserves original log and migration bytes and repeats without duplication |
+| TC-history-branches | Real Git branch events integrate while divergent checkpoint selection remains explicit |
+| TC-history-bounds | One bound test executes exact event, cycle, recent-read and maintenance count/byte fixtures |
+| TC-history-retention | Read-only preview, authorized apply and newly protected cycle references |
+| TC-history-retention-revalidation | Changed, missing and newly referenced evidence/artifacts are retained |
+
+The full Rust suites add unknown legacy payloads, migration, random/collision refusal, failed checkpoint saves and orphan visibility, unsafe/malformed receipts, interrupted cleanup/resume, separate timing tips, and real Git retention alongside another branch's new proof. Package regressions independently hash the prior checkpoint reference and preserve owner edits during skill updates. The mandatory Fledge verify lane also checks existing behavior, native structure, traceability and the real CLI exercise. Observations and current IDs live in the Chough checkpoint and evidence records; this plan does not invent a passing grade or hosted result. No cold-start rerun, real-project adoption or live cleanup is part of this qualification.
+
+## Case ID mapping (2026-11-03 split)
+
+Cases moved from cli.cases.toml with their bindings, paths, environments and
+expectations unchanged. `TC-cli-<rest>` became `TC-history-<rest>`, and a repeated
+`history-` was dropped: TC-cli-0050 to TC-cli-0061 are TC-history-0050 to
+TC-history-0061; TC-cli-history-adoption, -branches, -bounds, -retention,
+-legacy-timing-bounds, -frozen-reference-aliases, -closing-reset-age,
+-post-prune-reference and -stale-receipt-age are TC-history-adoption and so on; and
+TC-cli-retention-revalidation is TC-history-retention-revalidation. Earlier
+observations and bug records keep the old IDs as history.

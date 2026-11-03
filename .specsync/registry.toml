@@ -3,3 +3,4 @@ name = "chough"
 
 [specs]
 cli = "specs/cli/cli.spec.md"
+history = "specs/history/history.spec.md"

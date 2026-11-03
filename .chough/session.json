@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "One shared .agents skill copy: claude maps to .agents/skills, legacy .claude copies are reported and removed only on an explicit command, and this repository drops its .claude copy",
+  "objective": "Split the cli spec: REQ-cli-018 and REQ-cli-025 to 027 move to a new history module as REQ-history-001 to 004 with wording unchanged, so specs/cli/requirements.md has headroom under the 65536-byte bound",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit",
+  "native_change": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -277,7 +277,8 @@
     "Agent corvid-agent assumption: only the claude host is remapped to .agents/skills; codex, cursor, gemini and grok keep their directories because Leif's 8:27 AM answer named .claude only",
     "Agent corvid-agent applies Human authority: Leif (0xLeif) chat 2026-11-03 8:09-8:27 AM MT interview answers 'Only the shared .agents copy' and 'Remove .claude entirely' (relayed intent approval; final acceptance is his next decision). Covered scope: claude->.agents mapping, legacy report, explicit remove-legacy, this repo's .claude removal, docs. Limits: other hosts unchanged, edited legacy files kept, no release",
     "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases",
-    "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's."
+    "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's.",
+    "Agent corvid-agent: chose the retention and transition-history group because it shares no case with a requirement that stays in cli and owns src/history.rs, tests/history.rs and tests/evidence.rs; SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: parent agent instruction 2026-11-03 9:46 AM MT)"
   ],
   "open_questions": [],
   "completed": [
@@ -628,5 +629,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Squash-merge PR #54 with --match-head-commit after all hosted checks on the archive tip are green; then merge main into PR #55 and open the src/skill.rs librarian-guide follow-up"
+  "next_action": "Add specs/history, move file ownership and cases, add tests/spec_split.rs, then specsync change check --commit"
 }

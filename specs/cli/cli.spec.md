@@ -10,7 +10,6 @@ files:
   - src/context.rs
   - src/evidence.rs
   - src/identity.rs
-  - src/history.rs
   - src/library.rs
   - src/prefs.rs
   - src/records.rs
@@ -29,8 +28,6 @@ files:
   - tests/workflow_authority.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
-  - tests/history.rs
-  - tests/evidence.rs
   - tests/next.rs
 
 db_tables: []
