@@ -381,6 +381,9 @@ pub(super) fn read_record(path: &Path) -> Result<String> {
 /// Read a native SpecSync spec file under `specs/` at any size. Spec files are the
 /// project's contracts, not Chough records, so Chough's record bounds do not apply
 /// (Leif, 2026-11-03 10:05 AM MT: "Spec files can grow to whatever number they want").
+///
+/// This reader does no path checks of its own: callers must resolve `path` through
+/// [`local_path`] first, which refuses paths outside the project root and symlinks.
 pub(super) fn read_spec_file(path: &Path) -> Result<String> {
     Ok(std::fs::read_to_string(path)?)
 }
