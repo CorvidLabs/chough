@@ -1,0 +1,56 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793671739,
+      "digest": "fca64678a48f23c3ef5434f8aec6e059839f78ab6700485aa445fd4f07ed208d",
+      "note": "Approved as corvid-agent under Leif's 2026-11-02 9:14 AM MT instruction 'Use corvid-agent for all approvals for all things!! You are corvid-agent'; issue #49 scope",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "cli-cleanups-for-issue-49-hyphen-values-in-bug-add-no-repeated-native-next-action-in-the-next-main-line-iso-times-in",
+        "title": "CLI cleanups for issue 49: hyphen values in bug add, no repeated native next action in the next main line, ISO times in next text, help text, cli.md drift and exercise temp dir cleanup",
+        "description": "CLI cleanups for issue 49: hyphen values in bug add, no repeated native next action in the next main line, ISO times in next text, help text, cli.md drift and exercise temp dir cleanup",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "docs/exercises/feature-bug-loop.md",
+          "examples/feature-bug-loop.sh",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/main.rs",
+          "src/stage.rs",
+          "src/timing.rs",
+          "tests/bugs.rs",
+          "tests/next.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Polish within REQ-cli-008, REQ-cli-011, REQ-cli-012 and REQ-cli-021 as written: no requirement or criterion text changes; JSON fields are unchanged",
+        "acceptance_criteria": [
+          "A gate refusal names the native status command once, even when the native next action already names it; the next view's main Next line no longer repeats the native next action, so a long native next action does not cut it",
+          "Every bug add and cases run option has a help description",
+          "No approval or actor wording changes (#44); fledge lanes run verify passes",
+          "The next text view shows the last failure's time as UTC ISO 8601; the JSON keeps observed_at_unix_seconds",
+          "bug add accepts free-text values that begin with -- (for example --title \"--name prints nothing\") and records them verbatim",
+          "docs/cli.md lists history show|adopt|prune in the Commands table and describes SpecSync 6.1.1 versus 6.1.2 accurately in the approved-delta guard intro",
+          "examples/feature-bug-loop.sh removes the temporary directory it created after a passing full run, and keeps a passed-in directory, a prepare-cold-start directory and a failed run's directory"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Stay off next's approval/actor wording (#44), SKILL.md and references/lifecycle.md (#42); avoid #44/#46 hunks in docs/cli.md, src/main.rs and tests/next.rs; no em dashes in docs",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

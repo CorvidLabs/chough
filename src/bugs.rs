@@ -178,29 +178,41 @@ fn generate_bug_id(bug: &Bug) -> Result<String> {
 
 #[derive(clap::Args)]
 pub(super) struct AddArgs {
-    #[arg(long)]
+    /// Short title; also sets the bug ID slug. Values may start with `--`.
+    #[arg(long, allow_hyphen_values = true)]
     title: String,
-    #[arg(long)]
+    /// What was seen to go wrong.
+    #[arg(long, allow_hyphen_values = true)]
     symptom: String,
-    #[arg(long)]
+    /// The input or action that triggers the failure.
+    #[arg(long, allow_hyphen_values = true)]
     trigger: String,
-    #[arg(long)]
+    /// The behavior that should have happened.
+    #[arg(long, allow_hyphen_values = true)]
     expected: String,
-    #[arg(long)]
+    /// The behavior that actually happened.
+    #[arg(long, allow_hyphen_values = true)]
     actual: String,
-    #[arg(long)]
+    /// The environment where the failure was seen, for example local-linux-x86_64.
+    #[arg(long, allow_hyphen_values = true)]
     environment: String,
-    #[arg(long, default_value = "Not yet assessed.")]
+    /// Who or what is affected and how badly.
+    #[arg(long, default_value = "Not yet assessed.", allow_hyphen_values = true)]
     impact: String,
+    /// A HI criterion ID the failure breaks (repeatable).
     #[arg(long = "criterion")]
     criteria: Vec<String>,
+    /// A SpecSync requirement ID the failure breaks (repeatable).
     #[arg(long = "requirement")]
     requirements: Vec<String>,
+    /// A test case ID that covers the failure (repeatable).
     #[arg(long = "case")]
     cases: Vec<String>,
-    #[arg(long = "step")]
+    /// One reproduction step, in order (repeatable).
+    #[arg(long = "step", allow_hyphen_values = true)]
     steps: Vec<String>,
-    #[arg(long)]
+    /// A fixture path or description that reproduces the failure.
+    #[arg(long, allow_hyphen_values = true)]
     fixture: Option<String>,
     /// A recorded observation that shows the failure.
     #[arg(long = "observation")]
@@ -216,10 +228,11 @@ pub(super) struct AddArgs {
     /// A passed observation at an earlier, ancestor revision (required for regression).
     #[arg(long)]
     regression_baseline: Option<String>,
-    #[arg(long, default_value = "manual report")]
+    /// Where the report came from.
+    #[arg(long, default_value = "manual report", allow_hyphen_values = true)]
     source: String,
     /// Add even though similar bugs exist, stating why this one is distinct.
-    #[arg(long)]
+    #[arg(long, allow_hyphen_values = true)]
     distinct: Option<String>,
 }
 

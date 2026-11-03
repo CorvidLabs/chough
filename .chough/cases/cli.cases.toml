@@ -2676,6 +2676,42 @@ expected = [
 ]
 
 [[case]]
+id = "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens"
+title = "bug add records text values that start with two hyphens verbatim"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::bug_text_values_may_start_with_two_hyphens passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "bug_text_values_may_start_with_two_hyphens"
+
+[[case]]
+id = "TC-cli-native-next-action-is-not-repeated-in-the-next-line"
+title = "A native next action is shown once and does not cut the next line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "FLOW-13"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::native_next_action_is_shown_once_and_does_not_cut_the_next_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "native_next_action_is_shown_once_and_does_not_cut_the_next_line"
+
+[[case]]
 id = "TC-cli-sdd-off-names-specsync-change-adopt"
 title = "A configured project with SDD off says to run specsync change adopt"
 status = "active"

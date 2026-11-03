@@ -369,6 +369,24 @@ pub(super) fn gate_for_state(
     })
 }
 
+/// The native next action for a refusal, naming the status command once: when the
+/// native next action already names it, no separate `Run` is added.
+fn native_hint(next: &str, status: &str) -> String {
+    if next.contains(status) {
+        format!("Native next action: {next}.")
+    } else {
+        format!("Native next action: {next}. Run `{status}`.")
+    }
+}
+
+/// A gate detail for the one-line next valid action: the part before the native next
+/// action, which the views show on their own lines with the full gate detail.
+fn action_detail(detail: &str) -> &str {
+    detail
+        .split_once(" Native next action")
+        .map_or(detail, |(head, _)| head)
+}
+
 fn native_gate(
     root: &Path,
     change: &str,
@@ -388,7 +406,8 @@ fn native_gate(
             return refused(
                 format!("refused:native-{state}"),
                 format!(
-                    "{purpose} needs native state archived; it is {state}. Native next action: {next}. Run `{status}`."
+                    "{purpose} needs native state archived; it is {state}. {}",
+                    native_hint(next, status)
                 ),
             );
         }
@@ -404,8 +423,9 @@ fn native_gate(
             other => refused(
                 format!("refused:native-archive-{}", other.unwrap_or("unreported")),
                 format!(
-                    "{purpose} needs an archive whose terminal evidence authenticates; summary.terminal_evidence.validity is {}. Native next action: {next}. Run `{status}`.",
-                    other.unwrap_or("not reported")
+                    "{purpose} needs an archive whose terminal evidence authenticates; summary.terminal_evidence.validity is {}. {}",
+                    other.unwrap_or("not reported"),
+                    native_hint(next, status)
                 ),
             ),
         };
@@ -419,7 +439,8 @@ fn native_gate(
         return refused(
             format!("refused:native-{state}"),
             format!(
-                "{purpose} needs native state {wanted}; it is {state}. Native next action: {next}. Run `{status}`."
+                "{purpose} needs native state {wanted}; it is {state}. {}",
+                native_hint(next, status)
             ),
         );
     }
@@ -430,8 +451,9 @@ fn native_gate(
         return refused(
             "refused:native-approval-invalid".into(),
             format!(
-                "{purpose} needs a valid definition approval; native status reports approval_valid {}. Native next action: {next}. Run `{status}`.",
-                approval.map_or("missing".to_string(), |valid| valid.to_string())
+                "{purpose} needs a valid definition approval; native status reports approval_valid {}. {}",
+                approval.map_or("missing".to_string(), |valid| valid.to_string()),
+                native_hint(next, status)
             ),
         );
     }
@@ -443,7 +465,8 @@ fn native_gate(
         return refused(
             "refused:native-correction-invalid".into(),
             format!(
-                "{purpose} needs valid native corrections; native status reports correction_valid false. Native next action: {next}. Run `{status}`."
+                "{purpose} needs valid native corrections; native status reports correction_valid false. {}",
+                native_hint(next, status)
             ),
         );
     }
@@ -865,7 +888,11 @@ pub(super) fn assess(
         archived_action(session, state, native_next)
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
         Action {
-            action: format!("Gate not open ({}): {}", gate.label, gate.detail),
+            action: format!(
+                "Gate not open ({}): {}",
+                gate.label,
+                action_detail(&gate.detail)
+            ),
             reason: format!("Native state does not allow reaching {to} yet."),
             command: Some(status_command(session.native_change.as_deref())),
         }
@@ -917,7 +944,11 @@ fn done_action(
             ),
         ),
         (_, Some(gate)) => Action {
-            action: format!("Gate not open ({}): {}", gate.label, gate.detail),
+            action: format!(
+                "Gate not open ({}): {}",
+                gate.label,
+                action_detail(&gate.detail)
+            ),
             reason: "Stage done needs an archived change whose terminal evidence authenticates."
                 .into(),
             command: Some(status_command(session.native_change.as_deref())),

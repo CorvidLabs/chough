@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Implement issue #31: bounded transition history and protected retention with explicit adoption and preserved proof",
+  "objective": "Issue #49 CLI and docs cleanups",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "bound-transition-history-and-preserve-referenced-proof",
+  "native_change": "cli-cleanups-for-issue-49-hyphen-values-in-bug-add-no-repeated-native-next-action-in-the-next-main-line-iso-times-in",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -100,7 +100,9 @@
       "TC-cli-history-closing-reset-age",
       "TC-cli-history-stale-receipt-age",
       "TC-cli-history-post-prune-reference",
-      "TC-cli-sdd-off-names-specsync-change-adopt"
+      "TC-cli-sdd-off-names-specsync-change-adopt",
+      "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
+      "TC-cli-native-next-action-is-not-repeated-in-the-next-line"
     ],
     "design": [],
     "files": [
@@ -291,7 +293,8 @@
     "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
     "PR37 final main d839fef repair passes233 tests on Rust 1.95/1.88, ten bound cases and all nine Fledge steps. Both original reproductions now report missing referenced proof and partial restoration cannot hide a separate cycle reference. All parent proof bytes are preserved; independent scoped rereview found no remaining issue.",
     "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.",
-    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved."
+    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved.",
+    "Implemented the six #49 cleanups with tests (bugs, stages, next) and two cases"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -430,7 +433,10 @@
     "OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56",
     "OBS-tc-cli-history-adoption-6cb6b66e612d1aa174aa9390",
     "OBS-tc-cli-history-adoption-9c0a346ae0344141170e9194",
-    "OBS-tc-cli-history-bounds-40ad3c6f4a4722ada4a57999"
+    "OBS-tc-cli-history-bounds-40ad3c6f4a4722ada4a57999",
+    "OBS-human-observation-174caaa1021cfdf5a553f7a3",
+    "OBS-tc-cli-bug-add-accepts-values-that-start-with-two-hyphens-916110763b00ec6ddf3afb73",
+    "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b"
   ],
   "bugs": [
     "BUG-0001",
@@ -459,5 +465,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "This session merges PR37 after current-head Grok approval and all checks pass, then resynchronizes and qualifies PR44 and PR46 before merging each. Check main afterward. Source: 0xLeif chat instruction to merge approved, green PRs and resynchronize."
+  "next_action": "Accept: commit, check --commit, push, open the PR, review and ship as corvid-agent"
 }

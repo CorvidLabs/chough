@@ -2905,3 +2905,61 @@ fn a_configured_project_with_sdd_off_says_to_run_specsync_change_adopt() {
         "{next}"
     );
 }
+
+/// A native next action that already names the status command is not repeated: the
+/// refusal names the command once and the `next` main line keeps only the gate's own
+/// detail, so a long native next action no longer cuts it (issue #49).
+#[cfg(unix)]
+#[test]
+fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    fixture.no_spec_approval("add-thing");
+    let native_next = format!(
+        "complete selected artifacts {}, then run `specsync change status add-thing`",
+        "and their open decisions ".repeat(15)
+    );
+    fixture.write(".stub-next", &format!("{native_next}\n"));
+
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("refused:native-draft"), "{refused}");
+    assert!(refused.contains(&native_next), "{refused}");
+    assert_eq!(
+        refused.matches("specsync change status add-thing").count(),
+        1,
+        "{refused}"
+    );
+
+    let output = fixture.run(&["next"]);
+    assert!(output.status.success());
+    let shown = String::from_utf8(output.stdout).unwrap();
+    let main = shown
+        .lines()
+        .find(|line| line.starts_with("Next: "))
+        .unwrap();
+    assert!(
+        main.starts_with("Next: Gate not open (refused:native-draft): "),
+        "{main}"
+    );
+    assert!(main.ends_with("it is draft."), "{main}");
+    assert!(
+        !main.contains("[cut]") && !main.contains("Native next action"),
+        "{main}"
+    );
+    assert!(
+        shown.contains(&format!("  Native next action: {native_next}")),
+        "{shown}"
+    );
+    assert!(
+        shown.contains("  Run: specsync change status add-thing"),
+        "{shown}"
+    );
+    let status = fixture.ok(&["status", "--json"]);
+    let detail = status["checkpoint"]["gate"]["detail"].as_str().unwrap();
+    assert!(detail.contains(&native_next), "{detail}");
+}

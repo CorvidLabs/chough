@@ -165,9 +165,12 @@ pub(super) enum CasesCommand {
     },
     /// Execute an automated case's binding and record the observation.
     Run {
+        /// The case ID to run, for example TC-cli-example.
         id: String,
+        /// The environment ID to record, one the case lists.
         #[arg(long)]
         environment: String,
+        /// Use this observation ID instead of allocating one.
         #[arg(long)]
         observation_id: Option<String>,
     },

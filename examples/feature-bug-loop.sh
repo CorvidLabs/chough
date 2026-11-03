@@ -11,8 +11,23 @@
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
-work=${1:-$(mktemp -d "${TMPDIR:-/tmp}/chough-exercise.XXXXXX")}
+if [ -n "${1:-}" ]; then
+    work=$1 created=""
+else
+    work=$(mktemp -d "${TMPDIR:-/tmp}/chough-exercise.XXXXXX") created=yes
+fi
 mode=${2:-full}
+# A directory this script created is removed after a passing full run; a passed-in
+# directory, a prepared cold start and a failed run's directory are kept.
+cleanup() {
+    status=$?
+    if [ -n "$created" ] && [ "$mode" = "full" ] && [ "$status" -eq 0 ]; then
+        rm -rf "$work"
+    elif [ -n "$created" ]; then
+        printf 'Kept %s\n' "$work" >&2
+    fi
+}
+trap cleanup EXIT
 chough=${CHOUGH:-chough}
 env_name=${CHOUGH_ENVIRONMENT:-exercise-local}
 last_observation=""
@@ -235,4 +250,8 @@ step "Accept: only a human review and native archive can close this"
 $chough stage advance >/dev/null
 expect_refusal "leaving accept before review and archive" "refused:native-verifying" $chough stage advance
 $chough next --environment "$env_name" --json | jq -r '.next_valid_action.action'
-printf '\nEXERCISE PASSED in %s\n' "$work"
+if [ -n "$created" ]; then
+    printf '\nEXERCISE PASSED (removing %s)\n' "$work"
+else
+    printf '\nEXERCISE PASSED in %s\n' "$work"
+fi

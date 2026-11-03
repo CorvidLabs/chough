@@ -928,7 +928,7 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     );
     let shown = text(&fixture, &["next"]);
     for line in [
-        "Last failure: m-latest at 3000: fixture observation m-latest",
+        "Last failure: m-latest at 1970-01-01T00:50:00Z: fixture observation m-latest",
         "  Linked bugs: BUG-0001 fix-pending-verification, BUG-0002 open, BUG-0003 verified (3 of 4)",
     ] {
         assert!(shown.contains(line), "missing {line:?} in:\n{shown}");
@@ -952,7 +952,7 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     );
     let shown = text(&fixture, &["next"]);
     assert!(
-        shown.contains("Last failure: n-tie at 3000: sss"),
+        shown.contains("Last failure: n-tie at 1970-01-01T00:50:00Z: sss"),
         "{shown}"
     );
     assert!(shown.contains("  Linked bugs: none"), "{shown}");
@@ -1219,7 +1219,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     for total in [
         "Decisions (",
         " of 50, newest first):",
-        "Last failure: fail-037 at 1900000000: failure 037",
+        "Last failure: fail-037 at 2030-03-17T17:46:40Z: failure 037",
         " of 40)",
         " of 16 modules):",
         "Archived lesson bundles (",

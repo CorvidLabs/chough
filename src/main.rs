@@ -26,6 +26,7 @@ use std::path::{Path, PathBuf};
     about = "Checkpointed stages, focused context and honest evidence; native tools own lifecycle state"
 )]
 struct Cli {
+    /// The project directory to work in.
     #[arg(long, global = true, default_value = ".")]
     root: PathBuf,
     #[command(subcommand)]
@@ -957,7 +958,9 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
         lines.push(format!(
             "Last failure: {} at {}: {}",
             text(&failure["id"]),
-            text(&failure["observed_at_unix_seconds"]),
+            failure["observed_at_unix_seconds"]
+                .as_u64()
+                .map_or_else(|| text(&failure["observed_at_unix_seconds"]), timing::utc),
             text(&failure["summary"])
         ));
         let bugs = &failure["bugs"];

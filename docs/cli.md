@@ -29,6 +29,7 @@ their JSON.
 | `library init\|snapshot PATH... --reason R\|index` | Optional librarian; requires `pref set librarian on --source ...`. `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` with new and legacy dated snapshots. |
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
+| `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
 
 ## Transition history
 
@@ -375,9 +376,9 @@ Chough suggests carries `--reason`.
 
 ## Approved-delta guard
 
-SpecSync 6.1.1 keeps `approval_valid` true after an approved semantic delta is edited
-(BUG-0002). So before a move to build, test or accept (by advance, skip, back, reset
-or return) on a change in state approved, implementing or verifying with
+SpecSync 6.1.1 and earlier keep `approval_valid` true after an approved semantic delta is
+edited (BUG-0002); SpecSync 6.1.2 flags it. Chough keeps its own check with either, so
+before a move to build, test or accept (by advance, skip, back, reset or return) on a change in state approved, implementing or verifying with
 `approval_valid` true, Chough reads `.specsync/changes/<id>/approvals.json` read-only
 within 4 MiB, SpecSync's change-artifact bound, takes the last `definition` approval,
 and compares its `approved_delta_digests` with digests of `deltas/<module>.md` for

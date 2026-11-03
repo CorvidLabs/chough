@@ -165,7 +165,7 @@ impl Span {
 }
 
 /// UTC ISO 8601 from Unix seconds (proleptic Gregorian calendar).
-fn utc(seconds: u64) -> String {
+pub(super) fn utc(seconds: u64) -> String {
     let days = (seconds / 86_400) as i64;
     let rest = seconds % 86_400;
     // Howard Hinnant's civil_from_days.
