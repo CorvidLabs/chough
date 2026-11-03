@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "integrate-the-approved-case-ordering-and-native-authority-workflow-changes",
+  "native_change": "integrate-merged-bounded-history-into-the-agent-operated-native-workflow",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -173,7 +173,9 @@
     "decided: native operations record project agent actor corvid-agent and cite actual human authorization separately, because the acting account and the authority source are different provenance roles; PR44 peer-review refinement is covered by the existing standing permission, and the original approval event is preserved",
     "human: 0xLeif instructed \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status and remaining native closeout gate were presented. This authorizes this session to finish all three native scopes on PR #44 under the existing through-PR authorization; native acting account is corvid-agent. Merge, release, deployment and live cleanup remain separate.",
     "agent: root selected the complete PR44 current-cycle group for integration. The native checkpoint helper first refused the original divergent inputs; a separate explicit selected-cycle operand preserved that group while merging additive collections. Original parent inputs and all transition occurrences remain retained. This is branch ownership, not approval or gate closure.",
-    "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: finish the reviewed PRs through native closeout and current-head qualification under his standing through-PR authorization; merge remains his."
+    "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: finish the reviewed PRs through native closeout and current-head qualification under his standing through-PR authorization; merge remains his.",
+    "Acting project agent: corvid-agent. Human source: 0xLeif explicitly said \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02, supplementing the standing through-PR permission relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 and \"Can you finish up all these?\". Scope: resynchronize PR44 with already squash-merged PR37 at main a788869b32b8442cbc8d7be2bf19c19a922954a8, preserve both accepted implementations and immutable proof, qualify and push normally. Root alone records native review/ship and done; this worker never merges. No new as-is human acceptance, release, deployment, live history adoption or cleanup is inferred.",
+    "agent: root instructed that this worker holds the PR44 feature push after final committed verification. Root obtains independent local review, records native closeout and done, then publishes one fully closed head; origin remains3e25fb4 until that root push."
   ],
   "open_questions": [],
   "completed": [
@@ -437,5 +439,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "0xLeif merges PR44 after every hosted check passes on this final head. If another PR merges first, integrate that main and requalify. No release or deployment is authorized by this closeout."
+  "next_action": "Merge pinned main a788869 into the approved integration scope, preserve all proof, qualify on both Rust versions, then stop at accept with current committed verification and no feature push."
 }

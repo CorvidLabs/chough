@@ -1,0 +1,52 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793668297,
+      "digest": "f405d69528baae5d50a2778aab75c360550820f725236e42074820d2a203e353",
+      "note": "Acting project agent: corvid-agent. Human source: 0xLeif explicitly said \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02, supplementing the standing through-PR permission relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 and \"Can you finish up all these?\". Scope: resynchronize PR44 with already squash-merged PR37 at main a788869b32b8442cbc8d7be2bf19c19a922954a8, preserve both accepted implementations and immutable proof, qualify and push normally. Root alone records native review/ship and done; this worker never merges. No new as-is human acceptance, release, deployment, live history adoption or cleanup is inferred.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-merged-bounded-history-into-the-agent-operated-native-workflow",
+        "title": "Integrate merged bounded history into the agent-operated native workflow",
+        "description": "Integrate merged bounded history into the agent-operated native workflow",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          ".chough/cases/cli.cases.toml",
+          ".claude/skills/chough-workflow/references/checkpoint.md",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/context.md",
+          "specs/cli/requirements.md",
+          "specs/cli/testing.md",
+          "src/skill.rs",
+          "tests/package.rs",
+          "tests/workflow_authority.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Combine already approved and archived PR37 history/retention and PR44 authority behavior after the authorized PR37 squash merge. Preserve both requirement meanings and all proof; reconcile shared metadata and canonical version without adding new behavior, approval semantics, live adoption or cleanup.",
+        "acceptance_criteria": [
+          "Integrate already-merged main a788869 into PR44 with ordinary merge and canonical version23, preserving approved history/retention and agent-operated native workflow meanings, all149 case definitions, all45 predecessor identities, one complete selected PR44 current-cycle group, every additive collection and legacy transition occurrence, and byte-identical existing archives/cold-start/evidence. Pass all required Fledge steps, complete Rust1.95/1.88 tests with measured counts, affected cases and native verification before guarded normal push; stop at accept with current committed verification for root-only review/ship/done. No force/rebase, worker merge, live adoption/cleanup, release or deployment."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Preserve exact accepted source and archive/evidence/cold-start bytes; native lifecycle remains authoritative. Module context lessons require independently hashed safe-upgrade predecessors and edited-copy preservation, completed tasks then scoped check then cases, and occurrence-aware history merge without inferring order or human acceptance. No live adoption or cleanup.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
