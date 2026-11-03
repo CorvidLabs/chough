@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -611,5 +611,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit this actual approval source, refresh native verification, review immediately followed by ship, clear the resolved gate and advance to done, then qualify and merge the final head and verify main."
+  "next_action": "Require approval and all hosted checks at the final PR51 head, merge normally, verify actual main, then discuss Chough assessment, interview future priorities one multiple-choice question at a time, and prepare distinct Grok, Claude and Kimi prompts."
 }
