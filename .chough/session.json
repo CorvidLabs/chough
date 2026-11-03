@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -185,7 +185,8 @@
     "human: 0xLeif approved the complete issue #31 scope in draft PR #37 by replying \"Yes\" in chat on 2026-11-02; recorded with specsync change approve --actor 0xLeif; implementation acceptance, live adoption, live cleanup and merge remain separate decisions",
     "decided: project agent actor corvid-agent is recorded separately from actual human authorization, because the acting account and the authority source have different provenance roles; renewed native scope approval preserves the original event and all product proof",
     "human: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02 after the reviewed PR status was presented.",
-    "agent owner choice: retain the complete PR37 current-cycle group while importing all additive checkpoint/history records, because this branch continues its active bounded-history work. The finish-all instruction authorizes bounded integration and native closeout; merge and live adoption/cleanup remain separate."
+    "agent owner choice: retain the complete PR37 current-cycle group while importing all additive checkpoint/history records, because this branch continues its active bounded-history work. The finish-all instruction authorizes bounded integration and native closeout; merge and live adoption/cleanup remain separate.",
+    "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: complete the reviewed PRs, safety repairs, native closeout and current-head qualification under his standing through-PR authority. His later instruction permits resynchronization as merges continue; GitHub merge remains his."
   ],
   "open_questions": [],
   "completed": [
@@ -288,7 +289,8 @@
     "Integrated main9d02 (#41/#43/#45) with PR37 using one owner-selected current cycle and all additive records. All232tests on Rust1.95/Rust1.88, ten bound cases and nine Fledge steps pass; preserved all parent proof and clarified local append limits.",
     "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
     "PR37 final main d839fef repair passes233 tests on Rust 1.95/1.88, ten bound cases and all nine Fledge steps. Both original reproductions now report missing referenced proof and partial restoration cannot hide a separate cycle reference. All parent proof bytes are preserved; independent scoped rereview found no remaining issue.",
-    "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages."
+    "The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.",
+    "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -456,5 +458,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Root alone completes committed native verification, then fresh review immediately followed by ship for each of the 3 active scopes in required order. After archival, record done and publish current-head qualification for Grok and 0xLeif. No PR merge, release or live cleanup."
+  "next_action": "0xLeif merges PR37 after every hosted check passes on this final head and Grok refreshes its review. If main changes first, integrate it and requalify. No live adoption, cleanup, release or deployment."
 }
