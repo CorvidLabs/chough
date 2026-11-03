@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -200,7 +200,8 @@
     "human source retained: 0xLeif said \"Can you finish up all these?\" in chat on 2026-11-02; agent interpretation: finish the reviewed PRs through native closeout and current-head qualification under his standing through-PR authorization; merge remains his.",
     "Acting project agent: corvid-agent. Human source: 0xLeif explicitly said \"Merge approved, green PRs and resynchronize\" in chat on 2026-11-02, supplementing the standing through-PR permission relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 and \"Can you finish up all these?\". Scope: resynchronize PR44 with already squash-merged PR37 at main a788869b32b8442cbc8d7be2bf19c19a922954a8, preserve both accepted implementations and immutable proof, qualify and push normally. Root alone records native review/ship and done; this worker never merges. No new as-is human acceptance, release, deployment, live history adoption or cleanup is inferred.",
     "agent: root instructed that this worker holds the PR44 feature push after final committed verification. Root obtains independent local review, records native closeout and done, then publishes one fully closed head; origin remains3e25fb4 until that root push.",
-    "decided: corvid-agent records native approval, review and ship for PR #50 review fixes, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched)"
+    "decided: corvid-agent records native approval, review and ship for PR #50 review fixes, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched)",
+    "decided: implementation review of the PR #50 review-fix change recorded pass as corvid-agent and the change shipped at 41f6fb7, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review of 5b11aae; Leif's own PR #50 approval is still his)"
   ],
   "open_questions": [],
   "completed": [
@@ -320,7 +321,8 @@
     "Integrated accepted bounded history and agent-operated native workflow at canonical23; all13affected history/authority/ordering cases passed with protected parent proof and both host bundles intact.",
     "Final integrated source769b526 passed all9Fledge steps and all235tests across12suites on Rust1.95 and Rust1.88, with0failed/ignored/filtered. All13affected managed cases passed; protected1909parent blobs,149case definitions,45predecessors and allparent history occurrences remain preserved.",
     "PR44 integration with main a788869 is qualified: all 235 tests on Rust 1.95/1.88, nine Fledge steps and 13 affected cases passed. All 1909 protected parent blobs are exact. Independent scoped integration review has no findings, and the new native integration scope is archived.",
-    "Exercise work path made absolute with setup markers; regression test tests/cli.rs::exercise_cleanup_handles_a_relative_tmpdir (fails without the fix); case TC-cli-exercise-cleanup-handles-a-relative-tmpdir; corrective agent-assisted OBS-product-test-035959f28aa76d052d48fe78 beside the untouched human-observation record; CHANGELOG"
+    "Exercise work path made absolute with setup markers; regression test tests/cli.rs::exercise_cleanup_handles_a_relative_tmpdir (fails without the fix); case TC-cli-exercise-cleanup-handles-a-relative-tmpdir; corrective agent-assisted OBS-product-test-035959f28aa76d052d48fe78 beside the untouched human-observation record; CHANGELOG",
+    "Native change shipped (archived at 41f6fb7)"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -534,9 +536,7 @@
     "BUG-integrated-current-main-workflow-references-are-misclassified-as-edits-8cbff17ede6b1bad3926bce3"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Approve as corvid-agent, implement the two review fixes, verify, push, reply on PR #50"
 }
