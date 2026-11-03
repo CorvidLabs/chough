@@ -21,17 +21,26 @@
   ],
   "fixture": ".chough/artifacts/pr51-writer-atomicity/before/",
   "observations": [
-    "OBS-product-test-2a7d7facc915bcf96b293641"
+    "OBS-product-test-2a7d7facc915bcf96b293641",
+    "OBS-product-test-d7d49ea83fedc7d95d30dba1"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "PR51 discussion_r4451099601, confirmed by root failure-first regression",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793688210,
+      "text": "status: open -> verified. Final identical test bytes genuinely fail before repair and pass after it under Rust1.95. Three full writer regressions and fmt/check/lint pass; all earlier proof is unchanged.",
+      "observations": [
+        "OBS-product-test-d7d49ea83fedc7d95d30dba1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793687843,
-  "updated_at_unix_seconds": 1793687843
+  "updated_at_unix_seconds": 1793688210
 }

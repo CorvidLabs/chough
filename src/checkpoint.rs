@@ -345,12 +345,21 @@ pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {
     }
 }
 
-pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
+fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
     validate_v2(session)?;
+    let content = serde_json::to_string_pretty(session)? + "\n";
+    ensure!(
+        content.len() as u64 <= SESSION_LIMIT,
+        "session exceeds {SESSION_LIMIT} bytes"
+    );
+    Ok(content)
+}
+
+pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
     write_replace_bounded(
         root,
         SESSION,
-        &(serde_json::to_string_pretty(session)? + "\n"),
+        &serialize_checkpoint(session)?,
         SESSION_LIMIT,
     )
 }
@@ -754,6 +763,17 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .filter(|gate| !open_before_additions.contains(gate))
             .cloned()
             .collect();
+        let mut candidate = session.clone();
+        if (!cleared.is_empty() || !opened.is_empty())
+            && let Some(cursor) = candidate.history_cursor.as_mut()
+            && cursor.head.is_none()
+        {
+            // Every gate event keeps the cycle and leaves a fixed-width head.
+            // Size the final cursor before publishing any events; this ID is
+            // only a serialization placeholder and is never allocated or saved.
+            cursor.head = Some("EVT-000000000000000000000000".into());
+        }
+        serialize_checkpoint(&candidate)?;
         if session.history_cursor.is_some() {
             for gate in &cleared {
                 stage::log_gate(root, &mut session, stage::GATE_CLOSED, &current_stage, gate)?;

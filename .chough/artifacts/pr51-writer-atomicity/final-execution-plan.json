@@ -1,0 +1,30 @@
+{
+  "scope": "Settled source tasks and independent source review precede this real final execution.",
+  "commands": [
+    [
+      "fledge",
+      "lanes",
+      "run",
+      "verify"
+    ],
+    [
+      "fledge",
+      "run",
+      "ci-archive-fixtures"
+    ]
+  ],
+  "formal_mac_cases": [
+    "TC-cli-report-case-read-budget",
+    "TC-cli-report-read-invalidation",
+    "TC-cli-report-trace-parity"
+  ],
+  "environment": "local-macos-arm64",
+  "expected_rust_tests": 252,
+  "required_steps": 9,
+  "toolchain": "Rust1.95.0, HI0.8.0, Fledge1.8.0, SpecSync6.1.2",
+  "native": "Ordinary check enters verifying before audit; final commit/check/review/ship follow after all observations and records.",
+  "omissions": [
+    "No cold-start, human Pass grade, release, deployment or live adoption/prune.",
+    "Hosted jobs provide actual Linux/Windows qualification."
+  ]
+}

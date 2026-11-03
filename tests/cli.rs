@@ -546,7 +546,8 @@ fn checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events() {
         let mut initial = candidate.clone();
         initial["awaiting_human"] = json!(["existing-one", "existing-two"]);
         initial["history_cursor"]["head"] = Value::Null;
-        assert!(serde_json::to_string_pretty(&initial).unwrap().len() + 1 <= 131_072);
+        let initial_bytes = serde_json::to_string_pretty(&initial).unwrap().len() + 1;
+        assert!(initial_bytes <= 131_072);
         fixture.write(".chough/session.json", &initial.to_string());
         let args = [
             "checkpoint",

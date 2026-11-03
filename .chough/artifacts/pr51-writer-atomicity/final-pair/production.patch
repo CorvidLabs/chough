@@ -1,0 +1,60 @@
+diff --git a/src/checkpoint.rs b/src/checkpoint.rs
+index 47334d4..9519e60 100644
+--- a/src/checkpoint.rs
++++ b/src/checkpoint.rs
+@@ -345,12 +345,21 @@ pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {
+     }
+ }
+ 
+-pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
++fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
+     validate_v2(session)?;
++    let content = serde_json::to_string_pretty(session)? + "\n";
++    ensure!(
++        content.len() as u64 <= SESSION_LIMIT,
++        "session exceeds {SESSION_LIMIT} bytes"
++    );
++    Ok(content)
++}
++
++pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
+     write_replace_bounded(
+         root,
+         SESSION,
+-        &(serde_json::to_string_pretty(session)? + "\n"),
++        &serialize_checkpoint(session)?,
+         SESSION_LIMIT,
+     )
+ }
+@@ -754,6 +763,17 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
+             .filter(|gate| !open_before_additions.contains(gate))
+             .cloned()
+             .collect();
++        let mut candidate = session.clone();
++        if (!cleared.is_empty() || !opened.is_empty())
++            && let Some(cursor) = candidate.history_cursor.as_mut()
++            && cursor.head.is_none()
++        {
++            // Every gate event keeps the cycle and leaves a fixed-width head.
++            // Size the final cursor before publishing any events; this ID is
++            // only a serialization placeholder and is never allocated or saved.
++            cursor.head = Some("EVT-000000000000000000000000".into());
++        }
++        serialize_checkpoint(&candidate)?;
+         if session.history_cursor.is_some() {
+             for gate in &cleared {
+                 stage::log_gate(root, &mut session, stage::GATE_CLOSED, &current_stage, gate)?;
+diff --git a/tests/cli.rs b/tests/cli.rs
+index 8c67706..ed55346 100644
+--- a/tests/cli.rs
++++ b/tests/cli.rs
+@@ -546,7 +546,8 @@ fn checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events() {
+         let mut initial = candidate.clone();
+         initial["awaiting_human"] = json!(["existing-one", "existing-two"]);
+         initial["history_cursor"]["head"] = Value::Null;
+-        assert!(serde_json::to_string_pretty(&initial).unwrap().len() + 1 <= 131_072);
++        let initial_bytes = serde_json::to_string_pretty(&initial).unwrap().len() + 1;
++        assert!(initial_bytes <= 131_072);
+         fixture.write(".chough/session.json", &initial.to_string());
+         let args = [
+             "checkpoint",

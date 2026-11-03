@@ -170,7 +170,8 @@
       ".chough/evidence/OBS-product-test-e613f31740235919b76505d7.json",
       ".chough/artifacts/pr51-root-qualification/final-freshness-peer.json",
       ".chough/evidence/OBS-product-test-2a7d7facc915bcf96b293641.json",
-      ".chough/artifacts/pr51-writer-atomicity/protected-parent-manifest.json"
+      ".chough/artifacts/pr51-writer-atomicity/protected-parent-manifest.json",
+      ".chough/evidence/OBS-product-test-d7d49ea83fedc7d95d30dba1.json"
     ]
   },
   "decisions": [
@@ -596,10 +597,11 @@
     "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
     "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
     "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b",
-    "BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5"
+    "BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5",
+    "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Failure and blocking bug recorded. Commit the unchanged production source with stable failing regressions, then repair prepublication candidate sizing."
+  "next_action": "Independent source review, then settle task text before full final verification."
 }

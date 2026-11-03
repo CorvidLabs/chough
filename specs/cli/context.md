@@ -299,3 +299,16 @@ each normalized cycle occurrence once; only occurrences inside known exact file
 paths are file-specific. Check both pre-prune protection and post-prune
 availability, including partial restoration. Limits: disposable local fixtures;
 no live proof was removed and external path grammars remain outside this proof.
+
+2026-11-03, checkpoint refusal publication order (observation): writer-level
+regressions reproduced four orphan gate events after a rejected capacity update,
+while the saved checkpoint stayed unchanged. Source:
+OBS-product-test-2a7d7facc915bcf96b293641 and
+BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1,
+with stable tests and unchanged production source frozen in
+.chough/artifacts/pr51-writer-atomicity/before/. Future use: validate the complete
+serialized candidate before publishing side records, including the 26-byte growth
+from a null history head to its first fixed-width event ID. Test every managed
+record path and byte, exact-bound success and multiple clear/open gates. Limits:
+disposable macOS fixtures; this finding does not establish transactionality for
+later I/O errors, ID collisions or cycle-storage capacity failures.
