@@ -1,0 +1,45 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793640514,
+      "digest": "1f6a5f405a685548635c775f8ca8dff0bbcf791ae5c7733d5c948116d1996348",
+      "note": "Completes PR44 source/reference/copy consistency under actual0xLeifstanding chat authorization permitting needed repository changes delivered byPRs, relayed at issue11comment6581702299. Acting projectagentaccount iscorvid-agent; humanpermission is the authority SOURCE. No actual human implementation acceptance, merge, release or deployment is inferred.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-native-workflow-stage-references-and-installed-copies-consistent",
+        "title": "Make native workflow stage references and installed copies consistent",
+        "description": "Make native workflow stage references and installed copies consistent",
+        "kind": "documentation",
+        "affected_specs": [],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/",
+          ".claude/skills/chough-workflow/",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/plan.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Complete the existing REQ-cli-029 agent-operated authority guidance across plan/accept references and installed host copies; no additional canonical requirement, helper command or lifecycle state is introduced. The primary workflow change owns its contract and helper/test support.",
+        "acceptance_criteria": [
+          "Plan applies existing explicit authority before asking any missing decision, native writer examples use the acting agent account with actual human authority as source, accept preserves the actual implementation acceptance boundary, managed repository host copies match canonical guidance without overwriting edits, and cross-bundle actor/copy consistency plus safe predecessor upgrades are tested."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793660278,
+      "digest": "b81cd6195d91966a886dfe8d29b495031c820c230759d1d1e0ab490f16297079",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

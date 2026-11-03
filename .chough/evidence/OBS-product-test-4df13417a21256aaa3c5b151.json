@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-4df13417a21256aaa3c5b151",
+  "criteria": [
+    "LIFE-1",
+    "LIFE-6",
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Expanded writer-example regression fails on four human-actor examples in three user docs at baseline 9c41e95; exact test patch, source and binary hashes and failed output are retained before docs repair.",
+  "artifacts": [
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.metadata.json",
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.patch",
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.head",
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.head": "cfe9505c4cf3c4d99f5e4be0b96e5a9544ee8a091d7aebe46fa6f68cb26f48ee",
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.log": "e61687ea584ddbb08b3c2485c0257258c59cf39ab4d85127f4aef4c06d46a104",
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.metadata.json": "ba2e29e833f374e5664390167cb4b9f70622941e65d3f07f6a8d7deb31f2b632",
+    ".chough/artifacts/native-workflow-user-docs-before/baseline.patch": "7206daad16231e5fd36a92c80ee21bd4385c6731b38cee1601c51f1f749ed7a8"
+  },
+  "observed_at_unix_seconds": 1793642695,
+  "snapshot": {
+    "revision": "9c41e95949adcb1009c986f97db50faa593d81b2",
+    "dirty": true,
+    "fingerprint": "345a05f98acff619fb9ec1d4d541da89897af9e4664e9a7b5c52000211f1ca16",
+    "content": "96c399fcb93116e3fc1f83137e3dbcdba145820f5f46895a97314ffb3497e3ed"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Structural documentation consistency check, not fresh-agent behavior or human acceptance."
+  ]
+}

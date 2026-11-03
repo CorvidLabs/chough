@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea",
+  "title": "Timing native-budget regression sometimes records no initial stub call on MSRV",
+  "symptom": "The unchanged timeout test expected cur-change in the stub-call log but found no calls.",
+  "trigger": "Full Rust1.88 qualification with concurrent independent local builds and tests.",
+  "expected": "The current native read starts within the two-second fixture budget, then times out; later reads are not started.",
+  "actual": "The test failed at timing.rs1475 with an empty call list.",
+  "criteria": [
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-024"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64-rust1.88",
+  "revision": "9c41e95949adcb1009c986f97db50faa593d81b2",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-c640523df825794a3f2f64e3",
+    "OBS-tc-cli-agent-native-workflow-upgrade-c87dc40990d5b05c8f45e17d"
+  ],
+  "impact": "Unresolved qualification reliability concern; no timing code changed in the workflow documentation PR.",
+  "classification": "unclassified",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Observed PR44 final user-docs MSRV qualification",
+  "notes": [
+    {
+      "at_unix_seconds": 1793643390,
+      "text": "The isolated unchanged timeout test and full unchanged MSRV suite subsequently passed. No budget or assertion changed. Cause remains unconfirmed; keep this reliability concern open and out of the workflow-docs repair scope.",
+      "observations": [
+        "OBS-tc-cli-agent-native-workflow-upgrade-c87dc40990d5b05c8f45e17d"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793643140,
+  "updated_at_unix_seconds": 1793643390
+}

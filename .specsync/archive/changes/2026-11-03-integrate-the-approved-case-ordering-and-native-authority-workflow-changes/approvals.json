@@ -1,0 +1,56 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793661007,
+      "digest": "ad653a61f76682dc3d600a7ad71e34b779ec320121a9a6d2179a860eca8d1c7f",
+      "note": "Acting project agent: corvid-agent. Human authority: 0xLeif standing chat permission on2026-11-02 for needed repository changes through PRs, relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 , and his later instruction \"Can you finish up all these?\" after PR status and closeout gates were presented. Covered scope: bounded integration of main8fb0ea7 into PR44 with preserved ordering/authority behavior, checkpoint/history/proof, qualification and normal push. Root remains sole native review/ship writer; merge, release, deployment and live cleanup remain separate. No new as-is approval is claimed.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-the-approved-case-ordering-and-native-authority-workflow-changes",
+        "title": "Integrate the approved case ordering and native authority workflow changes",
+        "description": "Integrate the approved case ordering and native authority workflow changes",
+        "kind": "refactor",
+        "affected_specs": [],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/",
+          ".chough/cases/cli.cases.toml",
+          ".claude/skills/chough-workflow/",
+          "CHANGELOG.md",
+          "docs/ROADMAP.md",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/testing.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/context.md",
+          "specs/cli/requirements.md",
+          "specs/cli/testing.md",
+          "src/skill.rs",
+          "tests/package.rs",
+          "tests/workflow_authority.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Reconcile independently approved and archived PR41 ordering and PR44 authority changes on one merge result. Preserve both existing requirement meanings, native records and all proof; canonical version advancement and combined files/metadata introduce no new requirement, helper behavior or lifecycle state.",
+        "acceptance_criteria": [
+          "Merge main8fb0ea7 into PR44 without rebase or force, preserve case-ordering and acting-agent/human-source guidance across canonical and both host bundles, retain all existing predecessor identities/tests and both approved requirement effects with monotonic canonical version, select the complete PR44 checkpoint current-cycle group while preserving additive collections and every transition occurrence, leave existing archives/cold-start/observations/artifacts byte-identical, and pass all required Fledge steps, relevant bound cases and complete Rust1.95/1.88 tests before normal push. Native review/ship remains with the root closing session."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793664695,
+      "digest": "01086890c8d04d45f0c4b2dbdb789d9245b5a40a5d17280133019de539a5df6b",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

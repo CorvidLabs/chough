@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "integrate-the-approved-open-human-gate-follow-up-and-examples",
+  "slug": "integrate-the-approved-open-human-gate-follow-up-and-examples",
+  "title": "Integrate the approved open-human-gate follow-up and examples",
+  "description": "Integrate the approved open-human-gate follow-up and examples",
+  "kind": "documentation",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "4f82d3c235545eb7ea32c9413ee971ceae527644",
+  "created_at": 1793661825,
+  "updated_at": 1793664829,
+  "affected_specs": [],
+  "affected_paths": [
+    "examples/feature-bug-loop.sh",
+    "docs/walkthrough.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Import the already approved and archived PR45 example and walkthrough changes while combining its existing open-human-gate behavior with PR44. Existing integration scopes own stage/tests and common canonical paths. No new requirement meaning, runtime or inferred acceptance is added.",
+  "acceptance_criteria": [
+    "Integrate pinned main9d02fbf, preserving the approved open-awaiting-human guard for advance/skip and both existing failure/not-run guards and tests. Preserve example refusal ordering, acting-agent/human-source walkthrough guidance, exact protected proof and coherent PR44 checkpoint history. Combined canonical version becomes21 beyond main20; full qualification and ordinary push precede root-only native review/ship."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

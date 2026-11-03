@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "make-native-workflow-stage-references-and-installed-copies-consistent",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "e2a3e5876d35d8ea7eeefb5787ced352190abd58",
+      "contract_digest": "1f6a5f405a685548635c775f8ca8dff0bbcf791ae5c7733d5c948116d1996348",
+      "execution_digest": "1c9bcf119d683a6a5d876c1997f621728be9a7dd761a68d6d2a03c7fd218a235",
+      "workspace_digest": "fe528a5bfa2f82640b722306147cee14016dd735247b980b8497129e274453c6",
+      "timestamp": 1793660250
+    }
+  ]
+}

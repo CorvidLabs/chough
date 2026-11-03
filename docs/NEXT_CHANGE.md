@@ -54,8 +54,8 @@ to execute tests; HI IDs and SpecSync lifecycle ownership stay unchanged.
 
 ## Prepare the actual native definition
 
-After the human selects this outcome, use a new branch and the installed native
-CLI. The following creates a draft; it does not approve one:
+After the human selects this outcome, the agent uses a new branch and the installed
+native CLI. The following creates a draft; it does not approve one:
 
 ```sh
 specsync change new "Reuse observations after metadata commits" \
@@ -64,12 +64,16 @@ specsync change new "Reuse observations after metadata commits" \
 ```
 
 Use the returned ID and interview questions; complete the selected artifacts and
-contract delta, including the migration/output-label decision. Present that exact
-definition for a genuine human scope decision. Only then, if approved, record
-`specsync change approve <returned-id> --actor <actual-human>` and follow native
-status through implementation, product checks, `check --commit`, CI, genuine scoped
-review, same-PR ship/finalize, archive commit/CI, and GitHub merge. Actor text is
-not authenticated identity. Native status/recovery overrides this example sequence.
+contract delta, including the migration/output-label decision. The agent checks
+whether actual prior or standing human authority covers that exact definition and
+asks for the missing decision only when needed. If covered, it records
+`specsync change approve <returned-id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"`
+and follows native status through implementation, product checks, `check --commit`,
+CI, genuine scoped review, same-PR ship/finalize, archive commit/CI, and GitHub merge.
+The acting account is separate from the actual human authority source and is not
+authenticated identity. Scope authorization does not supply implementation
+acceptance or merge authority. Native status/recovery overrides this conditional
+example; the proposal's unapproved historical status remains unchanged.
 
 The baseline keeps native SDD's default optional policy. Before the first full
 scoped cycle, inspect `specsync change adopt --help` and deliberately adopt the
