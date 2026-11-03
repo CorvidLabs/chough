@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -296,7 +296,8 @@
     "PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved.",
     "Added cfg(test) clock and native-output hooks, the same-second two-root unit test, the real Git integration fixture test, two cases and a CHANGELOG note",
     "SpecSync change reviewed (pass) and finalized as corvid-agent; archived for PR #48",
-    "Same-second test passes git plain temporary paths (Windows verbatim path fix)"
+    "Same-second test passes git plain temporary paths (Windows verbatim path fix)",
+    "Windows path fix reviewed (pass) and finalized as corvid-agent"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -464,5 +465,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Rerun the case and verify"
+  "next_action": "Wait for hosted CI on PR #48; do not merge"
 }
