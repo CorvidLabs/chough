@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -578,5 +578,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Final native check/closeout after committed proof; publish for all hosted platforms and exact-head independent review, then authorized merge."
+  "next_action": "Merge PR50 after final-head independent approval and all hosted checks; user authorized approved-green merges. Capacity51stays separate."
 }

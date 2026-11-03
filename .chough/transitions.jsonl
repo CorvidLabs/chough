@@ -267,3 +267,4 @@
 {"schema_version":1,"at_unix_seconds":1793682883,"kind":"advance","from":"plan","to":"build","reason":null,"gate":"native:approved","revision":"6715944ff6c4d0423f59e38d76a9cba6ea89e708","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793684068,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"890e821adc072327b413cf704c4cbfa840cb3db0","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793684560,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"890e821adc072327b413cf704c4cbfa840cb3db0","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793684788,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"5434178ec025e2249f5440f98757b9faf6575b27","refresh":[]}
