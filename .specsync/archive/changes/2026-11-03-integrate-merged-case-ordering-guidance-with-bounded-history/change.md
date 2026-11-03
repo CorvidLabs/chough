@@ -1,6 +1,6 @@
 ---
 id: integrate-merged-case-ordering-guidance-with-bounded-history
-state: implementing
+state: archived
 type: documentation
 base_commit: d80066472bc52eb0968d39e3db8b4e4a274eb19f
 ---

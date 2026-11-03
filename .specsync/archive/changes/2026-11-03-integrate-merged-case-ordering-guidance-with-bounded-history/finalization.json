@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-merged-case-ordering-guidance-with-bounded-history",
+  "implementation_commit": "b9e464d4daabd699a84f2c9a815437ba86f73ca8",
+  "implementation_tree": "b8adeacdbba6b1585b0c7fc878f15e6f16fab8d0",
+  "contract_digest": "4bd906d0c6f936df4eaa4d837e0a1cc9eb3cbbf5edfe88496b509a7e86f7ee35",
+  "workspace_digest": "649f06b3319afdc56e46ca23ba4e5a1762ee2f8cf0fd1d5e57714da3b717cd53",
+  "closing_digest": "c115e43be7e138a75c5a89b04c92cbe83e4a0d5f13719bd9b9d6e3661a41b910",
+  "review_digest": "d94054cb3ff8b115ec034db01f8c261c0d7f7a7fd616271f53fcd5f2b3a3c28b",
+  "finalization_digest": "0f8eba11d109e74f35b80fbfb3b1d0149e804b243e16ab07c05556fadc441dfa",
+  "timestamp": 1793667032
+}
