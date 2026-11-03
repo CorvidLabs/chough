@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "f8b99ff243d42248a3e73fa381030fd12a1f34b0",
+      "contract_digest": "d0f291d6a1a19f70dd87f5cfc1e81fb7b563fae7895b4b9eeaa77d1f56a0af5a",
+      "execution_digest": "d401ec6fecc6cc27c84620ac8daaba01d7e80370cfb77263c869377627ea9acb",
+      "workspace_digest": "0b1ad2cb3c0df79be2f9bc808088aeef408fb94b860ae18830b933f17cd1456f",
+      "timestamp": 1793714707
+    }
+  ]
+}

@@ -7,11 +7,11 @@
   "title": "Refuse over-bound checkpoint candidates before publishing gate history",
   "description": "Refuse over-bound checkpoint candidates before publishing gate history",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "9bd3d506b86cbb312a5a3e195697cd3138920039",
   "created_at": 1793687243,
-  "updated_at": 1793714545,
+  "updated_at": 1793714732,
   "affected_specs": [
     "cli"
   ],
