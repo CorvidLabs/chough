@@ -323,13 +323,19 @@ wording; frozen old-skill fixtures were not changed. Future use: when guidance w
 changes, search runtime refusal and next-action strings in src/ as well as the
 skill and docs, and assert the remedy text in a test.
 
-2026-11-03, spec size bounded by a Chough record reader (verified): `chough evidence
-add` read `specs/<module>/requirements.md` through the 65,536-byte structured-record
+2026-11-03, spec size bounded by Chough readers (verified): `chough evidence add`
+read `specs/<module>/requirements.md` through the 65,536-byte structured-record
 reader, so a growing cli companion blocked #55 and forced the #59 split, although
-SpecSync sets no spec-file cap. Source: the failing-first run of
-`spec_requirements_companions_are_read_at_any_size` ("structured record exceeds 65536
-bytes") and Leif's 2026-11-03 10:05 AM MT decision that spec files have no size
-limit. Limits: only the two `requirements.md` reads in src/evidence.rs read native
-spec files today. Future use: read files the project owns under `specs/` with
-`records::read_spec_file`, keep `read_record` for Chough's own records, and treat
-size as a composability hint, not a gate.
+SpecSync sets no spec-file cap. The #61 review then found `chough next` skipping a
+module `context.md` over 4 MiB when pointing at its Lessons heading. Source: the
+failing-first runs of `spec_requirements_companions_are_read_at_any_size`
+("structured record exceeds 65536 bytes") and
+`next_searches_a_context_md_larger_than_4_mib` ("larger than 4194304 bytes, not
+searched"), and Leif's 2026-11-03 10:05 AM MT decision that spec files have no size
+limit. Limits: Chough reads spec files in `evidence add` (`requirements.md`, whole),
+`next` (the `context.md` Lessons heading, streamed), `context` (display-budgeted
+sections that mark their cut) and evidence snapshots (streamed digests). Future use:
+when removing a bound for a kind of file, search every reader of that path, not only
+the one that failed; read files under `specs/` with `records::read_spec_file` or a
+streamed read, keep `read_record` for Chough's own records, and treat size as a
+composability hint, not a gate.

@@ -7,10 +7,10 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "build",
     "status": "active",
     "callers": [],
-    "iteration": 2
+    "iteration": 1
   },
   "native_change": "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies",
   "references": {
