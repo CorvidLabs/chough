@@ -1,0 +1,23 @@
+{
+  "head": "9bd3d506b86cbb312a5a3e195697cd3138920039",
+  "files_sha256": {
+    "src/checkpoint.rs": "f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750",
+    "src/history.rs": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+    "tests/cli.rs": "66aa50bcd0b26f69045cc069ef036266b1501a7bb4f5ccf9bb49b2986dcb39bb"
+  },
+  "patch_sha256": "c9140ef7c2d0ae1e5c96d088419046f45bb8060e6e04daa36e3b6be12fd9ab03",
+  "argv": [
+    "fledge",
+    "run",
+    "test",
+    "--",
+    "--locked",
+    "--test",
+    "cli",
+    "checkpoint_writer_",
+    "--",
+    "--nocapture"
+  ],
+  "binary_before_sha256": "863adade6aa1ddd6eb921400a395238d4d8051fcd2279907458504f27a2effe3",
+  "production_changes_before": []
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
+  "slug": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
+  "title": "Refuse over-bound checkpoint candidates before publishing gate history",
+  "description": "Refuse over-bound checkpoint candidates before publishing gate history",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "9bd3d506b86cbb312a5a3e195697cd3138920039",
+  "created_at": 1793687243,
+  "updated_at": 1793687319,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "src/history.rs",
+    "tests/cli.rs",
+    "tests/history.rs",
+    "specs/cli/context.md",
+    "specs/cli/testing.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Repair existing REQ-cli-032 byte-identical refusal and REQ-cli-007 bounded checkpoint invariants; no new product contract, bound, schema or history policy.",
+  "acceptance_criteria": [
+    "Observation-count and serialized-byte overflow through the checkpoint writer with gate changes refuse before any managed record changes; exact bounds and successful gate history still work; all old evidence and unrelated limits remain byte-identical; focused and required gates pass with current proof."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Preserve old proof, exact bounds and current cursor semantics; validate before allocation/publication; real failure-first proof, actual source identity and no new lifecycle ledger.",
+    "public_contract": "no"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793687319,
+      "digest": "d0f291d6a1a19f70dd87f5cfc1e81fb7b563fae7895b4b9eeaa77d1f56a0af5a",
+      "note": "Acting agent corvid-agent. Actual human standing through-PR authority, explicit Merge approved green PRs and resynchronize, and latest finish-these-PRs request cover this concrete REQ-cli-032 atomicity repair on PR51 and conditional independently reviewed green merge. No new human as-is grade, release, deployment or live cleanup.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
+        "title": "Refuse over-bound checkpoint candidates before publishing gate history",
+        "description": "Refuse over-bound checkpoint candidates before publishing gate history",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "specs/cli/context.md",
+          "specs/cli/testing.md",
+          "src/checkpoint.rs",
+          "src/history.rs",
+          "tests/cli.rs",
+          "tests/history.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Repair existing REQ-cli-032 byte-identical refusal and REQ-cli-007 bounded checkpoint invariants; no new product contract, bound, schema or history policy.",
+        "acceptance_criteria": [
+          "Observation-count and serialized-byte overflow through the checkpoint writer with gate changes refuse before any managed record changes; exact bounds and successful gate history still work; all old evidence and unrelated limits remain byte-identical; focused and required gates pass with current proof."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Preserve old proof, exact bounds and current cursor semantics; validate before allocation/publication; real failure-first proof, actual source identity and no new lifecycle ledger.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

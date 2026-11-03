@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Finish the existing capacity proposal with accurate provenance and named limit refusals",
+  "objective": "Refuse capacity-overflow checkpoint writes before gate history publication",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "finish-the-bounded-capacity-proposal-with-named-refusals-and-accurate-provenance",
+  "native_change": "refuse-over-bound-checkpoint-candidates-before-publishing-gate-history",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -168,7 +168,9 @@
       ".chough/evidence/OBS-tc-cli-report-read-invalidation-e13d4017cd8f17a34782547f.json",
       ".chough/evidence/OBS-tc-cli-report-trace-parity-f63fb27141834a3f4710be95.json",
       ".chough/evidence/OBS-product-test-e613f31740235919b76505d7.json",
-      ".chough/artifacts/pr51-root-qualification/final-freshness-peer.json"
+      ".chough/artifacts/pr51-root-qualification/final-freshness-peer.json",
+      ".chough/evidence/OBS-product-test-2a7d7facc915bcf96b293641.json",
+      ".chough/artifacts/pr51-writer-atomicity/protected-parent-manifest.json"
     ]
   },
   "decisions": [
@@ -257,7 +259,8 @@
     "decided: implementation review of the PR #50 review-fix change recorded pass as corvid-agent and the change shipped at 41f6fb7, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review of 5b11aae; Leif's own PR #50 approval is still his)",
     "decided: corvid-agent records native approval, review and ship for the PR #50 evidence fix, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched)",
     "decided: implementation review of the PR #50 evidence-fix change recorded pass as corvid-agent and the change shipped, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review; Leif's own PR #50 approval is still his)",
-    "Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit \"Merge approved, green PRs and resynchronize\" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates."
+    "Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit \"Merge approved, green PRs and resynchronize\" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates.",
+    "Agent corvid-agent root applies actual standing through-PR permission and explicit Merge approved, green PRs and resynchronize plus latest finish-these-PRs request to repair existing REQ-cli-032 atomic refusal. Preserve every old record and bound; no new human as-is grade or numeric choice. Root alone closes this scope."
   ],
   "open_questions": [],
   "completed": [
@@ -598,5 +601,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR51 after independent approval of the actual final head and every hosted check passes, then verify merged main and deliver the overnight Grok handoff."
+  "next_action": "Failure and blocking bug recorded. Commit the unchanged production source with stable failing regressions, then repair prepublication candidate sizing."
 }
