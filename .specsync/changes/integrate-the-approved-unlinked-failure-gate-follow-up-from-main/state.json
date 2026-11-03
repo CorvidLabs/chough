@@ -11,7 +11,7 @@
   "canonical_applied": true,
   "base_commit": "e4eadd817a38127a1ebf49815b599cd89cfbefd0",
   "created_at": 1793661169,
-  "updated_at": 1793663920,
+  "updated_at": 1793664430,
   "affected_specs": [],
   "affected_paths": [
     "src/stage.rs",
@@ -28,6 +28,17 @@
     "docs"
   ],
   "dependencies": [],
+  "acceptance_owner_corrections": [
+    {
+      "schema_version": 1,
+      "sequence": 1,
+      "path": "src/stage.rs",
+      "module": "cli",
+      "actor": "corvid-agent",
+      "reason": "The accepted main stage guard source is canonically owned by cli. Record the missing exact source ownership for this active NoSpec integration through an append-only native correction, under the existing through-PR and finish-all authority. Preserve all original proof and approvals.",
+      "timestamp": 1793664430
+    }
+  ],
   "answers": {
     "architecture_risk": "no",
     "public_contract": "no"

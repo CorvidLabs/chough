@@ -11,7 +11,7 @@
   "canonical_applied": true,
   "base_commit": "6fde285473f3fa3b6efd45bc0582b3826ec8775d",
   "created_at": 1793660876,
-  "updated_at": 1793663907,
+  "updated_at": 1793664627,
   "affected_specs": [],
   "affected_paths": [
     "skills/chough-workflow/references/plan.md",
@@ -44,6 +44,17 @@
     "docs"
   ],
   "dependencies": [],
+  "acceptance_owner_corrections": [
+    {
+      "schema_version": 1,
+      "sequence": 1,
+      "path": "src/skill.rs",
+      "module": "cli",
+      "actor": "corvid-agent",
+      "reason": "The already approved integration changes src/skill.rs, which is deterministically owned by specs/cli/cli.spec.md; the NoSpec definition omitted an affected module. Append this exact owner binding through the native guided correction, preserving the existing definition/approval events. Actual authority is 0xLeif standing through-PR permission and finish-all instruction; no new product semantics.",
+      "timestamp": 1793664427
+    }
+  ],
   "answers": {
     "architecture_risk": "no",
     "public_contract": "no"

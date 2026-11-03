@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "integrate-the-approved-case-ordering-and-native-authority-workflow-changes",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "2caacd527054a9690c24b093932743b67e480530",
+  "contract_digest": "ad653a61f76682dc3d600a7ad71e34b779ec320121a9a6d2179a860eca8d1c7f",
+  "execution_digest": "b6b5aa15de350e53bd5fdc4e6cde9c258e398c9036f4fbc1c88c01926e4f6743",
+  "workspace_digest": "29c1b8b7ca0b88618bb5a34a7bd72d77bd112191d851f1234b42b20395bfb62e",
+  "timestamp": 1793664154
+}
