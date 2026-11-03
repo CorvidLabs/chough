@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -151,7 +151,12 @@
       ".chough/evidence/OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56.json",
       ".chough/evidence/OBS-product-test-c15c11e67b8c42a50a4cf835.json",
       ".chough/artifacts/pr46-checkpoint-reference-index/policy.json",
-      ".chough/artifacts/pr46-archive-executor-performance"
+      ".chough/artifacts/pr46-archive-executor-performance",
+      ".chough/evidence/OBS-tc-cli-report-case-read-budget-2af9122b4596a360fdf87116.json",
+      ".chough/evidence/OBS-tc-cli-report-read-invalidation-6352cd6b7a933e27a28d1bce.json",
+      ".chough/evidence/OBS-tc-cli-report-trace-parity-4330cee0bcfefa49971754aa.json",
+      ".chough/evidence/OBS-product-test-9d0fec683204719b7d77acc4.json",
+      ".chough/artifacts/pr50-root-qualification/final-freshness-peer.json"
     ]
   },
   "decisions": [
@@ -337,7 +342,8 @@
     "Combined source:9Fledge steps and240tests on each Rust1.95/1.88, all16cases passed; actual44main imported with identical qualified inputs and0record replay.",
     "Combined source passed 240 tests on each Rust version, nine Fledge steps and 16 cases; the integration is archived.",
     "Main 134ee19 integrated: 3-way checkpoint (197 obs, 37 files), test call fixed, #48 cases rerun",
-    "Integration shipped as corvid-agent per #46 through-PR authority; Leif's PR approval still his"
+    "Integration shipped as corvid-agent per #46 through-PR authority; Leif's PR approval still his",
+    "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -572,5 +578,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Approve concrete integration definition under recorded standing human authority, merge accepted main, qualify fresh source and publish only after native closeout."
+  "next_action": "Final native check/closeout after committed proof; publish for all hosted platforms and exact-head independent review, then authorized merge."
 }
