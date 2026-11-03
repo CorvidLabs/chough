@@ -175,3 +175,4 @@
 {"schema_version":1,"at_unix_seconds":1793640245,"kind":"advance","from":"accept","to":"done","reason":"Accepted: archived SpecSync change, verify lane passed locally","gate":"native:archived","revision":"892ef32c6eb6a4964a92f3e922816f2958a001be","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793663521,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793663850,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793664991,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"9e8b1788815841697ca0a10153742a629e1dd859","refresh":[]}
