@@ -3020,3 +3020,39 @@ expected = ["tests/evidence.rs::archive_summary_apply_is_authorized_ledgered_and
 adapter = "cargo-test"
 test_target = "evidence"
 test = "archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change"
+
+[[case]]
+id = "TC-cli-knowledge-entries-bounded"
+title = "Knowledge entries stay bounded with cumulative manifests and a refused build writes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-2", "KNOW-6"]
+requirements = ["REQ-cli-015"]
+paths = ["src/library.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing"
+
+[[case]]
+id = "TC-cli-archive-summary-fails-closed"
+title = "The archive summary apply fails closed without native validity and rolls back a partial removal"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-9", "KNOW-10"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal"

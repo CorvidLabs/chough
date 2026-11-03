@@ -1853,22 +1853,35 @@ fn summary_plan(root: &Path, archives: &[ListedArchive]) -> Result<SummaryPlan> 
     })
 }
 
-/// Terminal evidence validity of each archive, as `specsync change status` reports it.
-fn validity(root: &Path, ids: &BTreeSet<String>) -> BTreeMap<String, String> {
-    ids.iter()
-        .map(|id| {
-            let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
-            let state = response
-                .value
-                .as_ref()
-                .and_then(|value| value["summary"]["terminal_evidence"]["validity"].as_str())
-                .map_or_else(
-                    || format!("unreadable ({})", response.section.state),
-                    str::to_string,
-                );
-            (id.clone(), state)
-        })
+fn one_line_bounded(text: &str) -> String {
+    text.split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .chars()
+        .take(200)
         .collect()
+}
+
+/// Terminal evidence validity of each archive, as `specsync change status` reports it.
+/// Fails closed: an archive whose validity cannot be read is an error, never a value.
+fn validity(root: &Path, ids: &BTreeSet<String>) -> Result<BTreeMap<String, String>> {
+    let mut found = BTreeMap::new();
+    for id in ids {
+        let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
+        let Some(state) = response
+            .value
+            .as_ref()
+            .and_then(|value| value["summary"]["terminal_evidence"]["validity"].as_str())
+        else {
+            bail!(
+                "`specsync change status {id} --json` did not report terminal evidence validity ({}: {}); nothing was removed without a native validity check",
+                response.section.state,
+                one_line_bounded(&response.section.content)
+            );
+        };
+        found.insert(id.clone(), state.to_string());
+    }
+    Ok(found)
 }
 
 /// `chough library archive [--apply]`: preview the post-archive summary, or with an
@@ -1920,41 +1933,75 @@ pub(super) fn archive_summary(
             .flat_map(|candidate| candidate.archives.iter().cloned())
             .collect();
         if !eligible.is_empty() {
-            let before = validity(root, &affected);
+            let before = validity(root, &affected)?;
+            // Read everything removal needs before the first ledger line is written.
+            let mut prepared = vec![];
+            for candidate in &eligible {
+                let evidence = load(root, &candidate.id)?;
+                let record_digest = file_digest(root, &candidate.files[0])?;
+                let mut bytes = vec![];
+                for file in &candidate.files {
+                    bytes.push((file.clone(), fs::read(local_path(root, file)?)?));
+                }
+                prepared.push((candidate, evidence, record_digest, bytes));
+            }
             write_entries(root)?;
             let head = head_revision(root);
             let at = now()?;
             let mut held: Vec<(String, Vec<u8>)> = vec![];
-            for candidate in &eligible {
-                let evidence = load(root, &candidate.id)?;
-                let entry = json!({
-                    "schema_version": 1,
-                    "id": candidate.id,
-                    "cases": case_ids(&evidence),
-                    "environment": evidence.environment,
-                    "outcome": evidence.outcome,
-                    "kind": evidence.kind,
-                    "revision": evidence.snapshot.revision,
-                    "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
-                    "artifacts": evidence.artifact_fingerprints,
-                    "record_digest": file_digest(root, &candidate.files[0])?,
-                    "removed": candidate.files,
-                    "archives": candidate.archives,
-                    "knowledge": entry_path(&candidate.archives[0]),
-                    "reason": SUMMARY_REASON,
-                    "policy": policy(Some(authority)),
-                    "head": head,
-                    "pruned_at_unix_seconds": at,
-                });
-                append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
-                for file in &candidate.files {
-                    let bytes = fs::read(local_path(root, file)?)?;
-                    remove_if_present(root, file)?;
-                    held.push((file.clone(), bytes));
+            let mut recorded: Vec<String> = vec![];
+            let removal: Result<()> = (|| {
+                for (candidate, evidence, record_digest, bytes) in &prepared {
+                    let entry = json!({
+                        "schema_version": 1,
+                        "id": candidate.id,
+                        "cases": case_ids(evidence),
+                        "environment": evidence.environment,
+                        "outcome": evidence.outcome,
+                        "kind": evidence.kind,
+                        "revision": evidence.snapshot.revision,
+                        "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
+                        "artifacts": evidence.artifact_fingerprints,
+                        "record_digest": record_digest,
+                        "removed": candidate.files,
+                        "archives": candidate.archives,
+                        "knowledge": entry_path(&candidate.archives[0]),
+                        "reason": SUMMARY_REASON,
+                        "policy": policy(Some(authority)),
+                        "head": head,
+                        "pruned_at_unix_seconds": at,
+                    });
+                    append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
+                    recorded.push(candidate.id.clone());
+                    for (file, content) in bytes {
+                        held.push((file.clone(), content.clone()));
+                        remove_if_present(root, file)?;
+                    }
                 }
-            }
-            let after = validity(root, &affected);
-            if after != before {
+                Ok(())
+            })();
+            let failure = match removal {
+                Err(error) => Some(format!("removal failed partway ({error:#})")),
+                Ok(()) => match validity(root, &affected) {
+                    Err(error) => Some(format!(
+                        "terminal evidence validity could not be re-read after removal ({error:#})"
+                    )),
+                    Ok(after) if after != before => Some(format!(
+                        "removing archived proof changed terminal evidence validity ({})",
+                        before
+                            .iter()
+                            .filter(|(id, state)| after.get(*id) != Some(*state))
+                            .map(|(id, state)| format!(
+                                "{id}: {state} -> {}",
+                                after.get(id).map_or("missing", String::as_str)
+                            ))
+                            .collect::<Vec<_>>()
+                            .join("; ")
+                    )),
+                    Ok(_) => None,
+                },
+            };
+            if let Some(failure) = failure {
                 for (file, bytes) in &held {
                     let path = local_path(root, file)?;
                     if let Some(parent) = path.parent() {
@@ -1962,33 +2009,22 @@ pub(super) fn archive_summary(
                     }
                     fs::write(&path, bytes).with_context(|| format!("restoring {file}"))?;
                 }
-                for candidate in &eligible {
+                for id in &recorded {
                     append_line(
                         root,
                         LEDGER,
                         &serde_json::to_string(&json!({
                             "schema_version": 1,
                             "event": "restored",
-                            "id": candidate.id,
-                            "reason": "removal changed an affected archive's terminal evidence validity",
+                            "id": id,
+                            "reason": failure,
                             "restored_at_unix_seconds": now()?,
                         }))?,
                     )?;
                 }
                 write_entries(root)?;
-                let changed: Vec<String> = before
-                    .iter()
-                    .filter(|(id, state)| after.get(*id) != Some(*state))
-                    .map(|(id, state)| {
-                        format!(
-                            "{id}: {state} -> {}",
-                            after.get(id).map_or("missing", String::as_str)
-                        )
-                    })
-                    .collect();
                 bail!(
-                    "removing archived proof changed terminal evidence validity ({}); restored {} files and recorded the restore in {LEDGER}",
-                    changed.join("; "),
+                    "{failure}; restored {} files and recorded the restore in {LEDGER}",
                     held.len()
                 );
             }

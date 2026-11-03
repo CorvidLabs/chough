@@ -134,7 +134,9 @@
       "TC-cli-librarian-default-on-knowledge",
       "TC-cli-knowledge-archive-entries",
       "TC-cli-archive-summary-preview",
-      "TC-cli-archive-summary-apply"
+      "TC-cli-archive-summary-apply",
+      "TC-cli-knowledge-entries-bounded",
+      "TC-cli-archive-summary-fails-closed"
     ],
     "design": [],
     "files": [
@@ -292,7 +294,8 @@
     "Agent: deferred, not captured: duplicate or contradicting lesson flags, scoped lessons in next, retired-lesson history, status hot-folder counts and outside artifact storage (#14 item 3)",
     "Agent authority: corvid-agent acts under Leif's standing through-PR authority (7:49 AM MT) and his 8:27 AM MT intent answers; no release, deploy, live cleanup of this repository's .chough history or fabricated human acceptance",
     "Repo dry run of chough library archive (preview only, nothing written): 52 archives (3 hot, 49 cold), 579 listed observation sets, 0 eligible, 0 reclaimable bytes. SpecSync verification manifests are cumulative, so the newest archive lists all 579 present records and every set is protected as hot; 83 are protected only by hot listings (about 614 KB). Leif decides whether hot should mean the archive that first listed a set; no live cleanup was run.",
-    "src/skill.rs is outside this change's approved affected paths, so the KNOWN_PREVIOUS digest for main 0363d4a references/librarian.md is not added here; until a follow-up change adds it, skill status reports an installed 0363d4a librarian.md as edited and skill update keeps it rather than replacing it."
+    "src/skill.rs is outside this change's approved affected paths, so the KNOWN_PREVIOUS digest for main 0363d4a references/librarian.md is not added here; until a follow-up change adds it, skill status reports an installed 0363d4a librarian.md as edited and skill update keeps it rather than replacing it.",
+    "Review 5755705790 fixes: knowledge entries are bounded (first-listed paths, at most 100 rows, 64 KiB) and built in memory before writing; apply fails closed when SpecSync cannot report an affected archive's validity and restores on any error after the first ledger line. Both regression tests failed first on a53e604 src. src/skill.rs KNOWN_PREVIOUS for librarian.md stays a follow-up: SpecSync 6.1.2 cannot widen affected_paths after draft (change correct accepts only public_contract and architecture_risk), so widening would bypass the native guard. corvid-agent, under Leif's approved KNOW intent relayed by the parent agent."
   ],
   "open_questions": [],
   "completed": [
@@ -621,7 +624,13 @@
     "OBS-tc-cli-archive-summary-apply-73bd07d530eac90204447d25",
     "OBS-tc-cli-archive-summary-preview-d0a76434022c89c7008e8d0a",
     "OBS-tc-cli-knowledge-archive-entries-e16e5b4bb89ce6ef2835c056",
-    "OBS-tc-cli-librarian-default-on-knowledge-ab75b0dd66df0f5ca429d3fc"
+    "OBS-tc-cli-librarian-default-on-knowledge-ab75b0dd66df0f5ca429d3fc",
+    "OBS-tc-cli-archive-summary-apply-017af1fee70a2b18d13ce95a",
+    "OBS-tc-cli-archive-summary-fails-closed-d96abea42ebd8134f6a36f36",
+    "OBS-tc-cli-archive-summary-preview-8f893d16e89c4e10f42fdec2",
+    "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
+    "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
+    "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423"
   ],
   "bugs": [
     "BUG-0001",

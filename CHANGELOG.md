@@ -17,8 +17,13 @@ All notable changes to Chough are recorded here. The format follows
   or with retention authority and no open native change, removal of observation proof
   only cold archived changes list (outside the newest 3) and that is committed
   identically at HEAD, after its summary is written and its ledger line appended. A
-  removal that changes any affected archive's terminal evidence validity is restored
-  and refused. It never runs on its own after finalize.
+  removal that changes any affected archive's terminal evidence validity, or that
+  fails partway, is restored and refused, and an archive whose validity SpecSync cannot
+  report refuses the apply before anything is removed. It never runs on its own after
+  finalize. Knowledge entries stay within 64 KiB with cumulative manifests (paths are
+  detailed in the entry of the archive that first listed them, at most 100 rows), and
+  `library init`, `index` and `snapshot` build everything before writing, so a refusal
+  leaves no partial `knowledge/` folder.
 
 - Approved-delta guard refusals that need a new definition approval now name the
   acting agent account and a human authority note, matching docs/cli.md, instead of

@@ -527,9 +527,16 @@ passed observation, and validation runs keep their recorded counts.
 
 `chough library archive` keeps one regenerated summary per archived native change in
 `knowledge/archives/<change-id>.md` (title, hot or cold, base, implementation and
-verification commits, requirement IDs, acceptance criteria, each listed `.chough/` path
-with its manifest digest and where its bytes are now, observation outcomes, linked bugs
-and the lesson bundle) and lets the raw proof go once it is safely in Git (REQ-cli-033).
+verification commits, requirement IDs, acceptance criteria, each `.chough/` path the
+archive first listed with its manifest digest and where its bytes are now, observation
+outcomes, linked bugs and the lesson bundle) and lets the raw proof go once it is safely
+in Git (REQ-cli-033).
+
+- Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
+  path an earlier archive already listed is counted but detailed only in that earlier
+  entry, and at most 100 rows are listed in full; the rest are counted and left to the
+  native `verification.json`. `library init`, `index` and `snapshot` build and bound
+  every entry and the index in memory first, so a refusal writes nothing.
 
 - Archived changes are ordered by finalization timestamp, then directory, newest first;
   the newest 3 are hot. An observation set the verification manifest of a hot archive
@@ -546,8 +553,12 @@ and the lesson bundle) and lets the raw proof go once it is safely in Git (REQ-c
   writes the knowledge entries first, appends each set's ledger line to
   `.chough/pruned.jsonl` (reason `archived-summary`, the knowledge entry and the head)
   before removing it, then re-reads every affected archive's terminal evidence
-  validity. If any changed, every removed file is restored, a `restored` ledger event is
-  appended for each set, and the command fails.
+  validity. If any changed, if a validity cannot be re-read, or if any step after the
+  first ledger line fails, every removed file is restored, a `restored` ledger event is
+  appended for each ledgered set, and the command fails.
+- Validity must be read as a real value before anything is removed: when `specsync
+  change status` fails or does not report an affected archive's terminal evidence
+  validity, `--apply` refuses and removes and ledgers nothing.
 - Removed observations referenced later read as `pruned`, never current or passed, and
   their entries show `Git <commit>` as the location. Native archives, ignore rules and
   Git history are never changed, and the step never runs on its own after finalize.

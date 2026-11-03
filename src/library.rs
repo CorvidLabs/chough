@@ -59,6 +59,10 @@ pub(super) enum LibraryCommand {
 }
 
 const HOT_ARCHIVES: usize = 3;
+/// Rows each knowledge entry lists in full before pointing at the manifest.
+const ENTRY_ROWS: usize = 100;
+/// The managed-file bound every generated knowledge file stays within.
+const ENTRY_LIMIT: usize = 65_536;
 const ARCHIVES: &str = ".specsync/archive/changes";
 
 /// One archived native change, read from its local records.
@@ -204,8 +208,33 @@ fn archive_entry(
     root: &Path,
     archive: &Archive,
     hot: bool,
+    first: &[(String, String)],
     ledger: &std::collections::BTreeMap<String, serde_json::Value>,
     bug_refs: &[(String, Vec<String>)],
+) -> Result<String> {
+    let full = archive_entry_rows(root, archive, hot, first, ledger, bug_refs, ENTRY_ROWS)?;
+    if full.len() <= ENTRY_LIMIT {
+        return Ok(full);
+    }
+    let counts = archive_entry_rows(root, archive, hot, first, ledger, bug_refs, 0)?;
+    ensure!(
+        counts.len() <= ENTRY_LIMIT,
+        "knowledge entry for {} exceeds {ENTRY_LIMIT} bytes even without its file tables",
+        archive.id
+    );
+    Ok(counts)
+}
+
+/// One knowledge entry listing at most `rows` file and observation rows; the rest are
+/// counted and left to the native manifest.
+fn archive_entry_rows(
+    root: &Path,
+    archive: &Archive,
+    hot: bool,
+    first: &[(String, String)],
+    ledger: &std::collections::BTreeMap<String, serde_json::Value>,
+    bug_refs: &[(String, Vec<String>)],
+    rows_limit: usize,
 ) -> Result<String> {
     let base = format!("{ARCHIVES}/{}", archive.dir);
     let commit = |value: &Option<String>| value.clone().unwrap_or_else(|| "unrecorded".into());
@@ -228,7 +257,7 @@ fn archive_entry(
         .map(|error| format!("| (manifest unreadable: {}) | | |\n", one_line(error)))
         .unwrap_or_default();
     let mut observations = vec![];
-    for (path, listed_digest) in &archive.listed {
+    for (path, listed_digest) in first.iter().take(rows_limit) {
         let full = local_path(root, path)?;
         let location = if full.is_file() {
             if crate::records::file_digest(root, path).is_ok_and(|digest| digest == *listed_digest)
@@ -250,6 +279,21 @@ fn archive_entry(
         {
             observations.push(id.to_string());
         }
+    }
+    let shown = first.len().min(rows_limit);
+    let mut files_note = format!(
+        "{listed} `.chough/` paths of {total} manifest entries; {first} first listed by this archive, \
+{shown} shown below. Paths first listed by an earlier archive are summarized there; the full \
+list is the native manifest [verification.json](../../{base}/verification.json).",
+        listed = archive.listed.len(),
+        total = archive.all_paths.len(),
+        first = first.len(),
+    );
+    if shown < first.len() {
+        files_note.push_str(&format!(
+            " {} more first listed here are not shown; read them from the manifest.",
+            first.len() - shown
+        ));
     }
     let mut rows = String::new();
     for id in &observations {
@@ -316,7 +360,7 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
 - Requirements: {requirements}\n\
 - Lesson bundle: {lesson}\n\n\
 ## Acceptance criteria\n\n{criteria}\n\
-## Listed .chough files\n\n{count} of {total} manifest entries. Location is where the bytes are now.\n\n\
+## Listed .chough files\n\n{files_note} Location is where the bytes are now.\n\n\
 | Path | Digest | Location |\n|---|---|---|\n{files}\n\
 ## Observations\n\n| ID | Outcome | Environment | Cases |\n|---|---|---|---|\n{rows}\n\
 ## Bugs\n\n{bugs}",
@@ -338,8 +382,7 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
             "none".into()
         },
         criteria = list(&archive.criteria),
-        count = archive.listed.len(),
-        total = archive.all_paths.len(),
+        files_note = files_note,
         files = files,
         rows = rows,
         bugs = list(&bugs),
@@ -348,21 +391,52 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
 
 /// Regenerate every archived-change entry and the index.
 fn regenerate(root: &Path, dir: &str) -> Result<()> {
+    write_all(root, dir, build(root, dir)?)
+}
+
+/// Every generated knowledge file, built and bounded in memory before anything is written.
+fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
     let found = archives(root)?;
     let ledger = evidence::ledger_records(root)?;
     let bug_refs = bugs::observation_references(root)?;
+    // Cumulative manifests repeat earlier proof; each entry details what it first listed.
+    let mut seen = std::collections::BTreeSet::new();
+    let mut first: Vec<Vec<(String, String)>> = vec![vec![]; found.len()];
+    for (index, archive) in found.iter().enumerate().rev() {
+        first[index] = archive
+            .listed
+            .iter()
+            .filter(|(path, _)| seen.insert(path.clone()))
+            .cloned()
+            .collect();
+    }
+    let mut files = vec![];
     for (index, archive) in found.iter().enumerate() {
-        let content = archive_entry(root, archive, index < HOT_ARCHIVES, &ledger, &bug_refs)?;
-        let relative = format!("{dir}/archives/{}.md", archive.id);
-        fs::create_dir_all(local_path(root, &format!("{dir}/archives"))?)?;
-        write_replace(root, &relative, &content)?;
+        let content = archive_entry(
+            root,
+            archive,
+            index < HOT_ARCHIVES,
+            &first[index],
+            &ledger,
+            &bug_refs,
+        )?;
+        files.push((format!("{dir}/archives/{}.md", archive.id), content));
     }
     let content = index(root, dir, &found)?;
     ensure!(
-        content.len() <= 65_536,
-        "index exceeds 65536 bytes; summarize older snapshots in a brief"
+        content.len() <= ENTRY_LIMIT,
+        "index exceeds {ENTRY_LIMIT} bytes; summarize older snapshots in a brief"
     );
-    write_replace(root, &format!("{dir}/INDEX.md"), &content)
+    files.push((format!("{dir}/INDEX.md"), content));
+    Ok(files)
+}
+
+fn write_all(root: &Path, dir: &str, files: Vec<(String, String)>) -> Result<()> {
+    fs::create_dir_all(local_path(root, &format!("{dir}/archives"))?)?;
+    for (relative, content) in files {
+        write_replace(root, &relative, &content)?;
+    }
+    Ok(())
 }
 
 fn enabled_dir(root: &Path) -> Result<String> {
@@ -707,9 +781,11 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
     let dir = enabled_dir(root)?;
     match command {
         LibraryCommand::Init => {
+            // Build and bound everything first so a refusal leaves no half-built folder.
+            let files = build(root, &dir)?;
             let created_readme = write_new(root, &format!("{dir}/README.md"), README)?;
             fs::create_dir_all(local_path(root, &format!("{dir}/briefs"))?)?;
-            regenerate(root, &dir)?;
+            write_all(root, &dir, files)?;
             print_json(&json!({
                 "schema_version": 1,
                 "library": dir,
@@ -718,6 +794,8 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
             }))
         }
         LibraryCommand::Snapshot { paths, reason } => {
+            // Refuse an unbuildable index before the snapshot is written.
+            build(root, &dir)?;
             let value = snapshot(root, &dir, &paths, &reason)?;
             regenerate(root, &dir)?;
             print_json(&value)
