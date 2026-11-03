@@ -144,16 +144,7 @@ each could not be built, and the tested fixture fills the bound instead. Source:
 choice. Limits: checkpoint-backed lists. Future use: check record-size bounds when
 writing a criterion's fixture, before approval.
 
-2026-11-02, checkpoint capacity (decided, values pending): Leif approved raising the
-limits in chat, 9:40 PM MT: "Do your agent's cleanup and raise the progress file and
-test-result limits." He did not give values. PR #50's three-way merge of main 747a12c
-reached 68,737 bytes with 200 observation pointers, so corvid-agent proposed a
-131,072-byte checkpoint bound and a 400-entry `observations` bound, pending his
-confirmation. "Test-result limits" means the observation pointer list, not the 1 MiB
-captured-output bound, which is unchanged; every other record and list bound is also
-unchanged. The cleanup half is done in #50. Source: native change
-raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400.
-Future use: compact superseded agent notes before the checkpoint nears the new bound.
+2026-11-02, checkpoint capacity (agent implementation decision): Leif's qualitative direction was "Do your agent's cleanup and raise the progress file and test-result limits." The later direct instruction was to finish these PRs and merge. Under that standing through-PR authority, root selects the existing proposal of131072checkpoint bytes and400observation pointers as bounded engineering values; these are not human-specified numbers. All other record/list/output/history bounds remain unchanged. PR50cleanup fits the old bounds and is separate. Preserve the original capacity archive and qualify final diagnostic/provenance bytes through the fresh followup; this records no new human Pass grade or numeric quote.
 
 2026-11-01, closeout order (verified): SpecSync 6.1.2 `change check` refuses while the
 closeout box is open, so closeout runs before the scoped check and is extended, not

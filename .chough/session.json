@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Raise the checkpoint limits to 128 KiB and 400 observation pointers (LIFE-11)",
+  "objective": "Finish the existing capacity proposal with accurate provenance and named limit refusals",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "raise-the-checkpoint-session-byte-limit-to-131072-and-the-observation-pointer-limit-to-400",
+  "native_change": "finish-the-bounded-capacity-proposal-with-named-refusals-and-accurate-provenance",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -246,7 +246,8 @@
     "Agent corvid-agent applies 0xLeif standing through-PR ticket permission and chat instruction \"Merge approved, green PRs and resynchronize\" to the PR46 archive executor performance fix. All native obligations, validation, 90-second commands and 10-minute job budget stay unchanged. No evidence rewrite, longer timeout, release or deployment is authorized.",
     "Agent corvid-agent records delegated native closeout of the bounded PR46 executor fix under 0xLeif standing through-PR authority and explicit finish/merge instruction. Peer review and local verification are retained. Exact-head GitHub approval and every hosted check still gate merge.",
     "decided: corvid-agent approves, reviews and ships the #48 main integration, (because 0xLeif's through-PR authorization in #46's archived context and issuecomment-6595229360; scope: integration only; limits: no limit raise, pruning or merge)",
-    "decided: raise only the checkpoint byte bound (131072) and the observation pointer bound (400), keeping every other bound, (because Human decision: Leif (0xLeif), chat 2026-11-02 9:40 PM MT: 'Do your agent's cleanup and raise the progress file and test-result limits.' Approvals recorded as corvid-agent under his 2026-11-02 9:14 AM MT instruction 'Use corvid-agent for all approvals for all things!! You are corvid-agent'; limits: no history pruning, no other bound changes)"
+    "decided: raise only the checkpoint byte bound (131072) and the observation pointer bound (400), keeping every other bound, (because Human decision: Leif (0xLeif), chat 2026-11-02 9:40 PM MT: 'Do your agent's cleanup and raise the progress file and test-result limits.' Approvals recorded as corvid-agent under his 2026-11-02 9:14 AM MT instruction 'Use corvid-agent for all approvals for all things!! You are corvid-agent'; limits: no history pruning, no other bound changes)",
+    "Agent corvid-agent root selects the existing131072/400proposal as bounded implementation values under0xLeif standing through-PR permission and latest direct request to finish these PRs and merge. The numbers are agent-selected, not human-specified; ambiguous2is not an approval source. Preserve all other bounds and old proof. New native followup qualifies the diagnostic and current prose; root alone closes it."
   ],
   "open_questions": [],
   "completed": [
@@ -616,5 +617,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Await Leif's confirmation of the proposed values and his review of #51; then merge main into #50 with the cleanup"
+  "next_action": "Approve concrete bounded followup, capture failing diagnostic assertion, repair it and qualify final source after importing accepted PR50."
 }

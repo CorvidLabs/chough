@@ -1,0 +1,31 @@
+▶️ Running task: test
+   Compiling rustix v1.1.6
+   Compiling bitflags v2.13.2
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling errno v0.3.14
+   Compiling tempfile v3.27.0
+   Compiling chough v0.1.0 (/private/tmp/chough-pr51-finish-SLSKxX)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.72s
+     Running tests/cli.rs (target/debug/deps/cli-f87db1c6230f0e78)
+
+running 1 test
+test observation_pointer_bound_is_400_and_other_lists_stay_at_200 ... FAILED
+
+failures:
+
+---- observation_pointer_bound_is_400_and_other_lists_stay_at_200 stdout ----
+
+thread 'observation_pointer_bound_is_400_and_other_lists_stay_at_200' (335789799) panicked at tests/cli.rs:366:5:
+Error: too many observation
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    observation_pointer_bound_is_400_and_other_lists_stay_at_200
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 28 filtered out; finished in 0.47s
+
+error: test failed, to rerun pass `--test cli`
+error: Task 'test' failed with exit code 101

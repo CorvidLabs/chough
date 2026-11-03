@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "id": "BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5",
+  "title": "Observation overflow refusal omits its numeric capacity bound",
+  "symptom": "401observation pointers refuse without naming the400limit required byREQ-cli-032",
+  "trigger": "Run the existing observation pointer boundary test with an unchanged added limit400diagnostic assertion",
+  "expected": "The refusal identifies the observation list and numeric400limit while preserving the checkpoint bytes.",
+  "actual": "The actual refusal is only Error: too many observation and the focused assertion fails.",
+  "criteria": [
+    "LIFE-11"
+  ],
+  "requirements": [
+    "REQ-cli-032"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "dbb66d979e2c34e41926401641d58971c0d65f65",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-product-test-f070b3954a220492de975d64"
+  ],
+  "impact": "The named capacity requirement is not met and the operator cannot see which numeric limit applies.",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "root independent review and genuine unchanged failure-first regression at current working inputs",
+  "notes": [],
+  "created_at_unix_seconds": 1793684808,
+  "updated_at_unix_seconds": 1793684808
+}

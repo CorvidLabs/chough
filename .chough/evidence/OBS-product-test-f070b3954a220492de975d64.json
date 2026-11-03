@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-f070b3954a220492de975d64",
+  "criteria": [
+    "LIFE-11"
+  ],
+  "requirements": [
+    "REQ-cli-032"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Failure-first: the unchanged401-observation fixture fails its added numeric 'limit 400' assertion because the actual diagnostic is 'too many observation'. Focused Fledge wrapper exits1/Cargo101,0passed,1failed,28filtered. Production diagnostic source is unchanged; exact inputs and output are frozen.",
+  "artifacts": [
+    ".chough/artifacts/pr51-root-qualification/named-bound-before.log",
+    ".chough/artifacts/pr51-root-qualification/named-bound-before.json",
+    ".chough/artifacts/pr51-root-qualification/unfixed-source.diff"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/pr51-root-qualification/named-bound-before.json": "9a1fe65b798ad74db9e840c7c9edc3671f409c38d27d3e2ee7809baa4276b345",
+    ".chough/artifacts/pr51-root-qualification/named-bound-before.log": "b9f2b559adb0d166edcd57187a0a29163c35e587f1c384f2d92034886438ecf3",
+    ".chough/artifacts/pr51-root-qualification/unfixed-source.diff": "db20804c4acc92b8697f3b9a719fd2b4c2d14f9cc31c0a5756b852ef5f066cb8"
+  },
+  "observed_at_unix_seconds": 1793684807,
+  "snapshot": {
+    "revision": "dbb66d979e2c34e41926401641d58971c0d65f65",
+    "dirty": true,
+    "fingerprint": "f3642c5a00f365098fe010089515cfd0d55d5e4dbd30bacdb0d1595cc506ecbc",
+    "content": "65b9e4afd694c8a5fae424aec021290059b6249bbb7c4a5cd0422a11f629e21e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Focused failing regression on actual Mac, not a full-suite result or human acceptance. Production source is repaired only after this record."
+  ]
+}

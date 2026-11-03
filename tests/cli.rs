@@ -363,6 +363,11 @@ fn observation_pointer_bound_is_400_and_other_lists_stay_at_200() {
     let output = fixture.run(&["context", "--json"]);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("too many observation"));
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("limit 400"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     for list in ["decisions", "completed", "bugs"] {
         let mut other = session.clone();

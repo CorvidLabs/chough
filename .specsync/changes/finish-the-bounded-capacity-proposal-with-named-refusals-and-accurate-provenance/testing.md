@@ -1,0 +1,3 @@
+# Verification
+
+Strengthen the existing401refusal test to require400, record its genuine pre-fix failure, repair the diagnostic and retain the unchanged test pass. Use actual environment and source/artifact identities. Preserve old records; append new proof rather than relabel it. Settle current HI/context/requirement/changelog and task text before final full execution. Run Fledge9 and relevant boundary tests/cases, confirm other limits/path/symlink/atomic behavior unchanged, preserve all parent proof and imported PR50 data. Commit all records before final check--commit; root performs consecutive review/ship with no Chough write or commit between. Exact-head independent review and hosted green remain merge gates.
