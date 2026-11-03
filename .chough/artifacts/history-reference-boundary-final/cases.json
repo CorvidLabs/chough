@@ -1,0 +1,132 @@
+{
+  "TC-cli-history-adoption": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-adoption",
+      "observation": "OBS-tc-cli-history-adoption-e92ef456df9bb306122e5c49",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact adoption_preview_preserves_legacy_bytes_and_apply_is_explicit for TC-cli-history-adoption: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-branches": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-branches",
+      "observation": "OBS-tc-cli-history-branches-a583af0dc8d289a8bc85e974",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact real_git_branch_events_survive_while_checkpoint_selection_remains_explicit for TC-cli-history-branches: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-bounds": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-bounds",
+      "observation": "OBS-tc-cli-history-bounds-8b1bdc05a3bcff11bb9e2104",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact history_bounds_cover_all_resource_limits for TC-cli-history-bounds: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-retention": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-retention",
+      "observation": "OBS-tc-cli-history-retention-87883da5845bf1a09ea09ce2",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact cycle_retention_is_read_only_until_authorized_and_revalidates_new_references for TC-cli-history-retention: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-retention-revalidation": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-retention-revalidation",
+      "observation": "OBS-tc-cli-retention-revalidation-8d6110a0c117bea8ca70fa30",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test evidence -- --exact retention_revalidation_keeps_changed_missing_and_newly_referenced_proof for TC-cli-retention-revalidation: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-legacy-timing-bounds": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-legacy-timing-bounds",
+      "observation": "OBS-tc-cli-history-legacy-timing-bounds-4f9244f4d002a56f2ef55abc",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test timing -- --exact legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission for TC-cli-history-legacy-timing-bounds: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-frozen-reference-aliases": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-frozen-reference-aliases",
+      "observation": "OBS-tc-cli-history-frozen-reference-aliases-e23c5439bb0746ed9a4a04d5",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply for TC-cli-history-frozen-reference-aliases: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-closing-reset-age": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-closing-reset-age",
+      "observation": "OBS-tc-cli-history-closing-reset-age-5f7301cffac64ea2405888de",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact idle_cycle_age_uses_the_selected_closure_and_receipts_record_it for TC-cli-history-closing-reset-age: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-stale-receipt-age": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-stale-receipt-age",
+      "observation": "OBS-tc-cli-history-stale-receipt-age-224cc1c146d566807a575983",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact stale_receipt_age_cannot_override_a_recent_selected_closure for TC-cli-history-stale-receipt-age: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  },
+  "TC-cli-history-post-prune-reference": {
+    "exit_code": 0,
+    "result": {
+      "case": "TC-cli-history-post-prune-reference",
+      "observation": "OBS-tc-cli-history-post-prune-reference-9777c1521a8529bbc801e17f",
+      "outcome": "passed",
+      "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+      "retention": null,
+      "schema_version": 1,
+      "summary": "Ran cargo test --locked --test history -- --exact real_git_post_prune_references_report_unavailable_until_exact_restoration for TC-cli-history-post-prune-reference: passed (exit 0, tests run 1)."
+    },
+    "stderr": ""
+  }
+}

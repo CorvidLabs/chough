@@ -998,7 +998,8 @@ fn normalize_reference_paths(value: &mut Value) {
 }
 
 fn reference_boundary(character: char) -> bool {
-    character.is_whitespace() || matches!(character, '`' | '"' | '\'')
+    character.is_whitespace()
+        || (character.is_ascii_punctuation() && !matches!(character, '.' | '/' | '\\' | '-' | '_'))
 }
 
 fn normalize_plaintext_references(text: &str) -> String {
@@ -1041,18 +1042,14 @@ fn reference_text(path: &str, bytes: &[u8]) -> Result<String> {
 fn note_missing_references(
     cycle: &mut Cycle,
     source: &str,
-    referenced: impl Fn(&FilePlan) -> bool,
+    missing: &[usize],
+    referenced: impl Fn(usize) -> bool,
 ) {
-    let present: BTreeSet<_> = cycle
-        .present_files
-        .iter()
-        .map(|file| file.path.as_str())
-        .collect();
-    for file in &cycle.files {
-        if !present.contains(file.path.as_str()) && referenced(file) {
+    for &index in missing {
+        if referenced(index) {
             cycle
                 .missing_references
-                .entry(file.path.clone())
+                .entry(cycle.files[index].path.clone())
                 .or_default()
                 .insert(source.to_string());
         }
@@ -1061,22 +1058,45 @@ fn note_missing_references(
 
 fn directory_reference(text: &str, path: &str) -> bool {
     text.split(reference_boundary)
-        .any(|token| token.trim_end_matches('/') == path)
+        .any(|token| token.trim_end_matches(['/', '.']) == path)
 }
 
-fn bare_cycle_reference(text: &str, cycle: &str) -> bool {
-    text.match_indices(cycle).any(|(start, _)| {
-        [
-            text[..start].chars().next_back(),
-            text[start + cycle.len()..].chars().next(),
-        ]
-        .iter()
-        .all(|edge| {
-            edge.is_none_or(|character| {
-                !character.is_ascii_alphanumeric() && !matches!(character, '/' | '\\' | '-' | '_')
-            })
-        })
-    })
+fn file_reference_boundaries(text: &str, start: usize, end: usize) -> bool {
+    let (Some(before), Some(after)) = (text.get(..start), text.get(end..)) else {
+        return false;
+    };
+    before.chars().next_back().is_none_or(reference_boundary)
+        && after
+            .trim_start_matches('.')
+            .chars()
+            .next()
+            .is_none_or(reference_boundary)
+}
+
+/// Every cycle mention is either inside a bounded known file path or names the
+/// whole cycle. Matching byte spans with get keeps surrounding Unicode safe.
+fn cycle_references(
+    text: &str,
+    cycle: &str,
+    paths: &BTreeMap<&str, usize>,
+) -> (bool, BTreeSet<usize>) {
+    // Validated event paths have fixed-shape cycle and event identities.
+    let file_length = paths.first_key_value().map_or(0, |(path, _)| path.len());
+    let prefix_length = ROOT.len() + "/cycles/".len();
+    let mut files = BTreeSet::new();
+    for (position, _) in text.match_indices(cycle) {
+        let exact_file = position.checked_sub(prefix_length).and_then(|start| {
+            let end = start.checked_add(file_length)?;
+            let file = paths.get(text.get(start..end)?)?;
+            file_reference_boundaries(text, start, end).then_some(file)
+        });
+        if let Some(&index) = exact_file {
+            files.insert(index);
+        } else {
+            return (true, files);
+        }
+    }
+    (false, files)
 }
 
 fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
@@ -1198,9 +1218,16 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
         };
     }
     let at = now()?;
-    let texts: Vec<(String, String)> = sources
+    let cycles_directory = format!("{ROOT}/cycles");
+    let texts: Vec<(String, String, bool)> = sources
         .iter()
-        .map(|(path, bytes)| Ok((path.clone(), reference_text(path, bytes)?)))
+        .map(|(path, bytes)| {
+            let text = reference_text(path, bytes)?;
+            let all_cycles = [ROOT, cycles_directory.as_str()]
+                .iter()
+                .any(|directory| directory_reference(&text, directory));
+            Ok((path.clone(), text, all_cycles))
+        })
         .collect::<Result<_>>()?;
     for cycle in cycles.values_mut() {
         let parents: BTreeSet<&String> = cycle
@@ -1288,45 +1315,56 @@ fn inventory(root: &Path, session: &Checkpoint) -> Result<Vec<Cycle>> {
                 .reasons
                 .insert("unselected orphan or unresolved cycle closure".into());
         }
-        let cycle_key = cycle.id.to_lowercase();
-        for (source, text) in &texts {
-            let whole_cycle = [
-                ROOT.to_string(),
-                format!("{ROOT}/cycles"),
-                format!("{ROOT}/cycles/{cycle_key}"),
-            ]
+        let cycle_key = cycle.id.to_ascii_lowercase();
+        let normalized_files: Vec<String> = cycle
+            .files
             .iter()
-            .any(|prefix| directory_reference(text, &prefix.to_lowercase()))
-                || bare_cycle_reference(text, &cycle_key);
-            if whole_cycle
-                || text.contains(&cycle_key)
-                || cycle
-                    .files
-                    .iter()
-                    .any(|file| text.contains(&file.path.to_lowercase()))
-            {
+            .map(|file| file.path.to_ascii_lowercase())
+            .collect();
+        let paths: BTreeMap<&str, usize> = normalized_files
+            .iter()
+            .enumerate()
+            .map(|(index, path)| (path.as_str(), index))
+            .collect();
+        let missing: Vec<usize> = {
+            let present: BTreeSet<&str> = cycle
+                .present_files
+                .iter()
+                .map(|file| file.path.as_str())
+                .collect();
+            cycle
+                .files
+                .iter()
+                .enumerate()
+                .filter_map(|(index, file)| {
+                    (!present.contains(file.path.as_str())).then_some(index)
+                })
+                .collect()
+        };
+        for (source, text, all_cycles) in &texts {
+            let (whole_cycle, files) = if *all_cycles {
+                (true, BTreeSet::new())
+            } else {
+                cycle_references(text, &cycle_key, &paths)
+            };
+            if whole_cycle || !files.is_empty() {
                 cycle.reasons.insert(format!("referenced by {source}"));
-                note_missing_references(cycle, source, |file| {
-                    whole_cycle || text.contains(&file.path.to_lowercase())
+                note_missing_references(cycle, source, &missing, |index| {
+                    whole_cycle || files.contains(&index)
                 });
             }
         }
         for path in &native {
             let key = path.replace('\\', "/").to_lowercase();
-            if cycle.files.iter().any(|file| {
-                file.path.to_lowercase() == key
-                    || file
-                        .path
-                        .to_lowercase()
-                        .starts_with(&format!("{}/", key.trim_end_matches('/')))
-            }) {
+            let directory = format!("{}/", key.trim_end_matches('/'));
+            if normalized_files
+                .iter()
+                .any(|file| file == &key || file.starts_with(&directory))
+            {
                 cycle.reasons.insert("native acceptance manifest".into());
-                note_missing_references(cycle, "native acceptance manifest", |file| {
-                    file.path.to_lowercase() == key
-                        || file
-                            .path
-                            .to_lowercase()
-                            .starts_with(&format!("{}/", key.trim_end_matches('/')))
+                note_missing_references(cycle, "native acceptance manifest", &missing, |index| {
+                    normalized_files[index] == key
+                        || normalized_files[index].starts_with(&directory)
                 });
             }
         }

@@ -251,3 +251,14 @@ Future use: reuse normalized token boundaries and one whole-cycle classification
 for both protection and availability; retain a separate exact-file restoration
 case alongside all four directory quote forms. Limits: disposable local fixtures;
 no live proof was removed and this does not define every external path grammar.
+
+2026-11-02, reference occurrence classification (observation): punctuation and mixed
+file/directory references exposed another availability gap after the earlier quote
+repair. Source: OBS-tc-cli-history-post-prune-reference-8e61ca8d5022c39e4631183c,
+with the original capture and failure-first regressions retained under
+.chough/artifacts/history-protected-reference-punctuation-proof/ and
+.chough/artifacts/history-reference-classification-followup/. Future use: classify
+each normalized cycle occurrence once; only occurrences inside known exact file
+paths are file-specific. Check both pre-prune protection and post-prune
+availability, including partial restoration. Limits: disposable local fixtures;
+no live proof was removed and external path grammars remain outside this proof.

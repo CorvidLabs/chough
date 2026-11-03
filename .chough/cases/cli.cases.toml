@@ -2572,7 +2572,7 @@ requirements = ["REQ-cli-026", "REQ-cli-027"]
 paths = ["src/history.rs", "tests/history.rs"]
 environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
-expected = ["The real Git prune then independent-reference then clean-merge ordering covers an exact event path plus bare, single-quoted, backtick and double-quoted cycle directories; missing paths and sources are explicit, preview preserves bytes, apply refuses writes, and exact restoration clears each diagnostic"]
+expected = ["The real Git prune then independent-reference then clean-merge ordering covers exact event paths, four directory quote forms, terminal punctuation, parentheses, mixed file and cycle references, longer unknown paths containing known file prefixes or suffixes, and Unicode context; missing paths and sources are explicit, preview preserves bytes, apply refuses writes, restoring only an exact file cannot satisfy a separate whole-cycle reference, and exact restoration clears each diagnostic"]
 
 [case.bind]
 adapter = "cargo-test"

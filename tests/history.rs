@@ -815,7 +815,14 @@ fn frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply() 
         r".CHOUGH\\history\\CYCLES",
         r".CHOUGH//history/./CYCLES\",
     ] {
-        for quote in ['`', '"'] {
+        for (open, close) in [
+            ("`", "`"),
+            ("\"", "\""),
+            ("", ""),
+            ("", "."),
+            ("(", ")"),
+            ("(", ")."),
+        ] {
             let f = closed_cycles();
             assert!(
                 !f.ok(&["history", "prune"])["eligible"]
@@ -826,7 +833,7 @@ fn frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply() 
             let artifact = ".chough/artifacts/frozen-path-reference.log";
             f.write(
                 artifact,
-                &format!("Frozen reference: preserve {quote}{alias}{quote}.\n"),
+                &format!("Frozen reference: preserve {open}{alias}{close}\n"),
             );
             let before = saved_files(f.root());
             let preview = f.ok(&["history", "prune"]);
@@ -1011,7 +1018,34 @@ fn stale_receipt_age_cannot_override_a_recent_selected_closure() {
 
 #[test]
 fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
-    for quote in [None, Some(""), Some("'"), Some("`"), Some("\"")] {
+    #[derive(Clone, Copy)]
+    enum Reference {
+        CheckpointFile,
+        Directory(&'static str, &'static str, bool),
+        CycleMention,
+        FileSuffix(&'static str),
+        FilePrefix(&'static str),
+        FileProse(&'static str, &'static str),
+    }
+    for reference in [
+        Reference::CheckpointFile,
+        Reference::Directory("", "", false),
+        Reference::Directory("'", "'", false),
+        Reference::Directory("`", "`", false),
+        Reference::Directory("\"", "\"", false),
+        Reference::Directory("", ".", true),
+        Reference::Directory("", ".", false),
+        Reference::Directory("(", ")", false),
+        Reference::Directory("(", ").", true),
+        Reference::CycleMention,
+        Reference::FileSuffix(".bak"),
+        Reference::FileSuffix("/child"),
+        Reference::FileSuffix("_copy"),
+        Reference::FilePrefix("backup/"),
+        Reference::FileProse("", "."),
+        Reference::FileProse("\"", "\""),
+        Reference::FileProse("(", ")."),
+    ] {
         let f = closed_cycles();
         let preview = f.ok(&["history", "prune"]);
         let target = preview["eligible"][0]["files"][0]["path"]
@@ -1023,11 +1057,19 @@ fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
         let receipt_path = format!(".chough/history/pruned/{cycle}.json");
         let cycle_directory = format!(".chough/history/cycles/{cycle}");
         let artifact = ".chough/artifacts/post-prune-cycle-directory.log";
-        let reference_source = if quote.is_some() {
-            artifact
-        } else {
+        let reference_source = if matches!(reference, Reference::CheckpointFile) {
             ".chough/session.json"
+        } else {
+            artifact
         };
+        let mixed = matches!(
+            reference,
+            Reference::Directory(_, _, true) | Reference::FileSuffix(_) | Reference::FilePrefix(_)
+        );
+        let whole_cycle = !matches!(
+            reference,
+            Reference::CheckpointFile | Reference::FileProse(_, _)
+        );
         f.write(
             ".gitattributes",
             ".chough/session.json merge=chough-session\n",
@@ -1068,15 +1110,30 @@ fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
         git_ok(&f, &["commit", "-m", "prune unreferenced old cycles"]);
         git_ok(&f, &["checkout", "-b", "new-reference", "baseline"]);
         assert_eq!(f.read(&target), target_bytes);
-        if let Some(quote) = quote {
-            f.write(
-                artifact,
-                &format!("Retain {quote}{cycle_directory}{quote}\n"),
-            );
-            git_ok(&f, &["add", artifact]);
-        } else {
+        if matches!(reference, Reference::CheckpointFile) {
             f.ok(&["checkpoint", "--file", &target]);
             git_ok(&f, &["add", ".chough/session.json"]);
+        } else {
+            let reference_text = match reference {
+                Reference::Directory(open, close, mixed) => {
+                    let directory = format!("Retain {open}{cycle_directory}{close}\n");
+                    if mixed {
+                        format!("Retain {target}\n{directory}")
+                    } else {
+                        directory
+                    }
+                }
+                Reference::CycleMention => {
+                    // The candidate span cuts through a multibyte prefix.
+                    format!("{}{}{}", "é".repeat(16), cycle, "é".repeat(100))
+                }
+                Reference::FileSuffix(suffix) => format!("Retain {target}\nAnd {target}{suffix}\n"),
+                Reference::FilePrefix(prefix) => format!("Retain {target}\nAnd {prefix}{target}\n"),
+                Reference::FileProse(open, close) => format!("Retain {open}{target}{close}\n"),
+                Reference::CheckpointFile => unreachable!(),
+            };
+            f.write(artifact, &reference_text);
+            git_ok(&f, &["add", artifact]);
         }
         git_ok(
             &f,
@@ -1109,7 +1166,36 @@ fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
         assert_eq!(f.read(&receipt_path), receipt);
         assert_eq!(git(&f, &["status", "--porcelain"]).stdout, before);
         assert!(!f.exists(&target));
-        let restore_path = if quote.is_some() {
+        if mixed {
+            git_ok(&f, &["restore", "--source", "baseline", "--", &target]);
+            assert_eq!(f.read(&target), target_bytes);
+            let before_partial_restore = git(&f, &["status", "--porcelain"]).stdout;
+            for report in [f.ok(&["history", "show"]), f.ok(&["history", "prune"])] {
+                assert_eq!(report["complete"], false, "{report}");
+                assert!(
+                    report["partial"].as_array().unwrap().iter().any(|entry| {
+                        entry["path"] != target
+                            && entry["sources"]
+                                .as_array()
+                                .unwrap()
+                                .iter()
+                                .any(|source| source == reference_source)
+                    }),
+                    "{report}"
+                );
+            }
+            assert!(
+                f.fails(&["history", "prune", "--apply"])
+                    .contains("referenced history")
+            );
+            assert_eq!(f.read(&target), target_bytes);
+            assert_eq!(f.read(&receipt_path), receipt);
+            assert_eq!(
+                git(&f, &["status", "--porcelain"]).stdout,
+                before_partial_restore
+            );
+        }
+        let restore_path = if whole_cycle {
             &cycle_directory
         } else {
             &target

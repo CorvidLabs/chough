@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -286,7 +286,8 @@
     "PR37 peer safety repairs qualified: actual closing reset age and explicit missing referenced history, all 225 tests on Rust1.95/Rust1.88, ten exact bound cases, nine Fledge steps and original reproductions. Initial filter-only binding recorded not-run and was corrected to exact names; no test assertion was relaxed.",
     "Final directory reference repair passed 225 tests on Rust1.95/Rust1.88, ten exact cases and nine Fledge steps. This is pre-integration evidence; main8fb0ea7 has now merged and the integrated source needs fresh qualification.",
     "Integrated main9d02 (#41/#43/#45) with PR37 using one owner-selected current cycle and all additive records. All232tests on Rust1.95/Rust1.88, ten bound cases and nine Fledge steps pass; preserved all parent proof and clarified local append limits.",
-    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG"
+    "Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG",
+    "PR37 final main d839fef repair passes233 tests on Rust 1.95/1.88, ten bound cases and all nine Fledge steps. Both original reproductions now report missing referenced proof and partial restoration cannot hide a separate cycle reference. All parent proof bytes are preserved; independent scoped rereview found no remaining issue."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -422,7 +423,9 @@
     "OBS-tc-cli-history-retention-0884ced5b5b7c5bc4964c170",
     "OBS-tc-cli-retention-revalidation-2a910a07f6d3ffdc73fdf2fb",
     "OBS-tc-cli-history-legacy-timing-bounds-4fd40efecc92433cfdb1554c",
-    "OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56"
+    "OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56",
+    "OBS-tc-cli-history-adoption-6cb6b66e612d1aa174aa9390",
+    "OBS-tc-cli-history-adoption-9c0a346ae0344141170e9194"
   ],
   "bugs": [
     "BUG-0001",
@@ -451,5 +454,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Record committed verification for all three active changes, review and ship in native required order under the finish-all instruction, then push done checkpoint and watch hosted checks; merge remains 0xLeif"
+  "next_action": "Root alone completes committed native verification, then fresh review immediately followed by ship for each of the 3 active scopes in required order. After archival, record done and publish current-head qualification for Grok and 0xLeif. No PR merge, release or live cleanup."
 }

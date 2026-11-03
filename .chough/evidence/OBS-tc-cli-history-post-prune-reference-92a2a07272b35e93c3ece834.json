@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-history-post-prune-reference-92a2a07272b35e93c3ece834",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-cli-027"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Independent review reproduced a known exact-file path prefix followed by .bak being treated as that file alone; after partial restore history incorrectly reported complete. Source/binary identities and full raw fixture are retained.",
+  "artifacts": [
+    ".chough/artifacts/history-reference-classification-followup/boundary-before-complete-capture.tar.gz",
+    ".chough/artifacts/history-reference-classification-followup/boundary-reproduce.py",
+    ".chough/artifacts/history-reference-classification-followup/boundary-before-notes.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/history-reference-classification-followup/boundary-before-complete-capture.tar.gz": "774b3ae5b03f8d62484c8751d723bd682a3868286e7a13eb4c597554b046ca10",
+    ".chough/artifacts/history-reference-classification-followup/boundary-before-notes.txt": "95a6a73e72de9136662ac601984850df037eb686977096fe7d34b1a498b32102",
+    ".chough/artifacts/history-reference-classification-followup/boundary-reproduce.py": "175428f61ef481e3bd9fd329f130d732674c53e2d331d38ee6707ad565868812"
+  },
+  "observed_at_unix_seconds": 1793665061,
+  "snapshot": {
+    "revision": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "dirty": true,
+    "fingerprint": "304d34e5e305562b9d19935b70d492378d91218d703ea50b86105a67b37de4b4",
+    "content": "46d88d2af570d0495176f703f84ffb9a4e582b3c4aa630138a909facc3cb3f34"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-history-post-prune-reference",
+      "digest": "ae1a5c85c3011b0a4da18c977587b9348fc371c48e34cacd48f9b39e7af4c2d3"
+    }
+  ],
+  "method": "automated",
+  "limitations": [
+    "Historical failing source identity is in the immutable capture; this is not a pass of the in-progress repair."
+  ]
+}
