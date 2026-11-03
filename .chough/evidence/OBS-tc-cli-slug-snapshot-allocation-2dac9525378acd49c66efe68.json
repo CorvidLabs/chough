@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-slug-snapshot-allocation-2dac9525378acd49c66efe68",
+  "criteria": [
+    "FLOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-015",
+    "REQ-cli-023"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test optional -- --exact independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots for TC-cli-slug-snapshot-allocation: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-slug-snapshot-allocation-2dac9525378acd49c66efe68.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-slug-snapshot-allocation-2dac9525378acd49c66efe68.log": "b1aae35a8c988abe8e87e09ddb45f2ec5436b9084af07ff56f3d03f1808839d8"
+  },
+  "observed_at_unix_seconds": 1793728349,
+  "snapshot": {
+    "revision": "de51ef203932baabd9e2109bbb66f57e84a45d7c",
+    "dirty": false,
+    "fingerprint": "4e36afbd74c8e260daa81cc1715f1efc10f65d832b61e50ff0800a7078197ece",
+    "content": "5c89658e3893dbfd92dd4561dbb3f918038894bc1bdcfc16f48a7c7caf74d971"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-slug-snapshot-allocation",
+      "digest": "6588c7737c95f31d281441e4844e26b6208c42c219bccd41dad67f9cf28978e8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

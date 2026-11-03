@@ -886,12 +886,16 @@ fn read_ledger(root: &Path) -> Result<BTreeSet<String>> {
             continue;
         }
         let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
-        ids.insert(
-            entry["id"]
-                .as_str()
-                .context("retention ledger line without an id")?
-                .to_string(),
-        );
+        let id = entry["id"]
+            .as_str()
+            .context("retention ledger line without an id")?
+            .to_string();
+        // A `restored` event puts a removed observation back; it is no longer pruned.
+        if entry["event"] == "restored" {
+            ids.remove(&id);
+        } else {
+            ids.insert(id);
+        }
     }
     Ok(ids)
 }
@@ -924,6 +928,10 @@ pub(super) fn ledger_entries(root: &Path) -> Result<BTreeMap<String, PrunedEntry
             .as_str()
             .context("retention ledger line without an id")?
             .to_string();
+        if entry["event"] == "restored" {
+            entries.remove(&id);
+            continue;
+        }
         entries.insert(
             id,
             PrunedEntry {
@@ -1063,6 +1071,7 @@ impl Reads<'_> {
 }
 
 /// Native manifests that protect observation sets, or why they could not be read.
+#[derive(Clone)]
 struct Native {
     state: &'static str,
     detail: String,
@@ -1314,10 +1323,19 @@ struct Classification {
 }
 
 fn classify(root: &Path, at: u64) -> Result<Classification> {
+    classify_with(root, at, None)
+}
+
+/// [`classify`], optionally reusing native manifests already read, so a re-check after
+/// native probes reads every local protection without starting another process.
+fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classification> {
     let records = load_all(root)?;
     let references = references(root)?;
     let named_files = file_references(root)?;
-    let native = native_manifests(root)?;
+    let native = match native {
+        Some(native) => native,
+        None => native_manifests(root)?,
+    };
     let manifest_keys: Vec<(&String, BTreeSet<String>)> = native
         .manifests
         .iter()
@@ -1639,6 +1657,711 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
     }))
 }
 
+/// The newest ledger line per observation ID, with `restored` events undoing a removal.
+pub(super) fn ledger_records(root: &Path) -> Result<BTreeMap<String, Value>> {
+    let path = local_path(root, LEDGER)?;
+    if !path.exists() {
+        return Ok(BTreeMap::new());
+    }
+    ensure!(
+        path.is_file() && fs::metadata(&path)?.len() <= LEDGER_LIMIT,
+        "{LEDGER} must be a file within {LEDGER_LIMIT} bytes"
+    );
+    let mut records = BTreeMap::new();
+    for line in fs::read_to_string(&path)?.lines() {
+        if line.trim().is_empty() {
+            continue;
+        }
+        let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
+        let id = entry["id"]
+            .as_str()
+            .context("retention ledger line without an id")?
+            .to_string();
+        if entry["event"] == "restored" {
+            records.remove(&id);
+        } else {
+            records.insert(id, entry);
+        }
+    }
+    Ok(records)
+}
+
+/// Outcome, environment and cases of a present observation, for knowledge entries.
+pub(super) fn observation_summary(root: &Path, id: &str) -> Option<(String, String, Vec<String>)> {
+    if !is_present(root, id).ok()? {
+        return None;
+    }
+    let evidence = load(root, id).ok()?;
+    let outcome = serde_json::to_value(&evidence.outcome)
+        .ok()
+        .and_then(|value| value.as_str().map(str::to_string))
+        .unwrap_or_else(|| "unknown".into());
+    let cases = case_ids(&evidence)
+        .into_iter()
+        .map(str::to_string)
+        .collect();
+    Some((outcome, evidence.environment.clone(), cases))
+}
+
+/// One archived change as the post-archive summary sees it: its ID, whether it is one
+/// of the hot (newest) archives, and the paths its verification manifest lists.
+pub(super) struct ListedArchive {
+    pub(super) id: String,
+    pub(super) hot: bool,
+    pub(super) paths: BTreeSet<String>,
+}
+
+const SUMMARY_REASON: &str = "archived-summary: routine automated proof listed only by cold archived changes (outside the newest 3), summarized in the knowledge directory and committed identically at HEAD; bytes stay recoverable from Git";
+
+/// Eligible candidates, protected sets, sets not at HEAD, and the native read state.
+struct SummaryPlan {
+    eligible: Vec<SummaryCandidate>,
+    protected: Vec<Value>,
+    uncommitted: Vec<Value>,
+    native: Native,
+}
+
+struct SummaryCandidate {
+    id: String,
+    files: Vec<String>,
+    archives: Vec<String>,
+    bytes: u64,
+}
+
+/// The blob each of `files` has in HEAD's tree; untracked files are absent.
+fn head_blobs(root: &Path, files: &[String]) -> Result<BTreeMap<String, String>> {
+    let mut tracked = BTreeMap::new();
+    for chunk in files.chunks(256) {
+        let mut arguments = vec!["ls-tree", "HEAD", "--"];
+        arguments.extend(chunk.iter().map(String::as_str));
+        let Ok(listed) = git(root, &arguments) else {
+            return Ok(BTreeMap::new());
+        };
+        for line in String::from_utf8_lossy(&listed.stdout).lines() {
+            if let Some((meta, path)) = line.split_once('\t')
+                && let Some(blob) = meta.split_whitespace().nth(2)
+            {
+                tracked.insert(path.to_string(), blob.to_string());
+            }
+        }
+    }
+    Ok(tracked)
+}
+
+/// Files whose working-tree bytes equal the blob tracked at HEAD. Hashing uses
+/// `--no-filters`, so the exact bytes on disk are compared: with `core.autocrlf` or
+/// other clean filters a file that differs from HEAD byte for byte is never identical.
+fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> {
+    let tracked = head_blobs(root, files)?;
+    let mut identical = BTreeSet::new();
+    for chunk in files.chunks(256) {
+        let present: Vec<&String> = chunk
+            .iter()
+            .filter(|file| local_path(root, file).is_ok_and(|path| path.is_file()))
+            .collect();
+        if present.is_empty() {
+            continue;
+        }
+        let mut arguments = vec!["hash-object", "--no-filters", "--"];
+        arguments.extend(present.iter().map(|file| file.as_str()));
+        let hashed = git(root, &arguments)?;
+        for (file, blob) in present
+            .iter()
+            .zip(String::from_utf8_lossy(&hashed.stdout).lines())
+        {
+            if tracked.get(file.as_str()).map(String::as_str) == Some(blob.trim()) {
+                identical.insert((*file).clone());
+            }
+        }
+    }
+    Ok(identical)
+}
+
+/// The Git blob ID of exactly `bytes`, with no filters applied.
+fn blob_of(root: &Path, bytes: &[u8]) -> Result<String> {
+    use std::io::Write;
+    let mut child = Command::new("git")
+        .args(["hash-object", "--no-filters", "--stdin"])
+        .current_dir(root)
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .context("git is required for evidence")?;
+    child
+        .stdin
+        .take()
+        .context("git hash-object stdin")?
+        .write_all(bytes)?;
+    let output = child.wait_with_output()?;
+    ensure!(
+        output.status.success(),
+        "git hash-object --no-filters --stdin failed: {}",
+        bounded(&output.stderr)
+    );
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+}
+
+/// Where `--apply` holds a file between moving it out of place and deleting it. Holds sit
+/// outside every listed record directory, so a stale one never breaks a record listing.
+pub(super) const HOLD_DIR: &str = ".chough/removing";
+
+/// Holds left in [`HOLD_DIR`] by an apply that stopped partway or found a conflict.
+pub(super) fn stale_holds(root: &Path) -> Result<Vec<String>> {
+    let mut names = vec![];
+    let path = local_path(root, HOLD_DIR)?;
+    if path.is_dir() {
+        for entry in fs::read_dir(path)? {
+            names.push(format!(
+                "{HOLD_DIR}/{}",
+                entry?.file_name().to_string_lossy()
+            ));
+        }
+    }
+    names.sort();
+    Ok(names)
+}
+
+/// Put `hold` back at `path` only if nothing is there: a hard link fails when the target
+/// exists, so a file a writer recreated meanwhile is never replaced.
+fn put_back(hold: &Path, path: &Path) -> std::io::Result<()> {
+    fs::hard_link(hold, path)?;
+    fs::remove_file(hold)
+}
+
+/// Where [`remove_verified`] holds `relative` while it compares the bytes: always a file
+/// directly in [`HOLD_DIR`], named by a digest of the path, never beside the record, so a
+/// hold left behind cannot sit in a directory that readers list.
+fn hold_path(relative: &str) -> String {
+    format!(
+        "{HOLD_DIR}/{}.hold",
+        &crate::records::digest_bytes(relative.as_bytes())[..24]
+    )
+}
+
+/// Remove `relative` only while it still holds `expected`. The file is first moved into
+/// [`HOLD_DIR`], so later writes to its path cannot be lost, then compared and deleted at
+/// once. Bytes that differ are put back without replacing anything and refused.
+fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
+    let path = local_path(root, relative)?;
+    let holds = local_path(root, HOLD_DIR)?;
+    fs::create_dir_all(&holds)?;
+    let hold = local_path(root, &hold_path(relative))?;
+    ensure!(
+        !hold.exists(),
+        "{} already exists; nothing was removed",
+        hold.display()
+    );
+    fs::rename(&path, &hold).with_context(|| format!("removing {relative}"))?;
+    let actual = fs::read(&hold).with_context(|| format!("re-reading {relative}"));
+    if actual.as_deref().ok() == Some(expected) {
+        fs::remove_file(&hold).with_context(|| format!("removing {relative}"))?;
+        let _ = fs::remove_dir(&holds);
+        return Ok(());
+    }
+    match put_back(&hold, &path) {
+        Ok(()) => {
+            let _ = fs::remove_dir(&holds);
+            bail!("{relative} changed during the apply; its bytes were kept and it was not removed")
+        }
+        Err(error) => bail!(
+            "{relative} changed during the apply and could not be put back without replacing a file written meanwhile ({error}); its changed bytes are kept at {}",
+            hold.display()
+        ),
+    }
+}
+
+/// Classify observation sets that archived manifests list: candidates (listed only by
+/// cold archives, no protection left once age and the latest-archive reason are set
+/// aside, every file committed identically at HEAD), protected sets with reasons, and
+/// sets held back because their bytes are not at HEAD.
+fn summary_plan(
+    root: &Path,
+    archives: &[ListedArchive],
+    native: Option<Native>,
+) -> Result<SummaryPlan> {
+    let (pending, protected, native) = summary_protections(root, archives, native)?;
+    let all: Vec<String> = pending
+        .iter()
+        .flat_map(|candidate| candidate.files.iter().cloned())
+        .collect();
+    let identical = identical_at_head(root, &all)?;
+    let mut eligible = vec![];
+    let mut uncommitted = vec![];
+    for candidate in pending {
+        let differing: Vec<&String> = candidate
+            .files
+            .iter()
+            .filter(|file| !identical.contains(*file))
+            .collect();
+        if differing.is_empty() {
+            eligible.push(candidate);
+        } else {
+            uncommitted.push(json!({
+                "id": candidate.id,
+                "files": differing,
+                "reason": "not committed identically at HEAD; commit it before it can be summarized",
+            }));
+        }
+    }
+    Ok(SummaryPlan {
+        eligible,
+        protected,
+        uncommitted,
+        native,
+    })
+}
+
+/// The protection rules of [`summary_plan`], from local state and the given manifests:
+/// sets listed only by cold archives with no protection left (pending the HEAD check),
+/// and protected sets with their reasons.
+fn summary_protections(
+    root: &Path,
+    archives: &[ListedArchive],
+    native: Option<Native>,
+) -> Result<(Vec<SummaryCandidate>, Vec<Value>, Native)> {
+    let classification = classify_with(root, now()?, native)?;
+    let keyed: Vec<(&ListedArchive, BTreeSet<String>)> = archives
+        .iter()
+        .map(|archive| {
+            (
+                archive,
+                archive.paths.iter().map(|path| file_key(path)).collect(),
+            )
+        })
+        .collect();
+    let mut pending = vec![];
+    let mut protected = vec![];
+    for set in &classification.sets {
+        let evidence = &set.evidence;
+        let record_path = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
+        let mut keys = vec![file_key(&record_path)];
+        keys.extend(evidence.artifacts.iter().map(|artifact| file_key(artifact)));
+        let listing: Vec<&ListedArchive> = keyed
+            .iter()
+            .filter(|(_, paths)| keys.iter().any(|key| paths.contains(key)))
+            .map(|(archive, _)| *archive)
+            .collect();
+        if listing.is_empty() {
+            continue;
+        }
+        let mut reasons: Vec<String> = set
+            .reasons
+            .iter()
+            .filter(|reason| *reason != "recent" && !reason.starts_with("native archive "))
+            .cloned()
+            .collect();
+        reasons.extend(
+            listing
+                .iter()
+                .filter(|archive| archive.hot)
+                .map(|archive| format!("hot archive {}", archive.id)),
+        );
+        let cold: Vec<String> = listing
+            .iter()
+            .filter(|archive| !archive.hot)
+            .map(|archive| archive.id.clone())
+            .collect();
+        if reasons.is_empty() {
+            let mut files = vec![record_path];
+            files.extend(set.removable.iter().cloned());
+            pending.push(SummaryCandidate {
+                id: evidence.id.clone(),
+                files,
+                archives: cold,
+                bytes: set.bytes,
+            });
+        } else {
+            protected.push(json!({
+                "id": evidence.id,
+                "cases": case_ids(evidence),
+                "archives": cold,
+                "reasons": reasons,
+            }));
+        }
+    }
+    Ok((pending, protected, classification.native))
+}
+
+/// Re-apply the protection rules right before removing one of `candidate`'s files: no
+/// native change is open, and the set is still unprotected with no file beyond the plan. The
+/// bytes themselves are checked against the plan by [`remove_verified`].
+fn still_unprotected(
+    root: &Path,
+    archives: &[ListedArchive],
+    native: &Native,
+    candidate: &SummaryCandidate,
+) -> Result<()> {
+    let open = change_dirs(root, ".specsync/changes").map_err(anyhow::Error::msg)?;
+    ensure!(
+        open.is_empty(),
+        "a native change opened during removal ({}); {} was not removed",
+        open.join(", "),
+        candidate.id
+    );
+    let (pending, protected, _) = summary_protections(root, archives, Some(native.clone()))?;
+    // The record is removed last, so it is still present here; artifacts this apply
+    // already removed drop out of the current set, which may list no file beyond the plan.
+    if pending.iter().any(|current| {
+        current.id == candidate.id
+            && current.files.first() == candidate.files.first()
+            && current
+                .files
+                .iter()
+                .all(|file| candidate.files.contains(file))
+    }) {
+        return Ok(());
+    }
+    let now = protected
+        .iter()
+        .find(|entry| entry["id"] == candidate.id.as_str())
+        .map_or_else(
+            || "its files changed".to_string(),
+            |entry| format!("now protected by {}", entry["reasons"]),
+        );
+    bail!(
+        "protections changed during removal ({}: {now}); its files were not removed",
+        candidate.id
+    )
+}
+
+fn one_line_bounded(text: &str) -> String {
+    text.split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .chars()
+        .take(200)
+        .collect()
+}
+
+/// Terminal evidence validity of each archive, as `specsync change status` reports it.
+/// Fails closed: an archive whose validity cannot be read is an error, never a value.
+fn validity(root: &Path, ids: &BTreeSet<String>) -> Result<BTreeMap<String, String>> {
+    let mut found = BTreeMap::new();
+    for id in ids {
+        let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
+        let Some(state) = response
+            .value
+            .as_ref()
+            .and_then(|value| value["summary"]["terminal_evidence"]["validity"].as_str())
+        else {
+            bail!(
+                "`specsync change status {id} --json` did not report terminal evidence validity ({}: {}); nothing was removed without a native validity check",
+                response.section.state,
+                one_line_bounded(&response.section.content)
+            );
+        };
+        found.insert(id.clone(), state.to_string());
+    }
+    Ok(found)
+}
+
+/// `chough library archive [--apply]`: preview the post-archive summary, or with an
+/// authority remove the eligible proof after `write_entries` summarized it. Ledger lines
+/// come first; a removal that changes any affected archive's validity is restored.
+pub(super) fn archive_summary(
+    root: &Path,
+    archives: &[ListedArchive],
+    knowledge_dir: &str,
+    authority: Option<&str>,
+    write_entries: &dyn Fn(&Path) -> Result<()>,
+) -> Result<Value> {
+    let _budget = authority.map(|_| crate::history::maintenance_budget());
+    let SummaryPlan {
+        eligible,
+        protected,
+        uncommitted,
+        native,
+    } = summary_plan(root, archives, None)?;
+    let entry_path = |archive: &str| format!("{knowledge_dir}/archives/{archive}.md");
+    let listed: Vec<Value> = eligible
+        .iter()
+        .map(|candidate| {
+            json!({
+                "id": candidate.id,
+                "files": candidate.files,
+                "archives": candidate.archives,
+                "bytes": candidate.bytes,
+                "knowledge": entry_path(&candidate.archives[0]),
+            })
+        })
+        .collect();
+    let reclaimable: u64 = eligible.iter().map(|candidate| candidate.bytes).sum();
+    let mut pruned = vec![];
+    if let Some(authority) = authority {
+        let holds = stale_holds(root)?;
+        ensure!(
+            holds.is_empty(),
+            "an earlier apply left files in {HOLD_DIR} ({}); inspect them and move each back or delete it before applying again",
+            holds.join(", ")
+        );
+        let open = change_dirs(root, ".specsync/changes").map_err(anyhow::Error::msg)?;
+        ensure!(
+            open.is_empty(),
+            "a native change is open ({}); summarize archived proof only between changes, after it is archived or abandoned",
+            open.join(", ")
+        );
+        ensure!(
+            native.state != "unavailable",
+            "native manifests are unavailable: {}",
+            native.detail
+        );
+        let affected: BTreeSet<String> = eligible
+            .iter()
+            .flat_map(|candidate| candidate.archives.iter().cloned())
+            .collect();
+        if !eligible.is_empty() {
+            let before = validity(root, &affected)?;
+            // The validity probes run external processes, so protections may have
+            // changed meanwhile (a checkpoint reference, a bug, an open change). Re-plan
+            // from local state only, reusing the manifests already read, and refuse
+            // unless every eligible set is still eligible with the same files.
+            let open = change_dirs(root, ".specsync/changes").map_err(anyhow::Error::msg)?;
+            ensure!(
+                open.is_empty(),
+                "a native change opened during the validity check ({}); nothing was removed",
+                open.join(", ")
+            );
+            let fresh = summary_plan(root, archives, Some(native.clone()))?;
+            let gained: Vec<String> = eligible
+                .iter()
+                .filter(|candidate| {
+                    !fresh.eligible.iter().any(|current| {
+                        current.id == candidate.id && current.files == candidate.files
+                    })
+                })
+                .map(|candidate| {
+                    let now = fresh
+                        .protected
+                        .iter()
+                        .chain(&fresh.uncommitted)
+                        .find(|entry| entry["id"] == candidate.id.as_str());
+                    match now {
+                        Some(entry) if !entry["reasons"].is_null() => {
+                            format!("{}: now protected by {}", candidate.id, entry["reasons"])
+                        }
+                        Some(entry) => format!(
+                            "{}: no longer committed identically at HEAD {}",
+                            candidate.id, entry["files"]
+                        ),
+                        None => format!("{}: its files changed", candidate.id),
+                    }
+                })
+                .collect();
+            ensure!(
+                gained.is_empty(),
+                "protections or committed bytes changed during the native validity check ({}); nothing was removed. Preview again",
+                gained.join("; ")
+            );
+            // Read everything removal needs before the first ledger line is written.
+            let mut prepared = vec![];
+            for candidate in &eligible {
+                let evidence = load(root, &candidate.id)?;
+                let record_digest = file_digest(root, &candidate.files[0])?;
+                let mut bytes = vec![];
+                for file in &candidate.files {
+                    bytes.push((file.clone(), fs::read(local_path(root, file)?)?));
+                }
+                prepared.push((candidate, evidence, record_digest, bytes));
+            }
+            // The native validity check runs external processes; a file may have changed
+            // since the plan found it identical at HEAD. Check the exact bytes held for
+            // removal against HEAD before anything is written, and refuse otherwise.
+            let files: Vec<String> = eligible
+                .iter()
+                .flat_map(|candidate| candidate.files.iter().cloned())
+                .collect();
+            let tracked = head_blobs(root, &files)?;
+            let mut changed = vec![];
+            for (_, _, _, bytes) in &prepared {
+                for (file, content) in bytes {
+                    if tracked.get(file) != Some(&blob_of(root, content)?) {
+                        changed.push(file.clone());
+                    }
+                }
+            }
+            ensure!(
+                changed.is_empty(),
+                "files changed after they were found committed identically at HEAD ({}); nothing was removed. Commit or restore them and preview again",
+                changed.join(", ")
+            );
+            write_entries(root)?;
+            let head = head_revision(root);
+            let at = now()?;
+            let mut held: Vec<(String, Vec<u8>)> = vec![];
+            let mut recorded: Vec<String> = vec![];
+            let removal: Result<()> = (|| {
+                for (candidate, evidence, record_digest, bytes) in &prepared {
+                    let entry = json!({
+                        "schema_version": 1,
+                        "id": candidate.id,
+                        "cases": case_ids(evidence),
+                        "environment": evidence.environment,
+                        "outcome": evidence.outcome,
+                        "kind": evidence.kind,
+                        "revision": evidence.snapshot.revision,
+                        "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
+                        "artifacts": evidence.artifact_fingerprints,
+                        "record_digest": record_digest,
+                        "removed": candidate.files,
+                        "archives": candidate.archives,
+                        "knowledge": entry_path(&candidate.archives[0]),
+                        "reason": SUMMARY_REASON,
+                        "policy": policy(Some(authority)),
+                        "head": head,
+                        "pruned_at_unix_seconds": at,
+                    });
+                    append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
+                    recorded.push(candidate.id.clone());
+                    // Artifacts first and the record last, so the set stays classifiable.
+                    for (file, content) in bytes.iter().skip(1).chain(bytes.iter().take(1)) {
+                        // Protections can change at any point in the apply (another agent
+                        // updating the checkpoint, a bug link, an open change), so they are
+                        // checked again right before every removal.
+                        still_unprotected(root, archives, &native, candidate)?;
+                        remove_verified(root, file, content)?;
+                        held.push((file.clone(), content.clone()));
+                    }
+                }
+                Ok(())
+            })();
+            let failure = match removal {
+                Err(error) => Some(format!("removal failed partway ({error:#})")),
+                Ok(()) => match validity(root, &affected) {
+                    Err(error) => Some(format!(
+                        "terminal evidence validity could not be re-read after removal ({error:#})"
+                    )),
+                    Ok(after) if after != before => Some(format!(
+                        "removing archived proof changed terminal evidence validity ({})",
+                        before
+                            .iter()
+                            .filter(|(id, state)| after.get(*id) != Some(*state))
+                            .map(|(id, state)| format!(
+                                "{id}: {state} -> {}",
+                                after.get(id).map_or("missing", String::as_str)
+                            ))
+                            .collect::<Vec<_>>()
+                            .join("; ")
+                    )),
+                    Ok(_) => None,
+                },
+            };
+            if let Some(failure) = failure {
+                // Restore with create-new: a file a writer recreated meanwhile is kept, and
+                // the removed bytes stay recoverable from HEAD, where they were verified.
+                let mut kept = vec![];
+                for (file, bytes) in &held {
+                    let path = local_path(root, file)?;
+                    if let Some(parent) = path.parent() {
+                        fs::create_dir_all(parent)?;
+                    }
+                    match fs::OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .open(&path)
+                    {
+                        Ok(mut target) => {
+                            use std::io::Write;
+                            target
+                                .write_all(bytes)
+                                .with_context(|| format!("restoring {file}"))?;
+                        }
+                        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                            kept.push(file.clone());
+                        }
+                        Err(error) => {
+                            return Err(error).with_context(|| format!("restoring {file}"));
+                        }
+                    }
+                }
+                let failure = if kept.is_empty() {
+                    failure
+                } else {
+                    format!(
+                        "{failure}; not restored because a file was written there meanwhile, kept as written, removed bytes recoverable from Git HEAD: {}",
+                        kept.join(", ")
+                    )
+                };
+                for id in &recorded {
+                    append_line(
+                        root,
+                        LEDGER,
+                        &serde_json::to_string(&json!({
+                            "schema_version": 1,
+                            "event": "restored",
+                            "id": id,
+                            "reason": failure,
+                            "restored_at_unix_seconds": now()?,
+                        }))?,
+                    )?;
+                }
+                write_entries(root)?;
+                bail!(
+                    "{failure}; restored {} files and recorded the restore in {LEDGER}",
+                    held.len()
+                );
+            }
+            pruned = eligible
+                .iter()
+                .map(|candidate| candidate.id.clone())
+                .collect();
+            write_entries(root)?;
+        }
+    }
+    let hot: Vec<&str> = archives
+        .iter()
+        .filter(|archive| archive.hot)
+        .map(|archive| archive.id.as_str())
+        .collect();
+    let cold: Vec<&str> = archives
+        .iter()
+        .filter(|archive| !archive.hot)
+        .map(|archive| archive.id.as_str())
+        .collect();
+    Ok(json!({
+        "schema_version": 1,
+        "applied": authority.is_some(),
+        "authority": authority,
+        "hot": hot,
+        "cold": cold,
+        "native": {"state": native.state, "detail": native.detail},
+        "eligible": listed,
+        "protected": protected,
+        "uncommitted": uncommitted,
+        "stale_holds": stale_holds(root)?,
+        "totals": {
+            "eligible": listed.len(),
+            "protected": protected.len(),
+            "uncommitted": uncommitted.len(),
+            "reclaimable_bytes": reclaimable,
+        },
+        "pruned": pruned,
+        "ledger": LEDGER,
+        "note": "Preview by default. Applying needs retention authority and no open native change; it keeps one knowledge entry per archive, removes only files committed identically at HEAD (recoverable from Git), and never edits native archives or Git history.",
+    }))
+}
+
+/// The retention authority for an apply, or the refusal a human must resolve.
+pub(super) fn retention_authority(root: &Path, command: &str) -> Result<String> {
+    let session = read_session(root)?;
+    let authorized = match &session {
+        Session::V2(checkpoint) => prefs::authorized(root, checkpoint, "retention")?,
+        Session::V1(_) => {
+            let (value, origin) = prefs::effective(root, "retention")?;
+            (value == "auto").then_some(origin)
+        }
+    };
+    match authorized {
+        Some(authority) => Ok(authority),
+        None => {
+            let (value, origin) = prefs::effective(root, "retention")?;
+            bail!(
+                "{command} is not authorized (retention = {value}, {origin}). Preview first, then ask the human; record their answer with `chough consent grant retention --source <their words>`"
+            )
+        }
+    }
+}
+
 fn remove_if_present(root: &Path, relative: &str) -> Result<()> {
     match fs::remove_file(local_path(root, relative)?) {
         Err(error) if error.kind() != std::io::ErrorKind::NotFound => {
@@ -1697,6 +2420,65 @@ pub(super) fn auto_prune(root: &Path) -> Value {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_hold_never_sits_in_the_removed_file_directory() {
+        let records = [
+            ".chough/evidence/a.json",
+            ".chough/artifacts/x.log",
+            ".chough/artifacts/nested/deep/y.log",
+            ".chough/library/snapshots/SNAP-a/manifest.json",
+        ];
+        let mut seen = std::collections::BTreeSet::new();
+        for record in records {
+            let hold = hold_path(record);
+            let hold = Path::new(&hold);
+            assert_eq!(hold.parent(), Some(Path::new(HOLD_DIR)), "{record}");
+            assert_ne!(hold.parent(), Path::new(record).parent(), "{record}");
+            let name = Path::new(record).file_name().unwrap().to_str().unwrap();
+            assert!(
+                !hold.to_str().unwrap().contains(name),
+                "{record}: {}",
+                hold.display()
+            );
+            assert!(seen.insert(hold.to_path_buf()), "{record}");
+        }
+    }
+
+    #[test]
+    fn remove_verified_puts_changed_bytes_back_and_leaves_no_hold() {
+        let root = tempfile::tempdir().unwrap();
+        fs::create_dir_all(root.path().join(EVIDENCE_DIR)).unwrap();
+        let file = format!("{EVIDENCE_DIR}/a.json");
+        fs::write(root.path().join(&file), "changed\n").unwrap();
+        let error = remove_verified(root.path(), &file, b"verified\n").unwrap_err();
+        assert!(error.to_string().contains("not removed"), "{error:#}");
+        assert_eq!(
+            fs::read_to_string(root.path().join(&file)).unwrap(),
+            "changed\n"
+        );
+        assert!(!root.path().join(HOLD_DIR).exists());
+        remove_verified(root.path(), &file, b"changed\n").unwrap();
+        assert!(!root.path().join(&file).exists());
+        assert!(!root.path().join(HOLD_DIR).exists());
+    }
+
+    #[test]
+    fn put_back_never_replaces_a_file_written_meanwhile() {
+        let root = tempfile::tempdir().unwrap();
+        let hold = root.path().join("hold");
+        let path = root.path().join("path");
+        fs::write(&hold, "held\n").unwrap();
+        fs::write(&path, "written meanwhile\n").unwrap();
+        let error = put_back(&hold, &path).unwrap_err();
+        assert_eq!(error.kind(), std::io::ErrorKind::AlreadyExists);
+        assert_eq!(fs::read_to_string(&path).unwrap(), "written meanwhile\n");
+        assert_eq!(fs::read_to_string(&hold).unwrap(), "held\n");
+        fs::remove_file(&path).unwrap();
+        put_back(&hold, &path).unwrap();
+        assert_eq!(fs::read_to_string(&path).unwrap(), "held\n");
+        assert!(!hold.exists());
+    }
 
     fn observation(id: String) -> Evidence {
         Evidence {

@@ -1,0 +1,120 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793721268,
+      "digest": "a13cb483c1d6de9be7c6aa39f5fd8c0abd224f787bc009dcda4e00c7d4063d1d",
+      "note": "Agent account corvid-agent records scope approval under Leif (0xLeif)'s chat answers 2026-11-03 8:09-8:27 AM MT (summary only; newest 3 archived changes hot; librarian on everywhere with an opt-out; knowledge/ at the root) and his yes to the drafted intent, relayed by the parent agent. Limits: no live cleanup of this repository's .chough history, no outside storage, no release or deployment. Final acceptance remains Leif's.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "context-knowledge-directory-knowledge-by-default-with-the-librarian-on-and-an-opt-out-one-regenerated-summary-per",
+        "title": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
+        "description": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/",
+          ".chough/cases/",
+          "AGENTS.md",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "README.md",
+          "docs/",
+          "hi/knowledge.md",
+          "skills/",
+          "specs/cli/",
+          "src/evidence.rs",
+          "src/library.rs",
+          "src/main.rs",
+          "src/prefs.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The index lists existing library/ snapshots and briefs as they are, byte-identical and unmigrated, and a lessons index that points to each module lesson source and each lesson bundle without copying lesson text; chough next names the knowledge index",
+          "With no preference set, the librarian is on and its directory is knowledge/; pref set librarian off opts out with a recorded source, and checkpoints and cold resume still work",
+          "fmt, lint, the full tests and fledge lanes run verify pass",
+          "library archive --apply needs retention consent or preference, is refused while any native change is open, removes only files committed byte-identically at HEAD, writes each removal to the retention ledger first with the knowledge entry and digests, shows removed observations as pruned, and restores everything and refuses when an affected archive's terminal evidence validity changes",
+          "library archive previews without writing which observation sets of archives outside the newest 3 would leave the working tree, the bytes and why each other set stays; checkpoint, bug, open-change, hot-archive, validation, newest-run, newest-failure, non-routine and directly named protections all still hold",
+          "library index writes knowledge/INDEX.md and one knowledge/archives/<change-id>.md per archived change with its title, criteria, requirements, commits, listed records and artifacts with digests and current location, observation outcomes and environments, linked bugs and lesson bundle; regenerating from the same sources gives identical bytes and no gate reads the directory"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "AGENTS.md: preserve existing files and records; never invent results. Removal is working-tree only and needs existing retention authority; raw bytes stay in Git history. Leif 2026-11-03 8:09-8:27 AM MT answers: summary only, newest 3 archived changes hot, librarian on with opt-out, knowledge/ at the root. No live cleanup of this repository's .chough history in this change",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "e587ac32d3137894855b67978e2aa500354a83d10927bd70cbdbb5fbd71c7990"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793721904,
+      "digest": "a13cb483c1d6de9be7c6aa39f5fd8c0abd224f787bc009dcda4e00c7d4063d1d",
+      "note": "Re-approval of the same scope by corvid-agent (agent account) on Leif's intent approval of Nov 3 2026 08:09-08:27 MST (Q1-Q5 answers and his yes). Only the REQ-cli-015 and REQ-cli-033 delta wording was tightened so specs/cli/requirements.md stays within Chough's 65,536-byte record bound; no requirement was added or removed. Final acceptance remains Leif's.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "context-knowledge-directory-knowledge-by-default-with-the-librarian-on-and-an-opt-out-one-regenerated-summary-per",
+        "title": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
+        "description": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/",
+          ".chough/cases/",
+          "AGENTS.md",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "README.md",
+          "docs/",
+          "hi/knowledge.md",
+          "skills/",
+          "specs/cli/",
+          "src/evidence.rs",
+          "src/library.rs",
+          "src/main.rs",
+          "src/prefs.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The index lists existing library/ snapshots and briefs as they are, byte-identical and unmigrated, and a lessons index that points to each module lesson source and each lesson bundle without copying lesson text; chough next names the knowledge index",
+          "With no preference set, the librarian is on and its directory is knowledge/; pref set librarian off opts out with a recorded source, and checkpoints and cold resume still work",
+          "fmt, lint, the full tests and fledge lanes run verify pass",
+          "library archive --apply needs retention consent or preference, is refused while any native change is open, removes only files committed byte-identically at HEAD, writes each removal to the retention ledger first with the knowledge entry and digests, shows removed observations as pruned, and restores everything and refuses when an affected archive's terminal evidence validity changes",
+          "library archive previews without writing which observation sets of archives outside the newest 3 would leave the working tree, the bytes and why each other set stays; checkpoint, bug, open-change, hot-archive, validation, newest-run, newest-failure, non-routine and directly named protections all still hold",
+          "library index writes knowledge/INDEX.md and one knowledge/archives/<change-id>.md per archived change with its title, criteria, requirements, commits, listed records and artifacts with digests and current location, observation outcomes and environments, linked bugs and lesson bundle; regenerating from the same sources gives identical bytes and no gate reads the directory"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "AGENTS.md: preserve existing files and records; never invent results. Removal is working-tree only and needs existing retention authority; raw bytes stay in Git history. Leif 2026-11-03 8:09-8:27 AM MT answers: summary only, newest 3 archived changes hot, librarian on with opt-out, knowledge/ at the root. No live cleanup of this repository's .chough history in this change",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2350af177020f33fb4c8bbe5b924c64d6ab4cc436a032e60704ebdd255b34fb6"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793735760,
+      "digest": "7b688973a5fa0353a156c5fec32e29122adfa38145e3d27e85c2b4ca500fc9df",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

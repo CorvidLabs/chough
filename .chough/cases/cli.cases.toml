@@ -2070,13 +2070,13 @@ track = "functional"
 method = "agent-assisted"
 criteria = ["FLOW-12", "LIFE-1"]
 requirements = ["REQ-cli-002", "REQ-cli-015"]
-paths = ["skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/checkpoint.md", "skills/chough-workflow/references/bugs.md", "skills/chough-workflow/references/librarian.md", "skills/chough-workflow/references/lifecycle.md", ".agents/skills/chough-workflow/", ".claude/skills/chough-workflow/"]
+paths = ["skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/checkpoint.md", "skills/chough-workflow/references/bugs.md", "skills/chough-workflow/references/librarian.md", "skills/chough-workflow/references/lifecycle.md", ".agents/skills/chough-workflow/"]
 environments = ["repository-text"]
 artifacts = ["reviewer-note"]
-setup = ["The canonical skill bundle and both host copies at the implementation tip"]
+setup = ["The canonical skill bundle and the shared .agents host copy (which the claude host also installs since #54) at the implementation tip"]
 steps = [
   "Read references/accept.md Compounding, checkpoint.md, bugs.md, librarian.md Closeout and lifecycle.md",
-  "Run chough skill status for both host copies",
+  "Run chough skill status",
 ]
 expected = [
   "accept.md gives the observation, hypothesis and verified labels, each lesson's source and limits, and that a project decision always outranks a lesson, which never changes it",
@@ -2084,7 +2084,7 @@ expected = [
   "bugs.md says a failing check fixed in the same pull request still gets a bug record or a lesson entry",
   "librarian.md describes closeout inside the open native change before specsync change check --commit, with at most 12 summary lines, no spec edits after archive, working with the librarian off and a brief only when it is on",
   "lifecycle.md and accept.md say SpecSync 6.1.2 ships verification_ignored_paths, that this repository has not adopted it, and why",
-  "chough skill status reports both host copies current",
+  "chough skill status reports the .agents host copy current and no .claude copy",
 ]
 
 [[case]]
@@ -2552,6 +2552,222 @@ expected = ["tests/stages.rs::delta_guard_refusals_name_the_agent_actor_and_the_
 adapter = "cargo-test"
 test_target = "stages"
 test = "delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note"
+
+[[case]]
+id = "TC-cli-librarian-default-on-knowledge"
+title = "The librarian is on by default in knowledge/ and the opt-out is recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-5"]
+requirements = ["REQ-cli-015"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/optional.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off"
+
+[[case]]
+id = "TC-cli-knowledge-archive-entries"
+title = "Knowledge entries summarize each archive deterministically with a lessons index and the earlier library folder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-2", "KNOW-3", "KNOW-4", "KNOW-6", "KNOW-12"]
+requirements = ["REQ-cli-015"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::knowledge_entries_summarize_each_archive_deterministically passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "knowledge_entries_summarize_each_archive_deterministically"
+
+[[case]]
+id = "TC-cli-archive-summary-preview"
+title = "The archive summary preview lists cold-archive proof and keeps every protection"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7", "KNOW-8", "KNOW-11"]
+requirements = ["REQ-cli-033"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_previews_cold_archive_proof_and_keeps_protections passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_previews_cold_archive_proof_and_keeps_protections"
+
+[[case]]
+id = "TC-cli-archive-summary-apply"
+title = "The archive summary apply is authorized, ledgered and restored on a validity change"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7", "KNOW-9", "KNOW-10", "KNOW-11"]
+requirements = ["REQ-cli-033"]
+paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change"
+
+[[case]]
+id = "TC-cli-knowledge-entries-bounded"
+title = "Knowledge entries stay bounded with cumulative manifests and a refused build writes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-2", "KNOW-6"]
+requirements = ["REQ-cli-015"]
+paths = ["src/library.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing"
+
+[[case]]
+id = "TC-cli-archive-summary-fails-closed"
+title = "The archive summary apply fails closed without native validity and rolls back a partial removal"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-9", "KNOW-10"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal"
+
+[[case]]
+id = "TC-cli-archive-summary-changed-during-check"
+title = "The archive summary apply refuses and keeps the bytes when a file changes during the native validity check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7", "KNOW-9"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check"
+
+[[case]]
+id = "TC-cli-archive-summary-unfiltered-head-compare"
+title = "Under core.autocrlf a CRLF file that differs from HEAD byte for byte is held back, not eligible"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf"
+
+[[case]]
+id = "TC-cli-archive-summary-protection-during-check"
+title = "The archive summary apply refuses when a protection appears during the native validity check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-8"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check"
+
+[[case]]
+id = "TC-cli-archive-summary-protection-before-each-removal"
+title = "The archive summary apply re-checks protections right before each removal and keeps the files when one appears after the validity check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-8"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check"
+
+[[case]]
+id = "TC-cli-archive-summary-no-clobber-restore"
+title = "An archive summary rollback keeps a file recreated during the apply instead of overwriting it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-7", "KNOW-10"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::archive_summary_restore_keeps_a_file_recreated_during_the_apply passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "archive_summary_restore_keeps_a_file_recreated_during_the_apply"
+
+[[case]]
+id = "TC-cli-archive-summary-stale-holds"
+title = "A stale removal hold never breaks status and blocks the next apply until resolved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-9"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply passes: with a hold in .chough/removing, status, next, context, timing, bug list, the evidence prune preview and the library archive preview succeed, and apply is refused until the hold is resolved"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply"
 
 [[case]]
 id = "TC-cli-claude-host-shares-agents-copy"

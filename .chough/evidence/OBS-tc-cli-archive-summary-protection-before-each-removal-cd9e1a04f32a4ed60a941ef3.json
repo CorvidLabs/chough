@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-archive-summary-protection-before-each-removal-cd9e1a04f32a4ed60a941ef3",
+  "criteria": [
+    "KNOW-8"
+  ],
+  "requirements": [
+    "REQ-cli-033"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check for TC-cli-archive-summary-protection-before-each-removal: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-archive-summary-protection-before-each-removal-cd9e1a04f32a4ed60a941ef3.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-archive-summary-protection-before-each-removal-cd9e1a04f32a4ed60a941ef3.log": "0f717911674247b46bf5e59aa61e5633189ba59c025f590ef825ac514196ccce"
+  },
+  "observed_at_unix_seconds": 1793733666,
+  "snapshot": {
+    "revision": "ec7daea266cceb11520457bacdbb0b9809d3c2ed",
+    "dirty": false,
+    "fingerprint": "592a87f49d3155cae90b34ec315f95e28cb642d6eb0ff8f5b99dced54b808bcd",
+    "content": "bd1b9de8e5329c9aff59991b5481e1fb7a6d8cf2dcb7e2673e6c23937ceea0d2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-archive-summary-protection-before-each-removal",
+      "digest": "fd6e2f5ee3cc30666b235066f19a3ba577075d0e1ba197f53b2f74cc43e6d20d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
