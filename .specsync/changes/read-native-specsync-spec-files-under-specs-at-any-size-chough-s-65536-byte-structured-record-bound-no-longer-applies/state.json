@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies",
+  "slug": "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies",
+  "title": "Read native SpecSync spec files under specs at any size: Chough's 65536-byte structured-record bound no longer applies to spec companions such as requirements.md, every Chough record keeps its bound, and the workflow skill gains advisory composability guidance",
+  "description": "Read native SpecSync spec files under specs at any size: Chough's 65536-byte structured-record bound no longer applies to spec companions such as requirements.md, every Chough record keeps its bound, and the workflow skill gains advisory composability guidance",
+  "kind": "feature",
+  "state": "approved",
+  "base_commit": "4daf861509b70c14282ac16b5d0547d701e385b2",
+  "created_at": 1793726853,
+  "updated_at": 1793726987,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/evidence.rs",
+    "src/skill.rs",
+    "tests/",
+    "docs/cli.md",
+    "skills/chough-workflow/",
+    ".agents/skills/",
+    "specs/cli/",
+    "CHANGELOG.md",
+    ".chough/cases/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Chough reads a native SpecSync spec file under specs/ at any size: `chough evidence add` validates a requirement ID against a requirements.md companion larger than 4 MiB, and still refuses an ID owned by another module with the same message",
+    "Every Chough record keeps its bound: a structured record other than the checkpoint over 65,536 bytes and a checkpoint over 131,072 bytes are still refused, and RECORD_LIMIT stays 65,536",
+    "The workflow skill build reference gains advisory composability guidance, identical in the bundled and installed copies: split independent behavior, keep coupled behavior together, treat a source file nearing about 1,000 lines as a split candidate, and treat size as a hint, never a gate",
+    "`chough skill status` reports main's previous build reference as known-outdated, so `chough skill update` can refresh it",
+    "fmt, lint, the full tests, the new case and fledge lanes run verify pass"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "AGENTS.md: preserve existing files and records and never invent results. REQ-cli-032 keeps every structured record other than the checkpoint at its existing bound; this change adds a separate requirement for native spec files and does not reword REQ-cli-032. Leif (0xLeif) 2026-11-03 10:05 AM MT: spec files can grow to any size, and composability guidance should keep things lean without being crazy about it. Existing archives stay untouched; SpecSync is unchanged; the 65,536-byte cap is Chough's own (SpecSync only bounds coverage files at 8 MiB).",
+    "public_contract": "yes"
+  }
+}

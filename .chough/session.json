@@ -7,7 +7,7 @@
     "history"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -634,5 +634,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merged after green hosted checks; then re-merge main into #55"
+  "next_action": "New cycle from done after reset: New cycle: read native SpecSync spec files under specs/ at any size, keeping every Chough record bound, plus composability guidance (parent agent instruction 2026-11-03 10:06 AM MT relaying Leif's 10:05 AM MT words: \"Spec files can grow to whatever number they want ... we shouldn't really care about file size for specs.\"); traced to LIFE-11; no new HI criterion captured without Leif's confirmation. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }

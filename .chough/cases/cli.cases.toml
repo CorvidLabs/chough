@@ -2588,3 +2588,39 @@ expected = ["tests/optional.rs::legacy_claude_copy_is_reported_and_removed_only_
 adapter = "cargo-test"
 test_target = "optional"
 test = "legacy_claude_copy_is_reported_and_removed_only_explicitly"
+
+[[case]]
+id = "TC-cli-spec-files-read-at-any-size"
+title = "A requirements companion over 4 MiB is read at any size; ownership is still checked"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-11"]
+requirements = ["REQ-cli-034"]
+paths = ["src/records.rs", "src/evidence.rs", "tests/cli.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::spec_requirements_companions_are_read_at_any_size passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "spec_requirements_companions_are_read_at_any_size"
+
+[[case]]
+id = "TC-cli-build-reference-from-main-known-outdated"
+title = "Main's previous build reference reads known-outdated and skill update brings in the composability guidance"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-11", "LIFE-4"]
+requirements = ["REQ-cli-034"]
+paths = ["src/skill.rs", "skills/chough-workflow/references/build.md", "tests/cli.rs"]
+environments = ["local-linux-x86_64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::build_reference_from_main_4daf861_is_known_outdated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "build_reference_from_main_4daf861_is_known_outdated"

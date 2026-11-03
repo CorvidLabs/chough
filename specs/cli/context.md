@@ -322,3 +322,14 @@ at main 8300b58) and its bug. Limits: one search of src/, skills/ and docs/ for 
 wording; frozen old-skill fixtures were not changed. Future use: when guidance wording
 changes, search runtime refusal and next-action strings in src/ as well as the
 skill and docs, and assert the remedy text in a test.
+
+2026-11-03, spec size bounded by a Chough record reader (verified): `chough evidence
+add` read `specs/<module>/requirements.md` through the 65,536-byte structured-record
+reader, so a growing cli companion blocked #55 and forced the #59 split, although
+SpecSync sets no spec-file cap. Source: the failing-first run of
+`spec_requirements_companions_are_read_at_any_size` ("structured record exceeds 65536
+bytes") and Leif's 2026-11-03 10:05 AM MT decision that spec files have no size
+limit. Limits: only the two `requirements.md` reads in src/evidence.rs read native
+spec files today. Future use: read files the project owns under `specs/` with
+`records::read_spec_file`, keep `read_record` for Chough's own records, and treat
+size as a composability hint, not a gate.

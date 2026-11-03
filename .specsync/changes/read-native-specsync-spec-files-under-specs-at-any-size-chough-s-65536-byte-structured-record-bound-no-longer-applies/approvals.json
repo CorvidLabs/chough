@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793726987,
+      "digest": "9da0350ad754fc39da803216b8c170e95ad419990fb26accbb9ebeeef1611c52",
+      "note": "Agent account corvid-agent records definition approval under the parent agent's instruction of 2026-11-03 10:06 AM MT, relaying Leif (0xLeif) at 10:05 AM MT verbatim: \"Spec files can grow to whatever number they want. It's mainly just all the artifacts and all of the investigations or evidence and all the stuff that you're storing. we shouldn't really care about file size for specs.\" and \"we need to have some, you know, good sense of composability but not be crazy about it.\" Scope: remove Chough's record bound for native spec files under specs/ only; every Chough record keeps its bound; advisory composability guidance, never a gate; KNOWN_PREVIOUS entry for main's build reference. Limits: no SpecSync change, archives untouched, no new HI criterion captured, no release or deployment. Independent review and final acceptance are arranged by the parent.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies",
+        "title": "Read native SpecSync spec files under specs at any size: Chough's 65536-byte structured-record bound no longer applies to spec companions such as requirements.md, every Chough record keeps its bound, and the workflow skill gains advisory composability guidance",
+        "description": "Read native SpecSync spec files under specs at any size: Chough's 65536-byte structured-record bound no longer applies to spec companions such as requirements.md, every Chough record keeps its bound, and the workflow skill gains advisory composability guidance",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/",
+          ".chough/cases/",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "skills/chough-workflow/",
+          "specs/cli/",
+          "src/evidence.rs",
+          "src/records.rs",
+          "src/skill.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Chough reads a native SpecSync spec file under specs/ at any size: `chough evidence add` validates a requirement ID against a requirements.md companion larger than 4 MiB, and still refuses an ID owned by another module with the same message",
+          "Every Chough record keeps its bound: a structured record other than the checkpoint over 65,536 bytes and a checkpoint over 131,072 bytes are still refused, and RECORD_LIMIT stays 65,536",
+          "The workflow skill build reference gains advisory composability guidance, identical in the bundled and installed copies: split independent behavior, keep coupled behavior together, treat a source file nearing about 1,000 lines as a split candidate, and treat size as a hint, never a gate",
+          "`chough skill status` reports main's previous build reference as known-outdated, so `chough skill update` can refresh it",
+          "fmt, lint, the full tests, the new case and fledge lanes run verify pass"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "AGENTS.md: preserve existing files and records and never invent results. REQ-cli-032 keeps every structured record other than the checkpoint at its existing bound; this change adds a separate requirement for native spec files and does not reword REQ-cli-032. Leif (0xLeif) 2026-11-03 10:05 AM MT: spec files can grow to any size, and composability guidance should keep things lean without being crazy about it. Existing archives stay untouched; SpecSync is unchanged; the 65,536-byte cap is Chough's own (SpecSync only bounds coverage files at 8 MiB).",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "460a0597b14ce95ebf13c708ceaa4b0f6f51abeff6a08aa85f6167839eef2fc1"
+      }
+    }
+  ],
+  "reopenings": []
+}

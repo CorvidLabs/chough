@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Native SpecSync spec files under `specs/` are read at any size: `chough evidence
+  add` no longer refuses a `requirements.md` companion over 65,536 bytes (REQ-cli-034).
+  Every Chough record keeps its bound. The workflow skill's build reference gains
+  advisory "Keep it composable" guidance; size is a hint, never a gate. Leif decided
+  this on 2026-11-03.
+
 - The cli spec module is split so its requirements companion has headroom under the
   65,536-byte record bound: REQ-cli-018 and REQ-cli-025 to REQ-cli-027 are now
   REQ-history-001 to REQ-history-004 in the new `history` module, with wording
