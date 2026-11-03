@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0132-6b025b023ab4af885ceae705",
+  "criteria": [
+    "FLOW-12",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-002",
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass, 5=pass, 6=pass. Independent agent-assisted review by the Chough bot (review 5757616772, 6/6 pass at 204581b; skills unchanged since), agreeing with corvid-agent's reviewer-note-ab2bce3.md; skill status re-run at this head",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0132/independent-review-5757616772.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0132/independent-review-5757616772.md": "0863ab4b984a80687ad0dfd55bb26fe58a12282c6388761118567c7f036651fa"
+  },
+  "observed_at_unix_seconds": 1793731581,
+  "snapshot": {
+    "revision": "94e98b22f7925ca5d1a35d1e52519cbc8af06420",
+    "dirty": false,
+    "fingerprint": "6f460425b159dc9c7c03a32a6dac657a1d17bab9d0d8442abf1f7d0217c50d1a",
+    "content": "4e24dbf0d0aa6750cdd9733c3277e548de63fdeac535ed841c507bf560785715"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0132",
+      "digest": "e2467f253be5cd9c0130dd881b9f559f511f89bb61bab39e95f3352bfdb6f6de"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Agent-assisted, not human acceptance; does not replace Leif's scoped review",
+    "Checks wording, not agent behavior"
+  ]
+}
