@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd",
+  "criteria": [
+    "LIFE-13",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "not-run",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test optional -- --exact legacy_claude_copy_is_reported_and_removed_only_explicitly for TC-cli-legacy-claude-copy-removed-only-explicitly: not-run (exit 101, tests run 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.log": "bd4cce5335c294323b3670e4b17b438cace2f5548c1c2a8b92ebcb61c3622cbf"
+  },
+  "observed_at_unix_seconds": 1793720489,
+  "snapshot": {
+    "revision": "0363d4af368bb07cc07f16c2f5fff7645c1c05bc",
+    "dirty": true,
+    "fingerprint": "996a91aaf928b97fe83c9a65b513e218a6bbcdd4377155b502182b4f778d3acc",
+    "content": "b422aa10b22a1eb31985be1265ba60f73e1367ea0912b403c7d227830be8ce8a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-legacy-claude-copy-removed-only-explicitly",
+      "digest": "0dff37e86d08ee15994045f9bd0939cdfda61e7e10f54daceb808874ce01fbeb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "legacy_claude_copy_is_reported_and_removed_only_explicitly"
+  ],
+  "exit_code": 101,
+  "tests_run": 0,
+  "limitations": [
+    "cargo exited 101 before reporting any test result: a build or environment failure, not an assertion about the behavior",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

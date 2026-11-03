@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee",
+  "criteria": [
+    "LIFE-13",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test optional -- --exact legacy_claude_copy_is_reported_and_removed_only_explicitly for TC-cli-legacy-claude-copy-removed-only-explicitly: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee.log": "db0bec1b2cd4d5b0d230f40d3c854e351d73ef169406d749dcc72bdf11575c1f"
+  },
+  "observed_at_unix_seconds": 1793720525,
+  "snapshot": {
+    "revision": "0363d4af368bb07cc07f16c2f5fff7645c1c05bc",
+    "dirty": true,
+    "fingerprint": "0daa842e4e919123a6c3534ce131b0f7e4945e415df541160b6cece33398bd4e",
+    "content": "3dd2924db0ef89353e7d132460a12cb6e01ec3a180c9163dac17e564a2edafd9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-legacy-claude-copy-removed-only-explicitly",
+      "digest": "0dff37e86d08ee15994045f9bd0939cdfda61e7e10f54daceb808874ce01fbeb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "legacy_claude_copy_is_reported_and_removed_only_explicitly"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

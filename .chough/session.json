@@ -45,7 +45,10 @@
       "KNOW-9",
       "KNOW-10",
       "KNOW-11",
-      "KNOW-12"
+      "KNOW-12",
+      "LIFE-12",
+      "LIFE-13",
+      "LIFE-14"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -295,7 +298,12 @@
     "Agent authority: corvid-agent acts under Leif's standing through-PR authority (7:49 AM MT) and his 8:27 AM MT intent answers; no release, deploy, live cleanup of this repository's .chough history or fabricated human acceptance",
     "Repo dry run of chough library archive (preview only, nothing written): 52 archives (3 hot, 49 cold), 579 listed observation sets, 0 eligible, 0 reclaimable bytes. SpecSync verification manifests are cumulative, so the newest archive lists all 579 present records and every set is protected as hot; 83 are protected only by hot listings (about 614 KB). Leif decides whether hot should mean the archive that first listed a set; no live cleanup was run.",
     "src/skill.rs is outside this change's approved affected paths, so the KNOWN_PREVIOUS digest for main 0363d4a references/librarian.md is not added here; until a follow-up change adds it, skill status reports an installed 0363d4a librarian.md as edited and skill update keeps it rather than replacing it.",
-    "Review 5755705790 fixes: knowledge entries are bounded (first-listed paths, at most 100 rows, 64 KiB) and built in memory before writing; apply fails closed when SpecSync cannot report an affected archive's validity and restores on any error after the first ledger line. Both regression tests failed first on a53e604 src. src/skill.rs KNOWN_PREVIOUS for librarian.md stays a follow-up: SpecSync 6.1.2 cannot widen affected_paths after draft (change correct accepts only public_contract and architecture_risk), so widening would bypass the native guard. corvid-agent, under Leif's approved KNOW intent relayed by the parent agent."
+    "Review 5755705790 fixes: knowledge entries are bounded (first-listed paths, at most 100 rows, 64 KiB) and built in memory before writing; apply fails closed when SpecSync cannot report an affected archive's validity and restores on any error after the first ledger line. Both regression tests failed first on a53e604 src. src/skill.rs KNOWN_PREVIOUS for librarian.md stays a follow-up: SpecSync 6.1.2 cannot widen affected_paths after draft (change correct accepts only public_contract and architecture_risk), so widening would bypass the native guard. corvid-agent, under Leif's approved KNOW intent relayed by the parent agent.",
+    "decided: intent LIFE-12..14 approved because Leif (0xLeif) answered the interview 'Only the shared .agents copy' and on 2026-11-03 8:27 AM MT 'Remove .claude entirely', and the parent relayed his yes as intent approval; his next decision is final acceptance",
+    "Agent corvid-agent assumption: only the claude host is remapped to .agents/skills; codex, cursor, gemini and grok keep their directories because Leif's 8:27 AM answer named .claude only",
+    "Agent corvid-agent applies Human authority: Leif (0xLeif) chat 2026-11-03 8:09-8:27 AM MT interview answers 'Only the shared .agents copy' and 'Remove .claude entirely' (relayed intent approval; final acceptance is his next decision). Covered scope: claude->.agents mapping, legacy report, explicit remove-legacy, this repo's .claude removal, docs. Limits: other hosts unchanged, edited legacy files kept, no release",
+    "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases",
+    "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's."
   ],
   "open_questions": [],
   "completed": [
@@ -405,7 +413,8 @@
     "chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy.",
     "Failure-first: the default-on and archive-entry cases failed at 0363d4a (OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834, OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8); the two REQ-cli-033 tests failed at 0363d4a in cargo test (unrecognized subcommand / not authorized) but could not be recorded as cases before the requirement materialized. All four cases now pass.",
     "Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).",
-    "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections)."
+    "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections).",
+    "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb"
   ],
   "observations": [
     "tc-cli-0101-1793473306",

@@ -1,0 +1,12 @@
+--- stdout ---
+
+--- stderr ---
+   Compiling chough v0.1.0 (/workspace/chough-know-b)
+error[E0762]: unterminated character literal
+    --> tests/optional.rs:5427:1
+     |
+5427 | '    let created: Vec<&str> = output["created"]
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0762`.
+error: could not compile `chough` (test "optional") due to 1 previous error

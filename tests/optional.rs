@@ -804,14 +804,14 @@ fn skills_install_per_host_and_update_only_unmodified_files() {
         "--objective",
         "Install for two hosts",
         "--host",
-        "claude",
+        "codex",
         "--host",
         "openai",
     ]);
-    assert_eq!(output["hosts"], serde_json::json!(["claude", "openai"]));
+    assert_eq!(output["hosts"], serde_json::json!(["codex", "openai"]));
     let files = bundle_files();
     assert!(files.len() >= 20);
-    for host in [".claude/skills", ".agents/skills"] {
+    for host in [".codex/skills", ".agents/skills"] {
         for file in &files {
             let installed = fixture.root().join(host).join("chough-workflow").join(file);
             let canonical = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -831,15 +831,15 @@ fn skills_install_per_host_and_update_only_unmodified_files() {
     .unwrap()
     // The 0.1.0 digest is of LF bytes; a Windows checkout may have converted them.
     .replace("\r\n", "\n");
-    fixture.write(".claude/skills/chough-workflow/SKILL.md", &old);
+    fixture.write(".codex/skills/chough-workflow/SKILL.md", &old);
     fixture.write(
-        ".claude/skills/chough-workflow/references/bugs.md",
+        ".codex/skills/chough-workflow/references/bugs.md",
         "my own notes\n",
     );
     fs::remove_file(
         fixture
             .root()
-            .join(".claude/skills/chough-workflow/references/roles.md"),
+            .join(".codex/skills/chough-workflow/references/roles.md"),
     )
     .unwrap();
     let state = |report: &Value, file: &str| {
@@ -851,13 +851,13 @@ fn skills_install_per_host_and_update_only_unmodified_files() {
             .unwrap()
             .clone()
     };
-    let status = fixture.ok(&["skill", "status", "--host", "claude"]);
+    let status = fixture.ok(&["skill", "status", "--host", "codex"]);
     assert_eq!(state(&status, "SKILL.md")["state"], "known-outdated");
     assert_eq!(state(&status, "references/bugs.md")["state"], "edited");
     assert_eq!(state(&status, "references/roles.md")["state"], "missing");
     assert_eq!(state(&status, "references/stages.md")["state"], "current");
 
-    let updated = fixture.ok(&["skill", "update", "--host", "claude"]);
+    let updated = fixture.ok(&["skill", "update", "--host", "codex"]);
     assert_eq!(state(&updated, "SKILL.md")["action"], "updated");
     assert_eq!(
         state(&updated, "references/bugs.md")["action"],
@@ -865,10 +865,10 @@ fn skills_install_per_host_and_update_only_unmodified_files() {
     );
     assert_eq!(state(&updated, "references/roles.md")["action"], "added");
     assert_eq!(
-        fixture.read(".claude/skills/chough-workflow/references/bugs.md"),
+        fixture.read(".codex/skills/chough-workflow/references/bugs.md"),
         "my own notes\n"
     );
-    assert_ne!(fixture.read(".claude/skills/chough-workflow/SKILL.md"), old);
+    assert_ne!(fixture.read(".codex/skills/chough-workflow/SKILL.md"), old);
     assert!(
         fixture
             .fails(&["init", "--host", "unknown"])
@@ -1004,4 +1004,149 @@ fn the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off() {
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(next["knowledge"]["librarian"], "off");
     fixture.ok(&["status"]);
+}
+
+#[test]
+fn claude_host_installs_the_shared_agents_copy_once() {
+    // LIFE-12, REQ-cli-016: one full copy, in the shared `.agents/skills` directory.
+    let fixture = Fixture::new();
+    let output = fixture.ok(&[
+        "init",
+        "--objective",
+        "One shared copy",
+        "--host",
+        "claude",
+        "--host",
+        "openai",
+    ]);
+    assert!(
+        !fixture.root().join(".claude").exists(),
+        "init --host claude created .claude/"
+    );
+    let canonical = Path::new(env!("CARGO_MANIFEST_DIR")).join("skills/chough-workflow");
+    for file in bundle_files() {
+        assert_eq!(
+            fs::read(
+                fixture
+                    .root()
+                    .join(".agents/skills/chough-workflow")
+                    .join(&file)
+            )
+            .unwrap(),
+            fs::read(canonical.join(&file)).unwrap(),
+            "{file}"
+        );
+    }
+    let created: Vec<&str> = output["created"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|path| path.as_str().unwrap())
+        .collect();
+    let skill_files: Vec<&&str> = created
+        .iter()
+        .filter(|path| path.contains("skills/chough-workflow/"))
+        .collect();
+    assert_eq!(skill_files.len(), bundle_files().len(), "{created:?}");
+    assert!(skill_files.iter().all(|path| path.starts_with(".agents/")));
+    assert_eq!(output["preserved"], serde_json::json!([]));
+    let status = fixture.ok(&["skill", "status", "--host", "claude"]);
+    assert_eq!(status["hosts"].as_array().unwrap().len(), 1);
+    assert_eq!(
+        status["hosts"][0]["directory"],
+        ".agents/skills/chough-workflow"
+    );
+    let updated = fixture.ok(&["skill", "update", "--host", "claude", "--host", "openai"]);
+    assert_eq!(updated["hosts"].as_array().unwrap().len(), 1);
+    assert!(!fixture.root().join(".claude").exists());
+}
+
+#[test]
+fn legacy_claude_copy_is_reported_and_removed_only_explicitly() {
+    // LIFE-13, REQ-cli-016: a legacy `.claude` copy is never deleted silently.
+    let fixture = Fixture::new();
+    let canonical = Path::new(env!("CARGO_MANIFEST_DIR")).join("skills/chough-workflow");
+    let legacy = ".claude/skills/chough-workflow";
+    for file in bundle_files() {
+        let bytes = fs::read_to_string(canonical.join(&file)).unwrap();
+        fixture.write(&format!("{legacy}/{file}"), &bytes);
+    }
+    fixture.write(&format!("{legacy}/SKILL.md"), BASE_5AF3F78_SKILL);
+    fixture.write(&format!("{legacy}/references/bugs.md"), "my own notes\n");
+    fixture.write(&format!("{legacy}/NOTES.md"), "unknown file\n");
+    let snapshot = |fixture: &Fixture| -> Vec<(String, String)> {
+        let mut files: Vec<(String, String)> = bundle_files()
+            .into_iter()
+            .chain(["NOTES.md".to_string()])
+            .map(|file| {
+                let path = format!("{legacy}/{file}");
+                let body = fixture.read(&path);
+                (path, body)
+            })
+            .collect();
+        files.sort();
+        files
+    };
+    let before = snapshot(&fixture);
+
+    // Without the shared copy, removal refuses and changes nothing.
+    let refused = fixture.fails(&["skill", "remove-legacy", "--host", "claude"]);
+    assert!(
+        refused.contains(".agents/skills/chough-workflow"),
+        "{refused}"
+    );
+    assert_eq!(snapshot(&fixture), before);
+
+    fixture.ok(&["init", "--objective", "Legacy copy", "--host", "claude"]);
+    assert_eq!(snapshot(&fixture), before, "init touched the legacy copy");
+    for command in ["status", "update"] {
+        let report = fixture.ok(&["skill", command]);
+        let legacy_report = &report["legacy"][0];
+        assert_eq!(legacy_report["directory"], legacy, "{command}: {report}");
+        assert_eq!(legacy_report["host"], "claude");
+        let state = |file: &str| {
+            legacy_report["files"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|entry| entry["file"] == file)
+                .unwrap()["state"]
+                .clone()
+        };
+        assert_eq!(state("SKILL.md"), "known-outdated");
+        assert_eq!(state("references/bugs.md"), "edited");
+        assert_eq!(state("references/stages.md"), "current");
+        assert_eq!(state("NOTES.md"), "unknown");
+        assert!(
+            legacy_report["remove"]
+                .as_str()
+                .unwrap()
+                .contains("chough skill remove-legacy --host claude")
+        );
+        assert_eq!(
+            snapshot(&fixture),
+            before,
+            "{command} touched the legacy copy"
+        );
+    }
+
+    let removed = fixture.ok(&["skill", "remove-legacy", "--host", "claude"]);
+    let kept: Vec<&str> = removed["legacy"][0]["kept"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| file.as_str().unwrap())
+        .collect();
+    assert_eq!(kept, ["NOTES.md", "references/bugs.md"]);
+    assert!(!fixture.exists(&format!("{legacy}/SKILL.md")));
+    assert!(!fixture.exists(&format!("{legacy}/references/stages.md")));
+    assert_eq!(
+        fixture.read(&format!("{legacy}/references/bugs.md")),
+        "my own notes\n"
+    );
+    assert_eq!(
+        fixture.read(&format!("{legacy}/NOTES.md")),
+        "unknown file\n"
+    );
+    assert!(fixture.exists(".agents/skills/chough-workflow/SKILL.md"));
 }

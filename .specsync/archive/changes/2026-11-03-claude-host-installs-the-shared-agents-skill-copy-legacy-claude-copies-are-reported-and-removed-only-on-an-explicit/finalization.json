@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit",
+  "implementation_commit": "d036d9234b5926d26d0a8dcd2caeb03171138fe1",
+  "implementation_tree": "d3297973df5e7d68159d267f201217e17753e072",
+  "contract_digest": "0271a1e0d88c358f61185c90e2645738442b24eabc7e4b1693fa3eabe8164f4f",
+  "workspace_digest": "045da35b699a31c54615b2f755ff0ebc8196856276e081c021e0f480821da964",
+  "closing_digest": "3402bef4c72aabf2d772e269d59edb36e80f55d4f0315de014ba0f3b879bd5e6",
+  "review_digest": "d312d7ff9d586b29507336b2f76a24709bbca44e514043a69887c5147e9c42f7",
+  "finalization_digest": "3f102ddbf91cd6aa8157eaca5f86e79b05e6b6c417bc1b3f0fe6ddba3cf21914",
+  "timestamp": 1793723575
+}
