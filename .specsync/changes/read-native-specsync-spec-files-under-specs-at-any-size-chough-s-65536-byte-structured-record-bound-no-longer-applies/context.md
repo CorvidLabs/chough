@@ -10,8 +10,10 @@ requirements companion `specs/cli/requirements.md` grew past Chough's 65,536-byt
 structured-record bound. #59 split the cli spec to make room, but that only moved
 the limit. The bound is Chough's own: `src/evidence.rs` read `requirements.md`
 through `records::read_record` (RECORD_LIMIT 65,536) when `chough evidence add`
-checks a requirement ID's owning module, and `chough next` skipped a module
-`context.md` over 4 MiB (NATIVE_RECORD_LIMIT) when pointing at its Lessons section.
+checks a requirement ID's owning module. `chough next` also skips a module
+`context.md` over 4 MiB (NATIVE_RECORD_LIMIT) when pointing at its Lessons section,
+and `chough library snapshot` refuses files over 4 MiB; both are left to the
+dependent change's follow-up PR.
 SpecSync itself does not cap spec files.
 
 Leif (0xLeif), 2026-11-03 10:05 AM MT: "Spec files can grow to whatever number they

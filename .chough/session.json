@@ -7,7 +7,7 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1

@@ -959,35 +959,6 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
 }
 
 #[test]
-fn next_searches_a_context_md_larger_than_4_mib() {
-    let fixture = Fixture::new();
-    fixture.init();
-    // Native spec files have no size bound (REQ-cli-034): past 4 MiB the Lessons
-    // heading is still found, CRLF included, and a file without one says so.
-    let line = "Filler line for a large native context file.\r\n";
-    let filler = line.repeat(4 * 1_048_576 / line.len() + 2);
-    assert!(filler.len() > 4 * 1_048_576);
-    let filler_lines = filler.matches('\n').count();
-    fixture.write(
-        "specs/cli/context.md",
-        &format!("{filler}## Lessons\r\n\r\nSECRET-LESSON-TEXT\r\n"),
-    );
-    fixture.write("specs/docs/context.md", &filler);
-    let mut session = fixture.session();
-    session["modules"] = json!(["cli", "docs"]);
-    fixture.write(".chough/session.json", &session.to_string());
-    let next = fixture.ok(&["next", "--json"]);
-    assert_eq!(
-        next["lessons"]["sources"],
-        json!({"total": 2, "items": [
-            {"module": "cli", "path": "specs/cli/context.md", "section_line": filler_lines + 1, "note": null},
-            {"module": "docs", "path": "specs/docs/context.md", "section_line": null, "note": "no Lessons section"},
-        ]})
-    );
-    assert!(!next.to_string().contains("SECRET-LESSON-TEXT"));
-}
-
-#[test]
 fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
     let fixture = Fixture::new();
     fixture.init();

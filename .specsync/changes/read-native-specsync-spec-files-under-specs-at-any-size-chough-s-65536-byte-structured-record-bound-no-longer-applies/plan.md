@@ -8,8 +8,10 @@ artifact: plan
 ## Approach
 
 Add `records::read_spec_file`, an unbounded reader for native spec files, and use it
-for the two `requirements.md` reads in `src/evidence.rs`; search a module
-`context.md` for its Lessons heading line by line at any size in `chough next`.
+for the two `requirements.md` reads in `src/evidence.rs`. `chough next`'s
+`context.md` search and `chough library snapshot`'s spec-file refusal move to the
+dependent change's follow-up PR (review 5757165977), because src/main.rs and
+src/library.rs are outside this change's paths.
 `chough context` keeps its display budgets for spec text. Every Chough record keeps
 `read_record` and its bounds. Add advisory composability guidance to the workflow
 skill's build reference and register main's previous build reference digest so
