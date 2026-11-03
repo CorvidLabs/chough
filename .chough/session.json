@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
-  "objective": "Issue #30 acceptance evidence: same-second two-root test with a pinned clock, and a real Git fixture for independently added generated records",
+  "objective": "Integrate main 134ee19 into PR #48 (Refs #30)",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "windows-safe-git-paths-in-the-issue-30-same-second-test",
+  "native_change": "integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -239,7 +239,8 @@
     "agent owner choice: keep PR46 current-cycle fields together while importing accepted37 because this branch continues report-read integration; all additive collections and196legacy transition occurrences were preserved, with no live history adoption or pruning",
     "agent owner choice: retain24superseded observation records as direct protected file references because202active pointers exceeded200; reviewed policy and raw parents are frozen in pr46-checkpoint-reference-index",
     "Agent corvid-agent applies 0xLeif standing through-PR ticket permission and chat instruction \"Merge approved, green PRs and resynchronize\" to the PR46 archive executor performance fix. All native obligations, validation, 90-second commands and 10-minute job budget stay unchanged. No evidence rewrite, longer timeout, release or deployment is authorized.",
-    "Agent corvid-agent records delegated native closeout of the bounded PR46 executor fix under 0xLeif standing through-PR authority and explicit finish/merge instruction. Peer review and local verification are retained. Exact-head GitHub approval and every hosted check still gate merge."
+    "Agent corvid-agent records delegated native closeout of the bounded PR46 executor fix under 0xLeif standing through-PR authority and explicit finish/merge instruction. Peer review and local verification are retained. Exact-head GitHub approval and every hosted check still gate merge.",
+    "decided: corvid-agent approves, reviews and ships the #48 main integration, (because 0xLeif's through-PR authorization in #46's archived context and issuecomment-6595229360; scope: integration only; limits: no limit raise, pruning or merge)"
   ],
   "open_questions": [],
   "completed": [
@@ -371,7 +372,8 @@
     "PR46 final main d839 integration passed 209 tests on Rust1.95/Rust1.88, all nine Fledge steps and three report cases; all native changes are archived under the actual finish-all instruction. Original proof and approval history remain intact.",
     "Intermediate accepted37 integration passed22history,5report-cache and2legacy timing tests plus build/fmt/lint/native audit;1875parent proof blobs remain exact. Full qualification waits for final accepted44 source.",
     "Combined source:9Fledge steps and240tests on each Rust1.95/1.88, all16cases passed; actual44main imported with identical qualified inputs and0record replay.",
-    "Combined source passed 240 tests on each Rust version, nine Fledge steps and 16 cases; the integration is archived."
+    "Combined source passed 240 tests on each Rust version, nine Fledge steps and 16 cases; the integration is archived.",
+    "Main 134ee19 integrated: 3-way checkpoint (197 obs, 37 files), test call fixed, #48 cases rerun"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -601,7 +603,9 @@
     "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence"
+  ],
   "run_consents": [],
-  "next_action": "Wait for hosted CI on PR #48; do not merge"
+  "next_action": "Fix freshness call, requalify, verify, push; no merge"
 }

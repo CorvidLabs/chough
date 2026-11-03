@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-same-second-runs-in-two-git-roots-stay-distinct-d858afe0ef8cc7aaa2364f4b",
+  "criteria": [
+    "FLOW-7",
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-023"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --bin chough -- --exact tests::same_second_runs_in_two_git_roots_keep_distinct_identities_after_merge for TC-cli-same-second-runs-in-two-git-roots-stay-distinct: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-same-second-runs-in-two-git-roots-stay-distinct-d858afe0ef8cc7aaa2364f4b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-same-second-runs-in-two-git-roots-stay-distinct-d858afe0ef8cc7aaa2364f4b.log": "7ee20fb28673e4358614f6715f1c010d5293a4a817aaadb067f27feca57e4887"
+  },
+  "observed_at_unix_seconds": 1793679334,
+  "snapshot": {
+    "revision": "781ee446db654bd159295a48fdbee25cebb26cb1",
+    "dirty": true,
+    "fingerprint": "ea8dcc2ad97f54b7e4d24e90cbcaf4b25191147a1218efc9f13289c24d0a457c",
+    "content": "ad885553e4a1b7a3eeeadba77a9d1d0858eccd2e8134e3b24680cb3ebdb4d840"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-same-second-runs-in-two-git-roots-stay-distinct",
+      "digest": "f488427b3322cf2f59195888e45fac7577303fd152be389b0f78871f06ed505a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--bin",
+    "chough",
+    "--",
+    "--exact",
+    "tests::same_second_runs_in_two_git_roots_keep_distinct_identities_after_merge"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

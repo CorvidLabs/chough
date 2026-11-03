@@ -1197,12 +1197,15 @@ mod tests {
         let merged = evidence::load_all(&a).unwrap();
         assert_eq!(merged.len(), 2);
         let current = evidence::snapshot(&a);
-        for evidence in &merged {
+        let observations = evidence::Reads::new(&a)
+            .observations(&current, Some("local"))
+            .unwrap();
+        assert_eq!(observations.len(), 2);
+        for observation in &observations {
             assert_eq!(
-                evidence::freshness(&a, evidence, &current, Some("local")).unwrap(),
-                "current-observation",
+                observation["freshness"], "current-observation",
                 "{}",
-                evidence.id
+                observation["record"]["id"]
             );
         }
     }

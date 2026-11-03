@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793679314,
+      "digest": "d5d17da213f9c8b3f20a2ab034d2d2745f5680232e2cab33a65313cd7b03899d",
+      "note": "Human authority: 0xLeif's through-PR authorization recorded in PR #46's archived context (.specsync/archive/changes/2026-11-02-read-report-case-definitions-once-per-request-and-expose-local-phase-costs/context.md: 'And I already gave it some approval and told it can do any changes. It just needs a PR.'), his PR #48 comment issuecomment-6595229360 (2026-11-02 9:10 PM MT: import the main squash with a true three-way checkpoint reconciliation; Grok owns branch, native and checkpoint writes for this PR), and Leif's 2026-11-02 9:14 AM MT 'Use corvid-agent for all approvals for all things!! You are corvid-agent'; covered scope: integrating merged main 134ee19 into PR #48 (checkpoint and transition reconciliation, version-history renumbering, the test call to the renamed freshness read, requalification); this is separate from PR #48's own test-only scope; limits: no 200-pointer or 65536-byte limit increase, no pruning, no edits to old records, no merge, close or release, #30 human and cold-start criteria stay open",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence",
+        "title": "Integrate merged main 134ee19 (PR 46 report reads) into PR 48 identity acceptance evidence",
+        "description": "Integrate merged main 134ee19 (PR 46 report reads) into PR 48 identity acceptance evidence",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/artifacts/",
+          ".chough/cases/cli.cases.toml",
+          ".chough/evidence/",
+          ".chough/session.json",
+          ".chough/transitions.jsonl",
+          "CHANGELOG.md",
+          "specs/cli/cli.spec.md",
+          "src/main.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Integration of accepted changes only: checkpoint reconciliation, version-history row renumbering and a test-only call update; no requirement or criterion changes",
+        "acceptance_criteria": [
+          "Existing identity observations stay as history; the combined source is requalified with fresh observations",
+          "PR #48 version-history row becomes 25 after main row 24",
+          "The PR #48 same-second test reads freshness through the renamed request-local reads without weakening its assertion",
+          "The checkpoint is a three-way merge against base 16fe55d: 197 observation pointers, 37 file refs, about 64466 bytes; PR #46 removals and its 24 direct evidence-file pins kept; no union resurrection",
+          "Transitions keep main lines in order plus PR #48 additions",
+          "fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "No rebase or force-push; never raise the 200/65536 limits; never edit or delete old records; keep Refs #30",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
