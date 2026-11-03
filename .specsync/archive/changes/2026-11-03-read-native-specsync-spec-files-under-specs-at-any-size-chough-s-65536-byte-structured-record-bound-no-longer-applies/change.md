@@ -1,6 +1,6 @@
 ---
 id: read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies
-state: implementing
+state: archived
 type: feature
 base_commit: 4daf861509b70c14282ac16b5d0547d701e385b2
 ---
