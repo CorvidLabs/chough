@@ -14,6 +14,9 @@ into an empty directory and runs the real tools. Human gates in the sample are
 SIMULATED with labelled actors; nothing is pushed or posted. Every expected outcome
 is an assertion, so the script either prints `EXERCISE PASSED` or names the step
 that diverged.
+Without a directory argument it creates a temporary one and removes it after a
+passing full run; a failed run or `prepare-cold-start` keeps it and prints its path,
+and a directory you pass is always kept.
 
 ## Sequence and observed result
 

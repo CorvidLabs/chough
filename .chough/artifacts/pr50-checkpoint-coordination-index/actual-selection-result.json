@@ -1,0 +1,25 @@
+{
+  "source50": "6715944ff6c4d0423f59e38d76a9cba6ea89e708",
+  "main48": "747a12cc6fc396f0e8646fee1f2801e02b7d3035",
+  "root_selected_commit": "3e32fd75cb0cfcf22e46e8ed310edc6b09887517",
+  "selection": "root approved build current-cycle group, selected atomically in derived incoming operand",
+  "bytes": 59047,
+  "observations": 200,
+  "file_references": 38,
+  "inherited_direct_record_pins": 24,
+  "retired_decisions": 10,
+  "retired_completed": 41,
+  "all_other_literal_strings_preserved": true,
+  "new_observation_reference_policy": "each actual new record path is a direct file pin; no further active-ID retirement",
+  "transitions": {
+    "main": 243,
+    "root_before_import": 226,
+    "appended_unique_occurrences": 24,
+    "merged": 267,
+    "all_parent_occurrences_preserved": true,
+    "main_order_preserved": true,
+    "own_unique_order_preserved": true
+  },
+  "native_helper_exit": 0,
+  "merged_checkpoint_sha256": "4f068c3a612696e8a7a238aff1278f8cd24afac63d9ab1862499492e262d42f3"
+}

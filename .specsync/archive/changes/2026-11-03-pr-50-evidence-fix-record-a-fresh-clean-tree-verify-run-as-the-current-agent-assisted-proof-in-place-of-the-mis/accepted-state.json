@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis",
+  "slug": "pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis",
+  "title": "PR 50 evidence fix: record a fresh clean-tree verify run as the current agent-assisted proof in place of the mis-snapshotted corrective observation",
+  "description": "PR 50 evidence fix: record a fresh clean-tree verify run as the current agent-assisted proof in place of the mis-snapshotted corrective observation",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "ba3691cd54b8f776abdd3f9dde9c2fd023b04a50",
+  "created_at": 1793676154,
+  "updated_at": 1793676316,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".chough/evidence/",
+    ".chough/artifacts/"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Evidence records only; no requirement, criterion or code change",
+  "acceptance_criteria": [
+    "fledge lanes run verify passes on a clean tree at a named committed revision, and a small new artifact log header names that exact revision",
+    "A new agent-assisted product-test observation cites that log and is bound to a clean snapshot at that revision",
+    "Its limitation says OBS-product-test-035959f28aa76d052d48fe78 wrongly carried the 250d637 snapshot for the a788869 log and that the new record replaces it as current proof",
+    "OBS-human-observation-174caaa1021cfdf5a553f7a3, OBS-product-test-035959f28aa76d052d48fe78 and issue-49-verify.log stay byte-identical"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Never edit or delete old records; no rebase or force-push",
+    "public_contract": "no"
+  }
+}

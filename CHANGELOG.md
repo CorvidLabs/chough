@@ -94,6 +94,17 @@ All notable changes to Chough are recorded here. The format follows
   refusal. A later pass, or a bug of any status linking the failure, lifts it
   (issue #39).
 
+- CLI cleanups (issue #49): `bug add` accepts text values that begin with `--`
+  (for example `--title "--name prints nothing"`); a native gate refusal names
+  `specsync change status` once, and the `next` main line no longer repeats the
+  native next action (it stays on its own line and in the gate detail), so it is not
+  cut mid-word; the `next` text shows the last failure's time as UTC ISO 8601 (JSON
+  keeps `observed_at_unix_seconds`); every `bug add` and `cases run` option has help
+  text; `docs/cli.md` lists `history` and says SpecSync 6.1.2 flags an edited
+  approved delta; `examples/feature-bug-loop.sh` removes the temporary directory it
+  created after a passing full run, including under a relative `TMPDIR` (the path
+  is made absolute before the script changes directory).
+
 - Skill guidance for case recording order (#11, BUG-0017): the plan, testing and
   accept references say that a requirement an approved change adds is linkable only
   after the scoped `specsync change check` materializes it, so that check runs before

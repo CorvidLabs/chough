@@ -1,0 +1,39 @@
+# fledge lanes run verify (exit 0)
+# revision: 380acffcc4240c346a789198eea003d7dc90da9a
+# tree: clean (git status --porcelain --untracked-files=all empty before and after the run)
+# environment: local-linux-x86_64, PATH with ~/.cargo/bin first; run by corvid-agent on 2026-11-02 8:23 PM MST
+# excerpt: lane steps, test totals and the lane result
+  ▶️ Running task: fmt
+  ✔ Step 1 done (285ms)
+  ▶️ Running task: lint
+  ✔ Step 2 done (94ms)
+  ▶️ Running task: test
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.05s
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.09s
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.26s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.83s
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.54s
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.13s
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+  ✔ Step 3 done (39.094s)
+  ▶️ Running task: intent
+  ✔ Step 4 done (2ms)
+  ▶️ Running task: spec
+1 specs checked: 1 passed, 0 warning(s), 0 failed
+File coverage: 15/15 (100%)
+  ✔ Step 5 done (24ms)
+  ▶️ Running task: audit
+  ✔ Step 6 done (115ms)
+  ▶️ Running task: cases
+      "title": "An unterminated escape never hides a second test result",
+  ✔ Step 7 done (439ms)
+  ▶️ Running task: exercise
+  ✔ Step 8 done (6.571s)
+  ▶️ Running task: build
+  ✔ Step 9 done (40ms)
+✅ Lane verify completed (9 steps in 46.668s)

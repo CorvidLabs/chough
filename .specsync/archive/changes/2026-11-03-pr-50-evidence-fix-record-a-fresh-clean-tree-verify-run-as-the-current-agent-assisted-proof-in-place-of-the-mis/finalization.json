@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis",
+  "implementation_commit": "30fcf4e8a7a324eba7778ffcab14659b43de5090",
+  "implementation_tree": "21ab0e7a4aa3a7a9852434dbbde752570deb112f",
+  "contract_digest": "a5d60a99448aa2bed0d747b25063dc974040458c7b9b5b013e8ff9477fac11ac",
+  "workspace_digest": "5165c13af274c16ca6ca1fcfc44df834b3f8088daeb998045291a4ed932db777",
+  "closing_digest": "d0a13bdd4e859481e638ed882034085230ee68ddbf39c295e201888a2cfd203f",
+  "review_digest": "9715b336f2f78e6c66bd76023f73eea0ce4eee175fce9caf860e2a1ed8ade7df",
+  "finalization_digest": "0e33c674c1eb3ea081b13f2dd8dfc69e6116e9d8cbd6b6cfcd29506786cdb172",
+  "timestamp": 1793676316
+}
