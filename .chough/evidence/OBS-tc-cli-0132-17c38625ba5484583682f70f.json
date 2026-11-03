@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0132-17c38625ba5484583682f70f",
+  "criteria": [
+    "FLOW-12",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-002",
+    "REQ-cli-015"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "repository-text",
+  "summary": "Verdicts 1=pass, 2=pass, 3=pass, 4=pass, 5=pass, 6=pass. Re-run at ab2bce3: lesson labels, decision precedence, same-PR failure records, closeout and verification_ignored_paths wording present; the shared .agents copy is current 24/24 and no .claude copy exists",
+  "artifacts": [
+    ".chough/artifacts/tc-cli-0132/reviewer-note-ab2bce3.md"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-cli-0132/reviewer-note-ab2bce3.md": "24971f979d1fc8f86a09aa112ca426c92005369432ab3f85694fa036a0c7769d"
+  },
+  "observed_at_unix_seconds": 1793729710,
+  "snapshot": {
+    "revision": "c1194a676e6f1210764d44b661034836650871d8",
+    "dirty": false,
+    "fingerprint": "df554f6aa7de1ef2bd6cc7aa624827ff396c2ec0362a199d874c9f4d64e8b8a1",
+    "content": "051679b0349edd20a50880e55a130ac7c048b5bcf19255bd77a1563b4a017355"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0132",
+      "digest": "e2467f253be5cd9c0130dd881b9f559f511f89bb61bab39e95f3352bfdb6f6de"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Reviewed by the authoring agent, not an independent reviewer",
+    "Checks wording, not agent behavior"
+  ]
+}
