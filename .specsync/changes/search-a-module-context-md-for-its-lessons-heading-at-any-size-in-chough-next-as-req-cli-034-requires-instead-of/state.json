@@ -7,10 +7,11 @@
   "title": "Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays",
   "description": "Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "45f7012197e0aa5c2ffdb163cc0025fd09b37b1a",
   "created_at": 1793727831,
-  "updated_at": 1793740324,
+  "updated_at": 1793740375,
   "affected_specs": [
     "cli"
   ],
