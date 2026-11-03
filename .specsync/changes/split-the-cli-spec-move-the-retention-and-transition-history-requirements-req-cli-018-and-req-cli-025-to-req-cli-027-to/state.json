@@ -7,10 +7,11 @@
   "title": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
   "description": "Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound",
   "kind": "refactor",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "7bd1b62dc8ac563c4100302088c89113977ffe7f",
   "created_at": 1793724750,
-  "updated_at": 1793724825,
+  "updated_at": 1793724998,
   "affected_specs": [
     "cli",
     "history"

@@ -1,6 +1,6 @@
 ---
 module: history
-version: 1
+version: 2
 status: active
 files:
   - src/history.rs
@@ -79,3 +79,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | Version | Date | Changes |
 |---------|------|---------|
 | 1 | 2026-11-03 | Split from cli with REQ-cli-018 and REQ-cli-025 to REQ-cli-027 renamed REQ-history-001 to REQ-history-004, wording unchanged |
+| 2 | 2026-11-03 | split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to: Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound |

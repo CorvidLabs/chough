@@ -1,6 +1,6 @@
 ---
 id: split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to
-state: approved
+state: implementing
 type: refactor
 base_commit: 7bd1b62dc8ac563c4100302088c89113977ffe7f
 ---
