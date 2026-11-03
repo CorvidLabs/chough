@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies",
+  "native_change": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -141,7 +141,8 @@
       "TC-cli-archive-summary-apply",
       "TC-cli-knowledge-entries-bounded",
       "TC-cli-archive-summary-fails-closed",
-      "TC-history-split-keeps-requirement-wording"
+      "TC-history-split-keeps-requirement-wording",
+      "TC-cli-next-searches-large-context-md"
     ],
     "design": [],
     "files": [
@@ -680,5 +681,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: New cycle: read native SpecSync spec files under specs/ at any size, keeping every Chough record bound, plus composability guidance (parent agent instruction 2026-11-03 10:06 AM MT relaying Leif's 10:05 AM MT words: \"Spec files can grow to whatever number they want ... we shouldn't really care about file size for specs.\"); traced to LIFE-11; no new HI criterion captured without Leif's confirmation. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "C is archived on #66 (8494b0e). D (next's context.md search at any size) is implemented and verified; the parent requests D's independent review, then review, finalize and the stage moves to done."
 }
