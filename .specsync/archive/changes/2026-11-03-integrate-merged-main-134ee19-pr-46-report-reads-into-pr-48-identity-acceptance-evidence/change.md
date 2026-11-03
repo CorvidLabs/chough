@@ -1,6 +1,6 @@
 ---
 id: integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence
-state: implementing
+state: archived
 type: operations
 base_commit: 781ee446db654bd159295a48fdbee25cebb26cb1
 ---

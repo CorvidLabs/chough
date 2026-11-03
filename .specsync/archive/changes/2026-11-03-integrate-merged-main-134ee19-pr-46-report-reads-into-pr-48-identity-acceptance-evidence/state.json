@@ -7,11 +7,11 @@
   "title": "Integrate merged main 134ee19 (PR 46 report reads) into PR 48 identity acceptance evidence",
   "description": "Integrate merged main 134ee19 (PR 46 report reads) into PR 48 identity acceptance evidence",
   "kind": "operations",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "781ee446db654bd159295a48fdbee25cebb26cb1",
   "created_at": 1793679255,
-  "updated_at": 1793679410,
+  "updated_at": 1793679439,
   "affected_specs": [
     "cli"
   ],
