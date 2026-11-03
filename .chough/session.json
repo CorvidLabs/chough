@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -597,5 +597,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Record native verification and closeout, push final PR46 head, require exact-head review and green checks, merge, then verify main."
+  "next_action": "Merge PR46 after final-head corvid-agent approval and every hosted check passes; then verify main. User authorized merge and resynchronization."
 }

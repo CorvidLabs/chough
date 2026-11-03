@@ -223,3 +223,4 @@
 {"schema_version":1,"at_unix_seconds":1793676626,"kind":"advance","from":"plan","to":"build","reason":null,"gate":"native:approved","revision":"9af1921a3bb1f7092d364a18489cb3028e97ff26","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793677749,"kind":"advance","from":"build","to":"test","reason":null,"gate":"native:verifying","revision":"9af1921a3bb1f7092d364a18489cb3028e97ff26","refresh":[]}
 {"schema_version":1,"at_unix_seconds":1793677782,"kind":"advance","from":"test","to":"accept","reason":null,"gate":"native:verifying","revision":"9af1921a3bb1f7092d364a18489cb3028e97ff26","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1793678096,"kind":"advance","from":"accept","to":"done","reason":null,"gate":"native:archived","revision":"c1226fe7657a889833a072f6296767a78952a465","refresh":[]}
