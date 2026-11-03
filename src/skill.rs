@@ -236,12 +236,6 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/librarian.md",
         "4fa746a83405059803f3589579559dd2ac909d942e1fd8dd709158b488e5dc0d",
     ),
-    // Main 0363d4a: the optional-and-off librarian, superseded by the librarian on by
-    // default in knowledge/ with the post-archive summary (KNOW-1, KNOW-5, KNOW-7).
-    (
-        "references/librarian.md",
-        "0d06962f4048d1d18d77d0e7f4131d47eff0ee82c76c152588865898369ecd27",
-    ),
     // Main 118a895 (learning handoffs, #35); superseded by the resume step that asks an
     // agent to state the recorded handoff before its first edit.
     (

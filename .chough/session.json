@@ -291,7 +291,8 @@
     "Human (Leif, chat 2026-11-03 8:09-8:27 AM MT): Q1 'Keep only a summary; raw files stay recoverable from git', Q2 'Keep the newest 3 archived changes hot', Q3 'Librarian on everywhere with an opt-out', Q4 'Use knowledge/ at the project root', and yes to the drafted intent; captured as KNOW-1..12 in hi/knowledge.md",
     "Agent: deferred, not captured: duplicate or contradicting lesson flags, scoped lessons in next, retired-lesson history, status hot-folder counts and outside artifact storage (#14 item 3)",
     "Agent authority: corvid-agent acts under Leif's standing through-PR authority (7:49 AM MT) and his 8:27 AM MT intent answers; no release, deploy, live cleanup of this repository's .chough history or fabricated human acceptance",
-    "Repo dry run of chough library archive (preview only, nothing written): 52 archives (3 hot, 49 cold), 579 listed observation sets, 0 eligible, 0 reclaimable bytes. SpecSync verification manifests are cumulative, so the newest archive lists all 579 present records and every set is protected as hot; 83 are protected only by hot listings (about 614 KB). Leif decides whether hot should mean the archive that first listed a set; no live cleanup was run."
+    "Repo dry run of chough library archive (preview only, nothing written): 52 archives (3 hot, 49 cold), 579 listed observation sets, 0 eligible, 0 reclaimable bytes. SpecSync verification manifests are cumulative, so the newest archive lists all 579 present records and every set is protected as hot; 83 are protected only by hot listings (about 614 KB). Leif decides whether hot should mean the archive that first listed a set; no live cleanup was run.",
+    "src/skill.rs is outside this change's approved affected paths, so the KNOWN_PREVIOUS digest for main 0363d4a references/librarian.md is not added here; until a follow-up change adds it, skill status reports an installed 0363d4a librarian.md as edited and skill update keeps it rather than replacing it."
   ],
   "open_questions": [],
   "completed": [
@@ -616,7 +617,11 @@
     "OBS-tc-cli-archive-summary-apply-eb8be0166a59ac65618579ef",
     "OBS-tc-cli-archive-summary-preview-b9b8f9d5b85bc0d07e74d888",
     "OBS-tc-cli-knowledge-archive-entries-5f87ff8883f726e6614de2db",
-    "OBS-tc-cli-librarian-default-on-knowledge-12316a36b3c0df407410b76a"
+    "OBS-tc-cli-librarian-default-on-knowledge-12316a36b3c0df407410b76a",
+    "OBS-tc-cli-archive-summary-apply-73bd07d530eac90204447d25",
+    "OBS-tc-cli-archive-summary-preview-d0a76434022c89c7008e8d0a",
+    "OBS-tc-cli-knowledge-archive-entries-e16e5b4bb89ce6ef2835c056",
+    "OBS-tc-cli-librarian-default-on-knowledge-ab75b0dd66df0f5ca429d3fc"
   ],
   "bugs": [
     "BUG-0001",
