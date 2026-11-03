@@ -1,6 +1,6 @@
 ---
 id: windows-safe-git-paths-in-the-issue-30-same-second-test
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 46ca7a4407ebad831ee05f8fc580822190b36b74
 ---

@@ -7,11 +7,11 @@
   "title": "Windows-safe git paths in the issue 30 same-second test",
   "description": "Windows-safe git paths in the issue 30 same-second test",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "46ca7a4407ebad831ee05f8fc580822190b36b74",
   "created_at": 1793671125,
-  "updated_at": 1793671219,
+  "updated_at": 1793671233,
   "affected_specs": [
     "cli"
   ],
