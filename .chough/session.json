@@ -370,7 +370,8 @@
     "Native evidence-fix change shipped",
     "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged.",
     "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved.",
-    "PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured."
+    "PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured.",
+    "PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -608,9 +609,7 @@
     "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Explicit exception requested after automatic approval review twice rejected corvid-agent native review under its interpretation of AGENTS.md; PR51 source and proof are published and independently reviewed."
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Commit this actual approval source, refresh native verification, review immediately followed by ship, clear the resolved gate and advance to done, then qualify and merge the final head and verify main."
 }
