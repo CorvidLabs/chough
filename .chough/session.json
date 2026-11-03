@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -636,5 +636,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Run fledge lanes run verify, advance build to test, push and open the PR; independent review of the head is arranged by the parent agent"
+  "next_action": "Independent review of the PR head (arranged by the parent agent); then specsync change review, ship, accept and done"
 }
