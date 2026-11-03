@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-build-reference-from-main-known-outdated-259350e132b7653f28360841",
+  "criteria": [
+    "LIFE-11",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-034"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test cli -- --exact build_reference_from_main_4daf861_is_known_outdated for TC-cli-build-reference-from-main-known-outdated: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-build-reference-from-main-known-outdated-259350e132b7653f28360841.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-build-reference-from-main-known-outdated-259350e132b7653f28360841.log": "8594276c229954b14a61e7833e77ea62388ec41c4affc9e7d57c9cd0fc7405b7"
+  },
+  "observed_at_unix_seconds": 1793729214,
+  "snapshot": {
+    "revision": "9d6356db38d6e3b767e286208ebddd5136808426",
+    "dirty": false,
+    "fingerprint": "68f794ab909b505adc790dbc5c7bfa408816ef2e276aa8b77965aded291b47c1",
+    "content": "101aa10b327e49ee797eccc9940fd79fac0ebed42ecfb2eefa6725935a2ecb8b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-build-reference-from-main-known-outdated",
+      "digest": "e87e897bdf1ab06ffab9894326cd28ecb9b9faed7c463e3dc6c369087343f52f"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "build_reference_from_main_4daf861_is_known_outdated"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
