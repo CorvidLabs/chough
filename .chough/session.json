@@ -6,7 +6,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -163,7 +163,12 @@
       ".chough/evidence/OBS-tc-cli-report-read-invalidation-6352cd6b7a933e27a28d1bce.json",
       ".chough/evidence/OBS-tc-cli-report-trace-parity-4330cee0bcfefa49971754aa.json",
       ".chough/evidence/OBS-product-test-9d0fec683204719b7d77acc4.json",
-      ".chough/artifacts/pr50-root-qualification/final-freshness-peer.json"
+      ".chough/artifacts/pr50-root-qualification/final-freshness-peer.json",
+      ".chough/evidence/OBS-tc-cli-report-case-read-budget-115b6dcd869d4b061b985d12.json",
+      ".chough/evidence/OBS-tc-cli-report-read-invalidation-e13d4017cd8f17a34782547f.json",
+      ".chough/evidence/OBS-tc-cli-report-trace-parity-f63fb27141834a3f4710be95.json",
+      ".chough/evidence/OBS-product-test-e613f31740235919b76505d7.json",
+      ".chough/artifacts/pr51-root-qualification/final-freshness-peer.json"
     ]
   },
   "decisions": [
@@ -353,7 +358,8 @@
     "Native change shipped (archived at 41f6fb7)",
     "Clean-tree verify at 380acffcc4240c346a789198eea003d7dc90da9a recorded as OBS-product-test-ba63e97a0304049db5437166 with .chough/artifacts/pr-50-clean-verify-380acff.log; old records unchanged",
     "Native evidence-fix change shipped",
-    "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged."
+    "Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged.",
+    "Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved."
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -592,5 +598,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Approve concrete bounded followup, capture failing diagnostic assertion, repair it and qualify final source after importing accepted PR50."
+  "next_action": "Final native verification and closeout after committed fresh proof; publish for all current hosted checks and independent review, then authorized merge."
 }
