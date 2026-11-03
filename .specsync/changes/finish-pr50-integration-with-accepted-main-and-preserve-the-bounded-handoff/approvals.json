@@ -1,0 +1,44 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793682882,
+      "digest": "37034e9920127370b1ecc45ea3c30b559d2e43b1eb49b9dd99462d19d761180b",
+      "note": "Actual human sources:0xLeif standing permission for any changes through PRs, explicit \"Merge approved, green PRs and resynchronize\" and \"get the 3 prs merged?\" in this conversation. Covered scope is final PR50 import of accepted main747a, reviewed literal handoff cleanup within65536/200, genuine fresh proof and guarded delivery. Context records scope and limits. No capacity/LIFE-11 decision, archive/evidence rewrite, new human acceptance, release or deployment is inferred. Root alone closes this new scope.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "finish-pr50-integration-with-accepted-main-and-preserve-the-bounded-handoff",
+        "title": "Finish PR50 integration with accepted main and preserve the bounded handoff",
+        "description": "Finish PR50 integration with accepted main and preserve the bounded handoff",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "skills",
+          "specs/cli",
+          "src",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Integrate already accepted main747a with reviewed CLI fixes, preserve every old proof blob and exact retired checkpoint text, and capture genuine final-source evidence. No new product requirement, capacity increase, output-limit change, archive rewrite or release.",
+        "acceptance_criteria": [
+          "Actual main747a and published PR50 parent671 are ancestors; accepted report reads, two-worker archive executor, identity acceptance and CLI fixes all remain. Proper three-way checkpoint collection semantics preserve all old evidence, archives, human/binding text,24direct pins and200observation IDs;10superseded coordination and41completed notes move verbatim into pinned immutable raw/indexed proof. Final checkpoint remains at most65536bytes/200IDs and all other existing bounds. Genuine final-source tests/cases and artifact/input hashes are recorded after native task text settles; new observations use exact record-file pins. Independent review and all exact-head checks pass before authorized merge. No capacity raise or LIFE-11 work here."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "No force push/rebase, no manual archive/evidence edits, no lost parent transition occurrences or source behavior, no byte/item budget increases, no new human acceptance or numeric choice from an agent label or ambiguous chat. Root alone writes the new scope checkpoint/review/ship; workers own only assigned source paths.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
