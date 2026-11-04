@@ -182,3 +182,83 @@ fn an_unreadable_attempts_record_is_unknown_and_adds_no_native_read() {
     let shown = text(&fixture);
     assert!(shown.contains("Native check: unknown"), "{shown}");
 }
+
+const MOVED: &str = "{\"readiness\":\"conditional\",\"reason\":\"the tree moved after the last check, so a fresh session would resume from evidence that no longer matches\"}";
+const CURRENT: &str =
+    "{\"readiness\":\"safe\",\"reason\":\"verification is current for this working tree\"}";
+
+/// The #91 review: SpecSync stays `verifying` after the tree moves on, so `verifying`
+/// alone must not clear the note; its handoff readiness, from the same status read,
+/// says whether the last check still matches this tree.
+#[cfg(unix)]
+#[test]
+fn a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree() {
+    let fixture = project("verifying");
+    write_attempts(
+        &fixture,
+        &[attempt(
+            1_793_800_000,
+            "4100c2aa6afd940da7e986fb37da408ee76d6596",
+            &[("specsync check --spec cli", true, 0)],
+        )],
+    );
+    fixture.write(".stub-handoff", MOVED);
+    fixture.write(".stub-count", "");
+    fixture.native_calls();
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(fixture.native_calls(), 1, "one native status read");
+    let check = &next["native_check"];
+    assert_eq!(check["last_attempt"]["passed"], true, "{next:#}");
+    assert_eq!(check["not_passed_for_tree"], true, "{next:#}");
+    let note = check["note"].as_str().unwrap_or_default();
+    assert!(
+        note.contains("the tree moved after the last check")
+            && note.contains(&format!("specsync change check {CHANGE}")),
+        "{note:?}"
+    );
+    assert!(text(&fixture).contains("the tree moved after the last check"));
+
+    fixture.write(".stub-handoff", CURRENT);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["native_check"]["not_passed_for_tree"], false,
+        "{next:#}"
+    );
+    assert_eq!(next["native_check"]["note"], Value::Null, "{next:#}");
+}
+
+/// When a verifying change's status reply carries no readiness, whether the last check
+/// matches this tree is unknown, and `next` says so rather than nothing.
+#[cfg(unix)]
+#[test]
+fn a_verifying_change_without_readiness_reports_freshness_unknown() {
+    let fixture = project("verifying");
+    let next = fixture.ok(&["next", "--json"]);
+    let check = &next["native_check"];
+    assert_eq!(check["not_passed_for_tree"], false, "{next:#}");
+    let note = check["note"].as_str().unwrap_or_default();
+    assert!(
+        note.contains("unknown") && note.contains(&format!("specsync change check {CHANGE}")),
+        "{note:?}"
+    );
+}
+
+/// A failed attempt with no failing command says so instead of an empty list (#91 nit).
+#[cfg(unix)]
+#[test]
+fn a_failed_attempt_without_a_failing_command_says_so() {
+    let fixture = project("implementing");
+    let mut failed = attempt(
+        1_793_800_000,
+        "4100c2aa6afd940da7e986fb37da408ee76d6596",
+        &[("specsync check --spec cli", true, 0)],
+    );
+    failed["passed"] = json!(false);
+    write_attempts(&fixture, &[failed]);
+    let shown = text(&fixture);
+    let line = shown
+        .lines()
+        .find(|line| line.starts_with("Native check:"))
+        .unwrap();
+    assert!(line.ends_with("no failing command recorded"), "{line}");
+}

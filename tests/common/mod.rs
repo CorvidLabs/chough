@@ -195,7 +195,8 @@ impl Fixture {
 # .stub-approval (true, false or none to omit), .stub-correction (true or false),
 # .stub-validity (terminal evidence when archived; none omits it), .stub-next (the
 # native next action), .stub-affected (the quoted modules of change.affected_specs;
-# none omits the change object), .stub-no-spec (true or false) and .stub-fail. When
+# none omits the change object), .stub-no-spec (true or false), .stub-handoff (a JSON
+# object reported as summary.handoff; absent omits it) and .stub-fail. When
 # .stub-count exists, every call appends a line to .stub-calls. summary.id echoes the
 # requested change, as SpecSync's status reply names it.
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
@@ -208,6 +209,7 @@ next=$(cat .stub-next 2>/dev/null || echo "stub next action for $state")
 affected=$(cat .stub-affected 2>/dev/null || echo '')
 nospec=$(cat .stub-no-spec 2>/dev/null || echo true)
 fields=",\"correction_valid\":$correction"
+if [ -f .stub-handoff ]; then fields="$fields,\"handoff\":$(cat .stub-handoff)"; fi
 if [ "$approval" != none ]; then fields="$fields,\"approval_valid\":$approval"; fi
 if [ "$state" = archived ] && [ "$validity" != none ]; then
     fields="$fields,\"terminal_evidence\":{\"validity\":\"$validity\"}"
