@@ -693,6 +693,50 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
 mod tests {
     use super::*;
 
+    /// #96 review (REQ-history-008): a session file that moves away after a successful
+    /// save keeps the event that save points to; the cleanup removes only events no saved
+    /// checkpoint references.
+    #[test]
+    fn a_vanish_after_a_successful_save_keeps_the_saved_event() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().canonicalize().unwrap();
+        run(
+            &root,
+            SessionCommand::New {
+                key: "alpha".into(),
+                objective: "Ship alpha".into(),
+                intent_scope: String::new(),
+                modules: vec![],
+            },
+        )
+        .unwrap();
+        unpin(&root);
+        let mut session = checkpoint::read_checkpoint(&root).unwrap();
+        let transition: crate::stage::Transition = serde_json::from_value(json!({
+            "schema_version": 1, "at_unix_seconds": 1, "kind": "iterate",
+            "from": "intent", "to": "intent"
+        }))
+        .unwrap();
+        crate::history::append(&root, &mut session, transition).unwrap();
+        checkpoint::save_checkpoint(&root, &session).unwrap();
+        let cursor = session.history_cursor.clone().unwrap();
+        let cycle = root.join(format!(".chough/history/cycles/{}", cursor.cycle));
+        // The cleanup may remove the cycle directory too; count it as empty then.
+        let count = || fs::read_dir(&cycle).map_or(0, |entries| entries.count());
+        let saved = count();
+        assert!(saved >= 1);
+        fs::create_dir_all(root.join(ARCHIVE)).unwrap();
+        fs::rename(
+            root.join(session_file("alpha")),
+            root.join(archive_file("alpha")),
+        )
+        .unwrap();
+        let error = checkpoint_path(&root).unwrap_err().to_string();
+        assert!(error.contains("nothing was saved"), "{error}");
+        assert_eq!(count(), saved, "the saved event was removed");
+        unpin(&root);
+    }
+
     /// Leif's review thread on #77: a `session use` in another process partway through
     /// `inbox fold` must not save the folded session or its inbox decisions into the
     /// newly active session's file (REQ-cli-037).
