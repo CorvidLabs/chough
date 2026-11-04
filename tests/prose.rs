@@ -20,9 +20,12 @@ fn walk(dir: &Path, found: &mut Vec<String>) {
 
 #[test]
 fn bundled_skill_files_contain_no_em_or_en_dashes() {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("skills/chough-workflow");
+    // The bundled skill and its shipped host copy (LIFE-14).
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
     let mut found = Vec::new();
-    walk(&root, &mut found);
+    for root in ["skills/chough-workflow", ".agents/skills/chough-workflow"] {
+        walk(&manifest.join(root), &mut found);
+    }
     assert!(
         found.is_empty(),
         "replace U+2013 and U+2014 with a colon, comma, parentheses or a new sentence: {found:?}"

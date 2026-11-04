@@ -82,6 +82,25 @@ fn a_checkpoint_written_with_dotted_modules_is_read_by_every_view() {
     }
 }
 
+/// Plain criterion IDs Chough accepted before hi sub-criteria, such as `UX-012`, stay
+/// accepted, so a checkpoint that already holds one is still read by every view.
+#[test]
+fn plain_criterion_ids_accepted_before_stay_accepted() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for criterion in ["UX-012", "ux-1", "UX-a", "UX-"] {
+        fixture.ok(&["checkpoint", "--criterion", criterion]);
+    }
+    for args in [&["next"][..], &["status"], &["context", "--json"]] {
+        let output = fixture.run(args);
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
 #[test]
 fn ids_neither_tool_accepts_are_still_refused() {
     let fixture = Fixture::new();
@@ -100,9 +119,7 @@ fn ids_neither_tool_accepts_are_still_refused() {
     }
     fixture.init();
     let original = fixture.read(".chough/session.json");
-    for criterion in [
-        "UX-012", "ux-1", "UX-1.A", "UX-1..a", "UX-a", "UX-1.a.b", "UX-",
-    ] {
+    for criterion in ["UX-1.A", "UX-1..a", "UX-1.a.b", "UX-1.", "UX 1", "UX-1/a"] {
         let error = fixture.fails(&["checkpoint", "--criterion", criterion]);
         assert!(
             error.contains("invalid criterion ID"),
@@ -110,7 +127,7 @@ fn ids_neither_tool_accepts_are_still_refused() {
         );
         assert_eq!(fixture.read(".chough/session.json"), original);
     }
-    for requirement in ["REQ cli-1", "REQ-cli/1", "REQ-cli-1!"] {
+    for requirement in ["REQ cli-1", "REQ-cli/1", "REQ-cli-1!", "..", "._."] {
         let error = fixture.fails(&["checkpoint", "--requirement", requirement]);
         assert!(
             error.contains("invalid requirement ID"),

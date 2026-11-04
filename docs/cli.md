@@ -129,11 +129,15 @@ A session, bug, evidence or case module is any module ID SpecSync accepts, so a 
 module such as `chat.service` works: one path segment of at most 247 bytes (so
 `<module>.spec.md` fits in 255), with no path separator, `<>:"|?*` or control
 character, not `.` or `..`, no leading or trailing space, no trailing `.`, and no
-Windows reserved device basename such as `CON` or `COM1`. A criterion is any ID hi accepts, including sub-criteria such as
-`BOTS-1.a`: an uppercase family, a hyphen, then levels that alternate a number
-without a leading zero and lowercase letters, at most 100 bytes. Requirement and
-case references, such as `REQ-chat.service-1`, are ASCII letters, digits, `-`, `_`
-and `.` up to 100 bytes, and are never used as paths. Observations keep the narrower
+Windows reserved device basename such as `CON` or `COM1`.
+A criterion is any ID hi accepts, including sub-criteria such as `BOTS-1.a`: an
+uppercase family, a hyphen, then levels that alternate a number without a leading
+zero and lowercase letters, with no length limit beyond the record bounds. A plain
+ID Chough accepted before, such as `UX-012`, is still accepted so existing records
+stay readable, though hi does not trace it; a dotted ID hi rejects, such as `UX-1.A`,
+is refused. Requirement and case references, such as `REQ-chat.service-1`, are
+ASCII letters, digits, `-`, `_` and `.` up to 100 bytes with at least one letter or
+digit, and are never used as paths. Observations keep the narrower
 name rule. A requirement reference matches its heading as a whole token, and a
 sentence-ending `.` after it still matches.
 

@@ -184,7 +184,8 @@ pub(super) fn valid_module_name(value: &str) -> bool {
 /// `A-Z` then `A-Z`, `0-9` or `_`, a hyphen, then levels separated by single dots that
 /// alternate number and lowercase letters, starting with a number, such as `LIFE-3`,
 /// `UX-12.a` or `SEND-1.a.1.b`. A number level fits in 32 bits and has no leading zero.
-pub(super) fn valid_criterion_id(value: &str) -> bool {
+/// Like hi, it sets no length limit; the record bounds still apply.
+fn hi_criterion_id(value: &str) -> bool {
     let Some((family, rest)) = value.split_once('-') else {
         return false;
     };
@@ -192,7 +193,7 @@ pub(super) fn valid_criterion_id(value: &str) -> bool {
         && family
             .bytes()
             .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'_');
-    if !family_ok || rest.is_empty() || value.len() > 100 {
+    if !family_ok || rest.is_empty() {
         return false;
     }
     rest.split('.').enumerate().all(|(index, part)| {
@@ -207,11 +208,19 @@ pub(super) fn valid_criterion_id(value: &str) -> bool {
     })
 }
 
+/// A criterion ID Chough records: any ID hi accepts (DRIVE-1), and any plain ID that
+/// `valid_name` accepted before hi sub-criteria were supported, such as `UX-012`, so no
+/// existing checkpoint or bug becomes unreadable. Dotted IDs hi rejects stay refused.
+pub(super) fn valid_criterion_id(value: &str) -> bool {
+    hi_criterion_id(value) || valid_name(value)
+}
+
 /// A requirement or case ID that may embed a dotted SpecSync module, such as
 /// `REQ-chat.service-1` or `TC-chat.service-sends-hybrid`: the characters of `valid_name`
-/// plus `.`, within the same 100 bytes. These IDs are never used as paths.
+/// plus `.`, within the same 100 bytes, with at least one letter or digit. These IDs are
+/// never used as paths.
 pub(super) fn valid_reference_id(value: &str) -> bool {
-    !value.is_empty()
+    value.bytes().any(|byte| byte.is_ascii_alphanumeric())
         && value.len() <= 100
         && value
             .bytes()
