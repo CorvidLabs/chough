@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-empty-native-verification-is-reported-f7f356d443031dd23f7b4866",
+  "criteria": [
+    "FLOW-15",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-038"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test verification -- --exact a_project_whose_native_verification_runs_no_commands_is_told_so for TC-cli-empty-native-verification-is-reported: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-empty-native-verification-is-reported-f7f356d443031dd23f7b4866.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-empty-native-verification-is-reported-f7f356d443031dd23f7b4866.log": "a3afe81b262d02338f5d83d5eb7b0afffe9860a358ecc73091a98a524389166f"
+  },
+  "observed_at_unix_seconds": 1793803760,
+  "snapshot": {
+    "revision": "a2cfc54d01ee66cf3a2e5787685e1159d0be7b81",
+    "dirty": false,
+    "fingerprint": "c1a89c154edd341b4a019f3c29a8af0ed347852e444b7d321a179a94d98f1b25",
+    "content": "4936df7fa48dbb456f2ce9390ab4a5fae32af43b054dbf6b9ed96182bb5751e7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-empty-native-verification-is-reported",
+      "digest": "cb3c8424492e87c0f9b24abc2cd4bd360d0e0038fa4e11879e80e7d17fb841b7"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "verification",
+    "--",
+    "--exact",
+    "a_project_whose_native_verification_runs_no_commands_is_told_so"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

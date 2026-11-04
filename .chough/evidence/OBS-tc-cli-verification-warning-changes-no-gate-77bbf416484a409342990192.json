@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-verification-warning-changes-no-gate-77bbf416484a409342990192",
+  "criteria": [
+    "FLOW-15"
+  ],
+  "requirements": [
+    "REQ-cli-038"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test verification -- --exact the_warning_changes_no_gate_and_adds_no_native_read for TC-cli-verification-warning-changes-no-gate: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-verification-warning-changes-no-gate-77bbf416484a409342990192.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-verification-warning-changes-no-gate-77bbf416484a409342990192.log": "8bdde552563f0305776e547fcf84b5dccd2edf1dbf5a2af34dd64bb0258532e4"
+  },
+  "observed_at_unix_seconds": 1793803770,
+  "snapshot": {
+    "revision": "a2cfc54d01ee66cf3a2e5787685e1159d0be7b81",
+    "dirty": false,
+    "fingerprint": "c1a89c154edd341b4a019f3c29a8af0ed347852e444b7d321a179a94d98f1b25",
+    "content": "4936df7fa48dbb456f2ce9390ab4a5fae32af43b054dbf6b9ed96182bb5751e7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-verification-warning-changes-no-gate",
+      "digest": "72b0ee1f020422b20845a83db74e97247cdc5fbac6772faea3b60ab93a13cd9a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "verification",
+    "--",
+    "--exact",
+    "the_warning_changes_no_gate_and_adds_no_native_read"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

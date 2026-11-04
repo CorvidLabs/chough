@@ -2694,3 +2694,75 @@ expected = ["tests/next.rs::next_searches_a_context_md_larger_than_4_mib passes"
 adapter = "cargo-test"
 test_target = "next"
 test = "next_searches_a_context_md_larger_than_4_mib"
+
+[[case]]
+id = "TC-cli-empty-native-verification-is-reported"
+title = "next, status and stage say when native verification runs no project commands"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "LIFE-7"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::a_project_whose_native_verification_runs_no_commands_is_told_so passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "a_project_whose_native_verification_runs_no_commands_is_told_so"
+
+[[case]]
+id = "TC-cli-no-warning-with-verification-commands"
+title = "No warning with verification commands, SDD disabled or no native configuration"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::no_warning_with_verification_commands_disabled_sdd_or_no_native_configuration passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "no_warning_with_verification_commands_disabled_sdd_or_no_native_configuration"
+
+[[case]]
+id = "TC-cli-test-stage-points-to-test-evidence"
+title = "The test stage points to recorded test evidence before accept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "FLOW-6"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_test_stage_points_to_recorded_test_evidence_before_accept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_test_stage_points_to_recorded_test_evidence_before_accept"
+
+[[case]]
+id = "TC-cli-verification-warning-changes-no-gate"
+title = "The verification warning changes no gate and adds no native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_warning_changes_no_gate_and_adds_no_native_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_warning_changes_no_gate_and_adds_no_native_read"

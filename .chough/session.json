@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -647,7 +647,19 @@
     "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
-    "OBS-structural-0ceefdd961ed75d53f1b3742"
+    "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-tc-cli-empty-native-verification-is-reported-36a9e06c4d81809d70517978",
+    "OBS-tc-cli-no-warning-with-verification-commands-9483cee01e3ce7cfefc2892e",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-b7ad48437505322ca0d0a827",
+    "OBS-tc-cli-verification-warning-changes-no-gate-389a2ecae654afd54c518dc7",
+    "OBS-tc-cli-empty-native-verification-is-reported-f7f356d443031dd23f7b4866",
+    "OBS-tc-cli-no-warning-with-verification-commands-1117235d34a36bd25bfafd67",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-0fb8457f8691ce190e249340",
+    "OBS-tc-cli-verification-warning-changes-no-gate-77bbf416484a409342990192",
+    "OBS-tc-cli-empty-native-verification-is-reported-89e811b60d60b84814aba6cc",
+    "OBS-tc-cli-no-warning-with-verification-commands-8071ce2a4357a13b16ac2659",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-5f481c7a19e91146a01808b1",
+    "OBS-tc-cli-verification-warning-changes-no-gate-cce83d9687676c797ff397f8"
   ],
   "bugs": [
     "BUG-0001",
@@ -681,7 +693,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of the #85 change by Leif (FLOW-10); corvid-agent PR review is an agent review, not this"
+  ],
   "run_consents": [],
-  "next_action": "Write the failing-first tests in tests/verification.rs, then src/policy.rs and the next, status and stage changes"
+  "next_action": "Ask corvid-agent to review the PR; Leif records the native implementation review, then finalize and archive"
 }
