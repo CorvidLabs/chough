@@ -41,6 +41,48 @@
       "approved_delta_digests": {
         "cli": "a82599066d2546b9f117575a006908e75dd3fba4043b5261d106b2e0f973f8de"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793810457,
+      "digest": "23a954ab5c4aa1197eaadf807af15babddbaad6ff855c3f6f16418302e726e43",
+      "note": "Re-approval recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'): REQ-cli-038 (this change's own added requirement) now bounds the warning, naming at most 3 effective commands each cut, after the 0xLeif review on #92 found next could exceed its 16384-byte bound; scope otherwise unchanged. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and",
+        "title": "Warn when the native check runs none of the project commands, judged from the effective commands SpecSync reports, and point the test stage to recorded test evidence (issue 85)",
+        "description": "Warn when the native check runs none of the project commands, judged from the effective commands SpecSync reports, and point the test stage to recorded test evidence (issue 85)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/main.rs",
+          "src/policy.rs",
+          "src/stage.rs",
+          "tests/common/mod.rs",
+          "tests/verification.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With an effective native command list of only specsync check the next and status reports carry the warning naming that command. With a configured project command that the effective list omits the warning still shows and counts it. With a project command in the effective list or no list or SDD disabled or no native configuration there is no warning. At the test stage next names chough cases run and says recorded test evidence is needed before accept. Stage moves and native reads are unchanged. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 85 under FLOW-15 (Warn and point, Leif 2026-11-04), replacing closed PR 89; warning only with no gate change; judged from the effective commands in the status read already made, never from configuration alone (spec-sync 848); no native read added; new code in a small policy module",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2af54a992708487f3efa380ff26030b028ba5c542fceef9964266ca1361051e2"
+      }
     }
   ],
   "reopenings": []
