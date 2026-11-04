@@ -3051,3 +3051,100 @@ fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
     check_refusal(&refused, id);
     assert_eq!(records(&fixture), before);
 }
+
+const NEW_CHANGE: &str = "specsync change new \"<outcome>\" --spec <module> --path <path>";
+
+/// Write a SYNTHETIC archive record for `id` finalized at `timestamp`.
+#[cfg(unix)]
+fn finalized(fixture: &Fixture, id: &str, timestamp: u64) {
+    fixture.write(
+        &format!(".specsync/archive/changes/2026-11-03-{id}/finalization.json"),
+        &json!({"change_id": id, "timestamp": timestamp}).to_string(),
+    );
+}
+
+/// Issue 76 item 2: at plan with SpecSync configured and no native change recorded, the
+/// refused gate names `specsync change new`, not a bare status read.
+#[cfg(unix)]
+#[test]
+fn plan_without_a_native_change_names_change_new() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Plan the change"]);
+    fixture.ok(&["checkpoint", "--next-action", "Write the plan"]);
+    fixture.ok(&["stage", "iterate", "--note", "Plan drafted"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    assert_eq!(action["command"], NEW_CHANGE, "{next}");
+    let text = action["action"].as_str().unwrap();
+    assert!(text.contains("refused:no-native-change"), "{text}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], action["action"]);
+}
+
+/// Issue 76 item 5: after a reset from done, the archived change from before the reset
+/// is the previous cycle's, so `next` keeps the reset's guidance and names
+/// `specsync change new`, at plan directly and after advancing from intent, and never
+/// the archived refusal or another reset.
+#[cfg(unix)]
+#[test]
+fn reset_after_an_archived_change_guides_to_a_new_change() {
+    // Reset to plan: the reset's next action shows, with the new-change command.
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Continue plan: New cycle from done after reset: Next feature."),
+        "{text}"
+    );
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+    assert!(!text.contains("refused:native-archived"), "{text}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], action["action"]);
+
+    // Reset to intent, then advance: no loop back to another reset.
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", "Next feature"]);
+    let mut stages = vec![];
+    while stage(&fixture) != "plan" {
+        fixture.ok(&["stage", "advance"]);
+        let next = fixture.ok(&["next", "--json"]);
+        let action = &next["next_valid_action"];
+        let text = action["action"].as_str().unwrap().to_string();
+        assert!(!text.contains("stage reset"), "{}: {text}", stage(&fixture));
+        assert_ne!(action["command"], RESET_COMMAND, "{}: {action}", stage(&fixture));
+        stages.push((stage(&fixture), action.clone()));
+    }
+    let (_, at_plan) = stages.last().unwrap();
+    assert_eq!(at_plan["command"], NEW_CHANGE, "{at_plan}");
+    assert!(
+        at_plan["action"]
+            .as_str()
+            .unwrap()
+            .contains("New cycle from done after reset: Next feature."),
+        "{at_plan}"
+    );
+
+    // A change finalized after the latest reset is this cycle's: the archived-change
+    // guidance stays.
+    let fixture = done_fixture("new-change");
+    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", "Next feature"]);
+    fixture.ok(&["stage", "advance"]);
+    finalized(&fixture, "new-change", 4_000_000_000);
+    let next = fixture.ok(&["next", "--json"]);
+    let text = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("The recorded native change is archived while the checkpoint is at"),
+        "{text}"
+    );
+    assert_eq!(next["next_valid_action"]["command"], RESET_COMMAND);
+}
+
+#[cfg(unix)]
+const RESET_COMMAND: &str = "chough stage reset --to intent --reason \"<why>\"";

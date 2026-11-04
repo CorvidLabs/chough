@@ -1045,8 +1045,6 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
                 ".specsync/archive/changes/2026-10-07-change-7/lesson-bundle.md",
                 ".specsync/archive/changes/2026-10-06-change-6/lesson-bundle.md",
                 ".specsync/archive/changes/2026-10-05-change-5/lesson-bundle.md",
-                ".specsync/archive/changes/2026-10-04-change-4/lesson-bundle.md",
-                ".specsync/archive/changes/2026-10-03-change-3/lesson-bundle.md",
             ]},
         })
     );
@@ -1057,12 +1055,12 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
         "  docs: specs/docs/context.md (no Lessons section)",
         "  ghost: specs/ghost/context.md (missing)",
         "  native: specs/native/native.3md\n",
-        "Archived lesson bundles (5 of 7, newest first):",
+        "Archived lesson bundles (3 of 7, newest first):",
         "  .specsync/archive/changes/2026-10-07-change-7/lesson-bundle.md",
     ] {
         assert!(shown.contains(line), "missing {line:?} in:\n{shown}");
     }
-    assert!(!shown.contains("2026-10-02-change-2"), "{shown}");
+    assert!(!shown.contains("2026-10-04-change-4"), "{shown}");
     assert!(!raw.contains("SECRET-LESSON-TEXT"), "{raw}");
     assert!(!shown.contains("SECRET-LESSON-TEXT"), "{shown}");
     // Nothing is written: no fold state, ledger or index.
@@ -1099,6 +1097,76 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
             text(&fixture, &["next"])
                 .contains("  ghost: specs/ghost/context.md (cannot be read: symlink")
         );
+    }
+}
+
+/// Issue 74: `next` names the newest 3 lesson bundles by finalization timestamp, then
+/// directory, the same archives `chough library index` marks hot (KNOW-8), not the
+/// newest by directory name.
+#[test]
+fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
+    let fixture = Fixture::new();
+    fixture.init();
+    // Same-day SYNTHETIC archives finalized in cycle order 1 to 6, whose slug order
+    // differs from that order; "zzz-unfinalized" has no finalization.json.
+    let cycles = [
+        "enforce-rules",
+        "preserve-history",
+        "protect-secrets",
+        "add-bounded-pagination",
+        "search-messages",
+        "export-chats",
+    ];
+    for (index, slug) in cycles.iter().enumerate() {
+        let dir = format!(".specsync/archive/changes/2026-11-03-{slug}");
+        fixture.write(
+            &format!("{dir}/finalization.json"),
+            &json!({"change_id": slug, "timestamp": 1_793_700_000 + 600 * index as u64})
+                .to_string(),
+        );
+        fixture.write(
+            &format!("{dir}/verification.json"),
+            "{\"acceptance_manifest\":{\"entries\":[]}}\n",
+        );
+        fixture.write(&format!("{dir}/lesson-bundle.md"), "SYNTHETIC lesson\n");
+    }
+    fixture.write(
+        ".specsync/archive/changes/2026-11-03-zzz-unfinalized/lesson-bundle.md",
+        "SYNTHETIC lesson\n",
+    );
+
+    let next = fixture.ok(&["next", "--json"]);
+    let path = |slug: &str| format!(".specsync/archive/changes/2026-11-03-{slug}/lesson-bundle.md");
+    assert_eq!(
+        next["lessons"]["archived_bundles"],
+        json!({"total": 7, "items": [
+            path("export-chats"),
+            path("search-messages"),
+            path("add-bounded-pagination"),
+        ]})
+    );
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!(
+            "Archived lesson bundles (3 of 7, newest first):\n  {}\n  {}\n  {}\n",
+            path("export-chats"),
+            path("search-messages"),
+            path("add-bounded-pagination")
+        )),
+        "{shown}"
+    );
+
+    // The librarian's hot archives are the same three.
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/INDEX.md");
+    for slug in ["export-chats", "search-messages", "add-bounded-pagination"] {
+        assert!(index.contains(&format!("[{slug}](archives/{slug}.md)")), "{index}");
+        let line = index.lines().find(|line| line.starts_with(&format!("[{slug}]"))).unwrap_or_else(|| panic!("{slug} in {index}"));
+        assert!(line.ends_with("(hot)"), "{line}");
+    }
+    for slug in ["protect-secrets", "preserve-history", "enforce-rules"] {
+        let line = index.lines().find(|line| line.starts_with(&format!("[{slug}]"))).unwrap_or_else(|| panic!("{slug} in {index}"));
+        assert!(line.ends_with("(cold)"), "{line}");
     }
 }
 
@@ -1233,7 +1301,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
         (&next["decisions"]["items"], 5),
         (&next["last_failure"]["bugs"]["items"], 3),
         (&next["lessons"]["sources"]["items"], 10),
-        (&next["lessons"]["archived_bundles"]["items"], 5),
+        (&next["lessons"]["archived_bundles"]["items"], 3),
         (&next["awaiting_human"]["items"], 10),
         (&next["blockers"]["items"], 10),
         (&next["observations"]["items"], 10),
