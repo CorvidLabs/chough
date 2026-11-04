@@ -3612,3 +3612,45 @@ fn backfill_refuses_release_to_done() {
     fixture.ok(&["stage", "advance"]);
     assert_eq!(stage(&fixture), "done");
 }
+
+/// Leif's review thread on #78 (src/stage.rs): a reset older than the 64 KiB tail of a
+/// legacy transition log is still found, so the archived change stays the previous
+/// cycle's and `next` keeps the reset's guidance.
+#[cfg(unix)]
+#[test]
+fn a_reset_older_than_the_log_tail_is_still_found() {
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    let before = fixture.read(".chough/transitions.jsonl");
+    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    let log = fixture.read(".chough/transitions.jsonl");
+    let gates = &log[before.len()..];
+    assert_eq!(gates.lines().count(), 2, "{gates}");
+    for line in gates.lines() {
+        let record: Value = serde_json::from_str(line).unwrap();
+        assert!(
+            ![
+                "advance", "iterate", "back", "reset", "skip", "pause", "resume", "enter", "return"
+            ]
+            .contains(&record["kind"].as_str().unwrap()),
+            "{record}"
+        );
+    }
+    // Push the reset out of the last 65,536 bytes with gate records only.
+    let mut padded = before.clone();
+    while padded.len() - before.len() < 80_000 {
+        padded.push_str(gates);
+    }
+    fixture.write(".chough/transitions.jsonl", &padded);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Continue plan: New cycle from done after reset: Next feature."),
+        "{text}"
+    );
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+    assert!(!text.contains("refused:native-archived"), "{text}");
+}
