@@ -124,7 +124,7 @@ Acceptance Criteria
 - A cargo filter that matches no test records not-run, never passed.
 - Changing a case definition reports its earlier observations as stale-case-definition.
 - A case whose descendant holds its output returns by its deadline, and its descendants are stopped.
-- SIGINT, SIGTERM or SIGHUP during `cases run`, including while it saves after its command exits, or during a native read in `next` leaves no process Chough started, Git included, and no new or changed `.chough` file.
+- SIGINT, SIGTERM or SIGHUP during `cases run` before its save begins, during a native read in `next`, or during the Git that `stage backfill` or `library snapshot` runs before writing leaves no process Chough started, Git included, and no new or changed `.chough` or library file; a stop once a case run's save has begun leaves both its artifact and its observation, and no process Chough started.
 - A stop request made during the interval halts a repeated run before the next attempt, and resuming continues with the stored limits.
 - A declared variable reaches the command, and the observation names it without its value.
 - An observation of a case that declares no variables still states that inherited environment variables were not recorded.

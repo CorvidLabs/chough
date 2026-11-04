@@ -21,11 +21,6 @@ fn command_case(id: &str, argv: &str, expect: &str) -> String {
     )
 }
 
-/// Every file under `.chough` with its bytes.
-fn snapshot(root: &Path) -> BTreeMap<String, Vec<u8>> {
-    snapshot_dirs(root, &[".chough"])
-}
-
 /// Every file under each of `dirs` that exists, with its bytes.
 fn snapshot_dirs(root: &Path, dirs: &[&str]) -> BTreeMap<String, Vec<u8>> {
     fn walk(base: &Path, dir: &Path, files: &mut BTreeMap<String, Vec<u8>>) {
@@ -427,7 +422,14 @@ fn stopping_a_backfill_stops_its_git_and_records_nothing() {
         assert_stopped(
             &fixture,
             &[
-                "stage", "backfill", "--at", &at, "--commit", &head, "--quote", "Leif: yes",
+                "stage",
+                "backfill",
+                "--at",
+                &at,
+                "--commit",
+                &head,
+                "--quote",
+                "Leif: yes",
             ],
             signal,
             number,
@@ -456,7 +458,13 @@ fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
         stall_git(&fixture, seconds);
         assert_stopped_in(
             &fixture,
-            &["library", "snapshot", "notes.md", "--reason", "keep the note"],
+            &[
+                "library",
+                "snapshot",
+                "notes.md",
+                "--reason",
+                "keep the note",
+            ],
             signal,
             number,
             &format!("sleep {seconds}"),
