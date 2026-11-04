@@ -2178,6 +2178,38 @@ fn checkpoint_writer_removes_only_orphaned_session_temps() {
     );
 }
 
+/// Read-only commands that take the checkpoint lock leave session temps in place: only
+/// a checkpoint write removes them (review of #70, the approved criterion's "read-only
+/// commands remove nothing").
+#[test]
+fn read_only_commands_leave_session_temps_in_place() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let temp = ".chough/.session.json.4194304.tmp";
+    for args in [
+        vec!["context"],
+        vec!["stage", "show"],
+        vec!["history", "show"],
+        vec!["history", "prune"],
+    ] {
+        fixture.write(temp, "{\"partial\":");
+        let before = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+        let output = fixture.run(&args);
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(output.status.success(), "{args:?} {stderr}");
+        assert!(!stderr.contains("removed"), "{args:?} {stderr}");
+        assert!(
+            fixture.root().join(temp).is_file(),
+            "{args:?} removed the session temp"
+        );
+        assert_eq!(
+            fs::read(fixture.root().join(".chough/session.json")).unwrap(),
+            before,
+            "{args:?}"
+        );
+    }
+}
+
 /// The exercise removes its project's checkpoint lock file on exit, in every mode
 /// (review of #70): the setup's `checkpoint_lock` names the file real Chough creates
 /// for the project under the given TMPDIR, and the exit cleanup deletes it whether the
