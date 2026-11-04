@@ -1600,6 +1600,7 @@ mod tests {
             gate: None,
             revision: None,
             refresh: vec![],
+            backfill: None,
         }
     }
 

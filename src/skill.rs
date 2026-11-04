@@ -265,6 +265,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/checkpoint.md",
         "00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d",
     ),
+    // Main edbc3c1 (v0.2.0); superseded by the backfill guidance (REQ-cli-036).
+    (
+        "references/lifecycle.md",
+        "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

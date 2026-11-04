@@ -204,6 +204,9 @@ struct Record {
     from: String,
     to: String,
     reason: Option<String>,
+    /// A backfilled move's evidence (REQ-history-005): when it was recorded, the
+    /// commit and the quote. Its `at` is the original time.
+    backfill: Option<Value>,
 }
 
 struct Transitions {
@@ -273,6 +276,10 @@ fn read_transitions(root: &Path, session: &Session, all: bool) -> Result<Transit
             from,
             to,
             reason: text("reason"),
+            backfill: value
+                .get("backfill")
+                .filter(|backfill| backfill.is_object())
+                .cloned(),
         });
     }
     Ok(Transitions {
@@ -299,6 +306,9 @@ struct Segment {
     elapsed: Span,
     waiting: Option<Span>,
     active: Option<Span>,
+    /// A backfilled move starts or ends this segment, so one bound is a time
+    /// given after the fact.
+    backfilled: bool,
 }
 
 impl Segment {
@@ -316,6 +326,7 @@ impl Segment {
             "elapsed": self.elapsed.to_json(),
             "waiting": self.waiting.as_ref().map(Span::to_json),
             "active": self.active.as_ref().map(Span::to_json),
+            "backfilled": self.backfilled,
         })
     }
 
@@ -577,6 +588,7 @@ fn derive(transitions: &Transitions, session: &Session, at: u64) -> Derived {
         elapsed: Span::Unknown(String::new()),
         waiting: None,
         active: None,
+        backfilled: false,
     };
     let Some(first) = moves.first() else {
         // No stage record yet: the current stage since an unrecorded start.
@@ -596,7 +608,8 @@ fn derive(transitions: &Transitions, session: &Session, at: u64) -> Derived {
     let mut cycles: Vec<Cycle> = vec![];
     let mut visits: BTreeMap<String, u32> = BTreeMap::new();
     for (index, record) in moves.iter().enumerate() {
-        let ended = close(open, record.at.clone(), false, &gates, at);
+        let mut ended = close(open, record.at.clone(), false, &gates, at);
+        ended.backfilled |= record.backfill.is_some();
         if index == 0 {
             before_first = Some(ended);
         } else {
@@ -637,6 +650,7 @@ fn derive(transitions: &Transitions, session: &Session, at: u64) -> Derived {
         open.iteration = iteration;
         open.visit = visit;
         open.entered_by = Some(record.kind.clone());
+        open.backfilled = record.backfill.is_some();
     }
     let last = close(open, Time::Known(at), true, &gates, at);
     cycles
@@ -669,6 +683,8 @@ struct StageTotal {
     active: Span,
     waiting: Span,
     paused: Span,
+    /// Stage time in segments a backfilled move bounds.
+    backfilled: Span,
 }
 
 fn stage_totals(cycle: &Cycle) -> Vec<StageTotal> {
@@ -713,6 +729,12 @@ fn stage_totals(cycle: &Cycle) -> Vec<StageTotal> {
                 paused: Span::sum(
                     of.iter()
                         .filter(|segment| segment.state == "paused")
+                        .map(|segment| &segment.elapsed),
+                ),
+                backfilled: Span::sum(
+                    working
+                        .iter()
+                        .filter(|segment| segment.backfilled)
                         .map(|segment| &segment.elapsed),
                 ),
                 stage: name,
@@ -1445,7 +1467,11 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     let mut stage_samples: BTreeMap<String, Vec<u64>> = BTreeMap::new();
     for cycle in derived.cycles.iter().filter(|cycle| cycle.completed) {
         for total in stage_totals(cycle) {
-            // Same-second records are backfills, not samples.
+            // A stage a backfilled move bounds has a time given after the fact.
+            if total.backfilled.seconds() != Some(0) {
+                continue;
+            }
+            // Same-second records are written together, not samples.
             if let Some(seconds) = total.stage_time.seconds().filter(|seconds| *seconds > 0) {
                 stage_samples.entry(total.stage).or_default().push(seconds);
             }
@@ -1534,6 +1560,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
                 "active": total.active.to_json(),
                 "waiting": total.waiting.to_json(),
                 "paused": total.paused.to_json(),
+                "backfilled": total.backfilled.to_json(),
             })).collect::<Vec<_>>(),
         })
     };
@@ -1548,6 +1575,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
             "waiting": "Waiting on a human is the time a recorded awaiting-human gate was open; it never says who decided or what.",
             "estimates": "Estimates come from recorded history and are not targets; fewer than 3 samples are too few to estimate.",
             "validation": format!("Validation run time is the {RUN_WALL_CLOCK}, not per-test time."),
+            "backfilled": BACKFILLED,
         },
         "filters": {"cycle": args.cycle, "stage": args.stage, "case": args.case, "bug": args.bug},
         "partial": partial,
@@ -1561,6 +1589,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
             "lineage_selection": "Only the checkpoint-selected parent chain is derived; unselected branch timelines remain separate and their durations are unknown. Inspect chough history show for other tips.",
         },
         "transition_lineages": transitions.lineages,
+        "backfilled": backfilled_moves(&transitions.records),
         "before_first_record": before_first.map(Segment::to_json),
         "cycles": shown.iter().map(|cycle| cycle_json(cycle)).collect::<Vec<_>>(),
         "gates": gate_rows,
@@ -1585,6 +1614,30 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     }
     trace_phase("render", phase);
     Ok(())
+}
+
+const BACKFILLED: &str = "A backfilled move was recorded after it happened, at the original time it gives, with the commit and quote it rests on as evidence only; it records no human approval or review. Segments it bounds are marked and are not estimate samples.";
+
+/// Every backfilled move, with its original and recording times and its evidence.
+fn backfilled_moves(records: &[Record]) -> Vec<Value> {
+    records
+        .iter()
+        .filter_map(|record| {
+            let backfill = record.backfill.as_ref()?;
+            Some(json!({
+                "kind": record.kind,
+                "from": record.from,
+                "to": record.to,
+                "at": record.at.to_json(),
+                "recorded_at": Time::of(
+                    backfill.get("recorded_at_unix_seconds").and_then(Value::as_u64),
+                    "missing recording time",
+                ).to_json(),
+                "commit": backfill.get("commit"),
+                "quote": backfill.get("quote"),
+            }))
+        })
+        .collect()
 }
 
 fn time_text(value: &Value) -> String {
@@ -1676,6 +1729,21 @@ fn render(
                 .map(|segment| &segment.elapsed),
         );
         out.push_str(&format!("Idle between cycles: {}\n", idle.text()));
+    }
+    let backfilled = report["backfilled"].as_array().cloned().unwrap_or_default();
+    if !backfilled.is_empty() {
+        out.push_str(&format!("\n## Backfilled moves\n\n{BACKFILLED}\n\n"));
+        for entry in &backfilled {
+            out.push_str(&format!(
+                "- {} -> {} at {}, recorded {}, commit {}: \"{}\"\n",
+                entry["from"].as_str().unwrap_or_default(),
+                entry["to"].as_str().unwrap_or_default(),
+                time_text(&entry["at"]),
+                time_text(&entry["recorded_at"]),
+                entry["commit"].as_str().unwrap_or("unknown"),
+                entry["quote"].as_str().unwrap_or_default()
+            ));
+        }
     }
     out.push_str("\n## Human gates\n\n");
     if derived.gates.is_empty() {

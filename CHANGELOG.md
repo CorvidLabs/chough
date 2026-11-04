@@ -6,6 +6,27 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The hosted SpecSync Archive check reads archived change status with one worker per
+  CPU, at least two and at most eight, instead of a fixed two (DRIVE-10). Every
+  archive and history snapshot is still authenticated with the same checks, SpecSync
+  version and timeouts. On the #71 tree (63 archives) the check took 9 min 56 s with
+  two workers, 5 min 4 s with four and 2 min 54 s with eight on the same machine.
+- Dotted SpecSync module IDs such as `chat.service` and hi sub-criterion IDs such as
+  `BOTS-1.a` are accepted by `init`, `checkpoint`, `bugs`, `evidence` and `cases`, and
+  a checkpoint holding them is read by every view (#56, #57). Module and requirement
+  IDs SpecSync refuses, and dotted criterion IDs hi refuses such as `UX-1.A`, are
+  refused. Plain criterion IDs Chough accepted before, such as `UX-012` or `ux-1`,
+  are still accepted so existing checkpoints and bugs stay readable, though hi does
+  not trace them; re-record one with a valid hi ID, such as `UX-12`, to link it. `checkpoint --remove-completed` removes one mistaken completed
+  entry in the same call that adds its correction. A test keeps the bundled workflow
+  skill free of em and en dashes (DRIVE-1, DRIVE-7).
+- `chough stage backfill --at <time> --commit <rev> --quote <text>` records a move to
+  the next main stage that already happened, at its original time with the commit and
+  quote it rests on (REQ-cli-036, REQ-history-005). Every advance refusal applies and
+  native state is read now; it records no human approval or review. `chough timing`
+  lists backfilled moves separately, marks the segments they bound and keeps those
+  stages out of estimates. Older Chough binaries refuse a transition log that holds a
+  backfilled record, so upgrade every agent on a project before using it.
 - Sessions per objective or native change (REQ-cli-037, REQ-history-006): `chough
   session new <key>` creates `.chough/sessions/<key>.json` with its own history
   cycle, `session adopt` moves an existing checkpoint there byte for byte, `session

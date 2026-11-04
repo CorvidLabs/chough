@@ -17,9 +17,8 @@ mod validate;
 use anyhow::{Context, Result, ensure};
 use checkpoint::{SESSION, Session, new_checkpoint, read_session};
 use clap::{Parser, Subcommand};
-use records::{
-    NativeJson, local_path, native_json, print_json, valid_name, write_new, write_new_bounded,
-};
+use records::valid_module_name;
+use records::{NativeJson, local_path, native_json, print_json, write_new, write_new_bounded};
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 
@@ -248,8 +247,8 @@ fn init(
         "the project uses sessions mode; run `chough session new <key>`"
     );
     ensure!(
-        modules.iter().all(|module| valid_name(module)),
-        "module names use letters, digits, hyphens, underscores"
+        modules.iter().all(|module| valid_module_name(module)),
+        "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
     );
     let hosts = if hosts.is_empty() {
         vec!["openai".to_string()]
