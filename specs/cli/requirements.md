@@ -59,7 +59,7 @@ large context is visibly bounded. Local artifacts remain reviewable plain files.
 
 ### REQ-cli-007
 
-Canonical checkpoint and explicit migration. The helper SHALL keep one canonical checkpoint at `.chough/session.json`, schema version 2, holding the objective, intent scope, modules, current stage with its status and side-stage callers, the native change identity, referenced criteria, requirements, cases, design sources and files, decisions, open questions, completed work, observation and bug references, blockers, awaiting-human gates, run consents and the next action. It SHALL migrate a schema 1 session only through an explicit command that first preserves the original bytes, and SHALL keep reading schema 1 sessions for context and status. Trace: FLOW-13, LIFE-3.
+Canonical checkpoint and explicit migration. The helper SHALL keep one canonical checkpoint at `.chough/session.json` or, in sessions mode, the active session file (REQ-cli-037), schema version 2, holding the objective, intent scope, modules, current stage with its status and side-stage callers, the native change identity, referenced criteria, requirements, cases, design sources and files, decisions, open questions, completed work, observation and bug references, blockers, awaiting-human gates, run consents and the next action. It SHALL migrate a schema 1 session only through an explicit command that first preserves the original bytes, and SHALL keep reading schema 1 sessions for context and status. Trace: FLOW-13, LIFE-3, DRIVE-3.
 
 The helper SHALL provide bounded `chough checkpoint --merge <base> <ours> <theirs>` for three-way reconciliation of schema 2 checkpoints. For `decisions`, `open_questions`, `completed`, `observations`, `bugs` and every collection under `references`, entries SHALL be compared as exact strings. Base entries not removed on either side SHALL retain base order, entries added by ours SHALL follow in ours order with an identical addition on both sides included once, and remaining entries added by theirs SHALL follow in theirs order. An entry removed on only one side SHALL remain removed.
 
@@ -67,7 +67,7 @@ The complete values of `objective`, `intent_scope`, `modules`, `stage`, `native_
 
 Every input SHALL be read within the existing checkpoint bounds and validated without unknown fields. All three inputs SHALL use schema version 2, and the merged result SHALL satisfy every existing checkpoint bound before it is written. A successful merge SHALL write the result only to `<ours>`, leaving `<base>` and `<theirs>` byte-identical. Every refusal SHALL leave all three inputs byte-identical and SHALL create no checkpoint, transition, gate, consent, approval, review or other record. This reconciliation path SHALL NOT change one-owner live writes, native SpecSync authority or any non-checkpoint ID scheme, and SHALL NOT introduce a second writable checkpoint store.
 
-The repository SHALL declare `.chough/session.json merge=chough-session` in `.gitattributes`. Documentation SHALL give the per-clone command `git config merge.chough-session.driver 'chough checkpoint --merge %O %A %B'`; initialization SHALL NOT change Git configuration. The explicit merge command SHALL remain the fallback when no driver is configured.
+The repository SHALL declare `.chough/session.json merge=chough-session` in `.gitattributes`, and the same driver for `.chough/sessions/*.json` and `.chough/sessions/archive/*.json`. Documentation SHALL give the per-clone command `git config merge.chough-session.driver 'chough checkpoint --merge %O %A %B'`; initialization SHALL NOT change Git configuration. The explicit merge command SHALL remain the fallback when no driver is configured.
 
 Acceptance Criteria
 - A checkpoint saved by one process is read unchanged by `chough context` and `chough next` in another process; unknown fields and unsupported versions are rejected.
@@ -80,6 +80,7 @@ Acceptance Criteria
 - Schema 1 in any position, mixed schema versions, malformed JSON or record content, unknown fields, unsupported versions and a result exceeding an existing item, caller or 131072-byte checkpoint bound fail closed.
 - A real Git fixture using the `.gitattributes` declaration and documented per-clone driver automatically merges compatible checkpoint edits and leaves a conflicting current-cycle merge unresolved with a nonzero driver result. Init leaves Git configuration byte-identical, and the explicit command performs the same compatible merge without driver configuration.
 - Real Git evidence first records the pre-implementation conflicting checkpoint merge failure and links it to a local bug, then records a strictly later pass after implementation. The evidence uses explicit readable IDs without allocating a new case number, and all non-checkpoint ID schemes remain unchanged.
+- The repository's `.gitattributes` declares the `chough-session` driver for `.chough/session.json`, `.chough/sessions/*.json` and `.chough/sessions/archive/*.json`.
 
 ### REQ-cli-008
 
@@ -348,4 +349,13 @@ Acceptance Criteria
 - A backfilled plan to build move records the given time, full commit SHA and quote, and `timing --json` lists it under `backfilled` and marks its segments.
 - A draft native change, an open awaiting-human gate, a future or out-of-order time, an unknown or unreachable commit, a blank quote and a side stage refuse with the checkpoint and log unchanged.
 - No approval, review, consent or gate record is written.
+
+### REQ-cli-037
+
+Active session checkpoint. When `.chough/sessions/` exists, the canonical checkpoint SHALL be the active session file `.chough/sessions/<key>.json`, named by the untracked pointer `.chough/local/active-session` or, with no pointer, the only open session, and every command SHALL read and write that file instead of `.chough/session.json`. Chough SHALL refuse with nothing written when it cannot tell which session is active, and `init` SHALL refuse in sessions mode. Only the active session is written, so this is not a second writable store (REQ-cli-007). Each command SHALL resolve the active session once and save only to that session, so a switch by another process partway through a command does not redirect its save; if that session is archived or removed meanwhile, the save SHALL refuse with nothing written. Without `.chough/sessions/` behaviour and bytes SHALL be unchanged. Trace: DRIVE-3.
+
+Acceptance Criteria
+- A stage move in sessions mode changes only the active session file and its history cycle.
+- No session, several open sessions without a pointer, or a pointer to a missing or archived session refuses with nothing written.
+- A `session use` by another process partway through a command leaves the newly active session's file unchanged, and the command's save lands in the session it resolved.
 
