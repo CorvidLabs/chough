@@ -5,7 +5,7 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Write failing tests in tests/cases.rs
-- [ ] Add the approved-delta resolver to case validation
-- [ ] Update the skill references, docs and CHANGELOG.md
-- [ ] Run fledge lanes run verify
+- [x] Write failing tests in tests/cases.rs
+- [x] Add the approved-delta resolver to case validation
+- [x] Update the skill references, docs and CHANGELOG.md
+- [x] Run fledge lanes run verify
