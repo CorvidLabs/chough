@@ -7,10 +7,11 @@
   "title": "Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76)",
   "description": "Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "edbc3c1adecebf6a1378a731965c3bfe8c8217df",
   "created_at": 1793757316,
-  "updated_at": 1793757438,
+  "updated_at": 1793757739,
   "affected_specs": [
     "cli"
   ],

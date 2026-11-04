@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1793757705,
+      "commit": "028ae4b80418e65ad6faa5a8c4a6e87a44bb70ee",
+      "contract_digest": "5a7a95b4b3cb5949ce810e74228d09205dfbdf7584a0a579a49aea8ffc393243",
+      "execution_digest": "c33a27aa615a0a73ef44515bf702558bd57a6236f21b6247ee674bff0d300e90",
+      "workspace_digest": "96d684cf108321943175bd642de8529bfd16a0d409cd38f3900565290896c2eb",
+      "passed": false,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        },
+        {
+          "command": "specsync change check order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76 (effective contract: cli)",
+          "success": false,
+          "exit_code": 1
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-021"
+      ]
+    },
+    {
+      "timestamp": 1793757739,
+      "commit": "2e64494713f0eb3992abfd86d6cbb63710433ac8",
+      "contract_digest": "5a7a95b4b3cb5949ce810e74228d09205dfbdf7584a0a579a49aea8ffc393243",
+      "execution_digest": "c33a27aa615a0a73ef44515bf702558bd57a6236f21b6247ee674bff0d300e90",
+      "workspace_digest": "d585324b2e40b64a835a5c884e8580d25c23e13b212c48cb0fbf1dc5f968b526",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-021"
+      ]
+    }
+  ]
+}
