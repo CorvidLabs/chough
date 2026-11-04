@@ -3644,6 +3644,32 @@ fn a_reset_older_than_the_log_tail_is_still_found() {
         padded.push_str(gates);
     }
     fixture.write(".chough/transitions.jsonl", &padded);
+    assert_reset_guidance(&fixture);
+}
+
+/// A legacy done fixture whose archived `old-change` closed before a reset to plan,
+/// followed by gate records only, at least `padding` bytes of them.
+#[cfg(unix)]
+fn reset_then_gates(padding: usize) -> Fixture {
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    let before = fixture.read(".chough/transitions.jsonl");
+    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    let gates = fixture.read(".chough/transitions.jsonl")[before.len()..].to_string();
+    let mut padded = before.clone();
+    while padded.len() - before.len() < padding {
+        padded.push_str(&gates);
+    }
+    fixture.write(".chough/transitions.jsonl", &padded);
+    fixture
+}
+
+/// `next` names the reset's new-cycle guidance: the archived change is the previous
+/// cycle's.
+#[cfg(unix)]
+fn assert_reset_guidance(fixture: &Fixture) {
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     let text = action["action"].as_str().unwrap();
@@ -3653,4 +3679,70 @@ fn a_reset_older_than_the_log_tail_is_still_found() {
     );
     assert_eq!(action["command"], NEW_CHANGE, "{action}");
     assert!(!text.contains("refused:native-archived"), "{text}");
+}
+
+/// `next` says the cycle is unknown rather than inferring either way.
+#[cfg(unix)]
+fn assert_cycle_unknown(fixture: &Fixture) {
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
+        "{text}"
+    );
+    assert_eq!(action["command"], "chough history show", "{action}");
+}
+
+/// Leif's review thread 4463488843 on #78: after `history adopt --apply`, the adopted
+/// cursor's first cycle continues its legacy anchor, and a reset in that anchor older
+/// than the 64 KiB tail is still found.
+#[cfg(unix)]
+#[test]
+fn an_adopted_cursor_finds_a_reset_in_its_legacy_anchor_beyond_the_tail() {
+    let fixture = reset_then_gates(80_000);
+    fixture.ok(&["history", "adopt", "--apply"]);
+    let session = fixture.session();
+    assert!(!session["history_cursor"]["legacy"].is_null(), "{session}");
+    assert_reset_guidance(&fixture);
+}
+
+/// The same thread: a legacy log beyond the 16 MiB bound is not read as "no reset";
+/// the cycle is unknown.
+#[cfg(unix)]
+#[test]
+fn a_legacy_log_beyond_its_bound_leaves_the_cycle_unknown() {
+    let fixture = reset_then_gates(16 * 1_048_576 + 4096);
+    assert_cycle_unknown(&fixture);
+}
+
+/// The same thread: an unreadable legacy log (here mode 000) is not read as "no reset";
+/// the cycle is unknown. Only a missing log reads as empty. Root reads any mode, so
+/// the check is skipped there.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_legacy_log_leaves_the_cycle_unknown() {
+    use std::os::unix::fs::PermissionsExt;
+    let euid = Command::new("id").arg("-u").output().unwrap();
+    if String::from_utf8_lossy(&euid.stdout).trim() == "0" {
+        return;
+    }
+    let fixture = reset_then_gates(0);
+    let log = fixture.root().join(".chough/transitions.jsonl");
+    fs::set_permissions(&log, fs::Permissions::from_mode(0o000)).unwrap();
+    let next = fixture.run(&["next", "--json"]);
+    fs::set_permissions(&log, fs::Permissions::from_mode(0o644)).unwrap();
+    assert!(
+        next.status.success(),
+        "{}",
+        String::from_utf8_lossy(&next.stderr)
+    );
+    let next: Value = serde_json::from_slice(&next.stdout).unwrap();
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
+        "{text}"
+    );
+    assert_ne!(action["command"], RESET_COMMAND, "{action}");
 }
