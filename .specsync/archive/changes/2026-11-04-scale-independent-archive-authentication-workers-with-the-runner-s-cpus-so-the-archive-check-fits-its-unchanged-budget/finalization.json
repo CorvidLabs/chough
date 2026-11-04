@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "scale-independent-archive-authentication-workers-with-the-runner-s-cpus-so-the-archive-check-fits-its-unchanged-budget",
+  "implementation_commit": "ee7318db0c67a3af4d6d0ae89d2ce7ac5794384d",
+  "implementation_tree": "da870234ccf368dbb4dc9db319542e629280f813",
+  "contract_digest": "44b48c4434f2f48677168a06a58ca307f7d674524e1da045f1fa86544a4a8bcb",
+  "workspace_digest": "7e8517d94c4a9ebed5f854c3040cd6ade2f25b239f28722acedfb6d969b13ebd",
+  "closing_digest": "89c9d2ad480f5bdda9f339d601f174735a6812b322095a64ca293370cb2cf40d",
+  "review_digest": "591b834b2e126d2a446f413000a10e5c18be4eef4fb94bdd94fea67706a427f9",
+  "finalization_digest": "756bfb95dd68a23711e5577fe8137e0b2cd75def5ae47900832c4478fba279f9",
+  "timestamp": 1793767946
+}

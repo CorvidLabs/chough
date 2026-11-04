@@ -85,9 +85,14 @@ class ArchiveExecutorTests(unittest.TestCase):
         thread.start()
         return thread, returned, result
 
-    def test_two_workers_overlap_and_read_every_id_once(self):
+    def test_archive_workers_follow_the_cpu_count_between_two_and_eight(self):
+        for cpus, workers in [(1, 2), (3, 3), (4, 4), (64, 8), (None, 2)]:
+            with mock.patch.object(self.gate.os, "cpu_count", return_value=cpus):
+                self.assertEqual(self.gate.archive_workers(), workers, cpus)
+
+    def test_one_worker_per_cpu_overlaps_and_reads_every_id_once(self):
         ids = {f"change-{number}" for number in range(6)}
-        release, two_started, third_started = (threading.Event() for _ in range(3))
+        release, all_started, extra_started = (threading.Event() for _ in range(3))
         lock = threading.Lock()
         calls = []
         active = peak = 0
@@ -99,10 +104,10 @@ class ArchiveExecutorTests(unittest.TestCase):
                 calls.append(change_id)
                 active += 1
                 peak = max(peak, active)
-                if len(calls) == 2:
-                    two_started.set()
-                if len(calls) > 2:
-                    third_started.set()
+                if len(calls) == 3:
+                    all_started.set()
+                if len(calls) > 3:
+                    extra_started.set()
             try:
                 self.assertTrue(release.wait(5), "worker was not released")
                 return self.response(change_id), 0
@@ -110,20 +115,22 @@ class ArchiveExecutorTests(unittest.TestCase):
                 with lock:
                     active -= 1
 
-        with mock.patch.object(self.gate, "native", side_effect=read):
+        with mock.patch.object(self.gate, "native", side_effect=read), mock.patch.object(
+            self.gate.os, "cpu_count", return_value=3
+        ):
             thread, _, result = self.start(
                 lambda: self.gate.authenticate_archives("specsync", Path("."), ids, ids)
             )
             try:
-                self.assertTrue(two_started.wait(5), "native reads never overlapped")
-                self.assertFalse(third_started.wait(0.1), "more than two native reads started")
+                self.assertTrue(all_started.wait(5), "three native reads never overlapped")
+                self.assertFalse(extra_started.wait(0.1), "more than three native reads started")
             finally:
                 release.set()
                 thread.join(5)
         self.assertFalse(thread.is_alive())
         self.assertNotIn("error", result)
         self.assertEqual(sorted(calls), sorted(ids))
-        self.assertEqual(peak, 2)
+        self.assertEqual(peak, 3)
 
     def test_errors_are_reported_in_id_order_not_completion_order(self):
         release, beta_failed = threading.Event(), threading.Event()
