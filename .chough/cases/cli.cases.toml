@@ -2694,3 +2694,75 @@ expected = ["tests/next.rs::next_searches_a_context_md_larger_than_4_mib passes"
 adapter = "cargo-test"
 test_target = "next"
 test = "next_searches_a_context_md_larger_than_4_mib"
+
+[[case]]
+id = "TC-cli-stop-reaches-setsid-descendant"
+title = "A stop also stops a descendant that left the process group"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "src/main.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::stopping_a_case_run_stops_a_descendant_that_left_the_group passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "stopping_a_case_run_stops_a_descendant_that_left_the_group"
+
+[[case]]
+id = "TC-cli-stop-reaches-orphaned-descendant"
+title = "A stop also stops an orphan that left the process group"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "src/main.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::stopping_a_case_run_stops_an_orphan_that_left_the_group passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "stopping_a_case_run_stops_an_orphan_that_left_the_group"
+
+[[case]]
+id = "TC-cli-git-grace-kill-reported"
+title = "A grace kill after Chough's own Git is reported"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::a_grace_kill_after_git_is_reported passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "a_grace_kill_after_git_is_reported"
+
+[[case]]
+id = "TC-cli-failed-head-revision-reported"
+title = "A failed git rev-parse HEAD is reported"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::a_failed_head_revision_is_reported passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "a_failed_head_revision_is_reported"
