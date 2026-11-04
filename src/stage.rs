@@ -4,7 +4,8 @@
 use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{
     NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
-    local_path, native_json, now, print_json, read_log_tail, read_native_record, read_record,
+    local_path, native_json, now, print_json, read_log_full, read_log_tail, read_native_record,
+    read_record,
 };
 use crate::{bugs, evidence, prefs};
 use anyhow::{Result, bail, ensure};
@@ -822,39 +823,62 @@ fn archived_and_authenticated(root: &Path, session: &Checkpoint, state: &NativeS
 /// Whether the latest stage transition is a reset, which starts the new cycle: the
 /// checkpoint still names the archived change until a new one is recorded, and the
 /// reset's own next action applies. Gate records start no stage segment and are
-/// skipped; an unreadable log reads as no reset.
-fn reached_by_reset(root: &Path, history: Option<&crate::history::HistoryRead>) -> bool {
+/// skipped; an unreadable log reads as no reset, and a legacy log too large to read
+/// whole is unknown (`Err`).
+fn reached_by_reset(
+    root: &Path,
+    history: Option<&crate::history::HistoryRead>,
+) -> Result<bool, String> {
     if let Some(read) = history {
-        return read
+        return Ok(read
             .records
             .iter()
             .rev()
             .filter_map(|value| value["kind"].as_str())
             .find(|kind| STAGE_KINDS.contains(kind))
-            .is_some_and(|kind| kind == "reset");
+            .is_some_and(|kind| kind == "reset"));
     }
-    let Ok(path) = local_path(root, TRANSITIONS) else {
-        return false;
-    };
-    let Ok((lines, _)) = read_log_tail(&path, usize::MAX) else {
-        return false;
-    };
-    lines
+    Ok(legacy_transitions(root)?
         .iter()
         .rev()
-        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
-        .filter_map(|record| {
-            record
-                .get("kind")
-                .and_then(Value::as_str)
-                .map(str::to_string)
-        })
-        .find(|kind| STAGE_KINDS.contains(&kind.as_str()))
-        .is_some_and(|kind| kind == "reset")
+        .filter_map(|record| record.get("kind").and_then(Value::as_str))
+        .find(|kind| STAGE_KINDS.contains(kind))
+        .is_some_and(|kind| kind == "reset"))
 }
 
-/// When the newest reset was recorded, if the transition log names one.
-fn latest_reset_at(root: &Path, history: Option<&crate::history::HistoryRead>) -> Option<u64> {
+/// The bound on a legacy transition log read whole, the same 16 MiB the timing
+/// report reads it to.
+const LEGACY_TRANSITIONS_LIMIT: u64 = 16 * 1_048_576;
+
+/// Every record of the legacy transition log, read whole rather than from its 64 KiB
+/// tail, so a reset older than the tail is still found. An unreadable log reads as
+/// empty; a log beyond the bound is unknown (`Err`, with why), never read as no reset.
+fn legacy_transitions(root: &Path) -> Result<Vec<Value>, String> {
+    let Ok(path) = local_path(root, TRANSITIONS) else {
+        return Ok(vec![]);
+    };
+    let Ok(log) = read_log_full(&path, LEGACY_TRANSITIONS_LIMIT) else {
+        return Ok(vec![]);
+    };
+    if log.skipped_bytes > 0 {
+        return Err(format!(
+            "{TRANSITIONS}: earliest {} bytes skipped beyond the {LEGACY_TRANSITIONS_LIMIT}-byte bound",
+            log.skipped_bytes
+        ));
+    }
+    Ok(log
+        .lines
+        .iter()
+        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+        .collect())
+}
+
+/// When the newest reset was recorded, if the transition log names one; a legacy log
+/// too large to read whole is unknown (`Err`).
+fn latest_reset_at(
+    root: &Path,
+    history: Option<&crate::history::HistoryRead>,
+) -> Result<Option<u64>, String> {
     // The newest reset by recorded time, not the last appended: merged logs can hold
     // resets out of order. When any reset's time cannot be read, none is trusted and
     // only the reached-by-reset test applies.
@@ -870,15 +894,9 @@ fn latest_reset_at(root: &Path, history: Option<&crate::history::HistoryRead>) -
         newest
     }
     if let Some(read) = history {
-        return newest(read.records.iter());
+        return Ok(newest(read.records.iter()));
     }
-    let path = local_path(root, TRANSITIONS).ok()?;
-    let (lines, _) = read_log_tail(&path, usize::MAX).ok()?;
-    let records: Vec<Value> = lines
-        .iter()
-        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
-        .collect();
-    newest(records.iter())
+    Ok(newest(legacy_transitions(root)?.iter()))
 }
 
 /// Whether the recorded archived change belongs to the cycle before the latest reset:
@@ -920,20 +938,20 @@ fn previous_cycle(
             // The first cycle after adoption may continue the anchored legacy log, which
             // then holds the latest reset; it is read whole, as for a legacy project.
             let legacy = cursor.legacy.is_some();
-            let reached = reached_by_reset(root, Some(&cycle))
-                || (!stages && legacy && reached_by_reset(root, None));
+            let reached = reached_by_reset(root, Some(&cycle))?
+                || (!stages && legacy && reached_by_reset(root, None)?);
             let reset_at = if resets {
-                latest_reset_at(root, Some(&cycle))
+                latest_reset_at(root, Some(&cycle))?
             } else if legacy {
-                latest_reset_at(root, None)
+                latest_reset_at(root, None)?
             } else {
                 None
             };
             (reached, reset_at)
         }
         (history, _) => (
-            reached_by_reset(root, history),
-            latest_reset_at(root, history),
+            reached_by_reset(root, history)?,
+            latest_reset_at(root, history)?,
         ),
     };
     Ok(reached
