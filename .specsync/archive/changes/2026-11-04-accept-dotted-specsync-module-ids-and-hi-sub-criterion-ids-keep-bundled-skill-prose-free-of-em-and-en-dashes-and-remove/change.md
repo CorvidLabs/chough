@@ -1,6 +1,6 @@
 ---
 id: accept-dotted-specsync-module-ids-and-hi-sub-criterion-ids-keep-bundled-skill-prose-free-of-em-and-en-dashes-and-remove
-state: verifying
+state: archived
 type: bug_fix
 base_commit: d673efc9fadd00953cf9e42dad96e08f3c76103c
 ---

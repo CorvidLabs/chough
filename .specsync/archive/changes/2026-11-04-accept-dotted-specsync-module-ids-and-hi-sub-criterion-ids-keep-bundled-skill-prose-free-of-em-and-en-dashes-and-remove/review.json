@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "accept-dotted-specsync-module-ids-and-hi-sub-criterion-ids-keep-bundled-skill-prose-free-of-em-and-en-dashes-and-remove",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "f97323b77dfa8cc67b9a064f2db9c7df08e07774",
+  "contract_digest": "a069ddd814f75656f502f1685f9765a6f49113d3cbc629389fff12e9bdd74bc4",
+  "execution_digest": "31ebf88763716ed1904563ad37078f0ca0cbfbe25823d223ecb57b05aa8b7d04",
+  "workspace_digest": "6cb4df078ed65ae35eef54e7df3a8c302943a3b4b0749bc30561f5f7d45b6a0f",
+  "timestamp": 1793762528
+}
