@@ -9,3 +9,4 @@ artifact: tasks
 - [x] /proc descendant walk and subreaper (Linux), stderr notices
 - [x] Item 4 repro, reported on the PR
 - [x] docs/cli.md, docs/FRD.md and CHANGELOG.md
+- [x] Second #95 review: a per-fixture `sleep` identity for the new stop tests, so checks and `Reap` match only the fixture's own processes

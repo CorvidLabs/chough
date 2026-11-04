@@ -2732,6 +2732,24 @@ test_target = "stop"
 test = "stopping_a_case_run_stops_an_orphan_that_left_the_group"
 
 [[case]]
+id = "TC-cli-stop-test-leaves-other-runs-alone"
+title = "A stop test checks and reaps only its own fixture's processes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::a_stop_test_leaves_another_runs_processes_alone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "a_stop_test_leaves_another_runs_processes_alone"
+
+[[case]]
 id = "TC-cli-git-grace-kill-reported"
 title = "A grace kill after Chough's own Git is reported"
 status = "active"

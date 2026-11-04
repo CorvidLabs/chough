@@ -489,7 +489,7 @@ fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
 
 /// A `git` stand-in that, once `armed` exists, leaves `sleep {seconds}` running in the
 /// background holding its output pipes, runs the real Git, marks itself and exits.
-fn hold_git(fixture: &Fixture, seconds: u32) {
+fn hold_git(fixture: &Fixture, seconds: impl std::fmt::Display) {
     fixture.write(
         "bin/git",
         &format!(
@@ -588,14 +588,34 @@ fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
     assert!(started.elapsed() < Duration::from_secs(30));
 }
 
-/// Kills any process whose command line matches the pattern when dropped, so a failing
-/// assertion never leaves a test's sleep behind. Each test uses sleep numbers no other test
-/// in this file uses, because tests run in parallel and the pattern is matched by name.
-struct Reap(&'static str);
+/// A `sleep` argument only this fixture uses: `base` seconds plus a fraction made of this
+/// test process's ID, a per-process counter and the clock's nanoseconds, each fixed width
+/// so no identity is a prefix of another. The tests below find, check and reap their
+/// processes by `sleep <identity>`, so the same tests running in another worktree at the
+/// same time, and any other `sleep`, are never matched (#95 review).
+fn identity(base: u32) -> String {
+    static NEXT: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+    let next = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .subsec_nanos();
+    format!(
+        "{base}.{:010}{:04}{nanos:09}",
+        std::process::id(),
+        next % 10_000
+    )
+}
+
+/// Kills the processes whose command line contains this fixture's `sleep <identity>`
+/// when dropped, so a failing assertion never leaves the test's sleep behind.
+struct Reap(String);
 
 impl Drop for Reap {
     fn drop(&mut self) {
-        let _ = Command::new("pkill").args(["-KILL", "-f", self.0]).status();
+        let _ = Command::new("pkill")
+            .args(["-KILL", "-f", &self.0])
+            .status();
     }
 }
 
@@ -630,13 +650,14 @@ fn a_stop_test_leaves_another_runs_processes_alone() {
 
 #[cfg(target_os = "linux")]
 fn stop_a_descendant_that_left_the_group() {
-    let _reap = Reap("sleep 691");
+    let sleep = format!("sleep {}", identity(691));
+    let _reap = Reap(sleep.clone());
     let fixture = Fixture::new();
     fixture.hi_stand_in();
-    let argv = "[\"sh\", \"-c\", \"setsid sleep 691 & touch running; sleep 692 & wait\"]";
+    let argv = format!("[\"sh\", \"-c\", \"setsid {sleep} & touch running; sleep 692 & wait\"]");
     fixture.write(
         ".chough/cases/cli.cases.toml",
-        &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "never")),
+        &format!("{HEADER}{}", command_case("TC-cli-0001", &argv, "never")),
     );
     fixture.init();
     fixture.commit("fixture");
@@ -645,7 +666,7 @@ fn stop_a_descendant_that_left_the_group() {
         &["cases", "run", "TC-cli-0001", "--environment", "local"],
         "TERM",
         libc::SIGTERM,
-        "sleep 691",
+        &sleep,
     );
 }
 
@@ -654,13 +675,14 @@ fn stop_a_descendant_that_left_the_group() {
 #[cfg(target_os = "linux")]
 #[test]
 fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
-    let _reap = Reap("sleep 695");
+    let sleep = format!("sleep {}", identity(695));
+    let _reap = Reap(sleep.clone());
     let fixture = Fixture::new();
     fixture.hi_stand_in();
-    let argv = "[\"sh\", \"-c\", \"(setsid sleep 695 &); touch running; sleep 696 & wait\"]";
+    let argv = format!("[\"sh\", \"-c\", \"(setsid {sleep} &); touch running; sleep 696 & wait\"]");
     fixture.write(
         ".chough/cases/cli.cases.toml",
-        &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "never")),
+        &format!("{HEADER}{}", command_case("TC-cli-0001", &argv, "never")),
     );
     fixture.init();
     fixture.commit("fixture");
@@ -669,7 +691,7 @@ fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
         &["cases", "run", "TC-cli-0001", "--environment", "local"],
         "TERM",
         libc::SIGTERM,
-        "sleep 695",
+        &sleep,
     );
 }
 
@@ -677,9 +699,10 @@ fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
 /// output past the grace period and is stopped, Chough says so on stderr.
 #[test]
 fn a_grace_kill_after_git_is_reported() {
-    let _reap = Reap("sleep 681");
+    let seconds = identity(681);
+    let _reap = Reap(format!("sleep {seconds}"));
     let fixture = snapshot_fixture();
-    hold_git(&fixture, 681);
+    hold_git(&fixture, &seconds);
     let output = fixture.run(&[
         "library",
         "snapshot",
