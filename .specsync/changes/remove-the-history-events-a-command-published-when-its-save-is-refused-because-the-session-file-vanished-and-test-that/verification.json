@@ -1,9 +1,9 @@
 {
-  "timestamp": 1793811652,
-  "commit": "440d35bfdf678f865222e15a281778c5cb78e727",
+  "timestamp": 1793811931,
+  "commit": "4701712991fc0b9f1ea9346e2d3e0ac518f8363e",
   "contract_digest": "51a73960587e363107e72aefba8a52ec55467ff6fb8bc1f59349d6d49f501214",
-  "execution_digest": "39c18abe1a6ffa5b5b8c5899ac0e6bce47da52658e8a2743088096740a7ae265",
-  "workspace_digest": "474e1fd3560f29b36a1a96948b73800dec2d63d7e78e734f9dba9108589e6984",
+  "execution_digest": "0aae586940636534def8d255b8a0cad85875127e633cef6db892c12a9cc2835e",
+  "workspace_digest": "57d445bb44360e1b1180b1bb39c7affe63be2ca98ce573cc317f9138b2625551",
   "passed": true,
   "commands": [
     {
@@ -13,6 +13,6 @@
     }
   ],
   "requirement_ids": [
-    "REQ-history-002"
+    "REQ-history-008"
   ]
 }
