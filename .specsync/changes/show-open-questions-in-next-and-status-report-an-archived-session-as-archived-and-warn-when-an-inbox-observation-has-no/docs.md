@@ -7,5 +7,5 @@ artifact: docs
 
 - docs/cli.md: the next-view table gains `open_questions`; the sessions section says
   an archived session lists as `archived` and an unrecorded observation entry is added with a warning and listed as `recorded: false`.
-- docs/FRD.md: the REQ-cli-021 and REQ-history-006 rows add the new tests.
+- docs/FRD.md: the REQ-cli-021 row adds open questions, DRIVE-3 and tests/sessions.rs.
 - CHANGELOG.md: one Unreleased entry citing #84.

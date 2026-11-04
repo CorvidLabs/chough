@@ -419,6 +419,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             "valid_transitions": stage::valid_transitions(checkpoint),
             "awaiting_human": checkpoint.awaiting_human,
             "blockers": checkpoint.blockers,
+            "open_questions": checkpoint.open_questions,
             "references": checkpoint.references,
         }),
     };
@@ -474,9 +475,10 @@ const BUNDLE_LIMIT: usize = library::HOT_ARCHIVES;
 const DECISION_KINDS: [&str; 3] = ["decided", "rejected", "failed"];
 const ARCHIVED_CHANGES: &str = ".specsync/archive/changes";
 /// The lists the next view may shorten, each with its total kept, as JSON pointers.
-const LISTS: [&str; 8] = [
+const LISTS: [&str; 9] = [
     "/awaiting_human/items",
     "/blockers/items",
+    "/open_questions/items",
     "/blocking_bugs/items",
     "/observations/items",
     "/decisions/items",
@@ -764,6 +766,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut(&gate.label), "detail": cut(&gate.detail)})),
         "awaiting_human": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.awaiting_human).iter()),
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
+        "open_questions": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.open_questions).iter()),
         "blocking_bugs": listed(assessment.blocking.iter()),
         "other_open_bugs": assessment.open_bugs.len().saturating_sub(assessment.blocking.len()),
         "observations": {
@@ -891,7 +894,11 @@ fn next_text(view: &Value) -> String {
         ));
         lines.push(format!("  {}", text(&gate["detail"])));
     }
-    for (key, title) in [("awaiting_human", "Human gates"), ("blockers", "Blockers")] {
+    for (key, title) in [
+        ("awaiting_human", "Human gates"),
+        ("blockers", "Blockers"),
+        ("open_questions", "Open questions"),
+    ] {
         let total = view[key]["total"].as_u64().unwrap_or(0);
         let items = view[key]["items"].as_array().cloned().unwrap_or_default();
         if total == 0 {

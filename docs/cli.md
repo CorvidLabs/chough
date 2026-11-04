@@ -369,6 +369,7 @@ every command uses `.chough/session.json` exactly as before.
   switch archives it.
 - `chough session list` reports each open and archived session's key, objective,
   native change, stage, status, whether it is active and its `inbox_unfolded` count.
+  An archived session's status is `archived`; an open one's is its stage status (#84).
 
 The active session is named by `.chough/local/active-session`. That directory holds a
 `.gitignore` of `*`, so the pointer stays local to each worktree. With no pointer the
@@ -402,7 +403,10 @@ chough inbox add --session <key> --from <name> --kind observation|decision|compl
 Each call creates `.chough/sessions/<key>.inbox/INB-<24 hex>.json` with
 `schema_version`, `id`, `session`, `from`, `kind`, `text` and
 `recorded_at_unix_seconds`, and never replaces a file. For an observation, the text is
-its evidence ID (record the observation with `chough evidence add` first). An entry
+its evidence ID (record the observation with `chough evidence add` first). An ID with
+no record in `.chough/evidence/` is still added, because a subagent may report before
+this tree has the record, but `inbox add` warns on stderr naming it, and `inbox list`
+marks each observation entry `recorded: true` or `false` (#84). An entry
 has no approval, review, consent, gate or stage field and a record with any other
 field is refused, so a subagent cannot clear a gate or move a stage through it; stage
 gates still come from native SpecSync state. A session holds at most 200 unfolded
@@ -482,7 +486,7 @@ stage on that response, and shows:
 | `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`; with SpecSync configured but SDD off, as `specsync init` leaves it, the reason is ``native SDD is disabled; run `specsync change adopt` to gate stages``, and the `ungated:sdd-disabled` gate detail says the same); unknown values are `null` |
 | `next_valid_action` | `action`, `reason` and, when one applies, `command`; `status` reports the same `action` as its `next_valid_action` |
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
-| `awaiting_human`, `blockers`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest |
+| `awaiting_human`, `blockers`, `open_questions`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest. `open_questions` are the checkpoint's, from `checkpoint --question` or a folded inbox question; `status` reports all of them in its `checkpoint` section |
 | `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest checkpoint decisions, newest first; see [Decision prefixes](#decision-prefixes) |
 | `last_failure` | `{"id", "observed_at_unix_seconds", "summary", "bugs": {"total", "items": [{"id", "status"}]}}` for the failed observation with the greatest recorded `observed_at_unix_seconds` (ties to the greater ID), with at most 3 bugs that link it by their observations, note observations or regression baseline, by bug ID; `null` when no observation failed. No freshness label is computed; run `chough status` or the case for that |

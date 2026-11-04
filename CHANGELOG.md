@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough next` (text and JSON) now shows the checkpoint's open questions, at most 10
+  with their total like blockers, and `chough status` reports all of them, so a
+  question from `checkpoint --question` or a folded subagent inbox entry is no longer
+  silently parked. `session list` reports an archived session's status as
+  `archived`. `inbox add` of an observation ID with no evidence record still adds the
+  entry but warns, and `inbox list` marks observation entries `recorded: true|false`
+  (#84, LIFE-3, DRIVE-3, REQ-cli-021, REQ-history-006).
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns

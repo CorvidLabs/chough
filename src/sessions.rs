@@ -514,7 +514,7 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
                         "objective": session.objective,
                         "native_change": session.native_change,
                         "stage": session.stage.current,
-                        "status": session.stage.status,
+                        "status": if archived { "archived" } else { session.stage.status.as_str() },
                         "active": !archived && current.as_deref() == Some(key.as_str()),
                         "archived": archived,
                         "inbox_unfolded": unfolded(root, &key)?,
@@ -606,14 +606,30 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                 write_new_bounded(root, &file, &content, INBOX_LIMIT)?,
                 "inbox collision at {file}; no retry or overwrite"
             );
+            if matches!(kind, Kind::Observation) && !crate::evidence::is_present(root, &entry.text)?
+            {
+                // Leif's choice for #84: warn, do not refuse; a subagent may report
+                // before this tree has the record.
+                eprintln!(
+                    "chough: warning: observation {} has no record in .chough/evidence yet; the entry was added and `chough inbox list` marks it recorded: false",
+                    entry.text
+                );
+            }
             print_json(&json!({"schema_version":1,"added":file,"id":id}))
         }
         InboxCommand::List => {
             let key = active(root)?;
-            let entries: Vec<_> = pending(root, &key)?
-                .into_iter()
-                .map(|(_, entry)| entry)
-                .collect();
+            let mut entries = vec![];
+            for (_, entry) in pending(root, &key)? {
+                let recorded = (entry.kind == Kind::Observation.name())
+                    .then(|| crate::evidence::is_present(root, &entry.text))
+                    .transpose()?;
+                let mut value = serde_json::to_value(&entry)?;
+                if let Some(recorded) = recorded {
+                    value["recorded"] = json!(recorded);
+                }
+                entries.push(value);
+            }
             print_json(&json!({"schema_version":1,"session":key,"entries":entries}))
         }
         InboxCommand::Fold => {
