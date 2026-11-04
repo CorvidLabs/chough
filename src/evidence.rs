@@ -1009,14 +1009,14 @@ fn file_references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
             sources.push(source);
         }
     };
-    if let Session::V2(checkpoint) = read_session(root)? {
+    for (label, checkpoint) in crate::sessions::every_checkpoint(root)? {
         for path in checkpoint
             .references
             .design
             .iter()
             .chain(&checkpoint.references.files)
         {
-            add(path, "checkpoint".into());
+            add(path, label.clone());
         }
     }
     for (bug, path) in bugs::fixture_references(root)? {
@@ -1035,9 +1035,9 @@ fn references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
             sources.push(source);
         }
     };
-    if let Session::V2(checkpoint) = read_session(root)? {
+    for (label, checkpoint) in crate::sessions::every_checkpoint(root)? {
         for id in &checkpoint.observations {
-            add(id, "checkpoint".into());
+            add(id, label.clone());
         }
     }
     for (bug, ids) in bugs::observation_references(root)? {

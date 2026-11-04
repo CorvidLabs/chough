@@ -15,7 +15,10 @@ All notable changes to Chough are recorded here. The format follows
   entries with `chough inbox add`, and `chough inbox fold` adds them to the active
   session after checking every entry and target first. Branches that record work
   in different sessions merge without conflict; `checkpoint --merge` still merges two
-  edits of the same session. Without `.chough/sessions/` nothing changes. Older Chough
+  edits of the same session. Each command saves to the session it resolved when it
+  started, even if another process switches sessions meanwhile, and evidence
+  retention protects what every open and archived session references, refusing when
+  one cannot be read. Without `.chough/sessions/` nothing changes. Older Chough
   binaries do not know sessions mode, so upgrade every agent before adopting.
 
 ## [0.2.0] - 2026-11-03

@@ -306,6 +306,10 @@ pointer to a missing or archived session, every command refuses with nothing wri
 and names the command to run. `chough init` refuses in sessions mode.
 
 Only the active session is written, so there is still one writable checkpoint.
+Each command resolves the active session once and saves to that same session, so a
+`chough session use` in another process partway through a command does not redirect
+its save; if the session it resolved is archived or removed meanwhile, it refuses and
+saves nothing.
 Transitions of each session are its own immutable history cycle, so two branches that
 record work in different sessions merge without a conflict. Two edits of the same
 session still merge with the [checkpoint merge driver](#checkpoint-merges); declare
@@ -549,6 +553,7 @@ would be reclaimed and a warning when evidence and artifacts exceed 50 MiB.
 | Protected because | Reason shown |
 |---|---|
 | Listed in the checkpoint, as an observation or as a `--design` or `--file` path naming the record or one of its artifacts | `checkpoint` |
+| In sessions mode, listed the same way by another open session or by an archived session; a session that cannot be read refuses the preview and the apply | `session <key>` or `archived session <key>` |
 | Linked by a bug of any status (observation, note or regression baseline), or named by its fixture path | `<bug-id> <status>` |
 | Listed by an active native change's acceptance manifest | `native active <id>` |
 | Listed by the most recent archived change's manifest (highest finalization timestamp) | `native archive <id>` |

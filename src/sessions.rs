@@ -13,8 +13,31 @@ use anyhow::{Context, Result, bail, ensure};
 use clap::{Subcommand, ValueEnum};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::collections::HashMap;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::sync::{Mutex, PoisonError};
+
+/// The session each project root resolved to in this process. A command resolves its
+/// session once, so a `session use` in another process partway through cannot
+/// redirect its save into a different session's file.
+static PINNED: Mutex<Option<HashMap<PathBuf, String>>> = Mutex::new(None);
+
+fn pinned(root: &Path) -> Option<String> {
+    PINNED
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .as_ref()
+        .and_then(|map| map.get(root).cloned())
+}
+
+fn pin(root: &Path, relative: &str) {
+    PINNED
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .get_or_insert_with(HashMap::new)
+        .insert(root.to_path_buf(), relative.to_string());
+}
 
 pub(super) const DIR: &str = ".chough/sessions";
 const ARCHIVE: &str = ".chough/sessions/archive";
@@ -125,8 +148,10 @@ pub(super) fn enabled(root: &Path) -> Result<bool> {
 fn keys_in(root: &Path, dir: &str) -> Result<Vec<String>> {
     let path = local_path(root, dir)?;
     let mut keys = vec![];
-    let Ok(entries) = fs::read_dir(&path) else {
-        return Ok(keys);
+    let entries = match fs::read_dir(&path) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(keys),
+        Err(error) => return Err(error).with_context(|| format!("reading {dir}")),
     };
     for entry in entries {
         let entry = entry?;
@@ -183,17 +208,61 @@ fn active(root: &Path) -> Result<String> {
 }
 
 /// The project-relative path of the canonical checkpoint (REQ-cli-037).
+/// Resolved once per command (see [`PINNED`]); a session this command did not choose
+/// that is archived or removed meanwhile is refused rather than written again.
 pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
-    if !enabled(root)? {
-        return Ok(checkpoint::SESSION.to_string());
+    if let Some(relative) = pinned(root) {
+        if relative != checkpoint::SESSION {
+            ensure!(
+                local_path(root, &relative)?.is_file(),
+                "{relative} was archived or removed while this command ran; nothing was saved"
+            );
+        }
+        return Ok(relative);
     }
-    Ok(session_file(&active(root)?))
+    let relative = if enabled(root)? {
+        session_file(&active(root)?)
+    } else {
+        checkpoint::SESSION.to_string()
+    };
+    pin(root, &relative);
+    Ok(relative)
+}
+
+/// Every session checkpoint with how retention names it: the active checkpoint as
+/// `checkpoint`, other open sessions as `session <key>` and archived ones as
+/// `archived session <key>`. Any session that cannot be read is an error.
+pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
+    if !enabled(root)? {
+        return Ok(match checkpoint::read_session(root)? {
+            Session::V2(session) => vec![("checkpoint".into(), *session)],
+            Session::V1(_) => vec![],
+        });
+    }
+    let current = checkpoint_path(root).ok();
+    let mut all = vec![];
+    for key in keys_in(root, DIR)? {
+        let file = session_file(&key);
+        let label = if current.as_deref() == Some(file.as_str()) {
+            "checkpoint".to_string()
+        } else {
+            format!("session {key}")
+        };
+        all.push((label, read_at(root, &file)?));
+    }
+    for key in keys_in(root, ARCHIVE)? {
+        all.push((
+            format!("archived session {key}"),
+            read_at(root, &archive_file(&key))?,
+        ));
+    }
+    Ok(all)
 }
 
 fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
     let content = read_bounded_record(&local_path(root, relative)?, checkpoint::SESSION_LIMIT)
         .with_context(|| format!("reading {relative}"))?;
-    match checkpoint::parse(&content)? {
+    match checkpoint::parse(&content).with_context(|| format!("reading {relative}"))? {
         Session::V2(session) => Ok(*session),
         Session::V1(_) => bail!("{relative} uses schema 1"),
     }
@@ -201,7 +270,9 @@ fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
 
 fn point(root: &Path, key: &str) -> Result<()> {
     write_new(root, &format!("{LOCAL}/.gitignore"), "*\n")?;
-    write_replace_bounded(root, POINTER, &format!("{key}\n"), 512)
+    write_replace_bounded(root, POINTER, &format!("{key}\n"), 512)?;
+    pin(root, &session_file(key));
+    Ok(())
 }
 
 /// The number of unfolded entries in a session's inbox.
