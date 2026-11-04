@@ -1,0 +1,39 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793763134,
+      "digest": "7d070aec83c4e51b4e786419647929c92d76bf4d7c11e3421ca740deb31f847e",
+      "note": "Approved as corvid-agent (agent account, not a human approval) under Leif's 2026-11-03 7:49 AM MT standing authority for bounded fixes to Chough bug tickets and his 7:07 PM MT confirmation of FLOW-14 (card t819s9328). Call-site wiring that the Chough bot's review 5762745045 on #79 requires.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-stage-backfill-s-git-and-library-snapshot-s-save-under-the-flow-14-stop-watch-issue-75-review-5762745045-on-79",
+        "title": "Keep stage backfill's Git and library snapshot's save under the FLOW-14 stop watch (issue 75, review 5762745045 on #79)",
+        "description": "Keep stage backfill's Git and library snapshot's save under the FLOW-14 stop watch (issue 75, review 5762745045 on #79)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/library.rs",
+          "src/stage.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Call-site wiring for REQ-cli-011 as stated in stop-what-chough-started-when-chough-is-stopped-issue-75: stage.rs runs backfill's Git through records::run_owned, and library.rs reads the HEAD under the stop watch before staging a snapshot under a hidden name and renaming it whole. The requirement text lives in that change.",
+        "acceptance_criteria": [
+          "stopping_a_backfill_stops_its_git_and_records_nothing passes: a stop while stage backfill checks its commit stops that Git and leaves .chough byte-identical,stopping_a_library_snapshot_stops_git_and_records_nothing passes: a stop while library snapshot reads the HEAD stops that Git and leaves .chough and the library byte-identical,Every other stage and library test passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
