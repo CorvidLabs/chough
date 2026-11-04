@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Dotted SpecSync module IDs such as `chat.service` and hi sub-criterion IDs such as
+  `BOTS-1.a` are accepted by `init`, `checkpoint`, `bugs`, `evidence` and `cases`, and
+  a checkpoint holding them is read by every view (#56, #57). IDs neither tool accepts
+  are still refused. `checkpoint --remove-completed` removes one mistaken completed
+  entry in the same call that adds its correction. A test keeps the bundled workflow
+  skill free of em and en dashes (DRIVE-1, DRIVE-7).
+
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
   next` finds the Lessons heading of a `context.md` over 4 MiB (REQ-cli-034).

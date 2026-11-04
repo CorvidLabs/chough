@@ -151,6 +151,73 @@ pub(super) fn valid_name(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
 }
 
+/// A SpecSync module ID, accepted exactly when SpecSync 6.1.2's `validate_module_name`
+/// accepts it: one portable path segment such as `chat.service` or `identity-wipe.service`,
+/// with no separator, Windows-invalid or control character, no `.` or `..`, no leading or
+/// trailing space, no trailing dot, no Windows reserved device basename, and at most
+/// 247 bytes so `<module>.spec.md` fits in one 255-byte path component.
+pub(super) fn valid_module_name(value: &str) -> bool {
+    let mut components = Path::new(value).components();
+    let single =
+        matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none();
+    let clean = !value.chars().any(|c| {
+        matches!(c, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*') || c.is_control()
+    });
+    if !single || !clean || value != value.trim() || value.ends_with('.') {
+        return false;
+    }
+    if value.len() + ".spec.md".len() > 255 {
+        return false;
+    }
+    let basename = value
+        .split('.')
+        .next()
+        .unwrap_or_default()
+        .to_ascii_uppercase();
+    let numbered = basename.len() == 4
+        && (basename.starts_with("COM") || basename.starts_with("LPT"))
+        && matches!(basename.as_bytes()[3], b'1'..=b'9');
+    !(numbered || matches!(basename.as_str(), "CON" | "PRN" | "AUX" | "NUL"))
+}
+
+/// A HI criterion ID, accepted exactly when hi 0.8.0's `Id::parse` accepts it: a family of
+/// `A-Z` then `A-Z`, `0-9` or `_`, a hyphen, then levels separated by single dots that
+/// alternate number and lowercase letters, starting with a number, such as `LIFE-3`,
+/// `UX-12.a` or `SEND-1.a.1.b`. A number level fits in 32 bits and has no leading zero.
+pub(super) fn valid_criterion_id(value: &str) -> bool {
+    let Some((family, rest)) = value.split_once('-') else {
+        return false;
+    };
+    let family_ok = family.starts_with(|c: char| c.is_ascii_uppercase())
+        && family
+            .bytes()
+            .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'_');
+    if !family_ok || rest.is_empty() || value.len() > 100 {
+        return false;
+    }
+    rest.split('.').enumerate().all(|(index, part)| {
+        if index % 2 == 0 {
+            !part.is_empty()
+                && part.bytes().all(|b| b.is_ascii_digit())
+                && !(part.len() > 1 && part.starts_with('0'))
+                && part.parse::<u32>().is_ok()
+        } else {
+            !part.is_empty() && part.bytes().all(|b| b.is_ascii_lowercase())
+        }
+    })
+}
+
+/// A requirement or case ID that may embed a dotted SpecSync module, such as
+/// `REQ-chat.service-1` or `TC-chat.service-sends-hybrid`: the characters of `valid_name`
+/// plus `.`, within the same 100 bytes. These IDs are never used as paths.
+pub(super) fn valid_reference_id(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 100
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+}
+
 /// Longest native change ID accepted, matching SpecSync's own read ceiling (one path
 /// component); SpecSync mints IDs of up to 120 bytes from a change description.
 pub(super) const CHANGE_ID_LIMIT: usize = 255;

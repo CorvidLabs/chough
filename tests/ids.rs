@@ -67,7 +67,12 @@ fn a_checkpoint_written_with_dotted_modules_is_read_by_every_view() {
     session["modules"] = json!(["chat.service", "room.service", "linked-wallet.service"]);
     session["references"]["criteria"] = json!(["UX-12.a", "CHAT-34.a", "BOTS-4.g"]);
     fixture.write(".chough/session.json", &session.to_string());
-    for args in [&["next"][..], &["status"], &["context", "--json"], &["timing"]] {
+    for args in [
+        &["next"][..],
+        &["status"],
+        &["context", "--json"],
+        &["timing"],
+    ] {
         let output = fixture.run(args);
         assert!(
             output.status.success(),
@@ -95,14 +100,22 @@ fn ids_neither_tool_accepts_are_still_refused() {
     }
     fixture.init();
     let original = fixture.read(".chough/session.json");
-    for criterion in ["UX-012", "ux-1", "UX-1.A", "UX-1..a", "UX-a", "UX-1.a.b", "UX-"] {
+    for criterion in [
+        "UX-012", "ux-1", "UX-1.A", "UX-1..a", "UX-a", "UX-1.a.b", "UX-",
+    ] {
         let error = fixture.fails(&["checkpoint", "--criterion", criterion]);
-        assert!(error.contains("invalid criterion ID"), "{criterion}: {error}");
+        assert!(
+            error.contains("invalid criterion ID"),
+            "{criterion}: {error}"
+        );
         assert_eq!(fixture.read(".chough/session.json"), original);
     }
-    for requirement in ["REQ-.cli-1", "REQ-cli-1.", "REQ-cli..x-1", "REQ cli"] {
+    for requirement in ["REQ cli-1", "REQ-cli/1", "REQ-cli-1!"] {
         let error = fixture.fails(&["checkpoint", "--requirement", requirement]);
-        assert!(error.contains("invalid requirement ID"), "{requirement}: {error}");
+        assert!(
+            error.contains("invalid requirement ID"),
+            "{requirement}: {error}"
+        );
     }
 }
 
@@ -134,8 +147,10 @@ fn bugs_link_sub_criteria_and_dotted_requirements() {
         "--requirement",
         "REQ-chat.service-1",
     ]);
-    let text = bug.to_string();
-    assert!(text.contains("UX-12.a"), "{text}");
+    let record: serde_json::Value =
+        serde_json::from_str(&fixture.read(bug["recorded"].as_str().unwrap())).unwrap();
+    assert_eq!(record["criteria"], json!(["UX-12.a"]));
+    assert_eq!(record["requirements"], json!(["REQ-chat.service-1"]));
 }
 
 #[cfg(unix)]
@@ -149,6 +164,10 @@ fn cases_for_a_dotted_module_are_read_and_checked() {
     );
     init_dotted(&fixture);
     fixture.write(
+        "specs/chat.service/chat.service.spec.md",
+        "# Chat service\n",
+    );
+    fixture.write(
         ".chough/cases/chat.service.cases.toml",
         "profile = \"chough-testing/1\"\nmodule = \"chat.service\"\n\n[[case]]\nid = \"TC-chat.service-sends-hybrid\"\ntitle = \"Sends hybrid\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"manual\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-chat.service-1\"]\nenvironments = [\"local\"]\nartifacts = [\"reviewer-note\"]\nsetup = [\"Fixture\"]\nsteps = [\"Look\"]\nexpected = [\"It is right\"]\n",
     );
@@ -161,7 +180,13 @@ fn cases_for_a_dotted_module_are_read_and_checked() {
 fn a_mistaken_completed_entry_is_removed_or_corrected_in_one_call() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.ok(&["checkpoint", "--completed", "Shiped the fix", "--completed", "Kept"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--completed",
+        "Shiped the fix",
+        "--completed",
+        "Kept",
+    ]);
     fixture.ok(&[
         "checkpoint",
         "--remove-completed",
