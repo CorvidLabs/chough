@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793751066,
+      "digest": "6125a175bbf955168ad51010c6d304dd693fb9b7f903b14c258d675fd4673510",
+      "note": "Approved as corvid-agent (agent account, not a human approval) under Leif's 2026-11-03 7:49 AM MST standing Chough maintainer authority and his 5:03 PM MST request t811u (items 1 and 7) to fix every problem that stopped Chough from driving Raven's work; scope is DRIVE-1, DRIVE-7 and DRIVE-8 and issues 56 and 57: accept the IDs SpecSync and HI accept, a no-dash check for bundled skill files and checkpoint --remove-completed; no requirement text, gate, native read, schema or approver change",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "accept-dotted-specsync-module-ids-and-hi-sub-criterion-ids-keep-bundled-skill-prose-free-of-em-and-en-dashes-and-remove",
+        "title": "Accept dotted SpecSync module IDs and HI sub-criterion IDs, keep bundled skill prose free of em and en dashes, and remove a mistaken completed entry (DRIVE-1, DRIVE-7, DRIVE-8; issues 56 and 57)",
+        "description": "Accept dotted SpecSync module IDs and HI sub-criterion IDs, keep bundled skill prose free of em and en dashes, and remove a mistaken completed entry (DRIVE-1, DRIVE-7, DRIVE-8; issues 56 and 57)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "tests/ids.rs",
+          "tests/prose.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "ID acceptance within REQ-cli traceability and checkpoint requirements as written: the requirements already defer criterion IDs to HI and module and requirement IDs to SpecSync, so accepting exactly the IDs those tools accept changes no requirement or criterion text; removing a mistaken completed entry is a checkpoint update under the existing canonical checkpoint requirement; docs/cli.md states the accepted forms and the new flag",
+        "acceptance_criteria": [
+          "chough init, checkpoint, next, status, context and timing accept and keep SpecSync module IDs with dots such as chat.service, room.service, linked-wallet.service and identity-wipe.service, cases files and case IDs for such a module are read and checked, and requirement links such as REQ-chat.service-1 are kept; checkpoint --criterion and bug add --criterion accept HI sub-criterion IDs such as UX-12.a, CHAT-34.a and SEND-1.a.1.b; IDs SpecSync or HI refuse, such as a/b, .., CON, trailing., UX-012, ux-1, UX-1.A and UX-1..a, are still refused with nothing saved; a test fails if any bundled skill file contains U+2013 or U+2014; checkpoint --remove-completed removes one exact completed entry and refuses an entry that is not there with nothing saved; the new tests fail on main 8298e5a where they cover changed behavior; docs/cli.md states the accepted forms and the flag; fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded fix for Leif's t811u items 1 and 7 (first two bullets) and issues 56 and 57 only: no new dependency, no schema or output-key change, no change to stage gates, native reads or who approves; Chough still refuses to record human approval or review; module IDs follow SpecSync 6.1.2 validate_module_name and criterion IDs follow hi 0.8.0 Id::parse exactly; no em or en dashes in prose",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
