@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "2b930ff96c2edbf8d978cec828d28e0aea80965d",
+  "contract_digest": "17768857129fd64485cc417ee986b6556e2ade863599b83284dc920a4a05b5dc",
+  "execution_digest": "89f31ce7ae9663c696ba17617a6cac29b7a0c77431c3227a4445f1cb752929e6",
+  "workspace_digest": "55226debf95d79cf1a7ffcea05c8b8edb2ac662a38794768e64b61cc12cd7839",
+  "timestamp": 1793825651
+}
