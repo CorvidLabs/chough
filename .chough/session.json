@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -652,7 +652,13 @@
     "OBS-tc-cli-unrun-configured-commands-counted-0c3631e5ab7a2f35bf5b855c",
     "OBS-tc-cli-no-warning-when-project-command-runs-85e565e6c5a6f3c4309e9bb5",
     "OBS-tc-cli-test-stage-points-to-test-evidence-6f69b040a07c343bf5aad629",
-    "OBS-tc-cli-verification-warning-changes-no-gate-87ff7366f63ea32c9bc69a97"
+    "OBS-tc-cli-verification-warning-changes-no-gate-87ff7366f63ea32c9bc69a97",
+    "OBS-tc-cli-only-specsync-native-commands-reported-db301353e5b919ab6aa7fee4",
+    "OBS-tc-cli-unrun-configured-commands-counted-f4e5ca97dda2fa3c7e3e8e3f",
+    "OBS-tc-cli-no-warning-when-project-command-runs-55739ea2664c133f36b5fc6a",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-6544aa866a4dc8b52bc808d4",
+    "OBS-tc-cli-verification-warning-changes-no-gate-6c3032963ef43d641024293c",
+    "OBS-tc-cli-verification-warning-within-next-bound-637980c01bae0d36cb4d9362"
   ],
   "bugs": [
     "BUG-0001",
@@ -686,7 +692,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
