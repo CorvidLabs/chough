@@ -1,0 +1,44 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793807977,
+      "digest": "cef5db9c6ab8e7dece492b7e96257baba001f59527f3aadcb263091bfc0d33ee",
+      "note": "Recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'), under his standing approval that morning for bounded Chough bug fixes and his brief to fix issues 81 to 88 one PR each. Scope: issue 87 only, plain exit wording for a failed native command. Limits: no gate or state change, no release. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87",
+        "title": "Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87)",
+        "description": "Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/records.rs",
+          "tests/cli.rs",
+          "tests/native_failure.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A native command that exits 2 is shown as exit 2 in status and next and never as Some. A native command ended by SIGTERM is shown as killed by signal 15. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 87 under LIFE-7; wording only; the native section state and every gate are unchanged",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "1099876e470a6a0996148c4ade9e9a40c5431fa1f659f3fc45294ef03813860d"
+      }
+    }
+  ],
+  "reopenings": []
+}
