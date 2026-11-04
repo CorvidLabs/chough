@@ -683,5 +683,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: Re-record #71 after merging main 6a525b8. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "New cycle from done after reset: Record #78 test, accept and done after archive. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }
