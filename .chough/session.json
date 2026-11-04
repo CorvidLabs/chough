@@ -661,7 +661,14 @@
     "OBS-tc-cli-no-warning-when-project-command-runs-55739ea2664c133f36b5fc6a",
     "OBS-tc-cli-test-stage-points-to-test-evidence-6544aa866a4dc8b52bc808d4",
     "OBS-tc-cli-verification-warning-changes-no-gate-6c3032963ef43d641024293c",
-    "OBS-tc-cli-verification-warning-within-next-bound-637980c01bae0d36cb4d9362"
+    "OBS-tc-cli-verification-warning-within-next-bound-637980c01bae0d36cb4d9362",
+    "OBS-tc-cli-only-specsync-native-commands-reported-a6f781b3fc560e8967ba166b",
+    "OBS-tc-cli-unrun-configured-commands-counted-3095ad0b82067184bb392ef8",
+    "OBS-tc-cli-no-warning-when-project-command-runs-c111efd2af50bb26d1d62933",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba",
+    "OBS-tc-cli-verification-warning-changes-no-gate-db3f4125917b884186628c8c",
+    "OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40",
+    "OBS-tc-cli-sdd-policy-over-record-bound-f414334149bb55fd3fa8ab5c"
   ],
   "bugs": [
     "BUG-0001",
