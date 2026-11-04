@@ -1,6 +1,6 @@
 ---
 id: prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0
-state: verifying
+state: archived
 type: operations
 base_commit: 8298e5ab773aa7f6fb4c8685a6a29689951fd92b
 ---

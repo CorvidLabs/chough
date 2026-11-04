@@ -64,6 +64,58 @@
         }
       ],
       "requirement_ids": []
+    },
+    {
+      "timestamp": 1793751935,
+      "commit": "c3fd10d7837eb888bcf2cddadab441fee4d06dd0",
+      "contract_digest": "05941e099fee5ab6cae4b3dd739db8ff0e24edba6cce63c498c82ea51530abfa",
+      "execution_digest": "cb6fcd896ef9bdde2d786ba8128ecb49bf81ef47d2383ea5da06909dc3b6a45b",
+      "workspace_digest": "0d667303ec7ceb611977cd065fac3e808cf50b67e63b5749a84190441092eccf",
+      "acceptance_input_digest": "4b7704f9f7e595ca1320f2ae52f2c6c60835e9e67ab9cab1de744bff26897744",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "CHANGELOG.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4f34eddba2bbdeb0b5ab729983826c7b7d5cef611e268b246b8dfb72489183ec",
+            "entry_digest": "dceaffcb0dc19ea9f83491376f5c398d75c1a9e6d061096e4f9024032b322851",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "Cargo.lock",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f2c9a5593408cdc3c0f655648462cabdd000a491a3ae5eb89b3cfb7ec1dbd81d",
+            "entry_digest": "a3357565e621b69f0f2bbc4e9fb7c94fadf21182255484c0e00635218ca38f68",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "Cargo.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4a55750eebd9138a09f00bd40446fd8e5eebe96686423fe492a663c54b263433",
+            "entry_digest": "873e20a99ec5e390246e8d2976d088747d95bf9b3c9b075d43b3d5d2a0dd3785",
+            "owners": [
+              "@exact:delivery"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
     }
   ]
 }
