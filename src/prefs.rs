@@ -25,7 +25,7 @@ const KEYS: &[(&str, &[&str], &str)] = &[
     ("librarian", &["off", "on"], "on"),
     ("library-dir", &[], "knowledge"),
     ("required-lane", &[], ""),
-    ("retention", &["off", "auto"], "off"),
+    ("retention", &["off", "auto", "manual"], "off"),
 ];
 const CONSENT_KEYS: [&str; 4] = ["repeat-validation", "monitoring", "release", "retention"];
 

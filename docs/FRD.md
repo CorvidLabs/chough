@@ -134,6 +134,7 @@ Additional native requirements:
 
 | Requirement | Observable behavior | Criteria | Verification |
 |---|---|---|---|
+| REQ-cli-041 | `stage advance` into done trims cold archived proof with the librarian on unless `retention` is `manual`, reported as `applied.librarian_trim`, never undoing the move | KNOW-13, KNOW-11, KNOW-7, KNOW-5 | tests/librarian_trim.rs |
 | REQ-reporting-002 (was REQ-cli-024) | Bounded, deduplicated timing native reads with explicit excluded/unknown history | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-history-002 (was REQ-cli-025) | Explicit adoption, immutable events and a cursor in the single checkpoint/current-cycle group | LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13 | tests/history.rs; real Git branch fixture; schema migration regressions |
 | REQ-history-003 (was REQ-cli-026) | Bounded readers/cycles and protected whole-cycle retention with honest partial history | LIFE-3, LIFE-7, LIFE-8, LIFE-10, FLOW-13 | tests/history.rs boundary, receipt, interruption and integration fixtures |

@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- With the librarian on (the default), `chough stage advance` into done now trims cold
+  archived proof right after the move, under the same post-archive summary rules (ledger
+  first, validity restore, nothing removed while a native change is open), and reports it
+  as `applied.librarian_trim`. `chough pref set retention manual` opts out (#88, KNOW-13,
+  REQ-cli-041).
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns

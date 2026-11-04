@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing-first tests in tests/librarian_trim.rs
-- [ ] retention manual; library::trim_at_done; stage advance into done calls it
-- [ ] docs/cli.md, docs/FRD.md and CHANGELOG.md
+- [x] Failing-first tests in tests/librarian_trim.rs
+- [x] retention manual; library::trim_at_done; stage advance into done calls it
+- [x] docs/cli.md, docs/FRD.md and CHANGELOG.md
