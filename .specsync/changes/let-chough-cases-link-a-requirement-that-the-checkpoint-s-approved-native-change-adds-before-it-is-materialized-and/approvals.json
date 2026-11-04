@@ -1,0 +1,51 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793754405,
+      "digest": "985e7bf19f17f16a3a857279984050de4eed27dce3a385e3bb39ef9f76fa4c04",
+      "note": "Definition from Leif's brief t811u item 6, confirmed as his criteria at 5:24 PM MST (card t811s9271); the parent relayed the 6:03 PM MST decision to take the narrower option: fix Raven BUG-0004 so cases accept requirement IDs from the active approved delta, and document that the test stage links failing-first evidence, in its own PR",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "let-chough-cases-link-a-requirement-that-the-checkpoint-s-approved-native-change-adds-before-it-is-materialized-and",
+        "title": "Let Chough cases link a requirement that the checkpoint's approved native change adds before it is materialized, and document how the test stage links failing-first evidence (DRIVE-6, Raven BUG-0004)",
+        "description": "Let Chough cases link a requirement that the checkpoint's approved native change adds before it is materialized, and document how the test stage links failing-first evidence (DRIVE-6, Raven BUG-0004)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "docs/lifecycle.md",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/lifecycle.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/testing.md",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "src/stage.rs",
+          "tests/cases.rs",
+          "tests/cli.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Source: Leif's brief t811u item 6, \"Want: either the test stage links failing-first evidence (the commit that adds failing tests, the receipt showing them fail on the base, and the passing run) and cases accept REQ ids from the active approved change, or test folds into build with clear guidance. Pick one and document it.\", and Raven BUG-0004 (\"chough cases check rejects a requirement that exists only in an approved but not yet materialized SpecSync delta\"). The parent relayed the 6:03 PM MST decision to take the first option. Outcomes: (1) a case requirement absent from the module's requirements.md is accepted by cases check, run and record when the checkpoint's native change is approved, implementing or verifying with approval_valid true, correction_valid not false and its approved deltas unchanged (REQ-cli-022), and that change's delta for the case file's module adds or modifies the ID; (2) such a link is reported in cases check output under approved_delta_requirements with the change and module; (3) at most one native status read per command, and none when every link resolves in a companion; (4) a typo, another module's delta, an edited delta, an invalid approval or correction, a draft or archived change, no checkpoint change, no native configuration or a failed native read refuses as before, and the message names why the delta did not resolve it when a change was consulted; (5) evidence add and every stage gate are unchanged, Chough decides no approval and records no human approval or review; (6) the plan, testing, accept and lifecycle references and docs say cases may link approved delta requirements before change check and describe how the test stage links failing-first evidence: the commit that adds the failing tests, a failed observation on the base linked to a bug, and the passing run after the fix; (7) the new tests fail before the fix; fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Native SpecSync state still decides stage gates and what is approved: Chough only reads native status and the approved delta digests SpecSync recorded; Chough still refuses to record human approval or review; no new dependency, cache or runtime; REQ-cli-009 is amended explicitly; requirements.md stays within its 65536-byte bound; no timeout is raised and no gate or test is weakened; no em or en dashes in prose",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2fe9dd70ea05b4e0d8a6b6fea854e8d70bcf41b5060635642e1e62dead3240fd"
+      }
+    }
+  ],
+  "reopenings": []
+}
