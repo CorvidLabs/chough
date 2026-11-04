@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Split the cli spec: REQ-cli-020, REQ-cli-024 and REQ-cli-028 move to a new reporting module as REQ-reporting-001 to 003 with wording unchanged, so specs/cli/requirements.md fits the 65536-byte bound",
+  "objective": "Lock inbox add against archiving, and protect observations named by unfolded inbox entries from retention (issue #98)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
+  "native_change": "lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -683,5 +683,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: Native change let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406 archived after Chough bot review 5770708343 (agent review); recording test, accept and done. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "Write failing-first tests, then the lock and the retention source"
 }
