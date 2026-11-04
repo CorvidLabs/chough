@@ -647,7 +647,11 @@
     "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
-    "OBS-structural-0ceefdd961ed75d53f1b3742"
+    "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-tc-cli-folded-inbox-question-in-next-6ba7f2bb72784ad17f373066",
+    "OBS-tc-cli-next-shows-open-questions-e0e2d02ccd995729ce44ce74",
+    "OBS-tc-history-archived-session-listed-archived-4c905b8471e89e3ef4e171f2",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-9ace138ec6bef9b0b5d73bba"
   ],
   "bugs": [
     "BUG-0001",
