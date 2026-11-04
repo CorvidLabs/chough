@@ -589,7 +589,8 @@ fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
 }
 
 /// Kills any process whose command line matches the pattern when dropped, so a failing
-/// assertion never leaves a test's sleep behind.
+/// assertion never leaves a test's sleep behind. Each test uses sleep numbers no other test
+/// in this file uses, because tests run in parallel and the pattern is matched by name.
 struct Reap(&'static str);
 
 impl Drop for Reap {
@@ -603,10 +604,10 @@ impl Drop for Reap {
 #[cfg(target_os = "linux")]
 #[test]
 fn stopping_a_case_run_stops_a_descendant_that_left_the_group() {
-    let _reap = Reap("sleep 641");
+    let _reap = Reap("sleep 691");
     let fixture = Fixture::new();
     fixture.hi_stand_in();
-    let argv = "[\"sh\", \"-c\", \"setsid sleep 641 & touch running; sleep 642 & wait\"]";
+    let argv = "[\"sh\", \"-c\", \"setsid sleep 691 & touch running; sleep 692 & wait\"]";
     fixture.write(
         ".chough/cases/cli.cases.toml",
         &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "never")),
@@ -618,7 +619,7 @@ fn stopping_a_case_run_stops_a_descendant_that_left_the_group() {
         &["cases", "run", "TC-cli-0001", "--environment", "local"],
         "TERM",
         libc::SIGTERM,
-        "sleep 641",
+        "sleep 691",
     );
 }
 
@@ -627,10 +628,10 @@ fn stopping_a_case_run_stops_a_descendant_that_left_the_group() {
 #[cfg(target_os = "linux")]
 #[test]
 fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
-    let _reap = Reap("sleep 651");
+    let _reap = Reap("sleep 695");
     let fixture = Fixture::new();
     fixture.hi_stand_in();
-    let argv = "[\"sh\", \"-c\", \"(setsid sleep 651 &); touch running; sleep 652 & wait\"]";
+    let argv = "[\"sh\", \"-c\", \"(setsid sleep 695 &); touch running; sleep 696 & wait\"]";
     fixture.write(
         ".chough/cases/cli.cases.toml",
         &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "never")),
@@ -642,7 +643,7 @@ fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
         &["cases", "run", "TC-cli-0001", "--environment", "local"],
         "TERM",
         libc::SIGTERM,
-        "sleep 651",
+        "sleep 695",
     );
 }
 

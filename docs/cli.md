@@ -370,7 +370,9 @@ one of its own Git commands runs, it stops that command's process group and ends
 the same signal. On Linux it also stops every process below that command by parent
 links, including one that left the group with `setsid`, and, because the `chough`
 binary is the child subreaper of what it starts, one whose parent exited after starting
-it (a double fork) (#81). It keeps watching until the command's output closes: when a
+it (a double fork) (#81). Because Chough is that subreaper for the whole run, a stop
+for a deadline or a held pipe also stops an orphan re-parented to Chough earlier in the
+same run, for example a detached `git gc --auto` left by one of its Git commands. It keeps watching until the command's output closes: when a
 descendant still holds the output of one of Chough's own Git commands after Git exits,
 a signal still stops the group, and without one Chough stops the group 2 seconds after
 Git exits, says so on stderr (`chough: stopped a process that kept Git's output open 2 s

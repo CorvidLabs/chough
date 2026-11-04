@@ -1485,9 +1485,12 @@ fn native_json_read(
 /// The current Git HEAD when one exists; recorded with transitions as context only. A
 /// failure other than no repository or a HEAD with no commit is said on stderr (#81).
 pub(super) fn head_revision(root: &Path) -> Option<String> {
+    // Git's messages are matched below, so ask for them untranslated.
     let output = match run_owned(
         Command::new("git")
             .args(["rev-parse", "HEAD"])
+            .env("LC_ALL", "C")
+            .env("LANGUAGE", "C")
             .current_dir(root),
         None,
     ) {
