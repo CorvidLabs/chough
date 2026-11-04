@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-inbox-add-never-stranded-by-archive-5ac1c767aa6accc7cc5c79d1",
+  "criteria": [
+    "DRIVE-3"
+  ],
+  "requirements": [
+    "REQ-history-009"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact inbox_add_racing_an_archive_never_strands_its_entry for TC-history-inbox-add-never-stranded-by-archive: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-inbox-add-never-stranded-by-archive-5ac1c767aa6accc7cc5c79d1.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-inbox-add-never-stranded-by-archive-5ac1c767aa6accc7cc5c79d1.log": "329fe3850412b5793f971413b2e6ac426098e5df0344d9c2c1af41dab4d1d6ef"
+  },
+  "observed_at_unix_seconds": 1793815968,
+  "snapshot": {
+    "revision": "a29a3dfff39c545773ed70af71e6c07026e8a375",
+    "dirty": false,
+    "fingerprint": "6a33bdcbb7032267e7f86b827867fa6239bd651c2b4403ee154503fa4c23ca38",
+    "content": "ad89b17d5c6c438d685f7ba1e7eb8677cf29030440938af575e321c7276f876d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-inbox-add-never-stranded-by-archive",
+      "digest": "5e8ea897fa3b68c8e05d3e82fea3a391be92dbbcf84be4823892bef1f3eed801"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "inbox_add_racing_an_archive_never_strands_its_entry"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}
