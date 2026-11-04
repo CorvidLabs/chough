@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -681,7 +681,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10); corvid-agent PR review is an agent review, not this"
+  ],
   "run_consents": [],
-  "next_action": "Write failing-first tests in tests/next.rs and tests/sessions.rs, then the fix"
+  "next_action": "Ask corvid-agent to review the PR; Leif records the native implementation review, then finalize and archive"
 }
