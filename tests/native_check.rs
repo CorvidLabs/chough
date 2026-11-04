@@ -153,7 +153,7 @@ fn next_says_when_the_native_check_has_not_passed_for_this_tree() {
     // A verifying change whose last check SpecSync reports current gets no note; one
     // without readiness is covered by a_verifying_change_without_readiness_reports_freshness_unknown.
     let verifying = project("verifying");
-    verifying.write(".stub-handoff", CURRENT);
+    report_handoff(&verifying, CURRENT);
     let next = verifying.ok(&["next", "--json"]);
     assert_eq!(
         next["native_check"]["not_passed_for_tree"], false,
@@ -186,6 +186,21 @@ fn an_unreadable_attempts_record_is_unknown_and_adds_no_native_read() {
     assert!(shown.contains("Native check: unknown"), "{shown}");
 }
 
+/// Replace the stub `specsync` with one whose status reply, for a verifying change,
+/// carries `handoff` (a JSON object), logging calls like the shared stub does.
+#[cfg(unix)]
+fn report_handoff(fixture: &Fixture, handoff: &str) {
+    fixture.write(".stub-handoff", handoff);
+    fixture.write(
+        "bin/specsync",
+        r#"#!/bin/sh
+if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
+printf '{"summary":{"id":"%s","state":"verifying","next_action":"stub","approval_valid":true,"correction_valid":true,"handoff":%s}}\n' "$3" "$(cat .stub-handoff)"
+"#,
+    );
+    fixture.executable("bin/specsync");
+}
+
 const MOVED: &str = "{\"readiness\":\"conditional\",\"reason\":\"the tree moved after the last check, so a fresh session would resume from evidence that no longer matches\"}";
 const CURRENT: &str =
     "{\"readiness\":\"safe\",\"reason\":\"verification is current for this working tree\"}";
@@ -205,7 +220,7 @@ fn a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree() {
             &[("specsync check --spec cli", true, 0)],
         )],
     );
-    fixture.write(".stub-handoff", MOVED);
+    report_handoff(&fixture, MOVED);
     fixture.write(".stub-count", "");
     fixture.native_calls();
     let next = fixture.ok(&["next", "--json"]);
@@ -221,7 +236,7 @@ fn a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree() {
     );
     assert!(text(&fixture).contains("the tree moved after the last check"));
 
-    fixture.write(".stub-handoff", CURRENT);
+    report_handoff(&fixture, CURRENT);
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
         next["native_check"]["not_passed_for_tree"], false,
