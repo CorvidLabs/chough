@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-a-case-run-s-save-and-chough-s-own-git-under-the-flow-14-stop-watch-issue-75-review-on-79",
+  "implementation_commit": "8f186147eb858aaa0e4c16d3be80be142f1de2eb",
+  "implementation_tree": "732f3c9ec0655cdbb8566c23fc1eb2259a8d1da9",
+  "contract_digest": "efcaaf529eca397e36c81c28a96009b56a4b7cc72f7e3d7525145a887dc9a33b",
+  "workspace_digest": "c9a88587cf135ee59b5223d29ad406556678799b64b04d3df8897d5225b09f65",
+  "closing_digest": "66b2e9bfb8c219639ce9b467fab7c8e4d7d3a323db1dfee1b4c729ca1ce89372",
+  "review_digest": "a3a51f9f90e554c630f22c4ebff4fd55998b3a90872463dd543fe25147581a89",
+  "finalization_digest": "e94c828b4538b5dc9ee085df2b09dc39ebefe4052d4529dfab4aa96f972b0b0c",
+  "timestamp": 1793769995
+}

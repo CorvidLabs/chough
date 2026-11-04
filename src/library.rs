@@ -696,38 +696,66 @@ fn write_snapshot(
 ) -> Result<serde_json::Value> {
     let base = format!("{dir}/snapshots/{id}");
     let path = local_path(root, &base)?;
+    // Read the HEAD first: a stop during that Git ends Chough before anything is
+    // written (FLOW-14). The snapshot is then staged under a hidden name, which the
+    // index skips, and renamed into place whole, so no copy ever lacks its manifest.
+    let revision = head_revision(root);
+    crate::records::stop_if_noted();
     fs::create_dir_all(path.parent().context("snapshot has no parent")?)?;
-    local_path(root, &base)?;
-    fs::create_dir(&path).with_context(|| format!("creating snapshot {id} without replacement"))?;
-    let mut entries = vec![];
-    for (source, bytes) in sources {
-        let copy = format!("{base}/files/{source}");
-        ensure!(
-            write_new_bytes(root, &copy, &bytes)?,
-            "{copy} already exists"
-        );
-        entries.push(Entry {
-            source,
-            copy,
-            sha256: digest_bytes(&bytes),
-            bytes: bytes.len() as u64,
-        });
-    }
-    let manifest = Manifest {
-        schema_version: 1,
-        reason: reason.into(),
-        revision: head_revision(root),
-        created_at_unix_seconds: at,
-        entries,
-    };
     ensure!(
-        write_new(
-            root,
-            &format!("{base}/manifest.json"),
-            &(serde_json::to_string_pretty(&manifest)? + "\n"),
-        )?,
-        "snapshot manifest {base}/manifest.json already exists"
+        fs::symlink_metadata(&path).is_err(),
+        "creating snapshot {id} without replacement: {base} already exists"
     );
+    let staged = format!("{dir}/snapshots/.staging-{id}");
+    let staged_path = local_path(root, &staged)?;
+    fs::create_dir(&staged_path)
+        .with_context(|| format!("creating staged snapshot {staged} without replacement"))?;
+    let written = (|| -> Result<Manifest> {
+        let mut entries = vec![];
+        for (source, bytes) in sources {
+            let copy = format!("{base}/files/{source}");
+            let staged_copy = format!("{staged}/files/{source}");
+            ensure!(
+                write_new_bytes(root, &staged_copy, &bytes)?,
+                "{copy} already exists"
+            );
+            entries.push(Entry {
+                source,
+                copy,
+                sha256: digest_bytes(&bytes),
+                bytes: bytes.len() as u64,
+            });
+        }
+        let manifest = Manifest {
+            schema_version: 1,
+            reason: reason.into(),
+            revision,
+            created_at_unix_seconds: at,
+            entries,
+        };
+        ensure!(
+            write_new(
+                root,
+                &format!("{staged}/manifest.json"),
+                &(serde_json::to_string_pretty(&manifest)? + "\n"),
+            )?,
+            "snapshot manifest {base}/manifest.json already exists"
+        );
+        ensure!(
+            fs::symlink_metadata(&path).is_err(),
+            "creating snapshot {id} without replacement: {base} already exists"
+        );
+        fs::rename(&staged_path, &path)
+            .with_context(|| format!("moving staged snapshot {staged} to {base}"))?;
+        Ok(manifest)
+    })();
+    let manifest = match written {
+        Ok(manifest) => manifest,
+        Err(error) => {
+            let _ = fs::remove_dir_all(&staged_path);
+            return Err(error);
+        }
+    };
     Ok(json!({"schema_version": 1, "snapshot": base, "manifest": manifest}))
 }
 
@@ -794,6 +822,9 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
             }))
         }
         LibraryCommand::Snapshot { paths, reason } => {
+            // A stop before the snapshot is written records nothing; once writing starts
+            // it finishes the snapshot and its index first (FLOW-14).
+            let _watch = crate::records::stop_watch();
             // Refuse an unbuildable index before the snapshot is written.
             build(root, &dir)?;
             let value = snapshot(root, &dir, &paths, &reason)?;
@@ -964,11 +995,9 @@ mod tests {
         )
         .unwrap_err();
         assert!(error.to_string().contains("already exists"), "{error:#}");
-        let base = root.path().join(format!("library/snapshots/{id}"));
-        assert!(!base.join("manifest.json").exists());
-        assert_eq!(
-            fs::read(base.join("files/src/input.txt")).unwrap(),
-            b"first"
-        );
+        // Nothing of the failed snapshot is left: no copy, no manifest, no staging.
+        let snapshots = root.path().join("library/snapshots");
+        assert!(!snapshots.join(id).exists());
+        assert_eq!(fs::read_dir(&snapshots).unwrap().count(), 0);
     }
 }

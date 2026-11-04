@@ -6,6 +6,19 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The hosted SpecSync Archive check reads archived change status with one worker per
+  CPU, at least two and at most eight, instead of a fixed two (DRIVE-10). Every
+  archive and history snapshot is still authenticated with the same checks, SpecSync
+  version and timeouts. On the #71 tree (63 archives) the check took 9 min 56 s with
+  two workers, 5 min 4 s with four and 2 min 54 s with eight on the same machine.
+- Stopping Chough with Ctrl-C, `kill` (SIGTERM) or a hangup during `chough cases run`
+  or a native SpecSync read now stops the command it started, that command's process
+  group and Chough's own Git commands, including the Git that `stage backfill` and
+  `library snapshot` run, and records nothing partial, including while a case run saves
+  its result, and while a descendant of that Git still holds its output after Git
+  exits (stopped 2 seconds after Git exits when no signal comes); a library snapshot
+  is now written whole or not at all (FLOW-14, #75). A hard `kill -9` is not covered. Unix
+  only; Windows is unchanged.
 - `chough checkpoint --native-change <id>` asks SpecSync for the change before saving and
   refuses an ID SpecSync does not report (`refused:native-change-unknown`), leaving the
   checkpoint unchanged (#63, found in Kimi's second lab review). A reply whose
