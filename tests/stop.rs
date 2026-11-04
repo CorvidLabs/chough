@@ -163,10 +163,24 @@ fn assert_stopped_in(
     pattern: &str,
     dirs: &[&str],
 ) {
+    assert_stopped_after(fixture, args, signal, number, pattern, dirs, Duration::ZERO);
+}
+
+/// [`assert_stopped_in`], with the signal sent `delay` after the marker appears.
+fn assert_stopped_after(
+    fixture: &Fixture,
+    args: &[&str],
+    signal: &str,
+    number: i32,
+    pattern: &str,
+    dirs: &[&str],
+    delay: Duration,
+) {
     let _ = fs::remove_file(fixture.root().join("running"));
     let before = snapshot_dirs(fixture.root(), dirs);
     let (mut child, outputs) = start(fixture, args, Inherit::Defaults);
     wait_for_marker(fixture, &mut child);
+    std::thread::sleep(delay);
     send(&child, signal);
     let status = wait_exit(&mut child);
     let survived = still_running(pattern);
@@ -471,4 +485,105 @@ fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
             &[".chough", "knowledge"],
         );
     }
+}
+
+/// A `git` stand-in that, once `armed` exists, leaves `sleep {seconds}` running in the
+/// background holding its output pipes, runs the real Git, marks itself and exits.
+fn hold_git(fixture: &Fixture, seconds: u32) {
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\n[ -e armed ] && sleep {seconds} &\n'{}' \"$@\"\nstatus=$?\n[ -e armed ] && touch running\nexit $status\n",
+            real_git()
+        ),
+    );
+    fixture.executable("bin/git");
+    fixture.write("armed", "");
+}
+
+fn snapshot_fixture() -> Fixture {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.write("notes.md", "a design note\n");
+    fixture.write(".gitignore", "armed\nrunning\n");
+    fixture.commit("base");
+    fixture.ok(&["library", "index"]);
+    fixture
+}
+
+/// After Chough's own git exits, a descendant that still holds its output does not
+/// hide a stop: Chough keeps watching for stop signals until the pipes close, stops
+/// the group and ends by the signal, recording nothing (Leif's thread 4463155937 and
+/// Chough bot review 5762997733 on #79).
+#[test]
+fn stopping_while_a_descendant_of_git_holds_its_output_stops_both() {
+    for (signal, number, seconds) in [
+        ("INT", libc::SIGINT, 661),
+        ("TERM", libc::SIGTERM, 662),
+        ("HUP", libc::SIGHUP, 663),
+    ] {
+        let fixture = snapshot_fixture();
+        hold_git(&fixture, seconds);
+        // The marker is written as the stand-in exits; the signal follows once git has
+        // exited and well inside the grace for the held pipes.
+        assert_stopped_after(
+            &fixture,
+            &[
+                "library",
+                "snapshot",
+                "notes.md",
+                "--reason",
+                "keep the note",
+            ],
+            signal,
+            number,
+            &format!("sleep {seconds}"),
+            &[".chough", "knowledge"],
+            Duration::from_millis(500),
+        );
+    }
+}
+
+/// Without a stop, a descendant of git that holds its output is stopped after a
+/// bounded grace once git exits, and the command finishes with git's output.
+#[test]
+fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
+    let fixture = snapshot_fixture();
+    hold_git(&fixture, 671);
+    let started = Instant::now();
+    let (mut child, outputs) = start(
+        &fixture,
+        &[
+            "library",
+            "snapshot",
+            "notes.md",
+            "--reason",
+            "keep the note",
+        ],
+        Inherit::Defaults,
+    );
+    let started_at = Instant::now();
+    let status = loop {
+        if let Some(status) = child.try_wait().unwrap() {
+            break status;
+        }
+        if started_at.elapsed() > Duration::from_secs(30) {
+            let _ = child.kill();
+            let _ = Command::new("pkill").args(["-f", "sleep 671"]).status();
+            panic!("chough waited on the held pipes with no limit");
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    };
+    let survived = still_running("sleep 671");
+    if survived {
+        let _ = Command::new("pkill").args(["-f", "sleep 671"]).status();
+    }
+    assert!(!survived, "the descendant holding git's output survived");
+    assert!(
+        status.success(),
+        "{status:?} {}",
+        fs::read_to_string(outputs.path().join("stderr")).unwrap()
+    );
+    assert!(started.elapsed() < Duration::from_secs(30));
 }
