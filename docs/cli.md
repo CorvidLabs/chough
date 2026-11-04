@@ -130,6 +130,14 @@ records, and are read at any size; size is a composability hint, never a gate.
 `next` searches a module's `context.md` for its Lessons heading at any size. One
 reader is a known exception until a later change lifts it: `library snapshot`
 refuses any file over 4 MiB (REQ-cli-034).
+These bounds apply only to Chough's own records under `.chough/` and to what Chough
+displays (REQ-cli-042, LIFE-15). Native sources are never cut for a decision: criteria
+are validated against the complete `hi export -- <FAMILY>` output (up to 4 MiB), and
+SpecSync's own files, such as an archived `finalization.json` or `change.md`,
+`.specsync/sdd.json` and the change records `timing` reads, are read within SpecSync's
+4 MiB change-artifact bound. A display section cut at its budget says so and sends you
+to the complete source. Never shorten HI intent or criteria, specs or SpecSync files to
+fit a Chough bound; a native source that exceeds one is a Chough bug to report.
 Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
 up to 16 KiB; `status` carries the parsed state and next action in `native_summary`
 and `next` in `native`. Larger output is reported as `oversized` and refuses gated

@@ -47,8 +47,8 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
 
 With no checkpoint, run `chough init --objective "<outcome>" --intent-scope <HI-family>
 --module <module>`; it never overwrites existing files. Without `--host` it installs
-the skill for `openai`; any `--host` replaces that default, so repeat it for each
-host you want, for example `--host openai --host codex`. A schema 1 session is migrated only with `chough migrate`.
+the skill for `openai`; any `--host` replaces it; repeat it per host, as in
+`--host openai --host codex`. A schema 1 session is migrated only with `chough migrate`.
 
 ## Stages
 
@@ -67,9 +67,8 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
 
 ## Working rules
 
-- Talk naturally. Map requests such as "go back to design", "pause", "skip design,
-  it is a CLI change" or "check the library" to `chough stage …` commands, and say
-  what you recorded.
+- Talk naturally. Map requests such as "go back to design", "pause" or "skip design,
+  it is a CLI change" to `chough stage …` commands, and say what you recorded.
 - Resolve routine engineering and tool choices within applicable authorization.
   Ask the human when a consequential product choice, authority or optional execution
   policy remains unresolved. Synthesize findings first; do not return internal tool
@@ -79,20 +78,21 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
 - Evidence states what ran, where and on which inputs. A structural pass, exit code,
   actor label or agent review is not behavioral proof, human approval or deployment.
 - Nothing is published, released or deployed as a side effect of finishing work.
+- Chough's size bounds cover only its `.chough/` records and displays. Never edit HI
+  intent or criteria, specs or SpecSync files to fit one; report a Chough bug.
 
 ## Host use
 
-Chough runs in the current agent; no provider API or runtime is required. `chough init
+Chough runs in the current agent, with no provider API or runtime. `chough init
 --host <openai|claude|codex|cursor|gemini|grok>` copies this bundle into that host's
 project skill directory: openai, the default, and claude share one `.agents/skills`
 copy; gemini writes `.gemini/skills`, which no run has exercised. Kimi Code CLI uses
-`--host openai`; there is no `kimi` value. `chough skill status` shows whether a copy
-is current, edited or outdated and lists an old `.claude/skills` copy as legacy, which
-only `chough skill remove-legacy --host claude` removes. Discovery is the host's
-behavior: Claude Code 2.1.316 did not discover `.agents/skills` alone, so it reaches
-this skill through `CLAUDE.md` and `AGENTS.md`; Kimi Code CLI 0.41.0 discovered
-`.agents/skills/chough-workflow/SKILL.md` in one macOS session, and one run, reported
-narratively in closed PR #20 and not independently verified, said Google Antigravity
-read `.agents/skills`. Confirm that the host actually lists the skill; otherwise give
-it this file. Subagents are optional: [roles.md](references/roles.md) also
+`--host openai` (no `kimi` value). `chough skill status` shows whether a copy is
+current, edited or outdated; an old `.claude/skills` copy is legacy, removed only by
+`chough skill remove-legacy --host claude`. Discovery is host behavior: Claude Code
+2.1.316 did not discover `.agents/skills` alone, so it reaches this skill through
+`CLAUDE.md` and `AGENTS.md`; Kimi Code CLI 0.41.0 discovered this skill in
+`.agents/skills` once on macOS, and an unverified narrative in closed PR #20 said
+Google Antigravity read `.agents/skills`. Confirm the host lists the skill; otherwise
+give it this file. Subagents are optional: [roles.md](references/roles.md) also
 works as sequential passes.

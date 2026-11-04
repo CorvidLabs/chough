@@ -12,6 +12,25 @@ All notable changes to Chough are recorded here. The format follows
   stops a process that kept its own Git's output open, and when `git rev-parse HEAD`
   fails for a reason other than no repository or no commit (#81, FLOW-14, REQ-cli-011),
   including when `git` is not installed, which was silent before.
+
+## [0.3.0] - 2026-11-04
+
+- Chough's size bounds now apply only to its own records under `.chough/` and to what
+  it displays (#100, LIFE-15, REQ-cli-042, REQ-reporting-004). `chough evidence add`,
+  `chough cases check` and `chough cases run` validate criteria against the complete
+  `hi export -- <FAMILY>` output (up to 4 MiB) instead of its 16 KiB display section,
+  so a HI family over 16 KiB no longer fails with "native HI family export is invalid
+  or exceeds 16384 bytes". An archived `finalization.json` (`evidence prune`, history
+  retention), an archived `change.md` (`library index`, which silently dropped its
+  title and criteria), `.specsync/sdd.json` (stage gates) and the native records
+  `timing` reads are read within SpecSync's 4 MiB bound instead of the 64 KiB record
+  bound. Display cuts in `chough context` and native output now say they are for
+  display only and send you to the complete source. The workflow skill says Chough's
+  bounds never justify editing HI intent or criteria, specs or SpecSync files; report
+  a native source over a Chough bound as a Chough bug. Every Chough record keeps its
+  bound. Leif reported this after an agent shortened his HI intent in
+  CorvidLabs/jackdaw to fit the 16 KiB bound: "Chough should only reduce and do all
+  that for its own files in .chough and not the specs, not the human intent."
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns
@@ -346,5 +365,6 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0
 [0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
 [0.1.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.1.0

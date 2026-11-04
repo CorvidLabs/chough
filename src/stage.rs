@@ -5,7 +5,7 @@ use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{
     NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
     local_path, native_json, now, print_json, read_log_full, read_log_tail, read_native_record,
-    read_record,
+    read_native_text,
 };
 use crate::{bugs, evidence, prefs};
 use anyhow::{Result, bail, ensure};
@@ -219,7 +219,8 @@ fn sdd_policy(root: &Path) -> Result<Policy> {
     if !path.exists() {
         return Ok(Policy::Absent);
     }
-    let text = match read_record(&path) {
+    // SpecSync's policy file: read within SpecSync's bound, not Chough's (LIFE-15).
+    let text = match read_native_text(&path) {
         Ok(text) => text,
         Err(error) => {
             return Ok(Policy::Invalid(format!(
