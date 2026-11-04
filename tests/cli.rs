@@ -1826,6 +1826,67 @@ fn exercise_cleanup_handles_a_relative_tmpdir() {
     );
 }
 
+/// Spec files under `specs/**` are read at any size (Leif, 2026-11-03 10:05 AM MT:
+/// "Spec files can grow to whatever number they want"), while Chough's own
+/// records keep their bounds (see the preferences test above).
+#[test]
+fn spec_requirements_companions_are_read_at_any_size() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    // Over the 65,536-byte record bound and over the 4 MiB native record bound.
+    let padding = "Filler line that keeps this companion large.\n".repeat(120_000);
+    assert!(padding.len() > 4 * 1_048_576);
+    fixture.write(
+        "specs/cli/requirements.md",
+        &format!("{padding}### REQ-cli-001\nPreserve files.\n"),
+    );
+    fixture.write("specs/checkout-ui/checkout-ui.spec.md", "# Checkout UI\n");
+    fixture.write(
+        "specs/checkout-ui/requirements.md",
+        &format!("{padding}### REQ-checkout-ui-004\nShow the order total.\n"),
+    );
+    let add = |id: &str, requirement: &str| {
+        fixture.run(&[
+            "evidence",
+            "add",
+            id,
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            requirement,
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "test-local",
+            "--summary",
+            "Observed preserved files",
+        ])
+    };
+    let accepted = add("OBS-product-test-000000000000000000000071", "REQ-cli-001");
+    assert!(
+        accepted.status.success(),
+        "{}",
+        String::from_utf8_lossy(&accepted.stderr)
+    );
+    let refused = add(
+        "OBS-product-test-000000000000000000000072",
+        "REQ-checkout-ui-004",
+    );
+    let error = String::from_utf8_lossy(&refused.stderr).into_owned();
+    assert_eq!(refused.status.code(), Some(1), "{error}");
+    assert!(!error.contains("exceeds"), "{error}");
+    assert!(
+        error.contains(
+            "REQ-checkout-ui-004 belongs to module checkout-ui (specs/checkout-ui/requirements.md)"
+        ),
+        "{error}"
+    );
+}
+
 // Issues 62 and 64 (Kimi lab round 2): concurrent checkpoint writers and temp files
 // left by a writer killed mid-write.
 
@@ -2114,63 +2175,5 @@ fn checkpoint_writer_removes_only_orphaned_session_temps() {
             .root()
             .join(".chough/.preferences.json.4194304.tmp")
             .exists()
-/// Spec files under `specs/**` are read at any size (Leif, 2026-11-03 10:05 AM MT:
-/// "Spec files can grow to whatever number they want"), while Chough's own
-/// records keep their bounds (see the preferences test above).
-#[test]
-fn spec_requirements_companions_are_read_at_any_size() {
-    let fixture = Fixture::new();
-    fixture.evidence_fixture();
-    // Over the 65,536-byte record bound and over the 4 MiB native record bound.
-    let padding = "Filler line that keeps this companion large.\n".repeat(120_000);
-    assert!(padding.len() > 4 * 1_048_576);
-    fixture.write(
-        "specs/cli/requirements.md",
-        &format!("{padding}### REQ-cli-001\nPreserve files.\n"),
-    );
-    fixture.write("specs/checkout-ui/checkout-ui.spec.md", "# Checkout UI\n");
-    fixture.write(
-        "specs/checkout-ui/requirements.md",
-        &format!("{padding}### REQ-checkout-ui-004\nShow the order total.\n"),
-    );
-    let add = |id: &str, requirement: &str| {
-        fixture.run(&[
-            "evidence",
-            "add",
-            id,
-            "--criterion",
-            "LIFE-1",
-            "--requirement",
-            requirement,
-            "--contract",
-            "specs/cli/cli.spec.md",
-            "--kind",
-            "product-test",
-            "--outcome",
-            "passed",
-            "--environment",
-            "test-local",
-            "--summary",
-            "Observed preserved files",
-        ])
-    };
-    let accepted = add("OBS-product-test-000000000000000000000071", "REQ-cli-001");
-    assert!(
-        accepted.status.success(),
-        "{}",
-        String::from_utf8_lossy(&accepted.stderr)
-    );
-    let refused = add(
-        "OBS-product-test-000000000000000000000072",
-        "REQ-checkout-ui-004",
-    );
-    let error = String::from_utf8_lossy(&refused.stderr).into_owned();
-    assert_eq!(refused.status.code(), Some(1), "{error}");
-    assert!(!error.contains("exceeds"), "{error}");
-    assert!(
-        error.contains(
-            "REQ-checkout-ui-004 belongs to module checkout-ui (specs/checkout-ui/requirements.md)"
-        ),
-        "{error}"
     );
 }
