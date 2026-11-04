@@ -8,7 +8,7 @@ use std::ffi::OsStr;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Seek, SeekFrom, Write};
 use std::path::{Component, Path, PathBuf};
-use std::process::{Child, Command, ExitStatus, Stdio};
+use std::process::{Child, Command, ExitStatus, Output, Stdio};
 use std::sync::mpsc::{self, RecvTimeoutError};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use std::thread;
@@ -637,12 +637,8 @@ pub(super) fn run_bounded(
     env: &[(String, String)],
     limits: &Limits,
 ) -> io::Result<Captured> {
-    #[cfg(unix)]
-    let watch = interrupt::watch();
-    let result = run_watched(root, argv, env, limits);
-    #[cfg(unix)]
-    watch.finish();
-    result
+    let _watch = interrupt::watch();
+    run_watched(root, argv, env, limits)
 }
 
 fn run_watched(
@@ -708,7 +704,6 @@ fn run_watched(
         if status.is_some() && open == 0 {
             break;
         }
-        #[cfg(unix)]
         if interrupt::noted() {
             stop_tree(&mut child);
             let _ = child.wait();
@@ -767,15 +762,16 @@ fn run_watched(
     })
 }
 
-/// Stop signals while a bounded run owns a child (FLOW-14, REQ-cli-011).
+/// Stop signals while Chough owns a child or saves what one reported (FLOW-14,
+/// REQ-cli-011).
 #[cfg(unix)]
-mod interrupt {
+pub(super) mod interrupt {
     use std::sync::atomic::{AtomicI32, Ordering};
     use std::sync::{Mutex, PoisonError};
 
     /// The signals that stop Chough normally: Ctrl-C, a plain kill and a hangup.
     const SIGNALS: [libc::c_int; 3] = [libc::SIGINT, libc::SIGTERM, libc::SIGHUP];
-    /// The last stop signal noted while a run owned a child; 0 when none.
+    /// The last stop signal noted while a watch was active; 0 when none.
     static NOTED: AtomicI32 = AtomicI32::new(0);
 
     /// Only an atomic store, which is async-signal-safe.
@@ -783,27 +779,38 @@ mod interrupt {
         NOTED.store(signal, Ordering::SeqCst);
     }
 
-    /// Runs that are watching, and the dispositions the first one replaced; the last
-    /// to finish restores them, so overlapping runs (unit tests) never keep the handler.
+    /// Active watches, and the dispositions the first one replaced; the last to end
+    /// restores them, so nested or overlapping watches never keep the handler.
     static WATCHING: Mutex<(usize, Vec<(libc::c_int, libc::sigaction)>)> =
         Mutex::new((0, Vec::new()));
 
-    /// One run's watch; `finish` ends it.
-    pub(super) struct Watch;
+    /// One watch. Dropping the last one restores the previous dispositions and, when a
+    /// stop signal arrived meanwhile, ends Chough by that signal; during a panic it
+    /// only restores them.
+    pub(crate) struct Watch(());
 
-    /// Note stop signals instead of ending at once, leaving an inherited ignored
-    /// signal ignored.
-    pub(super) fn watch() -> Watch {
+    /// Note stop signals instead of ending at once. A signal inherited as ignored, or
+    /// as blocked in the signal mask, keeps its inherited disposition.
+    pub(crate) fn watch() -> Watch {
         let mut watching = WATCHING.lock().unwrap_or_else(PoisonError::into_inner);
         watching.0 += 1;
         if watching.0 > 1 {
-            return Watch;
+            return Watch(());
         }
+        // SAFETY: pthread_sigmask(3) only reads the calling thread's mask into a
+        // zeroed sigset_t.
+        let mut blocked: libc::sigset_t = unsafe { std::mem::zeroed() };
+        let mask_read = unsafe {
+            libc::pthread_sigmask(libc::SIG_BLOCK, std::ptr::null(), &raw mut blocked) == 0
+        };
         let previous = &mut watching.1;
         for signal in SIGNALS {
             // SAFETY: sigaction(2) with zeroed, then filled, plain C structs; the
-            // handler only stores to an atomic.
+            // handler only stores to an atomic. sigismember reads the set read above.
             unsafe {
+                if !mask_read || libc::sigismember(&raw const blocked, signal) == 1 {
+                    continue;
+                }
                 let mut old: libc::sigaction = std::mem::zeroed();
                 if libc::sigaction(signal, std::ptr::null(), &raw mut old) != 0
                     || old.sa_sigaction == libc::SIG_IGN
@@ -819,48 +826,169 @@ mod interrupt {
                 }
             }
         }
-        Watch
+        Watch(())
     }
 
-    /// Whether a stop signal arrived during this run.
-    pub(super) fn noted() -> bool {
+    /// Whether a stop signal arrived while a watch was active.
+    pub(crate) fn noted() -> bool {
         NOTED.load(Ordering::SeqCst) != 0
     }
 
-    impl Watch {
-        /// Restore the previous dispositions; when a stop signal arrived during the
-        /// run, end Chough by that signal so nothing is recorded after it.
-        pub(super) fn finish(self) {
+    /// End Chough now when a stop signal has arrived: the last point at which a stop
+    /// leaves nothing recorded. After it, a stop lets the save finish and then ends
+    /// Chough when the last watch ends.
+    pub(crate) fn stop_if_noted() {
+        let signal = NOTED.load(Ordering::SeqCst);
+        if signal != 0 {
+            restore(&mut WATCHING.lock().unwrap_or_else(PoisonError::into_inner));
+            end_by(signal);
+        }
+    }
+
+    fn restore(watching: &mut (usize, Vec<(libc::c_int, libc::sigaction)>)) {
+        for (signal, old) in watching.1.drain(..) {
+            // SAFETY: restores a disposition read by sigaction(2) in `watch`.
+            unsafe {
+                libc::sigaction(signal, &raw const old, std::ptr::null_mut());
+            }
+        }
+    }
+
+    /// End Chough by `signal`, as if it had not been caught.
+    fn end_by(signal: libc::c_int) -> ! {
+        // SAFETY: plain signal calls with a valid signal number; raise(3) ends the
+        // process with the default disposition, so the exit below is a fallback.
+        unsafe {
+            libc::signal(signal, libc::SIG_DFL);
+            let mut set: libc::sigset_t = std::mem::zeroed();
+            libc::sigemptyset(&raw mut set);
+            libc::sigaddset(&raw mut set, signal);
+            libc::pthread_sigmask(libc::SIG_UNBLOCK, &raw const set, std::ptr::null_mut());
+            libc::raise(signal);
+        }
+        std::process::exit(128 + signal);
+    }
+
+    impl Drop for Watch {
+        fn drop(&mut self) {
             {
                 let mut watching = WATCHING.lock().unwrap_or_else(PoisonError::into_inner);
-                watching.0 -= 1;
+                watching.0 = watching.0.saturating_sub(1);
                 if watching.0 > 0 {
                     return;
                 }
-                for (signal, old) in watching.1.drain(..) {
-                    // SAFETY: restores a disposition read by sigaction(2) in `watch`.
-                    unsafe {
-                        libc::sigaction(signal, &raw const old, std::ptr::null_mut());
-                    }
-                }
+                restore(&mut watching);
             }
-            let signal = NOTED.swap(0, Ordering::SeqCst);
-            if signal == 0 {
+            if std::thread::panicking() {
                 return;
             }
-            // SAFETY: plain signal calls with a valid signal number; raise(3) ends the
-            // process with the default disposition, so the exit below is a fallback.
-            unsafe {
-                libc::signal(signal, libc::SIG_DFL);
-                let mut set: libc::sigset_t = std::mem::zeroed();
-                libc::sigemptyset(&raw mut set);
-                libc::sigaddset(&raw mut set, signal);
-                libc::pthread_sigmask(libc::SIG_UNBLOCK, &raw const set, std::ptr::null_mut());
-                libc::raise(signal);
+            let signal = NOTED.swap(0, Ordering::SeqCst);
+            if signal != 0 {
+                end_by(signal);
             }
-            std::process::exit(128 + signal);
         }
     }
+}
+
+/// Without Unix signals there is nothing to watch.
+#[cfg(not(unix))]
+pub(super) mod interrupt {
+    pub(crate) struct Watch(());
+    pub(crate) fn watch() -> Watch {
+        Watch(())
+    }
+    pub(crate) fn noted() -> bool {
+        false
+    }
+    pub(crate) fn stop_if_noted() {}
+}
+
+/// Run one of Chough's own commands (git) like `Command::output`, with stdin closed
+/// unless the caller set it, but under the stop watch: on Unix it leads its own
+/// process group, and a stop signal stops that group and ends Chough by the signal
+/// before the caller sees a result (FLOW-14). `write` is sent to its stdin when given.
+pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Result<Output> {
+    let _watch = interrupt::watch();
+    if write.is_none() {
+        command.stdin(Stdio::null());
+    } else {
+        command.stdin(Stdio::piped());
+    }
+    command.stdout(Stdio::piped()).stderr(Stdio::piped());
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+        command.process_group(0);
+    }
+    let mut child = command.spawn()?;
+    let read_all = |stream: Option<Box<dyn Read + Send>>| {
+        thread::Builder::new()
+            .name("chough-git".into())
+            .spawn(move || {
+                let mut bytes = vec![];
+                if let Some(mut stream) = stream {
+                    stream.read_to_end(&mut bytes)?;
+                }
+                Ok::<_, io::Error>(bytes)
+            })
+    };
+    let stdout = read_all(
+        child
+            .stdout
+            .take()
+            .map(|s| Box::new(s) as Box<dyn Read + Send>),
+    );
+    let stderr = read_all(
+        child
+            .stderr
+            .take()
+            .map(|s| Box::new(s) as Box<dyn Read + Send>),
+    );
+    let (stdout, stderr) = match (stdout, stderr) {
+        (Ok(stdout), Ok(stderr)) => (stdout, stderr),
+        (Err(error), _) | (_, Err(error)) => {
+            stop_tree(&mut child);
+            let _ = child.wait();
+            return Err(error);
+        }
+    };
+    // The pipe closes when `stdin` drops at the end of this statement.
+    if let (Some(bytes), Some(mut stdin)) = (write, child.stdin.take())
+        && let Err(error) = stdin.write_all(bytes)
+    {
+        stop_tree(&mut child);
+        let _ = child.wait();
+        return Err(error);
+    }
+    let status = loop {
+        if interrupt::noted() {
+            stop_tree(&mut child);
+            let _ = child.wait();
+            return Err(io::Error::new(
+                io::ErrorKind::Interrupted,
+                "Chough was stopped by a signal",
+            ));
+        }
+        match child.try_wait() {
+            Ok(Some(status)) => break status,
+            Ok(None) => thread::sleep(POLL),
+            Err(error) => {
+                stop_tree(&mut child);
+                let _ = child.wait();
+                return Err(error);
+            }
+        }
+    };
+    let joined = |reader: thread::JoinHandle<io::Result<Vec<u8>>>| {
+        reader
+            .join()
+            .unwrap_or_else(|_| Err(io::Error::other("a reader panicked")))
+    };
+    Ok(Output {
+        status,
+        stdout: joined(stdout)?,
+        stderr: joined(stderr)?,
+    })
 }
 
 /// The deadline for native reads: 120 s unless CHOUGH_NATIVE_TIMEOUT_SECONDS names a
@@ -1097,11 +1225,13 @@ fn native_json_read(
 
 /// The current Git HEAD when one exists; recorded with transitions as context only.
 pub(super) fn head_revision(root: &Path) -> Option<String> {
-    let output = Command::new("git")
-        .args(["rev-parse", "HEAD"])
-        .current_dir(root)
-        .output()
-        .ok()?;
+    let output = run_owned(
+        Command::new("git")
+            .args(["rev-parse", "HEAD"])
+            .current_dir(root),
+        None,
+    )
+    .ok()?;
     output
         .status
         .success()
