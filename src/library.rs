@@ -185,9 +185,11 @@ fn archives(root: &Path) -> Result<Vec<Archive>> {
                 ),
                 Err(error) => (serde_json::Value::Null, Some(error)),
             };
+        // A native SpecSync file, read within SpecSync's bound and never Chough's
+        // 64 KiB record bound (LIFE-15).
         let change = local_path(root, &format!("{base}/change.md"))
             .ok()
-            .and_then(|path| read_record(&path).ok())
+            .and_then(|path| crate::records::read_native_text(&path).ok())
             .unwrap_or_default();
         let base_commit = change
             .lines()

@@ -341,3 +341,19 @@ when removing a bound for a kind of file, search every reader of that path, not 
 the one that failed; read files under `specs/` with `records::read_spec_file` or a
 streamed read, keep `read_record` for Chough's own records, and treat size as a
 composability hint, not a gate.
+
+2026-11-04, Chough bounds leaked onto HI and SpecSync files (verified): REQ-cli-034
+exempted `specs/` but not HI or SpecSync's own files. `validate_criteria` parsed the
+16 KiB display section of `hi export`, so in CorvidLabs/jackdaw PR #41 an agent cut
+`hi/board.md` intent from about 1,300 words to 64 and `hi/cost.md` from about 1,250 to
+70 to get under it (issue #100). Archived `finalization.json` and `change.md`,
+`.specsync/sdd.json` and timing's native records also used the 64 KiB record bound.
+Source: the failing-first runs in `.chough/artifacts/issue-100/` ("native HI family
+export is invalid or exceeds 16384 bytes", "structured record exceeds 65536 bytes")
+and Leif's 2026-11-04 rule, "Chough should only reduce and do all that for its own
+files in .chough and not the specs, not the human intent" (LIFE-15, REQ-cli-042,
+D-020). Limits: `library snapshot`'s 4 MiB copy limit stays; the earlier spec splits
+are not undone. Future use: decide from `records::native_json` or
+`records::read_native_text`, never from `native` or `read_record`, for any file Chough
+does not own; and when a bound refuses a native source, the fix is in Chough, never in
+the source.

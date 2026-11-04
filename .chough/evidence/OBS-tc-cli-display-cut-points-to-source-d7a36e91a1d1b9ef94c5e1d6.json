@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-display-cut-points-to-source-d7a36e91a1d1b9ef94c5e1d6",
+  "criteria": [
+    "LIFE-15"
+  ],
+  "requirements": [
+    "REQ-cli-042"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact display_truncation_points_to_the_complete_source for TC-cli-display-cut-points-to-source: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-display-cut-points-to-source-d7a36e91a1d1b9ef94c5e1d6.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-display-cut-points-to-source-d7a36e91a1d1b9ef94c5e1d6.log": "ff7d271f98e30c86e50a5e18af9d3ed6380b2d986d9639fd441f19e753b18154"
+  },
+  "observed_at_unix_seconds": 1793824753,
+  "snapshot": {
+    "revision": "a3ed589db6e436359ec9ad0d925f3ee8375b7b38",
+    "dirty": false,
+    "fingerprint": "3b44c8c1dec1a2571ffda111b664e0bb4e483128a4750abd8b5d4377709905e2",
+    "content": "fb610d88dee4a7859ebb7cd068309bc934037b5e2416d5674b222bee70fdce72"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-display-cut-points-to-source",
+      "digest": "b8e32ae32112300a1959de6eadc22fe45072747f563a0b9ca0735ce004ca9ac4"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "display_truncation_points_to_the_complete_source"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
