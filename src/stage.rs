@@ -884,8 +884,8 @@ fn archived_and_authenticated(root: &Path, session: &Checkpoint, state: &NativeS
 /// Whether the latest stage transition is a reset, which starts the new cycle: the
 /// checkpoint still names the archived change until a new one is recorded, and the
 /// reset's own next action applies. Gate records start no stage segment and are
-/// skipped; an unreadable log reads as no reset, and a legacy log too large to read
-/// whole is unknown (`Err`).
+/// skipped; a missing log reads as no reset, and an unreadable legacy log or one too
+/// large to read whole is unknown (`Err`).
 fn reached_by_reset(
     root: &Path,
     history: Option<&crate::history::HistoryRead>,
@@ -912,15 +912,14 @@ fn reached_by_reset(
 const LEGACY_TRANSITIONS_LIMIT: u64 = 16 * 1_048_576;
 
 /// Every record of the legacy transition log, read whole rather than from its 64 KiB
-/// tail, so a reset older than the tail is still found. An unreadable log reads as
-/// empty; a log beyond the bound is unknown (`Err`, with why), never read as no reset.
+/// tail, so a reset older than the tail is still found. Only a missing log reads as
+/// empty; an unreadable log, or one beyond the bound, is unknown (`Err`, with why),
+/// never read as no reset.
 fn legacy_transitions(root: &Path) -> Result<Vec<Value>, String> {
-    let Ok(path) = local_path(root, TRANSITIONS) else {
-        return Ok(vec![]);
-    };
-    let Ok(log) = read_log_full(&path, LEGACY_TRANSITIONS_LIMIT) else {
-        return Ok(vec![]);
-    };
+    let path = local_path(root, TRANSITIONS).map_err(|error| format!("{TRANSITIONS}: {error}"))?;
+    // A missing log reads as empty inside `read_log_full`; any other error is unknown.
+    let log = read_log_full(&path, LEGACY_TRANSITIONS_LIMIT)
+        .map_err(|error| format!("{TRANSITIONS}: {error}"))?;
     if log.skipped_bytes > 0 {
         return Err(format!(
             "{TRANSITIONS}: earliest {} bytes skipped beyond the {LEGACY_TRANSITIONS_LIMIT}-byte bound",
@@ -934,8 +933,8 @@ fn legacy_transitions(root: &Path) -> Result<Vec<Value>, String> {
         .collect())
 }
 
-/// When the newest reset was recorded, if the transition log names one; a legacy log
-/// too large to read whole is unknown (`Err`).
+/// When the newest reset was recorded, if the transition log names one; an unreadable
+/// legacy log or one too large to read whole is unknown (`Err`).
 fn latest_reset_at(
     root: &Path,
     history: Option<&crate::history::HistoryRead>,
