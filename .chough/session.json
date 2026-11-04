@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -423,7 +423,8 @@
     "Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).",
     "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections).",
     "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb",
-    "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)"
+    "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)",
+    "Issue #100: native sources read at full size; LIFE-15, D-020, REQ-cli-042, REQ-reporting-004; 0.2.1 prep"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -685,5 +686,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Materialize with specsync change check, then docs, verify and PR"
+  "next_action": "Push, open the PR (Fixes #100), observe CI; then human implementation review, native review, ship and archive on the same PR"
 }
