@@ -7,7 +7,8 @@
 use crate::checkpoint::{self, Checkpoint, Session};
 use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, now, print_json, read_bounded_record,
-    valid_change_id, valid_module_name, valid_name, write_new, write_new_bounded, write_replace_bounded,
+    valid_change_id, valid_module_name, valid_name, write_new, write_new_bounded,
+    write_replace_bounded,
 };
 use anyhow::{Context, Result, bail, ensure};
 use clap::{Subcommand, ValueEnum};

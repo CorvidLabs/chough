@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing test `session_new_accepts_the_module_ids_init_accepts` in tests/sessions.rs.
-- [ ] Use `valid_module_name` with init's refusal message in `session new`.
-- [ ] CHANGELOG note; `fledge lanes run verify`.
+- [x] Failing test `session_new_accepts_the_module_ids_init_accepts` in tests/sessions.rs.
+- [x] Use `valid_module_name` with init's refusal message in `session new`.
+- [x] CHANGELOG note; `fledge lanes run verify`.
