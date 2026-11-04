@@ -51,7 +51,11 @@ fn warnings(fixture: &Fixture) -> [Value; 3] {
     let next = fixture.ok(&["next", "--json"]);
     let status = fixture.ok(&["status"]);
     let stage = fixture.ok(&["stage", "show"]);
-    for (name, report) in [("next --json", &next), ("status", &status), ("stage show", &stage)] {
+    for (name, report) in [
+        ("next --json", &next),
+        ("status", &status),
+        ("stage show", &stage),
+    ] {
         assert!(
             report.get(WARNING_KEY).is_some(),
             "{name} has no {WARNING_KEY} key: {report:#}"
@@ -158,5 +162,8 @@ fn the_warning_changes_no_gate_and_adds_no_native_read() {
         );
         calls.push((next_calls, advance_calls));
     }
-    assert_eq!(calls[0], calls[1], "native reads with and without the warning");
+    assert_eq!(
+        calls[0], calls[1],
+        "native reads with and without the warning"
+    );
 }

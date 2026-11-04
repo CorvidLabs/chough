@@ -6,6 +6,7 @@ mod evidence;
 mod history;
 mod identity;
 mod library;
+mod policy;
 mod prefs;
 mod records;
 mod skill;
@@ -428,6 +429,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
         "native_summary": native_summary,
+        "native_verification_warning": policy::verification_warning(root)?,
         "snapshot": match &current { Ok(value) => serde_json::to_value(value)?, Err(error) => json!({"unknown": error.to_string()}) },
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,
@@ -739,6 +741,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
         "native": native,
+        "native_verification_warning": policy::verification_warning(root)?,
         "next_valid_action": {
             "action": cut(&assessment.action.action),
             "reason": cut(&assessment.action.reason),
@@ -844,6 +847,9 @@ fn next_text(view: &Value) -> String {
             text(&native["correction_valid"]),
             text(&native["terminal_evidence"])
         ));
+    }
+    if let Some(warning) = view["native_verification_warning"].as_str() {
+        lines.push(format!("Warning: {warning}"));
     }
     if native["next_action"].is_string() {
         lines.push(format!(

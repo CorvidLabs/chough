@@ -408,6 +408,7 @@ stage on that response, and shows:
 | `objective`, `stage` | The objective; current stage, status, iteration and side-stage callers |
 | `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`; with SpecSync configured but SDD off, as `specsync init` leaves it, the reason is ``native SDD is disabled; run `specsync change adopt` to gate stages``, and the `ungated:sdd-disabled` gate detail says the same); unknown values are `null` |
 | `next_valid_action` | `action`, `reason` and, when one applies, `command`; `status` reports the same `action` as its `next_valid_action` |
+| `native_verification_warning` | A sentence when a native configuration exists and `.specsync/sdd.json` enables SDD with no `verification_commands`, otherwise `null`; see [Empty native verification](#empty-native-verification) |
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
 | `awaiting_human`, `blockers`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest |
 | `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
@@ -430,6 +431,19 @@ of each source and records nothing: no fold state, ledger or index. Every orderi
 comes from recorded fields or names (checkpoint order, recorded observation time and
 ID, bug ID, archive directory name), never from file modification times or directory
 order, so the same records give byte-identical output in both forms.
+
+### Empty native verification
+
+When a native configuration exists and `.specsync/sdd.json` enables SDD with an empty
+or missing `verification_commands` list, `specsync change check` runs none of the
+project's own commands, so its "verified" does not show that the project's tests ran
+(#85, FLOW-15). `chough next` then prints a `Warning:` line under the native change,
+and `next --json`, `chough status` and every `chough stage` report carry the same
+sentence as `native_verification_warning` (otherwise `null`). It is read from that
+file alone, with no native read, and it is advice only: every stage move is allowed
+or refused exactly as without it. At the test stage, when nothing else stops it,
+`next` keeps `Continue test: <next action>`, says that accept needs recorded test
+evidence, and names `chough cases run <case-id> --environment <env>` as the command.
 
 ### Decision prefixes
 

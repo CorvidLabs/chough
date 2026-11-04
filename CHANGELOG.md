@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- When `.specsync/sdd.json` enables SDD with no `verification_commands`, `chough
+  next`, `chough status` and the `chough stage` reports now say that native
+  verification runs none of the project's commands, so a passing `specsync change
+  check` is not shown as proof that the tests ran, and at the test stage `next` points
+  to recording test evidence with `chough cases run` before accept (#85, FLOW-15,
+  REQ-cli-038). No gate changes and no native read is added. The `.specsync/sdd.json`
+  reader moved from src/stage.rs to a small src/policy.rs.
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns
