@@ -556,7 +556,16 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             print_json(&json!({"schema_version":1,"session":key,"entries":entries}))
         }
         InboxCommand::Fold => {
-            let key = active(root)?;
+            // Pin the session before anything is read, so the save goes to the session
+            // that was read even if another process runs `chough session use` meanwhile.
+            let relative = checkpoint_path(root)?;
+            let key = match relative
+                .strip_prefix(&format!("{DIR}/"))
+                .and_then(|file| file.strip_suffix(".json"))
+            {
+                Some(key) => key.to_string(),
+                None => active(root)?,
+            };
             let entries = pending(root, &key)?;
             let mut session = read_at(root, &session_file(&key))?;
             let folded = format!("{}/folded", inbox_dir(&key));
