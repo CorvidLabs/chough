@@ -1,6 +1,6 @@
 ---
 id: lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 75a732d8243181c375ee3c4f2651408ff9b41ab2
 ---
