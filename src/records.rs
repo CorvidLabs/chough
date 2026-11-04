@@ -133,8 +133,9 @@ pub(super) fn with_pinned_clock<T>(seconds: u64, run: impl FnOnce() -> T) -> T {
     result
 }
 
-/// Runs `run` with `native()` answering `program` with `stdout` on this thread instead of
-/// spawning it, so unit tests do not depend on a host install. Test builds only.
+/// Runs `run` with `native()` and `native_json()` answering `program` with `stdout` on
+/// this thread instead of spawning it, so unit tests do not depend on a host install.
+/// Test builds only.
 #[cfg(test)]
 pub(super) fn with_native_stdout<T>(program: &str, stdout: &str, run: impl FnOnce() -> T) -> T {
     NATIVE_STDOUT.with(|slot| slot.borrow_mut().push((program.into(), stdout.into())));
@@ -481,6 +482,21 @@ pub(super) fn read_bounded_record(path: &Path, limit: u64) -> Result<String> {
 /// (MAX_CHANGE_ARTIFACT_BYTES); native approval ledgers outgrow the 64 KiB record bound.
 pub(super) const NATIVE_RECORD_LIMIT: u64 = 4 * 1_048_576;
 
+/// Read a native SpecSync file, such as an archived `finalization.json` or `change.md` or
+/// `.specsync/sdd.json`, as text within SpecSync's own 4 MiB change-artifact bound,
+/// never Chough's 64 KiB record bound: native files are not Chough records, and a Chough
+/// bound must never decide a gate or push anyone to shorten them (LIFE-15).
+pub(super) fn read_native_text(path: &Path) -> Result<String> {
+    let bytes = read_native_record(path, NATIVE_RECORD_LIMIT)?.with_context(|| {
+        format!(
+            "native file exceeds SpecSync's {NATIVE_RECORD_LIMIT}-byte artifact bound: {}",
+            path.display()
+        )
+    })?;
+    String::from_utf8(bytes)
+        .with_context(|| format!("native file is not UTF-8: {}", path.display()))
+}
+
 /// Read a native record file read-only within `limit` bytes; `Ok(None)` when it is
 /// larger. A missing file is an `io::ErrorKind::NotFound` error.
 pub(super) fn read_native_record(path: &Path, limit: u64) -> io::Result<Option<Vec<u8>>> {
@@ -493,11 +509,15 @@ pub(super) fn bounded(value: &[u8]) -> String {
     bounded_capture(value, value.len() as u64)
 }
 
+/// The marker after a display section cut at 16 KiB. The cut is Chough's display bound
+/// only: the source is complete, and nothing should shorten it to fit (LIFE-15).
+pub(super) const DISPLAY_TRUNCATED: &str = "\n[truncated at 16384 bytes for display only; read the complete source when relevant, and never shorten the source to fit a Chough display bound]";
+
 /// Display a retained prefix of a stream that wrote `total` bytes, within 16 KiB.
 fn bounded_capture(retained: &[u8], total: u64) -> String {
     let mut result = String::from_utf8_lossy(&retained[..retained.len().min(LIMIT)]).into_owned();
     if total > LIMIT as u64 {
-        result.push_str("\n[truncated at 16384 bytes; read the source when relevant]");
+        result.push_str(DISPLAY_TRUNCATED);
     }
     result
 }
@@ -1315,6 +1335,25 @@ pub(super) fn native_json_within(
     arguments: &[&str],
     cap: Option<Duration>,
 ) -> NativeJson {
+    #[cfg(test)]
+    if let Some(stdout) = NATIVE_STDOUT.with(|slot| {
+        slot.borrow()
+            .iter()
+            .rev()
+            .find(|(name, _)| name == program)
+            .map(|(_, stdout)| stdout.clone())
+    }) {
+        return NativeJson {
+            section: Section {
+                source: format!("{} {}", program, arguments.join(" ")),
+                state: "observed".into(),
+                content: bounded(stdout.as_bytes()),
+            },
+            value: serde_json::from_str::<Value>(&stdout)
+                .ok()
+                .filter(|value| value.is_object() || value.is_array()),
+        };
+    }
     let started = Instant::now();
     let response = native_json_read(root, program, arguments, cap);
     trace_native(&response.section, started);
