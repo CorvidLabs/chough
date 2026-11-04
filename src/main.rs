@@ -6,6 +6,7 @@ mod evidence;
 mod history;
 mod identity;
 mod library;
+mod native_check;
 mod prefs;
 mod records;
 mod skill;
@@ -738,6 +739,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "iteration": checkpoint.stage.iteration,
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
+        "native_check": native_check::view(root, change.as_deref(), field("/state").and_then(Value::as_str))?,
         "native": native,
         "next_valid_action": {
             "action": cut(&assessment.action.action),
@@ -857,6 +859,7 @@ fn next_text(view: &Value) -> String {
             text(&native["approved_deltas"])
         ));
     }
+    lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
     lines.push(format!("Next: {}", text(&action["action"])));
     lines.push(format!("  Why: {}", text(&action["reason"])));
