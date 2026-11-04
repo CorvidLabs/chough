@@ -2784,3 +2784,21 @@ expected = ["tests/verification.rs::the_warning_changes_no_gate_and_adds_no_nati
 adapter = "cargo-test"
 test_target = "verification"
 test = "the_warning_changes_no_gate_and_adds_no_native_read"
+
+[[case]]
+id = "TC-cli-verification-warning-within-next-bound"
+title = "The native verification warning keeps next within its bound"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "LIFE-3"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_warning_stays_within_the_next_bound passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_warning_stays_within_the_next_bound"
