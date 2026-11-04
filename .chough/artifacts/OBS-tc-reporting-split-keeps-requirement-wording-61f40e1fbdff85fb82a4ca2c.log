@@ -1,0 +1,14 @@
+--- stdout ---
+
+running 4 tests
+test every_cli_requirement_before_the_reporting_split_is_still_in_cli_or_mapped ... ok
+test every_pre_split_cli_requirement_is_still_in_cli_or_mapped ... ok
+test moved_requirements_keep_their_wording_under_their_new_ids ... ok
+test reporting_requirements_keep_their_wording_under_their_new_ids ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/spec_split.rs (target/debug/deps/spec_split-ff782a3495c446d9)

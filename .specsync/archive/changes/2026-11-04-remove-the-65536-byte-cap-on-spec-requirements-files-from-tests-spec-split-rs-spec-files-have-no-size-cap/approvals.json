@@ -1,0 +1,45 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793835466,
+      "digest": "58b9cf1beadd3fe33ceb4f0537f5045bba67e2ad4285e716ecf80e6740f31b9f",
+      "note": "Leif chose Remove the size test, 2026-11-04; spec files have no size cap",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap",
+        "title": "Remove the 65536-byte cap on spec requirements files from tests/spec_split.rs (spec files have no size cap)",
+        "description": "Remove the 65536-byte cap on spec requirements files from tests/spec_split.rs (spec files have no size cap)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "tests/spec_split.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Test-only change: Chough bounds cover only its own .chough records (LIFE-15, REQ-cli-042); spec files have no size cap. No requirement text changes.",
+        "acceptance_criteria": [
+          "tests/spec_split.rs no longer fails when a spec requirements file is over 65536 bytes; its wording and mapping tests still pass; the two split cases expect 4 passing tests; fledge lanes run verify passes on Linux with specs/cli/requirements.md over 65536 bytes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif (0xLeif) 2026-11-04 chose Remove the size test and said the size cap is only for the files inside the .chough folder, not for anything else. Test-only; weakens no other test or gate.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793835652,
+      "digest": "264b7395b9885ff809d3bfaf6537b2814557b436b50b07964e15c71071bca5ec",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
