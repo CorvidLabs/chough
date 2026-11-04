@@ -3204,6 +3204,45 @@ fn reset_rule_uses_the_newest_reset_by_time_in_an_out_of_order_log() {
     assert_eq!(action["command"], NEW_CHANGE, "{action}");
 }
 
+/// Leif's review thread on #78: on a project with event history (the cursor `chough
+/// init` writes), the reset that began this cycle is found even after more than the
+/// 128 recent events `next` shows have been recorded since it, so the archived change
+/// stays the previous cycle's and `next` keeps naming a new native change.
+#[cfg(unix)]
+#[test]
+fn a_reset_beyond_the_recent_history_window_still_starts_this_cycle() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("archived");
+    fixture.write(".stub-validity", "exact\n");
+    fixture.write(".stub-next", "merge the PR on GitHub if it is still open\n");
+    // Initialized through the CLI directly, so the checkpoint keeps its history cursor.
+    fixture.ok(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--intent-scope",
+        "LIFE",
+        "--module",
+        "cli",
+    ]);
+    assert!(fixture.session()["history_cursor"].is_object());
+    fixture.ok(&["checkpoint", "--native-change", "old-change"]);
+    fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Closeout"]);
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    for count in 0..130 {
+        fixture.ok(&["stage", "iterate", "--note", &format!("iteration {count}")]);
+    }
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(!text.contains("is archived while"), "{text}");
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], text);
+}
+
 #[cfg(unix)]
 const RESET_COMMAND: &str = "chough stage reset --to intent --reason \"<why>\"";
 // ---------------------------------------------------------------------------
