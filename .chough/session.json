@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -647,7 +647,11 @@
     "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
-    "OBS-structural-0ceefdd961ed75d53f1b3742"
+    "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f",
+    "OBS-tc-cli-checkpoint-lock-in-project-ignored-0bdc620d8d275a5e98ff7902",
+    "OBS-tc-cli-adopt-race-writers-save-or-refuse-3f4a73ec4215638a4a9c7bda",
+    "OBS-tc-history-no-sessions-local-holds-only-lock-4053859ff887aeda5e1bb648"
   ],
   "bugs": [
     "BUG-0001",
@@ -681,7 +685,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Apply the failing-first tests, then the lock move"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
