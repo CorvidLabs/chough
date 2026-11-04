@@ -31,6 +31,43 @@ fn pinned(root: &Path) -> Option<String> {
         .and_then(|map| map.get(root).cloned())
 }
 
+#[cfg(test)]
+thread_local! {
+    static BEFORE_FOLD_SAVE: std::cell::RefCell<Option<Box<dyn FnMut()>>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+/// Runs `hook` just before `inbox fold` saves, standing in for another process's
+/// `chough session use` partway through the fold. Test builds only.
+#[cfg(test)]
+fn with_before_fold_save<T>(hook: impl FnMut() + 'static, run: impl FnOnce() -> T) -> T {
+    BEFORE_FOLD_SAVE.with(|slot| *slot.borrow_mut() = Some(Box::new(hook)));
+    let result = run();
+    BEFORE_FOLD_SAVE.with(|slot| *slot.borrow_mut() = None);
+    result
+}
+
+fn before_fold_save() {
+    #[cfg(test)]
+    BEFORE_FOLD_SAVE.with(|slot| {
+        if let Some(hook) = slot.borrow_mut().as_mut() {
+            hook();
+        }
+    });
+}
+
+/// Forgets this process's resolved session for `root`, as a fresh process would start.
+#[cfg(test)]
+fn unpin(root: &Path) {
+    if let Some(map) = PINNED
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .as_mut()
+    {
+        map.remove(root);
+    }
+}
+
 fn pin(root: &Path, relative: &str) {
     PINNED
         .lock()
@@ -555,6 +592,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                 targets.push((file, target));
             }
             if !entries.is_empty() {
+                before_fold_save();
                 checkpoint::save_checkpoint(root, &session)?;
                 fs::create_dir_all(local_path(root, &folded)?)?;
                 for (file, target) in targets {
@@ -564,5 +602,74 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             let ids: Vec<_> = entries.iter().map(|(_, entry)| entry.id.clone()).collect();
             print_json(&json!({"schema_version":1,"session":key,"folded":ids}))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Leif's review thread on #77: a `session use` in another process partway through
+    /// `inbox fold` must not save the folded session or its inbox decisions into the
+    /// newly active session's file (REQ-cli-037).
+    #[test]
+    fn a_switch_partway_through_inbox_fold_does_not_redirect_its_save() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().canonicalize().unwrap();
+        for (key, objective) in [("alpha", "Ship alpha"), ("beta", "Ship beta")] {
+            run(
+                &root,
+                SessionCommand::New {
+                    key: key.into(),
+                    objective: objective.into(),
+                    intent_scope: String::new(),
+                    modules: vec![],
+                },
+            )
+            .unwrap();
+        }
+        run(
+            &root,
+            SessionCommand::Use {
+                key: "alpha".into(),
+            },
+        )
+        .unwrap();
+        inbox(
+            &root,
+            InboxCommand::Add {
+                session: "alpha".into(),
+                from: "worker".into(),
+                kind: Kind::Decision,
+                text: "Keep the alpha decision in alpha".into(),
+            },
+        )
+        .unwrap();
+        let beta_before = fs::read(root.join(".chough/sessions/beta.json")).unwrap();
+        unpin(&root);
+        let pointer = root.join(POINTER);
+        with_before_fold_save(
+            move || fs::write(&pointer, "beta\n").unwrap(),
+            || inbox(&root, InboxCommand::Fold),
+        )
+        .unwrap();
+        assert_eq!(
+            fs::read(root.join(".chough/sessions/beta.json")).unwrap(),
+            beta_before,
+            "beta.json must keep its bytes"
+        );
+        let alpha: serde_json::Value =
+            serde_json::from_slice(&fs::read(root.join(".chough/sessions/alpha.json")).unwrap())
+                .unwrap();
+        assert_eq!(alpha["objective"], "Ship alpha");
+        assert!(
+            alpha["decisions"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|decision| decision == "Keep the alpha decision in alpha"),
+            "{alpha}"
+        );
+        unpin(&root);
     }
 }
