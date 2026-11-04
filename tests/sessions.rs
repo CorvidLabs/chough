@@ -495,3 +495,37 @@ fn fold_validates_entries_like_add() {
         assert!(fixture.exists(&file));
     }
 }
+
+/// A command resolves its session once: a `session use` in another process partway
+/// through a command does not redirect its save into the newly active session.
+#[cfg(unix)]
+#[test]
+fn a_switch_partway_through_a_command_does_not_redirect_its_save() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("approved");
+    // The SpecSync stand-in switches the active session the first time it runs after
+    // .switch-to appears, as another agent's `chough session use` would.
+    let stub = fixture.read("bin/specsync").replacen(
+        "#!/bin/sh\n",
+        "#!/bin/sh\nif [ -f .switch-to ]; then cp .switch-to .chough/local/active-session; rm .switch-to; fi\n",
+        1,
+    );
+    fixture.write("bin/specsync", &stub);
+    fixture.executable("bin/specsync");
+    sessions(&fixture);
+    fixture.ok(&["session", "use", "alpha"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    fixture.no_spec_approval("add-thing");
+    let alpha_stage = json(&fixture, ".chough/sessions/alpha.json")["stage"]["current"].clone();
+    let beta = fixture.read(".chough/sessions/beta.json");
+    fixture.write(".switch-to", "beta\n");
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(fixture.read(".chough/local/active-session"), "beta\n");
+    assert_eq!(fixture.read(".chough/sessions/beta.json"), beta);
+    let alpha = json(&fixture, ".chough/sessions/alpha.json");
+    assert_ne!(alpha["stage"]["current"], alpha_stage);
+    assert_eq!(alpha["objective"], "Ship alpha");
+}
