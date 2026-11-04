@@ -683,5 +683,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: Native change archived after approved review 5765093646; recording test, accept and done. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "New cycle from done after reset: Native change let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406 archived after Chough bot review 5770708343 (agent review); recording test, accept and done. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }
