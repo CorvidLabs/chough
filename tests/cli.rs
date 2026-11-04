@@ -1098,7 +1098,7 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     let (report, _) = next(None);
     assert_eq!(report["native_specsync"]["state"], "failed");
     let shown = report["native_specsync"]["content"].as_str().unwrap();
-    assert!(shown.starts_with("exit=Some(2)"), "{shown}");
+    assert!(shown.starts_with("exit 2\n"), "{shown}");
     assert!(shown.contains("[truncated at 16384 bytes"), "{shown}");
     assert!(shown.len() < 17_000, "{}", shown.len());
 }
