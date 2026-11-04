@@ -362,3 +362,136 @@ fn a_project_without_sessions_is_unchanged() {
     assert!(!fixture.exists(".chough/local"));
     assert!(fixture.fails(&["inbox", "fold"]).contains("sessions"));
 }
+
+fn finish(fixture: &Fixture, key: &str) {
+    fixture.ok(&["session", "use", key]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "Human: release it",
+    ]);
+    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    fixture.ok(&["stage", "advance"]);
+}
+
+fn add_entry(fixture: &Fixture, key: &str, kind: &str, text: &str) -> String {
+    fixture.ok(&[
+        "inbox",
+        "add",
+        "--session",
+        key,
+        "--from",
+        "subagent-1",
+        "--kind",
+        kind,
+        "--text",
+        text,
+    ])["id"]
+        .as_str()
+        .unwrap()
+        .to_string()
+}
+
+/// A done session with unfolded inbox entries is not archived on a switch, so its
+/// entries are not stranded; `session list` shows each session's unfolded count
+/// (review of #77).
+#[test]
+fn a_done_session_with_unfolded_entries_stays_open_on_switch() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    finish(&fixture, "alpha");
+    add_entry(&fixture, "alpha", "decision", "keep the cache");
+    let switched = fixture.ok(&["session", "use", "beta"]);
+    assert_eq!(switched["archived"], serde_json::json!([]), "{switched}");
+    assert_eq!(
+        switched["kept_open"],
+        serde_json::json!([{"key": "alpha", "inbox_unfolded": 1}]),
+        "{switched}"
+    );
+    assert!(fixture.exists(".chough/sessions/alpha.json"));
+    assert!(!fixture.exists(".chough/sessions/archive/alpha.json"));
+    let list = fixture.ok(&["session", "list"]);
+    let counts: Vec<_> = list["sessions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|session| {
+            (
+                session["key"].as_str().unwrap().to_string(),
+                session["inbox_unfolded"].as_u64().unwrap(),
+            )
+        })
+        .collect();
+    assert_eq!(counts, [("alpha".to_string(), 1), ("beta".to_string(), 0)]);
+    // Folding first lets the next switch archive it.
+    fixture.ok(&["session", "use", "alpha"]);
+    fixture.ok(&["inbox", "fold"]);
+    let switched = fixture.ok(&["session", "use", "beta"]);
+    assert_eq!(
+        switched["archived"],
+        serde_json::json!(["alpha"]),
+        "{switched}"
+    );
+}
+
+/// `inbox fold` checks every `folded/` target before it saves the session, so an
+/// existing target refuses with nothing changed and a rerun is not repeated work
+/// (review of #77).
+#[test]
+fn fold_checks_its_targets_before_saving_the_session() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha"]);
+    let first = add_entry(&fixture, "alpha", "decision", "keep the cache");
+    let second = add_entry(&fixture, "alpha", "decision", "drop the index");
+    fixture.write(
+        &format!(".chough/sessions/alpha.inbox/folded/{second}.json"),
+        "{}\n",
+    );
+    let before = fixture.read(".chough/sessions/alpha.json");
+    let refused = fixture.fails(&["inbox", "fold"]);
+    assert!(refused.contains("already folded"), "{refused}");
+    assert_eq!(fixture.read(".chough/sessions/alpha.json"), before);
+    for id in [&first, &second] {
+        assert!(fixture.exists(&format!(".chough/sessions/alpha.inbox/{id}.json")));
+    }
+    assert!(!fixture.exists(&format!(".chough/sessions/alpha.inbox/folded/{first}.json")));
+}
+
+/// `inbox fold` validates each entry the way `inbox add` does, so an edited entry with
+/// blank text or an invalid `from` is refused with nothing folded (review of #77).
+#[test]
+fn fold_validates_entries_like_add() {
+    for (field, value, expected) in [
+        ("text", "   ", "blank"),
+        ("from", "not valid!", "--from"),
+        ("text", "not an id", "evidence ID"),
+    ] {
+        let fixture = Fixture::new();
+        fixture.ok(&["session", "new", "alpha"]);
+        let kind = if expected == "evidence ID" {
+            "observation"
+        } else {
+            "decision"
+        };
+        let text = if kind == "observation" {
+            "OBS-ok"
+        } else {
+            "keep the cache"
+        };
+        let id = add_entry(&fixture, "alpha", kind, text);
+        let file = format!(".chough/sessions/alpha.inbox/{id}.json");
+        let mut record: Value = serde_json::from_str(&fixture.read(&file)).unwrap();
+        record[field] = Value::from(value);
+        fixture.write(&file, &record.to_string());
+        let before = fixture.read(".chough/sessions/alpha.json");
+        let refused = fixture.fails(&["inbox", "fold"]);
+        assert!(refused.contains(expected), "{field}: {refused}");
+        assert_eq!(fixture.read(".chough/sessions/alpha.json"), before);
+        assert!(fixture.exists(&file));
+    }
+}
