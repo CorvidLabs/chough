@@ -1,6 +1,6 @@
 ---
 id: keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy
-state: approved
+state: implementing
 type: bug_fix
 base_commit: d9269bec6ea0bc6c9e6c9f37bb9a6f6a05cd5024
 ---

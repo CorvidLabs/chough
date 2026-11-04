@@ -416,3 +416,21 @@ expected = ["tests/spec_split.rs passes: each moved body has its 7bd1b62 SHA-256
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "spec_split"]
 expect_output = ["test result: ok. 5 passed; 0 failed"]
+
+[[case]]
+id = "TC-history-no-sessions-local-holds-only-lock"
+title = "A project without sessions gains only the Git-ignored lock in .chough/local"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-11"]
+requirements = ["REQ-history-007"]
+paths = ["src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_project_without_sessions_is_unchanged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_project_without_sessions_is_unchanged"
