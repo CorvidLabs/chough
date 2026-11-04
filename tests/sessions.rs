@@ -529,3 +529,24 @@ fn a_switch_partway_through_a_command_does_not_redirect_its_save() {
     assert_ne!(alpha["stage"]["current"], alpha_stage);
     assert_eq!(alpha["objective"], "Ship alpha");
 }
+
+/// REQ-cli-007: the checkpoint merge driver covers session files too.
+#[test]
+fn the_repository_declares_the_merge_driver_for_every_session_file() {
+    let attributes =
+        fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(".gitattributes"))
+            .unwrap()
+            .replace("\r\n", "\n");
+    for pattern in [
+        ".chough/session.json",
+        ".chough/sessions/*.json",
+        ".chough/sessions/archive/*.json",
+    ] {
+        assert!(
+            attributes
+                .lines()
+                .any(|line| line == format!("{pattern} merge=chough-session")),
+            "{pattern}"
+        );
+    }
+}

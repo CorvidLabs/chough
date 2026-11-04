@@ -30,7 +30,10 @@
     ".agents/skills/chough-workflow/references/checkpoint.md",
     "src/skill.rs",
     "tests/workflow_authority.rs",
-    "tests/fixtures/workflow-at-edbc3c1-checkpoint.md"
+    "tests/fixtures/workflow-at-edbc3c1-checkpoint.md",
+    "src/evidence.rs",
+    "tests/evidence.rs",
+    "tests/spec_split.rs"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
