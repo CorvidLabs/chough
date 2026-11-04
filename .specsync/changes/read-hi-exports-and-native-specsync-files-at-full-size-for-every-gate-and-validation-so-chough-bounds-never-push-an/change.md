@@ -1,6 +1,6 @@
 ---
 id: read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
 ---

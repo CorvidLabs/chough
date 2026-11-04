@@ -292,3 +292,21 @@ expected = ["tests/spec_split.rs passes: each moved body has its a33c747 SHA-256
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "spec_split"]
 expect_output = ["test result: ok. 5 passed; 0 failed"]
+
+[[case]]
+id = "TC-reporting-approval-ledger-over-record-bound"
+title = "timing reads a native approval ledger over 64 KiB and gives its times"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15", "LIFE-10"]
+requirements = ["REQ-reporting-004"]
+paths = ["src/timing.rs", "src/records.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::native_approval_ledgers_over_the_record_bound_still_give_their_times passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "native_approval_ledgers_over_the_record_bound_still_give_their_times"

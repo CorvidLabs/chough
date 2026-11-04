@@ -7,10 +7,11 @@
   "title": "Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100)",
   "description": "Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "91a1fdd82a4e314e5037c6256f17199ef0d604f0",
   "created_at": 1793823703,
-  "updated_at": 1793824433,
+  "updated_at": 1793824499,
   "affected_specs": [
     "cli",
     "reporting"
