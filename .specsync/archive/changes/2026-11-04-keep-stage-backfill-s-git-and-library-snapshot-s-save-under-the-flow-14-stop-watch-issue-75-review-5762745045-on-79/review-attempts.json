@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "keep-stage-backfill-s-git-and-library-snapshot-s-save-under-the-flow-14-stop-watch-issue-75-review-5762745045-on-79",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "f7d2da55390fc41f8095c343f9f66a2bc25512f5",
+      "contract_digest": "7d070aec83c4e51b4e786419647929c92d76bf4d7c11e3421ca740deb31f847e",
+      "execution_digest": "fbec2356b623cf1e2d7d02cacb52fa76e41fd4d9a5defa972a07d450420b22cb",
+      "workspace_digest": "c9a88587cf135ee59b5223d29ad406556678799b64b04d3df8897d5225b09f65",
+      "timestamp": 1793770021
+    }
+  ]
+}
