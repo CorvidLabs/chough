@@ -3149,10 +3149,43 @@ fn checkpoint_refuses_a_native_reply_that_names_a_different_change() {
         assert!(refused.contains(named), "{id}: {refused}");
         assert_eq!(fixture.read(".chough/session.json"), before, "{id}");
     }
-    assert_eq!(
-        fixture.ok(&["checkpoint", "--native-change", "nameless"])["saved"],
-        true
+    let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    assert_eq!(saved["saved"], true);
+}
+
+/// Review thread on #71: a JSON reply that names no change ID does not identify the
+/// requested change, so it refuses like an unknown one and nothing is saved.
+#[cfg(unix)]
+#[test]
+fn checkpoint_refuses_a_native_reply_that_names_no_change() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fs::rename(
+        fixture.root().join("bin/specsync"),
+        fixture.root().join("bin/specsync-known"),
+    )
+    .unwrap();
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\ncase \"$3\" in\n  empty-object) printf '%s\\n' '{}' ;;\n  empty-array) printf '%s\\n' '[]' ;;\n  nameless) printf '%s\\n' '{\"summary\":{\"state\":\"draft\"}}' ;;\n  *) exec \"$(dirname \"$0\")/specsync-known\" \"$@\" ;;\nesac\n",
     );
+    fixture.executable("bin/specsync");
+    let before = fixture.read(".chough/session.json");
+    for id in ["empty-object", "empty-array", "nameless"] {
+        for extra in [vec![], vec!["--decision", "decided: ride along"]] {
+            let mut args = vec!["checkpoint", "--native-change", id];
+            args.extend(extra);
+            let refused = fixture.fails(&args);
+            assert!(
+                refused.contains("refused:native-change-unknown"),
+                "{id}: {refused}"
+            );
+            assert!(refused.contains(id), "{id}: {refused}");
+            assert_eq!(fixture.read(".chough/session.json"), before, "{id}");
+        }
+    }
     let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
     assert_eq!(saved["saved"], true);
 }

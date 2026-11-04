@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71",
+  "slug": "refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71",
+  "title": "Refuse a native change status reply that names no change ID (issue 63, review thread on #71)",
+  "description": "Refuse a native change status reply that names no change ID (issue 63, review thread on #71)",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "efa397da2f4c196d5e5120e87b7125dd25a106c1",
+  "created_at": 1793759210,
+  "updated_at": 1793759248,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "CHANGELOG.md",
+    "docs/cli.md",
+    "src/checkpoint.rs",
+    "tests/stages.rs"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With SpecSync configured chough checkpoint --native-change refuses as refused:native-change-unknown when the status reply is JSON that names neither summary.id nor change.id (for example [] or {}) and .chough/session.json stays byte-identical even with other updates in the same call; a reply that names the requested ID still saves; a reply naming another ID still refuses as refused:native-change-mismatch; docs/cli.md states it; the new test fails on the branch before the fix and fledge lanes run verify passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded follow-up for issue 63 and Leif's P2 review thread on #71 only: no new dependency or schema or output-key change and no change to stage gates or to next/status native reads",
+    "public_contract": "yes"
+  }
+}
