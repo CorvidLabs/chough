@@ -23,8 +23,25 @@ fi
 mode=${2:-full}
 # A directory this script created is removed after a passing full run; a passed-in
 # directory, a prepared cold start and a failed run's directory are kept.
+# Chough's checkpoint writer lock for this run's project stays in the temporary
+# directory after use (docs/cli.md); mark_checkpoint_lock names it once the project
+# exists, and the exit cleanup removes it in every mode, since no Chough command of
+# this run is still running then.
+checkpoint_lock=""
+mark_checkpoint_lock() {
+    chough_dir=$(cd "$work/.chough" && pwd -P)
+    if command -v sha256sum >/dev/null 2>&1; then
+        hash=$(printf '%s' "$chough_dir" | sha256sum | cut -c1-32)
+    else
+        hash=$(printf '%s' "$chough_dir" | shasum -a 256 | cut -c1-32)
+    fi
+    checkpoint_lock="$(cd "${TMPDIR:-/tmp}" && pwd -P)/chough-checkpoint-$hash.lock"
+}
 cleanup() {
     status=$?
+    if [ -n "$checkpoint_lock" ]; then
+        rm -f "$checkpoint_lock"
+    fi
     if [ -n "$created" ] && [ "$mode" = "full" ] && [ "$status" -eq 0 ]; then
         rm -rf "$work"
     elif [ -n "$created" ]; then
@@ -86,6 +103,7 @@ step "Intent: sample criteria CHECKOUT-1 and CHECKOUT-2 (sample input, already i
 hi check --json | jq -e '.problems == []' >/dev/null
 $chough init --objective "Free shipping from fifty dollars" --intent-scope CHECKOUT \
     --module shipping --host openai --host claude >/dev/null
+mark_checkpoint_lock
 specsync change adopt --json >/dev/null
 $chough pref set repeat-validation off \
     --source "Sample project setting: no repeated validation unless someone asks" >/dev/null
