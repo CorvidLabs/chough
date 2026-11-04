@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -653,7 +653,10 @@
     "OBS-tc-history-session-use-waits-for-stage-advance-e3eea25c5c0affb98bc95ced",
     "OBS-tc-history-vanished-session-leaves-no-event-b0f53c9d58b1db781869cc2b",
     "OBS-tc-history-session-use-waits-for-stage-advance-7a6125f3f1d9481f96b3a50f",
-    "OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150"
+    "OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150",
+    "OBS-tc-history-session-use-waits-for-stage-advance-8e1828e1ef1ea18d03e12611",
+    "OBS-tc-history-vanished-session-leaves-no-event-24bdee4af1db73b71a608106",
+    "OBS-tc-history-saved-event-survives-a-move-eb5e5bb43523ac1d191b24dc"
   ],
   "bugs": [
     "BUG-0001",
@@ -687,7 +690,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
