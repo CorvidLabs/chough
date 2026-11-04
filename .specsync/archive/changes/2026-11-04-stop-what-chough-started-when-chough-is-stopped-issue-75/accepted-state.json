@@ -7,11 +7,11 @@
   "title": "Stop what Chough started when Chough is stopped (issue 75)",
   "description": "Stop what Chough started when Chough is stopped (issue 75)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "5b69b2f0ffee9c0a8f322e557421d8f4de8a3e07",
   "created_at": 1793758205,
-  "updated_at": 1793768572,
+  "updated_at": 1793770053,
   "affected_specs": [
     "cli"
   ],
