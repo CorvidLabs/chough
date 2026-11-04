@@ -1,10 +1,9 @@
 {
   "schema_version": 2,
-  "objective": "Split the cli spec: REQ-cli-018 and REQ-cli-025 to 027 move to a new history module as REQ-history-001 to 004 with wording unchanged, so specs/cli/requirements.md has headroom under the 65536-byte bound",
+  "objective": "One context knowledge directory: knowledge/ at the root, librarian on by default with an opt-out, one summary per archived change, and raw proof outside the newest 3 archived changes leaves the working tree only after an authorized, previewed, validity-checked step",
   "intent_scope": "LIFE",
   "modules": [
-    "cli",
-    "history"
+    "cli"
   ],
   "stage": {
     "current": "done",
@@ -12,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to",
+  "native_change": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -35,6 +34,18 @@
       "FLOW-3",
       "LIFE-8",
       "LIFE-11",
+      "KNOW-1",
+      "KNOW-2",
+      "KNOW-3",
+      "KNOW-4",
+      "KNOW-5",
+      "KNOW-6",
+      "KNOW-7",
+      "KNOW-8",
+      "KNOW-9",
+      "KNOW-10",
+      "KNOW-11",
+      "KNOW-12",
       "LIFE-12",
       "LIFE-13",
       "LIFE-14"
@@ -61,6 +72,8 @@
       "REQ-history-004",
       "REQ-cli-028",
       "REQ-cli-032",
+      "REQ-cli-015",
+      "REQ-cli-033",
       "REQ-history-001"
     ],
     "cases": [
@@ -122,7 +135,14 @@
       "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
       "TC-cli-native-next-action-is-not-repeated-in-the-next-line",
       "TC-cli-delta-guard-refusals-name-the-agent-actor",
-      "TC-history-split-keeps-requirement-wording"
+      "TC-cli-librarian-default-on-knowledge",
+      "TC-cli-knowledge-archive-entries",
+      "TC-cli-archive-summary-preview",
+      "TC-cli-archive-summary-apply",
+      "TC-cli-knowledge-entries-bounded",
+      "TC-cli-archive-summary-fails-closed",
+      "TC-history-split-keeps-requirement-wording",
+      "TC-cli-next-searches-large-context-md"
     ],
     "design": [],
     "files": [
@@ -276,6 +296,12 @@
     "Agent corvid-agent root applies actual standing through-PR permission and explicit Merge approved, green PRs and resynchronize plus latest finish-these-PRs request to repair existing REQ-cli-032 atomic refusal. Preserve every old record and bound; no new human as-is grade or numeric choice. Root alone closes this scope.",
     "Human source: 0xLeif replied \"Yes I approve!\" in chat on 2026-11-03 to the explicit one-scope exception request for PR51: record native review as corvid-agent for refuse-over-bound-checkpoint-candidates-before-publishing-gate-history, immediately ship, then merge after fresh checks pass. This explicitly overrides the automatic reviewer interpretation of the AGENTS.md agent-label rule for this scope only. The acting account stays corvid-agent; no cold-start Pass grade, numeric choice, release, deployment or cleanup approval is inferred.",
     "Agent corvid-agent applies Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged.",
+    "Human (Leif, chat 2026-11-03 8:09-8:27 AM MT): Q1 'Keep only a summary; raw files stay recoverable from git', Q2 'Keep the newest 3 archived changes hot', Q3 'Librarian on everywhere with an opt-out', Q4 'Use knowledge/ at the project root', and yes to the drafted intent; captured as KNOW-1..12 in hi/knowledge.md",
+    "Agent: deferred, not captured: duplicate or contradicting lesson flags, scoped lessons in next, retired-lesson history, status hot-folder counts and outside artifact storage (#14 item 3)",
+    "Agent authority: corvid-agent acts under Leif's standing through-PR authority (7:49 AM MT) and his 8:27 AM MT intent answers; no release, deploy, live cleanup of this repository's .chough history or fabricated human acceptance",
+    "Repo dry run of chough library archive (preview only, nothing written): 52 archives (3 hot, 49 cold), 579 listed observation sets, 0 eligible, 0 reclaimable bytes. SpecSync verification manifests are cumulative, so the newest archive lists all 579 present records and every set is protected as hot; 83 are protected only by hot listings (about 614 KB). Leif decides whether hot should mean the archive that first listed a set; no live cleanup was run.",
+    "src/skill.rs is outside this change's approved affected paths, so the KNOWN_PREVIOUS digest for main 0363d4a references/librarian.md is not added here; until a follow-up change adds it, skill status reports an installed 0363d4a librarian.md as edited and skill update keeps it rather than replacing it.",
+    "Review 5755705790 fixes: knowledge entries are bounded (first-listed paths, at most 100 rows, 64 KiB) and built in memory before writing; apply fails closed when SpecSync cannot report an affected archive's validity and restores on any error after the first ledger line. Both regression tests failed first on a53e604 src. src/skill.rs KNOWN_PREVIOUS for librarian.md stays a follow-up: SpecSync 6.1.2 cannot widen affected_paths after draft (change correct accepts only public_contract and architecture_risk), so widening would bypass the native guard. corvid-agent, under Leif's approved KNOW intent relayed by the parent agent.",
     "decided: intent LIFE-12..14 approved because Leif (0xLeif) answered the interview 'Only the shared .agents copy' and on 2026-11-03 8:27 AM MT 'Remove .claude entirely', and the parent relayed his yes as intent approval; his next decision is final acceptance",
     "Agent corvid-agent assumption: only the claude host is remapped to .agents/skills; codex, cursor, gemini and grok keep their directories because Leif's 8:27 AM answer named .claude only",
     "Agent corvid-agent applies Human authority: Leif (0xLeif) chat 2026-11-03 8:09-8:27 AM MT interview answers 'Only the shared .agents copy' and 'Remove .claude entirely' (relayed intent approval; final acceptance is his next decision). Covered scope: claude->.agents mapping, legacy report, explicit remove-legacy, this repo's .claude removal, docs. Limits: other hosts unchanged, edited legacy files kept, no release",
@@ -389,6 +415,9 @@
     "Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed",
     "fledge lanes run verify passed all 9 steps (253 tests, 0 failed) on local Linux x86_64 with hi 0.8.0, fledge 1.8.0, specsync 6.1.2 after the scoped check",
     "chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy.",
+    "Failure-first: the default-on and archive-entry cases failed at 0363d4a (OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834, OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8); the two REQ-cli-033 tests failed at 0363d4a in cargo test (unrecognized subcommand / not authorized) but could not be recorded as cases before the requirement materialized. All four cases now pass.",
+    "Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).",
+    "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections).",
     "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb",
     "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)"
   ],
@@ -598,6 +627,24 @@
     "OBS-tc-cli-native-next-action-is-not-repeated-in-the-next-line-cc87caa5e7cfb2f2ebc0450b",
     "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0",
     "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a",
+    "OBS-tc-cli-archive-summary-apply-80a2a6e3c6ec8bc4e18a7a26",
+    "OBS-tc-cli-archive-summary-preview-1f2c89765aee431f36668db2",
+    "OBS-tc-cli-knowledge-archive-entries-794db939bed655f623b8a44b",
+    "OBS-tc-cli-librarian-default-on-knowledge-2dcb29dd56d16f75384484c1",
+    "OBS-tc-cli-archive-summary-apply-eb8be0166a59ac65618579ef",
+    "OBS-tc-cli-archive-summary-preview-b9b8f9d5b85bc0d07e74d888",
+    "OBS-tc-cli-knowledge-archive-entries-5f87ff8883f726e6614de2db",
+    "OBS-tc-cli-librarian-default-on-knowledge-12316a36b3c0df407410b76a",
+    "OBS-tc-cli-archive-summary-apply-73bd07d530eac90204447d25",
+    "OBS-tc-cli-archive-summary-preview-d0a76434022c89c7008e8d0a",
+    "OBS-tc-cli-knowledge-archive-entries-e16e5b4bb89ce6ef2835c056",
+    "OBS-tc-cli-librarian-default-on-knowledge-ab75b0dd66df0f5ca429d3fc",
+    "OBS-tc-cli-archive-summary-apply-017af1fee70a2b18d13ce95a",
+    "OBS-tc-cli-archive-summary-fails-closed-d96abea42ebd8134f6a36f36",
+    "OBS-tc-cli-archive-summary-preview-8f893d16e89c4e10f42fdec2",
+    "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
+    "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
+    "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
     "OBS-structural-0ceefdd961ed75d53f1b3742"
   ],
   "bugs": [
@@ -634,5 +681,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merged after green hosted checks; then re-merge main into #55"
+  "next_action": "C is archived on #66 (8494b0e). D (next's context.md search at any size) is implemented and verified; the parent requests D's independent review, then review, finalize and the stage moves to done."
 }

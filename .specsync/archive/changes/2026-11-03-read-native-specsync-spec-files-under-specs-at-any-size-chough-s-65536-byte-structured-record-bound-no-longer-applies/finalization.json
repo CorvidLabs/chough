@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies",
+  "implementation_commit": "f4c9d29d84c986022295d9aac609f9ff30126199",
+  "implementation_tree": "a4011df1dd35ac51e465fd9839964f1e7ab4a660",
+  "contract_digest": "9da0350ad754fc39da803216b8c170e95ad419990fb26accbb9ebeeef1611c52",
+  "workspace_digest": "895ac4d303c0f685396f8fd864415ca408564243cb872b750a101c6b9694d978",
+  "closing_digest": "d4466bfb448f4e080a7d14ecc3c362ea42b1a9cfe2dda4fa320d745095907cf0",
+  "review_digest": "f55a25840e124bfbaa0a510f972896bf6bba8a69535efd786afccb97708c58a4",
+  "finalization_digest": "37a999017d7a048d476d20117ea568d3d9321402efd18f1bfa220ad6c2a82675",
+  "timestamp": 1793740164
+}

@@ -22,8 +22,8 @@ const KEYS: &[(&str, &[&str], &str)] = &[
         &["capture-only", "propose-change"],
         "capture-only",
     ),
-    ("librarian", &["off", "on"], "off"),
-    ("library-dir", &[], "library"),
+    ("librarian", &["off", "on"], "on"),
+    ("library-dir", &[], "knowledge"),
     ("required-lane", &[], ""),
     ("retention", &["off", "auto"], "off"),
 ];

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-checkpoint-byte-bound-is-131072-6d4b9b6a2aec8a9a0aa5857b",
+  "criteria": [
+    "LIFE-11",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-032"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test cli -- --exact checkpoint_byte_bound_is_exactly_131072 for TC-cli-checkpoint-byte-bound-is-131072: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-checkpoint-byte-bound-is-131072-6d4b9b6a2aec8a9a0aa5857b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-checkpoint-byte-bound-is-131072-6d4b9b6a2aec8a9a0aa5857b.log": "d8283d131e2c172dde9d5e73e82a42637f2b7826e29ebd2a3d527e48c8808b7b"
+  },
+  "observed_at_unix_seconds": 1793727046,
+  "snapshot": {
+    "revision": "33b97876e64f989f1a7c3c4e9a93d0d955002e24",
+    "dirty": false,
+    "fingerprint": "2b77038d1aaca7f157ea3373c1b02190affbf00a7eea6b6f954982b9279b39e4",
+    "content": "751e074c87ef6416a2da9a0e743fc215858f016cec1e268bd07bc450ed2587c9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-checkpoint-byte-bound-is-131072",
+      "digest": "60b21844548598c72747edbfbc93cc678935efd2c0432e1ba9dcb6b8293a6c95"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "checkpoint_byte_bound_is_exactly_131072"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
