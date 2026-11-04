@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71",
+  "implementation_commit": "94fe794a7d2998a5681aeb89e5d2dc863ed0865e",
+  "implementation_tree": "b3884fece03eb7d9aa63743147d89fe0f712d2a7",
+  "contract_digest": "2109d9c2df3881d68f3b2a47977c18f4021ea281246add000fd0a811dbd7787c",
+  "workspace_digest": "ed9a14be76b2bcb638b356bd933a185c44a212fe5db0f7d43dae31ea0253688c",
+  "closing_digest": "080ffb603d8db6043236d96b4ea2af2d3d445c67485d4bff36db272c08403684",
+  "review_digest": "c1800cc88979a48334983860713dc5c6604ed9c2941b2af2fb66ea4ba62112d3",
+  "finalization_digest": "79bffa9b3873528c2a680a1af56283d3c764535ff5d79c89e4389fbba8a61037",
+  "timestamp": 1793764282
+}

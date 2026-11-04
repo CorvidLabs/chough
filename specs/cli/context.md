@@ -34,7 +34,7 @@ Later native changes, each approved by 0xLeif and archived under
 - PR #17: keep evidence current across commits and SpecSync bookkeeping; verify bugs
   only by a pass observed after the failure (D-018).
 - PR #15: report how long stages, tests, bug fixes and human decisions took
-  (`chough timing`, REQ-cli-020).
+  (`chough timing`, REQ-reporting-001).
 - PR #18: run the SpecSync archive gate before every CI job.
 - PR #16: bundle hygiene, case binding environment, colour-safe matching and
   actionable requirement and bug errors.

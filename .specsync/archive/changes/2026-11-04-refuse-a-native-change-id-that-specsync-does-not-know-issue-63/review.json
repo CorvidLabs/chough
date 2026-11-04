@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "e3ff647f2fdca1fd345ff459ddab7d491b64a82b",
+  "contract_digest": "b1c825b4894bbd1e5714bab0fc47b6844fab95394d43a515cfd760a135609557",
+  "execution_digest": "0ef68557f177951eb0f5a0036d4d8ad577907b361497b736fccc64beca2e8c4d",
+  "workspace_digest": "a5213d6fca721827a3c52084cdc95e994a515c3f4940cc984790dff821ffa625",
+  "timestamp": 1793757723
+}
