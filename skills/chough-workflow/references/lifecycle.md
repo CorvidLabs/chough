@@ -112,3 +112,12 @@ deltas and other artifacts makes it stale. A record without a content identity, 
 an earlier Chough, keeps the revision-bound comparison and is stale after any commit.
 The records do not authenticate a witness or verify a remote artifact. A changed
 input, artifact, case definition or environment makes the observation stale.
+
+## Moves that already happened
+
+When a stage moved outside Chough (for example in a subagent), record it with
+`chough stage backfill --at <original time> --commit <rev> --quote "<the words it rests
+on>"` rather than advancing now with "recorded after the fact" in a note. Native state
+is still read now and every advance refusal applies. The quote is evidence only: it
+never records a human approval or review, so record human gates and native approvals
+the usual way when they happen.
