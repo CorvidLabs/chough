@@ -1,0 +1,40 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793804818,
+      "digest": "5d482c223b1a543e8f2fa0f40fb7f4f5ba9e3b532d75ec6376b0df76487a910c",
+      "note": "Bounded bug fix from review thread 4465229406 on #77 (Leif's agent), under Leif's standing Chough maintainer authority of 2026-11-03; recorded by corvid-agent, not a human approval",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406",
+        "title": "Let chough session new accept the SpecSync module IDs that init accepts, such as chat.service (review thread 4465229406 on #77)",
+        "description": "Let chough session new accept the SpecSync module IDs that init accepts, such as chat.service (review thread 4465229406 on #77)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "src/sessions.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Code-only fix: session new checked --module with the session-key rule instead of the SpecSync module-ID rule that init, checkpoint, bugs, evidence and cases already use (#56); no requirement text names a module-ID rule, so no canonical spec changes",
+        "acceptance_criteria": [
+          "Source: review thread 4465229406 on #77 (Leif's agent): chough session new --module chat.service fails while chough init --module chat.service works. Outcomes: session new accepts every module ID init accepts, such as chat.service and identity-wipe.service, and stores them in the session; module IDs SpecSync refuses, such as a/b, .., a trailing dot or a leading space, are refused with the same invalid module name message as init and no session file written; a failing test comes first; fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Reuse records::valid_module_name, the SpecSync 6.1.2 module-ID rule init already uses (#56), rather than a new rule; refuse with nothing written as before; no requirement text changes; no em or en dashes in prose",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
