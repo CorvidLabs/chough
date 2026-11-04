@@ -1074,7 +1074,7 @@ pub(super) fn assess(
         // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
         Action {
             action: format!("Continue test: {}", session.next_action),
-            reason: "Accept needs recorded test evidence before accept: run the affected cases (`chough cases list` shows them) or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
+            reason: "Recorded test evidence is needed before accept: run the affected cases (`chough cases list` shows them) or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
             command: Some("chough cases run <case-id> --environment <env>".into()),
         }
     } else {

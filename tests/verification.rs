@@ -134,7 +134,7 @@ fn the_test_stage_points_to_recorded_test_evidence_before_accept() {
             action["reason"]
                 .as_str()
                 .unwrap_or_default()
-                .contains("recorded test evidence before accept"),
+                .contains("Recorded test evidence is needed before accept"),
             "{action:#}"
         );
     }
