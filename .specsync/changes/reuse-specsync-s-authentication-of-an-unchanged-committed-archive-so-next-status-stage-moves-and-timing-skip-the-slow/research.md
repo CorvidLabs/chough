@@ -9,3 +9,4 @@ artifact: research
 - Porting that check would duplicate SpecSync's lifecycle logic in Chough, which REQ-cli-028 and the hard rule forbid. Replaying SpecSync's own verdict for byte-identical inputs keeps SpecSync the authority.
 - `.github/scripts/check-specsync-archive.py` authenticates the same way, by requiring change and summary state archived and validity authenticated-history from `specsync change status <id> --json`.
 - Archives without an accepted-state snapshot or an acceptance manifest are judged partly from files outside the archive (legacy reconstruction), so they are never recorded.
+- `authenticated_accepted_transition_for` walks reachable Git history for the accepted transition and the archive's introduction, which is why the read takes about 47 seconds on Raven, and why the cache key must pin the committed tree and a reachable commit, not only the bytes.
