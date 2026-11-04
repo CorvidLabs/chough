@@ -1,6 +1,6 @@
 ---
 id: let-chough-cases-link-a-requirement-that-the-checkpoint-s-approved-native-change-adds-before-it-is-materialized-and
-state: verifying
+state: archived
 type: feature
 base_commit: d673efc9fadd00953cf9e42dad96e08f3c76103c
 ---
