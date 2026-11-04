@@ -40,6 +40,47 @@
       "approved_delta_digests": {
         "cli": "3015c532d756708d63ff03bffdff3d9a80549f986902c71651eb4251bcb9392b"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793813560,
+      "digest": "fb0899550161890e898a31ae92822ffd7ccdb1978c86544d983b1fddf2b281d8",
+      "note": "Re-approval recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'): REQ-cli-041 now also skips the trim for a recorded retention off, after the corvid-agent review on #97 found a human's recorded off was overridden; this keeps KNOW-13's opt-out by recorded preference. Scope otherwise unchanged. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88",
+        "title": "Trim old proof automatically when a change reaches done with the librarian on, and let retention manual opt out (issue 88)",
+        "description": "Trim old proof automatically when a change reaches done with the librarian on, and let retention manual opt out (issue 88)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/library.rs",
+          "src/prefs.rs",
+          "src/stage.rs",
+          "tests/librarian_trim.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With defaults stage advance into done reports trimmed and prunes the cold archived proof that library archive would with a ledger entry whose authority names KNOW-13. With retention manual or the librarian off it reports skipped and removes nothing. With a native change open it reports refused naming it and removes nothing and done is still recorded. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded change for issue 88 under KNOW-13 as Leif chose on 2026-11-04 (auto-trim at done, retention manual opts out); the summary rules of REQ-cli-033 and KNOW-10 and KNOW-11 are kept; runs only on the move into done, never in next or status; never undoes the move",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "4d5967a88af702fb7029fac059a1db6057d6b9815c4c9f9c39e2956963b4a564"
+      }
     }
   ],
   "reopenings": []
