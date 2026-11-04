@@ -85,6 +85,49 @@
         "cli": "5fc7c885814915c0f119da0329ec25b0426c6d97d9055e353aef313102b8feed",
         "history": "70a7117d5fb3a7773abb1230a3a4d0afa9fa08024968b2468ddf8e57b0f779ea"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793807535,
+      "digest": "d5317fbc76fdea75b8c6af361f29b65eaa8808307e70feeba2012dc1570a2eb2",
+      "note": "Re-approval recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'): the only delta change restores the subject 'inbox fold' in REQ-history-006, a wording error the #90 review found; scope and behavior are unchanged. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no",
+        "title": "Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)",
+        "description": "Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/main.rs",
+          "src/sessions.rs",
+          "tests/next.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough next shows the checkpoint open questions in text and JSON bounded to 10 with their total and chough status reports them,A question folded from a session inbox appears in next,session list reports an archived session with status archived,inbox add of an observation entry whose ID has no evidence record still adds it and warns on stderr naming the ID and inbox list marks it recorded false,Each new test fails on 290cce3 and fledge lanes run verify passes on Linux"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 84 under LIFE-3 and DRIVE-3; item b is a warning only, as Leif chose on 2026-11-04; stacked on #77 at 290cce3 because items a and b live in its sessions code; no gate change; the next view stays within 16384 bytes; inbox entries still never edit a session",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "5fc7c885814915c0f119da0329ec25b0426c6d97d9055e353aef313102b8feed",
+        "history": "d125e7b1930480dc9fa34d26f28dec76ed8fb7059f8c1bbaced5f56c666ad87e"
+      }
     }
   ],
   "reopenings": []
