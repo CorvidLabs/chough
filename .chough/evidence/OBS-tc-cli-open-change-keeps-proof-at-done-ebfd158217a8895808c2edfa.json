@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-open-change-keeps-proof-at-done-ebfd158217a8895808c2edfa",
+  "criteria": [
+    "KNOW-11",
+    "KNOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-041"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test librarian_trim -- --exact an_open_native_change_keeps_proof_and_the_move_still_succeeds for TC-cli-open-change-keeps-proof-at-done: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-open-change-keeps-proof-at-done-ebfd158217a8895808c2edfa.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-open-change-keeps-proof-at-done-ebfd158217a8895808c2edfa.log": "a14687a4649333e759b31132707248c6c665ce427213843ba9436c4a2b175edd"
+  },
+  "observed_at_unix_seconds": 1793812419,
+  "snapshot": {
+    "revision": "457a4af979db7874b1c88212c04928e8254f3b33",
+    "dirty": false,
+    "fingerprint": "b519ca556e59de6e392dfa2bb1891fa62750b4d88a3c5178afdeba501ec3c949",
+    "content": "1cdce5713d60226e5309afea45907992a7b0da3c30b4e0f1c170bb322220fd5d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-open-change-keeps-proof-at-done",
+      "digest": "d95e74e285e3cda157cc790c60f8c9567283beb36764d0df2a728724690f6187"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "librarian_trim",
+    "--",
+    "--exact",
+    "an_open_native_change_keeps_proof_and_the_move_still_succeeds"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
