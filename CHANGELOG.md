@@ -9,7 +9,8 @@ All notable changes to Chough are recorded here. The format follows
 - `inbox add` now takes the checkpoint writer lock, so a concurrent `session use` can no
   longer archive the session between its check and its write and strand the entry, and
   evidence retention protects observations named by unfolded inbox entries (#98,
-  REQ-history-009).
+  REQ-history-009). Each entry is published whole, so an add stopped while writing leaves
+  no partial entry behind.
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns
