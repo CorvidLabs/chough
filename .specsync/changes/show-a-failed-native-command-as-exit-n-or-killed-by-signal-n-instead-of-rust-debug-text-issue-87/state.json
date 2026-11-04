@@ -7,10 +7,11 @@
   "title": "Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87)",
   "description": "Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "91a1fdd82a4e314e5037c6256f17199ef0d604f0",
   "created_at": 1793807944,
-  "updated_at": 1793807977,
+  "updated_at": 1793808114,
   "affected_specs": [
     "cli"
   ],

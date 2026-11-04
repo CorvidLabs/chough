@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 39
+version: 40
 status: active
 files:
   - src/main.rs
@@ -244,3 +244,4 @@ provider, runtime or hosted service.
 | 37 | 2026-11-04 | refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71: Refuse a native change status reply that names no change ID (issue 63, review thread on #71) |
 | 38 | 2026-11-04 | split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new: Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound |
 | 39 | 2026-11-04 | order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76: Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76) |
+| 40 | 2026-11-04 | show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87: Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87) |

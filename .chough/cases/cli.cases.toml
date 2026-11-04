@@ -2694,3 +2694,39 @@ expected = ["tests/next.rs::next_searches_a_context_md_larger_than_4_mib passes"
 adapter = "cargo-test"
 test_target = "next"
 test = "next_searches_a_context_md_larger_than_4_mib"
+
+[[case]]
+id = "TC-cli-failed-native-exit-in-plain-words"
+title = "A failed native command is shown as exit N"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-003"]
+paths = ["src/records.rs", "tests/native_failure.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_failure.rs::a_failed_native_read_shows_its_exit_in_plain_words passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_failure"
+test = "a_failed_native_read_shows_its_exit_in_plain_words"
+
+[[case]]
+id = "TC-cli-native-killed-by-signal-says-so"
+title = "A native command ended by a signal is shown as killed by signal N"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-003"]
+paths = ["src/records.rs", "tests/native_failure.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_failure.rs::a_native_read_killed_by_a_signal_says_so passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_failure"
+test = "a_native_read_killed_by_a_signal_says_so"
