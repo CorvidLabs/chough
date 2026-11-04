@@ -15,7 +15,9 @@ artifact: design
     `failed_commands` (`{"total", "items": [{"command", "exit_code"}]}`, at most 3,
     commands cut to 512 bytes); `null` when there is no attempts file.
   - `not_passed_for_tree`: true when the native state `next` already read is
-    `approved` or `implementing`; `note` then says SpecSync keeps no reason when it
+    `approved` or `implementing`, or `verifying` with a `handoff.readiness` other than
+    `safe` (the tree moved after the last check; #91 review); a `verifying` reply with no
+    readiness gives an "unknown" note instead; `note` then says SpecSync keeps no reason when it
     refuses before verifying and names `specsync change check <id>`.
   - `unknown`: the reason when the file cannot be read, is oversized or malformed;
     `last_attempt` is then `null`, never "no failure".

@@ -739,7 +739,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "iteration": checkpoint.stage.iteration,
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
-        "native_check": native_check::view(root, change.as_deref(), field("/state").and_then(Value::as_str))?,
+        "native_check": native_check::view(root, change.as_deref(), summary)?,
         "native": native,
         "next_valid_action": {
             "action": cut(&assessment.action.action),

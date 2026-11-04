@@ -35,8 +35,11 @@ struct Command {
 /// The `native_check` field of the next view: `null` with no recorded native change or
 /// no workspace under `.specsync/changes/` (an archived change), otherwise the latest
 /// recorded attempt, whether the check has not passed for this tree, and why it is
-/// unknown when the attempts record cannot be read.
-pub(super) fn view(root: &Path, change: Option<&str>, state: Option<&str>) -> Result<Value> {
+/// unknown when the attempts record cannot be read. `summary` is the `summary` of the
+/// native status read `next` already made: its `state`, and for `verifying` its
+/// `handoff.readiness`, which SpecSync sets to `safe` only while its last check still
+/// matches this tree (#91 review). No other native read is made.
+pub(super) fn view(root: &Path, change: Option<&str>, summary: Option<&Value>) -> Result<Value> {
     let Some(change) = change.filter(|change| valid_change_id(change)) else {
         return Ok(Value::Null);
     };
@@ -44,12 +47,45 @@ pub(super) fn view(root: &Path, change: Option<&str>, state: Option<&str>) -> Re
     if !local_path(root, &workspace)?.is_dir() {
         return Ok(Value::Null);
     }
-    let not_passed = matches!(state, Some("approved" | "implementing"));
-    let note = not_passed.then(|| {
-        format!(
-            "The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); run `specsync change check {change}` to see it."
-        )
-    });
+    let state = summary
+        .and_then(|summary| summary.get("state"))
+        .and_then(Value::as_str);
+    let handoff = summary.and_then(|summary| summary.get("handoff"));
+    let readiness = handoff
+        .and_then(|handoff| handoff.get("readiness"))
+        .and_then(Value::as_str);
+    let check = format!("run `specsync change check {change}`");
+    let (not_passed, note) = match (state, readiness) {
+        (Some("approved" | "implementing"), _) => (
+            true,
+            Some(format!(
+                "The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); {check} to see it."
+            )),
+        ),
+        (Some("verifying"), Some("safe")) => (false, None),
+        (Some("verifying"), Some(_)) => {
+            let reason = handoff
+                .and_then(|handoff| handoff.get("reason"))
+                .and_then(Value::as_str)
+                .map_or_else(
+                    || "its last check no longer matches this tree".to_string(),
+                    crate::cut,
+                );
+            (
+                true,
+                Some(format!(
+                    "The native check has not passed for this tree: SpecSync says {reason}; {check}."
+                )),
+            )
+        }
+        (Some("verifying"), None) => (
+            false,
+            Some(format!(
+                "Whether the last native check matches this tree is unknown: SpecSync's status gave no readiness; {check} to be sure."
+            )),
+        ),
+        _ => (false, None),
+    };
     let (last_attempt, unknown) =
         match latest(root, &format!("{workspace}/verification-attempts.json")) {
             Ok(attempt) => (attempt, None),
@@ -148,6 +184,9 @@ pub(super) fn lines(check: &Value) -> Vec<String> {
             let total = failed["total"].as_u64().unwrap_or(0);
             if total > shown.len() as u64 {
                 shown.push(format!("{} more", total - shown.len() as u64));
+            }
+            if shown.is_empty() {
+                shown.push("no failing command recorded".into());
             }
             lines.push(format!(
                 "Native check: last attempt failed at {at} on {commit}: {}",

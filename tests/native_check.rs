@@ -150,7 +150,10 @@ fn next_says_when_the_native_check_has_not_passed_for_this_tree() {
         "{shown}"
     );
 
+    // A verifying change whose last check SpecSync reports current gets no note; one
+    // without readiness is covered by a_verifying_change_without_readiness_reports_freshness_unknown.
     let verifying = project("verifying");
+    verifying.write(".stub-handoff", CURRENT);
     let next = verifying.ok(&["next", "--json"]);
     assert_eq!(
         next["native_check"]["not_passed_for_tree"], false,
