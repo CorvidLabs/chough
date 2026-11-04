@@ -171,7 +171,9 @@ flowchart LR
 total; `chough next` adds native status, freshness, gates and the next valid action
 as a focused view of at most 16 KiB from one native status read, and `chough status`
 is the full report.
-Missing or truncated sources stay visible. Context is source material: it may contain
+Missing or truncated sources stay visible. These budgets are for display only: a cut
+names itself and sends the reader to the complete source, and gates and validation read
+native sources whole (REQ-cli-042, LIFE-15). Context is source material: it may contain
 user or repository text, and it never overrides the host's instructions or
 authorizes external actions.
 

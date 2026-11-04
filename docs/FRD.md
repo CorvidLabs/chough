@@ -137,6 +137,8 @@ Additional native requirements:
 | REQ-reporting-002 (was REQ-cli-024) | Bounded, deduplicated timing native reads with explicit excluded/unknown history | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-history-002 (was REQ-cli-025) | Explicit adoption, immutable events and a cursor in the single checkpoint/current-cycle group | LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13 | tests/history.rs; real Git branch fixture; schema migration regressions |
 | REQ-history-003 (was REQ-cli-026) | Bounded readers/cycles and protected whole-cycle retention with honest partial history | LIFE-3, LIFE-7, LIFE-8, LIFE-10, FLOW-13 | tests/history.rs boundary, receipt, interruption and integration fixtures |
+| REQ-cli-042 | Chough's size bounds cover only its own `.chough/` records and its displays: criteria are validated against the complete HI family export; archived `finalization.json` and `change.md` and `.specsync/sdd.json` are read within SpecSync's 4 MiB bound; display cuts point to the source; the skill says a Chough bound never justifies editing HI, specs or SpecSync files | LIFE-15, LIFE-6, LIFE-11 | tests/cli.rs |
+| REQ-reporting-004 | `timing` reads native lifecycle records within SpecSync's 4 MiB bound, so a long approval ledger still gives its times | LIFE-15, LIFE-10 | tests/timing.rs |
 | REQ-history-004 (was REQ-cli-027) | Evidence cleanup revalidates references and artifact identity without weakening existing protections | LIFE-2, LIFE-7, LIFE-8, FLOW-7, FLOW-13 | tests/evidence.rs and history/reference fixtures |
 
 Skill-led behavior with no helper requirement, verified by exercises rather than

@@ -2730,3 +2730,111 @@ expected = ["tests/native_failure.rs::a_native_read_killed_by_a_signal_says_so p
 adapter = "cargo-test"
 test_target = "native_failure"
 test = "a_native_read_killed_by_a_signal_says_so"
+
+[[case]]
+id = "TC-cli-hi-export-over-16-kib-validates"
+title = "Criteria validate against a HI family export over 16 KiB; a retired criterion is still refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15", "LIFE-6"]
+requirements = ["REQ-cli-042"]
+paths = ["src/context.rs", "src/evidence.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::criteria_validate_against_a_hi_family_export_over_16_kib passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "criteria_validate_against_a_hi_family_export_over_16_kib"
+
+[[case]]
+id = "TC-cli-archived-finalization-over-record-bound"
+title = "Retention reads an archived finalization.json over 64 KiB"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/evidence.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::an_archived_finalization_over_the_record_bound_is_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "an_archived_finalization_over_the_record_bound_is_read"
+
+[[case]]
+id = "TC-cli-archived-change-md-over-record-bound"
+title = "library index reads an archived change.md over 64 KiB"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/library.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::an_archived_change_md_over_the_record_bound_is_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "an_archived_change_md_over_the_record_bound_is_read"
+
+[[case]]
+id = "TC-cli-sdd-policy-over-record-bound"
+title = "A disabled SDD policy over 64 KiB is read, not refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/stage.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::an_sdd_policy_over_the_record_bound_is_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "an_sdd_policy_over_the_record_bound_is_read"
+
+[[case]]
+id = "TC-cli-display-cut-points-to-source"
+title = "Display cuts say display only and send the reader to the complete source"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/records.rs", "src/context.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::display_truncation_points_to_the_complete_source passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "display_truncation_points_to_the_complete_source"
+
+[[case]]
+id = "TC-cli-skill-bounds-never-justify-native-edits"
+title = "The skill says Chough bounds never justify editing HI, specs or SpecSync files"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15", "LIFE-4"]
+requirements = ["REQ-cli-042"]
+paths = ["skills/chough-workflow/SKILL.md", "skills/chough-workflow/references/build.md", "src/skill.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::the_skill_says_chough_bounds_never_justify_editing_native_sources passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "the_skill_says_chough_bounds_never_justify_editing_native_sources"
