@@ -643,15 +643,100 @@ fn take(shared: &Mutex<Retained>) -> (Vec<u8>, u64, bool) {
     )
 }
 
-/// Stop the command and its descendants by signalling the process group it leads.
-/// Returns true when the group was signalled.
+/// Whether this process made itself a child subreaper (Linux; the binary does at
+/// startup). A stop then also collects Chough's own children: orphans of a stopped
+/// tree are re-parented here instead of to init (#81).
+#[cfg(target_os = "linux")]
+static SUBREAPER: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Make this process the subreaper of what it starts, so a descendant whose parent exits
+/// (a double fork) is re-parented to Chough and a stop can still find it (Linux; called
+/// once by the binary, never by unit tests, which share one process).
+pub(super) fn become_subreaper() {
+    #[cfg(target_os = "linux")]
+    {
+        // SAFETY: prctl(2) with PR_SET_CHILD_SUBREAPER takes plain integers.
+        if unsafe { libc::prctl(libc::PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0) } == 0 {
+            SUBREAPER.store(true, std::sync::atomic::Ordering::SeqCst);
+        }
+    }
+}
+
+/// Every process below `roots` by parent links in `/proc` (Linux), roots included. This
+/// finds descendants that left the process group with `setsid` (#81, FLOW-14).
+#[cfg(target_os = "linux")]
+fn descendants(roots: &[u32]) -> Vec<i32> {
+    let mut links: Vec<(i32, i32)> = vec![];
+    for entry in fs::read_dir("/proc").into_iter().flatten().flatten() {
+        let Some(pid) = entry
+            .file_name()
+            .to_str()
+            .and_then(|name| name.parse::<i32>().ok())
+        else {
+            continue;
+        };
+        let Ok(stat) = fs::read_to_string(entry.path().join("stat")) else {
+            continue;
+        };
+        // The command name is in parentheses and may hold spaces; the state and the
+        // parent ID follow the last ')'.
+        let Some(rest) = stat.rfind(')').map(|end| &stat[end + 1..]) else {
+            continue;
+        };
+        if let Some(parent) = rest
+            .split_whitespace()
+            .nth(1)
+            .and_then(|field| field.parse::<i32>().ok())
+        {
+            links.push((pid, parent));
+        }
+    }
+    let mut found: Vec<i32> = roots
+        .iter()
+        .filter_map(|root| i32::try_from(*root).ok())
+        .collect();
+    let mut next = 0;
+    while next < found.len() {
+        let parent = found[next];
+        for (pid, of) in &links {
+            if *of == parent && !found.contains(pid) {
+                found.push(*pid);
+            }
+        }
+        next += 1;
+    }
+    found
+}
+
+/// Stop the command and its descendants: signal the process group it leads and, on
+/// Linux, every process below it by parent links, including ones that left the group
+/// and, when Chough is their subreaper, orphans of the tree. Returns true when the
+/// group was signalled.
 #[cfg(unix)]
 fn stop_tree(child: &mut Child) -> bool {
+    #[cfg(target_os = "linux")]
+    let tree = {
+        let mut roots = vec![child.id()];
+        if SUBREAPER.load(std::sync::atomic::Ordering::SeqCst) {
+            roots.push(std::process::id());
+        }
+        descendants(&roots)
+    };
     let stopped = i32::try_from(child.id()).is_ok_and(|group| {
         // SAFETY: kill(2) takes plain integers and has no memory-safety preconditions.
         // The negative ID names the process group the child leads (process_group(0)).
         unsafe { libc::kill(-group, libc::SIGKILL) == 0 }
     });
+    #[cfg(target_os = "linux")]
+    {
+        let own = i32::try_from(std::process::id()).unwrap_or(-1);
+        for pid in tree.into_iter().filter(|pid| *pid != own && *pid > 1) {
+            // SAFETY: as above; a process that already ended makes kill(2) fail harmlessly.
+            unsafe {
+                libc::kill(pid, libc::SIGKILL);
+            }
+        }
+    }
     // std never signals a child it has already reaped.
     let _ = child.kill();
     stopped
@@ -1116,6 +1201,11 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
         }
         if exited_at.is_some_and(|at| at.elapsed() >= EXIT_GRACE) {
             stop_tree(&mut child);
+            // Say so (#81): the stopped process would otherwise go unnoticed.
+            eprintln!(
+                "chough: stopped a process that kept Git's output open {} s after Git exited",
+                EXIT_GRACE.as_secs()
+            );
             break;
         }
         if open == 0 {
@@ -1392,19 +1482,53 @@ fn native_json_read(
     }
 }
 
-/// The current Git HEAD when one exists; recorded with transitions as context only.
+/// The current Git HEAD when one exists; recorded with transitions as context only. A
+/// failure other than no repository or a HEAD with no commit is said on stderr (#81).
 pub(super) fn head_revision(root: &Path) -> Option<String> {
-    let output = run_owned(
+    let output = match run_owned(
         Command::new("git")
             .args(["rev-parse", "HEAD"])
             .current_dir(root),
         None,
-    )
-    .ok()?;
-    output
-        .status
-        .success()
-        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_string())
+    ) {
+        Ok(output) => output,
+        Err(error) => {
+            eprintln!(
+                "chough: could not read the Git revision ({error}); the record is saved without one"
+            );
+            return None;
+        }
+    };
+    if output.status.success() {
+        return Some(String::from_utf8_lossy(&output.stdout).trim().to_string());
+    }
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let expected = stderr.contains("not a git repository")
+        || stderr.contains("unknown revision")
+        || stderr.contains("ambiguous argument 'HEAD'");
+    if !expected {
+        let reason = stderr
+            .lines()
+            .find(|line| !line.trim().is_empty())
+            .map_or_else(|| "no message".to_string(), |line| cut(line.trim(), 200));
+        let code = output
+            .status
+            .code()
+            .map_or_else(|| "no exit code".to_string(), |code| format!("exit {code}"));
+        eprintln!(
+            "chough: could not read the Git revision ({code}: {reason}); the record is saved without one"
+        );
+    }
+    None
+}
+
+/// At most `limit` bytes of `text`, cut on a character boundary.
+fn cut(text: &str, limit: usize) -> String {
+    let mut end = text.len().min(limit);
+    while !text.is_char_boundary(end) {
+        end -= 1;
+    }
+    text[..end].to_string()
 }
 
 /// List JSON record names in a managed directory in a deterministic order.

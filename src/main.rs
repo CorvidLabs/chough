@@ -149,6 +149,8 @@ enum EvidenceCommand {
 }
 
 fn main() -> Result<()> {
+    // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
+    records::become_subreaper();
     let cli = Cli::parse();
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");

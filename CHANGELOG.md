@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Stopping Chough on Linux now also stops what its command started outside the process
+  group: a descendant that called `setsid`, and one whose parent exited (the `chough`
+  binary is now the child subreaper of what it starts). Chough says on stderr when it
+  stops a process that kept its own Git's output open, and when `git rev-parse HEAD`
+  fails for a reason other than no repository or no commit (#81, FLOW-14, REQ-cli-011).
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns

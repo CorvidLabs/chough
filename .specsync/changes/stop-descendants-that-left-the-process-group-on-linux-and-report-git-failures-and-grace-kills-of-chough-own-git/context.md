@@ -25,3 +25,10 @@ code only if the repro shows a Chough defect.
 Authority: Leif's 2026-11-04 standing approval for bounded Chough bug fixes and his
 brief to fix issues 81 to 88 one PR each. Linux only, as his brief says: other Unix
 systems keep the process-group stop.
+
+Item 4, reproduced on 2026-11-04 (Linux, SpecSync 6.1.2, this repository): with a `git`
+on PATH that leaves `sleep 300 &` holding its output, `chough status`'s native read ends
+as `timed-out` at the 120 s deadline. SpecSync waits for its own Git child's output to
+close, so the command Chough runs never exits and the 2 s grace (which starts when that
+command exits) does not apply; Chough's deadline bounds it and a stop signal still ends
+everything at once. No Chough code changes for item 4.

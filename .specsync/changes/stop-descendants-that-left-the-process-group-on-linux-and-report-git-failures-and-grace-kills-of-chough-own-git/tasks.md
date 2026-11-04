@@ -5,7 +5,7 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing-first tests in tests/stop.rs
-- [ ] /proc descendant walk and subreaper (Linux), stderr notices
-- [ ] Item 4 repro, reported on the PR
-- [ ] docs/cli.md, docs/FRD.md and CHANGELOG.md
+- [x] Failing-first tests in tests/stop.rs
+- [x] /proc descendant walk and subreaper (Linux), stderr notices
+- [x] Item 4 repro, reported on the PR
+- [x] docs/cli.md, docs/FRD.md and CHANGELOG.md
