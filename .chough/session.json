@@ -719,7 +719,11 @@
     "OBS-tc-cli-stop-reaches-orphaned-descendant-c6f2746fbfbc2a25a497c34c",
     "OBS-tc-cli-stop-test-leaves-other-runs-alone-3deb795837fce1bcfe9a70eb",
     "OBS-tc-cli-git-grace-kill-reported-97de588d17c22586b8838abc",
-    "OBS-tc-cli-failed-head-revision-reported-df2be0c1a86a5ea60b5f3e36"
+    "OBS-tc-cli-failed-head-revision-reported-df2be0c1a86a5ea60b5f3e36",
+    "OBS-tc-cli-done-trims-cold-proof-by-default-4c5fc87d107ee513fe4e9d62",
+    "OBS-tc-cli-retention-manual-opts-out-at-done-989840dd1b48e3eb9ac57fd0",
+    "OBS-tc-cli-open-change-keeps-proof-at-done-b72b5200b873c85e09d7871f",
+    "OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049"
   ],
   "bugs": [
     "BUG-0001",
