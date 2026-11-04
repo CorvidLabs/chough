@@ -7,11 +7,11 @@
   "title": "Refuse a native change status reply that names no change ID (issue 63, review thread on #71)",
   "description": "Refuse a native change status reply that names no change ID (issue 63, review thread on #71)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "efa397da2f4c196d5e5120e87b7125dd25a106c1",
   "created_at": 1793759210,
-  "updated_at": 1793763595,
+  "updated_at": 1793764297,
   "affected_specs": [
     "cli"
   ],
