@@ -6,6 +6,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-03
+
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
   next` finds the Lessons heading of a `context.md` over 4 MiB (REQ-cli-034).
@@ -243,4 +245,5 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
 [0.1.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.1.0
