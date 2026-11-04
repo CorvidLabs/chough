@@ -40,6 +40,47 @@
       "approved_delta_digests": {
         "cli": "92b443d3b0772329b1bba9369e462d369de22a860741b097ab01fa1fe838e145"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793805636,
+      "digest": "23e59e8a2afacda5708bff9aba9a2f7242dfdcf9fb34dc6c9115b8af63c69b6e",
+      "note": "Recorded by Claude Code acting as 0xLeif on Leif's machine and Git identity, at his instruction on 2026-11-04 ('you sign as me'), under his standing approval that morning for bounded Chough bug fixes and his choice of 'Warn and point' for issue 85 (FLOW-15). Scope unchanged from the earlier claude-agent record, which stays as history: issue 85 only, warning and test-stage guidance, no gate change. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "say-when-native-verification-runs-no-project-commands-and-point-the-test-stage-to-recorded-test-evidence-before-accept",
+        "title": "Say when native verification runs no project commands, and point the test stage to recorded test evidence before accept (issue 85)",
+        "description": "Say when native verification runs no project commands, and point the test stage to recorded test evidence before accept (issue 85)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/main.rs",
+          "src/policy.rs",
+          "src/stage.rs",
+          "tests/verification.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With SDD enabled and no verification_commands in .specsync/sdd.json chough next and chough status and chough stage reports say native verification runs none of the project commands and name verification_commands as the place to list them,With at least one verification command or with SDD disabled or with no native configuration none of them shows that warning,At the test stage with no gate or human decision or blocking bug stopping it chough next points to chough cases run and says recorded test evidence is needed before accept,The same stage moves are allowed and refused with and without the warning and the warning adds no native read,Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 85 under FLOW-15 as Leif chose it on 2026-11-04; warning and guidance only with no new gate and no stage move newly allowed or refused; the warning reads only .specsync/sdd.json and adds no native read; existing output keys keep their meaning; new code goes in a small policy module so stage.rs and main.rs do not grow past what they need",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "92b443d3b0772329b1bba9369e462d369de22a860741b097ab01fa1fe838e145"
+      }
     }
   ],
   "reopenings": []

@@ -1,6 +1,6 @@
 ---
 id: say-when-native-verification-runs-no-project-commands-and-point-the-test-stage-to-recorded-test-evidence-before-accept
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 9d5d65b5acb306dde3af1f4166ce5c1b2c068f74
 ---
