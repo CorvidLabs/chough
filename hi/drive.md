@@ -7,7 +7,7 @@ families: [DRIVE]
 
 ## Intent
 
-I want Chough to drive real project work, such as Raven's on 2026-11-03, quickly and without pushing agents to work around it. Source: Leif in chat, 2026-11-03 5:03 PM MST (message t811u): "Fix every problem that stopped Chough from driving Raven's work on 2026-11-03, and make SpecSync's slow commands fast. Leif wants the workflow quick: no command should keep an agent waiting minutes, and nothing should push agents to work around Chough." and "Don't change who approves: Chough must keep refusing to record human approval or review, and native SpecSync state must keep deciding stage gates. That part worked well." Each criterion below quotes the matching "Want" line of that message.
+I want Chough to drive real project work, such as Raven's on 2026-11-03, quickly and without pushing agents to work around it. Source: the brief Leif sent in chat on 2026-11-03 at 5:03 PM MST (message t811u), quoted verbatim below; the brief names Leif in the third person. Leif confirmed it in chat on 2026-11-03 at 5:24 PM MST, answering card t811s9271: "Yes, that brief is my intent, keep it quoted as my criteria". The brief reads: "Fix every problem that stopped Chough from driving Raven's work on 2026-11-03, and make SpecSync's slow commands fast. Leif wants the workflow quick: no command should keep an agent waiting minutes, and nothing should push agents to work around Chough." and "Don't change who approves: Chough must keep refusing to record human approval or review, and native SpecSync state must keep deciding stage gates. That part worked well." Each criterion below quotes the matching "Want" line of that brief.
 
 ## Criteria
 

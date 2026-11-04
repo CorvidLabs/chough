@@ -15,7 +15,10 @@ All notable changes to Chough are recorded here. The format follows
   Such gates are labelled `native:archived-authenticated-cached`. `chough stage advance
   --to <stage>` moves through several main stages on one native read and records
   nothing when any step is refused. REQ-cli-024 and REQ-cli-028 now allow this one
-  cache. From Leif's brief t811u items 2 and 7.
+  cache. The first read of each archive on a fresh clone, machine or CI run is still
+  the full live read (about 45 s on Raven), so `next` within a few seconds (DRIVE-2)
+  is met only once warm; the cold start is a tracked follow-up. From Leif's brief
+  t811u items 2 and 7.
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough

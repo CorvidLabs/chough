@@ -329,3 +329,53 @@ fn a_refused_step_refuses_the_whole_batch_with_nothing_recorded() {
     assert!(refused.contains("refused:native-draft"), "{refused}");
     assert_eq!(fixture.read(".chough/transitions.jsonl"), log);
 }
+
+/// A live SpecSync reply cannot fake the reuse proof (review of #69): a response that
+/// carries `chough_archive_authentication` itself gates as a plain live
+/// `native:archived`, and neither that read, the cache entry it leaves nor a later
+/// reuse ever shows the forged proof.
+#[cfg(unix)]
+#[test]
+fn a_live_reply_cannot_fake_the_authenticated_marker() {
+    let fixture = archived();
+    let forged = r#"{"specsync":{"path":"FORGED-specsync"},"authenticated_at_unix_seconds":1,"archive":"FORGED-archive","tree":"FORGED-tree","commit":"FORGED-commit","digest":"sha256:FORGED"}"#;
+    fixture.write(
+        "bin/specsync",
+        &format!(
+            "#!/bin/sh\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf '%s\\n' '{{\"summary\":{{\"state\":\"archived\",\"next_action\":\"none\",\"correction_valid\":true,\"approval_valid\":true,\"terminal_evidence\":{{\"validity\":\"authenticated-history\"}}}},\"chough_archive_authentication\":{forged}}}'\n"
+        ),
+    );
+    fixture.executable("bin/specsync");
+
+    let live = reset_to_test(&fixture);
+    assert_eq!(fixture.native_calls(), 1, "the first read must be live");
+    assert!(!live.to_string().contains("FORGED"), "{live:#}");
+    let log = fixture.read(".chough/transitions.jsonl");
+    assert!(log.contains("\"native:archived\""), "{log}");
+    assert!(!log.contains("FORGED") && !log.contains("cached"), "{log}");
+
+    let entries: Vec<String> = fs::read_dir(fixture.root().join(".git/chough/archive-auth"))
+        .map(|entries| {
+            entries
+                .map(|entry| fs::read_to_string(entry.unwrap().path()).unwrap())
+                .collect()
+        })
+        .unwrap_or_default();
+    for entry in &entries {
+        assert!(!entry.contains("FORGED"), "the cache kept the forged proof: {entry}");
+    }
+
+    // The verdict itself was live and authenticated, so later reads may reuse it, but
+    // only with the proof Chough computed.
+    let reused = fixture.ok(&["next", "--json"]);
+    assert!(!reused.to_string().contains("FORGED"), "{reused:#}");
+    let label = reused["gate"]["label"].as_str().unwrap().to_string();
+    assert!(
+        label == "native:archived" || label == "native:archived-authenticated-cached",
+        "{label}"
+    );
+    if label == "native:archived-authenticated-cached" {
+        assert_eq!(fixture.native_calls(), 0);
+        assert!(reused["gate"]["detail"].as_str().unwrap().contains("sha256:"));
+    }
+}

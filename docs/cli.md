@@ -787,6 +787,20 @@ depends on has changed (REQ-cli-035). Chough never decides validity itself.
   `chough_archive_authentication`, and its read state is `cached`.
 - **What stays live.** `library archive` validity checks and the approved-delta guard
   never use it, because they exist to notice a change.
+- **The first read is still slow.** A fresh clone, a new machine, CI, or any change to
+  a key input starts with no entry. The first `next`, `status`, stage move or `timing`
+  on each archive makes the full live read: about 45 s per archive on Raven, and
+  `timing` warms one archive per budgeted run. So DRIVE-2's "`next` answers within a
+  few seconds" holds only once warm. The cold start is not yet met and is tracked as
+  a follow-up, for SpecSync's own speedup (Part 2 of brief t811u) or a cheaper
+  integrity check to close.
+- **What it trusts.** The entry is trusted local state under the Git directory. A
+  hand-forged entry for a reachable, unchanged archive would be replayed, so treat
+  that directory like the rest of `.git`. A live SpecSync reply cannot carry the
+  proof: Chough drops `chough_archive_authentication` from every live response. The
+  binary key is the resolved path, size and modification time, so a wrapper script
+  whose target SpecSync is upgraded keeps its key; delete the directory after such
+  an upgrade.
 
 ## Report read diagnostics
 
