@@ -2177,3 +2177,53 @@ fn checkpoint_writer_removes_only_orphaned_session_temps() {
             .exists()
     );
 }
+
+/// The exercise removes its project's checkpoint lock file on exit, in every mode
+/// (review of #70): the setup's `checkpoint_lock` names the file real Chough creates
+/// for the project under the given TMPDIR, and the exit cleanup deletes it whether the
+/// run passed, failed or prepared a cold start.
+#[cfg(unix)]
+#[test]
+fn exercise_removes_its_checkpoint_lock_on_exit() {
+    let script = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
+    )
+    .unwrap();
+    let begin = script.find("# work-dir setup: begin").unwrap();
+    let end = script.find("# work-dir setup: end").unwrap();
+    let setup = &script[begin..end];
+    for (args, status) in [
+        (vec![], 0),
+        (vec![], 1),
+        (vec!["", "prepare-cold-start"], 0),
+    ] {
+        let temp = TempDir::new().unwrap();
+        let cwd = TempDir::new().unwrap();
+        let chough = env!("CARGO_BIN_EXE_chough");
+        // The setup's own lock name, then a real Chough write that creates the lock.
+        let body = format!(
+            "set -eu\n{setup}cd \"$work\"\n\"{chough}\" init --objective Probe --intent-scope LIFE --module cli >/dev/null\nmark_checkpoint_lock\n\"{chough}\" checkpoint --decision 'Probe the lock' >/dev/null\nprintf '%s\\n' \"$checkpoint_lock\"\n[ -f \"$checkpoint_lock\" ] || exit 9\nexit {status}\n"
+        );
+        let out = Command::new("sh")
+            .arg("-c")
+            .arg(body)
+            .arg("feature-bug-loop.sh")
+            .args(&args)
+            .current_dir(cwd.path())
+            .env("TMPDIR", temp.path())
+            .output()
+            .unwrap();
+        assert_eq!(out.status.code(), Some(status), "{args:?} {out:?}");
+        let named = String::from_utf8_lossy(&out.stdout).trim().to_string();
+        assert!(
+            named.contains("chough-checkpoint-") && named.ends_with(".lock"),
+            "{named}"
+        );
+        let locks: Vec<String> = fs::read_dir(temp.path())
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+            .filter(|name| name.starts_with("chough-checkpoint-"))
+            .collect();
+        assert!(locks.is_empty(), "{args:?} exit {status} left {locks:?}");
+    }
+}

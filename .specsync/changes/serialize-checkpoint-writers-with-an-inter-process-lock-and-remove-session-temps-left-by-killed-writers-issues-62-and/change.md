@@ -1,6 +1,6 @@
 ---
 id: serialize-checkpoint-writers-with-an-inter-process-lock-and-remove-session-temps-left-by-killed-writers-issues-62-and
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 4daf861509b70c14282ac16b5d0547d701e385b2
 ---
