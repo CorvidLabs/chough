@@ -1,0 +1,44 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793811476,
+      "digest": "51a73960587e363107e72aefba8a52ec55467ff6fb8bc1f59349d6d49f501214",
+      "note": "Recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'), under his standing approval that morning for bounded Chough bug fixes, his brief to fix issues 81 to 88 one PR each, and his issue 82 choice 'Test the lock + clean up'. Scope: issue 82 only. Limits: other failed saves keep REQ-history-002's orphan, no release. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that",
+        "title": "Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)",
+        "description": "Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/history.rs",
+          "src/sessions.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A stage advance whose session file is moved away during its native read refuses with nothing saved and leaves no new event file. Session use started during a stage advance waits for it. Each new test fails where stated and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded fix for issue 82 as Leif chose on 2026-11-04 (test the lock and clean up); stacked on 77 at 75a732d; only events this command published and whose bytes are unchanged are removed; any other failed save keeps the unselected orphan of REQ-history-002",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "1da889850f16c85f47eddde33424dae5ac779f7e64f7d4ef084879ec1d98aabc"
+      }
+    }
+  ],
+  "reopenings": []
+}
