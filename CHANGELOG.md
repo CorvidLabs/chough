@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Stopping Chough with Ctrl-C, `kill` (SIGTERM) or a hangup during `chough cases run`
+  or a native SpecSync read now stops the command it started and that command's
+  children, and records nothing partial (FLOW-14, #75). A hard `kill -9` is not
+  covered. Unix only; Windows is unchanged.
+
 ## [0.2.0] - 2026-11-03
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence

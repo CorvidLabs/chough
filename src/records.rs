@@ -626,7 +626,26 @@ fn stop_tree(child: &mut Child) -> bool {
 /// Windows: its process tree); readers still blocked a second later are abandoned,
 /// never awaited. `env` is set on top of the inherited environment, which is never
 /// cleared.
+///
+/// On Unix, while the command runs, SIGINT, SIGTERM and SIGHUP are noted instead of
+/// ending Chough at once; a noted signal stops the command and its descendants, and
+/// Chough then ends by that signal before any caller can record a partial result
+/// (FLOW-14). A signal inherited as ignored stays ignored.
 pub(super) fn run_bounded(
+    root: &Path,
+    argv: &[impl AsRef<OsStr>],
+    env: &[(String, String)],
+    limits: &Limits,
+) -> io::Result<Captured> {
+    #[cfg(unix)]
+    let watch = interrupt::watch();
+    let result = run_watched(root, argv, env, limits);
+    #[cfg(unix)]
+    watch.finish();
+    result
+}
+
+fn run_watched(
     root: &Path,
     argv: &[impl AsRef<OsStr>],
     env: &[(String, String)],
@@ -689,6 +708,15 @@ pub(super) fn run_bounded(
         if status.is_some() && open == 0 {
             break;
         }
+        #[cfg(unix)]
+        if interrupt::noted() {
+            stop_tree(&mut child);
+            let _ = child.wait();
+            return Err(io::Error::new(
+                io::ErrorKind::Interrupted,
+                "Chough was stopped by a signal",
+            ));
+        }
         let past_deadline = started.elapsed() >= limits.deadline;
         if status.is_none() && past_deadline {
             timed_out = true;
@@ -737,6 +765,102 @@ pub(super) fn run_bounded(
         descendants_stopped,
         capture_incomplete: open > 0 || stdout_failed || stderr_failed,
     })
+}
+
+/// Stop signals while a bounded run owns a child (FLOW-14, REQ-cli-011).
+#[cfg(unix)]
+mod interrupt {
+    use std::sync::atomic::{AtomicI32, Ordering};
+    use std::sync::{Mutex, PoisonError};
+
+    /// The signals that stop Chough normally: Ctrl-C, a plain kill and a hangup.
+    const SIGNALS: [libc::c_int; 3] = [libc::SIGINT, libc::SIGTERM, libc::SIGHUP];
+    /// The last stop signal noted while a run owned a child; 0 when none.
+    static NOTED: AtomicI32 = AtomicI32::new(0);
+
+    /// Only an atomic store, which is async-signal-safe.
+    extern "C" fn note(signal: libc::c_int) {
+        NOTED.store(signal, Ordering::SeqCst);
+    }
+
+    /// Runs that are watching, and the dispositions the first one replaced; the last
+    /// to finish restores them, so overlapping runs (unit tests) never keep the handler.
+    static WATCHING: Mutex<(usize, Vec<(libc::c_int, libc::sigaction)>)> =
+        Mutex::new((0, Vec::new()));
+
+    /// One run's watch; `finish` ends it.
+    pub(super) struct Watch;
+
+    /// Note stop signals instead of ending at once, leaving an inherited ignored
+    /// signal ignored.
+    pub(super) fn watch() -> Watch {
+        let mut watching = WATCHING.lock().unwrap_or_else(PoisonError::into_inner);
+        watching.0 += 1;
+        if watching.0 > 1 {
+            return Watch;
+        }
+        let previous = &mut watching.1;
+        for signal in SIGNALS {
+            // SAFETY: sigaction(2) with zeroed, then filled, plain C structs; the
+            // handler only stores to an atomic.
+            unsafe {
+                let mut old: libc::sigaction = std::mem::zeroed();
+                if libc::sigaction(signal, std::ptr::null(), &raw mut old) != 0
+                    || old.sa_sigaction == libc::SIG_IGN
+                {
+                    continue;
+                }
+                let mut action: libc::sigaction = std::mem::zeroed();
+                action.sa_sigaction = note as extern "C" fn(libc::c_int) as libc::sighandler_t;
+                action.sa_flags = libc::SA_RESTART;
+                libc::sigemptyset(&raw mut action.sa_mask);
+                if libc::sigaction(signal, &raw const action, std::ptr::null_mut()) == 0 {
+                    previous.push((signal, old));
+                }
+            }
+        }
+        Watch
+    }
+
+    /// Whether a stop signal arrived during this run.
+    pub(super) fn noted() -> bool {
+        NOTED.load(Ordering::SeqCst) != 0
+    }
+
+    impl Watch {
+        /// Restore the previous dispositions; when a stop signal arrived during the
+        /// run, end Chough by that signal so nothing is recorded after it.
+        pub(super) fn finish(self) {
+            {
+                let mut watching = WATCHING.lock().unwrap_or_else(PoisonError::into_inner);
+                watching.0 -= 1;
+                if watching.0 > 0 {
+                    return;
+                }
+                for (signal, old) in watching.1.drain(..) {
+                    // SAFETY: restores a disposition read by sigaction(2) in `watch`.
+                    unsafe {
+                        libc::sigaction(signal, &raw const old, std::ptr::null_mut());
+                    }
+                }
+            }
+            let signal = NOTED.swap(0, Ordering::SeqCst);
+            if signal == 0 {
+                return;
+            }
+            // SAFETY: plain signal calls with a valid signal number; raise(3) ends the
+            // process with the default disposition, so the exit below is a fallback.
+            unsafe {
+                libc::signal(signal, libc::SIG_DFL);
+                let mut set: libc::sigset_t = std::mem::zeroed();
+                libc::sigemptyset(&raw mut set);
+                libc::sigaddset(&raw mut set, signal);
+                libc::pthread_sigmask(libc::SIG_UNBLOCK, &raw const set, std::ptr::null_mut());
+                libc::raise(signal);
+            }
+            std::process::exit(128 + signal);
+        }
+    }
 }
 
 /// The deadline for native reads: 120 s unless CHOUGH_NATIVE_TIMEOUT_SECONDS names a

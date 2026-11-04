@@ -5,7 +5,7 @@ artifact: tasks
 
 # Tasks
 
-- [ ] FLOW-14 captured with hi from Leif's confirmed words
-- [ ] Failing-first tests in tests/stop.rs
-- [ ] Signal handling in `run_bounded` in src/records.rs
-- [ ] docs/cli.md, docs/FRD.md and CHANGELOG.md
+- [x] FLOW-14 captured with hi from Leif's confirmed words
+- [x] Failing-first tests in tests/stop.rs
+- [x] Signal handling in `run_bounded` in src/records.rs
+- [x] docs/cli.md, docs/FRD.md and CHANGELOG.md
