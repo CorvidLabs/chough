@@ -759,7 +759,7 @@ fn alpha_at_plan(fixture: &Fixture, before: &str) -> String {
     cycle(fixture, "alpha")
 }
 
-/// Issue #82 (REQ-history-002): #77's writer lock makes `session use` wait for a
+/// Issue #82 (REQ-history-008): #77's writer lock makes `session use` wait for a
 /// running `stage advance`, so Chough itself never archives or switches a session
 /// under a command and no orphan event is left. Guards the lock; passes at 75a732d.
 #[cfg(unix)]
@@ -826,7 +826,7 @@ fn session_use_waits_for_a_running_stage_advance() {
     );
 }
 
-/// Issue #82 (REQ-history-002, Leif's 2026-11-04 choice): when something outside Chough
+/// Issue #82 (REQ-history-008, Leif's 2026-11-04 choice): when something outside Chough
 /// moves the session file away during `stage advance`, the refused save leaves no
 /// orphan event: the event that command published is removed.
 #[cfg(unix)]

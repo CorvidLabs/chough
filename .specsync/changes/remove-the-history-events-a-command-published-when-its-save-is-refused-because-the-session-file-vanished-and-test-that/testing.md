@@ -13,10 +13,12 @@ artifact: testing
   (REQ-history-008): a stub `specsync` moves alpha's session file away during the native
   read; `stage advance` refuses with "nothing was saved" and leaves no new event file in
   alpha's cycle. Fails at 75a732d.
+- src/sessions.rs unit test `a_vanish_after_a_successful_save_keeps_the_saved_event`
+  (REQ-history-008, #96 review): fails at bf06289's src, which deleted the saved event.
 - `fledge lanes run verify` passes on Linux.
 
 ## Requirement evidence
 
 | Requirement | Evidence |
 |---|---|
-| REQ-history-008 | tests/sessions.rs `session_use_waits_for_a_running_stage_advance`, `a_save_refused_because_the_session_vanished_leaves_no_event` |
+| REQ-history-008 | tests/sessions.rs `session_use_waits_for_a_running_stage_advance`, `a_save_refused_because_the_session_vanished_leaves_no_event`; src/sessions.rs `a_vanish_after_a_successful_save_keeps_the_saved_event` |

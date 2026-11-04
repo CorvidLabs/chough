@@ -153,9 +153,9 @@ pub(super) fn new_cursor(root: &Path) -> Result<Cursor> {
     })
 }
 
-/// What this process published: event paths with the SHA-256 of their bytes, and cycle
-/// directories it reserved (#82). `discard_published` removes them when the command's
-/// save is refused because its checkpoint vanished.
+/// What this process published, per project root: event paths with the SHA-256 of their
+/// bytes, and cycle directories it reserved (#82, REQ-history-008). `discard_published`
+/// removes them when the command's save is refused because its checkpoint vanished.
 static PUBLISHED: std::sync::Mutex<Published> = std::sync::Mutex::new(Published {
     events: Vec::new(),
     directories: Vec::new(),
@@ -163,28 +163,45 @@ static PUBLISHED: std::sync::Mutex<Published> = std::sync::Mutex::new(Published 
 
 #[derive(Default)]
 struct Published {
-    /// Project-relative event paths with the SHA-256 of the bytes written.
-    events: Vec<(String, Vec<u8>)>,
-    /// Project-relative cycle directories reserved.
-    directories: Vec<String>,
+    /// Project root, project-relative event path and the SHA-256 of the bytes written.
+    events: Vec<(std::path::PathBuf, String, Vec<u8>)>,
+    /// Project root and project-relative cycle directory reserved.
+    directories: Vec<(std::path::PathBuf, String)>,
 }
 
-/// Remove the events this process published whose bytes are unchanged, then the cycle
-/// directories it reserved when they are empty; returns how many events it removed.
-/// Called only when a save is refused because the checkpoint the command resolved was
-/// archived, removed or adopted meanwhile (REQ-history-002, #82): any other failed save
-/// keeps its unselected orphan.
-pub(super) fn discard_published(root: &Path) -> usize {
-    let Published {
-        events,
-        directories,
-    } = std::mem::take(
-        &mut *PUBLISHED
+/// Remove the events this process published under `root` whose bytes are unchanged, then
+/// the cycle directories it reserved there when they are empty; returns how many events
+/// it removed. Called only when a save is refused because the checkpoint the command
+/// resolved was archived, removed or adopted meanwhile (REQ-history-008); any other
+/// failed save keeps REQ-history-002's unselected orphan. `heads` are the history cursor
+/// heads of every saved checkpoint: when one of them is an event this command published,
+/// that save happened and nothing is removed (#96 review).
+pub(super) fn discard_published(root: &Path, heads: &[String]) -> usize {
+    let (events, directories) = {
+        let mut published = PUBLISHED
             .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner),
-    );
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let (mine, others): (Vec<_>, Vec<_>) = std::mem::take(&mut published.events)
+            .into_iter()
+            .partition(|(owner, _, _)| owner == root);
+        published.events = others;
+        let (mine_dirs, other_dirs): (Vec<_>, Vec<_>) = std::mem::take(&mut published.directories)
+            .into_iter()
+            .partition(|(owner, _)| owner == root);
+        published.directories = other_dirs;
+        (mine, mine_dirs)
+    };
+    let saved = events.iter().any(|(_, relative, _)| {
+        Path::new(relative)
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .is_some_and(|id| heads.iter().any(|head| head == id))
+    });
+    if saved {
+        return 0;
+    }
     let mut removed = 0;
-    for (relative, digest) in events {
+    for (_, relative, digest) in events {
         let Ok(path) = local_path(root, &relative) else {
             continue;
         };
@@ -194,7 +211,7 @@ pub(super) fn discard_published(root: &Path) -> usize {
             removed += 1;
         }
     }
-    for relative in directories.into_iter().rev() {
+    for (_, relative) in directories.into_iter().rev() {
         if let Ok(path) = local_path(root, &relative) {
             // Fails, and so keeps the directory, unless it is empty.
             let _ = fs::remove_dir(path);
@@ -215,7 +232,7 @@ fn reserve_cursor(root: &Path, cycle: String) -> Result<Cursor> {
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner)
         .directories
-        .push(directory);
+        .push((root.to_path_buf(), directory));
     Ok(Cursor {
         cycle,
         head: None,
@@ -765,7 +782,7 @@ fn append_using(
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner)
         .events
-        .push((path, Sha256::digest(&content).to_vec()));
+        .push((root.to_path_buf(), path, Sha256::digest(&content).to_vec()));
     cursor.head = Some(id);
     session.history_cursor = Some(cursor);
     Ok(())
