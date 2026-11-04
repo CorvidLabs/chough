@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0104-9339375446b179acbff9dc30",
+  "criteria": [
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test timing -- --exact a_case_run_records_its_run_time_and_the_report_shows_it for TC-cli-0104: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-0104-9339375446b179acbff9dc30.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-0104-9339375446b179acbff9dc30.log": "1bbf1eb2e3177cdd495f3fd6719602c8412f02c15b98f788beca7918323495c7"
+  },
+  "observed_at_unix_seconds": 1793772323,
+  "snapshot": {
+    "revision": "3f3364b40f06fd0b1d8628ea710ec2e8329f6fc1",
+    "dirty": false,
+    "fingerprint": "f39f736072c8317c6e0bdccb1f25c541aee1d2b392e42cca3243f049b69a9235",
+    "content": "d70cb7eab43d35860dacfc4d6e941833909d359557f244601272d92b02bb4d64"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0104",
+      "digest": "fc36d61afbab826b82895994e59876a6d7bc702b3627d3d0b571df6eebf1970c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "a_case_run_records_its_run_time_and_the_report_shows_it"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
