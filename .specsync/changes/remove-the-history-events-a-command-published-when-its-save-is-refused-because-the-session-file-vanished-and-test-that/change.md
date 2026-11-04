@@ -1,6 +1,6 @@
 ---
 id: remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 75a732d8243181c375ee3c4f2651408ff9b41ab2
 ---
