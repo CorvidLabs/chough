@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A failed native command is now shown as `exit 2` or `killed by signal 15` instead of
+  Rust's debug form `exit=Some(2)` or `exit=None`, in `status`, `next` and stage refusals
+  (#87, REQ-cli-003).
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns

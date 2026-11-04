@@ -388,7 +388,10 @@ Native section states are `observed`; `failed` for a non-zero exit or output tha
 stayed open and could not be read completely; `unavailable` when the command cannot
 start or `CHOUGH_NATIVE_TIMEOUT_SECONDS` is not a whole number from 1 to 3600 (the
 command is then not run); `timed-out`; and, for JSON status, `oversized` and
-`invalid-output`. Each state other than `observed` leaves lifecycle state unknown,
+`invalid-output`. A `failed` section's content starts with how the command ended, in
+plain words: `exit <code>`, `killed by signal <number>`, `timed out` or `no exit
+status`, then its bounded output (#87). Each state other than `observed` leaves
+lifecycle state unknown,
 and gated transitions refuse it as `refused:native-unknown`. Without a SpecSync
 configuration, status reports `not-configured` and transitions are not natively gated.
 With SpecSync configured and SDD enabled but no native change recorded, gated

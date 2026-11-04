@@ -4,7 +4,7 @@ mod common;
 
 use common::Fixture;
 
-/// A project whose native change status read runs `script` as `specsync`.
+/// A project at plan whose native change status read then runs `script` as `specsync`.
 #[cfg(unix)]
 fn project(script: &str) -> Fixture {
     let fixture = Fixture::new();
@@ -12,6 +12,11 @@ fn project(script: &str) -> Fixture {
     fixture.native("approved");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "failing-change"]);
+    fixture.no_spec_approval("failing-change");
+    // Reach plan while the read still works, so `next` evaluates the gate to build,
+    // whose detail carries the failed read as in the issue.
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
     fixture.write("bin/specsync", &format!("#!/bin/sh\n{script}\n"));
     fixture.executable("bin/specsync");
     fixture
