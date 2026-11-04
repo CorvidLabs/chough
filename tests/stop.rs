@@ -8,7 +8,7 @@ use common::Fixture;
 use serde_json::Value;
 use std::collections::BTreeMap;
 use std::fs::{self, File};
-use std::os::unix::process::ExitStatusExt;
+use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::path::Path;
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::time::{Duration, Instant};
@@ -39,23 +39,29 @@ fn snapshot(root: &Path) -> BTreeMap<String, Vec<u8>> {
     files
 }
 
-/// Start chough in the background with its output in files. With `ignore_hup` the
-/// parent shell ignores SIGHUP before it execs chough, as `nohup` does.
+/// Start chough in the background with its output in files. With `ignore_hup` it
+/// inherits SIGHUP as ignored, as under `nohup`.
 fn start(fixture: &Fixture, args: &[&str], ignore_hup: bool) -> (Child, tempfile::TempDir) {
     let outputs = tempfile::tempdir().unwrap();
     let mut paths = vec![fixture.root().join("bin")];
     paths.extend(std::env::split_paths(
         &std::env::var_os("PATH").unwrap_or_default(),
     ));
-    let mut command = if ignore_hup {
-        let mut shell = Command::new("sh");
-        shell
-            .args(["-c", "trap '' HUP; exec \"$0\" \"$@\""])
-            .arg(env!("CARGO_BIN_EXE_chough"));
-        shell
-    } else {
-        Command::new(env!("CARGO_BIN_EXE_chough"))
-    };
+    let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
+    // The test runner may itself ignore some of these signals (a task runner or
+    // `nohup`), and an ignored signal is inherited; start chough from known defaults.
+    // SAFETY: signal(2) is async-signal-safe, as pre_exec requires.
+    unsafe {
+        command.pre_exec(move || {
+            for signal in [libc::SIGINT, libc::SIGTERM, libc::SIGHUP] {
+                libc::signal(signal, libc::SIG_DFL);
+            }
+            if ignore_hup {
+                libc::signal(libc::SIGHUP, libc::SIG_IGN);
+            }
+            Ok(())
+        });
+    }
     let child = command
         .arg("--root")
         .arg(fixture.root())
@@ -154,9 +160,9 @@ fn assert_stopped(fixture: &Fixture, args: &[&str], signal: &str, number: i32, p
 #[test]
 fn stopping_a_case_run_stops_its_command_and_records_nothing() {
     for (signal, number, seconds) in [
-        ("INT", libc_signal::SIGINT, 611),
-        ("TERM", libc_signal::SIGTERM, 612),
-        ("HUP", libc_signal::SIGHUP, 613),
+        ("INT", libc::SIGINT, 611),
+        ("TERM", libc::SIGTERM, 612),
+        ("HUP", libc::SIGHUP, 613),
     ] {
         let fixture = Fixture::new();
         fixture.hi_stand_in();
@@ -209,9 +215,9 @@ fn stopping_a_case_run_stops_its_command_and_records_nothing() {
 #[test]
 fn stopping_a_native_read_stops_specsync_and_records_nothing() {
     for (signal, number, seconds) in [
-        ("INT", libc_signal::SIGINT, 621),
-        ("TERM", libc_signal::SIGTERM, 622),
-        ("HUP", libc_signal::SIGHUP, 623),
+        ("INT", libc::SIGINT, 621),
+        ("TERM", libc::SIGTERM, 622),
+        ("HUP", libc::SIGHUP, 623),
     ] {
         let fixture = Fixture::new();
         fixture.stubs();
@@ -233,11 +239,4 @@ fn stopping_a_native_read_stops_specsync_and_records_nothing() {
             &format!("sleep {seconds}"),
         );
     }
-}
-
-/// Signal numbers, which are the same on Linux and macOS for these three.
-mod libc_signal {
-    pub(super) const SIGHUP: i32 = 1;
-    pub(super) const SIGINT: i32 = 2;
-    pub(super) const SIGTERM: i32 = 15;
 }
