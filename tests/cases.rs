@@ -1896,3 +1896,37 @@ fn an_unapproved_or_changed_delta_does_not_resolve_a_requirement() {
     );
     assert!(!error.contains("was consulted"), "{error}");
 }
+
+/// Leif's review thread on #72 (src/cases.rs): a delta file for a module outside the
+/// change's verified approved deltas does not resolve a case link, even when it adds
+/// the requirement and the approved deltas are unchanged.
+#[cfg(unix)]
+#[test]
+fn an_out_of_scope_delta_file_does_not_resolve_a_requirement() {
+    let fixture = delta_fixture(true);
+    approve_deltas(
+        &fixture,
+        &[(
+            "billing",
+            "## ADDED\n\n### REQUIREMENT REQ-billing-001\n\nBilling SHALL bill.\n",
+        )],
+    );
+    // An extra file the approval does not cover, adding the linked requirement.
+    fixture.write(
+        &format!(".specsync/changes/{LINK_CHANGE}/deltas/cli.md"),
+        LINK_DELTA,
+    );
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-090"));
+    refused_with(
+        &fixture,
+        &["cases", "check"],
+        &[
+            "requirement REQ-cli-090 not found in specs/cli/requirements.md",
+            &format!(
+                "the checkpoint's native change {LINK_CHANGE} was consulted and did not resolve it:"
+            ),
+            "its cli delta is not among the change's verified approved deltas",
+        ],
+    );
+    assert!(!fixture.exists(".chough/evidence"));
+}
