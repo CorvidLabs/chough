@@ -11,6 +11,7 @@ files:
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
+  - src/policy.rs
   - src/prefs.rs
   - src/records.rs
   - src/skill.rs
@@ -28,6 +29,7 @@ files:
   - tests/fixtures/workflow-at-825a380-lifecycle.md
   - tests/fixtures/workflow-at-edbc3c1-lifecycle.md
   - tests/next.rs
+  - tests/verification.rs
 
 db_tables: []
 depends_on: []

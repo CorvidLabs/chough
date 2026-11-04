@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing-first tests in tests/verification.rs (stub reports effective commands)
-- [ ] src/policy.rs, next and status warning, test-stage pointer
-- [ ] docs/cli.md, docs/FRD.md and CHANGELOG.md
+- [x] Failing-first tests in tests/verification.rs (stub reports effective commands)
+- [x] src/policy.rs, next and status warning, test-stage pointer
+- [x] docs/cli.md, docs/FRD.md and CHANGELOG.md
