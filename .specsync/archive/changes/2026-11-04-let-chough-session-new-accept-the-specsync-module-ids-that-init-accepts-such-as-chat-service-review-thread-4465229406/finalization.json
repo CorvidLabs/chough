@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406",
+  "implementation_commit": "db51a99fd4b3b7422ceb12c80cbca13d2dab2260",
+  "implementation_tree": "54c2cddb04b07d916683c1bd82c483c41dbb4632",
+  "contract_digest": "5d482c223b1a543e8f2fa0f40fb7f4f5ba9e3b532d75ec6376b0df76487a910c",
+  "workspace_digest": "03457a88f855b094e1c7455d9d19ab2f983c22f7adf967acf184ca542c3b78d0",
+  "closing_digest": "2beb5dd289b68866daf4d442ec8c031f0ab86ef97f1923ad4b38bbdca3a5dfd1",
+  "review_digest": "04ef37946b875aa14e97a8ecf876ed75a6e7aaed2d1785037823b49d37eed307",
+  "finalization_digest": "f61bd803af3605fb74a85d3ea692567297ff30c45d97d2b209ad5ccecbc92291",
+  "timestamp": 1793805213
+}

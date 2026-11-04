@@ -795,4 +795,38 @@ fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
     };
     assert_eq!(recorded("OBS-bogus"), false, "{list:#}");
     assert_eq!(recorded("OBS-recorded"), true, "{list:#}");
+#[test]
+fn session_new_accepts_the_module_ids_init_accepts() {
+    // Review thread 4465229406: `session new --module chat.service` was refused while
+    // `init --module chat.service` worked.
+    let fixture = Fixture::new();
+    fixture.ok(&[
+        "session",
+        "new",
+        "alpha",
+        "--objective",
+        "Ship alpha",
+        "--module",
+        "chat.service",
+        "--module",
+        "identity-wipe.service",
+    ]);
+    let session = json(&fixture, ".chough/sessions/alpha.json");
+    assert_eq!(
+        session["modules"],
+        serde_json::json!(["chat.service", "identity-wipe.service"])
+    );
+    for bad in ["a/b", "..", "trailing.", " lead"] {
+        let refused = fixture.fails(&[
+            "session",
+            "new",
+            "beta",
+            "--objective",
+            "Ship beta",
+            "--module",
+            bad,
+        ]);
+        assert!(refused.contains("invalid module name"), "{bad}: {refused}");
+        assert!(!fixture.exists(".chough/sessions/beta.json"), "{bad}");
+    }
 }
