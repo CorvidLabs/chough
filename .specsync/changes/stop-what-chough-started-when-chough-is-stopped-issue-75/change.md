@@ -1,6 +1,6 @@
 ---
 id: stop-what-chough-started-when-chough-is-stopped-issue-75
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 5b69b2f0ffee9c0a8f322e557421d8f4de8a3e07
 ---
