@@ -5,6 +5,7 @@ artifact: tasks
 
 # Tasks
 
-- [x] Failing-first tests (TMPDIR split, busy message in sessions mode, adopt race in tests/cli.rs)
-- [x] Lock in .chough/local/, busy message names the file, exercise cleanup
-- [x] docs/cli.md, docs/FRD.md and CHANGELOG.md
+- [ ] Failing-first tests (TMPDIR split, busy message in sessions mode, adopt race in tests/cli.rs)
+- [ ] Lock in .chough/local/, busy message names the file, exercise cleanup
+- [ ] #77's no-sessions test and the evidence snapshot follow Leif's choice
+- [ ] docs/cli.md, docs/FRD.md and CHANGELOG.md

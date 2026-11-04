@@ -27,7 +27,8 @@ other than DRIVE-11.
    `.chough/local/.gitignore` (`*`) create-only; drop the temp-directory digest.
 3. The busy refusal names the file from `sessions::checkpoint_path` (src/sessions.rs is
    unchanged, so the history module's contract is not touched).
-4. Update tests/common/mod.rs's lock path helper and the exercise script's cleanup.
+4. Update tests/common/mod.rs's lock path helper and the exercise script's cleanup;
+   #77's no-sessions test and the evidence snapshot follow Leif's choice (REQ-history-007).
 5. Docs, `specsync change check --commit`, Linux verify, cases, PR stacked on #77.
 
 ## Risks

@@ -1,4 +1,50 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793809307,
+      "digest": "40f3ffa8cf85bc91db6164699400e6846a275a8f1d139a12b5be846679e4f460",
+      "note": "Recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'), under his standing approval that morning for bounded Chough bug fixes, his brief to fix issues 81 to 88 one PR each, his issue 83 choice of the .chough/local lock with the DRIVE-11 wording, and his choice 'Lock everywhere, relax #77' (REQ-history-007). Scope: issue 83 only. Limits: no change to the wait bound or which commands lock, no release. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy",
+        "title": "Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83)",
+        "description": "Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "examples/feature-bug-loop.sh",
+          "src/checkpoint.rs",
+          "tests/cli.rs",
+          "tests/common/mod.rs",
+          "tests/evidence.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A writer with a different TMPDIR waits for the project lock and then saves. A busy refusal in sessions mode names the session file and saves nothing. Legacy writers racing session adopt either save in the remaining checkpoint or refuse naming the adoption with nothing saved. The lock lives in .chough/local which Git ignores and which in a project without sessions holds only the lock and its gitignore. Each new test fails where stated and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Bounded fix for issue 83 under DRIVE-11 as Leif chose on 2026-11-04 (.chough/local lock in every project, relaxing the 77 no-sessions test to no tracked or session file changes); stacked on 77 at 75a732d; the 30 second wait and which commands lock are unchanged; read-only commands take no lock",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "ec22f4e65d0ba3d01e846f363f36c96d6ebee862734fe4f7e96e76cff6652fc7",
+        "history": "f50884cf5b6aa413e1a2c0dc832485178b93c844edda9b8c3e6ed75c19bd10e8"
+      }
+    }
+  ],
   "reopenings": []
 }
