@@ -38,6 +38,25 @@
         "REQ-cli-042",
         "REQ-reporting-004"
       ]
+    },
+    {
+      "timestamp": 1793824772,
+      "commit": "914e95608724c8e7d3d2559abb6e464af66b5004",
+      "contract_digest": "17768857129fd64485cc417ee986b6556e2ade863599b83284dc920a4a05b5dc",
+      "execution_digest": "5feb9c8fd500525106ed791913b43bb34a2a5d35abaa53935a68188fb7a1ebc7",
+      "workspace_digest": "c3be5d97dc12e6bf81402b1c17655b6cc190046842c481785e1d7b24e5b3a36a",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec reporting",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-042",
+        "REQ-reporting-004"
+      ]
     }
   ]
 }
