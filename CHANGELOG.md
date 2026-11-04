@@ -12,7 +12,8 @@ All notable changes to Chough are recorded here. The format follows
   configured in `.specsync/sdd.json` that SpecSync 6.1.2 does not run
   (CorvidLabs/spec-sync#848). At the test stage `next` points to recording test
   evidence with `chough cases run` before accept (#85, FLOW-15, REQ-cli-038). No gate
-  changes and no native read is added. The `.specsync/sdd.json` reader moved from
+  changes and no native read is added; the warning names at most 3 commands, each cut,
+  so `next` stays within its bound. The `.specsync/sdd.json` reader moved from
   src/stage.rs to a small src/policy.rs. Replaces the closed #89.
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now

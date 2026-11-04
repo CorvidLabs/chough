@@ -17,4 +17,6 @@ artifact: testing
     configuration each give `null`.
   - `the_test_stage_points_to_recorded_test_evidence_before_accept`.
   - `the_warning_changes_no_gate_and_adds_no_native_read`.
+- #92 review: `the_warning_stays_within_the_next_bound` (a 20,000-character effective
+  command; 10 commands) fails at 2d73262 with `next --json` at 21,769 bytes.
 - Each new test fails on main 91a1fdd; `fledge lanes run verify` passes on Linux.

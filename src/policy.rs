@@ -95,17 +95,20 @@ pub(super) fn verification_warning(
     if !policy.enabled || effective.iter().any(|command| !is_specsync(command)) {
         return Ok(None);
     }
+    // Bounded like the rest of the next view (REQ-cli-021, #92 review): at most
+    // `SHOWN_COMMANDS` commands, each cut like a record string, with a count for the rest.
     let ran = if effective.is_empty() {
         "no command at all".to_string()
     } else {
-        format!(
-            "only {}",
-            effective
-                .iter()
-                .map(|command| format!("`{command}`"))
-                .collect::<Vec<_>>()
-                .join(", ")
-        )
+        let mut named: Vec<String> = effective
+            .iter()
+            .take(SHOWN_COMMANDS)
+            .map(|command| format!("`{}`", crate::cut(command)))
+            .collect();
+        if effective.len() > SHOWN_COMMANDS {
+            named.push(format!("{} more", effective.len() - SHOWN_COMMANDS));
+        }
+        format!("only {}", named.join(", "))
     };
     let mut warning = format!(
         "Native verification runs none of the project's commands: SpecSync's change check runs {ran}, so a passing `specsync change check` does not show that the project's tests ran. Record test evidence with `chough cases run` or `chough evidence add`."
@@ -123,6 +126,9 @@ pub(super) fn verification_warning(
     }
     Ok(Some(warning))
 }
+
+/// Effective commands the warning names; the rest are counted.
+const SHOWN_COMMANDS: usize = 3;
 
 /// SpecSync's own command: `specsync` followed by its arguments.
 fn is_specsync(command: &str) -> bool {
