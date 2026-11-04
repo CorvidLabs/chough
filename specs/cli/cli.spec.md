@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 33
+version: 34
 status: active
 files:
   - src/main.rs
@@ -240,3 +240,4 @@ provider, runtime or hosted service.
 | 31 | 2026-11-03 | read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies: Read native SpecSync spec files under specs at any size: Chough's 65536-byte structured-record bound no longer applies to spec companions such as requirements.md, every Chough record keeps its bound, and the workflow skill gains advisory composability guidance |
 | 32 | 2026-11-03 | search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of: Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays |
 | 33 | 2026-11-04 | record-a-stage-gate-that-already-happened-with-its-original-time-quoted-evidence-and-a-backfilled-flag-that-timing: Record a stage gate that already happened with its original time, quoted evidence and a backfilled flag that timing reports separately (DRIVE-5) |
+| 34 | 2026-11-04 | stop-what-chough-started-when-chough-is-stopped-issue-75: Stop what Chough started when Chough is stopped (issue 75) |

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-a-case-run-s-save-and-chough-s-own-git-under-the-flow-14-stop-watch-issue-75-review-on-79",
+  "slug": "keep-a-case-run-s-save-and-chough-s-own-git-under-the-flow-14-stop-watch-issue-75-review-on-79",
+  "title": "Keep a case run's save and Chough's own Git under the FLOW-14 stop watch (issue 75, review on #79)",
+  "description": "Keep a case run's save and Chough's own Git under the FLOW-14 stop watch (issue 75, review on #79)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "c22bf0c2e6a6cb60e1453b7adb83414c3f930d6c",
+  "created_at": 1793760499,
+  "updated_at": 1793769995,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/cases.rs",
+    "src/evidence.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Call-site wiring for REQ-cli-011 as widened by stop-what-chough-started-when-chough-is-stopped-issue-75: cases.rs holds the stop watch through the save and evidence.rs runs Git through records::run_owned. The requirement text lives in that change.",
+  "acceptance_criteria": [
+    "stopping_a_case_run_while_it_saves_stops_git_and_records_nothing passes: a stop while cases run takes its Git snapshot after the command exits stops that Git and leaves .chough byte-identical,Every other cases and evidence test passes unchanged"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}

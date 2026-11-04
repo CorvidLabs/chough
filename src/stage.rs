@@ -1353,12 +1353,15 @@ fn parse_at(text: &str) -> Result<u64> {
     Ok(seconds as u64)
 }
 
+/// Git under the stop watch (FLOW-14): a stop stops it and ends Chough by the signal.
 fn git_output(root: &Path, args: &[&str]) -> Option<std::process::Output> {
-    std::process::Command::new("git")
-        .args(args)
-        .current_dir(root)
-        .output()
-        .ok()
+    crate::records::run_owned(
+        std::process::Command::new("git")
+            .args(args)
+            .current_dir(root),
+        None,
+    )
+    .ok()
 }
 
 /// Check a backfill's time and evidence before any native read or record.
