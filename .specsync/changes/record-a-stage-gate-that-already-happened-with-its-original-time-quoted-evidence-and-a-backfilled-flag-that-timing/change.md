@@ -1,6 +1,6 @@
 ---
 id: record-a-stage-gate-that-already-happened-with-its-original-time-quoted-evidence-and-a-backfilled-flag-that-timing
-state: approved
+state: implementing
 type: feature
 base_commit: d673efc9fadd00953cf9e42dad96e08f3c76103c
 ---
