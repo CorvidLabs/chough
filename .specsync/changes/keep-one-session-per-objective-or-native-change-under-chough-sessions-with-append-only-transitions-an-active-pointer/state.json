@@ -7,10 +7,11 @@
   "title": "Keep one session per objective or native change under .chough/sessions with append-only transitions, an active pointer, automatic archiving and an append-only subagent inbox (DRIVE-3)",
   "description": "Keep one session per objective or native change under .chough/sessions with append-only transitions, an active pointer, automatic archiving and an append-only subagent inbox (DRIVE-3)",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "bc83411c7e28872926f4f394d80fd81e9e422e94",
   "created_at": 1793756911,
-  "updated_at": 1793757230,
+  "updated_at": 1793757232,
   "affected_specs": [
     "cli",
     "history"

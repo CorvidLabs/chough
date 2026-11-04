@@ -1,6 +1,6 @@
 ---
 id: keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer
-state: approved
+state: implementing
 type: feature
 base_commit: bc83411c7e28872926f4f394d80fd81e9e422e94
 ---
