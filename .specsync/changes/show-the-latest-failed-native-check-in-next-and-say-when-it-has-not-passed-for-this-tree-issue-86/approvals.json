@@ -39,6 +39,46 @@
       "approved_delta_digests": {
         "cli": "67c6425f493e4a1167af051ba35855a4b419cf55c02e32fc2749beb5724861e0"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793810095,
+      "digest": "13c0ba9b264cd120ccd3371d7fd3146b4f54bded8b01e9c7aa1803f0f4aef763",
+      "note": "Re-approval recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'): REQ-cli-039 (this change's own added requirement, delta and living text) gains the 0xLeif review's finding on #91 (a verifying change whose handoff readiness is not safe has not passed for this tree; no readiness is unknown) and the empty failing-command text; scope otherwise unchanged. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86",
+        "title": "Show the latest failed native check in next and say when it has not passed for this tree (issue 86)",
+        "description": "Show the latest failed native check in next and say when it has not passed for this tree (issue 86)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/main.rs",
+          "src/native_check.rs",
+          "tests/native_check.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "After a failed native attempt next shows its time and commit and failing commands with exit codes and a later passing attempt replaces it. With the change approved or implementing next says the native check has not passed for this tree and that SpecSync keeps no reason for refusals and names specsync change check. A malformed attempts record is unknown and next makes no extra native read. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 86 under LIFE-7 and LIFE-3 as Leif chose on 2026-11-04 (show, state the gap honestly, file upstream); no gate change; no native read added; next stays within 16384 bytes; new code in a small module",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "cfed93e62a059797579055036436a6a9fefb20fb0024a72b657d7f2e248bcdc5"
+      }
     }
   ],
   "reopenings": []
