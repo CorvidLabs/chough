@@ -311,7 +311,8 @@
     "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's.",
     "Agent corvid-agent: chose the retention and transition-history group because it shares no case with a requirement that stays in cli and owns src/history.rs, tests/history.rs and tests/evidence.rs; SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: parent agent instruction 2026-11-03 9:46 AM MT)",
     "Agent corvid-agent correction: the build->test transition at 2026-11-03 5:05 PM MST repeated the plan->build reason ('Plan approved natively: version 0.2.0 and dated change log only') because stage advance was run twice by mistake. The build edits (Cargo.toml, Cargo.lock, CHANGELOG.md) were made but not yet committed at that move; transitions are immutable, so this records the correction",
-    "Agent claude applies Human authority: Leif (0xLeif), product owner, issue #100 (filed by 0xLeif, 'Proposed fix' items 1 to 4) and his 2026-11-04 instruction relayed by the parent agent, verbatim: 'Chough should only reduce and do all that for its own files in .chough and not the specs, not the human intent.' Captured as LIFE-15 in his words. Covered scope: full-size native reads for HI family validation and SpecSync finalization, archived change.md, SDD policy and approval-ledger reads; display markers; skill guidance; tests; docs; decision D-020; changelog and 0.2.1 version bump. Limits: no merge, tag, publish, release or human acceptance grade; Chough's own record bounds unchanged"
+    "Agent claude applies Human authority: Leif (0xLeif), product owner, issue #100 (filed by 0xLeif, 'Proposed fix' items 1 to 4) and his 2026-11-04 instruction relayed by the parent agent, verbatim: 'Chough should only reduce and do all that for its own files in .chough and not the specs, not the human intent.' Captured as LIFE-15 in his words. Covered scope: full-size native reads for HI family validation and SpecSync finalization, archived change.md, SDD policy and approval-ledger reads; display markers; skill guidance; tests; docs; decision D-020; changelog and 0.2.1 version bump. Limits: no merge, tag, publish, release or human acceptance grade; Chough's own record bounds unchanged",
+    "PR #92 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -661,7 +662,25 @@
     "OBS-tc-cli-next-shows-failed-native-attempt-5e444635131ec2e4b81da15c",
     "OBS-tc-cli-next-says-native-check-not-passed-a993b10925c8375fc863d104",
     "OBS-tc-cli-unreadable-native-attempts-unknown-228e142cd4cde86ed3da9c79",
-    "OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2"
+    "OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2",
+    "OBS-tc-cli-only-specsync-native-commands-reported-4d926aca8f4dd992da154813",
+    "OBS-tc-cli-unrun-configured-commands-counted-0c3631e5ab7a2f35bf5b855c",
+    "OBS-tc-cli-no-warning-when-project-command-runs-85e565e6c5a6f3c4309e9bb5",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-6f69b040a07c343bf5aad629",
+    "OBS-tc-cli-verification-warning-changes-no-gate-87ff7366f63ea32c9bc69a97",
+    "OBS-tc-cli-only-specsync-native-commands-reported-db301353e5b919ab6aa7fee4",
+    "OBS-tc-cli-unrun-configured-commands-counted-f4e5ca97dda2fa3c7e3e8e3f",
+    "OBS-tc-cli-no-warning-when-project-command-runs-55739ea2664c133f36b5fc6a",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-6544aa866a4dc8b52bc808d4",
+    "OBS-tc-cli-verification-warning-changes-no-gate-6c3032963ef43d641024293c",
+    "OBS-tc-cli-verification-warning-within-next-bound-637980c01bae0d36cb4d9362",
+    "OBS-tc-cli-only-specsync-native-commands-reported-a6f781b3fc560e8967ba166b",
+    "OBS-tc-cli-unrun-configured-commands-counted-3095ad0b82067184bb392ef8",
+    "OBS-tc-cli-no-warning-when-project-command-runs-c111efd2af50bb26d1d62933",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba",
+    "OBS-tc-cli-verification-warning-changes-no-gate-db3f4125917b884186628c8c",
+    "OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40",
+    "OBS-tc-cli-sdd-policy-over-record-bound-f414334149bb55fd3fa8ab5c"
   ],
   "bugs": [
     "BUG-0001",
