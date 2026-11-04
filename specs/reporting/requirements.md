@@ -1,0 +1,42 @@
+# Reporting requirements
+
+These requirements moved from the cli module on 2026-11-04 with their wording
+unchanged; the old IDs are SpecSync tombstones. Mapping: REQ-cli-020 is
+REQ-reporting-001, REQ-cli-024 is REQ-reporting-002 and REQ-cli-028 is
+REQ-reporting-003. Their Trace lines still name LIFE-10 and the other criteria they
+named before. Observations live in `.chough/evidence/`.
+
+### REQ-reporting-001
+
+Timing report. The helper SHALL provide a read-only timing report derived from existing records: stage segments from transitions, including iterations, back, reset, skip, pause and resume, and side-stage enter and return; case observations and repeated-run summaries; bug creation, reproduction and verification; and the native lifecycle times native SpecSync exposes. It SHALL append a timestamped transition when an awaiting-human gate opens and one when it is cleared, and SHALL report active time separately from paused time and from time waiting on a human, without recording who decided or what. Every duration SHALL be labelled elapsed wall-clock time, not effort; history summaries SHALL give ranges with their sample count, labelled estimates rather than targets; a missing, unparseable or out-of-order timestamp SHALL be reported unknown, never zero. Inputs SHALL be bounded, and the report SHALL write no record. Trace: LIFE-10, LIFE-3, LIFE-6, LIFE-7.
+
+Acceptance Criteria
+- Fixture transitions with fixed timestamps for every transition kind yield the expected segments, gate records start or end no segment, and paused and waiting-on-human time are excluded from active time.
+- Opening a gate appends one gate-opened transition and clearing it one gate-closed transition; the report shows its waiting time, and a gate-opened record whose gate is no longer awaiting a human, with no gate-closed record, is reported closed at an unknown time.
+- A missing timestamp or an end before its start is reported unknown, not zero, and fewer than three samples are reported too few to estimate.
+- Running the report leaves every Chough and SpecSync record byte-identical, and input beyond its bound is reported partial.
+
+### REQ-reporting-002
+
+Timing native reads. Within one `chough timing` report the helper SHALL pass each distinct native change ID to `specsync change status` at most once, reusing that response for every place the report shows the change; the reuse SHALL be local to the request and SHALL NOT persist or serve any other command. The report SHALL read archived native history only when its selection shows history, which is `--cycle all` with no `--stage`, `--case` or `--bug` filter; otherwise it SHALL read only the checkpoint's native change, SHALL set `native.history` to null rather than an empty list, and SHALL report `native.history_selection` with state `skipped-by-filter` and the filters that excluded it, and the text form SHALL say that archived history was not read because of those filters. When history is selected, `native.history_selection` SHALL have state `selected` and SHALL report how many archived changes were read, reused, skipped beyond the existing bound of ten, and not read because the budget ran out. Total time spent waiting on native reads in one timing report SHALL be bounded by `CHOUGH_TIMING_NATIVE_BUDGET_SECONDS`, a whole number from 1 to 3600 with default 120, refused before any native read when invalid; a read SHALL run with the smaller of the per-read deadline and the remaining budget, and a read not started because the budget is exhausted SHALL be reported with status_read `not-read` and reason `budget-exhausted`, with its times unknown, never zero. Stage estimates SHALL continue to derive only from recorded transitions and SHALL NOT change with native history selection. With `CHOUGH_TRACE=1` the helper SHALL write to standard error one line per bounded native read with the program, arguments, elapsed milliseconds and final state, and timing SHALL write per-phase elapsed milliseconds; without it standard output and standard error SHALL be unchanged, and the trace SHALL NOT change any report, record or exit code. The budget, history selection and reuse SHALL NOT apply to stage moves, `chough next` or `chough status`, whose single native read keeps the per-read deadline and whose gates keep refusing missing, timed-out, failed or invalid native evidence. Trace: LIFE-10, LIFE-3, LIFE-6, LIFE-7.
+
+Acceptance Criteria
+- With a counting SpecSync stub and the checkpoint change also present in the archive, an unfiltered timing report runs `specsync change status` once for that change and at most ten archived reads in total, and the current and history entries for it carry the same response.
+- `--cycle current`, `--stage test`, `--case <id>` and `--bug <id>` each run only the checkpoint read, emit `native.history` null with `history_selection.state` `skipped-by-filter` naming the filter, and say so in text; the unfiltered report emits `selected` with read, reused, skipped and budget counts; stage estimates are identical in filtered and unfiltered reports of the same records.
+- With a 2 s budget and stub reads that sleep, hang, exit non-zero and print malformed JSON, the report ends within the budget plus process-stop grace, reports timed-out, failed, invalid-output and not-read budget-exhausted entries with unknown times, leaves no stub descendant running, and an invalid budget value is refused before any native process starts.
+- With `CHOUGH_TRACE=1` each native read and each timing phase produces one stderr line and standard output is byte-identical to the untraced run; without it both streams are byte-identical to the base behavior for the same records.
+- A stage move whose native read times out or fails is still refused with the budget variable set to 1, and `chough next` and `chough status` still make exactly one native read each.
+- Running the report leaves every Chough and SpecSync record byte-identical.
+
+### REQ-reporting-003
+
+Request-local reporting reads. Within one report request, the helper SHALL structurally load the case-definition suite at most once, and SHALL not load it when no bound-case digest is requested. It SHALL reuse the existing case-digest representation and failure semantics across observation and reference-label checks, with an ephemeral context bound to one project root. No result SHALL be reused by a later request. Source, artifact, environment and case changes SHALL retain their freshness effects, and native reads and lifecycle gates SHALL remain authoritative and unchanged. Trace: LIFE-3, LIFE-6, LIFE-7, LIFE-10, FLOW-13.
+
+Opt-in CHOUGH_TRACE=1 diagnostics SHALL report bounded stderr-only local phase durations and exact case-suite load/lookup counts while preserving standard output, record bytes and exit results. Measurements SHALL identify the revision, freshly built binary, environment, inputs and deadlines, distinguish first-process from repeated runs without assuming OS caches were purged, and distinguish completed native reads from timed-out or unavailable work. No persistent cache, new runtime or duplicate lifecycle state SHALL be introduced.
+
+Acceptance Criteria
+- Multiple observations and referenced labels in one next/status request cause at most one structural suite load; no bound cases cause zero loads. Legacy numeric and current slug digests remain unchanged.
+- Malformed, duplicate, retired, missing and unsafe case definitions retain explicit existing outcomes. A later request observes changed source, case definitions, artifacts and environment rather than reusing an earlier result.
+- Trace on and off preserve stdout, exit results and every project record, including refusal paths. Existing native call counts, deadlines and invalid-evidence gate refusals remain enforced.
+- Before/after measurements use the same input root and explicit binary identities, report local work separately from native wait, and retain incomplete reads as partial or unknown. Native slowness is not reported fixed by a local optimization.
+

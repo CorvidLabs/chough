@@ -1,8 +1,8 @@
 //! The single canonical checkpoint: `.chough/session.json`.
 
 use crate::records::{
-    CHANGE_ID_LIMIT, ensure_text, local_path, print_json, read_bounded_record, valid_change_id,
-    valid_name, write_new_bytes, write_replace_bounded,
+    CHANGE_ID_LIMIT, ensure_text, local_path, native_json, print_json, read_bounded_record,
+    valid_change_id, valid_name, write_new_bytes, write_replace_bounded,
 };
 use crate::records::{valid_criterion_id, valid_module_name, valid_reference_id};
 use crate::stage;
@@ -819,6 +819,49 @@ fn push_unique(list: &mut Vec<String>, values: Vec<String>) {
     }
 }
 
+/// Refuse to record a native change SpecSync does not report (issue 63). With SpecSync
+/// configured, `specsync change status <id> --json` must succeed with a JSON response;
+/// a missing change (SpecSync exits non-zero), a failed or timed-out read, or output
+/// that is not JSON refuses before anything is written, and so does a reply that names
+/// no change ID or whose `summary.id` or `change.id` names a different change. What the state means stays
+/// with the stage gates. Without a configuration there is nothing to ask.
+fn ensure_native_change_known(root: &Path, change: &str) -> Result<()> {
+    if !stage::native_configured(root)? {
+        return Ok(());
+    }
+    let response = native_json(root, "specsync", &["change", "status", change, "--json"]);
+    if response.value.is_none() {
+        let section = &response.section;
+        bail!(
+            "refused:native-change-unknown: SpecSync did not report native change {change}, so it was not recorded and the checkpoint is unchanged.\n{} ({}): {}\nRun `specsync change status {change}` or create the change with `specsync change new`.",
+            section.source,
+            section.state,
+            section.content.trim_end()
+        );
+    }
+    // The reply must be about the requested change: it must name a change ID
+    // (`summary.id` or `change.id`; SpecSync 6.1 names both) and every ID it names
+    // must match. A reply that names neither does not identify the change.
+    let value = response.value.as_ref().expect("checked above");
+    let named: Vec<&str> = [value.pointer("/summary/id"), value.pointer("/change/id")]
+        .into_iter()
+        .flatten()
+        .map(|id| id.as_str().unwrap_or("a non-text change id"))
+        .collect();
+    if named.is_empty() {
+        bail!(
+            "refused:native-change-unknown: SpecSync's reply for native change {change} names no change ID, so it does not identify the change; it was not recorded and the checkpoint is unchanged.\nRun `specsync change status {change} --json` and check that it reports the change.",
+        );
+    }
+    if named.iter().any(|id| *id != change) {
+        let reported = named.join(" and ");
+        bail!(
+            "refused:native-change-mismatch: SpecSync was asked for native change {change} but its reply names {reported}, so it was not recorded and the checkpoint is unchanged.\nRun `specsync change status {change} --json` and record the ID it reports.",
+        );
+    }
+    Ok(())
+}
+
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
     if let Some(operands) = args.merge {
         return merge_checkpoints(&operands);
@@ -843,6 +886,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             valid_change_id(&change),
             "invalid native change ID: up to {CHANGE_ID_LIMIT} bytes of letters, digits, - and _"
         );
+        ensure_native_change_known(root, &change)?;
         session.native_change = Some(change);
         changed = true;
     }

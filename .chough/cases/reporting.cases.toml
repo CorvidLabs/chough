@@ -1,0 +1,294 @@
+# Reporting module test-case definitions (chough-testing/1), split from cli.cases.toml on 2026-11-04
+# with their bindings unchanged; IDs map TC-cli-<rest> to TC-reporting-<rest> (a repeated report- is dropped).
+# TC-reporting-0080, 0082, 0088, 0089, 0100 and 0104 are twins of the cli cases with the same number, which keep
+# their links to requirements that stay in cli; see specs/reporting/testing.md.
+profile = "chough-testing/1"
+module = "reporting"
+
+[[case]]
+id = "TC-reporting-0080"
+title = "Every transition kind yields the expected stage segments and cycles"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::every_transition_kind_yields_the_expected_segments_and_cycles passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "every_transition_kind_yields_the_expected_segments_and_cycles"
+
+[[case]]
+id = "TC-reporting-0081"
+title = "Gate records start or end no segment and give waiting-on-human time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::gate_records_start_or_end_no_segment_and_give_waiting_time passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "gate_records_start_or_end_no_segment_and_give_waiting_time"
+
+[[case]]
+id = "TC-reporting-0082"
+title = "Checkpoint gates append one record when opened and one when cleared"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/checkpoint.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::checkpoint_gates_append_one_record_when_opened_and_one_when_cleared passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "checkpoint_gates_append_one_record_when_opened_and_one_when_cleared"
+
+[[case]]
+id = "TC-reporting-0083"
+title = "Gate records are reconciled with the awaiting-human list"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::gate_records_are_reconciled_with_the_awaiting_human_list passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "gate_records_are_reconciled_with_the_awaiting_human_list"
+
+[[case]]
+id = "TC-reporting-0084"
+title = "Missing and out-of-order times are unknown, never zero"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::missing_and_out_of_order_times_are_unknown_never_zero passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "missing_and_out_of_order_times_are_unknown_never_zero"
+
+[[case]]
+id = "TC-reporting-0085"
+title = "History ranges need three samples and exclude idle time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::history_ranges_need_three_samples_and_exclude_idle_time passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "history_ranges_need_three_samples_and_exclude_idle_time"
+
+[[case]]
+id = "TC-reporting-0086"
+title = "Bug fix times come from observations, notes and the retention ledger"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/bugs.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::bug_fix_times_come_from_observations_notes_and_the_retention_ledger passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "bug_fix_times_come_from_observations_notes_and_the_retention_ledger"
+
+[[case]]
+id = "TC-reporting-0087"
+title = "Observations group per case and validation elapsed is total run wall-clock"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "src/validate.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock"
+
+[[case]]
+id = "TC-reporting-0088"
+title = "Transitions beyond the bound are partial and every record stays byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/records.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical"
+
+[[case]]
+id = "TC-reporting-0089"
+title = "Native times come only from status and native records read read-only"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001", "REQ-reporting-002"]
+paths = ["src/timing.rs", "tests/timing.rs", "src/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::native_times_come_only_from_status_and_native_records_read_read_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "native_times_come_only_from_status_and_native_records_read_read_only"
+
+[[case]]
+id = "TC-reporting-0100"
+title = "A timed-out or unconfigured native read leaves native times unknown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001", "REQ-reporting-002"]
+paths = ["src/records.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown"
+
+[[case]]
+id = "TC-reporting-0104"
+title = "A case run records its run time and the timing report shows it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::a_case_run_records_its_run_time_and_the_report_shows_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "a_case_run_records_its_run_time_and_the_report_shows_it"
+
+[[case]]
+id = "TC-reporting-case-read-budget"
+title = "Report requests share one case suite across observation and reference checks"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7", "LIFE-10", "FLOW-13"]
+requirements = ["REQ-reporting-003"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::report_case_reads_are_shared_across_observations_and_references passes; the full verify lane also covers lazy and malformed/missing/retired/duplicate definitions and native gate regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "report_case_reads_are_shared_across_observations_and_references"
+
+[[case]]
+id = "TC-reporting-read-invalidation"
+title = "New report requests revalidate case source artifact environment and native inputs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7", "LIFE-10", "FLOW-13"]
+requirements = ["REQ-reporting-003"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::report_read_context_does_not_survive_the_next_request passes; the full verify lane also covers lazy and malformed/missing/retired/duplicate definitions and native gate regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "report_read_context_does_not_survive_the_next_request"
+
+[[case]]
+id = "TC-reporting-trace-parity"
+title = "Report traces preserve stdout errors records and exit results"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7", "LIFE-10", "FLOW-13"]
+requirements = ["REQ-reporting-003"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::report_traces_preserve_stdout_exit_results_and_managed_records passes with original loader cause diagnostics preserved byte-for-byte; the full verify lane also covers lazy and malformed/missing/retired/duplicate definitions and native gate regressions"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "report_traces_preserve_stdout_exit_results_and_managed_records"
+
+[[case]]
+id = "TC-reporting-split-keeps-requirement-wording"
+title = "The reporting spec split keeps every moved requirement's wording under its mapped ID"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7"]
+requirements = ["REQ-reporting-001", "REQ-reporting-002", "REQ-reporting-003"]
+paths = ["specs/cli/requirements.md", "specs/reporting/requirements.md", "tests/spec_split.rs"]
+environments = ["local-linux-x86_64", "local-macos-arm64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/spec_split.rs passes: each moved body has its a33c747 SHA-256 under its new ID, every REQ-cli-001 to 034 and 036 is in cli or mapped, and every companion fits 65536 bytes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "spec_split"]
+expect_output = ["test result: ok. 5 passed; 0 failed"]

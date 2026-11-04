@@ -982,6 +982,12 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     let fixture = Fixture::new();
     fixture.evidence_fixture();
     fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+    // The checkpoint's status read must name the change (review thread on #71).
+    common::stand_in(
+        &fixture.root().join("bin"),
+        "specsync",
+        r#"{"summary":{"id":"bounded-change","state":"draft"}}"#,
+    );
     fixture.ok(&["checkpoint", "--native-change", "bounded-change"]);
     fixture.write(
         ".specsync/changes/bounded-change/approvals.json",
