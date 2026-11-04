@@ -250,19 +250,30 @@ fn active(root: &Path) -> Result<String> {
 /// that is archived or removed meanwhile is refused rather than written again.
 pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
     if let Some(relative) = pinned(root) {
-        if relative != checkpoint::SESSION {
-            ensure!(
-                local_path(root, &relative)?.is_file(),
-                "{relative} was archived or removed while this command ran; nothing was saved"
-            );
+        // The checkpoint this command resolved vanished while it ran: archived, removed,
+        // or (for a legacy writer) adopted into sessions mode, so `.chough/session.json`
+        // would otherwise be written again. Nothing is saved, and the history events this
+        // command published are removed so no orphan is left (#82, REQ-history-002).
+        let vanished = if relative == checkpoint::SESSION {
+            enabled(root)?.then(|| {
+                format!(
+                    "{} was adopted into {DIR} while this command ran",
+                    checkpoint::SESSION
+                )
+            })
+        } else {
+            (!local_path(root, &relative)?.is_file())
+                .then(|| format!("{relative} was archived or removed while this command ran"))
+        };
+        if let Some(why) = vanished {
+            let removed = crate::history::discard_published(root);
+            let events = match removed {
+                0 => String::new(),
+                1 => "; the history event it had written was removed".into(),
+                count => format!("; the {count} history events it had written were removed"),
+            };
+            bail!("{why}; nothing was saved{events}");
         }
-        // A legacy writer re-checks the mode: sessions adopted after it resolved
-        // `.chough/session.json` would otherwise get that file written again.
-        ensure!(
-            relative != checkpoint::SESSION || !enabled(root)?,
-            "{} was adopted into {DIR} while this command ran; nothing was saved",
-            checkpoint::SESSION
-        );
         return Ok(relative);
     }
     let relative = if enabled(root)? {

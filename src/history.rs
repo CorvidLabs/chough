@@ -153,6 +153,56 @@ pub(super) fn new_cursor(root: &Path) -> Result<Cursor> {
     })
 }
 
+/// What this process published: event paths with the SHA-256 of their bytes, and cycle
+/// directories it reserved (#82). `discard_published` removes them when the command's
+/// save is refused because its checkpoint vanished.
+static PUBLISHED: std::sync::Mutex<Published> = std::sync::Mutex::new(Published {
+    events: Vec::new(),
+    directories: Vec::new(),
+});
+
+#[derive(Default)]
+struct Published {
+    /// Project-relative event paths with the SHA-256 of the bytes written.
+    events: Vec<(String, Vec<u8>)>,
+    /// Project-relative cycle directories reserved.
+    directories: Vec<String>,
+}
+
+/// Remove the events this process published whose bytes are unchanged, then the cycle
+/// directories it reserved when they are empty; returns how many events it removed.
+/// Called only when a save is refused because the checkpoint the command resolved was
+/// archived, removed or adopted meanwhile (REQ-history-002, #82): any other failed save
+/// keeps its unselected orphan.
+pub(super) fn discard_published(root: &Path) -> usize {
+    let Published {
+        events,
+        directories,
+    } = std::mem::take(
+        &mut *PUBLISHED
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner),
+    );
+    let mut removed = 0;
+    for (relative, digest) in events {
+        let Ok(path) = local_path(root, &relative) else {
+            continue;
+        };
+        if fs::read(&path).is_ok_and(|bytes| Sha256::digest(&bytes).to_vec() == digest)
+            && fs::remove_file(&path).is_ok()
+        {
+            removed += 1;
+        }
+    }
+    for relative in directories.into_iter().rev() {
+        if let Ok(path) = local_path(root, &relative) {
+            // Fails, and so keeps the directory, unless it is empty.
+            let _ = fs::remove_dir(path);
+        }
+    }
+    removed
+}
+
 fn reserve_cursor(root: &Path, cycle: String) -> Result<Cursor> {
     ensure!(valid_id(&cycle, "CYC-"), "invalid allocated cycle identity");
     let directory = format!("{ROOT}/cycles/{cycle}");
@@ -161,6 +211,11 @@ fn reserve_cursor(root: &Path, cycle: String) -> Result<Cursor> {
     local_path(root, &directory)?;
     fs::create_dir(path)
         .context("history cycle collision or directory creation failure; no retry")?;
+    PUBLISHED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .directories
+        .push(directory);
     Ok(Cursor {
         cycle,
         head: None,
@@ -706,6 +761,11 @@ fn append_using(
         publish(root, &path, &content)?,
         "history collision at {path}; no retry or overwrite"
     );
+    PUBLISHED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .events
+        .push((path, Sha256::digest(&content).to_vec()));
     cursor.head = Some(id);
     session.history_cursor = Some(cursor);
     Ok(())

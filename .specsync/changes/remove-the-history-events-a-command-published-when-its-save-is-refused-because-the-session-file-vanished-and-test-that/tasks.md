@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Tests in tests/sessions.rs (lock regression; vanished-session cleanup fails first)
-- [ ] Record and discard published events; call it from the vanished-checkpoint refusals
-- [ ] docs/cli.md and CHANGELOG.md
+- [x] Tests in tests/sessions.rs (lock regression; vanished-session cleanup fails first)
+- [x] Record and discard published events; call it from the vanished-checkpoint refusals
+- [x] docs/cli.md and CHANGELOG.md
