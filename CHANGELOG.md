@@ -8,7 +8,10 @@ All notable changes to Chough are recorded here. The format follows
 
 - `chough next` now lists the newest 3 archived lesson bundles by recorded
   finalization time, the same three the librarian marks hot, instead of the last 5 by
-  directory name, which mixed old and new work on a busy day (#74).
+  directory name, which mixed old and new work on a busy day (#74). It reads them with
+  the librarian's own rule, so hidden folders and archives without a readable
+  finalization record are skipped, and a hot archive without a bundle is marked
+  `(missing)`. The new-cycle guidance after a reset uses the newest reset by time.
 - After `chough stage reset` from an archived change, `chough next` keeps the reset's
   new-cycle guidance at every stage and suggests `specsync change new` instead of the
   archived gate refusal; at plan with no native change recorded it also suggests

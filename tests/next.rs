@@ -1201,10 +1201,14 @@ fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() 
             "{\"acceptance_manifest\":{\"entries\":[]}}\n",
         );
         if bundle {
-            fixture.write(&format!("{base}-{dir}/lesson-bundle.md"), "SYNTHETIC lesson\n");
+            fixture.write(
+                &format!("{base}-{dir}/lesson-bundle.md"),
+                "SYNTHETIC lesson\n",
+            );
         }
     };
-    let record = |id: &str, timestamp: Value| json!({"change_id": id, "timestamp": timestamp}).to_string();
+    let record =
+        |id: &str, timestamp: Value| json!({"change_id": id, "timestamp": timestamp}).to_string();
     archive("d", Some(&record("d", json!(300))), false);
     archive("b", Some(&record("b", json!(200))), true);
     archive("c", Some(&record("c", json!(200))), true);
@@ -1244,7 +1248,9 @@ fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() 
     let index = fixture.read("knowledge/INDEX.md");
     for (slug, status) in [("d", "hot"), ("c", "hot"), ("b", "hot"), ("a", "cold")] {
         assert!(
-            index.contains(&format!("- [{slug}](archives/{slug}.md) {slug} ({status})\n")),
+            index.contains(&format!(
+                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
+            )),
             "{slug} {status} in {index}"
         );
     }
@@ -1300,13 +1306,19 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     }
     // 40 archived bundles and 16 modules.
     for index in 0..40 {
+        let dir = format!(
+            ".specsync/archive/changes/2026-{:02}-{:02}-change-with-a-long-descriptive-name-{index:02}",
+            index / 28 + 1,
+            index % 28 + 1
+        );
+        fixture.write(&format!("{dir}/lesson-bundle.md"), "bundle\n");
         fixture.write(
-            &format!(
-                ".specsync/archive/changes/2026-{:02}-{:02}-change-with-a-long-descriptive-name-{index:02}/lesson-bundle.md",
-                index / 28 + 1,
-                index % 28 + 1
-            ),
-            "bundle\n",
+            &format!("{dir}/finalization.json"),
+            &json!({
+                "change_id": format!("change-with-a-long-descriptive-name-{index:02}"),
+                "timestamp": 1_790_000_000 + index,
+            })
+            .to_string(),
         );
     }
     let modules: Vec<String> = (0..16).map(|index| format!("module-{index:02}")).collect();

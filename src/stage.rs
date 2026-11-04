@@ -826,21 +826,30 @@ fn reached_by_reset(root: &Path, history: Option<&crate::history::HistoryRead>) 
 
 /// When the newest reset was recorded, if the transition log names one.
 fn latest_reset_at(root: &Path, history: Option<&crate::history::HistoryRead>) -> Option<u64> {
-    let reset_at = |record: &Value| {
-        (record.get("kind").and_then(Value::as_str) == Some("reset"))
-            .then(|| record.get("at_unix_seconds").and_then(Value::as_u64))
-            .flatten()
-    };
+    // The newest reset by recorded time, not the last appended: merged logs can hold
+    // resets out of order. When any reset's time cannot be read, none is trusted and
+    // only the reached-by-reset test applies.
+    fn newest<'a>(records: impl Iterator<Item = &'a Value>) -> Option<u64> {
+        let mut newest = None;
+        for record in records {
+            if record.get("kind").and_then(Value::as_str) != Some("reset") {
+                continue;
+            }
+            let at = record.get("at_unix_seconds").and_then(Value::as_u64)?;
+            newest = newest.max(Some(at));
+        }
+        newest
+    }
     if let Some(read) = history {
-        return read.records.iter().rev().find_map(reset_at);
+        return newest(read.records.iter());
     }
     let path = local_path(root, TRANSITIONS).ok()?;
     let (lines, _) = read_log_tail(&path, usize::MAX).ok()?;
-    lines
+    let records: Vec<Value> = lines
         .iter()
-        .rev()
         .filter_map(|line| serde_json::from_str::<Value>(line).ok())
-        .find_map(|record| reset_at(&record))
+        .collect();
+    newest(records.iter())
 }
 
 /// Whether the recorded archived change belongs to the cycle before the latest reset:

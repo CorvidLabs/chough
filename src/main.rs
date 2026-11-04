@@ -625,36 +625,21 @@ fn lesson_source(root: &Path, module: &str) -> Value {
     json!({"module": module, "path": context, "section_line": line, "note": note})
 }
 
-/// Archived SpecSync lesson bundles, newest first by recorded finalization timestamp,
-/// then archive directory name, the order the librarian uses for its hot archives; an
-/// archive without a readable finalization timestamp sorts as oldest. Nothing records
-/// which were folded.
-/// An archive directory that `local_path` refuses (a symlink, for one) has no bundles;
-/// a name that is not UTF-8 is counted and shown lossily.
+/// Archived SpecSync lesson bundles for the librarian's hot archives: the newest 3 by
+/// recorded finalization timestamp, then directory, read with the librarian's own rule
+/// (`library::archive_order`), so hidden or non-UTF-8 directories and archives without
+/// a readable `finalization.json` naming their change are not counted. A hot archive
+/// without a `lesson-bundle.md` is shown with `(missing)`. Nothing records which were
+/// folded. An archive directory that `local_path` refuses (a symlink, for one) lists
+/// none.
 fn archived_bundles(root: &Path) -> Result<Value> {
-    let mut names = vec![];
-    if let Ok(directory) = local_path(root, ARCHIVED_CHANGES)
-        && directory.is_dir()
-    {
-        for entry in std::fs::read_dir(&directory)? {
-            let entry = entry?;
-            if entry.path().join("lesson-bundle.md").is_file() {
-                names.push(entry.file_name().to_string_lossy().into_owned());
-            }
-        }
-    }
-    let mut names: Vec<(u64, String)> = names
-        .into_iter()
-        .map(|name| {
-            let timestamp = library::finalized(root, &name).map_or(0, |(_, timestamp)| timestamp);
-            (timestamp, name)
-        })
-        .collect();
-    names.sort_by(|left, right| right.cmp(left));
-    let names: Vec<String> = names.into_iter().map(|(_, name)| name).collect();
+    let found = library::archive_order(root).unwrap_or_default();
     Ok(json!({
-        "total": names.len(),
-        "items": names.iter().take(BUNDLE_LIMIT).map(|name| cut(&format!("{ARCHIVED_CHANGES}/{name}/lesson-bundle.md"))).collect::<Vec<_>>(),
+        "total": found.len(),
+        "items": found.iter().take(BUNDLE_LIMIT).map(|archive| {
+            let path = format!("{ARCHIVED_CHANGES}/{}/lesson-bundle.md", archive.dir);
+            cut(&if archive.lesson_bundle { path } else { format!("{path} (missing)") })
+        }).collect::<Vec<_>>(),
     }))
 }
 
