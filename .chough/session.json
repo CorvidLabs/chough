@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -647,7 +647,9 @@
     "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
-    "OBS-structural-0ceefdd961ed75d53f1b3742"
+    "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-tc-cli-failed-native-exit-in-plain-words-06ae1b849145ad876228e84b",
+    "OBS-tc-cli-native-killed-by-signal-says-so-b734a4db7e3e4908defda993"
   ],
   "bugs": [
     "BUG-0001",
@@ -681,7 +683,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Write failing-first tests, then the plain exit wording in src/records.rs"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
