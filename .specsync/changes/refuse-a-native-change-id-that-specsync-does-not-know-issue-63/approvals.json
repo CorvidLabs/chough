@@ -73,6 +73,45 @@
       "approved_delta_digests": {
         "cli": "974eb96b05c1f7de2f77878d678f110a41f01cb96d05959b38b35eb66dea83bf"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793756437,
+      "digest": "b1c825b4894bbd1e5714bab0fc47b6844fab95394d43a515cfd760a135609557",
+      "note": "Re-approved as corvid-agent (agent account, not a human approval) for the review ask relayed by the parent at 6:37 PM MST on 2026-11-03: refuse a SpecSync reply that names a different change ID than requested. REQ-cli-007 delta gains that sentence and an acceptance bullet; tests/common/mod.rs joins the scope because the shared stub now echoes summary.id",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+        "title": "Refuse a native change ID that SpecSync does not know (issue 63)",
+        "description": "Refuse a native change ID that SpecSync does not know (issue 63)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "tests/common/mod.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With SpecSync configured chough checkpoint --native-change for an ID that specsync change status does not report exits non-zero with refused:native-change-unknown naming the ID and the status command and .chough/session.json stays byte-identical even when other updates are in the same call, A failed or timed-out SpecSync read also refuses with nothing saved, An ID that SpecSync reports is saved as before, Without a SpecSync configuration only the existing ID format check applies, docs/cli.md states the refusal and the new test fails on main 4daf861 and fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 63 only: no new dependency or schema or output-key change and no change to stage gates or to next/status native reads; no PR until a corvid-agent PR slot is free",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "1833821222212275b2ea81e7be565056413734c2d24873480d7c10389b6a562e"
+      }
     }
   ],
   "reopenings": []
