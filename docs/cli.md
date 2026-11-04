@@ -404,8 +404,12 @@ while the checkpoint is at <stage>`, its command is the reset, and the native ne
 action is named as the thing to check first; after the suggested reset the checkpoint
 still names the archived change until a new one is recorded, so this rule does not
 apply while the archived change belongs to the previous cycle (the latest stage
-transition is a reset, or the change was finalized no later than the latest reset):
-the reset's next action stays, and a refused gate for the next main stage keeps it,
+transition is a reset, or the change was finalized no later than the latest reset;
+with event history the whole current cycle is read for that reset, up to the cycle's
+4096-event and 16 MiB capacity, not only the recent events `next` shows, and when the
+current cycle cannot be read whole the action says `Unknown whether native change <id>
+belongs to this cycle` with the reason and the command `chough history show`, rather
+than guessing either way): the reset's next action stays, and a refused gate for the next main stage keeps it,
 names this cycle's missing native change and suggests `specsync change new`, never
 another reset; at accept it
 first says `Record done first: chough stage advance (accept to done is allowed). Then:`
