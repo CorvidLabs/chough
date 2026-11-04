@@ -105,6 +105,32 @@ pub(super) enum StageCommand {
         #[arg(long)]
         note: Option<String>,
     },
+    /// Record a move to the next main stage that already happened, at its original
+    /// time with the commit and quote it rests on. Every advance refusal applies and
+    /// native state is read now; no human approval or review is recorded.
+    Backfill {
+        /// When the move happened: `YYYY-MM-DDTHH:MM:SSZ` or Unix seconds.
+        #[arg(long)]
+        at: String,
+        /// The commit the move rests on; it must be an ancestor of HEAD.
+        #[arg(long)]
+        commit: String,
+        /// The human's or the record's words, kept verbatim as evidence only.
+        #[arg(long)]
+        quote: String,
+        #[arg(long)]
+        note: Option<String>,
+    },
+}
+
+/// Evidence for a transition recorded after it happened (REQ-history-005). The
+/// transition's `at_unix_seconds` is the original time; this is evidence only.
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct Backfill {
+    pub(super) recorded_at_unix_seconds: u64,
+    pub(super) commit: String,
+    pub(super) quote: String,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -123,6 +149,9 @@ pub(super) struct Transition {
     pub(super) revision: Option<String>,
     #[serde(default)]
     pub(super) refresh: Vec<String>,
+    /// Present only on a backfilled move, so other records keep their bytes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) backfill: Option<Backfill>,
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -1021,10 +1050,28 @@ fn log_transition(
     gate: Option<&str>,
     refresh: Vec<String>,
 ) -> Result<()> {
+    log_transition_at(root, session, kind, route, reason, gate, refresh, None)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn log_transition_at(
+    root: &Path,
+    session: &mut Checkpoint,
+    kind: &str,
+    route: (&str, &str),
+    reason: Option<&str>,
+    gate: Option<&str>,
+    refresh: Vec<String>,
+    backfill: Option<(u64, Backfill)>,
+) -> Result<()> {
     let (from, to) = route;
+    let (at, backfill) = match backfill {
+        Some((at, backfill)) => (at, Some(backfill)),
+        None => (now()?, None),
+    };
     let transition = Transition {
         schema_version: 1,
-        at_unix_seconds: now()?,
+        at_unix_seconds: at,
         kind: kind.into(),
         from: from.into(),
         to: to.into(),
@@ -1032,6 +1079,7 @@ fn log_transition(
         gate: gate.map(str::to_string),
         revision: head_revision(root),
         refresh,
+        backfill,
     };
     if session.history_cursor.is_some() {
         crate::history::append(root, session, transition)
@@ -1250,16 +1298,143 @@ fn unlinked_failure(root: &Path, session: &Checkpoint) -> Result<Option<String>>
 }
 
 /// Apply a move to the next stage, checking the gates that apply to it.
+/// What a backfill's output says about its quote.
+const BACKFILL_EVIDENCE: &str = "The quote and commit are evidence only; no human approval or review is recorded, and native state decided the gate now.";
+
+/// Parse `--at`: Unix seconds or `YYYY-MM-DDTHH:MM:SSZ`.
+fn parse_at(text: &str) -> Result<u64> {
+    let text = text.trim();
+    if !text.is_empty() && text.bytes().all(|byte| byte.is_ascii_digit()) {
+        return text
+            .parse()
+            .map_err(|_| anyhow::anyhow!("--at {text:?} is out of range"));
+    }
+    let bad = || anyhow::anyhow!("--at {text:?} is not Unix seconds or YYYY-MM-DDTHH:MM:SSZ");
+    let bytes = text.as_bytes();
+    if bytes.len() != 20
+        || bytes[4] != b'-'
+        || bytes[7] != b'-'
+        || bytes[10] != b'T'
+        || bytes[13] != b':'
+        || bytes[16] != b':'
+        || bytes[19] != b'Z'
+    {
+        return Err(bad());
+    }
+    let number = |range: std::ops::Range<usize>| -> Result<i64> {
+        let part = &text[range];
+        ensure!(part.bytes().all(|byte| byte.is_ascii_digit()), bad());
+        Ok(part.parse()?)
+    };
+    let (year, month, day) = (number(0..4)?, number(5..7)?, number(8..10)?);
+    let (hour, minute, second) = (number(11..13)?, number(14..16)?, number(17..19)?);
+    ensure!(
+        (1970..=9999).contains(&year)
+            && (1..=12).contains(&month)
+            && (1..=31).contains(&day)
+            && hour < 24
+            && minute < 60
+            && second < 60,
+        bad()
+    );
+    // Howard Hinnant's days_from_civil.
+    let y = if month <= 2 { year - 1 } else { year };
+    let era = y.div_euclid(400);
+    let yoe = y - era * 400;
+    let mp = (month + 9) % 12;
+    let doy = (153 * mp + 2) / 5 + day - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    let days = era * 146_097 + doe - 719_468;
+    let seconds = days * 86_400 + hour * 3_600 + minute * 60 + second;
+    ensure!(
+        crate::timing::utc(seconds as u64) == text,
+        "--at {text:?} is not a calendar date"
+    );
+    Ok(seconds as u64)
+}
+
+fn git_output(root: &Path, args: &[&str]) -> Option<std::process::Output> {
+    std::process::Command::new("git")
+        .args(args)
+        .current_dir(root)
+        .output()
+        .ok()
+}
+
+/// Check a backfill's time and evidence before any native read or record.
+fn backfill_evidence(root: &Path, at: &str, commit: &str, quote: &str) -> Result<(u64, Backfill)> {
+    ensure_text("quote", quote)?;
+    let at = parse_at(at)?;
+    let recorded = now()?;
+    ensure!(
+        at <= recorded,
+        "backfill refused: --at {} is in the future",
+        crate::timing::utc(at)
+    );
+    let (latest, _) = recent_transitions(root, 1).map_err(|error| {
+        anyhow::anyhow!("backfill refused: the latest transition is unreadable: {error:#}")
+    })?;
+    if let Some(record) = latest.last() {
+        let Some(previous) = record.get("at_unix_seconds").and_then(Value::as_u64) else {
+            bail!("backfill refused: the latest transition has no readable time");
+        };
+        ensure!(
+            at >= previous,
+            "backfill refused: --at {} is before the latest recorded transition at {}; history stays in time order",
+            crate::timing::utc(at),
+            crate::timing::utc(previous)
+        );
+    }
+    ensure!(
+        !commit.trim().is_empty() && !commit.starts_with('-'),
+        "backfill refused: --commit {commit:?} does not resolve to a commit"
+    );
+    let resolved = git_output(
+        root,
+        &[
+            "rev-parse",
+            "--verify",
+            "--quiet",
+            &format!("{commit}^{{commit}}"),
+        ],
+    )
+    .filter(|output| output.status.success())
+    .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_string())
+    .filter(|sha| !sha.is_empty())
+    .ok_or_else(|| {
+        anyhow::anyhow!("backfill refused: --commit {commit:?} does not resolve to a commit")
+    })?;
+    let ancestor = git_output(root, &["merge-base", "--is-ancestor", &resolved, "HEAD"])
+        .is_some_and(|output| output.status.success());
+    ensure!(
+        ancestor,
+        "backfill refused: commit {resolved} is not an ancestor of HEAD"
+    );
+    Ok((
+        at,
+        Backfill {
+            recorded_at_unix_seconds: recorded,
+            commit: resolved,
+            quote: quote.to_string(),
+        },
+    ))
+}
+
 fn move_forward(
     root: &Path,
     session: &mut Checkpoint,
     kind: &str,
     reason: Option<&str>,
+    backfill: Option<(u64, Backfill)>,
 ) -> Result<Value> {
     ensure_active(session)?;
     ensure_main(session, kind)?;
     ensure_no_open_human_gate(session, kind)?;
     let from = session.stage.current.clone();
+    ensure!(
+        backfill.is_none() || from != "release",
+        "backfill refused: release to done cannot be backfilled; advance it when it happens"
+    );
     let to = if from == "release" {
         "done".to_string()
     } else {
@@ -1293,7 +1468,16 @@ fn move_forward(
         );
         gate_label = Some(gate.label);
     }
-    log_transition(
+    let evidence = backfill.as_ref().map(|(at, backfill)| {
+        json!({
+            "at_unix_seconds": at,
+            "recorded_at_unix_seconds": backfill.recorded_at_unix_seconds,
+            "commit": backfill.commit,
+            "quote": backfill.quote,
+            "evidence": BACKFILL_EVIDENCE,
+        })
+    });
+    log_transition_at(
         root,
         session,
         kind,
@@ -1301,10 +1485,15 @@ fn move_forward(
         reason,
         gate_label.as_deref(),
         vec![],
+        backfill,
     )?;
     session.stage.current = to.clone();
     session.stage.iteration = 1;
-    Ok(json!({"kind": kind, "from": from, "to": to, "gate": gate_label}))
+    let mut applied = json!({"kind": kind, "from": from, "to": to, "gate": gate_label});
+    if let Some(evidence) = evidence {
+        applied["backfill"] = evidence;
+    }
+    Ok(applied)
 }
 
 fn move_back(
@@ -1414,11 +1603,18 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 &mut session,
                 "advance",
                 note.as_deref(),
+                None,
             )?)
         }
         StageCommand::Skip { reason } => {
             ensure_text("reason", &reason)?;
-            Some(move_forward(root, &mut session, "skip", Some(&reason))?)
+            Some(move_forward(
+                root,
+                &mut session,
+                "skip",
+                Some(&reason),
+                None,
+            )?)
         }
         StageCommand::Iterate { note } => {
             ensure_text("note", &note)?;
@@ -1435,6 +1631,24 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
             )?;
             session.stage.iteration += 1;
             Some(json!({"kind": "iterate", "stage": stage, "iteration": session.stage.iteration}))
+        }
+        StageCommand::Backfill {
+            at,
+            commit,
+            quote,
+            note,
+        } => {
+            if let Some(note) = &note {
+                ensure_text("note", note)?;
+            }
+            let backfill = backfill_evidence(root, &at, &commit, &quote)?;
+            Some(move_forward(
+                root,
+                &mut session,
+                "advance",
+                note.as_deref(),
+                Some(backfill),
+            )?)
         }
         StageCommand::Back { to, reason } => {
             Some(move_back(root, &mut session, "back", &to, &reason)?)

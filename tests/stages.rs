@@ -3173,3 +3173,324 @@ fn checkpoint_native_change_without_specsync_keeps_the_format_check() {
             .contains("invalid native change ID")
     );
 }
+
+// ---------------------------------------------------------------------------
+// Backfilled moves (REQ-cli-036, REQ-history-005).
+
+fn unix_now() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+}
+
+fn rev_parse(fixture: &Fixture, rev: &str) -> String {
+    let output = Command::new("git")
+        .args(["rev-parse", rev])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    String::from_utf8(output.stdout).unwrap().trim().to_string()
+}
+
+/// A legacy project at plan with an approved native change whose earlier transitions
+/// happened about `shift` seconds ago, 100 seconds apart, inside a Git repository.
+#[cfg(unix)]
+fn backfill_fixture(state: &str, shift: u64) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native(state);
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    fixture.no_spec_approval("add-thing");
+    let shifted: String = transitions(&fixture)
+        .into_iter()
+        .enumerate()
+        .map(|(index, mut record)| {
+            let at = record["at_unix_seconds"].as_u64().unwrap();
+            record["at_unix_seconds"] = json!(at - shift + 100 * index as u64);
+            format!("{record}\n")
+        })
+        .collect();
+    fixture.write(".chough/transitions.jsonl", &shifted);
+    fixture.commit("base");
+    fixture
+}
+
+#[cfg(unix)]
+#[test]
+fn a_backfilled_move_keeps_its_original_time_and_quoted_evidence() {
+    let fixture = backfill_fixture("approved", 10_000);
+    let before = fixture.read(".chough/transitions.jsonl");
+    let at = unix_now() - 5_000;
+    let short = rev_parse(&fixture, "HEAD")[..12].to_string();
+    fixture.write(".stub-count", "");
+    fixture.native_calls();
+    let quote = "Leif, 4:10 PM: yes, build it in a subagent";
+    let out = fixture.ok(&[
+        "stage",
+        "backfill",
+        "--at",
+        &at.to_string(),
+        "--commit",
+        &short,
+        "--quote",
+        quote,
+        "--note",
+        "Built in a subagent",
+    ]);
+    assert!(fixture.native_calls() > 0, "the native gate is read now");
+    fs::remove_file(fixture.root().join(".stub-count")).unwrap();
+    assert_eq!(out["applied"]["kind"], "advance");
+    assert_eq!(out["applied"]["to"], "build");
+    assert_eq!(out["applied"]["gate"], "native:approved");
+    let evidence = out["applied"]["backfill"]["evidence"].as_str().unwrap();
+    assert!(evidence.contains("evidence only"), "{evidence}");
+    assert!(
+        evidence.contains("no human approval or review"),
+        "{evidence}"
+    );
+    assert_eq!(stage(&fixture), "build");
+
+    // Earlier records keep their bytes; the new one carries the past time and evidence.
+    let after = fixture.read(".chough/transitions.jsonl");
+    assert!(after.starts_with(&before));
+    let record = transitions(&fixture).pop().unwrap();
+    assert_eq!(record["kind"], "advance");
+    assert_eq!(record["at_unix_seconds"], at);
+    assert_eq!(record["reason"], "Built in a subagent");
+    assert_eq!(record["backfill"]["commit"], rev_parse(&fixture, "HEAD"));
+    assert_eq!(record["backfill"]["quote"], quote);
+    let recorded = record["backfill"]["recorded_at_unix_seconds"]
+        .as_u64()
+        .unwrap();
+    assert!(recorded >= at + 5_000 - 5 && recorded <= unix_now());
+    for line in before.lines() {
+        assert!(!line.contains("backfill"), "{line}");
+    }
+
+    // Nothing human is recorded.
+    let session = fixture.session();
+    assert_eq!(session["awaiting_human"], json!([]));
+    assert_eq!(session["run_consents"], json!([]));
+    assert!(!fixture.exists(".chough/preferences.json"));
+
+    // Timing lists it separately and marks the segments it bounds.
+    let report = fixture.ok(&["timing", "--json"]);
+    let listed = report["backfilled"].as_array().unwrap();
+    assert_eq!(listed.len(), 1, "{listed:?}");
+    assert_eq!(listed[0]["from"], "plan");
+    assert_eq!(listed[0]["to"], "build");
+    assert_eq!(listed[0]["at"]["unix_seconds"], at);
+    assert_eq!(listed[0]["recorded_at"]["unix_seconds"], recorded);
+    assert_eq!(listed[0]["commit"], record["backfill"]["commit"]);
+    assert_eq!(listed[0]["quote"], quote);
+    assert!(report["labels"]["backfilled"].as_str().is_some());
+    let segments = report["cycles"][0]["segments"].as_array().unwrap();
+    let marked: Vec<&str> = segments
+        .iter()
+        .filter(|segment| segment["backfilled"] == true)
+        .map(|segment| segment["stage"].as_str().unwrap())
+        .collect();
+    assert_eq!(marked, ["plan", "build"]);
+    assert!(
+        segments
+            .iter()
+            .filter(|segment| segment["stage"] == "design")
+            .all(|segment| segment["backfilled"] == false)
+    );
+    let plan = report["cycles"][0]["stages"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|total| total["stage"] == "plan")
+        .unwrap()
+        .clone();
+    assert_eq!(plan["backfilled"]["seconds"], plan["stage_time"]["seconds"]);
+    let text = String::from_utf8(fixture.run(&["timing"]).stdout).unwrap();
+    assert!(text.contains("Backfilled"), "{text}");
+
+    // Stages a backfilled move bounds are not estimate samples once the cycle ends.
+    fixture.write(".stub-state", "verifying\n");
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.write(".stub-state", "archived\n");
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "done");
+    let report = fixture.ok(&["timing", "--json"]);
+    assert_eq!(report["cycles"][0]["completed"], true);
+    let sampled: Vec<&str> = report["estimates"]["stages"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|estimate| estimate["stage"].as_str().unwrap())
+        .collect();
+    assert!(sampled.contains(&"design"), "{sampled:?}");
+    assert!(!sampled.contains(&"plan"), "{sampled:?}");
+    assert!(!sampled.contains(&"build"), "{sampled:?}");
+}
+
+#[cfg(unix)]
+#[test]
+fn backfill_refuses_what_advance_or_its_evidence_does_not_support() {
+    let fixture = backfill_fixture("draft", 10_000);
+    let head = rev_parse(&fixture, "HEAD");
+    let at = (unix_now() - 5_000).to_string();
+    let refused = |args: &[&str], expected: &str| {
+        let log = fixture.read(".chough/transitions.jsonl");
+        let session = fixture.read(".chough/session.json");
+        let mut route = vec!["stage", "backfill"];
+        route.extend_from_slice(args);
+        let error = fixture.fails(&route);
+        assert!(error.contains(expected), "{args:?}: {error}");
+        assert_eq!(fixture.read(".chough/transitions.jsonl"), log, "{args:?}");
+        assert_eq!(fixture.read(".chough/session.json"), session, "{args:?}");
+    };
+    let ok = ["--commit", head.as_str(), "--quote", "Leif: yes"];
+    let with = |at: &str, rest: &[&str]| -> Vec<String> {
+        let mut args = vec!["--at".to_string(), at.to_string()];
+        args.extend(rest.iter().map(|arg| arg.to_string()));
+        args
+    };
+    let call = |args: Vec<String>, expected: &str| {
+        let args: Vec<&str> = args.iter().map(String::as_str).collect();
+        refused(&args, expected);
+    };
+
+    // Native state does not support build.
+    call(with(&at, &ok), "refused:native-draft");
+    fixture.write(".stub-state", "approved\n");
+
+    // Times: future, before the latest transition, unparseable.
+    call(
+        with(&(unix_now() + 3_600).to_string(), &ok),
+        "is in the future",
+    );
+    call(
+        with("2020-01-01T00:00:00Z", &ok),
+        "before the latest recorded transition",
+    );
+    call(with("yesterday", &ok), "--at");
+
+    // Evidence: unknown commit, unreachable commit, blank quote.
+    call(
+        with(&at, &["--commit", "deadbeef", "--quote", "Leif: yes"]),
+        "does not resolve",
+    );
+    fixture.git(&["checkout", "-q", "-b", "elsewhere"]);
+    fixture.git(&["commit", "-q", "--allow-empty", "-m", "elsewhere"]);
+    let elsewhere = rev_parse(&fixture, "HEAD");
+    fixture.git(&["checkout", "-q", "-"]);
+    call(
+        with(&at, &["--commit", &elsewhere, "--quote", "Leif: yes"]),
+        "not an ancestor of HEAD",
+    );
+    call(
+        with(&at, &["--commit", &head, "--quote", "   "]),
+        "quote must not be blank",
+    );
+
+    // Every advance refusal still applies: an open human gate and a side stage.
+    // The gate is recorded now, so these backfill a move at the current time.
+    fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval"]);
+    call(with(&unix_now().to_string(), &ok), "refused:awaiting-human");
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    fixture.ok(&["stage", "enter", "bugs", "--reason", "Capture"]);
+    call(with(&unix_now().to_string(), &ok), "return");
+    fixture.ok(&["stage", "return"]);
+
+    // Still nothing human was recorded, and the gate refused as advance would.
+    assert!(!fixture.exists(".chough/preferences.json"));
+    assert_eq!(fixture.session()["run_consents"], json!([]));
+    assert!(
+        transitions(&fixture)
+            .iter()
+            .all(|record| record.get("backfill").is_none())
+    );
+}
+
+#[test]
+fn a_backfilled_move_is_carried_by_history_events() {
+    let fixture = Fixture::new();
+    fixture.ok(&[
+        "init",
+        "--objective",
+        "Backfill with history",
+        "--module",
+        "cli",
+    ]);
+    assert!(fixture.session()["history_cursor"].is_object());
+    fixture.commit("base");
+    let latest = fixture.ok(&["stage", "show"])["recent_transitions"]
+        .as_array()
+        .unwrap()
+        .last()
+        .map(|record| record["at_unix_seconds"].as_u64().unwrap())
+        .unwrap_or(0);
+    let at = latest.max(unix_now() - 60);
+    fixture.ok(&[
+        "stage",
+        "backfill",
+        "--at",
+        &at.to_string(),
+        "--commit",
+        "HEAD",
+        "--quote",
+        "Leif: intent approved",
+    ]);
+    let shown = fixture.ok(&["stage", "show"]);
+    let record = shown["recent_transitions"]
+        .as_array()
+        .unwrap()
+        .last()
+        .unwrap()
+        .clone();
+    assert_eq!(record["at_unix_seconds"], at);
+    assert_eq!(record["backfill"]["quote"], "Leif: intent approved");
+    assert_eq!(record["backfill"]["commit"], rev_parse(&fixture, "HEAD"));
+    let report = fixture.ok(&["timing", "--json"]);
+    assert_eq!(report["backfilled"].as_array().unwrap().len(), 1);
+}
+
+/// Release to done is never backfilled: it is advanced when it happens (review of #73).
+#[test]
+fn backfill_refuses_release_to_done() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "Human: please publish 0.2.0",
+    ]);
+    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    assert_eq!(stage(&fixture), "release");
+    fixture.commit("base");
+    let log = fixture.read(".chough/transitions.jsonl");
+    let session = fixture.read(".chough/session.json");
+    let refused = fixture.fails(&[
+        "stage",
+        "backfill",
+        "--at",
+        &unix_now().to_string(),
+        "--commit",
+        "HEAD",
+        "--quote",
+        "Leif: it shipped",
+    ]);
+    assert!(
+        refused.contains("release to done cannot be backfilled"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/transitions.jsonl"), log);
+    assert_eq!(fixture.read(".chough/session.json"), session);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "done");
+}
