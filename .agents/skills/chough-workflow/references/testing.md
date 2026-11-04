@@ -38,10 +38,31 @@ changes identity, while editing what it asserts makes earlier observations
 `stale-case-definition`.
 
 A requirement an approved native change adds is not in the companion until the
-scoped `specsync change check <id>` materializes it, so `cases check` refuses a case
-that links it before then. Finish the implementation tasks, run that check, then add,
-run and record those cases. Running or recording cases is never a `tasks.md`
-checkbox: `change check` refuses while any box is unchecked.
+scoped `specsync change check <id>` materializes it. Before then `cases check`, `run`
+and `record` accept a case linking it when the checkpoint records that change
+(`chough checkpoint --native-change <id>`), the change passes the build gate's native
+checks and its delta for the case file's module adds or modifies the ID; `cases
+check` lists such links under `approved_delta_requirements`. Anything else is
+refused with the reason. Running or recording cases is never a `tasks.md` checkbox:
+`change check` refuses while any box is unchecked.
+
+## Failing-first evidence in the test stage
+
+The test stage links three pieces of evidence for each regression or new behavior:
+
+1. The commit that adds the failing tests, before the fix. Record it with
+   `chough checkpoint --completed "Failing tests: <commit>"`.
+2. The failing run on that commit: `chough cases run <ID> --environment <env>` records
+   a failed observation, and `chough bug add ... --observation <id>` (or
+   `chough bug update <bug> --observation <id>`) links it, so the failure is a
+   receipt rather than a blocker.
+3. The passing run after the fix: rerun the same case, which records a passed
+   observation later than the failure.
+
+Leaving test for accept needs, for each case the checkpoint references, a latest
+executed observation that passed or that a bug links. Because cases can link the
+approved delta's requirements before materialization, all three steps run inside
+Chough, in order, rather than after the fact.
 
 ## Execute honestly
 

@@ -26,6 +26,14 @@ All notable changes to Chough are recorded here. The format follows
   exits (stopped 2 seconds after Git exits when no signal comes); a library snapshot
   is now written whole or not at all (FLOW-14, #75). A hard `kill -9` is not covered. Unix
   only; Windows is unchanged.
+- Cases may link a requirement that the checkpoint's approved native change adds or
+  modifies in its delta for the case module before `specsync change check`
+  materializes it, so failing-first cases run inside Chough (REQ-cli-009, Raven
+  BUG-0004). The change must pass the build gate's native checks; Chough makes one
+  native read per command for this, only when a link misses its companion, and lists
+  such links under `approved_delta_requirements`. A refused link now says why the
+  consulted delta did not resolve it. The testing reference describes how the test
+  stage links failing-first evidence.
 - `chough checkpoint --native-change <id>` asks SpecSync for the change before saving and
   refuses an ID SpecSync does not report (`refused:native-change-unknown`), leaving the
   checkpoint unchanged (#63, found in Kimi's second lab review). A reply whose
