@@ -5,10 +5,10 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Record pre-split digests at a33c747 and 70009d6
-- [ ] Add specs/reporting and move file ownership
-- [ ] Write the cli and reporting deltas
-- [ ] Move the 9 cases and twin the 6 co-linked cases with the documented ID mapping
-- [ ] Document the mappings and update cited IDs
-- [ ] Extend tests/spec_split.rs
-- [ ] Confirm the reporting delta bodies match the a33c747 digests before materializing (materialize, the moved cases, verify and the before/after comparison are in testing.md)
+- [x] Record pre-split digests at a33c747 and 70009d6
+- [x] Add specs/reporting and move file ownership
+- [x] Write the cli and reporting deltas
+- [x] Move the 9 cases and twin the 6 co-linked cases with the documented ID mapping
+- [x] Document the mappings and update cited IDs
+- [x] Extend tests/spec_split.rs
+- [x] Confirm the reporting delta bodies match the a33c747 digests before materializing (materialize, the moved cases, verify and the before/after comparison are in testing.md)
