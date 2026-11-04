@@ -1015,15 +1015,20 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
         command.process_group(0);
     }
     let mut child = command.spawn()?;
-    let read_all = |stream: Option<Box<dyn Read + Send>>| {
+    // Each reader and the stdin writer report when they end, so the loop below can
+    // keep watching for stop signals until every pipe has closed.
+    let (done, finished) = mpsc::channel::<()>();
+    let read_all = |stream: Option<Box<dyn Read + Send>>, done: mpsc::Sender<()>| {
         thread::Builder::new()
             .name("chough-git".into())
             .spawn(move || {
                 let mut bytes = vec![];
-                if let Some(mut stream) = stream {
-                    stream.read_to_end(&mut bytes)?;
-                }
-                Ok::<_, io::Error>(bytes)
+                let read = match stream {
+                    Some(mut stream) => stream.read_to_end(&mut bytes).map(|_| ()),
+                    None => Ok(()),
+                };
+                let _ = done.send(());
+                read.map(|()| bytes)
             })
     };
     let stdout = read_all(
@@ -1031,12 +1036,14 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
             .stdout
             .take()
             .map(|s| Box::new(s) as Box<dyn Read + Send>),
+        done.clone(),
     );
     let stderr = read_all(
         child
             .stderr
             .take()
             .map(|s| Box::new(s) as Box<dyn Read + Send>),
+        done.clone(),
     );
     let (stdout, stderr) = match (stdout, stderr) {
         (Ok(stdout), Ok(stderr)) => (stdout, stderr),
@@ -1048,14 +1055,23 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
     };
     // Stdin is written on its own thread so a large write to a stalled command never
     // holds off the stop check below; the pipe closes when the writer ends.
+    let mut open = 2_u8;
     let writer = match (write, child.stdin.take()) {
         (Some(bytes), Some(mut stdin)) => {
             let bytes = bytes.to_vec();
+            let done = done.clone();
             match thread::Builder::new()
                 .name("chough-git-stdin".into())
-                .spawn(move || stdin.write_all(&bytes))
-            {
-                Ok(writer) => Some(writer),
+                .spawn(move || {
+                    let written = stdin.write_all(&bytes);
+                    drop(stdin);
+                    let _ = done.send(());
+                    written
+                }) {
+                Ok(writer) => {
+                    open += 1;
+                    Some(writer)
+                }
                 Err(error) => {
                     stop_tree(&mut child);
                     let _ = child.wait();
@@ -1065,7 +1081,14 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
         }
         _ => None,
     };
-    let status = loop {
+    drop(done);
+    // Watch for stop signals until the command has exited and every pipe has closed. A
+    // descendant that keeps a pipe open after the command exits is given `EXIT_GRACE`,
+    // then the command's group is stopped; readers still open a second later are
+    // abandoned, never awaited.
+    let mut status: Option<ExitStatus> = None;
+    let mut exited_at: Option<Instant> = None;
+    loop {
         if interrupt::noted() {
             stop_tree(&mut child);
             let _ = child.wait();
@@ -1074,15 +1097,51 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
                 "Chough was stopped by a signal",
             ));
         }
-        match child.try_wait() {
-            Ok(Some(status)) => break status,
-            Ok(None) => thread::sleep(POLL),
-            Err(error) => {
-                stop_tree(&mut child);
-                let _ = child.wait();
-                return Err(error);
+        if status.is_none() {
+            match child.try_wait() {
+                Ok(Some(exit)) => {
+                    status = Some(exit);
+                    exited_at = Some(Instant::now());
+                }
+                Ok(None) => {}
+                Err(error) => {
+                    stop_tree(&mut child);
+                    let _ = child.wait();
+                    return Err(error);
+                }
             }
         }
+        if status.is_some() && open == 0 {
+            break;
+        }
+        if exited_at.is_some_and(|at| at.elapsed() >= EXIT_GRACE) {
+            stop_tree(&mut child);
+            break;
+        }
+        if open == 0 {
+            thread::sleep(POLL);
+        } else {
+            match finished.recv_timeout(POLL) {
+                Ok(()) => open -= 1,
+                Err(RecvTimeoutError::Timeout) => {}
+                Err(RecvTimeoutError::Disconnected) => open = 0,
+            }
+        }
+    }
+    let wait_until = Instant::now() + READER_WAIT;
+    while open > 0 {
+        match finished.recv_timeout(wait_until.saturating_duration_since(Instant::now())) {
+            Ok(()) => open -= 1,
+            Err(_) => break,
+        }
+    }
+    if open > 0 {
+        return Err(io::Error::other(
+            "a process Chough started kept its output open after it was stopped",
+        ));
+    }
+    let Some(status) = status else {
+        return Err(io::Error::other("the command's exit status was not read"));
     };
     if let Some(writer) = writer {
         writer

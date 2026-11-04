@@ -10,7 +10,9 @@ All notable changes to Chough are recorded here. The format follows
   or a native SpecSync read now stops the command it started, that command's process
   group and Chough's own Git commands, including the Git that `stage backfill` and
   `library snapshot` run, and records nothing partial, including while a case run saves
-  its result; a library snapshot is now written whole or not at all (FLOW-14, #75). A hard `kill -9` is not covered. Unix
+  its result, and while a descendant of that Git still holds its output after Git
+  exits (stopped 2 seconds after Git exits when no signal comes); a library snapshot
+  is now written whole or not at all (FLOW-14, #75). A hard `kill -9` is not covered. Unix
   only; Windows is unchanged.
 - Dotted SpecSync module IDs such as `chat.service` and hi sub-criterion IDs such as
   `BOTS-1.a` are accepted by `init`, `checkpoint`, `bugs`, `evidence` and `cases`, and

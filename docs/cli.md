@@ -340,7 +340,10 @@ and those descendants may keep running.
 Stopping Chough stops what it started (FLOW-14). On Unix, when Chough gets SIGINT
 (Ctrl-C), SIGTERM (a plain `kill`) or SIGHUP while a case binding, a native read or
 one of its own Git commands runs, it stops that command's process group and ends by
-the same signal. During `cases run` the stop handling lasts through the save: a stop
+the same signal. It keeps watching until the command's output closes: when a
+descendant still holds the output of one of Chough's own Git commands after Git exits,
+a signal still stops the group, and without one Chough stops the group 2 seconds after
+Git exits and goes on with Git's output. During `cases run` the stop handling lasts through the save: a stop
 before the save begins records nothing (no observation, artifact or checkpoint
 change), and a stop once it has begun lets the artifact and the observation both be
 written first, so a run is never half recorded. A signal Chough inherited as ignored
