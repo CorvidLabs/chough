@@ -2748,3 +2748,21 @@ expected = ["tests/native_check.rs::an_unreadable_attempts_record_is_unknown_and
 adapter = "cargo-test"
 test_target = "native_check"
 test = "an_unreadable_attempts_record_is_unknown_and_adds_no_native_read"
+
+[[case]]
+id = "TC-cli-verifying-tree-moved-not-passed"
+title = "A verifying change whose tree moved is shown as not passed for this tree"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-039"]
+paths = ["src/native_check.rs", "src/main.rs", "tests/native_check.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_check.rs::a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_check"
+test = "a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree"
