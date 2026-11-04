@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0",
+  "native_change": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -682,5 +682,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Independent review of PR #67 at the new head; then review and ship the native change, move test->accept->done, and merge after green CI"
+  "next_action": "New cycle from done after reset: New cycle: #71 (issue 63), refuse a native change ID SpecSync does not know or names differently. Built and verified on its branch (verify 9/9, 279 tests at e3ff647); native change archived at e29e8cf after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }
