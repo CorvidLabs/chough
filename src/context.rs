@@ -1,7 +1,7 @@
 //! Bounded, deterministic context assembly from native sources and the checkpoint.
 
 use crate::checkpoint::Session;
-use crate::records::{Section, file_section, local_path, native};
+use crate::records::{NativeJson, Section, file_section, local_path, native, native_json};
 use crate::{bugs, prefs, stage};
 use anyhow::{Result, ensure};
 use std::collections::BTreeSet;
@@ -9,11 +9,23 @@ use std::path::Path;
 
 const CONTEXT_LIMIT: usize = 131_072;
 
+/// The HI export shown in `chough context`: a display section within 16 KiB.
 pub(super) fn hi_export(root: &Path, scope: &str) -> Section {
     if scope.is_empty() {
         native(root, "hi", &["export"])
     } else {
         native(root, "hi", &["export", "--", scope])
+    }
+}
+
+/// The HI export a decision reads: parsed from the complete output (up to SpecSync's
+/// 4 MiB parse bound), never from the 16 KiB display section. HI owns the intent and its
+/// size; a Chough bound must never make anyone shorten it (LIFE-15).
+pub(super) fn hi_export_json(root: &Path, scope: &str) -> NativeJson {
+    if scope.is_empty() {
+        native_json(root, "hi", &["export"])
+    } else {
+        native_json(root, "hi", &["export", "--", scope])
     }
 }
 
@@ -94,7 +106,7 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
         if remaining == 0 {
             section.state = "omitted-budget".into();
             section.content =
-                "Source omitted: aggregate source content budget is 131072 bytes.".into();
+                "Source omitted from this display: the aggregate display budget is 131072 bytes. Read the source itself; never shorten it to fit a Chough display bound.".into();
         } else if section.content.len() > remaining {
             let mut boundary = remaining;
             while !section.content.is_char_boundary(boundary) {
@@ -103,7 +115,7 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
             section.content.truncate(boundary);
             section
                 .content
-                .push_str("\n[truncated: aggregate source content budget is 131072 bytes]");
+                .push_str("\n[truncated for display only: the aggregate display budget is 131072 bytes; read the complete source, and never shorten it to fit a Chough display bound]");
             section.state = "truncated-budget".into();
             remaining = 0;
         } else {
