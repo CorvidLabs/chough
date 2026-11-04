@@ -970,14 +970,25 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
             return Err(error);
         }
     };
-    // The pipe closes when `stdin` drops at the end of this statement.
-    if let (Some(bytes), Some(mut stdin)) = (write, child.stdin.take())
-        && let Err(error) = stdin.write_all(bytes)
-    {
-        stop_tree(&mut child);
-        let _ = child.wait();
-        return Err(error);
-    }
+    // Stdin is written on its own thread so a large write to a stalled command never
+    // holds off the stop check below; the pipe closes when the writer ends.
+    let writer = match (write, child.stdin.take()) {
+        (Some(bytes), Some(mut stdin)) => {
+            let bytes = bytes.to_vec();
+            match thread::Builder::new()
+                .name("chough-git-stdin".into())
+                .spawn(move || stdin.write_all(&bytes))
+            {
+                Ok(writer) => Some(writer),
+                Err(error) => {
+                    stop_tree(&mut child);
+                    let _ = child.wait();
+                    return Err(error);
+                }
+            }
+        }
+        _ => None,
+    };
     let status = loop {
         if interrupt::noted() {
             stop_tree(&mut child);
@@ -997,6 +1008,11 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
             }
         }
     };
+    if let Some(writer) = writer {
+        writer
+            .join()
+            .unwrap_or_else(|_| Err(io::Error::other("the stdin writer panicked")))?;
+    }
     let joined = |reader: thread::JoinHandle<io::Result<Vec<u8>>>| {
         reader
             .join()
