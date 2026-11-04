@@ -13,6 +13,7 @@ requirement's wording (TC-reporting-split-keeps-requirement-wording).
 | REQ-reporting-001 (formerly REQ-cli-020) | Mixed-ID timing from timestamps and stored durations, never lexical IDs or random suffixes; read-only validation resume accounting | TC-reporting-0080 to 0089, 0100, 0104; existing timing regressions and mixed-ID fixtures |
 | REQ-reporting-002 (formerly REQ-cli-024) | Bounded, deduplicated timing native reads with explicit excluded/unknown history | TC-reporting-0089, 0100; tests/timing.rs native read and budget regressions |
 | REQ-reporting-003 (formerly REQ-cli-028) | One lazy case-suite load across observation/reference passes, unchanged legacy/slug digests, new-request source/case/artifact/environment/native-artifact invalidation, missing/retired/duplicate outcomes and exact trace stdout/error/record parity | TC-reporting-case-read-budget, TC-reporting-read-invalidation, TC-reporting-trace-parity; portable tests/next.rs regressions |
+| REQ-reporting-004 | Native lifecycle records over 64 KiB still give their times; only SpecSync's 4 MiB bound applies | TC-reporting-approval-ledger-over-record-bound |
 
 Observations and current IDs live in the Chough checkpoint and evidence records;
 this plan does not invent a passing grade or hosted result.

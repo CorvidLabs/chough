@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-hi-export-over-16-kib-validates-9502b194da369ee1e7a7788b",
+  "criteria": [
+    "LIFE-15",
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-042"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact criteria_validate_against_a_hi_family_export_over_16_kib for TC-cli-hi-export-over-16-kib-validates: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-hi-export-over-16-kib-validates-9502b194da369ee1e7a7788b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-hi-export-over-16-kib-validates-9502b194da369ee1e7a7788b.log": "e136abd8a797fc63844b274cb0b9eb78bfbabee54664cfa61b6b96ad82b35c0f"
+  },
+  "observed_at_unix_seconds": 1793824745,
+  "snapshot": {
+    "revision": "a3ed589db6e436359ec9ad0d925f3ee8375b7b38",
+    "dirty": false,
+    "fingerprint": "3b44c8c1dec1a2571ffda111b664e0bb4e483128a4750abd8b5d4377709905e2",
+    "content": "fb610d88dee4a7859ebb7cd068309bc934037b5e2416d5674b222bee70fdce72"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-hi-export-over-16-kib-validates",
+      "digest": "74336dd0e71f5b4e85d6a2835992611685497ef6ab1dbd70ca2da9cb4caba4da"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "criteria_validate_against_a_hi_family_export_over_16_kib"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

@@ -1300,6 +1300,32 @@ printf '{"change":{"id":"%s","created_at":100,"updated_at":200},"summary":{"stat
     fixture
 }
 
+/// Issue #100 (LIFE-15): a native approval ledger is SpecSync's file, read within
+/// SpecSync's bound and never Chough's 65,536-byte record bound, so a long ledger still
+/// gives its approval times.
+#[cfg(unix)]
+#[test]
+fn native_approval_ledgers_over_the_record_bound_still_give_their_times() {
+    let fixture = native_fixture();
+    let note = "x".repeat(70_000);
+    let ledger = json!({
+        "approvals": [
+            {"gate": "definition", "actor": "agent", "timestamp": T + 100, "note": note, "digest": "abc"},
+            {"gate": "definition", "actor": "agent", "timestamp": T + 200, "note": "short", "digest": "def"},
+        ],
+        "reopenings": [],
+    })
+    .to_string();
+    assert!(ledger.len() > 65_536);
+    fixture.write(".specsync/changes/cur-change/approvals.json", &ledger);
+    let report = timing(&fixture, &[]);
+    let current = &report["native"]["current"];
+    assert_eq!(current["approvals_unknown"], Value::Null, "{current:#}");
+    let approvals = current["approvals"].as_array().unwrap();
+    assert_eq!(approvals.len(), 2, "{current:#}");
+    assert_eq!(at(&approvals[1]["at"]), Some(T + 200));
+}
+
 #[cfg(unix)]
 #[test]
 fn native_times_come_only_from_status_and_native_records_read_read_only() {

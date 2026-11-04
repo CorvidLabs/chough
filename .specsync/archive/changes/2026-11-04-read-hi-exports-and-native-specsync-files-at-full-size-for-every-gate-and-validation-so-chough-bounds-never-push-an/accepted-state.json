@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an",
+  "slug": "read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an",
+  "title": "Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100)",
+  "description": "Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "91a1fdd82a4e314e5037c6256f17199ef0d604f0",
+  "created_at": 1793823703,
+  "updated_at": 1793825688,
+  "affected_specs": [
+    "cli",
+    "reporting"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/evidence.rs",
+    "src/context.rs",
+    "src/library.rs",
+    "src/stage.rs",
+    "src/timing.rs",
+    "src/skill.rs",
+    "tests/cli.rs",
+    "tests/timing.rs",
+    "skills/chough-workflow/SKILL.md",
+    "skills/chough-workflow/references/build.md",
+    "Cargo.toml",
+    "Cargo.lock",
+    "CHANGELOG.md",
+    "docs/cli.md",
+    "docs/DECISIONS.md",
+    "docs/FRD.md",
+    "docs/architecture.md",
+    "hi/life.md",
+    "INTENT.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough evidence add and chough cases check validate a criterion against a HI family export larger than 16384 bytes and still refuse an unknown or retired criterion,chough evidence prune reads an archived finalization.json larger than 65536 bytes and the stage gates read a SpecSync policy larger than 65536 bytes,library index reads an archived change.md larger than 65536 bytes and timing reads approval ledgers larger than 65536 bytes,display truncation markers tell the reader to read the source in full and never to shorten it,the workflow skill states that a Chough size bound never justifies editing HI intent or criteria or specs or SpecSync files and that an oversized native source is a Chough bug to report,Chough records keep their bounds and each new test fails on main 91a1fdd and fledge lanes run verify passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Bounded bug fix for issue 100 under LIFE-15 in the owner's words; REQ-cli-034 already exempts spec files and keeps every Chough record bound under REQ-cli-032, and this change keeps those bounds; display budgets of chough context and next stay; native reads stay read-only and within SpecSync's own 4 MiB artifact and parse bounds; no gate or schema or output-key change and no new dependency",
+    "public_contract": "yes"
+  }
+}

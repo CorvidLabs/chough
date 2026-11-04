@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Split the cli spec: REQ-cli-020, REQ-cli-024 and REQ-cli-028 move to a new reporting module as REQ-reporting-001 to 003 with wording unchanged, so specs/cli/requirements.md fits the 65536-byte bound",
+  "objective": "Issue #100: Chough's size bounds apply only to its own .chough records and to what it displays; HI exports and native SpecSync files are read at full size for every gate, validation and decision, and the skill says a Chough bound never justifies editing HI, specs or SpecSync files",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
+  "native_change": "read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -49,7 +49,8 @@
       "KNOW-12",
       "LIFE-12",
       "LIFE-13",
-      "LIFE-14"
+      "LIFE-14",
+      "LIFE-15"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -309,7 +310,8 @@
     "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases",
     "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's.",
     "Agent corvid-agent: chose the retention and transition-history group because it shares no case with a requirement that stays in cli and owns src/history.rs, tests/history.rs and tests/evidence.rs; SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: parent agent instruction 2026-11-03 9:46 AM MT)",
-    "Agent corvid-agent correction: the build->test transition at 2026-11-03 5:05 PM MST repeated the plan->build reason ('Plan approved natively: version 0.2.0 and dated change log only') because stage advance was run twice by mistake. The build edits (Cargo.toml, Cargo.lock, CHANGELOG.md) were made but not yet committed at that move; transitions are immutable, so this records the correction"
+    "Agent corvid-agent correction: the build->test transition at 2026-11-03 5:05 PM MST repeated the plan->build reason ('Plan approved natively: version 0.2.0 and dated change log only') because stage advance was run twice by mistake. The build edits (Cargo.toml, Cargo.lock, CHANGELOG.md) were made but not yet committed at that move; transitions are immutable, so this records the correction",
+    "Agent claude applies Human authority: Leif (0xLeif), product owner, issue #100 (filed by 0xLeif, 'Proposed fix' items 1 to 4) and his 2026-11-04 instruction relayed by the parent agent, verbatim: 'Chough should only reduce and do all that for its own files in .chough and not the specs, not the human intent.' Captured as LIFE-15 in his words. Covered scope: full-size native reads for HI family validation and SpecSync finalization, archived change.md, SDD policy and approval-ledger reads; display markers; skill guidance; tests; docs; decision D-020; changelog and 0.2.1 version bump. Limits: no merge, tag, publish, release or human acceptance grade; Chough's own record bounds unchanged"
   ],
   "open_questions": [],
   "completed": [
@@ -421,7 +423,8 @@
     "Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).",
     "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections).",
     "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb",
-    "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)"
+    "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)",
+    "Issue #100: native sources read at full size; LIFE-15, D-020, REQ-cli-042, REQ-reporting-004; 0.2.1 prep"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -683,5 +686,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: Record #78 test, accept and done after archive. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "Push, open the PR (Fixes #100), observe CI; then human implementation review, native review, ship and archive on the same PR"
 }
