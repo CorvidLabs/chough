@@ -604,6 +604,32 @@ impl Drop for Reap {
 #[cfg(target_os = "linux")]
 #[test]
 fn stopping_a_case_run_stops_a_descendant_that_left_the_group() {
+    stop_a_descendant_that_left_the_group();
+}
+
+/// #95 review: a stop test finds and reaps only its own fixture's processes. A process
+/// whose command line is `sleep 691`, as when this suite runs in a second worktree at the
+/// same time, is neither taken for a survivor nor killed.
+#[cfg(target_os = "linux")]
+#[test]
+fn a_stop_test_leaves_another_runs_processes_alone() {
+    struct Decoy(Child);
+    impl Drop for Decoy {
+        fn drop(&mut self) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+    let mut decoy = Decoy(Command::new("sleep").arg("691").spawn().unwrap());
+    stop_a_descendant_that_left_the_group();
+    assert!(
+        decoy.0.try_wait().unwrap().is_none(),
+        "the stop test killed another run's sleep 691"
+    );
+}
+
+#[cfg(target_os = "linux")]
+fn stop_a_descendant_that_left_the_group() {
     let _reap = Reap("sleep 691");
     let fixture = Fixture::new();
     fixture.hi_stand_in();
