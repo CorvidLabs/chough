@@ -10,7 +10,8 @@ All notable changes to Chough are recorded here. The format follows
   refuses an ID SpecSync does not report (`refused:native-change-unknown`), leaving the
   checkpoint unchanged (#63, found in Kimi's second lab review). A reply whose
   `summary.id` or `change.id` names a different change is refused too
-  (`refused:native-change-mismatch`).
+  (`refused:native-change-mismatch`), and so is a reply that names no change ID
+  (`refused:native-change-unknown`).
 - `chough stage backfill --at <time> --commit <rev> --quote <text>` records a move to
   the next main stage that already happened, at its original time with the commit and
   quote it rests on (REQ-cli-036, REQ-history-005). Every advance refusal applies and
