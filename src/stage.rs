@@ -620,36 +620,32 @@ fn native_file(root: &Path, relative: &str) -> std::result::Result<Option<Vec<u8
     }
 }
 
-/// Compare the deltas of `change` with the digests its latest definition approval
-/// recorded, as SpecSync 6.1.1 does before verification (REQ-cli-022). It reads the
-/// native approval ledger and deltas only, starts no process and copies nothing.
-pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Deltas {
-    let directory = format!(".specsync/changes/{change}");
-    let ledger_path = format!("{directory}/approvals.json");
-    let ledger = match native_file(root, &ledger_path) {
-        Ok(Some(bytes)) => bytes,
-        Ok(None) => {
-            return Deltas::Unverifiable(format!("the approval ledger {ledger_path} is missing"));
-        }
-        Err(reason) => return Deltas::Unverifiable(reason),
+/// The `approved_delta_digests` of the latest definition approval of `change`: `None`
+/// when that approval records none, an error message when the ledger cannot be used.
+fn approved_digests(
+    root: &Path,
+    change: &str,
+) -> std::result::Result<Option<std::collections::BTreeMap<String, String>>, String> {
+    let ledger_path = format!(".specsync/changes/{change}/approvals.json");
+    let ledger = match native_file(root, &ledger_path)? {
+        Some(bytes) => bytes,
+        None => return Err(format!("the approval ledger {ledger_path} is missing")),
     };
-    let malformed =
-        || Deltas::Unverifiable(format!("the approval ledger {ledger_path} is malformed"));
-    let Ok(ledger) = serde_json::from_slice::<Value>(&ledger) else {
-        return malformed();
-    };
-    let Some(approvals) = ledger.get("approvals").and_then(Value::as_array) else {
-        return malformed();
-    };
+    let malformed = || format!("the approval ledger {ledger_path} is malformed");
+    let ledger = serde_json::from_slice::<Value>(&ledger).map_err(|_| malformed())?;
+    let approvals = ledger
+        .get("approvals")
+        .and_then(Value::as_array)
+        .ok_or_else(malformed)?;
     let Some(approval) = approvals
         .iter()
         .rev()
         .find(|approval| approval.get("gate").and_then(Value::as_str) == Some("definition"))
     else {
-        return Deltas::Unverifiable(format!("{ledger_path} has no definition approval"));
+        return Err(format!("{ledger_path} has no definition approval"));
     };
-    let approved = match approval.get("approved_delta_digests") {
-        None | Some(Value::Null) => None,
+    match approval.get("approved_delta_digests") {
+        None | Some(Value::Null) => Ok(None),
         Some(Value::Object(map)) => {
             let mut digests = std::collections::BTreeMap::new();
             for (module, digest) in map {
@@ -661,12 +657,24 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
                     {
                         digests.insert(module.clone(), digest.to_string());
                     }
-                    _ => return malformed(),
+                    _ => return Err(malformed()),
                 }
             }
-            Some(digests)
+            Ok(Some(digests))
         }
-        Some(_) => return malformed(),
+        Some(_) => Err(malformed()),
+    }
+}
+
+/// Compare the deltas of `change` with the digests its latest definition approval
+/// recorded, as SpecSync 6.1.1 does before verification (REQ-cli-022). It reads the
+/// native approval ledger and deltas only, starts no process and copies nothing.
+pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Deltas {
+    let directory = format!(".specsync/changes/{change}");
+    let ledger_path = format!("{directory}/approvals.json");
+    let approved = match approved_digests(root, change) {
+        Ok(approved) => approved,
+        Err(reason) => return Deltas::Unverifiable(reason),
     };
     let Some(affected) = value
         .pointer("/change/affected_specs")
@@ -736,17 +744,29 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
     }
 }
 
-/// The requirement IDs that the delta of `change` for `module` adds or modifies, read
-/// read-only within SpecSync's bound; none when that delta is missing (REQ-cli-009).
+/// The requirement IDs that the delta of `change` for `module` adds or modifies, taken
+/// from the same bytes whose digest matches the latest definition approval. A module
+/// outside the approval's `approved_delta_digests` resolves nothing, so an extra delta
+/// file cannot satisfy a link (REQ-cli-009).
 pub(super) fn delta_requirements(
     root: &Path,
     change: &str,
     module: &str,
 ) -> std::result::Result<BTreeSet<String>, String> {
+    let not_approved =
+        || format!("its {module} delta is not among the change's verified approved deltas");
+    let digest = approved_digests(root, change)?
+        .and_then(|approved| approved.get(module).cloned())
+        .ok_or_else(not_approved)?;
     let relative = format!(".specsync/changes/{change}/deltas/{module}.md");
     let Some(bytes) = native_file(root, &relative)? else {
-        return Ok(BTreeSet::new());
+        return Err(format!(
+            "refused:native-delta-changed: {relative} (deleted)"
+        ));
     };
+    if delta_digest(module, &bytes) != digest {
+        return Err(format!("refused:native-delta-changed: {relative} (edited)"));
+    }
     let text = String::from_utf8(bytes).map_err(|_| format!("{relative} is not UTF-8"))?;
     let mut section = "";
     let mut ids = BTreeSet::new();
