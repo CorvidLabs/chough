@@ -183,7 +183,7 @@ if [ "$state" = archived ] && [ "$validity" != none ]; then
 fi
 change=""
 if [ "$affected" != none ]; then
-    change=",\"change\":{\"affected_specs\":[$affected],\"no_spec_change\":$nospec}"
+    change=",\"change\":{\"state\":\"$state\",\"affected_specs\":[$affected],\"no_spec_change\":$nospec}"
 fi
 printf '{"summary":{"state":"%s","next_action":"%s"%s}%s}\n' "$state" "$next" "$fields" "$change"
 "#,
