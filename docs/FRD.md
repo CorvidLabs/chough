@@ -6,7 +6,7 @@ come from the authorized first slice; REQ-cli-007 to REQ-cli-017 come from the
 approved native change `evolve-chough-into-a-resumable-stage-workflow`; REQ-cli-018
 (now REQ-history-001) and REQ-cli-019 come from
 `prepare-a-first-release-candidate-with-reference-aware-evidence-retention-current-guidance-and-an-installable-package`;
-REQ-cli-020 comes from
+REQ-cli-020 (now REQ-reporting-001) comes from
 `report-how-long-stages-tests-bug-fixes-and-human-decisions-took-from-existing-records`;
 REQ-cli-021 and REQ-cli-022 come from
 `focused-chough-next-a-verification-guard-before-build-and-done-stage-resume`;
@@ -116,7 +116,7 @@ cross-module view and its traceability without restating it.
 | REQ-cli-008 | Stage routing with append-only history; every route into build, test, accept and done meets its native prerequisite, and unknown native state, invalid approval, unauthenticated archives or an invalid SDD policy refuse | FLOW-2, FLOW-5, FLOW-10, LIFE-1 | tests/stages.rs; feature-and-bug exercise |
 | REQ-cli-009 | `chough-testing/1` definitions with stable curated slug or exact legacy numeric IDs, global duplicate refusal and position-free digests; legacy IDs and digests do not change | FLOW-7, LIFE-2 | tests/cases.rs; TC-cli-slug-case-compatibility |
 | REQ-cli-010 | Focused selection with tracks and stated omissions | FLOW-6 | tests/cases.rs; both exercises |
-| REQ-cli-011 | Explicit case execution; vacuous and environment failures are not-run; optional explicit new-form observation IDs, automatic random OBS and VAL allocation, inherited artifact paths and legacy resume | FLOW-7, FLOW-9, LIFE-7 | tests/cases.rs, tests/optional.rs; slug observation and validation cases |
+| REQ-cli-011 | Explicit case execution; stopping Chough stops the started command and records nothing; vacuous and environment failures are not-run; optional explicit new-form observation IDs, automatic random OBS and VAL allocation, inherited artifact paths and legacy resume | FLOW-7, FLOW-9, LIFE-7, FLOW-14 | tests/cases.rs, tests/optional.rs, tests/stop.rs; slug observation and validation cases |
 | REQ-cli-012 | Local backlog with duplicate search and regression baselines; the deterministic creation-ID generator, known answers, create-once immutability, schema 1 compatibility and atomic refusal remain unchanged | FLOW-8, LIFE-5 | tests/bugs.rs; unchanged known-answer vectors; feature-and-bug exercise |
 | REQ-cli-013 | Standing preferences separate from run consent; new and legacy validation runs retain pause, stop, authorization and resume behavior | FLOW-9, FLOW-11 | tests/optional.rs, tests/stages.rs; TC-cli-slug-validation-allocation |
 | REQ-cli-014 | Release only when authorized; distinct delivery and dry-run kinds | FLOW-11, LIFE-7 | tests/stages.rs, tests/cases.rs |
@@ -125,7 +125,7 @@ cross-module view and its traceability without restating it.
 | REQ-cli-017 | Observation schema 2 and schema 1 reads with mixed new and legacy IDs, exact inherited artifact paths and unchanged references | LIFE-2, LIFE-7, FLOW-7 | tests/cases.rs, tests/evidence.rs; TC-cli-slug-observation-allocation |
 | REQ-history-001 (was REQ-cli-018) | Reference-aware retention across mixed legacy and new IDs: preview by default, consented apply, inherited artifact paths, append-only ledger with unchanged entry shape, and current, historical, pruned and unavailable labels | LIFE-8, LIFE-2, LIFE-7, FLOW-7, FLOW-13 | tests/evidence.rs |
 | REQ-cli-019 | Installable package without Chough's own records; new projects get the skills and an empty checkpoint; no em or en dash in the bundle | LIFE-9, LIFE-4 | tests/package.rs |
-| REQ-cli-020 | Read-only timing report across mixed legacy and new IDs, ordered by timestamps and stored durations rather than lexical IDs or random suffixes; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
+| REQ-reporting-001 (was REQ-cli-020) | Read-only timing report across mixed legacy and new IDs, ordered by timestamps and stored durations rather than lexical IDs or random suffixes; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-cli-021 | Focused `next` view within 16384 bytes, text by default and compact JSON with `--json`, one native status read shared with `status`, and a new-cycle action at a closed done stage; a reset replaces the checkpoint's next action | LIFE-3, FLOW-13, FLOW-2, LIFE-7 | tests/next.rs, tests/stages.rs |
 | REQ-cli-022 | Approved-delta guard: moves to build, test and accept compare SpecSync's approved-delta digests with the current deltas, read-only and bounded, refusing as delta-changed or delta-unverifiable | FLOW-5, LIFE-7, LIFE-1 | tests/stages.rs |
 | REQ-cli-023 | Shared slug normalization and random 96-bit OBS, VAL and SNAP allocation; one-candidate atomic create-new refusal without overwrite, fallback or retry; legacy reads, links and resume without migration, and unchanged non-ID record shapes | FLOW-7, FLOW-9, FLOW-12, FLOW-13, LIFE-2, LIFE-3, LIFE-7 | tests/cases.rs, tests/optional.rs, tests/evidence.rs, tests/timing.rs; four slug cases |
@@ -134,7 +134,7 @@ Additional native requirements:
 
 | Requirement | Observable behavior | Criteria | Verification |
 |---|---|---|---|
-| REQ-cli-024 | Bounded, deduplicated timing native reads with explicit excluded/unknown history | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
+| REQ-reporting-002 (was REQ-cli-024) | Bounded, deduplicated timing native reads with explicit excluded/unknown history | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-history-002 (was REQ-cli-025) | Explicit adoption, immutable events and a cursor in the single checkpoint/current-cycle group | LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13 | tests/history.rs; real Git branch fixture; schema migration regressions |
 | REQ-history-003 (was REQ-cli-026) | Bounded readers/cycles and protected whole-cycle retention with honest partial history | LIFE-3, LIFE-7, LIFE-8, LIFE-10, FLOW-13 | tests/history.rs boundary, receipt, interruption and integration fixtures |
 | REQ-history-004 (was REQ-cli-027) | Evidence cleanup revalidates references and artifact identity without weakening existing protections | LIFE-2, LIFE-7, LIFE-8, FLOW-7, FLOW-13 | tests/evidence.rs and history/reference fixtures |
@@ -168,6 +168,26 @@ so they were renamed. Older records, archives and decisions keep the old IDs.
 
 Their cases moved to `.chough/cases/history.cases.toml` as `TC-history-<rest>`; the
 case mapping is in specs/history/testing.md.
+
+## Requirement ID mapping: reporting split (2026-11-04)
+
+After PR #71 merged main a33c747 the cli requirements companion was 65,698 bytes,
+over Chough's 65,536-byte structured record bound, so the timing and reporting
+requirements moved to the new `reporting` module (specs/reporting/) with their
+wording unchanged, under the same SpecSync ID and tombstone rules. Older records,
+archives and decisions keep the old IDs.
+
+| Old ID | New ID |
+|---|---|
+| REQ-cli-020 | REQ-reporting-001 |
+| REQ-cli-024 | REQ-reporting-002 |
+| REQ-cli-028 | REQ-reporting-003 |
+
+Nine cases that linked only these requirements moved to
+`.chough/cases/reporting.cases.toml` as `TC-reporting-<rest>` (a repeated `report-`
+is dropped). Six cli cases that also link a requirement staying in cli keep their
+cli ID and those links, and each has a `TC-reporting-` twin with the identical
+binding for the moved requirement. The case mapping is in specs/reporting/testing.md.
 
 ## Skill-led behavior in the first slice
 
@@ -217,7 +237,7 @@ automatic human authentication, or deployment engine is included. The
 [roadmap](ROADMAP.md) records proposed extensions separately.
 
 
-## Request-local reporting work (REQ-cli-028)
+## Request-local reporting work (REQ-reporting-003, was REQ-cli-028)
 
 For LIFE-3, LIFE-6, LIFE-7, LIFE-10 and FLOW-13, reports share at most one structural
 case-suite load per request, using the existing case digests and validation errors.

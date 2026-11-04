@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
+  "implementation_commit": "78f2cfed95d94b54338e987b3728075923ea8d4c",
+  "implementation_tree": "674998f3121a6f3d74d2c34bb603c46795b6e1ba",
+  "contract_digest": "51cc41fd5ec9bf15993dd506814a6cd04effb41240013757c75aa1d8e504f266",
+  "workspace_digest": "3e204c46124b15705404c4c20d7810e73b22b1573a8d82cb9d8ff09cd11bc27a",
+  "closing_digest": "3831bcfd113d69289a89e9c8d5d4c80e2b0ac22ebf07474fc8960e91ff3549ea",
+  "review_digest": "75a790bd81da55c21c078ad71c688d7679c2cd26fb9edfc5610f79a9220c30ab",
+  "finalization_digest": "4055fc27855d73314150e2d288c5bb8358732c6df1492cc50ce3dfe957a3939e",
+  "timestamp": 1793775920
+}

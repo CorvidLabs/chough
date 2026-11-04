@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793759248,
+      "digest": "2109d9c2df3881d68f3b2a47977c18f4021ea281246add000fd0a811dbd7787c",
+      "note": "Approved as corvid-agent (agent account, not a human approval) under Leif's 2026-11-03 7:49 AM MT standing authority for bounded fixes to existing Chough bug tickets and his 7:08 PM MT ask (t820u) to get the Chough PRs reviewed and merged; scope is issue #63 and his P2 review thread on #71 only: refuse a status reply that names no change ID, no schema, output-key, gate or dependency change",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71",
+        "title": "Refuse a native change status reply that names no change ID (issue 63, review thread on #71)",
+        "description": "Refuse a native change status reply that names no change ID (issue 63, review thread on #71)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With SpecSync configured chough checkpoint --native-change refuses as refused:native-change-unknown when the status reply is JSON that names neither summary.id nor change.id (for example [] or {}) and .chough/session.json stays byte-identical even with other updates in the same call; a reply that names the requested ID still saves; a reply naming another ID still refuses as refused:native-change-mismatch; docs/cli.md states it; the new test fails on the branch before the fix and fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded follow-up for issue 63 and Leif's P2 review thread on #71 only: no new dependency or schema or output-key change and no change to stage gates or to next/status native reads",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "482dd8dac4200df47ae8340ae96dc55e41109b8c115e159e94c27517fa99c9a3"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793764282,
+      "digest": "080ffb603d8db6043236d96b4ea2af2d3d445c67485d4bff36db272c08403684",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

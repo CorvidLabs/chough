@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-reporting-0083-9b62d02fb71e29329b141400",
+  "criteria": [
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-reporting-001"
+  ],
+  "contracts": [
+    "specs/reporting/reporting.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test timing -- --exact gate_records_are_reconciled_with_the_awaiting_human_list for TC-reporting-0083: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-reporting-0083-9b62d02fb71e29329b141400.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-reporting-0083-9b62d02fb71e29329b141400.log": "2fb4bc0e04e37cef16782b9ecafbc3a2802bf88a1b176b3ebff1e9ac3b92fac1"
+  },
+  "observed_at_unix_seconds": 1793772302,
+  "snapshot": {
+    "revision": "3f3364b40f06fd0b1d8628ea710ec2e8329f6fc1",
+    "dirty": false,
+    "fingerprint": "f39f736072c8317c6e0bdccb1f25c541aee1d2b392e42cca3243f049b69a9235",
+    "content": "d70cb7eab43d35860dacfc4d6e941833909d359557f244601272d92b02bb4d64"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-reporting-0083",
+      "digest": "a6f8fd775f78fee3998bccc6a5a9a670084eae96fdb3e2d2aee026e0a4e0cbda"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "gate_records_are_reconciled_with_the_awaiting_human_list"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

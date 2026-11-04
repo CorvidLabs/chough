@@ -48,9 +48,9 @@ Lessons learned from rehearsing SpecSync 6.1: the delta is frozen once approved 
 `change check` refuses an edited delta; `change check` also refuses while `tasks.md`
 has unchecked boxes, so list human gates, and running or recording Chough cases, as
 plain text rather than checkboxes. A requirement the delta adds reaches the
-companion only when `change check` materializes it, and `chough cases check` refuses
-a case linking it until then, so a box for those cases would block the very check
-that unblocks them.
+companion only when `change check` materializes it; until then Chough cases may link
+it only while the checkpoint records the approved change and its delta is
+unchanged, and a box for those cases would still block that check.
 
 ## What needs reapproval
 

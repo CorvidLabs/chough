@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "94fe794a7d2998a5681aeb89e5d2dc863ed0865e",
+  "contract_digest": "2109d9c2df3881d68f3b2a47977c18f4021ea281246add000fd0a811dbd7787c",
+  "execution_digest": "6d5df476dffa867f8aee8c5903f01e7cb3f9b4461561c997cfb8fe765164459b",
+  "workspace_digest": "ed9a14be76b2bcb638b356bd933a185c44a212fe5db0f7d43dae31ea0253688c",
+  "timestamp": 1793764275
+}

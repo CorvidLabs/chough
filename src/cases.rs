@@ -7,7 +7,7 @@ use crate::records::{
     Captured, Limits, digest_bytes, local_path, now, print_json, run_bounded, valid_name,
     write_new_bytes,
 };
-use crate::{checkpoint, prefs};
+use crate::{checkpoint, prefs, stage};
 use anyhow::{Context, Result, bail, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
@@ -471,18 +471,120 @@ fn fledge_tasks(root: &Path) -> Result<BTreeSet<String>> {
         .unwrap_or_default())
 }
 
-/// Full validation, including native HI and requirement links for active cases.
-pub(super) fn check(root: &Path) -> Result<Vec<Located>> {
+/// Full validation, including native HI and requirement links for active cases, with
+/// the links that only the checkpoint's approved native delta resolves.
+pub(super) fn check(root: &Path) -> Result<(Vec<Located>, Vec<Value>)> {
     let cases = load(root)?;
     let tasks = fledge_tasks(root)?;
+    let links = DeltaLinks::new(root);
     for located in &cases {
-        check_links(root, located, &tasks)?;
+        check_links(root, located, &tasks, &links)?;
     }
-    Ok(cases)
+    Ok((cases, links.links.into_inner()))
+}
+
+/// What the checkpoint's native change says about case requirement links: read at most
+/// once per command, and only when a link misses its companion (REQ-cli-009).
+enum Consulted {
+    /// No native change is recorded, or SpecSync gates nothing here.
+    Nothing,
+    /// The change and why its deltas cannot resolve links.
+    Refused(String, String),
+    Approved(String),
+}
+
+struct DeltaLinks<'a> {
+    root: &'a Path,
+    consulted: OnceCell<Consulted>,
+    links: RefCell<Vec<Value>>,
+}
+
+impl<'a> DeltaLinks<'a> {
+    fn new(root: &'a Path) -> Self {
+        Self {
+            root,
+            consulted: OnceCell::new(),
+            links: RefCell::new(vec![]),
+        }
+    }
+
+    fn consult(&self) -> Result<&Consulted> {
+        if let Some(consulted) = self.consulted.get() {
+            return Ok(consulted);
+        }
+        let change = match checkpoint::read_session(self.root)? {
+            checkpoint::Session::V2(checkpoint) => checkpoint.native_change.clone(),
+            checkpoint::Session::V1(_) => None,
+        };
+        let consulted = match change {
+            None => Consulted::Nothing,
+            Some(change) => match stage::native_state(self.root, Some(&change))? {
+                stage::NativeState::State(state, value) => {
+                    let gate = stage::approved_change_gate(self.root, &change, &state, &value);
+                    if gate.allowed {
+                        Consulted::Approved(change)
+                    } else {
+                        Consulted::Refused(change, format!("{}: {}", gate.label, gate.detail))
+                    }
+                }
+                stage::NativeState::Unknown(reason) => {
+                    Consulted::Refused(change, format!("native status could not be read: {reason}"))
+                }
+                stage::NativeState::PolicyInvalid(reason) => {
+                    Consulted::Refused(change, format!("the SDD policy is invalid: {reason}"))
+                }
+                _ => Consulted::Nothing,
+            },
+        };
+        Ok(self.consulted.get_or_init(|| consulted))
+    }
+
+    /// Accept `requirement` for a case of `module` when the approved delta adds or
+    /// modifies it; otherwise the refusal for the miss, with why a consulted delta did
+    /// not resolve it.
+    fn resolve(
+        &self,
+        located: &Located,
+        requirement: &str,
+        miss: evidence::RequirementMiss,
+    ) -> Result<()> {
+        let module = &located.module;
+        let (change, reason) = match self.consult()? {
+            Consulted::Nothing => return Err(miss.for_cases()),
+            Consulted::Refused(change, reason) => (change, reason.clone()),
+            Consulted::Approved(change) => {
+                match stage::delta_requirements(self.root, change, module) {
+                    Ok(ids) if ids.contains(requirement) => {
+                        self.links.borrow_mut().push(json!({
+                            "case": located.case.id,
+                            "requirement": requirement,
+                            "change": change,
+                            "module": module,
+                        }));
+                        return Ok(());
+                    }
+                    Ok(_) => (
+                        change,
+                        format!("its {module} delta does not add or modify {requirement}"),
+                    ),
+                    Err(reason) => (change, reason),
+                }
+            }
+        };
+        Err(anyhow::anyhow!(
+            "{}; the checkpoint's native change {change} was consulted and did not resolve it: {reason}",
+            miss.for_cases()
+        ))
+    }
 }
 
 /// Validate a case's Fledge task, HI criteria and native requirements.
-fn check_links(root: &Path, located: &Located, tasks: &BTreeSet<String>) -> Result<()> {
+fn check_links(
+    root: &Path,
+    located: &Located,
+    tasks: &BTreeSet<String>,
+    links: &DeltaLinks,
+) -> Result<()> {
     let case = &located.case;
     let context = || format!("{}: case {}", located.file, case.id);
     if let Some(binding) = &case.bind
@@ -498,17 +600,27 @@ fn check_links(root: &Path, located: &Located, tasks: &BTreeSet<String>) -> Resu
         return Ok(());
     }
     evidence::validate_criteria(root, &case.criteria).with_context(context)?;
-    evidence::validate_requirements(root, &[located.contract()], &case.requirements)
+    for requirement in &case.requirements {
+        if let Err(miss) = evidence::validate_requirements(
+            root,
+            &[located.contract()],
+            std::slice::from_ref(requirement),
+        )
         .with_context(context)?
-        .map_err(|miss| miss.for_cases())
-        .with_context(context)
+        {
+            links
+                .resolve(located, requirement, miss)
+                .with_context(context)?;
+        }
+    }
+    Ok(())
 }
 
 /// Find an active case and confirm its links before it produces an observation.
 fn find_checked(root: &Path, id: &str) -> Result<Located> {
     let located = find(root, id)?;
     ensure!(located.case.status == "active", "{id} is retired");
-    check_links(root, &located, &fledge_tasks(root)?)?;
+    check_links(root, &located, &fledge_tasks(root)?, &DeltaLinks::new(root))?;
     Ok(located)
 }
 
@@ -641,7 +753,7 @@ fn select(
     );
     let mut selected = vec![];
     let mut omitted = vec![];
-    for located in check(root)? {
+    for located in check(root)?.0 {
         let case = &located.case;
         let linked = case.criteria.iter().any(|id| criteria.contains(id))
             || case.requirements.iter().any(|id| requirements.contains(id))
@@ -925,12 +1037,14 @@ pub(super) fn run_case(
         .iter()
         .map(|(name, value)| (name.clone(), value.clone()))
         .collect();
+    // The watch spans the run and the whole save: a stop before the save starts ends
+    // Chough with nothing recorded, and Chough's own git calls stop with it (FLOW-14).
+    let _watch = crate::records::stop_watch();
     let started = Instant::now();
     let execution = execute(root, &argv, &env, timeout)?;
     let duration_seconds = started.elapsed().as_secs();
     let (output, text, escapes_removed) = artifact(&execution);
     let artifact = format!("{ARTIFACTS_DIR}/{observation}.log");
-    write_artifact(root, &artifact, &output)?;
     let mut limitations = vec![];
     let missing: Vec<&String> = binding
         .expect_output
@@ -1037,6 +1151,12 @@ pub(super) fn run_case(
             .map_or("none".to_string(), |code| code.to_string()),
         tests_run.map_or(String::new(), |count| format!(", tests run {count}"))
     );
+    let snapshot = evidence::snapshot(root)?;
+    // The last point where a stop records nothing. From here the artifact and the
+    // observation are written without running anything, and a stop that arrives
+    // meanwhile ends Chough once both are saved.
+    crate::records::stop_if_noted();
+    write_artifact(root, &artifact, &output)?;
     let record = Evidence {
         schema_version: 2,
         id: observation.clone(),
@@ -1050,7 +1170,7 @@ pub(super) fn run_case(
         artifacts: vec![artifact.clone()],
         artifact_fingerprints: evidence::artifact_fingerprints(root, &[artifact])?,
         observed_at_unix_seconds: now()?,
-        snapshot: evidence::snapshot(root)?,
+        snapshot,
         provenance: PROVENANCE.into(),
         cases: vec![CaseRef {
             id: id.into(),
@@ -1172,15 +1292,19 @@ pub(super) const NOT_PASSED_EXIT: i32 = 3;
 pub(super) fn run(root: &Path, command: CasesCommand) -> Result<Option<i32>> {
     match command {
         CasesCommand::Check | CasesCommand::List => {
-            let cases = if matches!(command, CasesCommand::Check) {
-                check(root)?
+            let (cases, links) = if matches!(command, CasesCommand::Check) {
+                let (cases, links) = check(root)?;
+                (cases, Some(links))
             } else {
-                load(root)?
+                (load(root)?, None)
             };
             let summaries = cases.iter().map(summary).collect::<Result<Vec<_>>>()?;
-            print_json(
-                &json!({"schema_version": 1, "profile": PROFILE, "valid": true, "cases": summaries}),
-            )?;
+            let mut report =
+                json!({"schema_version": 1, "profile": PROFILE, "valid": true, "cases": summaries});
+            if let Some(links) = links {
+                report["approved_delta_requirements"] = Value::from(links);
+            }
+            print_json(&report)?;
             Ok(None)
         }
         CasesCommand::Select {

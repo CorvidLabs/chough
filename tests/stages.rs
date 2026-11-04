@@ -590,7 +590,7 @@ fn large_native_status_still_gates_by_its_summary_state() {
     // exceeds the 16 KiB display bound; over 4 MiB it is refused as oversized.
     fixture.write(
         "bin/specsync",
-        "#!/bin/sh\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nsize=20000\n[ -f .stub-huge ] && size=4200000\npad=$(head -c $size /dev/zero | tr '\\0' x)\nprintf '{\"summary\":{\"state\":\"%s\",\"next_action\":\"stub next action\",\"approval_valid\":true,\"terminal_evidence\":{\"validity\":\"authenticated-history\"}},\"change\":{\"affected_specs\":[],\"no_spec_change\":true},\"acceptance_entries\":\"%s\"}\\n' \"$state\" \"$pad\"\n",
+        "#!/bin/sh\nstate=$(cat .stub-state 2>/dev/null || echo draft)\nsize=20000\n[ -f .stub-huge ] && size=4200000\npad=$(head -c $size /dev/zero | tr '\\0' x)\nprintf '{\"summary\":{\"id\":\"%s\",\"state\":\"%s\",\"next_action\":\"stub next action\",\"approval_valid\":true,\"terminal_evidence\":{\"validity\":\"authenticated-history\"}},\"change\":{\"affected_specs\":[],\"no_spec_change\":true},\"acceptance_entries\":\"%s\"}\\n' \"$3\" \"$state\" \"$pad\"\n",
     );
     fixture.executable("bin/specsync");
     fixture.native("approved");
@@ -3050,6 +3050,161 @@ fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
     );
     check_refusal(&refused, id);
     assert_eq!(records(&fixture), before);
+}
+
+/// Issue 63 (Kimi lab round 2): with SpecSync configured, `checkpoint --native-change`
+/// asks SpecSync for the change before saving and refuses an ID it does not know,
+/// leaving the checkpoint byte-identical, even when other updates ride along.
+#[cfg(unix)]
+#[test]
+fn checkpoint_refuses_a_native_change_specsync_does_not_know() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    // SpecSync 6.1.2 exits non-zero for an unknown change; the stub knows every other ID.
+    fs::rename(
+        fixture.root().join("bin/specsync"),
+        fixture.root().join("bin/specsync-known"),
+    )
+    .unwrap();
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nif [ \"$3\" = does-not-exist ]; then\n  echo 'change does-not-exist was not found' >&2; exit 1\nfi\nexec \"$(dirname \"$0\")/specsync-known\" \"$@\"\n",
+    );
+    fixture.executable("bin/specsync");
+    let before = fixture.read(".chough/session.json");
+
+    let refused = fixture.fails(&["checkpoint", "--native-change", "does-not-exist"]);
+    assert!(
+        refused.contains("refused:native-change-unknown"),
+        "{refused}"
+    );
+    assert!(refused.contains("does-not-exist"), "{refused}");
+    assert!(
+        refused.contains("specsync change status does-not-exist"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/session.json"), before);
+
+    let refused = fixture.fails(&[
+        "checkpoint",
+        "--native-change",
+        "does-not-exist",
+        "--decision",
+        "Rides along with a bad change",
+    ]);
+    assert!(
+        refused.contains("refused:native-change-unknown"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/session.json"), before);
+
+    // A SpecSync failure is not proof the change exists: refused, nothing saved.
+    fixture.write(".stub-fail", "");
+    let refused = fixture.fails(&["checkpoint", "--native-change", "add-thing"]);
+    assert!(
+        refused.contains("refused:native-change-unknown"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/session.json"), before);
+    fs::remove_file(fixture.root().join(".stub-fail")).unwrap();
+
+    let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    assert_eq!(saved["saved"], true);
+    assert_eq!(fixture.session()["native_change"], "add-thing");
+}
+
+/// A reply about a different change is not proof the requested change exists: refused
+/// with the checkpoint unchanged (#71 review). A reply naming no change is left to the
+/// stage gates, as before.
+#[cfg(unix)]
+#[test]
+fn checkpoint_refuses_a_native_reply_that_names_a_different_change() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fs::rename(
+        fixture.root().join("bin/specsync"),
+        fixture.root().join("bin/specsync-known"),
+    )
+    .unwrap();
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\ncase \"$3\" in\n  alias-of-add-thing) printf '%s\\n' '{\"change\":{\"id\":\"add-thing\"},\"summary\":{\"id\":\"add-thing\",\"state\":\"draft\"}}' ;;\n  split-reply) printf '%s\\n' '{\"change\":{\"id\":\"add-thing\"},\"summary\":{\"id\":\"split-reply\",\"state\":\"draft\"}}' ;;\n  nameless) printf '%s\\n' '{\"summary\":{\"state\":\"draft\"}}' ;;\n  *) exec \"$(dirname \"$0\")/specsync-known\" \"$@\" ;;\nesac\n",
+    );
+    fixture.executable("bin/specsync");
+    let before = fixture.read(".chough/session.json");
+    for (id, named) in [
+        ("alias-of-add-thing", "add-thing"),
+        ("split-reply", "add-thing"),
+    ] {
+        let refused = fixture.fails(&["checkpoint", "--native-change", id]);
+        assert!(
+            refused.contains("refused:native-change-mismatch"),
+            "{id}: {refused}"
+        );
+        assert!(refused.contains(id), "{id}: {refused}");
+        assert!(refused.contains(named), "{id}: {refused}");
+        assert_eq!(fixture.read(".chough/session.json"), before, "{id}");
+    }
+    let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    assert_eq!(saved["saved"], true);
+}
+
+/// Review thread on #71: a JSON reply that names no change ID does not identify the
+/// requested change, so it refuses like an unknown one and nothing is saved.
+#[cfg(unix)]
+#[test]
+fn checkpoint_refuses_a_native_reply_that_names_no_change() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fs::rename(
+        fixture.root().join("bin/specsync"),
+        fixture.root().join("bin/specsync-known"),
+    )
+    .unwrap();
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\ncase \"$3\" in\n  empty-object) printf '%s\\n' '{}' ;;\n  empty-array) printf '%s\\n' '[]' ;;\n  nameless) printf '%s\\n' '{\"summary\":{\"state\":\"draft\"}}' ;;\n  *) exec \"$(dirname \"$0\")/specsync-known\" \"$@\" ;;\nesac\n",
+    );
+    fixture.executable("bin/specsync");
+    let before = fixture.read(".chough/session.json");
+    for id in ["empty-object", "empty-array", "nameless"] {
+        for extra in [vec![], vec!["--decision", "decided: ride along"]] {
+            let mut args = vec!["checkpoint", "--native-change", id];
+            args.extend(extra);
+            let refused = fixture.fails(&args);
+            assert!(
+                refused.contains("refused:native-change-unknown"),
+                "{id}: {refused}"
+            );
+            assert!(refused.contains(id), "{id}: {refused}");
+            assert_eq!(fixture.read(".chough/session.json"), before, "{id}");
+        }
+    }
+    let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+    assert_eq!(saved["saved"], true);
+}
+
+/// Without a SpecSync configuration there is nothing to ask, so the format check alone
+/// still decides (issue 63 leaves non-native projects unchanged).
+#[test]
+fn checkpoint_native_change_without_specsync_keeps_the_format_check() {
+    let fixture = Fixture::new();
+    fixture.init();
+    assert_eq!(
+        fixture.ok(&["checkpoint", "--native-change", "any-change"])["saved"],
+        true
+    );
+    assert!(
+        fixture
+            .fails(&["checkpoint", "--native-change", "bad id"])
+            .contains("invalid native change ID")
+    );
 }
 
 // ---------------------------------------------------------------------------

@@ -108,7 +108,7 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "26029a2ee652ddc55b2ef6a68ed3edfa6a699f3a61a8fffa8d4d485f1180f4fb",
     ),
-    // Main 2756dc2 (PR #9); superseded by the timing report (REQ-cli-020).
+    // Main 2756dc2 (PR #9); superseded by the timing report (REQ-reporting-001).
     (
         "references/checkpoint.md",
         "943d2b5dd1cf092b618c154a20f11ad30ea5a5ecbada1b0f1bb2ab480f047fa2",

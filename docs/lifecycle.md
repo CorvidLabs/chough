@@ -74,6 +74,12 @@ flowchart TB
     merge -. "only if authorized" .-> release["Optional release with real commands"]
 ```
 
+In the test stage, link failing-first evidence: the commit that adds the failing
+tests, a failed `chough cases run` on it linked to a bug, and the passing run after
+the fix (see the [testing reference](../skills/chough-workflow/references/testing.md)).
+Cases may link requirements the approved delta adds before materialization while the
+checkpoint records that change.
+
 The order before the review is: when the delta adds or modifies requirements, run
 `specsync change check <id>` first to materialize them; `chough cases run`; record the
 gate with `chough checkpoint --awaiting-human`; commit the source together with

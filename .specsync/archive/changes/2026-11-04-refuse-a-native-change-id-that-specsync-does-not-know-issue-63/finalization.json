@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+  "implementation_commit": "e3ff647f2fdca1fd345ff459ddab7d491b64a82b",
+  "implementation_tree": "e057eaa5b871e22399232298b54bb699a7caa828",
+  "contract_digest": "b1c825b4894bbd1e5714bab0fc47b6844fab95394d43a515cfd760a135609557",
+  "workspace_digest": "a5213d6fca721827a3c52084cdc95e994a515c3f4940cc984790dff821ffa625",
+  "closing_digest": "680185b75a18a3282ea7027a6a854921d14bd91d3a41c2a4d43d6fbc226b16ab",
+  "review_digest": "eb2fcdddad69d6e83726c05dfc11ad77d584ad3d9a9f29212037372197def0a1",
+  "finalization_digest": "b62bcfc1e49319f0b1b06c3747a6b61d0763c1a2137beb1edfcf596bae46c400",
+  "timestamp": 1793757728
+}

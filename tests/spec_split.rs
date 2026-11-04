@@ -2,6 +2,9 @@
 //! (REQ-history-001 to REQ-history-004, formerly REQ-cli-018 and REQ-cli-025 to
 //! REQ-cli-027). The digests are of each requirement body, trimmed, at main 7bd1b62.
 //! A later native change that edits a moved requirement updates its digest here.
+//! The 2026-11-04 split moved REQ-cli-020, REQ-cli-024 and REQ-cli-028 to the
+//! reporting module as REQ-reporting-001 to REQ-reporting-003; their digests are of
+//! each body, trimmed, at main a33c747.
 
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
@@ -33,6 +36,32 @@ const MOVED: [(&str, &str, &str); 4] = [
 
 /// The structured record bound every requirements companion must fit (src/records.rs).
 const RECORD_LIMIT: usize = 65_536;
+
+const MOVED_REPORTING: [(&str, &str, &str); 3] = [
+    (
+        "REQ-cli-020",
+        "REQ-reporting-001",
+        "d39174e678c7eb096fed525ea38af402163b9a348e29243bb4a94c6b2d91846c",
+    ),
+    (
+        "REQ-cli-024",
+        "REQ-reporting-002",
+        "85422fa81149313efd0227e2cf0607b4924b9866dc145636241e2b2e387c9a62",
+    ),
+    (
+        "REQ-cli-028",
+        "REQ-reporting-003",
+        "a6d5d17f585dbbd531b337e2102791f0c42c89f211bf5987ea03eb30c4f3608c",
+    ),
+];
+
+/// Whether a former cli requirement ID is in either split mapping.
+fn mapped(id: &str) -> bool {
+    MOVED
+        .iter()
+        .chain(MOVED_REPORTING.iter())
+        .any(|(old, _, _)| *old == id)
+}
 
 fn companion(module: &str) -> String {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -94,9 +123,8 @@ fn every_pre_split_cli_requirement_is_still_in_cli_or_mapped() {
     let cli = blocks(&companion("cli"));
     for number in 1..=32 {
         let id = format!("REQ-cli-{number:03}");
-        let mapped = MOVED.iter().any(|(old, _, _)| *old == id);
         assert!(
-            cli.contains_key(&id) != mapped,
+            cli.contains_key(&id) != mapped(&id),
             "{id} must be in specs/cli or in the split mapping, not both or neither"
         );
     }
@@ -104,11 +132,41 @@ fn every_pre_split_cli_requirement_is_still_in_cli_or_mapped() {
 
 #[test]
 fn every_requirements_companion_fits_the_record_bound() {
-    for module in ["cli", "history"] {
+    for module in ["cli", "history", "reporting"] {
         let size = companion(module).len();
         assert!(
             size <= RECORD_LIMIT,
             "specs/{module}/requirements.md is {size} bytes, over {RECORD_LIMIT}"
+        );
+    }
+}
+
+#[test]
+fn reporting_requirements_keep_their_wording_under_their_new_ids() {
+    let cli = blocks(&companion("cli"));
+    let history = blocks(&companion("history"));
+    let reporting = blocks(&companion("reporting"));
+    for (old, new, digest) in MOVED_REPORTING {
+        assert!(!cli.contains_key(old), "{old} must be gone from specs/cli");
+        assert!(
+            !history.contains_key(old) && !reporting.contains_key(old),
+            "{old} must not reappear in another module"
+        );
+        let body = reporting
+            .get(new)
+            .unwrap_or_else(|| panic!("{new} (was {old}) missing from specs/reporting"));
+        assert_eq!(sha256(body), digest, "{new} wording differs from {old}");
+    }
+}
+
+#[test]
+fn every_cli_requirement_before_the_reporting_split_is_still_in_cli_or_mapped() {
+    let cli = blocks(&companion("cli"));
+    for number in (1..=34).chain([36]) {
+        let id = format!("REQ-cli-{number:03}");
+        assert!(
+            cli.contains_key(&id) != mapped(&id),
+            "{id} must be in specs/cli or in a split mapping, not both or neither"
         );
     }
 }

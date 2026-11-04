@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+  "slug": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+  "title": "Refuse a native change ID that SpecSync does not know (issue 63)",
+  "description": "Refuse a native change ID that SpecSync does not know (issue 63)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "4daf861509b70c14282ac16b5d0547d701e385b2",
+  "created_at": 1793732121,
+  "updated_at": 1793757740,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "tests/stages.rs",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    "tests/common/mod.rs"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With SpecSync configured chough checkpoint --native-change for an ID that specsync change status does not report exits non-zero with refused:native-change-unknown naming the ID and the status command and .chough/session.json stays byte-identical even when other updates are in the same call, A failed or timed-out SpecSync read also refuses with nothing saved, An ID that SpecSync reports is saved as before, Without a SpecSync configuration only the existing ID format check applies, docs/cli.md states the refusal and the new test fails on main 4daf861 and fledge lanes run verify passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded bug fix for issue 63 only: no new dependency or schema or output-key change and no change to stage gates or to next/status native reads; no PR until a corvid-agent PR slot is free",
+    "public_contract": "yes"
+  }
+}

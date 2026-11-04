@@ -1,9 +1,10 @@
 {
   "schema_version": 2,
-  "objective": "#68 (#56, #57, DRIVE-1, DRIVE-7): dotted SpecSync module IDs and hi sub-criterion IDs are accepted, the bundled skill stays free of em and en dashes, and checkpoint --remove-completed corrects one entry",
+  "objective": "Split the cli spec: REQ-cli-020, REQ-cli-024 and REQ-cli-028 move to a new reporting module as REQ-reporting-001 to 003 with wording unchanged, so specs/cli/requirements.md fits the 65536-byte bound",
   "intent_scope": "LIFE",
   "modules": [
-    "cli"
+    "cli",
+    "reporting"
   ],
   "stage": {
     "current": "done",
@@ -11,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "scale-independent-archive-authentication-workers-with-the-runner-s-cpus-so-the-archive-check-fits-its-unchanged-budget",
+  "native_change": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -62,15 +63,15 @@
       "REQ-cli-019",
       "REQ-cli-023",
       "REQ-cli-002",
-      "REQ-cli-020",
-      "REQ-cli-024",
+      "REQ-reporting-001",
+      "REQ-reporting-002",
       "REQ-cli-009",
       "REQ-cli-005",
       "REQ-cli-030",
       "REQ-history-002",
       "REQ-history-003",
       "REQ-history-004",
-      "REQ-cli-028",
+      "REQ-reporting-003",
       "REQ-cli-032",
       "REQ-cli-015",
       "REQ-cli-033",
@@ -682,5 +683,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: New cycle: #80, scale the SpecSync Archive check's status workers with the runner's CPUs (DRIVE-10, Leif's t813u speed direction). Built and verified on its branch (verify 9/9 and change check --commit at ee7318d); native change archived at e6f7af7 after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "New cycle from done after reset: Re-record #71 after merging main 6a525b8. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }

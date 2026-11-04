@@ -141,11 +141,9 @@ pub(super) struct EvidenceArgs {
 }
 
 fn git(root: &Path, arguments: &[&str]) -> Result<Output> {
-    let output = Command::new("git")
-        .args(arguments)
-        .current_dir(root)
-        .output()
-        .context("git is required for evidence")?;
+    let output =
+        crate::records::run_owned(Command::new("git").args(arguments).current_dir(root), None)
+            .context("git is required for evidence")?;
     ensure!(
         output.status.success(),
         "git {} failed: {}",
@@ -384,11 +382,13 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
 
 /// Whether `ancestor` is an ancestor of (or equal to) the current HEAD.
 pub(super) fn is_ancestor_of_head(root: &Path, ancestor: &str) -> bool {
-    Command::new("git")
-        .args(["merge-base", "--is-ancestor", ancestor, "HEAD"])
-        .current_dir(root)
-        .output()
-        .is_ok_and(|output| output.status.success())
+    crate::records::run_owned(
+        Command::new("git")
+            .args(["merge-base", "--is-ancestor", ancestor, "HEAD"])
+            .current_dir(root),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
 }
 
 fn find_id(value: &Value, id: &str) -> bool {
@@ -1781,21 +1781,13 @@ fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> 
 
 /// The Git blob ID of exactly `bytes`, with no filters applied.
 fn blob_of(root: &Path, bytes: &[u8]) -> Result<String> {
-    use std::io::Write;
-    let mut child = Command::new("git")
-        .args(["hash-object", "--no-filters", "--stdin"])
-        .current_dir(root)
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::piped())
-        .spawn()
-        .context("git is required for evidence")?;
-    child
-        .stdin
-        .take()
-        .context("git hash-object stdin")?
-        .write_all(bytes)?;
-    let output = child.wait_with_output()?;
+    let output = crate::records::run_owned(
+        Command::new("git")
+            .args(["hash-object", "--no-filters", "--stdin"])
+            .current_dir(root),
+        Some(bytes),
+    )
+    .context("git is required for evidence")?;
     ensure!(
         output.status.success(),
         "git hash-object --no-filters --stdin failed: {}",

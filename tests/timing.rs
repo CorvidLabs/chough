@@ -1,4 +1,4 @@
-//! The read-only timing report and the gate records it reads (REQ-cli-020).
+//! The read-only timing report and the gate records it reads (REQ-reporting-001).
 //!
 //! Fixtures write transitions, observations, bugs and validation runs with fixed
 //! timestamps, so every expected segment, cycle and duration is exact.
@@ -1393,7 +1393,7 @@ fn native_times_come_only_from_status_and_native_records_read_read_only() {
     assert_eq!(history[1]["id"], "zzz-earlier");
     assert_eq!(report["native"]["skipped_archived"], 4);
 
-    // REQ-cli-024: the checkpoint change, also archived, is read once and its one
+    // REQ-reporting-002: the checkpoint change, also archived, is read once and its one
     // response serves both places the report shows it.
     fixture.write(
         ".specsync/archive/changes/2026-03-01-cur-change/finalization.json",
@@ -1524,7 +1524,7 @@ fn a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown() {
     assert_eq!(report["native"]["state"], "not-configured");
     assert_eq!(report["native"]["current"], Value::Null);
 
-    // REQ-cli-024: one whole-report budget. A hung read whose child holds the pipes
+    // REQ-reporting-002: one whole-report budget. A hung read whose child holds the pipes
     // gets the remaining budget, not the 120 s per-read deadline, and every read the
     // budget leaves no time for is not-read with unknown times, never zero.
     let fixture = native_fixture();
