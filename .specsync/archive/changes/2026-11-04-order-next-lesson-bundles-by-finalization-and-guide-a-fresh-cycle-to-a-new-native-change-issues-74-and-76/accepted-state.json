@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76",
+  "slug": "order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76",
+  "title": "Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76)",
+  "description": "Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "edbc3c1adecebf6a1378a731965c3bfe8c8217df",
+  "created_at": 1793757316,
+  "updated_at": 1793777741,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/library.rs",
+    "src/stage.rs",
+    "tests/next.rs",
+    "tests/stages.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough next names at most 3 archived lesson bundles newest first by finalization timestamp then archive directory so they match the hot set of chough library index and an archive without a readable finalization timestamp sorts as oldest,With SpecSync configured and no native change recorded the command for a refused no-native-change gate is specsync change new instead of a bare specsync change status,After a stage reset while the recorded native change is archived with authenticated terminal evidence and was finalized before that reset next shows the new native change guidance with the specsync change new command at every main stage before done and never the archived-change refusal or another reset,A recorded change finalized after the latest reset keeps the existing archived-change guidance,docs/cli.md states the order and the guidance and each new test fails on main edbc3c1 and fledge lanes run verify passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded bug fix for issues 74 and 76 (items 2 and 5) only: guidance and ordering in chough next and status; no stage gate or schema or output-key change and no new dependency and no extra native read; issue 75 and items 1 3 4 of issue 76 are out of scope",
+    "public_contract": "yes"
+  }
+}

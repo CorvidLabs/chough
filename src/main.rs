@@ -466,10 +466,10 @@ const LIST_LIMIT: usize = 10;
 const STRING_LIMIT: usize = 512;
 const CUT: &str = " [cut]";
 /// Entries shown of the newest decisions, of a failure's linked bugs and of archived
-/// lesson bundles.
+/// lesson bundles; the bundles shown are the librarian's hot archives (KNOW-8).
 const DECISION_LIMIT: usize = 5;
 const LINKED_BUG_LIMIT: usize = 3;
-const BUNDLE_LIMIT: usize = 5;
+const BUNDLE_LIMIT: usize = library::HOT_ARCHIVES;
 /// Decision prefixes read best-effort; any other entry is shown whole.
 const DECISION_KINDS: [&str; 3] = ["decided", "rejected", "failed"];
 const ARCHIVED_CHANGES: &str = ".specsync/archive/changes";
@@ -641,27 +641,30 @@ fn lesson_source(root: &Path, module: &str) -> Value {
     json!({"module": module, "path": context, "section_line": line, "note": note})
 }
 
-/// Archived SpecSync lesson bundles, newest first by archive directory name. Nothing
-/// records which were folded.
-/// An archive directory that `local_path` refuses (a symlink, for one) has no bundles;
-/// a name that is not UTF-8 is counted and shown lossily.
+/// Archived SpecSync lesson bundles for the librarian's hot archives: the newest 3 by
+/// recorded finalization timestamp, then directory, read with the librarian's own rule
+/// (`library::archive_order`), so hidden or non-UTF-8 directories and archives without
+/// a readable `finalization.json` naming their change are not counted. A hot archive
+/// without a `lesson-bundle.md` is shown with `(missing)`. Nothing records which were
+/// folded. When the archives cannot be read (a symlinked archive directory, for one),
+/// none is listed and `note` carries the same error `library index` refuses with.
 fn archived_bundles(root: &Path) -> Result<Value> {
-    let mut names = vec![];
-    if let Ok(directory) = local_path(root, ARCHIVED_CHANGES)
-        && directory.is_dir()
-    {
-        for entry in std::fs::read_dir(&directory)? {
-            let entry = entry?;
-            if entry.path().join("lesson-bundle.md").is_file() {
-                names.push(entry.file_name().to_string_lossy().into_owned());
-            }
+    let found = match library::archive_order(root) {
+        Ok(found) => found,
+        Err(error) => {
+            return Ok(json!({
+                "total": 0,
+                "items": [],
+                "note": cut(&format!("cannot be read: {error:#}")),
+            }));
         }
-    }
-    names.sort();
-    names.reverse();
+    };
     Ok(json!({
-        "total": names.len(),
-        "items": names.iter().take(BUNDLE_LIMIT).map(|name| cut(&format!("{ARCHIVED_CHANGES}/{name}/lesson-bundle.md"))).collect::<Vec<_>>(),
+        "total": found.len(),
+        "items": found.iter().take(BUNDLE_LIMIT).map(|archive| {
+            let path = format!("{ARCHIVED_CHANGES}/{}/lesson-bundle.md", archive.dir);
+            cut(&if archive.lesson_bundle { path } else { format!("{path} (missing)") })
+        }).collect::<Vec<_>>(),
     }))
 }
 
@@ -1077,7 +1080,9 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
     );
     let bundles = &view["lessons"]["archived_bundles"];
     let shown = items(bundles);
-    if total(bundles) == 0 {
+    if let Some(note) = bundles["note"].as_str() {
+        lines.push(format!("Archived lesson bundles: {note}"));
+    } else if total(bundles) == 0 {
         lines.push("Archived lesson bundles: none".into());
     } else {
         lines.push(format!(

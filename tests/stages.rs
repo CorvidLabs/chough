@@ -3052,6 +3052,247 @@ fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
     assert_eq!(records(&fixture), before);
 }
 
+const NEW_CHANGE: &str = "specsync change new \"<outcome>\" --spec <module> --path <path>";
+
+/// Write a SYNTHETIC archive record for `id` finalized at `timestamp`.
+#[cfg(unix)]
+fn finalized(fixture: &Fixture, id: &str, timestamp: u64) {
+    fixture.write(
+        &format!(".specsync/archive/changes/2026-11-03-{id}/finalization.json"),
+        &json!({"change_id": id, "timestamp": timestamp}).to_string(),
+    );
+}
+
+/// Issue 76 item 2: at plan with SpecSync configured and no native change recorded, the
+/// refused gate names `specsync change new`, not a bare status read.
+#[cfg(unix)]
+#[test]
+fn plan_without_a_native_change_names_change_new() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "plan",
+        "--reason",
+        "Plan the change",
+    ]);
+    fixture.ok(&["checkpoint", "--next-action", "Write the plan"]);
+    fixture.ok(&["stage", "iterate", "--note", "Plan drafted"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    assert_eq!(action["command"], NEW_CHANGE, "{next}");
+    let text = action["action"].as_str().unwrap();
+    assert!(text.contains("refused:no-native-change"), "{text}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], action["action"]);
+}
+
+/// Issue 76 item 5: after a reset from done, the archived change from before the reset
+/// is the previous cycle's, so `next` keeps the reset's guidance and names
+/// `specsync change new`, at plan directly and after advancing from intent, and never
+/// the archived refusal or another reset.
+#[cfg(unix)]
+#[test]
+fn reset_after_an_archived_change_guides_to_a_new_change() {
+    // Reset to plan: the reset's next action shows, with the new-change command.
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Continue plan: New cycle from done after reset: Next feature."),
+        "{text}"
+    );
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+    assert!(!text.contains("refused:native-archived"), "{text}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], action["action"]);
+
+    // Reset to intent, then advance: no loop back to another reset.
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "intent",
+        "--reason",
+        "Next feature",
+    ]);
+    let mut stages = vec![];
+    while stage(&fixture) != "plan" {
+        fixture.ok(&["stage", "advance"]);
+        let next = fixture.ok(&["next", "--json"]);
+        let action = &next["next_valid_action"];
+        let text = action["action"].as_str().unwrap().to_string();
+        assert!(!text.contains("stage reset"), "{}: {text}", stage(&fixture));
+        assert_ne!(
+            action["command"],
+            RESET_COMMAND,
+            "{}: {action}",
+            stage(&fixture)
+        );
+        stages.push((stage(&fixture), action.clone()));
+    }
+    let (_, at_plan) = stages.last().unwrap();
+    assert_eq!(at_plan["command"], NEW_CHANGE, "{at_plan}");
+    assert!(
+        at_plan["action"]
+            .as_str()
+            .unwrap()
+            .contains("New cycle from done after reset: Next feature."),
+        "{at_plan}"
+    );
+
+    // A change finalized after the latest reset is this cycle's: the archived-change
+    // guidance stays.
+    let fixture = done_fixture("new-change");
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "intent",
+        "--reason",
+        "Next feature",
+    ]);
+    fixture.ok(&["stage", "advance"]);
+    finalized(&fixture, "new-change", 4_000_000_000);
+    let next = fixture.ok(&["next", "--json"]);
+    let text = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("The recorded native change is archived while the checkpoint is at"),
+        "{text}"
+    );
+    assert_eq!(next["next_valid_action"]["command"], RESET_COMMAND);
+}
+
+/// Review of #78: the previous-cycle rule uses the newest reset by recorded time, not
+/// the last one appended; merged transition logs hold resets out of order.
+#[cfg(unix)]
+#[test]
+fn reset_rule_uses_the_newest_reset_by_time_in_an_out_of_order_log() {
+    let fixture = done_fixture("old-change");
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "intent",
+        "--reason",
+        "Next feature",
+    ]);
+    let log = fixture.read(".chough/transitions.jsonl");
+    let mut reset: Value = serde_json::from_str(log.lines().last().unwrap()).unwrap();
+    assert_eq!(reset["kind"], "reset", "{reset}");
+    let at = reset["at_unix_seconds"].as_u64().unwrap();
+    finalized(&fixture, "old-change", at);
+    // A merge appends an older reset after the newest one.
+    reset["at_unix_seconds"] = json!(at - 100);
+    fixture.write(".chough/transitions.jsonl", &format!("{log}{reset}\n"));
+    while stage(&fixture) != "plan" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(!text.contains("is archived while"), "{text}");
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+}
+
+/// Leif's review thread on #78: on a project with event history (the cursor `chough
+/// init` writes), the reset that began this cycle is found even after more than the
+/// 128 recent events `next` shows have been recorded since it, so the archived change
+/// stays the previous cycle's and `next` keeps naming a new native change.
+/// A project with event history (the cursor `chough init` writes) whose archived
+/// `old-change` closed before a reset to plan, followed by `iterations` iterations.
+#[cfg(unix)]
+fn reset_then_iterated(iterations: usize) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("archived");
+    fixture.write(".stub-validity", "exact\n");
+    fixture.write(".stub-next", "merge the PR on GitHub if it is still open\n");
+    // Initialized through the CLI directly, so the checkpoint keeps its history cursor.
+    fixture.ok(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--intent-scope",
+        "LIFE",
+        "--module",
+        "cli",
+    ]);
+    assert!(fixture.session()["history_cursor"].is_object());
+    fixture.ok(&["checkpoint", "--native-change", "old-change"]);
+    fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Closeout"]);
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    for count in 0..iterations {
+        fixture.ok(&["stage", "iterate", "--note", &format!("iteration {count}")]);
+    }
+    fixture
+}
+
+/// Leif's review thread on #78: on a project with event history, the reset that began
+/// this cycle is found even after more than the 128 recent events `next` shows have
+/// been recorded since it, so the archived change stays the previous cycle's and
+/// `next` keeps naming a new native change.
+#[cfg(unix)]
+#[test]
+fn a_reset_beyond_the_recent_history_window_still_starts_this_cycle() {
+    let fixture = reset_then_iterated(130);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(!text.contains("is archived while"), "{text}");
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(status["next_valid_action"], text);
+}
+
+/// The same thread: when the current cycle's history cannot be read whole, `next` says
+/// the cycle is unknown instead of inferring that the archived change closed this cycle
+/// (a reset) or the previous one (a new change).
+#[cfg(unix)]
+#[test]
+fn an_unreadable_cycle_start_is_reported_as_unknown() {
+    let fixture = reset_then_iterated(3);
+    let cycle = fixture.session()["history_cursor"]["cycle"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let dir = fixture
+        .root()
+        .join(format!(".chough/history/cycles/{cycle}"));
+    let root_event = fs::read_dir(&dir)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .find(|path| {
+            let event: Value = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
+            event["parent"].is_null()
+        })
+        .unwrap();
+    fs::remove_file(root_event).unwrap();
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
+        "{text}"
+    );
+    assert_eq!(action["command"], "chough history show", "{action}");
+    assert_ne!(action["command"], RESET_COMMAND, "{action}");
+    assert_ne!(action["command"], NEW_CHANGE, "{action}");
+}
+
+#[cfg(unix)]
+const RESET_COMMAND: &str = "chough stage reset --to intent --reason \"<why>\"";
+
 /// Issue 63 (Kimi lab round 2): with SpecSync configured, `checkpoint --native-change`
 /// asks SpecSync for the change before saving and refuses an ID it does not know,
 /// leaving the checkpoint byte-identical, even when other updates ride along.
@@ -3526,4 +3767,138 @@ fn backfill_refuses_release_to_done() {
     assert_eq!(fixture.read(".chough/session.json"), session);
     fixture.ok(&["stage", "advance"]);
     assert_eq!(stage(&fixture), "done");
+}
+
+/// Leif's review thread on #78 (src/stage.rs): a reset older than the 64 KiB tail of a
+/// legacy transition log is still found, so the archived change stays the previous
+/// cycle's and `next` keeps the reset's guidance.
+#[cfg(unix)]
+#[test]
+fn a_reset_older_than_the_log_tail_is_still_found() {
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    let before = fixture.read(".chough/transitions.jsonl");
+    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    let log = fixture.read(".chough/transitions.jsonl");
+    let gates = &log[before.len()..];
+    assert_eq!(gates.lines().count(), 2, "{gates}");
+    for line in gates.lines() {
+        let record: Value = serde_json::from_str(line).unwrap();
+        assert!(
+            ![
+                "advance", "iterate", "back", "reset", "skip", "pause", "resume", "enter", "return"
+            ]
+            .contains(&record["kind"].as_str().unwrap()),
+            "{record}"
+        );
+    }
+    // Push the reset out of the last 65,536 bytes with gate records only.
+    let mut padded = before.clone();
+    while padded.len() - before.len() < 80_000 {
+        padded.push_str(gates);
+    }
+    fixture.write(".chough/transitions.jsonl", &padded);
+    assert_reset_guidance(&fixture);
+}
+
+/// A legacy done fixture whose archived `old-change` closed before a reset to plan,
+/// followed by gate records only, at least `padding` bytes of them.
+#[cfg(unix)]
+fn reset_then_gates(padding: usize) -> Fixture {
+    let fixture = done_fixture("old-change");
+    finalized(&fixture, "old-change", 1_700_000_000);
+    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    let before = fixture.read(".chough/transitions.jsonl");
+    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    let gates = fixture.read(".chough/transitions.jsonl")[before.len()..].to_string();
+    let mut padded = before.clone();
+    while padded.len() - before.len() < padding {
+        padded.push_str(&gates);
+    }
+    fixture.write(".chough/transitions.jsonl", &padded);
+    fixture
+}
+
+/// `next` names the reset's new-cycle guidance: the archived change is the previous
+/// cycle's.
+#[cfg(unix)]
+fn assert_reset_guidance(fixture: &Fixture) {
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Continue plan: New cycle from done after reset: Next feature."),
+        "{text}"
+    );
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+    assert!(!text.contains("refused:native-archived"), "{text}");
+}
+
+/// `next` says the cycle is unknown rather than inferring either way.
+#[cfg(unix)]
+fn assert_cycle_unknown(fixture: &Fixture) {
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
+        "{text}"
+    );
+    assert_eq!(action["command"], "chough history show", "{action}");
+}
+
+/// Leif's review thread 4463488843 on #78: after `history adopt --apply`, the adopted
+/// cursor's first cycle continues its legacy anchor, and a reset in that anchor older
+/// than the 64 KiB tail is still found.
+#[cfg(unix)]
+#[test]
+fn an_adopted_cursor_finds_a_reset_in_its_legacy_anchor_beyond_the_tail() {
+    let fixture = reset_then_gates(80_000);
+    fixture.ok(&["history", "adopt", "--apply"]);
+    let session = fixture.session();
+    assert!(!session["history_cursor"]["legacy"].is_null(), "{session}");
+    assert_reset_guidance(&fixture);
+}
+
+/// The same thread: a legacy log beyond the 16 MiB bound is not read as "no reset";
+/// the cycle is unknown.
+#[cfg(unix)]
+#[test]
+fn a_legacy_log_beyond_its_bound_leaves_the_cycle_unknown() {
+    let fixture = reset_then_gates(16 * 1_048_576 + 4096);
+    assert_cycle_unknown(&fixture);
+}
+
+/// The same thread: an unreadable legacy log (here mode 000) is not read as "no reset";
+/// the cycle is unknown. Only a missing log reads as empty. Root reads any mode, so
+/// the check is skipped there.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_legacy_log_leaves_the_cycle_unknown() {
+    use std::os::unix::fs::PermissionsExt;
+    let euid = Command::new("id").arg("-u").output().unwrap();
+    if String::from_utf8_lossy(&euid.stdout).trim() == "0" {
+        return;
+    }
+    let fixture = reset_then_gates(0);
+    let log = fixture.root().join(".chough/transitions.jsonl");
+    fs::set_permissions(&log, fs::Permissions::from_mode(0o000)).unwrap();
+    let next = fixture.run(&["next", "--json"]);
+    fs::set_permissions(&log, fs::Permissions::from_mode(0o644)).unwrap();
+    assert!(
+        next.status.success(),
+        "{}",
+        String::from_utf8_lossy(&next.stderr)
+    );
+    let next: Value = serde_json::from_slice(&next.stdout).unwrap();
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
+        "{text}"
+    );
+    assert_ne!(action["command"], RESET_COMMAND, "{action}");
 }
