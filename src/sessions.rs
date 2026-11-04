@@ -720,10 +720,24 @@ mod tests {
     use super::*;
 
     /// #96 review (REQ-history-008): a session file that moves away after a successful
-    /// save keeps the event that save points to; the cleanup removes only events no saved
-    /// checkpoint references.
+    /// save keeps the event that save points to; the cleanup removes only events no save
+    /// may have written.
     #[test]
     fn a_vanish_after_a_successful_save_keeps_the_saved_event() {
+        saved_event_survives_a_move_to(&archive_file("alpha"));
+    }
+
+    /// Second #96 review (REQ-history-008): the same holds when the saved file is moved
+    /// somewhere Chough never looks for a checkpoint, so keeping the event cannot depend
+    /// on finding the saved checkpoint again.
+    #[test]
+    fn a_move_outside_the_session_stores_after_a_save_keeps_the_saved_event() {
+        saved_event_survives_a_move_to(".chough/saved-alpha.json");
+    }
+
+    /// Save one event on session alpha, move alpha's file to `destination`, then resolve
+    /// the checkpoint again: the refusal must keep the saved event.
+    fn saved_event_survives_a_move_to(destination: &str) {
         let dir = tempfile::tempdir().unwrap();
         let root = dir.path().canonicalize().unwrap();
         run(
@@ -751,15 +765,16 @@ mod tests {
         let count = || fs::read_dir(&cycle).map_or(0, |entries| entries.count());
         let saved = count();
         assert!(saved >= 1);
-        fs::create_dir_all(root.join(ARCHIVE)).unwrap();
-        fs::rename(
-            root.join(session_file("alpha")),
-            root.join(archive_file("alpha")),
-        )
-        .unwrap();
+        let moved = root.join(destination);
+        fs::create_dir_all(moved.parent().unwrap()).unwrap();
+        fs::rename(root.join(session_file("alpha")), &moved).unwrap();
         let error = checkpoint_path(&root).unwrap_err().to_string();
         assert!(error.contains("nothing was saved"), "{error}");
-        assert_eq!(count(), saved, "the saved event was removed");
+        assert_eq!(
+            count(),
+            saved,
+            "the saved event was removed after a move to {destination}"
+        );
         unpin(&root);
     }
 
