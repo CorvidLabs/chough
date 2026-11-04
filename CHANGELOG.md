@@ -57,6 +57,17 @@ All notable changes to Chough are recorded here. The format follows
   stages out of estimates. Older Chough binaries refuse a transition log that holds a
   backfilled record, so upgrade every agent on a project before using it.
 
+- Checkpoint writers in parallel in one clone no longer lose updates (#62): commands
+  that change `.chough/session.json` take an exclusive lock (an empty file in the
+  system temporary directory, named for the project) for their whole
+  read-modify-write, waiting up to 30 seconds before refusing as
+  `refused:checkpoint-busy` with nothing saved. A `.chough/.session.json.<pid>.tmp`
+  left by a writer killed before its rename is now removed by the next writer that
+  saves, with a stderr notice (#64); commands that only read remove nothing. New dependency: `fs4` 1.1.0, for a cross-platform file lock
+  within MSRV 1.88. The lock file stays in the temporary directory after use and is
+  safe to delete when no Chough command is running; the feature-and-bug exercise
+  removes its own on exit.
+
 ## [0.2.0] - 2026-11-03
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence

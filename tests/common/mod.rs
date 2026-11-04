@@ -9,6 +9,36 @@ use tempfile::TempDir;
 
 pub(super) struct Fixture(TempDir);
 
+/// Remove this fixture's checkpoint lock file from the system temporary directory when
+/// the fixture is dropped, so the suite leaves no lock files behind (issue 62's lock
+/// lives outside the project by design).
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        remove_checkpoint_lock(self.root());
+    }
+}
+
+/// The lock file Chough uses for this project: the system temporary directory, named
+/// for the SHA-256 of the canonical `.chough` path (see `checkpoint_lock_path` in
+/// src/checkpoint.rs). `None` when the project has no `.chough` directory.
+pub(super) fn checkpoint_lock_path(root: &Path) -> Option<std::path::PathBuf> {
+    use sha2::{Digest, Sha256};
+    let canonical = fs::canonicalize(root.join(".chough")).ok()?;
+    let digest = Sha256::digest(canonical.to_string_lossy().as_bytes());
+    let name: String = digest[..16]
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    Some(std::env::temp_dir().join(format!("chough-checkpoint-{name}.lock")))
+}
+
+/// Remove a project's checkpoint lock file, if any; for test cleanup only.
+pub(super) fn remove_checkpoint_lock(root: &Path) {
+    if let Some(lock) = checkpoint_lock_path(root) {
+        let _ = fs::remove_file(lock);
+    }
+}
+
 impl Fixture {
     pub(super) fn new() -> Self {
         let fixture = Self(tempfile::tempdir().unwrap());
