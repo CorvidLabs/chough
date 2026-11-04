@@ -1,4 +1,5 @@
-//! The single canonical checkpoint: `.chough/session.json`.
+//! The single canonical checkpoint: `.chough/session.json`, or the active session
+//! file under `.chough/sessions/` (REQ-cli-037).
 
 use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, print_json, read_bounded_record, valid_change_id,
@@ -311,7 +312,7 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
     Ok(())
 }
 
-fn parse(content: &str) -> Result<Session> {
+pub(super) fn parse(content: &str) -> Result<Session> {
     let value: Value = serde_json::from_str(content).context("invalid session record")?;
     match value.get("schema_version").and_then(Value::as_u64) {
         Some(1) => {
@@ -331,7 +332,7 @@ fn parse(content: &str) -> Result<Session> {
 }
 
 pub(super) fn read_session(root: &Path) -> Result<Session> {
-    let path = local_path(root, SESSION)?;
+    let path = local_path(root, &crate::sessions::checkpoint_path(root)?)?;
     parse(&read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?)
 }
 
@@ -358,7 +359,7 @@ fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
 pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
     write_replace_bounded(
         root,
-        SESSION,
+        &crate::sessions::checkpoint_path(root)?,
         &serialize_checkpoint(session)?,
         SESSION_LIMIT,
     )
@@ -369,7 +370,7 @@ pub(super) fn migrate(root: &Path, initial_stage: &str) -> Result<()> {
         stage::is_main(initial_stage),
         "migration stage must be a main stage"
     );
-    let path = local_path(root, SESSION)?;
+    let path = local_path(root, &crate::sessions::checkpoint_path(root)?)?;
     let original = read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?;
     let session = match parse(&original)? {
         Session::V2(_) => {

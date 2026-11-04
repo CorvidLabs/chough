@@ -31,6 +31,7 @@ their JSON.
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
+| `session new\|adopt\|use\|list`, `inbox add\|list\|fold` | Sessions per objective or native change, and the create-only subagent inbox. See [Sessions](#sessions). |
 
 ## Transition history
 
@@ -272,6 +273,68 @@ for a clean merge; a nonzero result leaves the conflict for human resolution.
 driver is configured, the explicit `chough checkpoint --merge <base> <ours> <theirs>`
 command is the fallback. One-owner live writes and the single canonical
 `.chough/session.json` remain unchanged, with no second checkpoint store.
+
+## Sessions
+
+A project can keep one checkpoint per objective or native change (REQ-cli-037,
+REQ-history-006). Sessions mode starts when `.chough/sessions/` exists; without it
+every command uses `.chough/session.json` exactly as before.
+
+- `chough session new <key> [--objective T] [--intent-scope S] [--module M]...`
+  creates `.chough/sessions/<key>.json`, a schema 2 checkpoint with its own history
+  cycle, and makes it active. The key uses the native change ID form (letters,
+  digits, `-` and `_`, up to the change ID bound). It refuses while an unadopted
+  `.chough/session.json` exists, and it never replaces a session, open or archived.
+- `chough session adopt <key>` moves an existing `.chough/session.json` there byte
+  for byte. The checkpoint needs a history cursor (`chough history adopt --apply`
+  first). Adopt on the main line before branches diverge: a branch that still edits
+  `.chough/session.json` conflicts once with the removal.
+- `chough session use <key>` makes an open session active. `session new` and `session
+  use` move every other open session whose stage is `done` to
+  `.chough/sessions/archive/<key>.json` with its bytes unchanged and report the keys
+  under `archived`.
+- `chough session list` reports each open and archived session's key, objective,
+  native change, stage, status and whether it is active.
+
+The active session is named by `.chough/local/active-session`. That directory holds a
+`.gitignore` of `*`, so the pointer stays local to each worktree. With no pointer the
+only open session is active. With no open session, several and no pointer, or a
+pointer to a missing or archived session, every command refuses with nothing written
+and names the command to run. `chough init` refuses in sessions mode.
+
+Only the active session is written, so there is still one writable checkpoint.
+Transitions of each session are its own immutable history cycle, so two branches that
+record work in different sessions merge without a conflict. Two edits of the same
+session still merge with the [checkpoint merge driver](#checkpoint-merges); declare
+it for the session files too:
+
+```gitattributes
+.chough/sessions/*.json merge=chough-session
+.chough/sessions/archive/*.json merge=chough-session
+```
+
+### Subagent inbox
+
+A subagent reports to a session without editing it:
+
+```sh
+chough inbox add --session <key> --from <name> --kind observation|decision|completed|question --text <text>
+```
+
+Each call creates `.chough/sessions/<key>.inbox/INB-<24 hex>.json` with
+`schema_version`, `id`, `session`, `from`, `kind`, `text` and
+`recorded_at_unix_seconds`, and never replaces a file. For an observation, the text is
+its evidence ID (record the observation with `chough evidence add` first). An entry
+has no approval, review, consent, gate or stage field and a record with any other
+field is refused, so a subagent cannot clear a gate or move a stage through it; stage
+gates still come from native SpecSync state. A session holds at most 200 unfolded
+entries.
+
+`chough inbox list` shows the active session's unfolded entries. `chough inbox fold`
+adds them, in ID order, to the active session's observations, decisions, completed
+work or open questions, skipping values already there, saves the session within its
+bounds, then moves each entry to `.chough/sessions/<key>.inbox/folded/`. A rerun after
+an interrupted fold adds nothing twice.
 
 ## Execution bounds
 

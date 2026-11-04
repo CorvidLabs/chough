@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Sessions per objective or native change (REQ-cli-037, REQ-history-006): `chough
+  session new <key>` creates `.chough/sessions/<key>.json` with its own history
+  cycle, `session adopt` moves an existing checkpoint there byte for byte, `session
+  use` and an untracked pointer pick the active session, and switching archives done
+  sessions unchanged. Subagents append create-only entries with `chough inbox add`,
+  and `chough inbox fold` adds them to the active session. Branches that record work
+  in different sessions merge without conflict; `checkpoint --merge` still merges two
+  edits of the same session. Without `.chough/sessions/` nothing changes. Older Chough
+  binaries do not know sessions mode, so upgrade every agent before adopting.
+
 ## [0.2.0] - 2026-11-03
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence

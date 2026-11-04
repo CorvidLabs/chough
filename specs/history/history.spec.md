@@ -7,6 +7,8 @@ files:
   - tests/history.rs
   - tests/evidence.rs
   - tests/spec_split.rs
+  - src/sessions.rs
+  - tests/sessions.rs
 
 db_tables: []
 depends_on:

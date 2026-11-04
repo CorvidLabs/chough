@@ -788,6 +788,7 @@ fn protection_sources(
     let mut sources = BTreeMap::new();
     for directory in [
         ".chough/session.json",
+        ".chough/sessions",
         ".chough/bugs",
         ".chough/cases",
         ".chough/evidence",

@@ -558,3 +558,40 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
     }
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
+
+/// v0.2.0's checkpoint reference (main edbc3c1) is a known earlier bundle file, so
+/// `skill update` delivers the sessions guidance over an unedited copy.
+#[test]
+fn checkpoint_guidance_from_v0_2_0_updates_to_the_sessions_guidance() {
+    let previous = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/workflow-at-edbc3c1-checkpoint.md"),
+    )
+    .unwrap()
+    .replace("\r\n", "\n")
+    .into_bytes();
+    assert_eq!(
+        format!("{:x}", Sha256::digest(&previous)),
+        "00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d"
+    );
+    let current = include_bytes!("../skills/chough-workflow/references/checkpoint.md");
+    assert_ne!(previous, current.to_vec());
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture
+        .root()
+        .join(".agents/skills/chough-workflow/references/checkpoint.md");
+    fs::write(&installed, &previous).unwrap();
+    let status = fixture.ok(&["skill", "status", "--host", "openai"]);
+    assert_eq!(
+        file_state(&status, "references/checkpoint.md")["state"],
+        "known-outdated"
+    );
+    let update = fixture.ok(&["skill", "update", "--host", "openai"]);
+    assert_eq!(
+        file_state(&update, "references/checkpoint.md")["action"],
+        "updated"
+    );
+    let delivered = fs::read_to_string(&installed).unwrap();
+    assert!(delivered.contains("chough inbox fold"), "{delivered}");
+}

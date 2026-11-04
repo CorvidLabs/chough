@@ -132,6 +132,23 @@ Success replaces only ours. Every refusal preserves all three inputs and writes 
 Chough record. The merge adds no second checkpoint store and does not change the
 one-owner rule for live writes.
 
+## Sessions per objective
+
+When `.chough/sessions/` exists, each objective or native change has its own
+checkpoint at `.chough/sessions/<key>.json`, and every command uses the active one
+(`chough session new|adopt|use|list`). Start one with `chough session new <change-id>`
+or move the existing checkpoint with `chough session adopt <key>`. Finished sessions
+move to `.chough/sessions/archive/` when you switch away. Subagents do not edit the
+session: they run `chough inbox add --session <key> --from <name> --kind
+observation|decision|completed|question --text <text>`, and the agent that owns the
+session runs `chough inbox fold`. Inbox entries never approve, review, consent, clear a
+gate or move a stage. Declare the merge driver for session files as well:
+
+```gitattributes
+.chough/sessions/*.json merge=chough-session
+.chough/sessions/archive/*.json merge=chough-session
+```
+
 ## Immutable transition history
 
 New projects use event history. Existing schema-2 projects remain in legacy mode

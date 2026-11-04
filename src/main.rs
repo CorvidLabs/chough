@@ -8,6 +8,7 @@ mod identity;
 mod library;
 mod prefs;
 mod records;
+mod sessions;
 mod skill;
 mod stage;
 mod timing;
@@ -135,6 +136,16 @@ enum Commands {
         #[command(subcommand)]
         command: skill::SkillCommand,
     },
+    /// Sessions per objective or native change: new, adopt, use, list.
+    Session {
+        #[command(subcommand)]
+        command: sessions::SessionCommand,
+    },
+    /// Create-only inbox entries for subagents, folded into the active session.
+    Inbox {
+        #[command(subcommand)]
+        command: sessions::InboxCommand,
+    },
 }
 
 #[derive(Subcommand)]
@@ -218,6 +229,8 @@ fn main() -> Result<()> {
         Commands::Library { command } => library::run(&root, command)?,
         Commands::Timing(args) => timing::run(&root, *args)?,
         Commands::Skill { command } => skill::run(&root, command)?,
+        Commands::Session { command } => sessions::run(&root, command)?,
+        Commands::Inbox { command } => sessions::inbox(&root, command)?,
     }
     Ok(())
 }
@@ -230,6 +243,10 @@ fn init(
     hosts: Vec<String>,
 ) -> Result<()> {
     ensure!(!objective.trim().is_empty(), "objective must not be blank");
+    ensure!(
+        !sessions::enabled(root)?,
+        "the project uses sessions mode; run `chough session new <key>`"
+    );
     ensure!(
         modules.iter().all(|module| valid_name(module)),
         "module names use letters, digits, hyphens, underscores"
