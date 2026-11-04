@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing-first tests in tests/sessions.rs and tests/evidence.rs
-- [ ] inbox add takes the lock; every_checkpoint adds unfolded inbox observations
-- [ ] docs/cli.md and CHANGELOG.md
+- [x] Failing-first tests in tests/sessions.rs and tests/evidence.rs
+- [x] inbox add takes the lock; every_checkpoint adds unfolded inbox observations
+- [x] docs/cli.md and CHANGELOG.md

@@ -276,7 +276,9 @@ pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
 
 /// Every session checkpoint with how retention names it: the active checkpoint as
 /// `checkpoint`, other open sessions as `session <key>` and archived ones as
-/// `archived session <key>`. Any session that cannot be read is an error.
+/// `archived session <key>`, then, for each session with unfolded observation entries,
+/// those observations as `inbox of session <key>` (#98). Any session or entry that
+/// cannot be read is an error.
 pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
     if !enabled(root)? {
         return Ok(match checkpoint::read_session(root)? {
@@ -300,6 +302,27 @@ pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>>
             format!("archived session {key}"),
             read_at(root, &archive_file(&key))?,
         ));
+    }
+    // Observations an unfolded inbox entry reports are what the session will hold once
+    // it folds, so retention protects them now (#98, REQ-history-009).
+    for key in keys_in(root, DIR)?
+        .into_iter()
+        .chain(keys_in(root, ARCHIVE)?)
+    {
+        let reported: Vec<String> = pending(root, &key)?
+            .into_iter()
+            .filter(|(_, entry)| entry.kind == Kind::Observation.name())
+            .map(|(_, entry)| entry.text)
+            .collect();
+        if !reported.is_empty() {
+            let mut inbox = checkpoint::new_checkpoint(
+                format!("Unfolded inbox of session {key}"),
+                String::new(),
+                vec![],
+            );
+            inbox.observations = reported;
+            all.push((format!("inbox of session {key}"), inbox));
+        }
     }
     Ok(all)
 }
@@ -582,6 +605,10 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             text,
         } => {
             ensure_key(&session)?;
+            // A switch archives a done session under this lock only when it has no
+            // unfolded entries, so taking it here means the entry is either seen by that
+            // switch (the session stays open) or refused below; never stranded (#98).
+            lock_project(root)?;
             ensure!(
                 local_path(root, &session_file(&session))?.is_file(),
                 "no open session {session}"
