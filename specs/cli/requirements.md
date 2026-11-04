@@ -24,12 +24,13 @@ Acceptance Criteria
 
 ### REQ-cli-003
 
-The helper SHALL report actual native SpecSync status and guidance, with unavailable, failed, undecodable, oversized or timed-out responses explicitly unknown. Native reads SHALL retain at most the parse bound of standard output and a display bound of standard error while reading, and SHALL end by a bounded deadline. Trace: LIFE-1, LIFE-6, LIFE-7.
+The helper SHALL report actual native SpecSync status and guidance, with unavailable, failed, undecodable, oversized or timed-out responses explicitly unknown. A failed native command SHALL be shown with its result in plain words, `exit <code>` or `killed by signal <number>`, never a program's internal debug form. Native reads SHALL retain at most the parse bound of standard output and a display bound of standard error while reading, and SHALL end by a bounded deadline. Trace: LIFE-1, LIFE-6, LIFE-7.
 
 Acceptance Criteria
 - Missing SpecSync never becomes an approved or delivered state, and an agent-written session next action never grants approval or overrides a native gate.
 - A native command that never exits is reported as timed-out by its deadline, and gated moves refuse it.
 - Output beyond the bounds is counted and reported, not retained.
+- A native command that exits 2 is shown as `exit 2`, and one ended by SIGTERM as `killed by signal 15`.
 
 ### REQ-cli-004
 
@@ -322,6 +323,28 @@ Acceptance Criteria
 - A backfilled plan to build move records the given time, full commit SHA and quote, and `timing --json` lists it under `backfilled` and marks its segments.
 - A draft native change, an open awaiting-human gate, a future or out-of-order time, an unknown or unreachable commit, a blank quote and a side stage refuse with the checkpoint and log unchanged.
 - No approval, review, consent or gate record is written.
+
+### REQ-cli-038
+
+Native verification that runs no project command. When SDD is enabled and the native status read that `chough next` or `chough status` makes reports the change's effective `verification_commands`, and every one of them is a SpecSync command (`specsync` followed by its arguments), `chough next` (text and JSON) and `chough status` SHALL say that native verification runs none of the project's commands, naming at most 3 of those commands, each cut to the next view's string bound, with a count for the rest, so a passing `specsync change check` does not show that the project's tests ran; when `.specsync/sdd.json` lists verification commands the effective list does not contain, they SHALL also say how many configured commands are not run. They SHALL decide this from that status read and that file, with no additional native read, and SHALL say nothing when the effective list is absent or includes a project command. At the test stage, when no pause, human decision, blocking bug, unlinked failure or gate stops it, `chough next` SHALL point to recording test evidence before accept, naming `chough cases run`. Neither SHALL allow or refuse any stage move that is not otherwise allowed or refused. Trace: FLOW-15, FLOW-6, LIFE-7.
+
+Acceptance Criteria
+- With an effective list of only `specsync check --spec cli`, `next`, `next --json` and `status` carry the warning naming that command.
+- With `cargo test --locked` configured in `.specsync/sdd.json` but absent from the effective list, the warning still shows and says 1 configured command is not run.
+- With a project command in the effective list, with no effective list in the status reply, with SDD disabled, or with no native configuration, there is no warning.
+- At the test stage with nothing else stopping it, `next` names `chough cases run` and says recorded test evidence is needed before accept.
+- `stage advance` from test is allowed with and without the warning, and the warning adds no native read.
+- A 20,000-character effective command keeps `next` and `next --json` within 16384 bytes with the warning still shown, and 10 commands name 3 with "7 more".
+
+### REQ-cli-039
+
+Native check result in next. When the recorded native change has a workspace under `.specsync/changes/<id>/`, `chough next` (text and JSON) SHALL report the native check: the latest attempt SpecSync recorded in that workspace's `verification-attempts.json` by timestamp, with its time and commit, and when it failed, the failing commands with their exit codes, at most 3 with their total. When the native state `next` read is `approved` or `implementing`, `next` SHALL also say that the native check has not passed for the current tree, that SpecSync keeps no reason when it refuses before verifying, and name `specsync change check <id>`. When that state is `verifying`, it SHALL use the same read's `handoff.readiness`: readiness `safe` means the last check matches the tree; any other readiness SHALL be reported as not passed for this tree with SpecSync's reason; and no readiness SHALL be reported as unknown, so a bare `verifying` state never clears the statement. A failed attempt that names no failing command SHALL say so. It SHALL read only that local file and the native state it already read, with no additional native read, and SHALL report an unreadable, oversized or malformed attempts record as unknown, never as no failure. Trace: LIFE-7, LIFE-3.
+
+Acceptance Criteria
+- After a failed attempt, `next` text and JSON show its time, commit, failing commands and exit codes; a later passing attempt replaces it.
+- With the change approved or implementing, `next` says the native check has not passed for this tree, that SpecSync keeps no reason for refusals, and names `specsync change check <id>`; when verifying, it does not.
+- A malformed attempts file is reported as unknown, and `next` still makes one native status read.
+- A verifying change whose handoff readiness is not `safe` (the tree moved after the last check) is reported as not passed for this tree with SpecSync's reason; with readiness `safe` there is no note; with no readiness, freshness is reported as unknown.
 
 ### REQ-cli-042
 

@@ -405,7 +405,10 @@ Native section states are `observed`; `failed` for a non-zero exit or output tha
 stayed open and could not be read completely; `unavailable` when the command cannot
 start or `CHOUGH_NATIVE_TIMEOUT_SECONDS` is not a whole number from 1 to 3600 (the
 command is then not run); `timed-out`; and, for JSON status, `oversized` and
-`invalid-output`. Each state other than `observed` leaves lifecycle state unknown,
+`invalid-output`. A `failed` section's content starts with how the command ended, in
+plain words: `exit <code>`, `killed by signal <number>`, `timed out` or `no exit
+status`, then its bounded output (#87). Each state other than `observed` leaves
+lifecycle state unknown,
 and gated transitions refuse it as `refused:native-unknown`. Without a SpecSync
 configuration, status reports `not-configured` and transitions are not natively gated.
 With SpecSync configured and SDD enabled but no native change recorded, gated
@@ -424,6 +427,8 @@ stage on that response, and shows:
 | `schema_version`, `view` | `1` and `next` |
 | `objective`, `stage` | The objective; current stage, status, iteration and side-stage callers |
 | `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`; with SpecSync configured but SDD off, as `specsync init` leaves it, the reason is ``native SDD is disabled; run `specsync change adopt` to gate stages``, and the `ungated:sdd-disabled` gate detail says the same); unknown values are `null` |
+| `native_check` | For a recorded native change with a workspace under `.specsync/changes/`, otherwise `null`: `last_attempt` (the latest attempt in its `verification-attempts.json` by timestamp: `passed`, `at_unix_seconds`, a 12-character `commit` and `failed_commands` with at most 3 `command` and `exit_code` entries and their `total`, or `null`), `not_passed_for_tree` (native state `approved` or `implementing`, or `verifying` while SpecSync's `handoff.readiness` from the same read is not `safe`, which it reports when the tree moved after the last check; a `verifying` reply with no readiness gives an "unknown" note instead), `note` and `unknown` (why the record could not be read; never shown as no failure). SpecSync 6.1.2 records an attempt only when a verification command runs; a refusal before verifying, such as incomplete tasks or missing requirement evidence, leaves no record or reason, so the note names `specsync change check <id>` (#86). It reads that one local file and no native command |
+| `native_verification_warning` | A sentence when the native check runs none of the project's commands, judged from the change's effective commands in the status read, otherwise `null`; `status` carries the same key. See [Native verification that runs no project command](#native-verification-that-runs-no-project-command) |
 | `next_valid_action` | `action`, `reason` and, when one applies, `command`; `status` reports the same `action` as its `next_valid_action` |
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
 | `awaiting_human`, `blockers`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest |
@@ -447,6 +452,23 @@ of each source and records nothing: no fold state, ledger or index. Every orderi
 comes from recorded fields or names (checkpoint order, recorded observation time and
 ID, bug ID, archive directory name), never from file modification times or directory
 order, so the same records give byte-identical output in both forms.
+
+### Native verification that runs no project command
+
+`specsync change status --json` reports the commands a change's native check runs as
+`summary.verification_commands`. When SDD is enabled and every one of them is
+SpecSync's own (`specsync check --spec <module>` and the like), the check runs none of
+the project's commands, so its "verified" does not show that the project's tests ran
+(#85, FLOW-15). `chough next` then prints a `Warning:` line under the native change, and
+`next --json` and `chough status` carry the sentence as `native_verification_warning`
+(otherwise `null`). It is judged from that list, not from `.specsync/sdd.json`:
+SpecSync 6.1.2's `change check` does not run the `verification_commands` configured
+there (CorvidLabs/spec-sync#848), so configured commands the list leaves out are counted
+in the warning instead of hiding it. It uses the status read already made, adds none,
+says nothing when the list is absent, and is advice only: every stage move is allowed
+or refused exactly as without it. At the test stage, when nothing else stops it, `next`
+keeps `Continue test: <next action>`, says recorded test evidence is needed before
+accept, and names `chough cases run <case-id> --environment <env>`.
 
 ### Decision prefixes
 

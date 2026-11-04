@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-next-says-native-check-not-passed-40a734bd0dfe7429c34fe5ce",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-039"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test native_check -- --exact next_says_when_the_native_check_has_not_passed_for_this_tree for TC-cli-next-says-native-check-not-passed: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-next-says-native-check-not-passed-40a734bd0dfe7429c34fe5ce.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-next-says-native-check-not-passed-40a734bd0dfe7429c34fe5ce.log": "80d1121ad71eac659bc95b8a7d0320aa979abff3cc97cacd9fbd6b1051c1a6e6"
+  },
+  "observed_at_unix_seconds": 1793810126,
+  "snapshot": {
+    "revision": "1dd26ae721c13daf77648f6f3cd8c19b75da79cb",
+    "dirty": false,
+    "fingerprint": "b8e12544a8eb4cae15e4727de9cebd9295de9792efdf777de94cada4182582d8",
+    "content": "081bb6acf6b46bb7439afa23a9f4149306af86eeebda8227c11c3517be88b241"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-next-says-native-check-not-passed",
+      "digest": "fc8c64d628d6017e040190bf1d2a2da5ba811f5faa0c28191c2254d4692dc5cb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "native_check",
+    "--",
+    "--exact",
+    "next_says_when_the_native_check_has_not_passed_for_this_tree"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

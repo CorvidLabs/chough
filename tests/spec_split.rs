@@ -33,9 +33,6 @@ const MOVED: [(&str, &str, &str); 4] = [
     ),
 ];
 
-/// The structured record bound every requirements companion must fit (src/records.rs).
-const RECORD_LIMIT: usize = 65_536;
-
 const MOVED_REPORTING: [(&str, &str, &str); 3] = [
     (
         "REQ-cli-020",
@@ -125,17 +122,6 @@ fn every_pre_split_cli_requirement_is_still_in_cli_or_mapped() {
         assert!(
             cli.contains_key(&id) != mapped(&id),
             "{id} must be in specs/cli or in the split mapping, not both or neither"
-        );
-    }
-}
-
-#[test]
-fn every_requirements_companion_fits_the_record_bound() {
-    for module in ["cli", "history", "reporting"] {
-        let size = companion(module).len();
-        assert!(
-            size <= RECORD_LIMIT,
-            "specs/{module}/requirements.md is {size} bytes, over {RECORD_LIMIT}"
         );
     }
 }

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-only-specsync-native-commands-reported-4d926aca8f4dd992da154813",
+  "criteria": [
+    "FLOW-15",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-038"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test verification -- --exact a_check_that_runs_only_specsync_commands_is_reported for TC-cli-only-specsync-native-commands-reported: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-only-specsync-native-commands-reported-4d926aca8f4dd992da154813.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-only-specsync-native-commands-reported-4d926aca8f4dd992da154813.log": "f68fd5b8f570262f7ea650f1db1444367b828a6b064792b2877ea94eb8b74815"
+  },
+  "observed_at_unix_seconds": 1793807267,
+  "snapshot": {
+    "revision": "72cb859928f7ff95001321c2bef965e4885eb280",
+    "dirty": true,
+    "fingerprint": "ea485aef83705ebd3c6a35351c375eecb3ca5cbdaf601e154b74667989df0c49",
+    "content": "904308536d011c94420f3a6354b92dd99cf295f9e976fc4d571f94ef551b25e0"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-only-specsync-native-commands-reported",
+      "digest": "334730759d5dec6e3047870996bc51f34a08f416d15c6018179d691e53d1011d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "verification",
+    "--",
+    "--exact",
+    "a_check_that_runs_only_specsync_commands_is_reported"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

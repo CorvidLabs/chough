@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-039"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test native_check -- --exact a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree for TC-cli-verifying-tree-moved-not-passed: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2.log": "a99d46b6413529c7f4f7b16cb38f2e36e7f34f7a66751a351b38d5b1d0352848"
+  },
+  "observed_at_unix_seconds": 1793810278,
+  "snapshot": {
+    "revision": "1ca7800badab837378b071f7097cdf7095fd696d",
+    "dirty": false,
+    "fingerprint": "0b72f5090a849a1ab7fcf6d8dafa932d432fdda82035abbddf5a75a60e329090",
+    "content": "02b7b6e194e876842f1eb735d9eb93b7639a8e368bcb867e0c3ece6967d6058d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-verifying-tree-moved-not-passed",
+      "digest": "aa2cc7434c7039fdbe6c5c8bcb4de275de55510ce9cae532247e1427b1222bbd"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "native_check",
+    "--",
+    "--exact",
+    "a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
