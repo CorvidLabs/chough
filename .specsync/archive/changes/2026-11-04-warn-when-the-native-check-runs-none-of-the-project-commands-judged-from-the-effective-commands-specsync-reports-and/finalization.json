@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and",
+  "implementation_commit": "4c3b7ab9a9bfdfe5d07744b47a6f35fe0f7978b7",
+  "implementation_tree": "ee6e94d9e9779f8590fb917e9cd17085a0abbc2c",
+  "contract_digest": "23a954ab5c4aa1197eaadf807af15babddbaad6ff855c3f6f16418302e726e43",
+  "workspace_digest": "1fad7d21a4f7f29ed5a5ac87622681cd69f48799a60992a760b9276bfafe01eb",
+  "closing_digest": "71e507b62ee61841eec2ee6cd0ad41fbe402736055bca6010678925c0c4a5f8e",
+  "review_digest": "97e11ce7f8b697acf59eb9cd64d1eff9ff065b1f2df9529db875aae1c5361c29",
+  "finalization_digest": "afa8b87a828eec4ce80611aa497c5ca0f4c992fbd7768e78747a8d5a280aaf2d",
+  "timestamp": 1793834070
+}
