@@ -1,0 +1,42 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793766839,
+      "digest": "44b48c4434f2f48677168a06a58ca307f7d674524e1da045f1fa86544a4a8bcb",
+      "note": "Approved by corvid-agent as the acting account under Leif's t813u speed direction (DRIVE-10), relayed by the parent agent at 9:31 PM MST; not a human approval",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "scale-independent-archive-authentication-workers-with-the-runner-s-cpus-so-the-archive-check-fits-its-unchanged-budget",
+        "title": "Scale independent archive authentication workers with the runner's CPUs so the Archive check fits its unchanged budget",
+        "description": "Scale independent archive authentication workers with the runner's CPUs so the Archive check fits its unchanged budget",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/scripts/check-specsync-archive.py",
+          ".github/scripts/test-specsync-archive.py",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "hi/drive.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "CI execution scheduling only. Every historical roster snapshot and archive obligation and every authenticated-history check stay; the exact SpecSync version and the before and after read-only fingerprints and the 90-second command timeout and the 10-minute job budget are unchanged. No runtime contract or evidence rewrite.",
+        "acceptance_criteria": [
+          "Independent current-root archive status reads use one worker per CPU that os.cpu_count reports with at least two and at most eight workers; Every historical roster snapshot and archive obligation is still read and every result must still match its requested ID and archived state and authenticated-history validity with no success until all reads finish; Native errors and invalid archives and command deadlines still fail closed; SpecSync 6.1.2 and the 90-second subprocess timeout and the output bounds and the read-only fingerprints and the 10-minute hosted job budget stay unchanged; The worker-count tests fail first and the existing native fixtures and concurrency and failure and drain tests pass; Local wall time of the check on the #71 head is measured before and after and the hosted Archive job on this PR passes within its budget; DRIVE-10 records the t813u speed direction in hi/drive.md and hi check passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The lesson of the archived change bound-independent-archive-authentication-workers-without-changing-validation-or-budgets: only independent current-root reads overlap and history replay stays serial",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
