@@ -127,7 +127,10 @@ another and none is lost. The lock is an empty file in the system temporary dire
 temporary directories (for example a different `TMPDIR`) do not share it. The operating
 system releases it when a command exits or is killed. A writer waits up to 30 seconds,
 then refuses as `refused:checkpoint-busy` with nothing saved; rerun it when the other
-command finishes. `status`, `next`, `cases`, `evidence`, `timing` and the pause checks
+command finishes. The lock file stays in the temporary directory after use, one per
+project; it is safe to delete whenever no Chough command is running for that project,
+and the next writer creates it again. `examples/feature-bug-loop.sh` removes its own
+project's lock on exit. `status`, `next`, `cases`, `evidence`, `timing` and the pause checks
 of `validate run` take no lock; `context` and the show forms of `stage`, `consent` and
 `history` take it while they run. Chough releases before this lock do not take it.
 

@@ -13,7 +13,9 @@ All notable changes to Chough are recorded here. The format follows
   `refused:checkpoint-busy` with nothing saved. A `.chough/.session.json.<pid>.tmp`
   left by a writer killed before its rename is now removed by the next writer, with a
   stderr notice (#64). New dependency: `fs4` 1.1.0, for a cross-platform file lock
-  within MSRV 1.88.
+  within MSRV 1.88. The lock file stays in the temporary directory after use and is
+  safe to delete when no Chough command is running; the feature-and-bug exercise
+  removes its own on exit.
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough

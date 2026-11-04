@@ -370,8 +370,8 @@ static HELD_LOCKS: Mutex<Vec<(PathBuf, fs::File)>> = Mutex::new(Vec::new());
 /// read-modify-write of `.chough/session.json` applies its change to the latest
 /// checkpoint. A repeated call is a no-op. After waiting `LOCK_WAIT` it refuses with
 /// nothing saved. Once the lock is held, session temps left by killed writers are
-/// removed (issue 64). `init` takes it too, so a new project has the lock file from
-/// the start.
+/// removed (issue 64). `init` takes no lock: it writes a new session that must not
+/// exist yet, so the first writer after it creates the lock file.
 pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
     let path = checkpoint_lock_path(root)?;
     let mut held = HELD_LOCKS.lock().unwrap_or_else(PoisonError::into_inner);
