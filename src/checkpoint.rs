@@ -4,6 +4,7 @@ use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, print_json, read_bounded_record, valid_change_id,
     valid_name, write_new_bytes, write_replace_bounded,
 };
+use crate::records::{valid_criterion_id, valid_module_name, valid_reference_id};
 use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
 use serde::{Deserialize, Serialize};
@@ -204,8 +205,8 @@ fn validate_common(objective: &str, modules: &[String]) -> Result<()> {
         "session objective must not be blank"
     );
     ensure!(
-        modules.iter().all(|module| valid_name(module)),
-        "invalid session module name"
+        modules.iter().all(|module| valid_module_name(module)),
+        "invalid session module name: use a module ID SpecSync accepts, such as chat.service"
     );
     ensure!(
         modules.len() <= 16,
@@ -229,8 +230,15 @@ pub(super) fn validate_v1(session: &SessionV1) -> Result<()> {
 
 fn ensure_ids(label: &str, values: &[String], limit: usize) -> Result<()> {
     ensure!(values.len() <= limit, "too many {label} (limit {limit})");
+    // HI owns criterion IDs and SpecSync owns module IDs, which requirement and case IDs
+    // embed, so each accepts exactly what its owner accepts (DRIVE-1).
+    let valid: fn(&str) -> bool = match label {
+        "criterion" => valid_criterion_id,
+        "requirement" | "case" => valid_reference_id,
+        _ => valid_name,
+    };
     for value in values {
-        ensure!(valid_name(value), "invalid {label} ID: {value}");
+        ensure!(valid(value), "invalid {label} ID: {value}");
     }
     Ok(())
 }
@@ -743,6 +751,7 @@ pub(super) struct CheckpointArgs {
             "questions",
             "resolved",
             "completed",
+            "remove_completed",
             "blockers",
             "clear_blockers",
             "awaiting_human",
@@ -773,6 +782,10 @@ pub(super) struct CheckpointArgs {
     resolved: Vec<String>,
     #[arg(long = "completed")]
     completed: Vec<String>,
+    /// Remove a completed entry by its exact text, before `--completed` adds any, so the
+    /// two together correct a mistaken entry in one call.
+    #[arg(long = "remove-completed")]
+    remove_completed: Vec<String>,
     #[arg(long = "blocker")]
     blockers: Vec<String>,
     #[arg(long)]
@@ -854,6 +867,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             session.open_questions.len() < before,
             "no open question has that exact text: {resolved}"
         );
+        changed = true;
+    }
+    for removed in &args.remove_completed {
+        let position = session.completed.iter().position(|entry| entry == removed);
+        let Some(position) = position else {
+            bail!("no completed entry has that exact text: {removed}");
+        };
+        session.completed.remove(position);
         changed = true;
     }
     for (list, values, label) in [

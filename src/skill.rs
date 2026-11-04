@@ -260,6 +260,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/build.md",
         "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a",
     ),
+    // Main edbc3c1 (v0.2.0); superseded by the backfill guidance (REQ-cli-036).
+    (
+        "references/lifecycle.md",
+        "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

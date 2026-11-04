@@ -8,7 +8,7 @@ use std::ffi::OsStr;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Seek, SeekFrom, Write};
 use std::path::{Component, Path, PathBuf};
-use std::process::{Child, Command, ExitStatus, Stdio};
+use std::process::{Child, Command, ExitStatus, Output, Stdio};
 use std::sync::mpsc::{self, RecvTimeoutError};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use std::thread;
@@ -149,6 +149,82 @@ pub(super) fn valid_name(value: &str) -> bool {
         && value
             .bytes()
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
+}
+
+/// A SpecSync module ID, accepted exactly when SpecSync 6.1.2's `validate_module_name`
+/// accepts it: one portable path segment such as `chat.service` or `identity-wipe.service`,
+/// with no separator, Windows-invalid or control character, no `.` or `..`, no leading or
+/// trailing space, no trailing dot, no Windows reserved device basename, and at most
+/// 247 bytes so `<module>.spec.md` fits in one 255-byte path component.
+pub(super) fn valid_module_name(value: &str) -> bool {
+    let mut components = Path::new(value).components();
+    let single =
+        matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none();
+    let clean = !value.chars().any(|c| {
+        matches!(c, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*') || c.is_control()
+    });
+    if !single || !clean || value != value.trim() || value.ends_with('.') {
+        return false;
+    }
+    if value.len() + ".spec.md".len() > 255 {
+        return false;
+    }
+    let basename = value
+        .split('.')
+        .next()
+        .unwrap_or_default()
+        .to_ascii_uppercase();
+    let numbered = basename.len() == 4
+        && (basename.starts_with("COM") || basename.starts_with("LPT"))
+        && matches!(basename.as_bytes()[3], b'1'..=b'9');
+    !(numbered || matches!(basename.as_str(), "CON" | "PRN" | "AUX" | "NUL"))
+}
+
+/// A HI criterion ID, accepted exactly when hi 0.8.0's `Id::parse` accepts it: a family of
+/// `A-Z` then `A-Z`, `0-9` or `_`, a hyphen, then levels separated by single dots that
+/// alternate number and lowercase letters, starting with a number, such as `LIFE-3`,
+/// `UX-12.a` or `SEND-1.a.1.b`. A number level fits in 32 bits and has no leading zero.
+/// Like hi, it sets no length limit; the record bounds still apply.
+fn hi_criterion_id(value: &str) -> bool {
+    let Some((family, rest)) = value.split_once('-') else {
+        return false;
+    };
+    let family_ok = family.starts_with(|c: char| c.is_ascii_uppercase())
+        && family
+            .bytes()
+            .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'_');
+    if !family_ok || rest.is_empty() {
+        return false;
+    }
+    rest.split('.').enumerate().all(|(index, part)| {
+        if index % 2 == 0 {
+            !part.is_empty()
+                && part.bytes().all(|b| b.is_ascii_digit())
+                && !(part.len() > 1 && part.starts_with('0'))
+                && part.parse::<u32>().is_ok()
+        } else {
+            !part.is_empty() && part.bytes().all(|b| b.is_ascii_lowercase())
+        }
+    })
+}
+
+/// A criterion ID Chough records: any ID hi accepts (DRIVE-1), and any plain ID that
+/// `valid_name` accepted before hi sub-criteria were supported, such as `UX-012`, so no
+/// existing checkpoint or bug becomes unreadable. Dotted IDs hi rejects stay refused.
+pub(super) fn valid_criterion_id(value: &str) -> bool {
+    hi_criterion_id(value) || valid_name(value)
+}
+
+/// A requirement or case ID that may embed a dotted SpecSync module, such as
+/// `REQ-chat.service-1` or `TC-chat.service-sends-hybrid`: the characters of `valid_name`
+/// plus `.`, within the same 100 bytes, with at least one letter or digit. These IDs are
+/// never used as paths.
+pub(super) fn valid_reference_id(value: &str) -> bool {
+    value.bytes().any(|byte| byte.is_ascii_alphanumeric())
+        && value.len() <= 100
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
 }
 
 /// Longest native change ID accepted, matching SpecSync's own read ceiling (one path
@@ -626,7 +702,22 @@ fn stop_tree(child: &mut Child) -> bool {
 /// Windows: its process tree); readers still blocked a second later are abandoned,
 /// never awaited. `env` is set on top of the inherited environment, which is never
 /// cleared.
+///
+/// On Unix, while the command runs, SIGINT, SIGTERM and SIGHUP are noted instead of
+/// ending Chough at once; a noted signal stops the command and its descendants, and
+/// Chough then ends by that signal before any caller can record a partial result
+/// (FLOW-14). A signal inherited as ignored stays ignored.
 pub(super) fn run_bounded(
+    root: &Path,
+    argv: &[impl AsRef<OsStr>],
+    env: &[(String, String)],
+    limits: &Limits,
+) -> io::Result<Captured> {
+    let _watch = interrupt::watch();
+    run_watched(root, argv, env, limits)
+}
+
+fn run_watched(
     root: &Path,
     argv: &[impl AsRef<OsStr>],
     env: &[(String, String)],
@@ -689,6 +780,14 @@ pub(super) fn run_bounded(
         if status.is_some() && open == 0 {
             break;
         }
+        if interrupt::noted() {
+            stop_tree(&mut child);
+            let _ = child.wait();
+            return Err(io::Error::new(
+                io::ErrorKind::Interrupted,
+                "Chough was stopped by a signal",
+            ));
+        }
         let past_deadline = started.elapsed() >= limits.deadline;
         if status.is_none() && past_deadline {
             timed_out = true;
@@ -736,6 +835,328 @@ pub(super) fn run_bounded(
         held_open,
         descendants_stopped,
         capture_incomplete: open > 0 || stdout_failed || stderr_failed,
+    })
+}
+
+/// Stop signals while Chough owns a child or saves what one reported (FLOW-14,
+/// REQ-cli-011).
+#[cfg(unix)]
+mod interrupt {
+    use std::sync::atomic::{AtomicI32, Ordering};
+    use std::sync::{Mutex, PoisonError};
+
+    /// The signals that stop Chough normally: Ctrl-C, a plain kill and a hangup.
+    const SIGNALS: [libc::c_int; 3] = [libc::SIGINT, libc::SIGTERM, libc::SIGHUP];
+    /// The last stop signal noted while a watch was active; 0 when none.
+    static NOTED: AtomicI32 = AtomicI32::new(0);
+
+    /// Only an atomic store, which is async-signal-safe.
+    extern "C" fn note(signal: libc::c_int) {
+        NOTED.store(signal, Ordering::SeqCst);
+    }
+
+    /// Active watches, and the dispositions the first one replaced; the last to end
+    /// restores them, so nested or overlapping watches never keep the handler.
+    static WATCHING: Mutex<(usize, Vec<(libc::c_int, libc::sigaction)>)> =
+        Mutex::new((0, Vec::new()));
+
+    /// One watch. Dropping the last one restores the previous dispositions and, when a
+    /// stop signal arrived meanwhile, ends Chough by that signal; during a panic it
+    /// only restores them.
+    pub(super) struct Watch(());
+
+    /// Note stop signals instead of ending at once. A signal inherited as ignored, or
+    /// as blocked in the signal mask, keeps its inherited disposition.
+    pub(super) fn watch() -> Watch {
+        let mut watching = WATCHING.lock().unwrap_or_else(PoisonError::into_inner);
+        watching.0 += 1;
+        if watching.0 > 1 {
+            return Watch(());
+        }
+        // SAFETY: pthread_sigmask(3) only reads the calling thread's mask into a
+        // zeroed sigset_t.
+        let mut blocked: libc::sigset_t = unsafe { std::mem::zeroed() };
+        let mask_read = unsafe {
+            libc::pthread_sigmask(libc::SIG_BLOCK, std::ptr::null(), &raw mut blocked) == 0
+        };
+        let previous = &mut watching.1;
+        for signal in SIGNALS {
+            // SAFETY: sigaction(2) with zeroed, then filled, plain C structs; the
+            // handler only stores to an atomic. sigismember reads the set read above.
+            unsafe {
+                if !mask_read || libc::sigismember(&raw const blocked, signal) == 1 {
+                    continue;
+                }
+                let mut old: libc::sigaction = std::mem::zeroed();
+                if libc::sigaction(signal, std::ptr::null(), &raw mut old) != 0
+                    || old.sa_sigaction == libc::SIG_IGN
+                {
+                    continue;
+                }
+                let mut action: libc::sigaction = std::mem::zeroed();
+                action.sa_sigaction = note as extern "C" fn(libc::c_int) as libc::sighandler_t;
+                action.sa_flags = libc::SA_RESTART;
+                libc::sigemptyset(&raw mut action.sa_mask);
+                if libc::sigaction(signal, &raw const action, std::ptr::null_mut()) == 0 {
+                    previous.push((signal, old));
+                }
+            }
+        }
+        Watch(())
+    }
+
+    /// Whether a stop signal arrived while a watch was active.
+    pub(super) fn noted() -> bool {
+        NOTED.load(Ordering::SeqCst) != 0
+    }
+
+    /// End Chough now when a stop signal has arrived: the last point at which a stop
+    /// leaves nothing recorded. After it, a stop lets the save finish and then ends
+    /// Chough when the last watch ends.
+    pub(super) fn stop_if_noted() {
+        let signal = NOTED.load(Ordering::SeqCst);
+        if signal != 0 {
+            restore(&mut WATCHING.lock().unwrap_or_else(PoisonError::into_inner));
+            end_by(signal);
+        }
+    }
+
+    fn restore(watching: &mut (usize, Vec<(libc::c_int, libc::sigaction)>)) {
+        for (signal, old) in watching.1.drain(..) {
+            // SAFETY: restores a disposition read by sigaction(2) in `watch`.
+            unsafe {
+                libc::sigaction(signal, &raw const old, std::ptr::null_mut());
+            }
+        }
+    }
+
+    /// End Chough by `signal`, as if it had not been caught.
+    fn end_by(signal: libc::c_int) -> ! {
+        // SAFETY: plain signal calls with a valid signal number; raise(3) ends the
+        // process with the default disposition, so the exit below is a fallback.
+        unsafe {
+            libc::signal(signal, libc::SIG_DFL);
+            let mut set: libc::sigset_t = std::mem::zeroed();
+            libc::sigemptyset(&raw mut set);
+            libc::sigaddset(&raw mut set, signal);
+            libc::pthread_sigmask(libc::SIG_UNBLOCK, &raw const set, std::ptr::null_mut());
+            libc::raise(signal);
+        }
+        std::process::exit(128 + signal);
+    }
+
+    impl Drop for Watch {
+        fn drop(&mut self) {
+            {
+                let mut watching = WATCHING.lock().unwrap_or_else(PoisonError::into_inner);
+                watching.0 = watching.0.saturating_sub(1);
+                if watching.0 > 0 {
+                    return;
+                }
+                restore(&mut watching);
+            }
+            if std::thread::panicking() {
+                return;
+            }
+            let signal = NOTED.swap(0, Ordering::SeqCst);
+            if signal != 0 {
+                end_by(signal);
+            }
+        }
+    }
+}
+
+/// Without Unix signals there is nothing to watch.
+#[cfg(not(unix))]
+mod interrupt {
+    pub(super) struct Watch(());
+    pub(super) fn watch() -> Watch {
+        Watch(())
+    }
+    pub(super) fn noted() -> bool {
+        false
+    }
+    pub(super) fn stop_if_noted() {}
+}
+
+/// A stop watch held across a whole operation, such as a case run and its save
+/// (FLOW-14): stop signals are noted, and dropping it ends Chough by a noted signal.
+pub(super) struct StopWatch {
+    _watch: interrupt::Watch,
+}
+
+pub(super) fn stop_watch() -> StopWatch {
+    StopWatch {
+        _watch: interrupt::watch(),
+    }
+}
+
+/// End Chough now by a stop signal noted under a [`StopWatch`]: the last point at
+/// which a stop records nothing.
+pub(super) fn stop_if_noted() {
+    interrupt::stop_if_noted();
+}
+
+/// Run one of Chough's own commands (git) like `Command::output`, with stdin closed
+/// unless the caller set it, but under the stop watch: on Unix it leads its own
+/// process group, and a stop signal stops that group and ends Chough by the signal
+/// before the caller sees a result (FLOW-14). `write` is sent to its stdin when given.
+pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Result<Output> {
+    let _watch = interrupt::watch();
+    if write.is_none() {
+        command.stdin(Stdio::null());
+    } else {
+        command.stdin(Stdio::piped());
+    }
+    command.stdout(Stdio::piped()).stderr(Stdio::piped());
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+        command.process_group(0);
+    }
+    let mut child = command.spawn()?;
+    // Each reader and the stdin writer report when they end, so the loop below can
+    // keep watching for stop signals until every pipe has closed.
+    let (done, finished) = mpsc::channel::<()>();
+    let read_all = |stream: Option<Box<dyn Read + Send>>, done: mpsc::Sender<()>| {
+        thread::Builder::new()
+            .name("chough-git".into())
+            .spawn(move || {
+                let mut bytes = vec![];
+                let read = match stream {
+                    Some(mut stream) => stream.read_to_end(&mut bytes).map(|_| ()),
+                    None => Ok(()),
+                };
+                let _ = done.send(());
+                read.map(|()| bytes)
+            })
+    };
+    let stdout = read_all(
+        child
+            .stdout
+            .take()
+            .map(|s| Box::new(s) as Box<dyn Read + Send>),
+        done.clone(),
+    );
+    let stderr = read_all(
+        child
+            .stderr
+            .take()
+            .map(|s| Box::new(s) as Box<dyn Read + Send>),
+        done.clone(),
+    );
+    let (stdout, stderr) = match (stdout, stderr) {
+        (Ok(stdout), Ok(stderr)) => (stdout, stderr),
+        (Err(error), _) | (_, Err(error)) => {
+            stop_tree(&mut child);
+            let _ = child.wait();
+            return Err(error);
+        }
+    };
+    // Stdin is written on its own thread so a large write to a stalled command never
+    // holds off the stop check below; the pipe closes when the writer ends.
+    let mut open = 2_u8;
+    let writer = match (write, child.stdin.take()) {
+        (Some(bytes), Some(mut stdin)) => {
+            let bytes = bytes.to_vec();
+            let done = done.clone();
+            match thread::Builder::new()
+                .name("chough-git-stdin".into())
+                .spawn(move || {
+                    let written = stdin.write_all(&bytes);
+                    drop(stdin);
+                    let _ = done.send(());
+                    written
+                }) {
+                Ok(writer) => {
+                    open += 1;
+                    Some(writer)
+                }
+                Err(error) => {
+                    stop_tree(&mut child);
+                    let _ = child.wait();
+                    return Err(error);
+                }
+            }
+        }
+        _ => None,
+    };
+    drop(done);
+    // Watch for stop signals until the command has exited and every pipe has closed. A
+    // descendant that keeps a pipe open after the command exits is given `EXIT_GRACE`,
+    // then the command's group is stopped; readers still open a second later are
+    // abandoned, never awaited.
+    let mut status: Option<ExitStatus> = None;
+    let mut exited_at: Option<Instant> = None;
+    loop {
+        if interrupt::noted() {
+            stop_tree(&mut child);
+            let _ = child.wait();
+            return Err(io::Error::new(
+                io::ErrorKind::Interrupted,
+                "Chough was stopped by a signal",
+            ));
+        }
+        if status.is_none() {
+            match child.try_wait() {
+                Ok(Some(exit)) => {
+                    status = Some(exit);
+                    exited_at = Some(Instant::now());
+                }
+                Ok(None) => {}
+                Err(error) => {
+                    stop_tree(&mut child);
+                    let _ = child.wait();
+                    return Err(error);
+                }
+            }
+        }
+        if status.is_some() && open == 0 {
+            break;
+        }
+        if exited_at.is_some_and(|at| at.elapsed() >= EXIT_GRACE) {
+            stop_tree(&mut child);
+            break;
+        }
+        if open == 0 {
+            thread::sleep(POLL);
+        } else {
+            match finished.recv_timeout(POLL) {
+                Ok(()) => open -= 1,
+                Err(RecvTimeoutError::Timeout) => {}
+                Err(RecvTimeoutError::Disconnected) => open = 0,
+            }
+        }
+    }
+    let wait_until = Instant::now() + READER_WAIT;
+    while open > 0 {
+        match finished.recv_timeout(wait_until.saturating_duration_since(Instant::now())) {
+            Ok(()) => open -= 1,
+            Err(_) => break,
+        }
+    }
+    if open > 0 {
+        return Err(io::Error::other(
+            "a process Chough started kept its output open after it was stopped",
+        ));
+    }
+    let Some(status) = status else {
+        return Err(io::Error::other("the command's exit status was not read"));
+    };
+    if let Some(writer) = writer {
+        writer
+            .join()
+            .unwrap_or_else(|_| Err(io::Error::other("the stdin writer panicked")))?;
+    }
+    let joined = |reader: thread::JoinHandle<io::Result<Vec<u8>>>| {
+        reader
+            .join()
+            .unwrap_or_else(|_| Err(io::Error::other("a reader panicked")))
+    };
+    Ok(Output {
+        status,
+        stdout: joined(stdout)?,
+        stderr: joined(stderr)?,
     })
 }
 
@@ -973,11 +1394,13 @@ fn native_json_read(
 
 /// The current Git HEAD when one exists; recorded with transitions as context only.
 pub(super) fn head_revision(root: &Path) -> Option<String> {
-    let output = Command::new("git")
-        .args(["rev-parse", "HEAD"])
-        .current_dir(root)
-        .output()
-        .ok()?;
+    let output = run_owned(
+        Command::new("git")
+            .args(["rev-parse", "HEAD"])
+            .current_dir(root),
+        None,
+    )
+    .ok()?;
     output
         .status
         .success()
