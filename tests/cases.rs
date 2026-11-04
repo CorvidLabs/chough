@@ -1648,3 +1648,249 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
             .all(|id| bugs.contains(&id.as_str()))
     );
 }
+
+// ---------------------------------------------------------------------------
+// Requirements an approved native change adds, linked before materialization
+// (REQ-cli-009, DRIVE-6, Raven BUG-0004).
+
+#[cfg(unix)]
+const LINK_CHANGE: &str = "add-the-delta-requirement";
+
+#[cfg(unix)]
+const LINK_DELTA: &str = "## ADDED\n\n### REQUIREMENT REQ-cli-090\n\nThe helper SHALL do the thing.\n\n## MODIFIED\n\n### REQUIREMENT REQ-cli-001\n\nThe helper SHALL do it better.\n";
+
+/// SpecSync 6.1.1's approved-delta digest (see tests/stages.rs).
+#[cfg(unix)]
+fn link_digest(module: &str, body: &str) -> String {
+    use sha2::{Digest, Sha256};
+    let body = body.replace("\r\n", "\n");
+    let mut hash = Sha256::new();
+    for (tag, value) in [
+        ("domain", "specsync.approved-delta.v1".as_bytes()),
+        ("module", module.as_bytes()),
+        ("body", body.as_bytes()),
+    ] {
+        hash.update((tag.len() as u64).to_be_bytes());
+        hash.update(tag.as_bytes());
+        hash.update((value.len() as u64).to_be_bytes());
+        hash.update(value);
+    }
+    format!("{:x}", hash.finalize())
+}
+
+/// Approve `LINK_CHANGE` with these module deltas, as SpecSync records the approval.
+#[cfg(unix)]
+fn approve_deltas(fixture: &Fixture, deltas: &[(&str, &str)]) {
+    let mut digests = serde_json::Map::new();
+    for (module, body) in deltas {
+        fixture.write(
+            &format!(".specsync/changes/{LINK_CHANGE}/deltas/{module}.md"),
+            body,
+        );
+        digests.insert((*module).into(), Value::from(link_digest(module, body)));
+    }
+    let affected = deltas
+        .iter()
+        .map(|(module, _)| format!("\"{module}\""))
+        .collect::<Vec<_>>()
+        .join(",");
+    fixture.write(".stub-affected", &format!("{affected}\n"));
+    fixture.write(
+        &format!(".specsync/changes/{LINK_CHANGE}/approvals.json"),
+        &serde_json::json!({
+            "approvals": [{"gate": "definition", "actor": "SYNTHETIC", "approved_delta_digests": digests}],
+            "reopenings": [],
+        })
+        .to_string(),
+    );
+}
+
+/// A project whose checkpoint records an approved native change with a `cli` delta
+/// adding REQ-cli-090, which `specs/cli/requirements.md` does not hold yet.
+#[cfg(unix)]
+fn delta_fixture(record_change: bool) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("approved");
+    fixture.write(".stub-no-spec", "false\n");
+    fixture.init();
+    if record_change {
+        fixture.ok(&["checkpoint", "--native-change", LINK_CHANGE]);
+    }
+    approve_deltas(&fixture, &[("cli", LINK_DELTA)]);
+    fixture
+}
+
+#[cfg(unix)]
+fn delta_cases(requirement: &str) -> String {
+    format!(
+        "{HEADER}{}\n[[case]]\nid = \"TC-cli-delta-run\"\ntitle = \"Delta run\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"{requirement}\"]\npaths = [\"src/\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"It says ok\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo ok\"]\nexpect_output = [\"ok\"]\n",
+        case("TC-cli-0001", "functional", requirement, "")
+    )
+}
+
+#[cfg(unix)]
+const RECORD: [&str; 12] = [
+    "cases",
+    "record",
+    "TC-cli-0001",
+    "--environment",
+    "local",
+    "--method",
+    "manual",
+    "--verdict",
+    "1=pass",
+    "--verdict",
+    "2=pass",
+    "--summary",
+];
+
+#[cfg(unix)]
+#[test]
+fn a_requirement_the_approved_delta_adds_is_linkable_before_materialization() {
+    let fixture = delta_fixture(true);
+    assert!(
+        !fixture
+            .read("specs/cli/requirements.md")
+            .contains("REQ-cli-090")
+    );
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-090"));
+    fixture.write(".stub-count", "");
+    fixture.native_calls();
+
+    let checked = fixture.ok(&["cases", "check"]);
+    assert_eq!(
+        fixture.native_calls(),
+        1,
+        "one native read serves every case"
+    );
+    let links = checked["approved_delta_requirements"].as_array().unwrap();
+    assert_eq!(links.len(), 2, "{checked}");
+    for (link, case) in links.iter().zip(["TC-cli-0001", "TC-cli-delta-run"]) {
+        assert_eq!(link["case"], case, "{checked}");
+        assert_eq!(link["requirement"], "REQ-cli-090");
+        assert_eq!(link["change"], LINK_CHANGE);
+        assert_eq!(link["module"], "cli");
+    }
+
+    let ran = fixture.ok(&["cases", "run", "TC-cli-delta-run", "--environment", "local"]);
+    assert_eq!(ran["outcome"], "passed", "{ran}");
+    assert_eq!(fixture.native_calls(), 1);
+    let mut record = RECORD.to_vec();
+    record.push("Looked");
+    let recorded = fixture.ok(&record);
+    assert_eq!(recorded["outcome"], "passed", "{recorded}");
+    assert_eq!(fixture.native_calls(), 1);
+
+    // A link the companion holds needs no native read, and none is listed.
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-001"));
+    let checked = fixture.ok(&["cases", "check"]);
+    assert_eq!(fixture.native_calls(), 0);
+    assert_eq!(
+        checked["approved_delta_requirements"],
+        serde_json::json!([])
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn an_unapproved_or_changed_delta_does_not_resolve_a_requirement() {
+    let consulted = format!(
+        "the checkpoint's native change {LINK_CHANGE} was consulted and did not resolve it:"
+    );
+    let refuses = |fixture: &Fixture, requirement: &str, reason: &str| {
+        fixture.write(".chough/cases/cli.cases.toml", &delta_cases(requirement));
+        let mut record = RECORD.to_vec();
+        record.push("Looked");
+        for args in [
+            vec!["cases", "check"],
+            vec!["cases", "run", "TC-cli-delta-run", "--environment", "local"],
+            record,
+        ] {
+            refused_with(
+                fixture,
+                &args,
+                &[
+                    &format!("requirement {requirement} not found in specs/cli/requirements.md"),
+                    &consulted,
+                    reason,
+                ],
+            );
+        }
+        assert!(!fixture.exists(".chough/evidence"));
+    };
+
+    let fixture = delta_fixture(true);
+    // A typo, and an ID only another module's delta adds.
+    refuses(
+        &fixture,
+        "REQ-cli-999",
+        "its cli delta does not add or modify REQ-cli-999",
+    );
+    approve_deltas(
+        &fixture,
+        &[
+            ("cli", LINK_DELTA),
+            (
+                "billing",
+                "## ADDED\n\n### REQUIREMENT REQ-cli-092\n\nElsewhere.\n",
+            ),
+        ],
+    );
+    refuses(
+        &fixture,
+        "REQ-cli-092",
+        "its cli delta does not add or modify REQ-cli-092",
+    );
+    // A removed requirement is not linkable.
+    approve_deltas(
+        &fixture,
+        &[("cli", "## REMOVED\n\n### REQUIREMENT REQ-cli-090\n")],
+    );
+    refuses(
+        &fixture,
+        "REQ-cli-090",
+        "its cli delta does not add or modify REQ-cli-090",
+    );
+    approve_deltas(&fixture, &[("cli", LINK_DELTA)]);
+
+    // A delta edited after the approval.
+    fixture.write(
+        &format!(".specsync/changes/{LINK_CHANGE}/deltas/cli.md"),
+        &LINK_DELTA.replace("do the thing", "do another thing"),
+    );
+    refuses(&fixture, "REQ-cli-090", "refused:native-delta-changed");
+    approve_deltas(&fixture, &[("cli", LINK_DELTA)]);
+
+    // Native approval, correction and state decide, as for the build gate.
+    for (file, value, reason) in [
+        (".stub-approval", "false", "refused:native-approval-invalid"),
+        (
+            ".stub-correction",
+            "false",
+            "refused:native-correction-invalid",
+        ),
+        (".stub-state", "draft", "refused:native-draft"),
+        (".stub-state", "archived", "refused:native-archived"),
+        (".stub-fail", "", "native status"),
+    ] {
+        let before = fixture.exists(file).then(|| fixture.read(file));
+        fixture.write(file, &format!("{value}\n"));
+        refuses(&fixture, "REQ-cli-090", reason);
+        match before {
+            Some(before) => fixture.write(file, &before),
+            None => std::fs::remove_file(fixture.root().join(file)).unwrap(),
+        }
+    }
+    fixture.ok(&["cases", "check"]);
+
+    // With no native change in the checkpoint, nothing is consulted.
+    let fixture = delta_fixture(false);
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-090"));
+    let error = refused_with(
+        &fixture,
+        &["cases", "check"],
+        &["requirement REQ-cli-090 not found in specs/cli/requirements.md"],
+    );
+    assert!(!error.contains("was consulted"), "{error}");
+}
