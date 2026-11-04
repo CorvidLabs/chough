@@ -221,3 +221,22 @@ fn an_open_native_change_keeps_proof_and_the_move_still_succeeds() {
     );
     assert!(fixture.exists(".chough/evidence/cold-a.json"));
 }
+
+/// #97 review: a recorded `retention off` is a standing preference against removal, so
+/// it stops trimming at done too; only the unset default lets the librarian trim.
+#[test]
+fn a_recorded_retention_off_is_not_trimmed_at_done() {
+    let fixture = at_accept();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "retention",
+        "off",
+        "--source",
+        "Human: never remove proof without asking me",
+    ]);
+    let trim = advance_to_done(&fixture);
+    assert_eq!(trim["status"], "skipped", "{trim:#}");
+    assert!(fixture.exists(".chough/evidence/cold-a.json"));
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+}
