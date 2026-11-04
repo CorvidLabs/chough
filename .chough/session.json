@@ -682,5 +682,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: Record #70 test, accept and done after archive. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "New cycle from done after reset: New cycle: #72 (DRIVE-6, Raven BUG-0004), let cases link a requirement the approved native delta adds before materialization. Built and verified on its branch (verify 9/9, 300 tests at d2fb697); native change archived at 526da50 after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }

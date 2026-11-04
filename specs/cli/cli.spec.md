@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 34
+version: 35
 status: active
 files:
   - src/main.rs
@@ -241,3 +241,4 @@ provider, runtime or hosted service.
 | 32 | 2026-11-03 | search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of: Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays |
 | 33 | 2026-11-04 | record-a-stage-gate-that-already-happened-with-its-original-time-quoted-evidence-and-a-backfilled-flag-that-timing: Record a stage gate that already happened with its original time, quoted evidence and a backfilled flag that timing reports separately (DRIVE-5) |
 | 34 | 2026-11-04 | stop-what-chough-started-when-chough-is-stopped-issue-75: Stop what Chough started when Chough is stopped (issue 75) |
+| 35 | 2026-11-04 | let-chough-cases-link-a-requirement-that-the-checkpoint-s-approved-native-change-adds-before-it-is-materialized-and: Let Chough cases link a requirement that the checkpoint's approved native change adds before it is materialized, and document how the test stage links failing-first evidence (DRIVE-6, Raven BUG-0004) |

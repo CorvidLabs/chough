@@ -1013,7 +1013,7 @@ fn plan_testing_and_accept_references_from_main_825a380_are_known_outdated_and_e
 }
 
 #[test]
-fn the_skill_runs_the_change_check_before_cases_that_link_a_new_requirement() {
+fn the_skill_links_new_requirements_from_the_approved_delta_and_failing_first_evidence() {
     let reference = |file: &str| {
         fs::read_to_string(
             manifest_dir()
@@ -1031,14 +1031,20 @@ fn the_skill_runs_the_change_check_before_cases_that_link_a_new_requirement() {
             &[
                 "and running or recording Chough cases, as plain text rather than checkboxes",
                 "reaches the companion only when `change check` materializes it",
+                "Chough cases may link it only while the checkpoint records the approved change and its delta is unchanged",
             ][..],
         ),
         (
             "testing.md",
             &[
                 "is not in the companion until the scoped `specsync change check <id>` materializes it",
-                "Finish the implementation tasks, run that check, then add, run and record those cases.",
+                "accept a case linking it when the checkpoint records that change (`chough checkpoint --native-change <id>`), the change passes the build gate's native checks and its delta for the case file's module adds or modifies the ID",
+                "lists such links under `approved_delta_requirements`. Anything else is refused with the reason.",
                 "Running or recording cases is never a `tasks.md` checkbox",
+                "## Failing-first evidence in the test stage",
+                "The commit that adds the failing tests, before the fix.",
+                "records a failed observation, and `chough bug add ... --observation <id>`",
+                "The passing run after the fix",
             ][..],
         ),
         (
