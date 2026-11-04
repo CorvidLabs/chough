@@ -734,7 +734,7 @@ fn session_new_accepts_the_module_ids_init_accepts() {
     }
 }
 
-/// An `inbox add` racing a switch that archives its done session never leaves its entry
+/// Issue #98 (REQ-history-009): an `inbox add` racing a switch that archives its done session never leaves its entry
 /// beside the archived session: either the switch sees the entry and keeps the session
 /// open, or the add sees the session archived and refuses. The test holds the
 /// checkpoint lock as `session use` does while it archives, then archives alpha itself.

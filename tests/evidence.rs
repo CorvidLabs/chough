@@ -1812,7 +1812,7 @@ fn retention_protects_what_inactive_and_archived_sessions_reference() {
     assert_eq!(tree(fixture.root()), before);
 }
 
-/// An observation a subagent reported through an unfolded inbox entry is protected
+/// Issue #98 (REQ-history-009): an observation a subagent reported through an unfolded inbox entry is protected
 /// from retention like one the session already holds, so a later fold never adds an
 /// observation that retention removed meanwhile.
 #[test]
