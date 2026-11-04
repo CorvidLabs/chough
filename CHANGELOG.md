@@ -79,7 +79,8 @@ All notable changes to Chough are recorded here. The format follows
   started, even if another process switches sessions meanwhile, and evidence
   retention protects what every open and archived session references, refusing when
   one cannot be read. Without `.chough/sessions/` nothing changes. Older Chough
-  binaries do not know sessions mode, so upgrade every agent before adopting.
+  binaries do not know sessions mode, so upgrade every agent before adopting. `session new
+  --module` accepts the same SpecSync module IDs as `init`, such as `chat.service`.
 
 - Checkpoint writers in parallel in one clone no longer lose updates (#62): commands
   that change `.chough/session.json` take an exclusive lock (an empty file in the

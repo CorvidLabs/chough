@@ -7,7 +7,7 @@
 use crate::checkpoint::{self, Checkpoint, Session};
 use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, now, print_json, read_bounded_record,
-    valid_change_id, valid_name, write_new, write_new_bounded, write_replace_bounded,
+    valid_change_id, valid_module_name, valid_name, write_new, write_new_bounded, write_replace_bounded,
 };
 use anyhow::{Context, Result, bail, ensure};
 use clap::{Subcommand, ValueEnum};
@@ -429,8 +429,8 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             ensure!(!objective.trim().is_empty(), "objective must not be blank");
             lock_project(root)?;
             ensure!(
-                modules.iter().all(|module| valid_name(module)),
-                "module names use letters, digits, hyphens, underscores"
+                modules.iter().all(|module| valid_module_name(module)),
+                "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
             );
             ensure_no_legacy(root)?;
             ensure_unused(root, &key)?;
