@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -649,7 +649,11 @@
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
     "OBS-structural-0ceefdd961ed75d53f1b3742",
     "OBS-tc-history-inbox-add-never-stranded-by-archive-5ac1c767aa6accc7cc5c79d1",
-    "OBS-tc-history-retention-protects-inbox-observations-8fec8fc27a1216fdcb7aea4d"
+    "OBS-tc-history-retention-protects-inbox-observations-8fec8fc27a1216fdcb7aea4d",
+    "OBS-tc-history-inbox-add-never-stranded-by-archive-377f3bb35fa0f5673b6b31d8",
+    "OBS-tc-history-retention-protects-inbox-observations-109154d26ff8100c774a82e2",
+    "OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-a8ac5ce3b372ea92e0c03b82",
+    "OBS-tc-history-retention-refuses-unreadable-inbox-entry-b7606d5bec75f2a5dcaa8347"
   ],
   "bugs": [
     "BUG-0001",
@@ -683,7 +687,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
