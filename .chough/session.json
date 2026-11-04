@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+  "native_change": "refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -682,5 +682,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: New cycle: #71 (issue 63), refuse a native change ID SpecSync does not know or names differently. Built and verified on its branch (verify 9/9, 279 tests at e3ff647); native change archived at e29e8cf after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "New cycle from done after reset: New cycle: #71 (#63), refuse a native change ID SpecSync does not know, plus review-thread follow-ups. Built and verified on its branch (verify 9/9 per the independent review at dcfc664); native changes archived at 978951c after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }
