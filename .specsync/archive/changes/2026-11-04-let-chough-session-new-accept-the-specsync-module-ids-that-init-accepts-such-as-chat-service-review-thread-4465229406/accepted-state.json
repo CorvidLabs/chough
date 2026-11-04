@@ -7,11 +7,11 @@
   "title": "Let chough session new accept the SpecSync module IDs that init accepts, such as chat.service (review thread 4465229406 on #77)",
   "description": "Let chough session new accept the SpecSync module IDs that init accepts, such as chat.service (review thread 4465229406 on #77)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "290cce3a024425cfd35600a43b8e458beaa89436",
   "created_at": 1793804817,
-  "updated_at": 1793804860,
+  "updated_at": 1793805213,
   "affected_specs": [
     "history"
   ],
