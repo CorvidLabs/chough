@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough next` and `chough status` now warn when the native check runs none of the
+  project's commands, judged from the effective `verification_commands` SpecSync reports
+  in the status read they already make (only `specsync check …`), and count commands
+  configured in `.specsync/sdd.json` that SpecSync 6.1.2 does not run
+  (CorvidLabs/spec-sync#848). At the test stage `next` points to recording test
+  evidence with `chough cases run` before accept (#85, FLOW-15, REQ-cli-038). No gate
+  changes and no native read is added; the warning names at most 3 commands, each cut,
+  so `next` stays within its bound. The `.specsync/sdd.json` reader moved from
+  src/stage.rs to a small src/policy.rs. Replaces the closed #89.
+
 ## [0.3.0] - 2026-11-04
 
 - Chough's size bounds now apply only to its own records under `.chough/` and to what

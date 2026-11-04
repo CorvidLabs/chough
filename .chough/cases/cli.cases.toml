@@ -2696,6 +2696,114 @@ test_target = "next"
 test = "next_searches_a_context_md_larger_than_4_mib"
 
 [[case]]
+id = "TC-cli-only-specsync-native-commands-reported"
+title = "next and status warn when the native check runs only SpecSync commands"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "LIFE-7"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::a_check_that_runs_only_specsync_commands_is_reported passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "a_check_that_runs_only_specsync_commands_is_reported"
+
+[[case]]
+id = "TC-cli-unrun-configured-commands-counted"
+title = "Configured commands the native check does not run are counted"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::configured_commands_the_check_does_not_run_are_counted passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "configured_commands_the_check_does_not_run_are_counted"
+
+[[case]]
+id = "TC-cli-no-warning-when-project-command-runs"
+title = "No warning when a project command runs or the list is unknown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::no_warning_when_a_project_command_runs_or_the_list_is_unknown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "no_warning_when_a_project_command_runs_or_the_list_is_unknown"
+
+[[case]]
+id = "TC-cli-test-stage-points-to-test-evidence"
+title = "The test stage points to recorded test evidence before accept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "FLOW-6"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_test_stage_points_to_recorded_test_evidence_before_accept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_test_stage_points_to_recorded_test_evidence_before_accept"
+
+[[case]]
+id = "TC-cli-verification-warning-changes-no-gate"
+title = "The verification warning changes no gate and adds no native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_warning_changes_no_gate_and_adds_no_native_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_warning_changes_no_gate_and_adds_no_native_read"
+
+[[case]]
+id = "TC-cli-verification-warning-within-next-bound"
+title = "The native verification warning keeps next within its bound"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "LIFE-3"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_warning_stays_within_the_next_bound passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_warning_stays_within_the_next_bound"
+
+[[case]]
 id = "TC-cli-hi-export-over-16-kib-validates"
 title = "Criteria validate against a HI family export over 16 KiB; a retired criterion is still refused"
 status = "active"
