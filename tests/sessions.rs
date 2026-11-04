@@ -359,7 +359,16 @@ fn a_project_without_sessions_is_unchanged() {
     fixture.ok(&["init", "--objective", "Plain"]);
     fixture.ok(&["stage", "advance"]);
     assert!(!fixture.exists(".chough/sessions"));
-    assert!(!fixture.exists(".chough/local"));
+    // The checkpoint writer lock lives in `.chough/local/` in every project (#83,
+    // REQ-history-007): it holds only the lock and its `.gitignore`, both ignored by
+    // Git, so no tracked or session file changes.
+    let mut local: Vec<String> = fs::read_dir(fixture.root().join(".chough/local"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    local.sort();
+    assert_eq!(local, [".gitignore", "checkpoint.lock"]);
+    assert_eq!(fixture.read(".chough/local/.gitignore"), "*\n");
     assert!(fixture.fails(&["inbox", "fold"]).contains("sessions"));
 }
 

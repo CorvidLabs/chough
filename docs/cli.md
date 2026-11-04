@@ -372,7 +372,9 @@ every command uses `.chough/session.json` exactly as before.
   native change, stage, status, whether it is active and its `inbox_unfolded` count.
 
 The active session is named by `.chough/local/active-session`. That directory holds a
-`.gitignore` of `*`, so the pointer stays local to each worktree. With no pointer the
+`.gitignore` of `*`, so the pointer stays local to each worktree. It also holds the
+checkpoint writer lock in every project, with or without sessions, and nothing else
+(REQ-history-007, #83). With no pointer the
 only open session is active. With no open session, several and no pointer, or a
 pointer to a missing or archived session, every command refuses with nothing written
 and names the command to run. `chough init` refuses in sessions mode.

@@ -134,6 +134,7 @@ Additional native requirements:
 
 | Requirement | Observable behavior | Criteria | Verification |
 |---|---|---|---|
+| REQ-history-007 | `.chough/local/` holds only Git-ignored local state (the active-session pointer and the checkpoint lock); a project without sessions gains no tracked or session file | DRIVE-3, DRIVE-11 | tests/sessions.rs, tests/cli.rs |
 | REQ-cli-040 | Serialized checkpoint writers with one project lock in `.chough/local/checkpoint.lock`, shared whatever the `TMPDIR`; busy refusal names the file being written; legacy writers racing adoption save or refuse | DRIVE-11, DRIVE-3 | tests/cli.rs; src/checkpoint.rs unit tests |
 | REQ-reporting-002 (was REQ-cli-024) | Bounded, deduplicated timing native reads with explicit excluded/unknown history | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-history-002 (was REQ-cli-025) | Explicit adoption, immutable events and a cursor in the single checkpoint/current-cycle group | LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13 | tests/history.rs; real Git branch fixture; schema migration regressions |
