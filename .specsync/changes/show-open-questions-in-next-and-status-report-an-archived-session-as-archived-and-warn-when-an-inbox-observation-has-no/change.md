@@ -1,6 +1,6 @@
 ---
 id: show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 290cce3a024425cfd35600a43b8e458beaa89436
 ---

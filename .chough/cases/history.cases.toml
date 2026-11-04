@@ -416,3 +416,57 @@ expected = ["tests/spec_split.rs passes: each moved body has its 7bd1b62 SHA-256
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "spec_split"]
 expect_output = ["test result: ok. 5 passed; 0 failed"]
+
+[[case]]
+id = "TC-history-folded-question-in-next"
+title = "A folded inbox question appears in next"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "DRIVE-3"]
+requirements = ["REQ-cli-021", "REQ-history-006"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_folded_inbox_question_appears_in_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_folded_inbox_question_appears_in_next"
+
+[[case]]
+id = "TC-history-archived-session-listed-archived"
+title = "session list reports an archived session as archived"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_list_reports_an_archived_session_as_archived passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_list_reports_an_archived_session_as_archived"
+
+[[case]]
+id = "TC-history-unrecorded-inbox-observation-warns"
+title = "An unrecorded inbox observation is added with a warning"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-7"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_unrecorded_inbox_observation_is_added_with_a_warning passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_unrecorded_inbox_observation_is_added_with_a_warning"

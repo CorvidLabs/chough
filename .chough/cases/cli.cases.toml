@@ -2694,3 +2694,21 @@ expected = ["tests/next.rs::next_searches_a_context_md_larger_than_4_mib passes"
 adapter = "cargo-test"
 test_target = "next"
 test = "next_searches_a_context_md_larger_than_4_mib"
+
+[[case]]
+id = "TC-cli-next-shows-open-questions"
+title = "next and status show open questions"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::open_questions_appear_in_next_and_status passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "open_questions_appear_in_next_and_status"
