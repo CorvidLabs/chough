@@ -17,6 +17,10 @@ artifact: testing
   decisions present match the writers that succeeded. #77's
   `legacy_writers_racing_adopt_end_in_one_mode` in tests/sessions.rs is unchanged.
 - tests/cli.rs: the lock file is ignored by Git.
+- tests/sessions.rs `a_project_without_sessions_is_unchanged` (#77): no `.chough/sessions/`;
+  `.chough/local/` holds only `.gitignore` and `checkpoint.lock`, both ignored by Git.
+- tests/evidence.rs `native_manifests_protect_their_sets_and_a_failed_read_protects_everything`:
+  its before/after snapshot leaves out the lock files the `consent grant` writer creates.
 - Each new or strengthened test fails at 75a732d where stated; `fledge lanes run verify`
   passes on Linux.
 
@@ -25,3 +29,4 @@ artifact: testing
 | Requirement | Evidence |
 |---|---|
 | REQ-cli-040 | tests/cli.rs `writers_with_different_temp_directories_share_the_checkpoint_lock`, `the_checkpoint_lock_lives_in_the_project_and_git_ignores_it`, `legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved`; src/checkpoint.rs `a_busy_refusal_names_the_session_file_being_written`, `a_held_checkpoint_lock_refuses_as_busy_after_the_wait` |
+| REQ-history-007 | tests/sessions.rs `a_project_without_sessions_is_unchanged`; tests/cli.rs `the_checkpoint_lock_lives_in_the_project_and_git_ignores_it` |
