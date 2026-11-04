@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "9e36a233b34f95f229de5f99185aebd58d4caee7",
+  "contract_digest": "5a7a95b4b3cb5949ce810e74228d09205dfbdf7584a0a579a49aea8ffc393243",
+  "execution_digest": "c33a27aa615a0a73ef44515bf702558bd57a6236f21b6247ee674bff0d300e90",
+  "workspace_digest": "936ddc5cae56f674740220caef22d47ce927eef8ea20fb0e7e640d4da8f14266",
+  "timestamp": 1793777731
+}

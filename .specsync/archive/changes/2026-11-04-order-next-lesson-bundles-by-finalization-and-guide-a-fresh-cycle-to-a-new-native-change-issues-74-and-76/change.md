@@ -1,6 +1,6 @@
 ---
 id: order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76
-state: implementing
+state: archived
 type: bug_fix
 base_commit: edbc3c1adecebf6a1378a731965c3bfe8c8217df
 ---

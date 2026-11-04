@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76",
+  "implementation_commit": "9e36a233b34f95f229de5f99185aebd58d4caee7",
+  "implementation_tree": "310d32becfd630b23c825034de1b8b6a95301094",
+  "contract_digest": "5a7a95b4b3cb5949ce810e74228d09205dfbdf7584a0a579a49aea8ffc393243",
+  "workspace_digest": "936ddc5cae56f674740220caef22d47ce927eef8ea20fb0e7e640d4da8f14266",
+  "closing_digest": "60830cebc44b83589c4cf4c5682008749f7b1c37a40fdeaa57a4822a16d20c3c",
+  "review_digest": "af2e9b1f9061046cdd27c7892f6d0037579cae4f39b3c1ca711a0da2c217be07",
+  "finalization_digest": "2fa8c8231a5560ce5693a411d46405ba4e2b5e703103f338b7a945eeda2d8c36",
+  "timestamp": 1793777741
+}
