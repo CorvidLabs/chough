@@ -884,18 +884,62 @@ fn latest_reset_at(root: &Path, history: Option<&crate::history::HistoryRead>) -
 /// Whether the recorded archived change belongs to the cycle before the latest reset:
 /// the latest stage transition is that reset, or the change's recorded finalization is
 /// no later than it (REQ-cli-021). Without both times only the first test applies.
+///
+/// With event history the current cycle is read whole, by its own walk bounded by the
+/// cycle's capacity (4096 events, 16 MiB), not by the recent window `next` shows: a
+/// reset starts a new cycle as its root event, so a reset followed by more than 128
+/// events is still found. When that walk is partial the answer is unknown (`Err`, with
+/// why), never inferred from an omitted event.
 fn previous_cycle(
     root: &Path,
     session: &Checkpoint,
     history: Option<&crate::history::HistoryRead>,
-) -> bool {
-    reached_by_reset(root, history)
-        || session
-            .native_change
-            .as_deref()
-            .and_then(|change| crate::library::finalized_at(root, change))
-            .zip(latest_reset_at(root, history))
-            .is_some_and(|(finalized, reset)| reset >= finalized)
+) -> Result<bool, String> {
+    let finalized = session
+        .native_change
+        .as_deref()
+        .and_then(|change| crate::library::finalized_at(root, change));
+    let (reached, reset_at) = match (history, session.history_cursor.as_ref()) {
+        (Some(_), Some(cursor)) => {
+            let cycle = crate::history::selected(
+                root,
+                cursor,
+                crate::history::CYCLE_EVENTS,
+                crate::history::CYCLE_BYTES,
+                false,
+            );
+            if !cycle.partial.is_empty() {
+                return Err(cycle.partial.join("; "));
+            }
+            let stages = cycle.records.iter().any(|record| {
+                record["kind"]
+                    .as_str()
+                    .is_some_and(|kind| STAGE_KINDS.contains(&kind))
+            });
+            let resets = cycle.records.iter().any(|record| record["kind"] == "reset");
+            // The first cycle after adoption may continue the anchored legacy log, which
+            // then holds the latest reset; it is read whole, as for a legacy project.
+            let legacy = cursor.legacy.is_some();
+            let reached = reached_by_reset(root, Some(&cycle))
+                || (!stages && legacy && reached_by_reset(root, None));
+            let reset_at = if resets {
+                latest_reset_at(root, Some(&cycle))
+            } else if legacy {
+                latest_reset_at(root, None)
+            } else {
+                None
+            };
+            (reached, reset_at)
+        }
+        (history, _) => (
+            reached_by_reset(root, history),
+            latest_reset_at(root, history),
+        ),
+    };
+    Ok(reached
+        || finalized
+            .zip(reset_at)
+            .is_some_and(|(finalized, reset)| reset >= finalized))
 }
 
 /// The gate for the next main stage and the next valid action, both evaluated on one
@@ -917,6 +961,16 @@ pub(super) fn assess(
             .and_then(Value::as_str)
             .filter(|text| !text.trim().is_empty()),
         _ => None,
+    };
+    // Read once, and only when an archived change at a main stage needs it.
+    let archived_cycle = std::cell::OnceCell::new();
+    let archived_cycle = || {
+        archived_cycle
+            .get_or_init(|| {
+                (is_main(current) && archived_and_authenticated(root, session, state))
+                    .then(|| previous_cycle(root, session, history))
+            })
+            .clone()
     };
     let action = if session.stage.status == "paused" {
         Action {
@@ -955,13 +1009,20 @@ pub(super) fn assess(
         }
     } else if current == "done" {
         done_action(root, session, state, native_next)
-    } else if is_main(current)
-        && archived_and_authenticated(root, session, state)
-        && !previous_cycle(root, session, history)
-    {
+    } else if archived_cycle() == Some(Ok(false)) {
         archived_action(session, state, native_next)
+    } else if let Some(Err(why)) = archived_cycle() {
+        // Neither cycle can be established: say so rather than guess either way.
+        Action {
+            action: format!(
+                "Unknown whether native change {} belongs to this cycle: the current cycle's history cannot be read whole ({why}). Check `chough history show`, then reset for a new cycle or record this cycle's native change.",
+                session.native_change.as_deref().unwrap_or("the native change")
+            ),
+            reason: "The reset that began this cycle is not in readable history, so the archived change is neither assumed closed with this cycle nor assumed to be the previous one's.".into(),
+            command: Some("chough history show".into()),
+        }
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
-        if is_main(current) && archived_and_authenticated(root, session, state) {
+        if archived_cycle() == Some(Ok(true)) {
             // The archive is the previous cycle's: keep the reset's guidance and name
             // the new native change, not the archived refusal or another reset.
             Action {
