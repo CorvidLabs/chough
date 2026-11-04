@@ -7,11 +7,11 @@
   "title": "Show the latest failed native check in next and say when it has not passed for this tree (issue 86)",
   "description": "Show the latest failed native check in next and say when it has not passed for this tree (issue 86)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "91a1fdd82a4e314e5037c6256f17199ef0d604f0",
   "created_at": 1793806262,
-  "updated_at": 1793834867,
+  "updated_at": 1793834884,
   "affected_specs": [
     "cli"
   ],
