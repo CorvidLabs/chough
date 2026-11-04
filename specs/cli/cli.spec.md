@@ -28,6 +28,7 @@ files:
   - tests/workflow_authority.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
+  - tests/fixtures/workflow-at-edbc3c1-lifecycle.md
   - tests/next.rs
 
 db_tables: []

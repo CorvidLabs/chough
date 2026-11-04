@@ -14,5 +14,10 @@ evidence (commit, quoted choice) and a backfilled flag that `timing` reports
 separately (DRIVE-5).
 
 The hard rule holds (parent, 6:03 PM MST): backfill never creates a human approval or
-review record, and it refuses if native state does not support the gate. The requirement is ADDED REQ-cli-036, kept short because the cli requirements
-companion is near its 65,536-byte bound.
+review record, and it refuses if native state does not support the gate. The change adds two
+requirements: ADDED REQ-cli-036 in the cli spec (the command, its refusals and the
+timing report) and ADDED REQ-history-005 in the history spec (the optional backfill
+field on the transition record). REQ-cli-036 is kept short as a matter of style; specs
+have no size cap (Leif, relayed 6:43 PM MST), so a later cli split is guidance only.
+Main's v0.2.0 lifecycle reference becomes a known earlier bundle file, so `chough
+skill update` delivers the backfill guidance over an unedited copy.

@@ -3332,3 +3332,43 @@ fn a_backfilled_move_is_carried_by_history_events() {
     let report = fixture.ok(&["timing", "--json"]);
     assert_eq!(report["backfilled"].as_array().unwrap().len(), 1);
 }
+
+/// Release to done is never backfilled: it is advanced when it happens (review of #73).
+#[test]
+fn backfill_refuses_release_to_done() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "Human: please publish 0.2.0",
+    ]);
+    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    assert_eq!(stage(&fixture), "release");
+    fixture.commit("base");
+    let log = fixture.read(".chough/transitions.jsonl");
+    let session = fixture.read(".chough/session.json");
+    let refused = fixture.fails(&[
+        "stage",
+        "backfill",
+        "--at",
+        &unix_now().to_string(),
+        "--commit",
+        "HEAD",
+        "--quote",
+        "Leif: it shipped",
+    ]);
+    assert!(
+        refused.contains("release to done cannot be backfilled"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/transitions.jsonl"), log);
+    assert_eq!(fixture.read(".chough/session.json"), session);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "done");
+}

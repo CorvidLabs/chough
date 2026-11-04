@@ -11,7 +11,7 @@
   "canonical_applied": true,
   "base_commit": "d673efc9fadd00953cf9e42dad96e08f3c76103c",
   "created_at": 1793755603,
-  "updated_at": 1793755989,
+  "updated_at": 1793756739,
   "affected_specs": [
     "cli",
     "history"
@@ -24,12 +24,16 @@
     "CHANGELOG.md",
     "skills/chough-workflow/references/lifecycle.md",
     ".agents/skills/chough-workflow/references/lifecycle.md",
-    "tests/stages.rs"
+    "tests/stages.rs",
+    "src/skill.rs",
+    "tests/workflow_authority.rs",
+    "tests/fixtures/workflow-at-edbc3c1-lifecycle.md",
+    "hi/drive.md"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
   "acceptance_criteria": [
-    "Source: Leif's brief t811u item 5, \"Want: `chough stage backfill` (or similar) that records a past gate with its original time, the approval evidence (commit, quoted choice), and a backfilled flag that `timing` reports separately.\", quoted as DRIVE-5 and confirmed as his criteria at 5:24 PM MST (card t811s9271); the parent relayed at 6:03 PM MST that the hard rule holds: it records a past gate's original time, the quoted evidence and a backfilled flag that timing reports separately, never creates a human approval or review record, and refuses if the native state doesn't support the gate. Outcomes: (1) chough stage backfill --at <UTC time or unix seconds> --commit <rev> --quote <text> [--note <text>] makes the move advance would make now, to the next main stage, and records it as an advance transition whose time is the given past time and which carries backfill {recorded_at_unix_seconds, commit (full SHA), quote}; (2) it applies every refusal advance applies (inactive or side stage, open awaiting-human gate, blocking bugs and unlinked failures leaving test, and the destination's native prerequisite read now), so native state still decides the gate; (3) it refuses with nothing recorded a time in the future, a time before the latest recorded transition, an unreadable latest transition, a commit that does not resolve or is not an ancestor of HEAD, a blank or oversized quote, and the release to done move; (4) it records no human approval, review, consent or awaiting-human gate, and its output says the quote is evidence only; (5) timing lists backfilled moves separately with their recorded time, commit and quote, marks segments a backfilled move bounds, reports their backfilled time per stage, and leaves them out of estimate samples; (6) records without backfill keep their exact bytes, and the legacy log and history events both carry it; (7) docs, CHANGELOG and the lifecycle skill reference describe it; (8) the new tests fail before the change and fledge lanes run verify passes"
+    "Source: Leif's brief t811u item 5, \"Want: `chough stage backfill` (or similar) that records a past gate with its original time, the approval evidence (commit, quoted choice), and a backfilled flag that `timing` reports separately.\", quoted as DRIVE-5 and confirmed as his criteria at 5:24 PM MST (card t811s9271); the parent relayed at 6:03 PM MST that the hard rule holds: it records a past gate's original time, the quoted evidence and a backfilled flag that timing reports separately, never creates a human approval or review record, and refuses if the native state doesn't support the gate. Outcomes: (1) chough stage backfill --at <UTC time or unix seconds> --commit <rev> --quote <text> [--note <text>] makes the move advance would make now, to the next main stage, and records it as an advance transition whose time is the given past time and which carries backfill {recorded_at_unix_seconds, commit (full SHA), quote}; (2) it applies every refusal advance applies (inactive or side stage, open awaiting-human gate, blocking bugs and unlinked failures leaving test, and the destination's native prerequisite read now), so native state still decides the gate; (3) it refuses with nothing recorded a time in the future, a time before the latest recorded transition, an unreadable latest transition, a commit that does not resolve or is not an ancestor of HEAD, a blank or oversized quote, and the release to done move; (4) it records no human approval, review, consent or awaiting-human gate, and its output says the quote is evidence only; (5) timing lists backfilled moves separately with their recorded time, commit and quote, marks segments a backfilled move bounds, reports their backfilled time per stage, and leaves them out of estimate samples; (6) records without backfill keep their exact bytes, and the legacy log and history events both carry it; (7) docs, CHANGELOG and the lifecycle skill reference describe it, and `chough skill update` replaces an unedited v0.2.0 lifecycle reference with it; (8) the new tests fail before the change and fledge lanes run verify passes"
   ],
   "selected_artifacts": [
     "context",
@@ -43,7 +47,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "yes",
-    "constraints": "No new dependency; transition records without backfill keep their exact bytes; no change to any existing stage gate, to native reads or to the cli spec (its requirements companion is near the 65536-byte bound), so the requirement goes in the history module; the hard rule holds: Chough records no human approval or review and native SpecSync state decides the gate",
+    "constraints": "No new dependency; transition records without backfill keep their exact bytes; no change to any existing stage gate or to native reads; the cli spec gains ADDED REQ-cli-036 (the command, its refusals and the timing report) and the history spec gains ADDED REQ-history-005 (the optional backfill field on the transition record); the v0.2.0 lifecycle reference is a known earlier bundle file so skill update delivers the backfill guidance; the hard rule holds: Chough records no human approval or review and native SpecSync state decides the gate",
     "public_contract": "yes"
   }
 }
