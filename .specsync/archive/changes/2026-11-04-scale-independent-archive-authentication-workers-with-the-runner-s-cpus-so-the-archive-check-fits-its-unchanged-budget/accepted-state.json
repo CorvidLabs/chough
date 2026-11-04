@@ -7,11 +7,11 @@
   "title": "Scale independent archive authentication workers with the runner's CPUs so the Archive check fits its unchanged budget",
   "description": "Scale independent archive authentication workers with the runner's CPUs so the Archive check fits its unchanged budget",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "1ac2ae228f12201fac910bce3a61837761580a89",
   "created_at": 1793766794,
-  "updated_at": 1793767438,
+  "updated_at": 1793767946,
   "affected_specs": [
     "cli"
   ],
