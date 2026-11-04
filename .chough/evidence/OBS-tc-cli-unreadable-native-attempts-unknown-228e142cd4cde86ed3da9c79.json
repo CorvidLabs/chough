@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-unreadable-native-attempts-unknown-228e142cd4cde86ed3da9c79",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-039"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test native_check -- --exact an_unreadable_attempts_record_is_unknown_and_adds_no_native_read for TC-cli-unreadable-native-attempts-unknown: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-unreadable-native-attempts-unknown-228e142cd4cde86ed3da9c79.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-unreadable-native-attempts-unknown-228e142cd4cde86ed3da9c79.log": "38c481ef9c6e5aba7534fb3c0a325ea5f4cbf714089f3ea1ed01041404beb945"
+  },
+  "observed_at_unix_seconds": 1793810276,
+  "snapshot": {
+    "revision": "1ca7800badab837378b071f7097cdf7095fd696d",
+    "dirty": false,
+    "fingerprint": "0b72f5090a849a1ab7fcf6d8dafa932d432fdda82035abbddf5a75a60e329090",
+    "content": "02b7b6e194e876842f1eb735d9eb93b7639a8e368bcb867e0c3ece6967d6058d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-unreadable-native-attempts-unknown",
+      "digest": "b3a8955f48aa49fa73e9cb5df6bc940bb465e61cf60ae3309ae39d70c0d610d5"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "native_check",
+    "--",
+    "--exact",
+    "an_unreadable_attempts_record_is_unknown_and_adds_no_native_read"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
