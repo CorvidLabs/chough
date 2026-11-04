@@ -587,3 +587,116 @@ fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
     );
     assert!(started.elapsed() < Duration::from_secs(30));
 }
+
+/// Kills any process whose command line matches the pattern when dropped, so a failing
+/// assertion never leaves a test's sleep behind.
+struct Reap(&'static str);
+
+impl Drop for Reap {
+    fn drop(&mut self) {
+        let _ = Command::new("pkill").args(["-KILL", "-f", self.0]).status();
+    }
+}
+
+/// Issue #81 item 1 (REQ-cli-011, FLOW-14): a descendant that left the process group
+/// with `setsid` is stopped too, on Linux.
+#[cfg(target_os = "linux")]
+#[test]
+fn stopping_a_case_run_stops_a_descendant_that_left_the_group() {
+    let _reap = Reap("sleep 641");
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    let argv = "[\"sh\", \"-c\", \"setsid sleep 641 & touch running; sleep 642 & wait\"]";
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "never")),
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    assert_stopped(
+        &fixture,
+        &["cases", "run", "TC-cli-0001", "--environment", "local"],
+        "TERM",
+        libc::SIGTERM,
+        "sleep 641",
+    );
+}
+
+/// Issue #81 item 1: a `setsid` descendant whose parent exited at once (a double fork)
+/// is orphaned; Chough is its subreaper on Linux, so a stop finds and stops it too.
+#[cfg(target_os = "linux")]
+#[test]
+fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
+    let _reap = Reap("sleep 651");
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    let argv = "[\"sh\", \"-c\", \"(setsid sleep 651 &); touch running; sleep 652 & wait\"]";
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "never")),
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    assert_stopped(
+        &fixture,
+        &["cases", "run", "TC-cli-0001", "--environment", "local"],
+        "TERM",
+        libc::SIGTERM,
+        "sleep 651",
+    );
+}
+
+/// Issue #81 item 3 (REQ-cli-011): when a descendant of Chough's own Git holds its
+/// output past the grace period and is stopped, Chough says so on stderr.
+#[test]
+fn a_grace_kill_after_git_is_reported() {
+    let _reap = Reap("sleep 681");
+    let fixture = snapshot_fixture();
+    hold_git(&fixture, 681);
+    let output = fixture.run(&[
+        "library",
+        "snapshot",
+        "notes.md",
+        "--reason",
+        "keep the note",
+    ]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(
+        stderr.contains("stopped a process that kept Git's output open"),
+        "{stderr}"
+    );
+}
+
+/// Issue #81 item 2 (REQ-cli-011): a failed `git rev-parse HEAD` is reported on stderr
+/// and the move is still recorded; with no repository at all nothing is said.
+#[test]
+fn a_failed_head_revision_is_reported() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.commit("fixture");
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ \"$1\" = rev-parse ] && [ \"$2\" = HEAD ]; then echo 'fatal: simulated failure' >&2; exit 1; fi\nexec '{}' \"$@\"\n",
+            real_git()
+        ),
+    );
+    fixture.executable("bin/git");
+    let output = fixture.run(&["stage", "advance"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(
+        stderr.contains("could not read the Git revision") && stderr.contains("simulated failure"),
+        "{stderr}"
+    );
+
+    let plain = Fixture::new();
+    plain.hi_stand_in();
+    plain.init();
+    let output = plain.run(&["stage", "advance"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(!stderr.contains("Git revision"), "no repository: {stderr}");
+}
