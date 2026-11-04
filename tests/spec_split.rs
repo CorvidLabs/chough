@@ -16,7 +16,8 @@ const MOVED: [(&str, &str, &str); 4] = [
     (
         "REQ-cli-025",
         "REQ-history-002",
-        "8f33a4424ed12b383bbd7f6ee45ecd3ffcbcf5cb7cd15a2052f377933d5b5567",
+        // Modified by native change keep-one-session-per-objective (#77): per-session cursor.
+        "bc8c769b2b2cde3bce9bfc1ce2314090293a44ec5d847c67aa56c2f7ffd326be",
     ),
     (
         "REQ-cli-026",
