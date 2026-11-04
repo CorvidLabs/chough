@@ -58,7 +58,7 @@ pub(super) enum LibraryCommand {
     },
 }
 
-pub(crate) const HOT_ARCHIVES: usize = 3;
+pub(super) const HOT_ARCHIVES: usize = 3;
 /// Rows each knowledge entry lists in full before pointing at the manifest.
 const ENTRY_ROWS: usize = 100;
 /// The managed-file bound every generated knowledge file stays within.
@@ -102,14 +102,14 @@ fn read_json(root: &Path, relative: &str) -> std::result::Result<serde_json::Val
 /// The change ID and finalization timestamp an archive directory records, when its
 /// `finalization.json` reads within the native bound and its directory name ends with
 /// that ID, the same check `archives` uses.
-pub(crate) fn finalized(root: &Path, dir: &str) -> Option<(String, u64)> {
+pub(super) fn finalized(root: &Path, dir: &str) -> Option<(String, u64)> {
     let value = read_json(root, &format!("{ARCHIVES}/{dir}/finalization.json")).ok()?;
     let id = value["change_id"].as_str().filter(|id| dir.ends_with(id))?;
     Some((id.to_string(), value["timestamp"].as_u64()?))
 }
 
 /// When the archived native change `change` was finalized, if an archive records it.
-pub(crate) fn finalized_at(root: &Path, change: &str) -> Option<u64> {
+pub(super) fn finalized_at(root: &Path, change: &str) -> Option<u64> {
     sorted_entries(root, ARCHIVES)
         .ok()?
         .iter()
