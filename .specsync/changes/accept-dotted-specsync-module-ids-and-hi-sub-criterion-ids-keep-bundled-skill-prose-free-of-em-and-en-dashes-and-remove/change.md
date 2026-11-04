@@ -1,6 +1,6 @@
 ---
 id: accept-dotted-specsync-module-ids-and-hi-sub-criterion-ids-keep-bundled-skill-prose-free-of-em-and-en-dashes-and-remove
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: d673efc9fadd00953cf9e42dad96e08f3c76103c
 ---
@@ -17,7 +17,7 @@ Accept dotted SpecSync module IDs and HI sub-criterion IDs, keep bundled skill p
 
 ## Acceptance Criteria
 
-- chough init, checkpoint, next, status, context and timing accept and keep SpecSync module IDs with dots such as chat.service, room.service, linked-wallet.service and identity-wipe.service, cases files and case IDs for such a module are read and checked, and requirement links such as REQ-chat.service-1 are kept; checkpoint --criterion and bug add --criterion accept HI sub-criterion IDs such as UX-12.a, CHAT-34.a and SEND-1.a.1.b; IDs SpecSync or HI refuse, such as a/b, .., CON, trailing., UX-012, ux-1, UX-1.A and UX-1..a, are still refused with nothing saved; a test fails if any bundled skill file contains U+2013 or U+2014; checkpoint --remove-completed removes one exact completed entry and refuses an entry that is not there with nothing saved; the new tests fail on main 8298e5a where they cover changed behavior; docs/cli.md states the accepted forms and the flag; fledge lanes run verify passes
+- chough init, checkpoint, next, status, context and timing accept and keep SpecSync module IDs with dots such as chat.service, room.service, linked-wallet.service and identity-wipe.service, cases files and case IDs for such a module are read and checked, and requirement links such as REQ-chat.service-1 are kept; checkpoint --criterion and bug add --criterion accept every criterion ID HI accepts, including sub-criterion IDs such as UX-12.a, CHAT-34.a and SEND-1.a.1.b, with no length cap of its own; plain criterion IDs Chough accepted before, such as UX-012 and ux-1, stay accepted so existing checkpoints and bugs stay readable (review 5761422487); module IDs SpecSync refuses, such as a/b, .., CON and trailing., dotted criterion IDs HI refuses, such as UX-1.A and UX-1..a, and requirement or case IDs with no letter or digit are refused with nothing saved; a test fails if any bundled skill file contains U+2013 or U+2014; checkpoint --remove-completed removes one exact completed entry and refuses an entry that is not there with nothing saved; the new tests fail on main 8298e5a where they cover changed behavior; docs/cli.md states the accepted forms and the flag; fledge lanes run verify passes
 
 ## No-spec Rationale
 
