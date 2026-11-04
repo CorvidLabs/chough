@@ -23,6 +23,11 @@ fn command_case(id: &str, argv: &str, expect: &str) -> String {
 
 /// Every file under `.chough` with its bytes.
 fn snapshot(root: &Path) -> BTreeMap<String, Vec<u8>> {
+    snapshot_dirs(root, &[".chough"])
+}
+
+/// Every file under each of `dirs` that exists, with its bytes.
+fn snapshot_dirs(root: &Path, dirs: &[&str]) -> BTreeMap<String, Vec<u8>> {
     fn walk(base: &Path, dir: &Path, files: &mut BTreeMap<String, Vec<u8>>) {
         for entry in fs::read_dir(dir).unwrap() {
             let path = entry.unwrap().path();
@@ -35,7 +40,11 @@ fn snapshot(root: &Path) -> BTreeMap<String, Vec<u8>> {
         }
     }
     let mut files = BTreeMap::new();
-    walk(root, &root.join(".chough"), &mut files);
+    for dir in dirs {
+        if root.join(dir).is_dir() {
+            walk(root, &root.join(dir), &mut files);
+        }
+    }
     files
 }
 
@@ -147,8 +156,20 @@ fn still_running(pattern: &str) -> bool {
 /// Stop chough with `signal` once its command runs; it must end by that signal, leave
 /// no process matching `pattern` and leave `.chough` byte-identical.
 fn assert_stopped(fixture: &Fixture, args: &[&str], signal: &str, number: i32, pattern: &str) {
+    assert_stopped_in(fixture, args, signal, number, pattern, &[".chough"]);
+}
+
+/// [`assert_stopped`], with every directory in `dirs` left byte-identical.
+fn assert_stopped_in(
+    fixture: &Fixture,
+    args: &[&str],
+    signal: &str,
+    number: i32,
+    pattern: &str,
+    dirs: &[&str],
+) {
     let _ = fs::remove_file(fixture.root().join("running"));
-    let before = snapshot(fixture.root());
+    let before = snapshot_dirs(fixture.root(), dirs);
     let (mut child, outputs) = start(fixture, args, Inherit::Defaults);
     wait_for_marker(fixture, &mut child);
     send(&child, signal);
@@ -166,9 +187,9 @@ fn assert_stopped(fixture: &Fixture, args: &[&str], signal: &str, number: i32, p
         fs::read_to_string(outputs.path().join("stderr")).unwrap()
     );
     assert_eq!(
-        snapshot(fixture.root()),
+        snapshot_dirs(fixture.root(), dirs),
         before,
-        "{signal}: an interrupted run changed .chough"
+        "{signal}: an interrupted run changed {dirs:?}"
     );
 }
 
@@ -337,4 +358,109 @@ fn a_stop_signal_inherited_as_blocked_stays_blocked() {
     assert_eq!(report["outcome"], "passed", "{report}");
     let observation = report["observation"].as_str().unwrap();
     assert!(fixture.exists(&format!(".chough/evidence/{observation}.json")));
+}
+
+/// A `git` stand-in that, once `armed` exists, marks itself running and stalls in
+/// `sleep {seconds}` before running the real Git.
+fn stall_git(fixture: &Fixture, seconds: u32) {
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ -e armed ]; then touch running; sleep {seconds}; fi\nexec '{}' \"$@\"\n",
+            real_git()
+        ),
+    );
+    fixture.executable("bin/git");
+    fixture.write("armed", "");
+}
+
+/// `stage backfill` checks its commit with Git before recording anything; a stop then
+/// stops that Git and records nothing (Chough bot review 5762745045 on #79).
+#[test]
+fn stopping_a_backfill_stops_its_git_and_records_nothing() {
+    for (signal, number, seconds) in [
+        ("INT", libc::SIGINT, 641),
+        ("TERM", libc::SIGTERM, 642),
+        ("HUP", libc::SIGHUP, 643),
+    ] {
+        let fixture = Fixture::new();
+        fixture.stubs();
+        fixture.native("approved");
+        fixture.init();
+        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+        fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
+        fixture.no_spec_approval("add-thing");
+        // Move the log into the past so a backfill at now minus 5,000 s fits after it.
+        let shifted: String = fixture
+            .read(".chough/transitions.jsonl")
+            .lines()
+            .enumerate()
+            .map(|(index, line)| {
+                let mut record: Value = serde_json::from_str(line).unwrap();
+                let at = record["at_unix_seconds"].as_u64().unwrap();
+                record["at_unix_seconds"] = Value::from(at - 10_000 + 100 * index as u64);
+                format!("{record}\n")
+            })
+            .collect();
+        fixture.write(".chough/transitions.jsonl", &shifted);
+        fixture.write(".gitignore", ".stub-*\narmed\nrunning\n");
+        fixture.commit("base");
+        let head = String::from_utf8(
+            Command::new("git")
+                .args(["rev-parse", "HEAD"])
+                .current_dir(fixture.root())
+                .output()
+                .unwrap()
+                .stdout,
+        )
+        .unwrap()
+        .trim()
+        .to_string();
+        let at = (std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
+            - 5_000)
+            .to_string();
+        stall_git(&fixture, seconds);
+        assert_stopped(
+            &fixture,
+            &[
+                "stage", "backfill", "--at", &at, "--commit", &head, "--quote", "Leif: yes",
+            ],
+            signal,
+            number,
+            &format!("sleep {seconds}"),
+        );
+    }
+}
+
+/// `library snapshot` reads the Git HEAD for its manifest; a stop then stops that Git
+/// and leaves the library unchanged, with no copied files and no manifest (Chough bot
+/// review 5762745045 on #79).
+#[test]
+fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
+    for (signal, number, seconds) in [
+        ("INT", libc::SIGINT, 651),
+        ("TERM", libc::SIGTERM, 652),
+        ("HUP", libc::SIGHUP, 653),
+    ] {
+        let fixture = Fixture::new();
+        fixture.hi_stand_in();
+        fixture.init();
+        fixture.write("notes.md", "a design note\n");
+        fixture.write(".gitignore", "armed\nrunning\n");
+        fixture.commit("base");
+        fixture.ok(&["library", "index"]);
+        stall_git(&fixture, seconds);
+        assert_stopped_in(
+            &fixture,
+            &["library", "snapshot", "notes.md", "--reason", "keep the note"],
+            signal,
+            number,
+            &format!("sleep {seconds}"),
+            &[".chough", "knowledge"],
+        );
+    }
 }
