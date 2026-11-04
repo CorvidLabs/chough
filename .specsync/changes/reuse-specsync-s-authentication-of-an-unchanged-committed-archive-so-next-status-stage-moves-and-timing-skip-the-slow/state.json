@@ -7,10 +7,11 @@
   "title": "Reuse SpecSync's authentication of an unchanged committed archive so next, status, stage moves and timing skip the slow live status read, and advance through several stages on one native read (DRIVE-2, DRIVE-9)",
   "description": "Reuse SpecSync's authentication of an unchanged committed archive so next, status, stage moves and timing skip the slow live status read, and advance through several stages on one native read (DRIVE-2, DRIVE-9)",
   "kind": "feature",
-  "state": "approved",
+  "state": "implementing",
+  "canonical_applied": true,
   "base_commit": "d673efc9fadd00953cf9e42dad96e08f3c76103c",
   "created_at": 1793752311,
-  "updated_at": 1793752495,
+  "updated_at": 1793752795,
   "affected_specs": [
     "cli"
   ],
