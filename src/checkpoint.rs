@@ -10,7 +10,6 @@ use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sha2::{Digest, Sha256};
 use std::collections::HashSet;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
@@ -353,22 +352,29 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
     parse(&read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?)
 }
 
-/// The checkpoint writer lock file for a project (issue 62): an empty, never-replaced
-/// file in the system temporary directory named for the SHA-256 of the project's
-/// canonical `.chough` path. It lives outside the project so it never becomes a
-/// managed record or a source change; every Chough process that resolves the same
-/// project and temporary directory uses the same file.
+/// The project's checkpoint writer lock (issues 62 and 83, DRIVE-11): the empty,
+/// never-replaced file `.chough/local/checkpoint.lock`. `.chough/local/` holds a
+/// `.gitignore` of `*` (written here when missing, create-only), so the lock is never a
+/// managed record or a source change, and every Chough process working on the project
+/// uses this one file whatever its temporary directory.
 fn checkpoint_lock_path(root: &Path) -> Result<PathBuf> {
-    let session = local_path(root, SESSION)?;
-    let directory = session.parent().context("session has no parent")?;
-    let canonical = fs::canonicalize(directory)
-        .with_context(|| format!("resolving {} for the checkpoint lock", directory.display()))?;
-    let digest = Sha256::digest(canonical.to_string_lossy().as_bytes());
-    let name: String = digest[..16]
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
-    Ok(std::env::temp_dir().join(format!("chough-checkpoint-{name}.lock")))
+    let ignore = local_path(root, ".chough/local/.gitignore")?;
+    fs::create_dir_all(
+        ignore
+            .parent()
+            .context("the lock directory has no parent")?,
+    )?;
+    // Writers race to create it; one that finds it already there carries on.
+    match OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&ignore)
+    {
+        Ok(mut file) => file.write_all(b"*\n")?,
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+        Err(error) => return Err(error).context("creating .chough/local/.gitignore"),
+    }
+    local_path(root, ".chough/local/checkpoint.lock")
 }
 
 /// Locks this process holds, by lock path; each is released when the process exits or
@@ -409,10 +415,16 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
             Err(fs4::TryLockError::WouldBlock) if started.elapsed() < LOCK_WAIT => {
                 std::thread::sleep(LOCK_POLL);
             }
-            Err(fs4::TryLockError::WouldBlock) => bail!(
-                "refused:checkpoint-busy: another Chough command is changing {SESSION} and did not finish within {} seconds; nothing was saved. Rerun when it finishes.",
-                LOCK_WAIT.as_secs()
-            ),
+            Err(fs4::TryLockError::WouldBlock) => {
+                // Name the file this command would write (#83). It refuses right after,
+                // so resolving, and pinning, the checkpoint here changes nothing.
+                let target = crate::sessions::checkpoint_path(root)
+                    .unwrap_or_else(|_| "the checkpoint".into());
+                bail!(
+                    "refused:checkpoint-busy: another Chough command is changing {target} and did not finish within {} seconds; nothing was saved. Rerun when it finishes.",
+                    LOCK_WAIT.as_secs()
+                )
+            }
             Err(fs4::TryLockError::Error(error)) => {
                 return Err(error)
                     .with_context(|| format!("locking the checkpoint lock {}", path.display()));

@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The checkpoint writer lock now lives in the project, at `.chough/local/checkpoint.lock`
+  (Git-ignored), instead of the system temporary directory, so writers with different
+  `TMPDIR` values, or a temp cleaner, can no longer split it and lose updates (#83,
+  DRIVE-11, REQ-cli-040). A busy refusal names the file it would write, the active
+  session's in sessions mode. Chough releases before this still lock in the temporary
+  directory and do not serialize with this one.
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns

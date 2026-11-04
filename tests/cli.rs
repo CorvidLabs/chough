@@ -451,6 +451,10 @@ fn fill_checkpoint_to_pretty_bytes(session: &mut Value, bytes: usize) {
 }
 
 fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str], bound: &str) {
+    // A writer has run before, so the project's lock (#83) already exists, as in any
+    // project; the comparison still covers every file, `.chough/local/` included.
+    fixture.write(".chough/local/.gitignore", "*\n");
+    fixture.write(".chough/local/checkpoint.lock", "");
     let before = managed_record_bytes(fixture.root());
     let output = fixture.run(args);
     assert!(!output.status.success(), "{args:?} unexpectedly succeeded");
@@ -1938,6 +1942,8 @@ fn checkpoint_writer_lock_holder_process() {
     };
     use std::io::Write;
     let root = PathBuf::from(std::env::var(LOCK_HOLDER_ROOT).unwrap());
+    // The lock lives in the project's `.chough/local/` (#83), as a writer creates it.
+    fs::create_dir_all(checkpoint_lock_path(&root).parent().unwrap()).unwrap();
     let lock = fs::OpenOptions::new()
         .read(true)
         .write(true)
@@ -2216,13 +2222,12 @@ fn read_only_commands_leave_session_temps_in_place() {
     }
 }
 
-/// The exercise removes its project's checkpoint lock file on exit, in every mode
-/// (review of #70): the setup's `checkpoint_lock` names the file real Chough creates
-/// for the project under the given TMPDIR, and the exit cleanup deletes it whether the
-/// run passed, failed or prepared a cold start.
+/// The exercise's checkpoint lock lives inside its project (#83, DRIVE-11): a Chough write
+/// creates `.chough/local/checkpoint.lock` there, and nothing named `chough-checkpoint-*`
+/// is left in the run's TMPDIR, whether the run passed, failed or prepared a cold start.
 #[cfg(unix)]
 #[test]
-fn exercise_removes_its_checkpoint_lock_on_exit() {
+fn exercise_keeps_its_checkpoint_lock_inside_the_project() {
     let script = fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
     )
@@ -2238,9 +2243,8 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
         let temp = TempDir::new().unwrap();
         let cwd = TempDir::new().unwrap();
         let chough = env!("CARGO_BIN_EXE_chough");
-        // The setup's own lock name, then a real Chough write that creates the lock.
         let body = format!(
-            "set -eu\n{setup}cd \"$work\"\n\"{chough}\" init --objective Probe --intent-scope LIFE --module cli >/dev/null\nmark_checkpoint_lock\n\"{chough}\" checkpoint --decision 'Probe the lock' >/dev/null\nprintf '%s\\n' \"$checkpoint_lock\"\n[ -f \"$checkpoint_lock\" ] || exit 9\nexit {status}\n"
+            "set -eu\n{setup}cd \"$work\"\n\"{chough}\" init --objective Probe --intent-scope LIFE --module cli >/dev/null\n\"{chough}\" checkpoint --decision 'Probe the lock' >/dev/null\nlock=\"$work/.chough/local/checkpoint.lock\"\nprintf '%s\\n' \"$lock\"\n[ -f \"$lock\" ] || exit 9\nexit {status}\n"
         );
         let out = Command::new("sh")
             .arg("-c")
@@ -2253,10 +2257,7 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
             .unwrap();
         assert_eq!(out.status.code(), Some(status), "{args:?} {out:?}");
         let named = String::from_utf8_lossy(&out.stdout).trim().to_string();
-        assert!(
-            named.contains("chough-checkpoint-") && named.ends_with(".lock"),
-            "{named}"
-        );
+        assert!(named.ends_with("/.chough/local/checkpoint.lock"), "{named}");
         let locks: Vec<String> = fs::read_dir(temp.path())
             .unwrap()
             .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
