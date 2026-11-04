@@ -4,7 +4,7 @@
 
 use crate::bugs::{self, Finding};
 use crate::cases;
-use crate::checkpoint::read_checkpoint;
+use crate::checkpoint::read_checkpoint_unlocked;
 use crate::evidence::{self, Outcome};
 use crate::prefs;
 use crate::records::{
@@ -65,7 +65,7 @@ pub(super) enum ValidateCommand {
 }
 
 fn authority(root: &Path) -> Result<String> {
-    let session = read_checkpoint(root)?;
+    let session = read_checkpoint_unlocked(root)?;
     if let Some(origin) = prefs::authorized(root, &session, "repeat-validation")? {
         return Ok(origin);
     }
@@ -111,7 +111,7 @@ fn halt(root: &Path) -> Result<Option<&'static str>> {
     if local_path(root, STOP_REQUEST)?.exists() {
         return Ok(Some("stopped"));
     }
-    if read_checkpoint(root)?.stage.status == "paused" {
+    if read_checkpoint_unlocked(root)?.stage.status == "paused" {
         return Ok(Some("paused"));
     }
     Ok(None)

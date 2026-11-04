@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "serialize-checkpoint-writers-with-an-inter-process-lock-and-remove-session-temps-left-by-killed-writers-issues-62-and",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "85caeb2de741b185f599e8c9ba3cf664d70c8b93",
+      "contract_digest": "001518fbb26830b9d785552b6935fb3136375eaf58e660ec5c94dde1b1e9c4e0",
+      "execution_digest": "3a249e12cf34c2d7fb95cbe45a9d2bba3d7c4a806b5683f58826a1cafcac8e7f",
+      "workspace_digest": "bc0692e8121d57f5af15c38c3dac350cf0f3b1b69aa1e0e285e7137e19749b90",
+      "timestamp": 1793774127
+    }
+  ]
+}

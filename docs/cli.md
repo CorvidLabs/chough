@@ -142,6 +142,33 @@ files, but each must be an existing regular file whose final component is not a
 symlink. Native tools and bound commands receive direct arguments, never
 shell-evaluated text.
 
+### Concurrent checkpoint writers
+
+Commands that change `.chough/session.json` (`checkpoint`, `stage`, `consent`,
+`history`, `migrate`) take an exclusive checkpoint lock before they read it and hold it
+until they exit, so writers in parallel in one clone apply their updates one after
+another and none is lost. The lock is an empty file in the system temporary directory,
+`chough-checkpoint-<hash>.lock`, named for the SHA-256 of the project's canonical
+`.chough` path, so nothing is added to the project; processes that see different
+temporary directories (for example a different `TMPDIR`) do not share it. The operating
+system releases it when a command exits or is killed. A writer waits up to 30 seconds,
+then refuses as `refused:checkpoint-busy` with nothing saved; rerun it when the other
+command finishes. The lock file stays in the temporary directory after use, one per
+project; it is safe to delete whenever no Chough command is running for that project,
+and the next writer creates it again. `examples/feature-bug-loop.sh` removes its own
+project's lock on exit. `status`, `next`, `cases`, `evidence`, `timing` and the pause checks
+of `validate run` take no lock; `context` and the show forms of `stage`, `consent` and
+`history` take it while they run. Chough releases before this lock do not take it.
+
+Every checkpoint write goes to `.chough/.session.json.<pid>.tmp` and is renamed over
+the session. A temp of that exact name found by a writer holding the lock was left by a
+command killed before it saved; the writer removes it just before it saves and prints
+`chough: removed .chough/<name> (<bytes> bytes), left by a checkpoint write that was
+stopped before it saved; .chough/session.json was not changed by it` on stderr. The
+killed command's update was never saved. Other temp names are left alone. Commands
+that only read, including `context` and the show forms that take the lock, remove
+nothing.
+
 | Record | Schema |
 |---|---|
 | Checkpoint | 2 (schema 1 read-only until migrated) |
