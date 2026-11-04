@@ -39,9 +39,18 @@ fn snapshot(root: &Path) -> BTreeMap<String, Vec<u8>> {
     files
 }
 
-/// Start chough in the background with its output in files. With `ignore_hup` it
-/// inherits SIGHUP as ignored, as under `nohup`.
-fn start(fixture: &Fixture, args: &[&str], ignore_hup: bool) -> (Child, tempfile::TempDir) {
+/// How chough inherits SIGHUP and SIGTERM when it starts.
+#[derive(Clone, Copy, PartialEq)]
+enum Inherit {
+    Defaults,
+    /// SIGHUP ignored, as under `nohup`.
+    IgnoredHup,
+    /// SIGTERM blocked in the signal mask.
+    BlockedTerm,
+}
+
+/// Start chough in the background with its output in files, inheriting `inherit`.
+fn start(fixture: &Fixture, args: &[&str], inherit: Inherit) -> (Child, tempfile::TempDir) {
     let outputs = tempfile::tempdir().unwrap();
     let mut paths = vec![fixture.root().join("bin")];
     paths.extend(std::env::split_paths(
@@ -56,8 +65,14 @@ fn start(fixture: &Fixture, args: &[&str], ignore_hup: bool) -> (Child, tempfile
             for signal in [libc::SIGINT, libc::SIGTERM, libc::SIGHUP] {
                 libc::signal(signal, libc::SIG_DFL);
             }
-            if ignore_hup {
+            if inherit == Inherit::IgnoredHup {
                 libc::signal(libc::SIGHUP, libc::SIG_IGN);
+            }
+            if inherit == Inherit::BlockedTerm {
+                let mut set: libc::sigset_t = std::mem::zeroed();
+                libc::sigemptyset(&raw mut set);
+                libc::sigaddset(&raw mut set, libc::SIGTERM);
+                libc::sigprocmask(libc::SIG_BLOCK, &raw const set, std::ptr::null_mut());
             }
             Ok(())
         });
@@ -134,7 +149,7 @@ fn still_running(pattern: &str) -> bool {
 fn assert_stopped(fixture: &Fixture, args: &[&str], signal: &str, number: i32, pattern: &str) {
     let _ = fs::remove_file(fixture.root().join("running"));
     let before = snapshot(fixture.root());
-    let (mut child, outputs) = start(fixture, args, false);
+    let (mut child, outputs) = start(fixture, args, Inherit::Defaults);
     wait_for_marker(fixture, &mut child);
     send(&child, signal);
     let status = wait_exit(&mut child);
@@ -195,7 +210,7 @@ fn stopping_a_case_run_stops_its_command_and_records_nothing() {
     let (mut child, outputs) = start(
         &fixture,
         &["cases", "run", "TC-cli-0001", "--environment", "local"],
-        true,
+        Inherit::IgnoredHup,
     );
     wait_for_marker(&fixture, &mut child);
     send(&child, "HUP");
@@ -239,4 +254,87 @@ fn stopping_a_native_read_stops_specsync_and_records_nothing() {
             &format!("sleep {seconds}"),
         );
     }
+}
+
+/// The path of the real `git`, for a stand-in that delays and then runs it.
+fn real_git() -> String {
+    let found = Command::new("sh")
+        .args(["-c", "command -v git"])
+        .output()
+        .unwrap();
+    assert!(found.status.success(), "git is required");
+    String::from_utf8(found.stdout).unwrap().trim().to_string()
+}
+
+/// A stop after the bound command exits, while Chough saves what it saw (its Git
+/// snapshot runs here), stops Chough's own git and records nothing: no artifact and
+/// no observation (Chough bot review on #79).
+#[test]
+fn stopping_a_case_run_while_it_saves_stops_git_and_records_nothing() {
+    for (signal, number, seconds) in [
+        ("INT", libc::SIGINT, 631),
+        ("TERM", libc::SIGTERM, 632),
+        ("HUP", libc::SIGHUP, 633),
+    ] {
+        let fixture = Fixture::new();
+        fixture.hi_stand_in();
+        let argv = "[\"sh\", \"-c\", \"touch ran; echo finished\"]";
+        fixture.write(
+            ".chough/cases/cli.cases.toml",
+            &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "finished")),
+        );
+        fixture.write(".gitignore", "ran\nrunning\n");
+        fixture.init();
+        fixture.commit("fixture");
+        // Once the bound command has run, every git call marks itself and stalls.
+        fixture.write(
+            "bin/git",
+            &format!(
+                "#!/bin/sh\nif [ -e ran ]; then touch running; sleep {seconds}; fi\nexec '{}' \"$@\"\n",
+                real_git()
+            ),
+        );
+        fixture.executable("bin/git");
+        assert_stopped(
+            &fixture,
+            &["cases", "run", "TC-cli-0001", "--environment", "local"],
+            signal,
+            number,
+            &format!("sleep {seconds}"),
+        );
+    }
+}
+
+/// A stop signal inherited as blocked stays blocked: the run finishes and records,
+/// as it did before stop handling.
+#[test]
+fn a_stop_signal_inherited_as_blocked_stays_blocked() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    let argv = "[\"sh\", \"-c\", \"touch running; sleep 2; echo finished\"]";
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{}", command_case("TC-cli-0001", argv, "finished")),
+    );
+    fixture.write(".gitignore", "running\n");
+    fixture.init();
+    fixture.commit("fixture");
+    let (mut child, outputs) = start(
+        &fixture,
+        &["cases", "run", "TC-cli-0001", "--environment", "local"],
+        Inherit::BlockedTerm,
+    );
+    wait_for_marker(&fixture, &mut child);
+    send(&child, "TERM");
+    let status = wait_exit(&mut child);
+    assert!(
+        status.success(),
+        "{status:?} {}",
+        fs::read_to_string(outputs.path().join("stderr")).unwrap()
+    );
+    let report: Value =
+        serde_json::from_slice(&fs::read(outputs.path().join("stdout")).unwrap()).unwrap();
+    assert_eq!(report["outcome"], "passed", "{report}");
+    let observation = report["observation"].as_str().unwrap();
+    assert!(fixture.exists(&format!(".chough/evidence/{observation}.json")));
 }
