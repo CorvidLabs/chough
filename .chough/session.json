@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Show the latest failed native check in next, and say plainly when the native check has not passed for this tree (issue #86)",
+  "objective": "Remove the 65,536-byte cap on spec requirements files from tests/spec_split.rs: spec files have no size cap; Chough bounds cover only .chough (LIFE-15)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86",
+  "native_change": "remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -722,5 +722,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #91 when hosted checks are green"
+  "next_action": "Run the split cases and verify, then close out on Leif decision"
 }
