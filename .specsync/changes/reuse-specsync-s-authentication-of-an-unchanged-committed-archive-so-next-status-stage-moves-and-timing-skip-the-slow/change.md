@@ -1,6 +1,6 @@
 ---
 id: reuse-specsync-s-authentication-of-an-unchanged-committed-archive-so-next-status-stage-moves-and-timing-skip-the-slow
-state: verifying
+state: implementing
 type: feature
 base_commit: d673efc9fadd00953cf9e42dad96e08f3c76103c
 ---

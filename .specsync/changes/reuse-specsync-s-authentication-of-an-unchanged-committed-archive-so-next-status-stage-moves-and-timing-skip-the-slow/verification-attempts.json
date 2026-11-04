@@ -40,6 +40,26 @@
         "REQ-cli-028",
         "REQ-cli-035"
       ]
+    },
+    {
+      "timestamp": 1793752890,
+      "commit": "7d44e2db40599c07374d07f575283449a162e181",
+      "contract_digest": "267bab3fc709124916d6de5b01581537f041c50ab52ba177aca723205d12afcf",
+      "execution_digest": "0fa1ff7ea38b1968bf8659f67b3d27fe8c6190fc0f02da54d3bddff6ebe41a77",
+      "workspace_digest": "2abb14fe6aa86f69ee63c9fba96cafc6c5533dcbeb7e736fceeb10f165bded8c",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-024",
+        "REQ-cli-028",
+        "REQ-cli-035"
+      ]
     }
   ]
 }
