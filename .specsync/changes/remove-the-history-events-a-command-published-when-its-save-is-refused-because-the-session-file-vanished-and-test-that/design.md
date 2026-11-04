@@ -13,4 +13,5 @@ artifact: design
   vanished while the command ran (the pinned session file was archived or removed, or a
   legacy writer found the project adopted into sessions mode) first call
   `discard_published`, and say how many events were removed. Any other failed save keeps
-  REQ-history-002's unselected orphan, as before.
+  REQ-history-002's unselected orphan, as before. The rule is ADDED as REQ-history-008 so
+  REQ-history-002's pinned wording stays unchanged.

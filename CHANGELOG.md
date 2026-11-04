@@ -8,7 +8,7 @@ All notable changes to Chough are recorded here. The format follows
 
 - A command whose save is refused because its session file was archived, removed or
   adopted while it ran now also removes the history events it had written, so no orphan
-  `EVT-` file is left (#82, REQ-history-002). A regression test shows `session use` waits
+  `EVT-` file is left (#82, REQ-history-008). A regression test shows `session use` waits
   for a running `stage advance`.
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
