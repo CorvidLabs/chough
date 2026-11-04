@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -650,7 +650,11 @@
     "OBS-structural-0ceefdd961ed75d53f1b3742",
     "OBS-tc-cli-done-trims-cold-proof-by-default-c304ea1236d56275d8bedece",
     "OBS-tc-cli-retention-manual-opts-out-at-done-ca5a4d3ea6ad2221c8ffad04",
-    "OBS-tc-cli-open-change-keeps-proof-at-done-ebfd158217a8895808c2edfa"
+    "OBS-tc-cli-open-change-keeps-proof-at-done-ebfd158217a8895808c2edfa",
+    "OBS-tc-cli-done-trims-cold-proof-by-default-90c448571845e4610ecddb0e",
+    "OBS-tc-cli-retention-manual-opts-out-at-done-bfb0848eaeafa5c56d02b670",
+    "OBS-tc-cli-open-change-keeps-proof-at-done-028f9cba4da3709613949b39",
+    "OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-cf4068ce301e6405fd93ea04"
   ],
   "bugs": [
     "BUG-0001",
@@ -684,7 +688,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
