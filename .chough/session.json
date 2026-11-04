@@ -658,7 +658,11 @@
     "OBS-tc-cli-next-shows-open-questions-dd8010a4477ee0d3a4d928d4",
     "OBS-tc-cli-folded-inbox-question-in-next-df085ce68897ec65347b04ff",
     "OBS-tc-history-archived-session-listed-archived-0b7bf375ca63dc707c766b52",
-    "OBS-tc-history-unrecorded-inbox-observation-warns-d2820cefe3e32277d797126e"
+    "OBS-tc-history-unrecorded-inbox-observation-warns-d2820cefe3e32277d797126e",
+    "OBS-tc-cli-next-shows-open-questions-3c08a49ba503200a398cda5e",
+    "OBS-tc-cli-folded-inbox-question-in-next-5b2bc7e3201f57a1fba07dc2",
+    "OBS-tc-history-archived-session-listed-archived-8236c0dede0fa96f94dad2bc",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-acf794d9b07dbfb1fa6deac7"
   ],
   "bugs": [
     "BUG-0001",
