@@ -434,3 +434,21 @@ expected = ["tests/sessions.rs::a_project_without_sessions_is_unchanged passes"]
 adapter = "cargo-test"
 test_target = "sessions"
 test = "a_project_without_sessions_is_unchanged"
+
+[[case]]
+id = "TC-history-sessions-local-holds-pointer-and-lock"
+title = "In sessions mode .chough/local holds only the pointer and the lock"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-11"]
+requirements = ["REQ-history-007"]
+paths = ["src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::in_sessions_mode_local_holds_only_the_pointer_and_the_lock passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "in_sessions_mode_local_holds_only_the_pointer_and_the_lock"

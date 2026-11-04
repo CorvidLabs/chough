@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-sessions-local-holds-pointer-and-lock-d4fcee9a422d26b637466ec1",
+  "criteria": [
+    "DRIVE-3",
+    "DRIVE-11"
+  ],
+  "requirements": [
+    "REQ-history-007"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact in_sessions_mode_local_holds_only_the_pointer_and_the_lock for TC-history-sessions-local-holds-pointer-and-lock: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-sessions-local-holds-pointer-and-lock-d4fcee9a422d26b637466ec1.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-sessions-local-holds-pointer-and-lock-d4fcee9a422d26b637466ec1.log": "55d044ee415ffc5e681e93114bd0a68c0778db3129da1d632828bfcc18179c03"
+  },
+  "observed_at_unix_seconds": 1793813349,
+  "snapshot": {
+    "revision": "e6d8d98be720b65ed4942f35c298ffaf73afbdf8",
+    "dirty": false,
+    "fingerprint": "e6ced339873f505b7b29f7068867eaeafc13680b9842c7851ff62760b0a5e03d",
+    "content": "fb56a5ce243d88c19f76bb1db70e861c5adcabeeb4b0e2ff3e2cd377f2b68892"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-sessions-local-holds-pointer-and-lock",
+      "digest": "b89d679153e4ac79abe1ad2fcfa0e29009f646d2ff1cae79b8f15d31543e4976"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "in_sessions_mode_local_holds_only_the_pointer_and_the_lock"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -651,7 +651,12 @@
     "OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f",
     "OBS-tc-cli-checkpoint-lock-in-project-ignored-0bdc620d8d275a5e98ff7902",
     "OBS-tc-cli-adopt-race-writers-save-or-refuse-3f4a73ec4215638a4a9c7bda",
-    "OBS-tc-history-no-sessions-local-holds-only-lock-4053859ff887aeda5e1bb648"
+    "OBS-tc-history-no-sessions-local-holds-only-lock-4053859ff887aeda5e1bb648",
+    "OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-e091efae8c4adcc2f332caf1",
+    "OBS-tc-cli-checkpoint-lock-in-project-ignored-2099148f28e0cbd6e416986d",
+    "OBS-tc-cli-adopt-race-writers-save-or-refuse-538709fd2dd881f8dcba1a15",
+    "OBS-tc-history-no-sessions-local-holds-only-lock-86f8471b898d99df69e20948",
+    "OBS-tc-history-sessions-local-holds-pointer-and-lock-d4fcee9a422d26b637466ec1"
   ],
   "bugs": [
     "BUG-0001",
@@ -685,7 +690,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
