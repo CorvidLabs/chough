@@ -1811,3 +1811,41 @@ fn retention_protects_what_inactive_and_archived_sessions_reference() {
     assert!(refused.contains("delta"), "{refused}");
     assert_eq!(tree(fixture.root()), before);
 }
+
+/// An observation a subagent reported through an unfolded inbox entry is protected
+/// from retention like one the session already holds, so a later fold never adds an
+/// observation that retention removed meanwhile.
+#[test]
+fn retention_protects_observations_named_by_unfolded_inbox_entries() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha"]);
+    fixture.commit("fixture");
+    for (id, age) in [("n1", 20), ("n2", 21), ("n3", 22), ("reported", 40)] {
+        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
+    }
+    fixture.ok(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "observation",
+        "--text",
+        "reported",
+    ]);
+
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert!(ids(&preview["eligible"]).is_empty(), "{preview:#}");
+    assert_eq!(
+        reasons(&preview, "reported"),
+        vec!["inbox of session alpha"]
+    );
+
+    fixture.ok(&["consent", "grant", "retention", "--source", "Human: prune"]);
+    fixture.ok(&["evidence", "prune", "--apply"]);
+    assert!(fixture.exists(".chough/evidence/reported.json"));
+    fixture.ok(&["inbox", "fold"]);
+    assert!(fixture.exists(".chough/evidence/reported.json"));
+}
