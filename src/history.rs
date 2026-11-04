@@ -153,9 +153,11 @@ pub(super) fn new_cursor(root: &Path) -> Result<Cursor> {
     })
 }
 
-/// What this process published, per project root: event paths with the SHA-256 of their
-/// bytes, and cycle directories it reserved (#82, REQ-history-008). `discard_published`
-/// removes them when the command's save is refused because its checkpoint vanished.
+/// What this process published, per project root, since it last found its checkpoint in
+/// place: event paths with the SHA-256 of their bytes, and cycle directories it reserved
+/// (#82, REQ-history-008). `retire_published` forgets them when a save may write them;
+/// `discard_published` removes them when the command's save is refused because its
+/// checkpoint vanished.
 static PUBLISHED: std::sync::Mutex<Published> = std::sync::Mutex::new(Published {
     events: Vec::new(),
     directories: Vec::new(),
@@ -169,37 +171,46 @@ struct Published {
     directories: Vec<(std::path::PathBuf, String)>,
 }
 
-/// Remove the events this process published under `root` whose bytes are unchanged, then
-/// the cycle directories it reserved there when they are empty; returns how many events
-/// it removed. Called only when a save is refused because the checkpoint the command
-/// resolved was archived, removed or adopted meanwhile (REQ-history-008); any other
-/// failed save keeps REQ-history-002's unselected orphan. `heads` are the history cursor
-/// heads of every saved checkpoint: when one of them is an event this command published,
-/// that save happened and nothing is removed (#96 review).
-pub(super) fn discard_published(root: &Path, heads: &[String]) -> usize {
-    let (events, directories) = {
-        let mut published = PUBLISHED
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
-        let (mine, others): (Vec<_>, Vec<_>) = std::mem::take(&mut published.events)
-            .into_iter()
-            .partition(|(owner, _, _)| owner == root);
-        published.events = others;
-        let (mine_dirs, other_dirs): (Vec<_>, Vec<_>) = std::mem::take(&mut published.directories)
-            .into_iter()
-            .partition(|(owner, _)| owner == root);
-        published.directories = other_dirs;
-        (mine, mine_dirs)
-    };
-    let saved = events.iter().any(|(_, relative, _)| {
-        Path::new(relative)
-            .file_stem()
-            .and_then(|stem| stem.to_str())
-            .is_some_and(|id| heads.iter().any(|head| head == id))
-    });
-    if saved {
-        return 0;
+/// Take this process's published events and reserved cycle directories under `root` out
+/// of the record, leaving other roots' entries.
+fn take_published(root: &Path) -> Published {
+    let mut published = PUBLISHED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    let (events, others): (Vec<_>, Vec<_>) = std::mem::take(&mut published.events)
+        .into_iter()
+        .partition(|(owner, _, _)| owner == root);
+    published.events = others;
+    let (directories, other_dirs): (Vec<_>, Vec<_>) = std::mem::take(&mut published.directories)
+        .into_iter()
+        .partition(|(owner, _)| owner == root);
+    published.directories = other_dirs;
+    Published {
+        events,
+        directories,
     }
+}
+
+/// Forget what this process published under `root`: the command found its checkpoint in
+/// place, and every save does so just before it writes, so a save may now point to those
+/// events and they are never this command's to remove (second #96 review). A save that
+/// then fails for another reason keeps REQ-history-002's unselected orphan.
+pub(super) fn retire_published(root: &Path) {
+    take_published(root);
+}
+
+/// Remove the events this process published under `root` since it last found its
+/// checkpoint in place, when their bytes are unchanged, then the cycle directories it
+/// reserved there when they are empty; returns how many events it removed. Called only
+/// when a save is refused because the checkpoint the command resolved was archived,
+/// removed or adopted meanwhile (REQ-history-008); any other failed save keeps
+/// REQ-history-002's unselected orphan. No save can point to these events: the
+/// checkpoint has not been in place since they were published.
+pub(super) fn discard_published(root: &Path) -> usize {
+    let Published {
+        events,
+        directories,
+    } = take_published(root);
     let mut removed = 0;
     for (_, relative, digest) in events {
         let Ok(path) = local_path(root, &relative) else {

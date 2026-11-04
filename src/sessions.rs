@@ -266,16 +266,17 @@ pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
                 .then(|| format!("{relative} was archived or removed while this command ran"))
         };
         if let Some(why) = vanished {
-            // Only events no saved checkpoint points to go; unreadable checkpoints keep all.
-            let removed = cursor_heads(root)
-                .map_or(0, |heads| crate::history::discard_published(root, &heads));
-            let events = match removed {
+            // Only events published since the checkpoint was last found in place go.
+            let events = match crate::history::discard_published(root) {
                 0 => String::new(),
                 1 => "; the history event it had written was removed".into(),
                 count => format!("; the {count} history events it had written were removed"),
             };
             bail!("{why}; nothing was saved{events}");
         }
+        // Found in place: a save resolves here just before it writes, so from now on the
+        // events published so far may be saved and are never removed (second #96 review).
+        crate::history::retire_published(root);
         return Ok(relative);
     }
     let relative = if enabled(root)? {
@@ -365,30 +366,6 @@ pub(super) fn remove_orphaned_temps(root: &Path) -> Result<()> {
         );
     }
     Ok(())
-}
-
-/// The history cursor heads of every saved checkpoint: open and archived sessions and a
-/// legacy `.chough/session.json`. Read directly, never through `checkpoint_path`, which
-/// calls this from its refusal.
-fn cursor_heads(root: &Path) -> Result<Vec<String>> {
-    let mut files: Vec<String> = keys_in(root, DIR)?
-        .iter()
-        .map(|key| session_file(key))
-        .collect();
-    files.extend(keys_in(root, ARCHIVE)?.iter().map(|key| archive_file(key)));
-    if local_path(root, checkpoint::SESSION)?.is_file() {
-        files.push(checkpoint::SESSION.to_string());
-    }
-    let mut heads = vec![];
-    for file in files {
-        if let Some(head) = read_at(root, &file)?
-            .history_cursor
-            .and_then(|cursor| cursor.head)
-        {
-            heads.push(head);
-        }
-    }
-    Ok(heads)
 }
 
 fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
