@@ -795,6 +795,8 @@ fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
     };
     assert_eq!(recorded("OBS-bogus"), false, "{list:#}");
     assert_eq!(recorded("OBS-recorded"), true, "{list:#}");
+}
+
 #[test]
 fn session_new_accepts_the_module_ids_init_accepts() {
     // Review thread 4465229406: `session new --module chat.service` was refused while
