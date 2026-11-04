@@ -11,6 +11,15 @@ All notable changes to Chough are recorded here. The format follows
   group and Chough's own Git commands, and records nothing partial, including while a
   case run saves its result (FLOW-14, #75). A hard `kill -9` is not covered. Unix
   only; Windows is unchanged.
+- Dotted SpecSync module IDs such as `chat.service` and hi sub-criterion IDs such as
+  `BOTS-1.a` are accepted by `init`, `checkpoint`, `bugs`, `evidence` and `cases`, and
+  a checkpoint holding them is read by every view (#56, #57). Module and requirement
+  IDs SpecSync refuses, and dotted criterion IDs hi refuses such as `UX-1.A`, are
+  refused. Plain criterion IDs Chough accepted before, such as `UX-012` or `ux-1`,
+  are still accepted so existing checkpoints and bugs stay readable, though hi does
+  not trace them; re-record one with a valid hi ID, such as `UX-12`, to link it. `checkpoint --remove-completed` removes one mistaken completed
+  entry in the same call that adds its correction. A test keeps the bundled workflow
+  skill free of em and en dashes (DRIVE-1, DRIVE-7).
 - `chough stage backfill --at <time> --commit <rev> --quote <text>` records a move to
   the next main stage that already happened, at its original time with the commit and
   quote it rests on (REQ-cli-036, REQ-history-005). Every advance refusal applies and

@@ -2,6 +2,7 @@
 
 use crate::evidence::{self, CaseRef, Evidence, Kind, Outcome, PROVENANCE};
 use crate::identity;
+use crate::records::valid_module_name;
 use crate::records::{
     Captured, Limits, digest_bytes, local_path, now, print_json, run_bounded, valid_name,
     write_new_bytes,
@@ -245,7 +246,7 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
         );
         let stem = name.trim_end_matches(".cases.toml");
         ensure!(
-            parsed.module == stem && valid_name(stem),
+            parsed.module == stem && valid_module_name(stem),
             "{file}: module must equal the file stem"
         );
         for case in parsed.cases {
