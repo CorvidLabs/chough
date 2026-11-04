@@ -186,3 +186,48 @@ fn the_warning_changes_no_gate_and_adds_no_native_read() {
         "native reads with and without the warning"
     );
 }
+
+/// The #92 review: the warning names effective commands, but a huge or long list must not
+/// push `next` past its 16384-byte bound (REQ-cli-021); at most 3 commands are named,
+/// each cut like other record strings, with a count for the rest.
+#[cfg(unix)]
+#[test]
+fn the_warning_stays_within_the_next_bound() {
+    let huge = format!("specsync check --spec {}", "x".repeat(20_000));
+    let fixture = at_test(
+        Some(ENABLED),
+        Some(&(serde_json::to_string(&[huge.as_str()]).unwrap() + "\n")),
+    );
+    let json = fixture.run(&["next", "--json"]);
+    assert!(json.status.success());
+    assert!(
+        json.stdout.len() <= 16_384,
+        "next --json is {} bytes",
+        json.stdout.len()
+    );
+    let view: Value = serde_json::from_slice(&json.stdout).unwrap();
+    let warning = view[KEY].as_str().unwrap_or_default();
+    assert!(
+        warning.contains("runs none of the project's commands") && warning.contains("[cut]"),
+        "{warning:.300}"
+    );
+    let shown = text(&fixture);
+    assert!(shown.len() <= 16_384, "next is {} bytes", shown.len());
+    assert!(shown.contains("runs none of the project's commands"));
+
+    let many: Vec<String> = (1..=10)
+        .map(|n| format!("specsync check --spec module{n}"))
+        .collect();
+    let fixture = at_test(
+        Some(ENABLED),
+        Some(&(serde_json::to_string(&many).unwrap() + "\n")),
+    );
+    let warning = fixture.ok(&["next", "--json"])[KEY].clone();
+    let warning = warning.as_str().unwrap_or_default();
+    assert!(
+        warning.contains("`specsync check --spec module3`"),
+        "{warning}"
+    );
+    assert!(!warning.contains("module4`"), "{warning}");
+    assert!(warning.contains("7 more"), "{warning}");
+}
