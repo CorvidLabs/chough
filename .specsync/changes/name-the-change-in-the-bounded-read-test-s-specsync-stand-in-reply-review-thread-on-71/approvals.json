@@ -1,0 +1,38 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793759495,
+      "digest": "7cd0984247a7960a4442e75ef94177252196327ff7268a82ba53f44161e4856a",
+      "note": "Approved by corvid-agent under Leif's standing authority (Nov 3, 2026, 7:49 AM MST) for bounded fixes to existing Chough bug tickets, and Leif's ask to close up the Chough PRs (t820u). Test fixture only, needed by the #71 review-thread fix.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "name-the-change-in-the-bounded-read-test-s-specsync-stand-in-reply-review-thread-on-71",
+        "title": "Name the change in the bounded-read test's SpecSync stand-in reply (review thread on #71)",
+        "description": "Name the change in the bounded-read test's SpecSync stand-in reply (review thread on #71)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/cli.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Test fixture only: the bounded-read test's stand-in reply named no change ID, which the #71 review-thread fix now refuses by design; the assertions are unchanged.",
+        "acceptance_criteria": [
+          "native_reads_end_by_their_deadline_and_retain_bounded_output passes with its assertions unchanged, its checkpoint stand-in reply naming bounded-change."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
