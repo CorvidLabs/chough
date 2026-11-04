@@ -9,6 +9,38 @@ All notable changes to Chough are recorded here. The format follows
 - `chough checkpoint --native-change <id>` asks SpecSync for the change before saving and
   refuses an ID SpecSync does not report (`refused:native-change-unknown`), leaving the
   checkpoint unchanged (#63, found in Kimi's second lab review).
+
+- Native SpecSync spec files under `specs/` are read at any size: `chough evidence
+  add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
+  next` finds the Lessons heading of a `context.md` over 4 MiB (REQ-cli-034).
+  Every Chough record keeps its bound. Until a later change, `chough library snapshot`
+  keeps its 4 MiB limit. The workflow skill's build reference gains
+  advisory "Keep it composable" guidance; size is a hint, never a gate. Leif decided
+  this on 2026-11-03.
+
+- The librarian is on by default in `knowledge/` at the project root, with a recorded
+  opt-out (`chough pref set librarian off --source ...`; KNOW-1, KNOW-5). `library
+  index` now writes one regenerated `knowledge/archives/<change-id>.md` entry per
+  archived native change and a lessons index of pointers, and lists an earlier
+  `library/` folder as is (KNOW-2, KNOW-4, KNOW-6, KNOW-12). `chough next` names the
+  index. Projects that relied on the old `off` default or the `library` folder name
+  should set `librarian off` or `library-dir library` explicitly.
+- New `chough library archive [--apply]` (REQ-cli-033; KNOW-7 to KNOW-11): a preview,
+  or with retention authority and no open native change, removal of observation proof
+  only cold archived changes list (outside the newest 3) and that is committed
+  byte-identically at HEAD (compared with `git hash-object --no-filters`, so
+  `core.autocrlf` cannot hide a difference; the exact bytes being removed are
+  checked again after the native validity check, protections are re-evaluated
+  then too, and a file or protection that changed refuses the apply with nothing
+  removed; files are held in `.chough/removing/`, put back and restored without
+  replacing a file written meanwhile, and `chough status` reports any stale hold), after its summary is written and its ledger line appended. A
+  removal that changes any affected archive's terminal evidence validity, or that
+  fails partway, is restored and refused, and an archive whose validity SpecSync cannot
+  report refuses the apply before anything is removed. It never runs on its own after
+  finalize. Knowledge entries stay within 64 KiB with cumulative manifests (paths are
+  detailed in the entry of the archive that first listed them, at most 100 rows), and
+  `library init`, `index` and `snapshot` build everything before writing, so a refusal
+  leaves no partial `knowledge/` folder.
 - The cli spec module is split so its requirements companion has headroom under the
   65,536-byte record bound: REQ-cli-018 and REQ-cli-025 to REQ-cli-027 are now
   REQ-history-001 to REQ-history-004 in the new `history` module, with wording

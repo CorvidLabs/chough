@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-observation-pointer-bound-is-400-59674733f4408c54905a3f36",
+  "criteria": [
+    "LIFE-11",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-032"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-x86_64",
+  "summary": "Ran cargo test --locked --test cli -- --exact observation_pointer_bound_is_400_and_other_lists_stay_at_200 for TC-cli-observation-pointer-bound-is-400: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-observation-pointer-bound-is-400-59674733f4408c54905a3f36.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-observation-pointer-bound-is-400-59674733f4408c54905a3f36.log": "d3509258cb12fa80134ccaa4da5925b3c1f793c0462988394463682469e73342"
+  },
+  "observed_at_unix_seconds": 1793731305,
+  "snapshot": {
+    "revision": "2f815db77ff92d08080c5f9f56ef7cef7e011d70",
+    "dirty": false,
+    "fingerprint": "b2037f5531553eaed8d0f797459031359d6088546d9db43b4e6fd07751055290",
+    "content": "1f4398879a6dc98348117096aa5c054bd21381a33003b4cc4ed4ad1eb3f4c1b1"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-observation-pointer-bound-is-400",
+      "digest": "fa10e773e3196e4cb36ded2a27ea1a60649c5a071d7f50021a3d9eafd03ddc07"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "observation_pointer_bound_is_400_and_other_lists_stay_at_200"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

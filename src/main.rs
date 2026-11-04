@@ -437,6 +437,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "environment": environment,
         "open_bugs": assessment.open_bugs,
         "blocking_bugs": assessment.blocking,
+        "removal_holds": match evidence::stale_holds(root) { Ok(holds) => json!(holds), Err(error) => json!({"unknown": error.to_string()}) },
         "human_approval": "unknown; Chough does not authenticate human identity or approval",
         "delivery": "unknown; a recorded observation does not establish deployment or release",
     }))
@@ -455,8 +456,6 @@ const LINKED_BUG_LIMIT: usize = 3;
 const BUNDLE_LIMIT: usize = 5;
 /// Decision prefixes read best-effort; any other entry is shown whole.
 const DECISION_KINDS: [&str; 3] = ["decided", "rejected", "failed"];
-/// Largest module context file searched for its Lessons heading.
-const LESSON_SOURCE_LIMIT: u64 = records::NATIVE_RECORD_LIMIT;
 const ARCHIVED_CHANGES: &str = ".specsync/archive/changes";
 /// The lists the next view may shorten, each with its total kept, as JSON pointers.
 const LISTS: [&str; 8] = [
@@ -563,21 +562,38 @@ fn last_failure(root: &Path) -> Result<Value> {
     }))
 }
 
-/// The 1-based line of the first line that is exactly `## Lessons`, read within a bound;
-/// Ok(None) for a missing file, Err with a note when it cannot be searched.
+/// The 1-based line of the first line that is exactly `## Lessons`. A module's
+/// `context.md` is a native spec file, so it is searched at any size (REQ-cli-034),
+/// line by line without loading the whole file. Ok(None) for a missing file, Err with a
+/// note when it cannot be read.
 fn lessons_heading(path: &Path) -> std::result::Result<Option<Option<usize>>, String> {
-    match records::read_native_record(path, LESSON_SOURCE_LIMIT) {
-        Ok(Some(bytes)) => Ok(Some(
-            String::from_utf8_lossy(&bytes)
-                .lines()
-                .position(|line| line.trim_end_matches('\r') == "## Lessons")
-                .map(|index| index + 1),
-        )),
-        Ok(None) => Err(format!(
-            "larger than {LESSON_SOURCE_LIMIT} bytes, not searched"
-        )),
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
-        Err(error) => Err(format!("cannot be read: {error}")),
+    use std::io::BufRead;
+    let file = match std::fs::File::open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(format!("cannot be read: {error}")),
+    };
+    let mut reader = std::io::BufReader::new(file);
+    let mut line = Vec::new();
+    let mut number = 0;
+    loop {
+        line.clear();
+        match reader.read_until(b'\n', &mut line) {
+            Ok(0) => return Ok(Some(None)),
+            Ok(_) => {}
+            Err(error) => return Err(format!("cannot be read: {error}")),
+        }
+        number += 1;
+        let mut text = line.as_slice();
+        if let Some(rest) = text.strip_suffix(b"\n") {
+            text = rest;
+        }
+        while let Some(rest) = text.strip_suffix(b"\r") {
+            text = rest;
+        }
+        if text == b"## Lessons" {
+            return Ok(Some(Some(number)));
+        }
     }
 }
 
@@ -740,6 +756,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "decisions": decisions(checkpoint.map_or(&empty, |checkpoint| &checkpoint.decisions)),
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,
+        "knowledge": library::pointer(root),
         "environment": environment.map(cut),
         "full_view": "chough status",
         "truncated": false,
@@ -1031,6 +1048,17 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
             ));
         }
     }
+    let knowledge = &view["knowledge"];
+    lines.push(
+        match (knowledge["librarian"].as_str(), knowledge["index"].as_str()) {
+            (_, Some(index)) => format!("Knowledge index: {index}"),
+            (Some("on"), None) => format!(
+                "Knowledge index: not built; run `chough library init` to create {}/",
+                text(&knowledge["dir"])
+            ),
+            _ => "Knowledge index: off (librarian opted out)".into(),
+        },
+    );
     let bundles = &view["lessons"]["archived_bundles"];
     let shown = items(bundles);
     if total(bundles) == 0 {

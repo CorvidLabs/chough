@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
+  "slug": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
+  "title": "Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays",
+  "description": "Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "45f7012197e0aa5c2ffdb163cc0025fd09b37b1a",
+  "created_at": 1793727831,
+  "updated_at": 1793749274,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "tests/next.rs",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    "specs/cli/",
+    ".chough/cases/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "`chough next` reports the 1-based line of `## Lessons` in a module context.md larger than 4 MiB, CRLF included, and `no Lessons section` for one without it, never a size note",
+    "tests/next.rs::next_searches_a_context_md_larger_than_4_mib fails before the fix and passes after it, and the existing lessons pointer test still passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [
+    "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies"
+  ],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "REQ-cli-034, accepted and archived in change read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies on this pull request, names chough next's 4 MiB context.md search as a known exception; this change modifies REQ-cli-034 to remove that exception and keeps chough library snapshot's 4 MiB refusal as a named exception. Every Chough record keeps its bound under REQ-cli-032. AGENTS.md: never invent results.",
+    "public_contract": "yes"
+  }
+}

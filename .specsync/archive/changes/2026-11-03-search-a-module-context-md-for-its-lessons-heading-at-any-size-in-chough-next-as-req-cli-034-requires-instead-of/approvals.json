@@ -1,0 +1,89 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793727861,
+      "digest": "b012401a20fbfdf9dbe8576b79fd0f9ba4688f3cfeb8ef8bc9f804150796e845",
+      "note": "Agent account corvid-agent records definition approval under the parent agent's 2026-11-03 10:39 AM MT instruction to fix the #61 review finding (https://github.com/CorvidLabs/chough/pull/61#pullrequestreview-5756873687) so chough next reads a module context.md at any size. Authority: Leif (0xLeif), 2026-11-03 10:05 AM MT, \"Spec files can grow to whatever number they want.\" This change only covers src/main.rs for REQ-cli-034; the public contract change is declared in its dependency read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies. No spec change, no HI criterion captured. Independent review and final acceptance are arranged by the parent.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
+        "title": "Search a module context.md for its Lessons heading at any size in chough next, as REQ-cli-034 requires, instead of skipping one over 4 MiB",
+        "description": "Search a module context.md for its Lessons heading at any size in chough next, as REQ-cli-034 requires, instead of skipping one over 4 MiB",
+        "kind": "bug_fix",
+        "affected_specs": [],
+        "affected_paths": [
+          "src/main.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-034, added by change read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies on the same pull request, already states this behavior; this change only covers src/main.rs, which that change's approved paths did not list",
+        "acceptance_criteria": [
+          "`chough next` reports the 1-based line of `## Lessons` in a module context.md larger than 4 MiB, CRLF included, and `no Lessons section` for one without it, never a size note",
+          "tests/next.rs::next_searches_a_context_md_larger_than_4_mib fails before the fix and passes after it, and the existing lessons pointer test still passes"
+        ],
+        "dependencies": [
+          "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies"
+        ],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "REQ-cli-034 and its public contract change are declared and approved in change read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies on the same pull request; this change only covers src/main.rs, which implements it. AGENTS.md: never invent results.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793740324,
+      "digest": "72370913855a69985ec956309b2836a30856148159cf0048c4938cb48e18f7c3",
+      "note": "Agent account corvid-agent re-approves this changed definition under Leif (0xLeif)'s standing authority of 2026-11-03 7:49 AM MT for bounded fixes to Chough tickets, and his 1:47 PM MST decision on #61 (\"Close #61 and open a fresh replacement PR\"), which has this change finish natively in #66. The edit answers review 5759349208 on #66 (https://github.com/CorvidLabs/chough/pull/66#pullrequestreview-5759349208): the definition declares the cli spec, tests/next.rs, docs/cli.md, CHANGELOG.md, specs/cli/ and .chough/cases/; drops the wording 'as REQ-cli-034 requires' from the title, description and rationale; and MODIFIES REQ-cli-034 to remove only chough next's 4 MiB exception. library snapshot's exception stays. Spec-size authority: Leif, 2026-11-03 10:05 AM MT, \"Spec files can grow to whatever number they want.\" No HI criterion was captured; LIFE-15 is not in this change. Independent review and final acceptance are arranged by the parent.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
+        "title": "Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays",
+        "description": "Search a module context.md for its Lessons heading at any size in chough next, and remove next's named 4 MiB exception from REQ-cli-034 while library snapshot's exception stays",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/cli/",
+          "src/main.rs",
+          "tests/next.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "`chough next` reports the 1-based line of `## Lessons` in a module context.md larger than 4 MiB, CRLF included, and `no Lessons section` for one without it, never a size note",
+          "tests/next.rs::next_searches_a_context_md_larger_than_4_mib fails before the fix and passes after it, and the existing lessons pointer test still passes"
+        ],
+        "dependencies": [
+          "read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies"
+        ],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "REQ-cli-034, accepted and archived in change read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies on this pull request, names chough next's 4 MiB context.md search as a known exception; this change modifies REQ-cli-034 to remove that exception and keeps chough library snapshot's 4 MiB refusal as a named exception. Every Chough record keeps its bound under REQ-cli-032. AGENTS.md: never invent results.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "dd54d24e7e2ef3eb9962e0e717b48c073869fb2ab88ada9679eb94adcc5b3ff5"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793749261,
+      "digest": "44ff8270b0f6444c53186be6af1184580fbd9c4bee1147ba9d739717c05802bb",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

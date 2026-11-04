@@ -1425,6 +1425,65 @@ fn accept_lifecycle_and_bugs_references_from_main_2756dc2_are_known_outdated() {
     }
 }
 
+#[test]
+fn build_reference_from_main_4daf861_is_known_outdated() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture.root().join(".agents/skills/chough-workflow");
+    fs::write(installed.join("references/build.md"), BUILD_AT_4DAF861).unwrap();
+    let state = |report: &Value| {
+        report["hosts"][0]["files"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["file"] == "references/build.md")
+            .unwrap()["state"]
+            .clone()
+    };
+    assert_eq!(state(&fixture.ok(&["skill", "status"])), "known-outdated");
+    fixture.ok(&["skill", "update"]);
+    assert_eq!(state(&fixture.ok(&["skill", "status"])), "current");
+    assert!(
+        fs::read_to_string(installed.join("references/build.md"))
+            .unwrap()
+            .contains("## Keep it composable")
+    );
+}
+
+/// `skills/chough-workflow/references/build.md` as shipped by main at 4daf861.
+const BUILD_AT_4DAF861: &str = r#"# Build loop
+
+`chough stage advance` from plan enters build only when native status shows the
+definition approved. Then:
+
+1. Take the next task from the native `tasks.md`. Stay inside the approved paths.
+2. Implement with the project's conventions. Keep contracts, requirements
+   traceability, tests and documentation in step.
+3. Add or update case definitions for the affected requirements (see
+   [testing.md](testing.md)).
+4. Run focused checks through Fledge (`fledge run test`, `fledge run lint`, project
+   lanes) and inspect the output, not just the exit code.
+5. Fix failures and repeat. Record a genuine product failure as a bug.
+6. Mark the task done in `tasks.md`, then save a checkpoint:
+   `chough checkpoint --completed "<increment>" --next-action "<next step>"`.
+
+## Ownership
+
+When subagents help, give each explicit files or modules, the relevant contract and
+requirements, and instructions to preserve others' edits. Only one agent edits a
+shared file at a time. The checkpoint has one writer; other agents report back
+instead of editing it.
+
+## Escalate only what matters
+
+Ordinary choices inside the approved scope are yours. Escalate a genuine blocker or
+a decision that would change intent, contract, acceptance criteria or scope. Record
+it with `--blocker` or `--awaiting-human`, and go back to plan if scope must change.
+
+A model saying a task is done is not a native transition, a passed test or a review.
+Native records and process results are what count.
+"#;
+
 /// `skills/chough-workflow/references/accept.md` as shipped by main at 2756dc2.
 const ACCEPT_AT_2756DC2: &str = r#"# Acceptance and native closeout
 
@@ -1758,5 +1817,66 @@ fn exercise_cleanup_handles_a_relative_tmpdir() {
     assert!(
         cwd.path().join("given").is_dir(),
         "a passed-in directory was removed"
+    );
+}
+
+/// Spec files under `specs/**` are read at any size (Leif, 2026-11-03 10:05 AM MT:
+/// "Spec files can grow to whatever number they want"), while Chough's own
+/// records keep their bounds (see the preferences test above).
+#[test]
+fn spec_requirements_companions_are_read_at_any_size() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    // Over the 65,536-byte record bound and over the 4 MiB native record bound.
+    let padding = "Filler line that keeps this companion large.\n".repeat(120_000);
+    assert!(padding.len() > 4 * 1_048_576);
+    fixture.write(
+        "specs/cli/requirements.md",
+        &format!("{padding}### REQ-cli-001\nPreserve files.\n"),
+    );
+    fixture.write("specs/checkout-ui/checkout-ui.spec.md", "# Checkout UI\n");
+    fixture.write(
+        "specs/checkout-ui/requirements.md",
+        &format!("{padding}### REQ-checkout-ui-004\nShow the order total.\n"),
+    );
+    let add = |id: &str, requirement: &str| {
+        fixture.run(&[
+            "evidence",
+            "add",
+            id,
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            requirement,
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "test-local",
+            "--summary",
+            "Observed preserved files",
+        ])
+    };
+    let accepted = add("OBS-product-test-000000000000000000000071", "REQ-cli-001");
+    assert!(
+        accepted.status.success(),
+        "{}",
+        String::from_utf8_lossy(&accepted.stderr)
+    );
+    let refused = add(
+        "OBS-product-test-000000000000000000000072",
+        "REQ-checkout-ui-004",
+    );
+    let error = String::from_utf8_lossy(&refused.stderr).into_owned();
+    assert_eq!(refused.status.code(), Some(1), "{error}");
+    assert!(!error.contains("exceeds"), "{error}");
+    assert!(
+        error.contains(
+            "REQ-checkout-ui-004 belongs to module checkout-ui (specs/checkout-ui/requirements.md)"
+        ),
+        "{error}"
     );
 }

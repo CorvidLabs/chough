@@ -1037,3 +1037,718 @@ fn retention_revalidation_keeps_changed_missing_and_newly_referenced_proof() {
     assert_eq!(report["skipped"][0]["id"], "revalidate-0");
     assert!(f.exists(".chough/evidence/revalidate-0.json"));
 }
+
+/// Five archived changes (a5..a3 hot, a2 and a1 cold) whose verification manifests list
+/// observation records, with a SpecSync stand-in that reports terminal evidence validity.
+/// `.stub-break` names a file whose absence makes every archive read `unauthenticated`.
+/// `.stub-hook` is a script the status call after the first N (`.stub-hook-after`) runs
+/// once, as an editor or another agent could act while the native check runs.
+#[cfg(unix)]
+fn knowledge_fixture() -> Fixture {
+    let fixture = Fixture::new();
+    fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
+    fixture.write(
+        "bin/specsync",
+        r#"#!/bin/sh
+id="$3"
+validity=authenticated-history
+if [ -f .stub-break ] && [ ! -f "$(cat .stub-break)" ]; then validity=unauthenticated; fi
+if [ -f .stub-fail ] && [ "$(cat .stub-fail)" = "$id" ]; then echo "status unavailable" >&2; exit 1; fi
+if [ -f .stub-hook ]; then
+  calls=$(($(cat .stub-calls 2>/dev/null || echo 0) + 1)); echo "$calls" > .stub-calls
+  if [ "$calls" -gt "$(cat .stub-hook-after)" ]; then sh .stub-hook; rm .stub-hook .stub-hook-after .stub-calls; fi
+fi
+printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity":"%s"}},"acceptance_entries":[]}\n' "$id" "$validity"
+"#,
+    );
+    fixture.executable("bin/specsync");
+    fixture.write(
+        "specs/cli/context.md",
+        "# Context\n\nIntro.\n\n## Lessons\n\n- 2026-01-01: a lesson.\n",
+    );
+    let listing: [(&str, &[&str]); 5] = [
+        ("a1", &["cold-a", "shared", "bugref", "n1"]),
+        ("a2", &["cold-b", "manual", "cold-c"]),
+        ("a3", &[]),
+        ("a4", &["shared"]),
+        ("a5", &["hot-x"]),
+    ];
+    for (index, (id, listed)) in listing.iter().enumerate() {
+        let dir = format!(".specsync/archive/changes/2026-0{}-01-{id}", index + 1);
+        fixture.write(
+            &format!("{dir}/finalization.json"),
+            &format!(
+                "{{\"schema_version\": 2, \"change_id\": \"{id}\", \"timestamp\": {}, \"implementation_commit\": \"{}\"}}\n",
+                (index + 1) * 100,
+                "1".repeat(40)
+            ),
+        );
+        let mut entries: Vec<Value> =
+            vec![json!({"path": "specs/cli/cli.spec.md", "kind": "file", "payload_digest": ZERO})];
+        for obs in *listed {
+            entries.push(json!({"path": format!(".chough/evidence/{obs}.json"), "kind": "file", "payload_digest": ZERO}));
+        }
+        if *id == "a1" {
+            entries.push(json!({"path": ".chough/artifacts/cold-a.log", "kind": "file", "payload_digest": digest("cold log\n")}));
+        }
+        if *id == "a5" {
+            // Real cumulative manifests exceed the 64 KiB structured-record bound.
+            for index in 0..800 {
+                entries.push(json!({"path": format!("docs/padding/{index:04}.md"), "kind": "file", "payload_digest": ZERO}));
+            }
+        }
+        fixture.write(
+            &format!("{dir}/verification.json"),
+            &serde_json::to_string_pretty(&json!({
+                "commit": "2".repeat(40),
+                "passed": true,
+                "requirement_ids": ["REQ-cli-001"],
+                "acceptance_manifest": {"schema_version": 1, "entries": entries},
+            }))
+            .unwrap(),
+        );
+        fixture.write(
+            &format!("{dir}/change.md"),
+            &format!(
+                "---\nid: {id}\nstate: archived\nbase_commit: {}\n---\n\n# Title of {id}\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- {id} works\n- {id} is documented\n\n## Other\n\n- not a criterion\n",
+                "3".repeat(40)
+            ),
+        );
+        fixture.write(
+            &format!("{dir}/lesson-bundle.md"),
+            &format!("# Lesson bundle: {id}\n"),
+        );
+    }
+    fixture.init();
+    for (id, outcome, age) in [
+        ("n1", "failed", 1),
+        ("n2", "passed", 2),
+        ("n3", "passed", 3),
+    ] {
+        write_obs(&fixture, &Obs::run(id, "TC-a", outcome, age));
+    }
+    write_obs(
+        &fixture,
+        &Obs::run("cold-a", "TC-a", "passed", 5)
+            .with_log(".chough/artifacts/cold-a.log", "cold log\n"),
+    );
+    for (id, age) in [
+        ("cold-b", 6),
+        ("hot-x", 7),
+        ("shared", 8),
+        ("bugref", 9),
+        ("plain", 10),
+    ] {
+        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
+    }
+    let mut manual = Obs::run("manual", "TC-a", "passed", 11);
+    manual.method = Some("manual");
+    write_obs(&fixture, &manual);
+    write_bug(&fixture, "BUG-0001", "verified", &["bugref"], None);
+    fixture.commit("fixture");
+    // Written after the commit, so its bytes are not at HEAD.
+    write_obs(&fixture, &Obs::run("cold-c", "TC-a", "passed", 12));
+    fixture
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_previews_cold_archive_proof_and_keeps_protections() {
+    let fixture = knowledge_fixture();
+    let before = tree(fixture.root());
+    let preview = fixture.ok(&["library", "archive"]);
+    assert_eq!(tree(fixture.root()), before, "the preview wrote");
+    assert_eq!(preview["applied"], false);
+    assert_eq!(preview["hot"], json!(["a5", "a4", "a3"]));
+    assert_eq!(preview["cold"], json!(["a2", "a1"]));
+    assert_eq!(
+        ids(&preview["eligible"]),
+        set(["cold-a", "cold-b"]),
+        "{preview:#}"
+    );
+    let cold_a = preview["eligible"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| entry["id"] == "cold-a")
+        .unwrap();
+    assert_eq!(
+        cold_a["files"],
+        json!([
+            ".chough/evidence/cold-a.json",
+            ".chough/artifacts/cold-a.log"
+        ])
+    );
+    assert_eq!(cold_a["archives"], json!(["a1"]));
+    assert!(cold_a["bytes"].as_u64().unwrap() > 0);
+    assert!(reasons(&preview, "shared").contains(&"hot archive a4".to_string()));
+    assert!(reasons(&preview, "hot-x").contains(&"hot archive a5".to_string()));
+    assert!(
+        reasons(&preview, "bugref")
+            .iter()
+            .any(|reason| reason.starts_with("BUG-0001")),
+        "{:?}",
+        reasons(&preview, "bugref")
+    );
+    assert!(
+        reasons(&preview, "manual")
+            .iter()
+            .any(|reason| reason.contains("manual"))
+    );
+    assert!(reasons(&preview, "n1").contains(&"newest".to_string()));
+    assert_eq!(ids(&preview["uncommitted"]), set(["cold-c"]));
+    // An observation no archive lists is left to `evidence prune`.
+    assert!(!ids(&preview["protected"]).contains("plain"));
+    assert!(!ids(&preview["eligible"]).contains("plain"));
+    assert_eq!(preview["totals"]["eligible"], 2);
+    // An archive manifest that cannot be read fails closed instead of reading as empty.
+    fixture.write(
+        ".specsync/archive/changes/2026-05-01-a5/verification.json",
+        "{not json",
+    );
+    let refused = fixture.fails(&["library", "archive"]);
+    assert!(
+        refused.contains("a5") && refused.contains("verification"),
+        "{refused}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change() {
+    let fixture = knowledge_fixture();
+    let before = tree(fixture.root());
+    assert!(
+        fixture
+            .fails(&["library", "archive", "--apply"])
+            .contains("not authorized")
+    );
+    assert_eq!(tree(fixture.root()), before);
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    fixture.write(".specsync/changes/open-one/change.md", "open\n");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(refused.contains("open-one"), "{refused}");
+    assert!(fixture.exists(".chough/evidence/cold-a.json"));
+    fs::remove_dir_all(fixture.root().join(".specsync/changes")).unwrap();
+
+    // A removal that changes an affected archive's validity is restored and refused.
+    fixture.write(".stub-break", ".chough/evidence/cold-a.json");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    let broken = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(broken.contains("validity"), "{broken}");
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert_eq!(fixture.read(".chough/artifacts/cold-a.log"), log);
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    let ledger = fixture.read(".chough/pruned.jsonl");
+    assert!(
+        ledger.lines().any(|line| line.contains("\"restored\"")),
+        "{ledger}"
+    );
+    fs::remove_file(fixture.root().join(".stub-break")).unwrap();
+
+    let applied = fixture.ok(&["library", "archive", "--apply"]);
+    assert_eq!(
+        applied["pruned"],
+        json!(["cold-a", "cold-b"]),
+        "{applied:#}"
+    );
+    assert!(!fixture.exists(".chough/evidence/cold-a.json"));
+    assert!(!fixture.exists(".chough/artifacts/cold-a.log"));
+    assert!(!fixture.exists(".chough/evidence/cold-b.json"));
+    for kept in [
+        "shared", "hot-x", "bugref", "manual", "n1", "cold-c", "plain",
+    ] {
+        assert!(
+            fixture.exists(&format!(".chough/evidence/{kept}.json")),
+            "{kept}"
+        );
+    }
+    let lines: Vec<Value> = fixture
+        .read(".chough/pruned.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .filter(|entry: &Value| entry["event"].is_null())
+        .collect();
+    let archived: Vec<&Value> = lines
+        .iter()
+        .filter(|entry| {
+            entry["reason"]
+                .as_str()
+                .unwrap()
+                .starts_with("archived-summary")
+        })
+        .collect();
+    assert!(archived.iter().any(|entry| entry["id"] == "cold-a"
+        && entry["knowledge"] == "knowledge/archives/a1.md"
+        && entry["artifacts"][".chough/artifacts/cold-a.log"] == digest("cold log\n")));
+    let entry = fixture.read("knowledge/archives/a1.md");
+    assert!(entry.contains(".chough/evidence/cold-a.json"), "{entry}");
+    assert!(entry.contains("Git "), "{entry}");
+    // A removed observation referenced later reads as pruned, never current or passed.
+    fixture.ok(&["checkpoint", "--observation", "cold-a"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let item = next["observations"]["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|item| item["id"] == "cold-a")
+        .cloned()
+        .unwrap_or_else(|| panic!("{next:#}"));
+    assert_eq!(item["label"], "pruned");
+}
+
+#[cfg(unix)]
+#[test]
+fn knowledge_entries_summarize_each_archive_deterministically() {
+    let fixture = knowledge_fixture();
+    fixture.write("library/briefs/old.md", "# Old brief\n");
+    fixture.write(
+        "library/snapshots/2024-01-01-1/manifest.json",
+        "{\"schema_version\":1,\"reason\":\"old\",\"revision\":null,\"created_at_unix_seconds\":1,\"entries\":[]}\n",
+    );
+    let earlier = fixture.read("library/briefs/old.md");
+    fixture.ok(&["library", "index"]);
+    let first = tree(&fixture.root().join("knowledge"));
+    fixture.ok(&["library", "index"]);
+    assert_eq!(
+        tree(&fixture.root().join("knowledge")),
+        first,
+        "regeneration differs"
+    );
+    assert_eq!(fixture.read("library/briefs/old.md"), earlier);
+    let index = fixture.read("knowledge/INDEX.md");
+    assert!(
+        index.contains("[a5](archives/a5.md) Title of a5 (hot)"),
+        "{index}"
+    );
+    assert!(
+        index.contains("[a1](archives/a1.md) Title of a1 (cold)"),
+        "{index}"
+    );
+    assert!(index.contains("## Lessons index"), "{index}");
+    assert!(
+        index.contains("specs/cli/context.md](../specs/cli/context.md) (## Lessons at line 5)"),
+        "{index}"
+    );
+    assert!(index.contains("2026-05-01-a5/lesson-bundle.md"), "{index}");
+    assert!(!index.contains("a lesson."), "lesson text copied: {index}");
+    assert!(index.contains("## Earlier library folder"), "{index}");
+    assert!(index.contains("../library/briefs/old.md"), "{index}");
+    assert!(
+        index.contains("../library/snapshots/2024-01-01-1/manifest.json"),
+        "{index}"
+    );
+    let entry = fixture.read("knowledge/archives/a1.md");
+    for expected in [
+        "# a1: Title of a1",
+        "- a1 works",
+        "- a1 is documented",
+        "REQ-cli-001",
+        &"1".repeat(40),
+        &"2".repeat(40),
+        &"3".repeat(40),
+        &format!(
+            "`.chough/artifacts/cold-a.log` | {} | working tree",
+            digest("cold log\n")
+        ),
+        "| cold-a | passed | local | TC-a |",
+        "BUG-0001",
+        "2026-01-01-a1/lesson-bundle.md",
+        "not a ledger",
+    ] {
+        assert!(entry.contains(expected), "missing {expected:?} in {entry}");
+    }
+    assert!(!entry.contains("not a criterion"), "{entry}");
+    // Listed with a digest that differs from the file on disk.
+    assert!(
+        entry.contains("working tree (changed since archive)"),
+        "{entry}"
+    );
+    // No gate reads the knowledge directory.
+    let mut with = fixture.ok(&["next", "--json"]);
+    fs::remove_dir_all(fixture.root().join("knowledge")).unwrap();
+    let mut without = fixture.ok(&["next", "--json"]);
+    with.as_object_mut().unwrap().remove("knowledge");
+    without.as_object_mut().unwrap().remove("knowledge");
+    assert_eq!(with, without);
+}
+
+#[cfg(unix)]
+#[test]
+fn knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing() {
+    let fixture = knowledge_fixture();
+    // A cumulative manifest relists earlier proof and adds far more than 64 KiB of paths.
+    let path = ".specsync/archive/changes/2026-05-01-a5/verification.json";
+    let mut manifest: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    let entries = manifest["acceptance_manifest"]["entries"]
+        .as_array_mut()
+        .unwrap();
+    for shared in ["cold-a", "shared"] {
+        entries.push(json!({"path": format!(".chough/evidence/{shared}.json"), "kind": "file", "payload_digest": ZERO}));
+    }
+    for index in 0..1500 {
+        entries.push(json!({"path": format!(".chough/evidence/OBS-padding-cumulative-proof-{index:04}-0123456789abcdef.json"), "kind": "file", "payload_digest": ZERO}));
+    }
+    fixture.write(path, &serde_json::to_string_pretty(&manifest).unwrap());
+    fixture.ok(&["library", "init"]);
+    let entry = fixture.read("knowledge/archives/a5.md");
+    assert!(entry.len() <= 65_536, "{} bytes", entry.len());
+    assert!(
+        entry.contains("1501 first listed by this archive"),
+        "{entry}"
+    );
+    assert!(
+        entry.contains("not shown; read them from the manifest"),
+        "{entry}"
+    );
+    // Proof an earlier archive first listed is detailed there, not repeated here.
+    assert!(!entry.contains("`.chough/evidence/cold-a.json`"), "{entry}");
+    assert!(
+        fixture
+            .read("knowledge/archives/a1.md")
+            .contains("`.chough/evidence/cold-a.json`")
+    );
+    assert!(
+        !fixture
+            .read("knowledge/archives/a4.md")
+            .contains("`.chough/evidence/shared.json`")
+    );
+    fixture.ok(&[
+        "library",
+        "snapshot",
+        "specs/cli/context.md",
+        "--reason",
+        "bounded",
+    ]);
+
+    // An index that cannot be bounded refuses before anything is written.
+    let fresh = knowledge_fixture();
+    for (index, id) in ["a1", "a2", "a3", "a4", "a5"].iter().enumerate() {
+        let change = format!(
+            ".specsync/archive/changes/2026-0{}-01-{id}/change.md",
+            index + 1
+        );
+        let text = fresh.read(&change).replace(
+            &format!("# Title of {id}"),
+            &format!("# Title of {id} {}", "x".repeat(20_000)),
+        );
+        fresh.write(&change, &text);
+    }
+    let refused = fresh.fails(&["library", "init"]);
+    assert!(refused.contains("65536"), "{refused}");
+    assert!(
+        !fresh.exists("knowledge"),
+        "a refused init left a partial knowledge folder"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal() {
+    use std::os::unix::fs::PermissionsExt;
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // SpecSync cannot report a cold archive's validity: refuse, remove and ledger nothing.
+    fixture.write(".stub-fail", "a1");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(
+        refused.contains("a1") && refused.contains("validity"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+    fs::remove_file(fixture.root().join(".stub-fail")).unwrap();
+
+    // A removal that errors partway restores what it removed and records the restore.
+    let artifacts = fixture.root().join(".chough/artifacts");
+    fs::set_permissions(&artifacts, fs::Permissions::from_mode(0o555)).unwrap();
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    let failed = fixture.fails(&["library", "archive", "--apply"]);
+    fs::set_permissions(&artifacts, fs::Permissions::from_mode(0o755)).unwrap();
+    assert!(failed.contains("removal failed partway"), "{failed}");
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert_eq!(fixture.read(".chough/artifacts/cold-a.log"), log);
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    let ledger = fixture.read(".chough/pruned.jsonl");
+    assert!(
+        ledger
+            .lines()
+            .any(|line| line.contains("\"restored\"") && line.contains("cold-a")),
+        "{ledger}"
+    );
+    let preview = fixture.ok(&["library", "archive"]);
+    assert_eq!(
+        ids(&preview["eligible"]),
+        set(["cold-a", "cold-b"]),
+        "{preview:#}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    // Planning reads the latest archive's manifest with one status call; the next one is
+    // the validity check that runs after the plan found every file identical at HEAD.
+    fixture.write(
+        ".stub-hook",
+        "printf 'new uncommitted bytes\\n' >> .chough/artifacts/cold-a.log\n",
+    );
+    fixture.write(".stub-hook-after", "1\n");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(fixture.exists(".chough/artifacts/cold-a.log"), "{refused}");
+    assert!(refused.contains("changed"), "{refused}");
+    assert!(
+        refused.contains(".chough/artifacts/cold-a.log"),
+        "{refused}"
+    );
+    // The bytes written during the check were never committed; they are kept, and
+    // nothing else was removed or ledgered.
+    assert_eq!(
+        fixture.read(".chough/artifacts/cold-a.log"),
+        format!("{log}new uncommitted bytes\n")
+    );
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf() {
+    let fixture = knowledge_fixture();
+    let status = std::process::Command::new("git")
+        .args(["config", "core.autocrlf", "true"])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(status.success());
+    // Same text with CRLF endings: a clean filter would hash it to HEAD's LF blob.
+    let record = fixture.read(".chough/evidence/cold-b.json");
+    assert!(!record.contains('\r'));
+    fixture.write(
+        ".chough/evidence/cold-b.json",
+        &record.replace('\n', "\r\n"),
+    );
+    let preview = fixture.ok(&["library", "archive"]);
+    assert_eq!(ids(&preview["eligible"]), set(["cold-a"]), "{preview:#}");
+    assert!(
+        preview["uncommitted"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entry| entry["id"] == "cold-b"),
+        "{preview:#}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // The checkpoint as it would read once it references cold-a.
+    let session = fixture.read(".chough/session.json");
+    fixture.ok(&["checkpoint", "--observation", "cold-a"]);
+    fixture.write(".stub-session", &fixture.read(".chough/session.json"));
+    fixture.write(".chough/session.json", &session);
+    assert_eq!(
+        ids(&fixture.ok(&["library", "archive"])["eligible"]),
+        set(["cold-a", "cold-b"])
+    );
+    // It starts referencing cold-a during the first validity call, after planning.
+    fixture.write(".stub-hook", "cp .stub-session .chough/session.json\n");
+    fixture.write(".stub-hook-after", "1\n");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(
+        refused.contains("protections or committed bytes changed"),
+        "{refused}"
+    );
+    assert!(refused.contains("cold-a"), "{refused}");
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert!(fixture.exists(".chough/artifacts/cold-a.log"));
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+    assert!(!fixture.exists(".chough/removing"));
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // The checkpoint as it would read once it references cold-a.
+    let session = fixture.read(".chough/session.json");
+    fixture.ok(&["checkpoint", "--observation", "cold-a"]);
+    fixture.write(".stub-session", &fixture.read(".chough/session.json"));
+    fixture.write(".chough/session.json", &session);
+    // A Git stand-in that forwards to Git and, on the first unfiltered stdin hash (the
+    // HEAD check of the bytes held for removal, after the validity check and its
+    // re-plan), makes the checkpoint reference cold-a: another agent's update that
+    // changes neither archive validity nor the candidate's bytes.
+    let real_git = String::from_utf8(
+        std::process::Command::new("sh")
+            .args(["-c", "command -v git"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ \"$1 $2 $3\" = \"hash-object --no-filters --stdin\" ] && [ -f .stub-session ]; then\n  cp .stub-session .chough/session.json && rm .stub-session\nfi\nexec '{}' \"$@\"\n",
+            real_git.trim()
+        ),
+    );
+    fixture.executable("bin/git");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    let other = fixture.read(".chough/evidence/cold-b.json");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(
+        !fixture.exists(".stub-session"),
+        "the hook did not run: {refused}"
+    );
+    assert!(
+        refused.contains("protections changed during removal") && refused.contains("cold-a"),
+        "{refused}"
+    );
+    // The checkpoint references cold-a, and every file of every set is still there.
+    assert!(fixture.read(".chough/session.json").contains("cold-a"));
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), record);
+    assert_eq!(fixture.read(".chough/artifacts/cold-a.log"), log);
+    assert_eq!(fixture.read(".chough/evidence/cold-b.json"), other);
+    assert!(!fixture.exists(".chough/removing"));
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_summary_restore_keeps_a_file_recreated_during_the_apply() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // Removing cold-a.json changes validity, so the apply restores; before it does, a
+    // writer recreates cold-a.json with new bytes during the re-read of validity.
+    fixture.write(".stub-break", ".chough/evidence/cold-a.json");
+    let record = fixture.read(".chough/evidence/cold-a.json");
+    let recreated = format!("{record}\n  \n");
+    fixture.write(".stub-recreated", &recreated);
+    fixture.write(
+        ".stub-hook",
+        "cp .stub-recreated .chough/evidence/cold-a.json\n",
+    );
+    // Planning reads one manifest and the first validity check reads a1 and a2.
+    fixture.write(".stub-hook-after", "3\n");
+    let log = fixture.read(".chough/artifacts/cold-a.log");
+    let failed = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(failed.contains("validity"), "{failed}");
+    assert!(
+        failed.contains("not restored because a file was written there meanwhile")
+            && failed.contains(".chough/evidence/cold-a.json"),
+        "{failed}"
+    );
+    assert_eq!(fixture.read(".chough/evidence/cold-a.json"), recreated);
+    assert_eq!(fixture.read(".chough/artifacts/cold-a.log"), log);
+    assert!(fixture.exists(".chough/evidence/cold-b.json"));
+    assert!(!fixture.exists(".chough/removing"));
+    let ledger = fixture.read(".chough/pruned.jsonl");
+    assert!(
+        ledger
+            .lines()
+            .any(|line| line.contains("\"restored\"") && line.contains("written there meanwhile")),
+        "{ledger}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    // A hold an interrupted apply left behind sits outside every record directory.
+    fixture.write(
+        ".chough/removing/0123456789abcdef01234567.hold",
+        "held bytes\n",
+    );
+    let status = fixture.ok(&["status"]);
+    assert_eq!(
+        status["removal_holds"],
+        json!([".chough/removing/0123456789abcdef01234567.hold"]),
+        "{status:#}"
+    );
+    // Every other reader of the record directories still works with the hold present.
+    fixture.ok(&["next", "--json"]);
+    fixture.ok(&["context", "--json"]);
+    fixture.ok(&["timing", "--json"]);
+    fixture.ok(&["bug", "list"]);
+    fixture.ok(&["evidence", "prune"]);
+    let preview = fixture.ok(&["library", "archive"]);
+    assert_eq!(preview["stale_holds"], status["removal_holds"]);
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(refused.contains(".chough/removing"), "{refused}");
+    assert!(fixture.exists(".chough/evidence/cold-a.json"));
+    assert_eq!(
+        fixture.read(".chough/removing/0123456789abcdef01234567.hold"),
+        "held bytes\n"
+    );
+    assert!(!fixture.exists(".chough/pruned.jsonl"));
+    // Once the holds are resolved, the apply runs and leaves no hold behind.
+    fs::remove_dir_all(fixture.root().join(".chough/removing")).unwrap();
+    let applied = fixture.ok(&["library", "archive", "--apply"]);
+    assert_eq!(
+        applied["pruned"],
+        json!(["cold-a", "cold-b"]),
+        "{applied:#}"
+    );
+    assert!(!fixture.exists(".chough/removing"));
+    assert_eq!(fixture.ok(&["status"])["removal_holds"], json!([]));
+}

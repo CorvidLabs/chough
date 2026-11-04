@@ -23,10 +23,10 @@ their JSON.
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` allocate an OBS ID when `--observation-id` is omitted and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID allocates the new OBS form; an explicit ID must use that form for a new write. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
-| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` off, on; `library-dir` a path (default `library`); `required-lane` a name (default empty); `retention` off, auto. Only `always`, `standing` and `auto` authorize without a run consent. |
+| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto. Only `always`, `standing` and `auto` authorize without a run consent. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. A new run receives a VAL ID and every attempt receives a new OBS ID. `resume ID` continues a new or legacy run under its original ID; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
-| `library init\|snapshot PATH... --reason R\|index` | Optional librarian; requires `pref set librarian on --source ...`. `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` with new and legacy dated snapshots. |
+| `library init\|snapshot PATH... --reason R\|index\|archive [--apply]` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` (new and legacy dated snapshots, archived changes newest first with the newest 3 marked hot, a lessons index of pointers, and any earlier `library/` folder listed as is) and one `archives/<change-id>.md` entry per archived native change. `archive` previews, or with `--apply` performs, the post-archive summary; see [Post-archive summary](#post-archive-summary). No gate reads the knowledge directory. |
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. Hosts that share a directory get one entry. Both report a `legacy` list for an older `.claude/skills` copy, with each file's state, and never write it. |
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
@@ -99,6 +99,11 @@ captured output to 1 MiB, context to 16 KiB per section and 128 KiB in total,
 sessions to 16 modules, the checkpoint `observations` list to 400 items, every other
 checkpoint list to 200 items and side-stage nesting to 4 levels. Chough releases
 before this bound refuse a checkpoint over 64 KiB.
+Native SpecSync spec files under `specs/` are the project's contracts, not Chough
+records, and are read at any size; size is a composability hint, never a gate.
+`next` searches a module's `context.md` for its Lessons heading at any size. One
+reader is a known exception until a later change lifts it: `library snapshot`
+refuses any file over 4 MiB (REQ-cli-034).
 Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
 up to 16 KiB; `status` carries the parsed state and next action in `native_summary`
 and `next` in `native`. Larger output is reported as `oversized` and refuses gated
@@ -324,7 +329,7 @@ stage on that response, and shows:
 | `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest checkpoint decisions, newest first; see [Decision prefixes](#decision-prefixes) |
 | `last_failure` | `{"id", "observed_at_unix_seconds", "summary", "bugs": {"total", "items": [{"id", "status"}]}}` for the failed observation with the greatest recorded `observed_at_unix_seconds` (ties to the greater ID), with at most 3 bugs that link it by their observations, note observations or regression baseline, by bug ID; `null` when no observation failed. No freshness label is computed; run `chough status` or the case for that |
-| `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>]}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing`, `larger than 4194304 bytes, not searched` or `cannot be read: <error>`, for example for a symlinked module directory); and the `.specsync/archive/changes/*/lesson-bundle.md` files, newest first by archive directory name, at most 5 (a symlinked archive directory lists none) |
+| `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>]}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing` or `cannot be read: <error>`, for example for a symlinked module directory); and the `.specsync/archive/changes/*/lesson-bundle.md` files, newest first by archive directory name, at most 5 (a symlinked archive directory lists none) |
 | `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
 
 The text form (the default) carries the same fields as short lines. Each form is at
@@ -523,6 +528,62 @@ run's `observation_labels`):
 Pruned and unavailable observations never count as current, passed or verifying
 evidence: bug verification ignores them, `bug update --status verified` needs a present
 passed observation, and validation runs keep their recorded counts.
+
+## Post-archive summary
+
+`chough library archive` keeps one regenerated summary per archived native change in
+`knowledge/archives/<change-id>.md` (title, hot or cold, base, implementation and
+verification commits, requirement IDs, acceptance criteria, each `.chough/` path the
+archive first listed with its manifest digest and where its bytes are now, observation
+outcomes, linked bugs and the lesson bundle) and lets the raw proof go once it is safely
+in Git (REQ-cli-033).
+
+- Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
+  path an earlier archive already listed is counted but detailed only in that earlier
+  entry, and at most 100 rows are listed in full; the rest are counted and left to the
+  native `verification.json`. `library init`, `index` and `snapshot` build and bound
+  every entry and the index in memory first, so a refusal writes nothing.
+
+- Archived changes are ordered by finalization timestamp, then directory, newest first;
+  the newest 3 are hot. An observation set the verification manifest of a hot archive
+  lists stays, with the reason `hot archive <id>`.
+- A set is eligible only when cold archives list it, no hot archive does, and no other
+  retention protection applies once age and the latest-archive reason are set aside:
+  checkpoint and bug references, active native manifests, named files, non-routine
+  records, the newest 3 and the newest failure per case and environment, and validation
+  failures and first and last passes all still protect it.
+- Every file of an eligible set must be tracked at HEAD with identical bytes; a set
+  that is not is listed under `uncommitted` and kept. Bytes are hashed with `git
+  hash-object --no-filters`, so `core.autocrlf` or a clean filter cannot make a file
+  that differs from HEAD look committed.
+- The preview writes nothing. `--apply` needs retention authority (`consent grant
+  retention` or `pref set retention auto`), is refused while any native change is open,
+  writes the knowledge entries first, appends each set's ledger line to
+  `.chough/pruned.jsonl` (reason `archived-summary`, the knowledge entry and the head)
+  before removing it, then re-reads every affected archive's terminal evidence
+  validity. If any changed, if a validity cannot be re-read, or if any step after the
+  first ledger line fails, every removed file is restored, a `restored` ledger event is
+  appended for each ledgered set, and the command fails.
+- Validity must be read as a real value before anything is removed: when `specsync
+  change status` fails or does not report an affected archive's terminal evidence
+  validity, `--apply` refuses and removes and ledgers nothing.
+- Files and protections can change while the validity check runs. After it,
+  `--apply` re-plans from local state (the checkpoint, bugs, named files, open native
+  changes and HEAD, reusing the native manifests it already read) and refuses,
+  removing and ledgering nothing, unless every eligible set is still eligible with the
+  same files. It then checks the exact bytes it holds against HEAD again.
+- Each file is moved into `.chough/removing/`, compared and deleted at once. Bytes that
+  differ are put back with a hard link, which never replaces a file written there
+  meanwhile; only if one was, the changed bytes stay in `.chough/removing/` and the
+  command names them. A rollback restores with create-new, so a file recreated
+  meanwhile is kept as written (the removed bytes are recoverable from HEAD) and the
+  failure names it.
+- Holds left by an interrupted apply never break record listings: `chough status`
+  lists them under `removal_holds`, the preview under `stale_holds`, and `--apply`
+  refuses until they are moved back or deleted.
+- Removed observations referenced later read as `pruned`, never current or passed, and
+  their entries show `Git <commit>` as the location. Native archives, ignore rules and
+  Git history are never changed, and the step never runs on its own after finalize.
 
 ## Test-case adapters
 

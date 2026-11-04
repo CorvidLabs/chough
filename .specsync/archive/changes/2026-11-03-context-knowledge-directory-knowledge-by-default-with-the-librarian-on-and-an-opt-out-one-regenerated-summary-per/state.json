@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "context-knowledge-directory-knowledge-by-default-with-the-librarian-on-and-an-opt-out-one-regenerated-summary-per",
+  "slug": "context-knowledge-directory-knowledge-by-default-with-the-librarian-on-and-an-opt-out-one-regenerated-summary-per",
+  "title": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
+  "description": "Context knowledge directory: knowledge/ by default with the librarian on and an opt-out, one regenerated summary per archived change with a lessons index, and raw proof outside the newest 3 archived changes leaves the working tree only through a previewed, authorized, validity-checked step",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "0363d4af368bb07cc07f16c2f5fff7645c1c05bc",
+  "created_at": 1793721186,
+  "updated_at": 1793735772,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "src/evidence.rs",
+    "src/prefs.rs",
+    "src/main.rs",
+    "tests/",
+    "docs/",
+    "skills/",
+    ".agents/skills/",
+    "specs/cli/",
+    "hi/knowledge.md",
+    "INTENT.md",
+    "CHANGELOG.md",
+    "README.md",
+    "AGENTS.md",
+    ".chough/cases/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With no preference set, the librarian is on and its directory is knowledge/; pref set librarian off opts out with a recorded source, and checkpoints and cold resume still work",
+    "library index writes knowledge/INDEX.md and one knowledge/archives/<change-id>.md per archived change with its title, criteria, requirements, commits, listed records and artifacts with digests and current location, observation outcomes and environments, linked bugs and lesson bundle; regenerating from the same sources gives identical bytes and no gate reads the directory",
+    "The index lists existing library/ snapshots and briefs as they are, byte-identical and unmigrated, and a lessons index that points to each module lesson source and each lesson bundle without copying lesson text; chough next names the knowledge index",
+    "library archive previews without writing which observation sets of archives outside the newest 3 would leave the working tree, the bytes and why each other set stays; checkpoint, bug, open-change, hot-archive, validation, newest-run, newest-failure, non-routine and directly named protections all still hold",
+    "library archive --apply needs retention consent or preference, is refused while any native change is open, removes only files committed byte-identically at HEAD, writes each removal to the retention ledger first with the knowledge entry and digests, shows removed observations as pruned, and restores everything and refuses when an affected archive's terminal evidence validity changes",
+    "fmt, lint, the full tests and fledge lanes run verify pass"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "AGENTS.md: preserve existing files and records; never invent results. Removal is working-tree only and needs existing retention authority; raw bytes stay in Git history. Leif 2026-11-03 8:09-8:27 AM MT answers: summary only, newest 3 archived changes hot, librarian on with opt-out, knowledge/ at the root. No live cleanup of this repository's .chough history in this change",
+    "public_contract": "yes"
+  }
+}
