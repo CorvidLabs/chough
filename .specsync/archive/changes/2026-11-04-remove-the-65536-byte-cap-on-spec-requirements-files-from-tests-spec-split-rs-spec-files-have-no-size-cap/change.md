@@ -1,6 +1,6 @@
 ---
 id: remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 270ca0cbadea844d6239c4b48da8c29bdb439713
 ---
