@@ -558,3 +558,40 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
     }
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
+
+/// v0.2.0's lifecycle reference (main edbc3c1) is a known earlier bundle file, so
+/// `skill update` delivers the backfill guidance over an unedited copy (review of #73).
+#[test]
+fn lifecycle_guidance_from_v0_2_0_updates_to_the_backfill_guidance() {
+    let previous = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/workflow-at-edbc3c1-lifecycle.md"),
+    )
+    .unwrap()
+    .replace("\r\n", "\n")
+    .into_bytes();
+    assert_eq!(
+        format!("{:x}", Sha256::digest(&previous)),
+        "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711"
+    );
+    let current = include_bytes!("../skills/chough-workflow/references/lifecycle.md");
+    assert_ne!(previous, current.to_vec());
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture
+        .root()
+        .join(".agents/skills/chough-workflow/references/lifecycle.md");
+    fs::write(&installed, &previous).unwrap();
+    let status = fixture.ok(&["skill", "status", "--host", "openai"]);
+    assert_eq!(
+        file_state(&status, "references/lifecycle.md")["state"],
+        "known-outdated"
+    );
+    let update = fixture.ok(&["skill", "update", "--host", "openai"]);
+    assert_eq!(
+        file_state(&update, "references/lifecycle.md")["action"],
+        "updated"
+    );
+    let delivered = fs::read_to_string(&installed).unwrap();
+    assert!(delivered.contains("chough stage backfill"), "{delivered}");
+}

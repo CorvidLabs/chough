@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "One context knowledge directory: knowledge/ at the root, librarian on by default with an opt-out, one summary per archived change, and raw proof outside the newest 3 archived changes leaves the working tree only after an authorized, previewed, validity-checked step",
+  "objective": "#73 (DRIVE-5): chough stage backfill records a gate that already happened, with its original time, quoted evidence and a backfilled flag that timing reports separately",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0",
+  "native_change": "record-a-stage-gate-that-already-happened-with-its-original-time-quoted-evidence-and-a-backfilled-flag-that-timing",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -682,5 +682,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Independent review of PR #67 at the new head; then review and ship the native change, move test->accept->done, and merge after green CI"
+  "next_action": "New cycle from done after reset: New cycle: #73 (DRIVE-5), chough stage backfill. Built and verified on its branch (verify passed 9/9 per the independent review at eddcc6a); native change archived at 54bee0a after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }
