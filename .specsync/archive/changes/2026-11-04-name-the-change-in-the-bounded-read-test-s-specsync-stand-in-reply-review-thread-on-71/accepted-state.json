@@ -7,11 +7,11 @@
   "title": "Name the change in the bounded-read test's SpecSync stand-in reply (review thread on #71)",
   "description": "Name the change in the bounded-read test's SpecSync stand-in reply (review thread on #71)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "2d4ba2592011b3be5f5b8f5cc54aad95f3309ed3",
   "created_at": 1793759476,
-  "updated_at": 1793763598,
+  "updated_at": 1793764235,
   "affected_specs": [
     "cli"
   ],

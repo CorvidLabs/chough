@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "name-the-change-in-the-bounded-read-test-s-specsync-stand-in-reply-review-thread-on-71",
+  "slug": "name-the-change-in-the-bounded-read-test-s-specsync-stand-in-reply-review-thread-on-71",
+  "title": "Name the change in the bounded-read test's SpecSync stand-in reply (review thread on #71)",
+  "description": "Name the change in the bounded-read test's SpecSync stand-in reply (review thread on #71)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "2d4ba2592011b3be5f5b8f5cc54aad95f3309ed3",
+  "created_at": 1793759476,
+  "updated_at": 1793764256,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/cli.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Test fixture only: the bounded-read test's stand-in reply named no change ID, which the #71 review-thread fix now refuses by design; the assertions are unchanged.",
+  "acceptance_criteria": [
+    "native_reads_end_by_their_deadline_and_retain_bounded_output passes with its assertions unchanged, its checkpoint stand-in reply naming bounded-change."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}

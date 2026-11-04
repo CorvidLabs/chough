@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "name-the-change-in-the-bounded-read-test-s-specsync-stand-in-reply-review-thread-on-71",
+  "reviewer": "corvid-agent",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "dcfc664652de2db94b7f5a4559410f55a1be8e51",
+  "contract_digest": "7cd0984247a7960a4442e75ef94177252196327ff7268a82ba53f44161e4856a",
+  "execution_digest": "7ea409b1c36a5713730d641fbf7b99f088a30a59ae550e20e79deca3f0e3b2d5",
+  "workspace_digest": "ed9a14be76b2bcb638b356bd933a185c44a212fe5db0f7d43dae31ea0253688c",
+  "timestamp": 1793764226
+}
