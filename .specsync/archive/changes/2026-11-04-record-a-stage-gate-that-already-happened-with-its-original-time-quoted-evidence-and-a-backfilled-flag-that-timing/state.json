@@ -7,11 +7,11 @@
   "title": "Record a stage gate that already happened with its original time, quoted evidence and a backfilled flag that timing reports separately (DRIVE-5)",
   "description": "Record a stage gate that already happened with its original time, quoted evidence and a backfilled flag that timing reports separately (DRIVE-5)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "d673efc9fadd00953cf9e42dad96e08f3c76103c",
   "created_at": 1793755603,
-  "updated_at": 1793756746,
+  "updated_at": 1793758334,
   "affected_specs": [
     "cli",
     "history"
