@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "let-chough-cases-link-a-requirement-that-the-checkpoint-s-approved-native-change-adds-before-it-is-materialized-and",
+  "implementation_commit": "d2fb69715cf75c104becc8094235988f3e24db44",
+  "implementation_tree": "3eb481ff681e2f91fd5b5fb07f5088a63262d8df",
+  "contract_digest": "a0de808d5d12fcafe8555725ffd19d47f3824aa6a73c9d3afdbca7978f0f795f",
+  "workspace_digest": "75ec8aa94877e8b67b10a9458f8d5b1f864e9ad74064071e6b05a914a33f9f2a",
+  "closing_digest": "215e2a1ca6cddf4bf088368c297966d2facceb87ff716472ae5c0e8f1a1e41a1",
+  "review_digest": "54ecc4c676faa8d59db3bebf7e1c3d1a31d3bac344cf8a81153ff2319776ba70",
+  "finalization_digest": "1428b188c8e04b95d93fc7b5db760f8560bebea16110ce4e837ec577c31fbc2f",
+  "timestamp": 1793772566
+}
