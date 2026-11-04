@@ -1,6 +1,6 @@
 ---
 id: stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
 ---
