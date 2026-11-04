@@ -550,3 +550,150 @@ fn the_repository_declares_the_merge_driver_for_every_session_file() {
         );
     }
 }
+
+/// Review of #77 (blocker 1): in sessions mode, with no `.chough/session.json`,
+/// concurrent read-modify-writes each apply their change to the latest checkpoint, so
+/// 20 concurrent `checkpoint --decision` calls keep all 20 decisions.
+#[test]
+fn concurrent_decisions_in_sessions_mode_keep_every_one() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    assert!(!fixture.exists(".chough/session.json"));
+    let texts: Vec<String> = (0..20)
+        .map(|n| format!("concurrent decision {n}"))
+        .collect();
+    std::thread::scope(|scope| {
+        for text in &texts {
+            let fixture = &fixture;
+            scope.spawn(move || {
+                let output = fixture.run(&["checkpoint", "--decision", text]);
+                assert!(
+                    output.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            });
+        }
+    });
+    let decisions = json(&fixture, ".chough/sessions/alpha.json")["decisions"].clone();
+    let kept: Vec<&str> = decisions
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(Value::as_str)
+        .collect();
+    let missing: Vec<&String> = texts
+        .iter()
+        .filter(|t| !kept.contains(&t.as_str()))
+        .collect();
+    assert!(
+        missing.is_empty(),
+        "lost {} of 20: {missing:?}",
+        missing.len()
+    );
+}
+
+/// Review of #77 (blocker 1): `inbox fold` racing one writer keeps both the folded
+/// observation and the writer's decision, in every one of 10 trials.
+#[test]
+fn fold_racing_a_writer_keeps_both_updates() {
+    let mut lost = vec![];
+    for trial in 0..10 {
+        let fixture = Fixture::new();
+        fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+        let observation = format!("OBS-folded-{trial}");
+        add_entry(&fixture, "alpha", "observation", &observation);
+        let decision = format!("racing decision {trial}");
+        std::thread::scope(|scope| {
+            let fixture = &fixture;
+            let decision = &decision;
+            scope.spawn(move || {
+                let output = fixture.run(&["inbox", "fold"]);
+                assert!(
+                    output.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            });
+            scope.spawn(move || {
+                let output = fixture.run(&["checkpoint", "--decision", decision]);
+                assert!(
+                    output.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            });
+        });
+        let session = json(&fixture, ".chough/sessions/alpha.json");
+        let has = |field: &str, text: &str| {
+            session[field]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|value| value == text)
+        };
+        if !has("observations", &observation) || !has("decisions", &decision) {
+            lost.push(trial);
+        }
+    }
+    assert!(lost.is_empty(), "lost an update in trials {lost:?} of 10");
+}
+
+/// Review of #77 (blocker 2, Leif's P1 thread 4462791456 and follow-up 4464264245):
+/// legacy writers racing `session adopt alpha` end in exactly one mode. After a
+/// successful adopt, `.chough/session.json` is gone and `.chough/sessions/` holds the
+/// session; a refused adopt leaves the legacy checkpoint and no sessions directory.
+#[test]
+fn legacy_writers_racing_adopt_end_in_one_mode() {
+    let mut both = vec![];
+    for trial in 0..20 {
+        let fixture = Fixture::new();
+        fixture.ok(&["init", "--objective", "Legacy objective"]);
+        std::thread::scope(|scope| {
+            let fixture = &fixture;
+            for writer in 0..4 {
+                scope.spawn(move || {
+                    fixture.run(&["checkpoint", "--decision", &format!("writer {writer}")]);
+                });
+            }
+            scope.spawn(move || {
+                fixture.run(&["session", "adopt", "alpha"]);
+            });
+        });
+        let legacy = fixture.exists(".chough/session.json");
+        let sessions = fixture.exists(".chough/sessions");
+        if legacy == sessions {
+            both.push(trial);
+        }
+    }
+    assert!(
+        both.is_empty(),
+        "not exactly one mode in trials {both:?} of 20"
+    );
+}
+
+/// Review of #77 (gap ii): a session-file temp left by a killed writer
+/// (`.chough/sessions/.<key>.json.<pid>.tmp`) is removed by the next checkpoint write
+/// and is ignored by Git, so `git add -A` never commits it.
+#[test]
+fn orphaned_session_file_temps_are_removed_and_ignored() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let temp = ".chough/sessions/.alpha.json.4242.tmp";
+    fixture.write(temp, "{\"partial\":");
+    let init = std::process::Command::new("git")
+        .args(["init", "-q"])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(init.success());
+    let ignored = std::process::Command::new("git")
+        .args(["check-ignore", "-q", "--no-index", temp])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(ignored.success(), "{temp} is not ignored by Git");
+    fixture.ok(&["checkpoint", "--decision", "after the killed writer"]);
+    assert!(!fixture.exists(temp), "{temp} was left behind");
+    assert!(fixture.exists(".chough/sessions/alpha.json"));
+}
