@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "stop-what-chough-started-when-chough-is-stopped-issue-75",
+  "slug": "stop-what-chough-started-when-chough-is-stopped-issue-75",
+  "title": "Stop what Chough started when Chough is stopped (issue 75)",
+  "description": "Stop what Chough started when Chough is stopped (issue 75)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "5b69b2f0ffee9c0a8f322e557421d8f4de8a3e07",
+  "created_at": 1793758205,
+  "updated_at": 1793770053,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "tests/stop.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "On Unix SIGINT or SIGTERM or SIGHUP sent to chough during chough cases run stops the case command and its descendants and chough ends by that signal,The same signals during a native SpecSync read by chough next stop the native command and its descendants,An interrupted run records no observation and no artifact and leaves the checkpoint and the .chough directory byte-identical,A signal that chough inherited as ignored stays ignored and the deadline and held-output behavior of REQ-cli-011 is unchanged,docs/cli.md states the behavior and each new test fails on main edbc3c1 and fledge lanes run verify passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded bug fix for issue 75 under FLOW-14 as Leif confirmed it on card t819s9328 at 7:07 PM MT 2026-11-03; SIGINT and SIGTERM and SIGHUP only and no SIGKILL watchdog; no gate or schema or output-key change and no new dependency; Windows behavior unchanged",
+    "public_contract": "yes"
+  }
+}

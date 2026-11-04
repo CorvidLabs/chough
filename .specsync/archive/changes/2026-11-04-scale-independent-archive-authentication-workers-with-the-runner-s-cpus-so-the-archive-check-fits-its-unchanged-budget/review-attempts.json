@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "scale-independent-archive-authentication-workers-with-the-runner-s-cpus-so-the-archive-check-fits-its-unchanged-budget",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "ee7318db0c67a3af4d6d0ae89d2ce7ac5794384d",
+      "contract_digest": "44b48c4434f2f48677168a06a58ca307f7d674524e1da045f1fa86544a4a8bcb",
+      "execution_digest": "07cf2769b3dc118132c850c3ce9885721e163f6d1ce4adb2bdb18ca928648317",
+      "workspace_digest": "7e8517d94c4a9ebed5f854c3040cd6ade2f25b239f28722acedfb6d969b13ebd",
+      "timestamp": 1793767938
+    }
+  ]
+}

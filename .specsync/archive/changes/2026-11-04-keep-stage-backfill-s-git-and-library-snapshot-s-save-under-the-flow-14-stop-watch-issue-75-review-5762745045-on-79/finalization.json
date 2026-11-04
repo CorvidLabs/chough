@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-stage-backfill-s-git-and-library-snapshot-s-save-under-the-flow-14-stop-watch-issue-75-review-5762745045-on-79",
+  "implementation_commit": "f7d2da55390fc41f8095c343f9f66a2bc25512f5",
+  "implementation_tree": "ff9248fd860b9c269034698e5b6e7620c2550ba5",
+  "contract_digest": "7d070aec83c4e51b4e786419647929c92d76bf4d7c11e3421ca740deb31f847e",
+  "workspace_digest": "c9a88587cf135ee59b5223d29ad406556678799b64b04d3df8897d5225b09f65",
+  "closing_digest": "9546aaea98570b253acde5acf8207a7589b6bd4c820fb43046c88a0a97e23f59",
+  "review_digest": "ea63892d796b2b8cc730dce1a1a04d1e0400331b0cd56fbedb22fd83eb7d6248",
+  "finalization_digest": "b8b3d0363815d2896e9385d6fffa0d8fa4db52dddd96b805b06f57ff2048c6f5",
+  "timestamp": 1793770029
+}

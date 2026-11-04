@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-stage-backfill-s-git-and-library-snapshot-s-save-under-the-flow-14-stop-watch-issue-75-review-5762745045-on-79",
+  "slug": "keep-stage-backfill-s-git-and-library-snapshot-s-save-under-the-flow-14-stop-watch-issue-75-review-5762745045-on-79",
+  "title": "Keep stage backfill's Git and library snapshot's save under the FLOW-14 stop watch (issue 75, review 5762745045 on #79)",
+  "description": "Keep stage backfill's Git and library snapshot's save under the FLOW-14 stop watch (issue 75, review 5762745045 on #79)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "a2e3bc073970d75e2399f217c9efb122f2c06126",
+  "created_at": 1793763119,
+  "updated_at": 1793770042,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "src/stage.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Call-site wiring for REQ-cli-011 as stated in stop-what-chough-started-when-chough-is-stopped-issue-75: stage.rs runs backfill's Git through records::run_owned, and library.rs reads the HEAD under the stop watch before staging a snapshot under a hidden name and renaming it whole. The requirement text lives in that change.",
+  "acceptance_criteria": [
+    "stopping_a_backfill_stops_its_git_and_records_nothing passes: a stop while stage backfill checks its commit stops that Git and leaves .chough byte-identical,stopping_a_library_snapshot_stops_git_and_records_nothing passes: a stop while library snapshot reads the HEAD stops that Git and leaves .chough and the library byte-identical,Every other stage and library test passes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}

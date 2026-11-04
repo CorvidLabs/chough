@@ -6,6 +6,28 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The hosted SpecSync Archive check reads archived change status with one worker per
+  CPU, at least two and at most eight, instead of a fixed two (DRIVE-10). Every
+  archive and history snapshot is still authenticated with the same checks, SpecSync
+  version and timeouts. On the #71 tree (63 archives) the check took 9 min 56 s with
+  two workers, 5 min 4 s with four and 2 min 54 s with eight on the same machine.
+- Stopping Chough with Ctrl-C, `kill` (SIGTERM) or a hangup during `chough cases run`
+  or a native SpecSync read now stops the command it started, that command's process
+  group and Chough's own Git commands, including the Git that `stage backfill` and
+  `library snapshot` run, and records nothing partial, including while a case run saves
+  its result, and while a descendant of that Git still holds its output after Git
+  exits (stopped 2 seconds after Git exits when no signal comes); a library snapshot
+  is now written whole or not at all (FLOW-14, #75). A hard `kill -9` is not covered. Unix
+  only; Windows is unchanged.
+- Dotted SpecSync module IDs such as `chat.service` and hi sub-criterion IDs such as
+  `BOTS-1.a` are accepted by `init`, `checkpoint`, `bugs`, `evidence` and `cases`, and
+  a checkpoint holding them is read by every view (#56, #57). Module and requirement
+  IDs SpecSync refuses, and dotted criterion IDs hi refuses such as `UX-1.A`, are
+  refused. Plain criterion IDs Chough accepted before, such as `UX-012` or `ux-1`,
+  are still accepted so existing checkpoints and bugs stay readable, though hi does
+  not trace them; re-record one with a valid hi ID, such as `UX-12`, to link it. `checkpoint --remove-completed` removes one mistaken completed
+  entry in the same call that adds its correction. A test keeps the bundled workflow
+  skill free of em and en dashes (DRIVE-1, DRIVE-7).
 - `chough next` now lists the newest 3 archived lesson bundles by recorded
   finalization time, the same three the librarian marks hot, instead of the last 5 by
   directory name, which mixed old and new work on a busy day (#74). It reads them with

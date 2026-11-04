@@ -18,7 +18,7 @@ their JSON.
 | `status [--environment NAME]` | The full view, always JSON (`--json` is accepted and changes nothing): checkpoint, the native gate for the next main stage in `checkpoint.gate` (`null` when that stage has no prerequisite), valid transitions, `next_valid_action`, native status, snapshot, observations with freshness, open and blocking bugs. |
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). Earlier builds printed the full status JSON here; scripts that read `next_valid_action` now read `.next_valid_action.action` from `next --json`, or use `status`. |
 | `migrate [--stage S]` | Converts a schema 1 session after saving its bytes to `.chough/session.v1.json`; refuses if that backup exists. |
-| `checkpoint` | Show, update or merge: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`, `--merge <base> <ours> <theirs>`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved. |
+| `checkpoint` | Show, update or merge: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--remove-completed` (removes one exact completed entry before any `--completed` additions, so a mistaken entry is corrected in one call; an entry that is not present is refused), `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`, `--merge <base> <ours> <theirs>`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved. |
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return\|backfill` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While the checkpoint has an open awaiting-human gate, `advance` and `skip` (release → done included) are refused as `refused:awaiting-human` before any native read, naming up to 3 gates; record the decision, then `chough checkpoint --clear-awaiting-human`. There is no bypass; `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are unaffected. `backfill` records an advance that already happened; see [Backfilled moves](#backfilled-moves). |
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` allocate an OBS ID when `--observation-id` is omitted and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID allocates the new OBS form; an explicit ID must use that form for a new write. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
@@ -148,6 +148,24 @@ shell-evaluated text.
 | Observation | 2 (schema 1 still read). The optional `duration_seconds` that `cases run` adds is a schema 2 field; because unknown fields are rejected, Chough builds from before it (including the 2756dc2 release candidate) refuse a repository holding such records, so use this build or later there. |
 | Case file | `profile = "chough-testing/1"` |
 | Bug, preferences, transition (including `gate-opened` and `gate-closed`), validation run, snapshot manifest | 1 |
+
+### Module, criterion and reference identities
+
+A session, bug, evidence or case module is any module ID SpecSync accepts, so a dotted
+module such as `chat.service` works: one path segment of at most 247 bytes (so
+`<module>.spec.md` fits in 255), with no path separator, `<>:"|?*` or control
+character, not `.` or `..`, no leading or trailing space, no trailing `.`, and no
+Windows reserved device basename such as `CON` or `COM1`.
+A criterion is any ID hi accepts, including sub-criteria such as `BOTS-1.a`: an
+uppercase family, a hyphen, then levels that alternate a number without a leading
+zero and lowercase letters, with no length limit beyond the record bounds. A plain
+ID Chough accepted before, such as `UX-012`, is still accepted so existing records
+stay readable, though hi does not trace it; a dotted ID hi rejects, such as `UX-1.A`,
+is refused. Requirement and case references, such as `REQ-chat.service-1`, are
+ASCII letters, digits, `-`, `_` and `.` up to 100 bytes with at least one letter or
+digit, and are never used as paths. Observations keep the narrower
+name rule. A requirement reference matches its heading as a whole token, and a
+sentence-ending `.` after it still matches.
 
 ### Case, observation, validation and snapshot identities
 
@@ -318,6 +336,19 @@ close and abandons any reader still blocked, so the run returns on time and its
 capture is reported incomplete. On Windows, `taskkill` cannot find descendants whose
 parent has already exited; such a run returns on time with an incomplete capture,
 and those descendants may keep running.
+
+Stopping Chough stops what it started (FLOW-14). On Unix, when Chough gets SIGINT
+(Ctrl-C), SIGTERM (a plain `kill`) or SIGHUP while a case binding, a native read or
+one of its own Git commands runs, it stops that command's process group and ends by
+the same signal. It keeps watching until the command's output closes: when a
+descendant still holds the output of one of Chough's own Git commands after Git exits,
+a signal still stops the group, and without one Chough stops the group 2 seconds after
+Git exits and goes on with Git's output. During `cases run` the stop handling lasts through the save: a stop
+before the save begins records nothing (no observation, artifact or checkpoint
+change), and a stop once it has begun lets the artifact and the observation both be
+written first, so a run is never half recorded. A signal Chough inherited as ignored
+(for example under `nohup`) or as blocked keeps that disposition. A hard `kill -9`
+cannot be caught, so a command may outlive it; Windows behavior is unchanged.
 
 A case artifact keeps both streams within 1 MiB in total and ends with a note for
 each stream that did not fit: `[truncated: stdout wrote N bytes; M discarded]`. Case

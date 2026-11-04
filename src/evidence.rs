@@ -8,6 +8,7 @@ use crate::records::{
     append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
     print_json, read_record, read_spec_file, record_names, valid_name, write_new,
 };
+use crate::records::{valid_module_name, valid_reference_id};
 use crate::{bugs, prefs, validate};
 use anyhow::{Context, Result, bail, ensure};
 use clap::ValueEnum;
@@ -140,11 +141,9 @@ pub(super) struct EvidenceArgs {
 }
 
 fn git(root: &Path, arguments: &[&str]) -> Result<Output> {
-    let output = Command::new("git")
-        .args(arguments)
-        .current_dir(root)
-        .output()
-        .context("git is required for evidence")?;
+    let output =
+        crate::records::run_owned(Command::new("git").args(arguments).current_dir(root), None)
+            .context("git is required for evidence")?;
     ensure!(
         output.status.success(),
         "git {} failed: {}",
@@ -383,11 +382,13 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
 
 /// Whether `ancestor` is an ancestor of (or equal to) the current HEAD.
 pub(super) fn is_ancestor_of_head(root: &Path, ancestor: &str) -> bool {
-    Command::new("git")
-        .args(["merge-base", "--is-ancestor", ancestor, "HEAD"])
-        .current_dir(root)
-        .output()
-        .is_ok_and(|output| output.status.success())
+    crate::records::run_owned(
+        Command::new("git")
+            .args(["merge-base", "--is-ancestor", ancestor, "HEAD"])
+            .current_dir(root),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
 }
 
 fn find_id(value: &Value, id: &str) -> bool {
@@ -432,10 +433,11 @@ pub(super) fn validate_criteria(root: &Path, criteria: &[String]) -> Result<()> 
     Ok(())
 }
 
-/// Whether `text` holds `id` as a whole token of ID characters.
+/// Whether `text` holds `id` as a whole token of ID characters. A dot belongs to the token
+/// so a dotted module's `REQ-chat.service-1` is one token, except a sentence-ending dot.
 fn holds_token(text: &str, id: &str) -> bool {
-    text.split(|c: char| !(c.is_ascii_alphanumeric() || c == '-'))
-        .any(|part| part == id)
+    text.split(|c: char| !(c.is_ascii_alphanumeric() || c == '-' || c == '.'))
+        .any(|part| part == id || part.trim_end_matches('.') == id)
 }
 
 /// A requirement link that none of the searched companions holds. Callers render it,
@@ -488,7 +490,7 @@ impl RequirementMiss {
 fn owning_module(root: &Path, id: &str, searched: &[String]) -> Option<String> {
     let (module, _) = id.strip_prefix("REQ-")?.rsplit_once('-')?;
     let companion = format!("specs/{module}/requirements.md");
-    if !valid_name(module) || searched.contains(&companion) {
+    if !valid_module_name(module) || searched.contains(&companion) {
         return None;
     }
     let path = local_path(root, &companion).ok()?;
@@ -706,7 +708,7 @@ pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
     }
     for case in &evidence.cases {
         ensure!(
-            valid_name(&case.id) && is_digest(&case.digest),
+            valid_reference_id(&case.id) && is_digest(&case.digest),
             "invalid case binding: {name}"
         );
     }
@@ -1779,21 +1781,13 @@ fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> 
 
 /// The Git blob ID of exactly `bytes`, with no filters applied.
 fn blob_of(root: &Path, bytes: &[u8]) -> Result<String> {
-    use std::io::Write;
-    let mut child = Command::new("git")
-        .args(["hash-object", "--no-filters", "--stdin"])
-        .current_dir(root)
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::piped())
-        .spawn()
-        .context("git is required for evidence")?;
-    child
-        .stdin
-        .take()
-        .context("git hash-object stdin")?
-        .write_all(bytes)?;
-    let output = child.wait_with_output()?;
+    let output = crate::records::run_owned(
+        Command::new("git")
+            .args(["hash-object", "--no-filters", "--stdin"])
+            .current_dir(root),
+        Some(bytes),
+    )
+    .context("git is required for evidence")?;
     ensure!(
         output.status.success(),
         "git hash-object --no-filters --stdin failed: {}",

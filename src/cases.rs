@@ -2,6 +2,7 @@
 
 use crate::evidence::{self, CaseRef, Evidence, Kind, Outcome, PROVENANCE};
 use crate::identity;
+use crate::records::valid_module_name;
 use crate::records::{
     Captured, Limits, digest_bytes, local_path, now, print_json, run_bounded, valid_name,
     write_new_bytes,
@@ -245,7 +246,7 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
         );
         let stem = name.trim_end_matches(".cases.toml");
         ensure!(
-            parsed.module == stem && valid_name(stem),
+            parsed.module == stem && valid_module_name(stem),
             "{file}: module must equal the file stem"
         );
         for case in parsed.cases {
@@ -924,12 +925,14 @@ pub(super) fn run_case(
         .iter()
         .map(|(name, value)| (name.clone(), value.clone()))
         .collect();
+    // The watch spans the run and the whole save: a stop before the save starts ends
+    // Chough with nothing recorded, and Chough's own git calls stop with it (FLOW-14).
+    let _watch = crate::records::stop_watch();
     let started = Instant::now();
     let execution = execute(root, &argv, &env, timeout)?;
     let duration_seconds = started.elapsed().as_secs();
     let (output, text, escapes_removed) = artifact(&execution);
     let artifact = format!("{ARTIFACTS_DIR}/{observation}.log");
-    write_artifact(root, &artifact, &output)?;
     let mut limitations = vec![];
     let missing: Vec<&String> = binding
         .expect_output
@@ -1036,6 +1039,12 @@ pub(super) fn run_case(
             .map_or("none".to_string(), |code| code.to_string()),
         tests_run.map_or(String::new(), |count| format!(", tests run {count}"))
     );
+    let snapshot = evidence::snapshot(root)?;
+    // The last point where a stop records nothing. From here the artifact and the
+    // observation are written without running anything, and a stop that arrives
+    // meanwhile ends Chough once both are saved.
+    crate::records::stop_if_noted();
+    write_artifact(root, &artifact, &output)?;
     let record = Evidence {
         schema_version: 2,
         id: observation.clone(),
@@ -1049,7 +1058,7 @@ pub(super) fn run_case(
         artifacts: vec![artifact.clone()],
         artifact_fingerprints: evidence::artifact_fingerprints(root, &[artifact])?,
         observed_at_unix_seconds: now()?,
-        snapshot: evidence::snapshot(root)?,
+        snapshot,
         provenance: PROVENANCE.into(),
         cases: vec![CaseRef {
             id: id.into(),

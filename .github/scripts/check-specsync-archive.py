@@ -15,6 +15,8 @@ import tomllib
 
 VERSION = "specsync 6.1.2"
 MAX_OUTPUT = 8 * 1024 * 1024
+MIN_ARCHIVE_WORKERS = 2
+MAX_ARCHIVE_WORKERS = 8
 
 
 class GateError(Exception):
@@ -174,6 +176,12 @@ def authenticate_archive(binary, root, change_id):
         raise GateError(f"Native archive {change_id} does not authenticate: {summary}")
 
 
+def archive_workers():
+    # Each archived status read is CPU-bound, so one worker per CPU, bounded.
+    cpus = os.cpu_count() or MIN_ARCHIVE_WORKERS
+    return max(MIN_ARCHIVE_WORKERS, min(cpus, MAX_ARCHIVE_WORKERS))
+
+
 def authenticate_archives(binary, root, obligations, current_archives):
     change_ids = sorted(obligations)
     for change_id in change_ids:
@@ -181,7 +189,7 @@ def authenticate_archives(binary, root, obligations, current_archives):
             raise GateError(f"Native change {change_id} was omitted instead of archived")
     # Only independent reads of the fixed current root overlap. The context
     # drains every submitted read, including on error, before the final fingerprint.
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=archive_workers()) as executor:
         pending = [
             executor.submit(authenticate_archive, binary, root, change_id)
             for change_id in change_ids
