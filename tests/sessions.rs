@@ -742,3 +742,29 @@ fn session_new_accepts_the_module_ids_init_accepts() {
         assert!(!fixture.exists(".chough/sessions/beta.json"), "{bad}");
     }
 }
+
+/// Issue #83 (REQ-history-007, #94 review): in sessions mode `.chough/local/` holds only
+/// `.gitignore`, `checkpoint.lock` and `active-session`, and Git ignores all three.
+#[test]
+fn in_sessions_mode_local_holds_only_the_pointer_and_the_lock() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.ok(&["checkpoint", "--decision", "Take the lock"]);
+    let mut local: Vec<String> = fs::read_dir(fixture.root().join(".chough/local"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    local.sort();
+    assert_eq!(local, [".gitignore", "active-session", "checkpoint.lock"]);
+    fixture.commit("fixture");
+    let tracked = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["ls-files", ".chough/local"])
+        .output()
+        .unwrap();
+    assert!(
+        tracked.stdout.is_empty(),
+        "{}",
+        String::from_utf8_lossy(&tracked.stdout)
+    );
+}

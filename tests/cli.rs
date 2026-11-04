@@ -2395,7 +2395,7 @@ fn legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved() {
             } else {
                 let stderr = String::from_utf8_lossy(&output.stderr);
                 assert!(
-                    stderr.contains("nothing was saved"),
+                    stderr.contains("was adopted") && stderr.contains("nothing was saved"),
                     "trial {trial}: {stderr}"
                 );
                 assert!(!present, "trial {trial}: refused {decision} is in {file}");
