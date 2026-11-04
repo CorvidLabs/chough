@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "#73 (DRIVE-5): chough stage backfill records a gate that already happened, with its original time, quoted evidence and a backfilled flag that timing reports separately",
+  "objective": "#68 (#56, #57, DRIVE-1, DRIVE-7): dotted SpecSync module IDs and hi sub-criterion IDs are accepted, the bundled skill stays free of em and en dashes, and checkpoint --remove-completed corrects one entry",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "record-a-stage-gate-that-already-happened-with-its-original-time-quoted-evidence-and-a-backfilled-flag-that-timing",
+  "native_change": "accept-dotted-specsync-module-ids-and-hi-sub-criterion-ids-keep-bundled-skill-prose-free-of-em-and-en-dashes-and-remove",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -682,5 +682,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: New cycle: #73 (DRIVE-5), chough stage backfill. Built and verified on its branch (verify passed 9/9 per the independent review at eddcc6a); native change archived at 54bee0a after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "New cycle from done after reset: New cycle: #68 (#56, #57, DRIVE-1, DRIVE-7), dotted IDs and small fixes. Built and verified on its branch (verify passed 9/9 per the independent review at f97323b); native change archived at 16eedcb after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }
