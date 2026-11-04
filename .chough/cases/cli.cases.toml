@@ -2748,3 +2748,21 @@ expected = ["tests/librarian_trim.rs::an_open_native_change_keeps_proof_and_the_
 adapter = "cargo-test"
 test_target = "librarian_trim"
 test = "an_open_native_change_keeps_proof_and_the_move_still_succeeds"
+
+[[case]]
+id = "TC-cli-recorded-retention-off-not-trimmed-at-done"
+title = "A recorded retention off is not trimmed at done"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-13", "KNOW-11"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::a_recorded_retention_off_is_not_trimmed_at_done passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "a_recorded_retention_off_is_not_trimmed_at_done"
