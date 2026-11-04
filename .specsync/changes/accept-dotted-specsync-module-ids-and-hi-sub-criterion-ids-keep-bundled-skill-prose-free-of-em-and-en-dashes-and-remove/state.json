@@ -7,10 +7,11 @@
   "title": "Accept dotted SpecSync module IDs and HI sub-criterion IDs, keep bundled skill prose free of em and en dashes, and remove a mistaken completed entry (DRIVE-1, DRIVE-7, DRIVE-8; issues 56 and 57)",
   "description": "Accept dotted SpecSync module IDs and HI sub-criterion IDs, keep bundled skill prose free of em and en dashes, and remove a mistaken completed entry (DRIVE-1, DRIVE-7, DRIVE-8; issues 56 and 57)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "d673efc9fadd00953cf9e42dad96e08f3c76103c",
   "created_at": 1793751012,
-  "updated_at": 1793751066,
+  "updated_at": 1793751368,
   "affected_specs": [
     "cli"
   ],
