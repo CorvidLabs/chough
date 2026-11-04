@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-reporting-approval-ledger-over-record-bound-0269a0274febd6c04572f055",
+  "criteria": [
+    "LIFE-15",
+    "LIFE-10"
+  ],
+  "requirements": [
+    "REQ-reporting-004"
+  ],
+  "contracts": [
+    "specs/reporting/reporting.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test timing -- --exact native_approval_ledgers_over_the_record_bound_still_give_their_times for TC-reporting-approval-ledger-over-record-bound: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-reporting-approval-ledger-over-record-bound-0269a0274febd6c04572f055.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-reporting-approval-ledger-over-record-bound-0269a0274febd6c04572f055.log": "bd7b769ef3a8b56ecdac90145b34720c5dd3e22963f2d0842410ef977d0304e1"
+  },
+  "observed_at_unix_seconds": 1793824757,
+  "snapshot": {
+    "revision": "a3ed589db6e436359ec9ad0d925f3ee8375b7b38",
+    "dirty": false,
+    "fingerprint": "3b44c8c1dec1a2571ffda111b664e0bb4e483128a4750abd8b5d4377709905e2",
+    "content": "fb610d88dee4a7859ebb7cd068309bc934037b5e2416d5674b222bee70fdce72"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-reporting-approval-ledger-over-record-bound",
+      "digest": "7bd36fcbce58fb684779b13dfdbdfc8f8f269217e55f04e3d7517d1043684ee0"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "native_approval_ledgers_over_the_record_bound_still_give_their_times"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

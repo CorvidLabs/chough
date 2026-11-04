@@ -26,6 +26,10 @@ Keep specs and source lean and composable, without being dogmatic about it:
 - Spec files have no size limit. Chough reads them at any size. Size is a hint to look
   for independent parts, never a gate. Chough's own records keep their bounds, so the
   thing to keep lean is generated proof and logs, not the contract.
+- Chough's bounds never reach native sources: every gate and check reads them at full
+  size. Never shorten, reword or split HI intent or criteria, specs or SpecSync change
+  and archive files to fit a Chough limit; if one exceeds a Chough bound, stop and
+  report a Chough bug.
 
 ## Ownership
 
