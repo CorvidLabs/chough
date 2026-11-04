@@ -680,7 +680,11 @@
     "OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba",
     "OBS-tc-cli-verification-warning-changes-no-gate-db3f4125917b884186628c8c",
     "OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40",
-    "OBS-tc-cli-sdd-policy-over-record-bound-f414334149bb55fd3fa8ab5c"
+    "OBS-tc-cli-sdd-policy-over-record-bound-f414334149bb55fd3fa8ab5c",
+    "OBS-tc-cli-next-shows-failed-native-attempt-2bfb3072e6805f30967489bf",
+    "OBS-tc-cli-next-says-native-check-not-passed-800a20e123c7d89d21b6de20",
+    "OBS-tc-cli-unreadable-native-attempts-unknown-85dac7a79455d716372aa119",
+    "OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a"
   ],
   "bugs": [
     "BUG-0001",
