@@ -3072,7 +3072,14 @@ fn plan_without_a_native_change_names_change_new() {
     fixture.stubs();
     fixture.native("draft");
     fixture.init();
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Plan the change"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "plan",
+        "--reason",
+        "Plan the change",
+    ]);
     fixture.ok(&["checkpoint", "--next-action", "Write the plan"]);
     fixture.ok(&["stage", "iterate", "--note", "Plan drafted"]);
     let next = fixture.ok(&["next", "--json"]);
@@ -3110,7 +3117,14 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
     // Reset to intent, then advance: no loop back to another reset.
     let fixture = done_fixture("old-change");
     finalized(&fixture, "old-change", 1_700_000_000);
-    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", "Next feature"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "intent",
+        "--reason",
+        "Next feature",
+    ]);
     let mut stages = vec![];
     while stage(&fixture) != "plan" {
         fixture.ok(&["stage", "advance"]);
@@ -3118,7 +3132,12 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
         let action = &next["next_valid_action"];
         let text = action["action"].as_str().unwrap().to_string();
         assert!(!text.contains("stage reset"), "{}: {text}", stage(&fixture));
-        assert_ne!(action["command"], RESET_COMMAND, "{}: {action}", stage(&fixture));
+        assert_ne!(
+            action["command"],
+            RESET_COMMAND,
+            "{}: {action}",
+            stage(&fixture)
+        );
         stages.push((stage(&fixture), action.clone()));
     }
     let (_, at_plan) = stages.last().unwrap();
@@ -3134,7 +3153,14 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
     // A change finalized after the latest reset is this cycle's: the archived-change
     // guidance stays.
     let fixture = done_fixture("new-change");
-    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", "Next feature"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "intent",
+        "--reason",
+        "Next feature",
+    ]);
     fixture.ok(&["stage", "advance"]);
     finalized(&fixture, "new-change", 4_000_000_000);
     let next = fixture.ok(&["next", "--json"]);

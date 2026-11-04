@@ -450,10 +450,10 @@ const LIST_LIMIT: usize = 10;
 const STRING_LIMIT: usize = 512;
 const CUT: &str = " [cut]";
 /// Entries shown of the newest decisions, of a failure's linked bugs and of archived
-/// lesson bundles.
+/// lesson bundles; the bundles shown are the librarian's hot archives (KNOW-8).
 const DECISION_LIMIT: usize = 5;
 const LINKED_BUG_LIMIT: usize = 3;
-const BUNDLE_LIMIT: usize = 5;
+const BUNDLE_LIMIT: usize = library::HOT_ARCHIVES;
 /// Decision prefixes read best-effort; any other entry is shown whole.
 const DECISION_KINDS: [&str; 3] = ["decided", "rejected", "failed"];
 const ARCHIVED_CHANGES: &str = ".specsync/archive/changes";
@@ -625,8 +625,10 @@ fn lesson_source(root: &Path, module: &str) -> Value {
     json!({"module": module, "path": context, "section_line": line, "note": note})
 }
 
-/// Archived SpecSync lesson bundles, newest first by archive directory name. Nothing
-/// records which were folded.
+/// Archived SpecSync lesson bundles, newest first by recorded finalization timestamp,
+/// then archive directory name, the order the librarian uses for its hot archives; an
+/// archive without a readable finalization timestamp sorts as oldest. Nothing records
+/// which were folded.
 /// An archive directory that `local_path` refuses (a symlink, for one) has no bundles;
 /// a name that is not UTF-8 is counted and shown lossily.
 fn archived_bundles(root: &Path) -> Result<Value> {
@@ -641,8 +643,15 @@ fn archived_bundles(root: &Path) -> Result<Value> {
             }
         }
     }
-    names.sort();
-    names.reverse();
+    let mut names: Vec<(u64, String)> = names
+        .into_iter()
+        .map(|name| {
+            let timestamp = library::finalized(root, &name).map_or(0, |(_, timestamp)| timestamp);
+            (timestamp, name)
+        })
+        .collect();
+    names.sort_by(|left, right| right.cmp(left));
+    let names: Vec<String> = names.into_iter().map(|(_, name)| name).collect();
     Ok(json!({
         "total": names.len(),
         "items": names.iter().take(BUNDLE_LIMIT).map(|name| cut(&format!("{ARCHIVED_CHANGES}/{name}/lesson-bundle.md"))).collect::<Vec<_>>(),

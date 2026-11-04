@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough next` now lists the newest 3 archived lesson bundles by recorded
+  finalization time, the same three the librarian marks hot, instead of the last 5 by
+  directory name, which mixed old and new work on a busy day (#74).
+- After `chough stage reset` from an archived change, `chough next` keeps the reset's
+  new-cycle guidance at every stage and suggests `specsync change new` instead of the
+  archived gate refusal; at plan with no native change recorded it also suggests
+  `specsync change new` rather than a bare status read (#76, items 2 and 5).
+
 ## [0.2.0] - 2026-11-03
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence

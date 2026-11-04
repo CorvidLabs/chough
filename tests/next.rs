@@ -595,27 +595,28 @@ fn set_mtime(path: &std::path::Path, seconds: u64) {
 }
 
 /// After the suggested reset the archived rule does not suggest another reset, although
-/// the checkpoint still names the archived change until a new one is recorded: at intent
-/// the reset's new-cycle next action shows; at plan the build gate refusal shows, as it
-/// does after a reset from done.
+/// the checkpoint still names the archived change until a new one is recorded: the
+/// reset's new-cycle next action shows at intent, and at plan too, with the command
+/// `specsync change new` rather than the archived gate refusal (issue 76 item 5).
 #[cfg(unix)]
 fn assert_after_reset(fixture: &Fixture, from: &str) {
     let next = fixture.ok(&["next", "--json"]);
     let action = next["next_valid_action"]["action"].as_str().unwrap();
     let current = fixture.session()["stage"]["current"].clone();
     let current = current.as_str().unwrap();
-    if current == "intent" {
-        assert!(
-            action.starts_with(&format!(
-                "Continue intent: New cycle from {from} after reset: "
-            )),
-            "{action}"
+    assert!(
+        action.starts_with(&format!(
+            "Continue {current}: New cycle from {from} after reset: "
+        )),
+        "{action}"
+    );
+    if current != "intent" {
+        assert_eq!(
+            next["next_valid_action"]["command"],
+            "specsync change new \"<outcome>\" --spec <module> --path <path>",
+            "{next}"
         );
-    } else {
-        assert!(
-            action.starts_with("Gate not open (refused:native-archived)"),
-            "{action}"
-        );
+        assert!(!action.contains("refused:native-archived"), "{action}");
     }
     assert!(!action.contains("is archived while"), "{action}");
     assert_ne!(next["next_valid_action"]["command"], RESET, "{next}");
@@ -1159,14 +1160,20 @@ fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
     // The librarian's hot archives are the same three.
     fixture.ok(&["library", "index"]);
     let index = fixture.read("knowledge/INDEX.md");
-    for slug in ["export-chats", "search-messages", "add-bounded-pagination"] {
-        assert!(index.contains(&format!("[{slug}](archives/{slug}.md)")), "{index}");
-        let line = index.lines().find(|line| line.starts_with(&format!("[{slug}]"))).unwrap_or_else(|| panic!("{slug} in {index}"));
-        assert!(line.ends_with("(hot)"), "{line}");
-    }
-    for slug in ["protect-secrets", "preserve-history", "enforce-rules"] {
-        let line = index.lines().find(|line| line.starts_with(&format!("[{slug}]"))).unwrap_or_else(|| panic!("{slug} in {index}"));
-        assert!(line.ends_with("(cold)"), "{line}");
+    for (slug, status) in [
+        ("export-chats", "hot"),
+        ("search-messages", "hot"),
+        ("add-bounded-pagination", "hot"),
+        ("protect-secrets", "cold"),
+        ("preserve-history", "cold"),
+        ("enforce-rules", "cold"),
+    ] {
+        assert!(
+            index.contains(&format!(
+                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
+            )),
+            "{slug} {status} in {index}"
+        );
     }
 }
 

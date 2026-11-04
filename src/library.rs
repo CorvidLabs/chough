@@ -58,7 +58,7 @@ pub(super) enum LibraryCommand {
     },
 }
 
-const HOT_ARCHIVES: usize = 3;
+pub(crate) const HOT_ARCHIVES: usize = 3;
 /// Rows each knowledge entry lists in full before pointing at the manifest.
 const ENTRY_ROWS: usize = 100;
 /// The managed-file bound every generated knowledge file stays within.
@@ -97,6 +97,26 @@ fn read_json(root: &Path, relative: &str) -> std::result::Result<serde_json::Val
             )
         })?;
     serde_json::from_slice(&bytes).map_err(|error| format!("{relative}: {error}"))
+}
+
+/// The change ID and finalization timestamp an archive directory records, when its
+/// `finalization.json` reads within the native bound and its directory name ends with
+/// that ID, the same check `archives` uses.
+pub(crate) fn finalized(root: &Path, dir: &str) -> Option<(String, u64)> {
+    let value = read_json(root, &format!("{ARCHIVES}/{dir}/finalization.json")).ok()?;
+    let id = value["change_id"].as_str().filter(|id| dir.ends_with(id))?;
+    Some((id.to_string(), value["timestamp"].as_u64()?))
+}
+
+/// When the archived native change `change` was finalized, if an archive records it.
+pub(crate) fn finalized_at(root: &Path, change: &str) -> Option<u64> {
+    sorted_entries(root, ARCHIVES)
+        .ok()?
+        .iter()
+        .filter(|dir| dir.ends_with(change))
+        .filter_map(|dir| finalized(root, dir))
+        .find(|(id, _)| id == change)
+        .map(|(_, timestamp)| timestamp)
 }
 
 /// Archived changes newest first by (finalization timestamp, directory).

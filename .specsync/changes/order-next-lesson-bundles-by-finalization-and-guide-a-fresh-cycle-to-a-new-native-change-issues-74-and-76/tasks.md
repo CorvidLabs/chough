@@ -5,9 +5,9 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing-first tests: bundle order and count in tests/next.rs; plan with no change,
+- [x] Failing-first tests: bundle order and count in tests/next.rs; plan with no change,
       reset to plan, reset to intent then advance, and a change finalized after the
       reset in tests/stages.rs
-- [ ] `finalized` and `finalized_at` in src/library.rs; `archived_bundles` uses them
-- [ ] `previous_cycle` and the new-change command in src/stage.rs
-- [ ] docs/cli.md and CHANGELOG.md
+- [x] `finalized` and `finalized_at` in src/library.rs; `archived_bundles` uses them
+- [x] `previous_cycle` and the new-change command in src/stage.rs
+- [x] docs/cli.md and CHANGELOG.md

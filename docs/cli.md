@@ -329,7 +329,7 @@ stage on that response, and shows:
 | `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest checkpoint decisions, newest first; see [Decision prefixes](#decision-prefixes) |
 | `last_failure` | `{"id", "observed_at_unix_seconds", "summary", "bugs": {"total", "items": [{"id", "status"}]}}` for the failed observation with the greatest recorded `observed_at_unix_seconds` (ties to the greater ID), with at most 3 bugs that link it by their observations, note observations or regression baseline, by bug ID; `null` when no observation failed. No freshness label is computed; run `chough status` or the case for that |
-| `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>]}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing` or `cannot be read: <error>`, for example for a symlinked module directory); and the `.specsync/archive/changes/*/lesson-bundle.md` files, newest first by archive directory name, at most 5 (a symlinked archive directory lists none) |
+| `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>]}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing` or `cannot be read: <error>`, for example for a symlinked module directory); and the `.specsync/archive/changes/*/lesson-bundle.md` files, newest first by recorded finalization timestamp (from `finalization.json`) then directory name, at most 3, the same three the librarian marks hot in `knowledge/INDEX.md`; an unreadable timestamp sorts oldest (a symlinked archive directory lists none) |
 | `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
 
 The text form (the default) carries the same fields as short lines. Each form is at
@@ -377,11 +377,16 @@ text, so `next` never cuts it), the reason opens with `Native change <id> is arc
 while the checkpoint is at <stage>`, its command is the reset, and the native next
 action is named as the thing to check first; after the suggested reset the checkpoint
 still names the archived change until a new one is recorded, so this rule does not
-apply while the latest stage transition is a reset; at accept it
+apply while the archived change belongs to the previous cycle (the latest stage
+transition is a reset, or the change was finalized no later than the latest reset):
+the reset's next action stays, and a refused gate for the next main stage keeps it,
+names this cycle's missing native change and suggests `specsync change new`, never
+another reset; at accept it
 first says `Record done first: chough stage advance (accept to done is allowed). Then:`
 and its command is `chough stage advance`, the documented close after finalize (release
 and side stages are not affected); a closed gate for the next main stage shows its
-label and detail; otherwise `Continue <stage>: <checkpoint next action>`. Every reset
+label and detail (with no native change recorded, `refused:no-native-change` suggests
+`specsync change new` rather than a status read); otherwise `Continue <stage>: <checkpoint next action>`. Every reset
 Chough suggests carries `--reason`.
 
 ## Approved-delta guard

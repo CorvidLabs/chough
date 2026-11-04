@@ -824,6 +824,42 @@ fn reached_by_reset(root: &Path, history: Option<&crate::history::HistoryRead>) 
         .is_some_and(|kind| kind == "reset")
 }
 
+/// When the newest reset was recorded, if the transition log names one.
+fn latest_reset_at(root: &Path, history: Option<&crate::history::HistoryRead>) -> Option<u64> {
+    let reset_at = |record: &Value| {
+        (record.get("kind").and_then(Value::as_str) == Some("reset"))
+            .then(|| record.get("at_unix_seconds").and_then(Value::as_u64))
+            .flatten()
+    };
+    if let Some(read) = history {
+        return read.records.iter().rev().find_map(reset_at);
+    }
+    let path = local_path(root, TRANSITIONS).ok()?;
+    let (lines, _) = read_log_tail(&path, usize::MAX).ok()?;
+    lines
+        .iter()
+        .rev()
+        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+        .find_map(|record| reset_at(&record))
+}
+
+/// Whether the recorded archived change belongs to the cycle before the latest reset:
+/// the latest stage transition is that reset, or the change's recorded finalization is
+/// no later than it (REQ-cli-021). Without both times only the first test applies.
+fn previous_cycle(
+    root: &Path,
+    session: &Checkpoint,
+    history: Option<&crate::history::HistoryRead>,
+) -> bool {
+    reached_by_reset(root, history)
+        || session
+            .native_change
+            .as_deref()
+            .and_then(|change| crate::library::finalized_at(root, change))
+            .zip(latest_reset_at(root, history))
+            .is_some_and(|(finalized, reset)| reset >= finalized)
+}
+
 /// The gate for the next main stage and the next valid action, both evaluated on one
 /// native state, so `next` and `status` report the same decision (REQ-cli-021).
 pub(super) fn assess(
@@ -883,18 +919,39 @@ pub(super) fn assess(
         done_action(root, session, state, native_next)
     } else if is_main(current)
         && archived_and_authenticated(root, session, state)
-        && !reached_by_reset(root, history)
+        && !previous_cycle(root, session, history)
     {
         archived_action(session, state, native_next)
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
-        Action {
-            action: format!(
-                "Gate not open ({}): {}",
-                gate.label,
-                action_detail(&gate.detail)
-            ),
-            reason: format!("Native state does not allow reaching {to} yet."),
-            command: Some(status_command(session.native_change.as_deref())),
+        if is_main(current) && archived_and_authenticated(root, session, state) {
+            // The archive is the previous cycle's: keep the reset's guidance and name
+            // the new native change, not the archived refusal or another reset.
+            Action {
+                action: format!("Continue {current}: {}", session.next_action),
+                reason: format!(
+                    "Native change {} is archived from before the latest reset, so it belongs to the previous cycle; reaching {to} needs this cycle's new native change ({}).",
+                    session
+                        .native_change
+                        .as_deref()
+                        .unwrap_or("the native change"),
+                    gate.label
+                ),
+                command: Some(NEW_CYCLE_CHANGE.into()),
+            }
+        } else {
+            Action {
+                action: format!(
+                    "Gate not open ({}): {}",
+                    gate.label,
+                    action_detail(&gate.detail)
+                ),
+                reason: format!("Native state does not allow reaching {to} yet."),
+                command: Some(if gate.label == "refused:no-native-change" {
+                    NEW_CYCLE_CHANGE.into()
+                } else {
+                    status_command(session.native_change.as_deref())
+                }),
+            }
         }
     } else {
         Action {
