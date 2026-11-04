@@ -255,6 +255,13 @@ pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
                 "{relative} was archived or removed while this command ran; nothing was saved"
             );
         }
+        // A legacy writer re-checks the mode: sessions adopted after it resolved
+        // `.chough/session.json` would otherwise get that file written again.
+        ensure!(
+            relative != checkpoint::SESSION || !enabled(root)?,
+            "{} was adopted into {DIR} while this command ran; nothing was saved",
+            checkpoint::SESSION
+        );
         return Ok(relative);
     }
     let relative = if enabled(root)? {
@@ -296,6 +303,56 @@ pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>>
     Ok(all)
 }
 
+/// Take the checkpoint writer lock for a session command when the project's `.chough`
+/// directory exists; before it exists there is nothing a concurrent writer could lose.
+fn lock_project(root: &Path) -> Result<()> {
+    if local_path(root, ".chough")?.is_dir() {
+        checkpoint::lock_checkpoint(root)?;
+    }
+    Ok(())
+}
+
+/// Git ignore rules for `.chough/sessions/`: the temps a session-file write uses
+/// before its rename.
+const IGNORE: &str = ".*.tmp\n";
+
+/// Remove `.chough/sessions/.<key>.json.<pid>.tmp` files left by writers killed before
+/// their rename (#77 review, gap ii), and make sure Git ignores that pattern. Called by
+/// `save_checkpoint` while it holds the checkpoint lock, under which every session-file
+/// writer renames, so a temp seen here was left by a killed writer. Only regular files
+/// with exactly that name directly in `.chough/sessions/` go.
+pub(super) fn remove_orphaned_temps(root: &Path) -> Result<()> {
+    if !enabled(root)? {
+        return Ok(());
+    }
+    write_new(root, &format!("{DIR}/.gitignore"), IGNORE)?;
+    for entry in fs::read_dir(local_path(root, DIR)?)? {
+        let entry = entry?;
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else {
+            continue;
+        };
+        let orphan = name
+            .strip_prefix('.')
+            .and_then(|rest| rest.strip_suffix(".tmp"))
+            .and_then(|rest| rest.rsplit_once(".json."))
+            .is_some_and(|(key, pid)| {
+                valid_change_id(key)
+                    && !pid.is_empty()
+                    && pid.bytes().all(|byte| byte.is_ascii_digit())
+            });
+        if !orphan || !entry.file_type()?.is_file() {
+            continue;
+        }
+        let bytes = entry.metadata().map_or(0, |metadata| metadata.len());
+        fs::remove_file(entry.path()).with_context(|| format!("removing {DIR}/{name}"))?;
+        eprintln!(
+            "chough: removed {DIR}/{name} ({bytes} bytes), left by a session write that was stopped before it saved; the session was not changed by it"
+        );
+    }
+    Ok(())
+}
+
 fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
     let content = read_bounded_record(&local_path(root, relative)?, checkpoint::SESSION_LIMIT)
         .with_context(|| format!("reading {relative}"))?;
@@ -307,6 +364,7 @@ fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
 
 fn point(root: &Path, key: &str) -> Result<()> {
     write_new(root, &format!("{LOCAL}/.gitignore"), "*\n")?;
+    write_new(root, &format!("{DIR}/.gitignore"), IGNORE)?;
     write_replace_bounded(root, POINTER, &format!("{key}\n"), 512)?;
     pin(root, &session_file(key));
     Ok(())
@@ -369,6 +427,7 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         } => {
             ensure_key(&key)?;
             ensure!(!objective.trim().is_empty(), "objective must not be blank");
+            lock_project(root)?;
             ensure!(
                 modules.iter().all(|module| valid_name(module)),
                 "module names use letters, digits, hyphens, underscores"
@@ -396,6 +455,7 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         }
         SessionCommand::Adopt { key } => {
             ensure_key(&key)?;
+            lock_project(root)?;
             ensure_unused(root, &key)?;
             let legacy = local_path(root, checkpoint::SESSION)?;
             let bytes = read_bounded_record(&legacy, checkpoint::SESSION_LIMIT)
@@ -419,6 +479,7 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         }
         SessionCommand::Use { key } => {
             ensure_key(&key)?;
+            lock_project(root)?;
             ensure!(
                 enabled(root)?,
                 "no sessions; run `chough session new <key>`"
@@ -556,6 +617,8 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             print_json(&json!({"schema_version":1,"session":key,"entries":entries}))
         }
         InboxCommand::Fold => {
+            // Lock before the read, as every read-modify-write of the checkpoint does.
+            checkpoint::lock_for_update(root)?;
             // Pin the session before anything is read, so the save goes to the session
             // that was read even if another process runs `chough session use` meanwhile.
             let relative = checkpoint_path(root)?;
