@@ -2,7 +2,7 @@
 //! to stage gates (REQ-cli-008, REQ-cli-031), and the warning when native verification
 //! runs none of the project's commands (REQ-cli-038, FLOW-15).
 
-use crate::records::{local_path, read_record};
+use crate::records::{local_path, read_native_text};
 use anyhow::Result;
 use serde::Deserialize;
 use serde_json::Value;
@@ -55,7 +55,8 @@ fn read(root: &Path) -> Result<Option<std::result::Result<PolicyFile, String>>> 
     if !path.exists() {
         return Ok(None);
     }
-    let text = match read_record(&path) {
+    // SpecSync's policy file: read within SpecSync's bound, not Chough's (LIFE-15).
+    let text = match read_native_text(&path) {
         Ok(text) => text,
         Err(error) => return Ok(Some(Err(format!("{POLICY} cannot be read: {error:#}")))),
     };

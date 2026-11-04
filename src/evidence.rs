@@ -2,11 +2,11 @@
 
 use crate::cases::{self, ARTIFACTS_DIR};
 use crate::checkpoint::{Session, read_session};
-use crate::context::hi_export;
+use crate::context::hi_export_json;
 use crate::identity;
 use crate::records::{
     append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
-    print_json, read_record, read_spec_file, record_names, valid_name, write_new,
+    print_json, read_native_text, read_record, read_spec_file, record_names, valid_name, write_new,
 };
 use crate::records::{valid_module_name, valid_reference_id};
 use crate::{bugs, prefs, validate};
@@ -415,14 +415,15 @@ pub(super) fn validate_criteria(root: &Path, criteria: &[String]) -> Result<()> 
             .0;
         ensure!(valid_name(family), "invalid criterion family");
         if !exports.contains_key(family) {
-            let export = hi_export(root, family);
-            ensure!(
-                export.state == "observed",
-                "cannot validate criteria: {}",
-                export.content
-            );
-            let value: Value = serde_json::from_str(&export.content)
-                .context("native HI family export is invalid or exceeds 16384 bytes")?;
+            // The complete export, not the 16 KiB display section: a family's intent can
+            // be any size, and a Chough bound must never decide this check (LIFE-15).
+            let export = hi_export_json(root, family);
+            let value = export.value.with_context(|| {
+                format!(
+                    "cannot validate criteria: {} was {}: {}",
+                    export.section.source, export.section.state, export.section.content
+                )
+            })?;
             exports.insert(family.to_string(), value);
         }
         ensure!(
@@ -1163,8 +1164,9 @@ fn latest_archive(root: &Path) -> Result<Option<String>, String> {
     let mut latest: Option<(u64, String, String)> = None;
     for directory in change_dirs(root, ".specsync/archive/changes")? {
         let name = format!(".specsync/archive/changes/{directory}/finalization.json");
+        // A native SpecSync file: read within SpecSync's bound, not Chough's (LIFE-15).
         let text = local_path(root, &name)
-            .and_then(|path| read_record(&path))
+            .and_then(|path| read_native_text(&path))
             .map_err(|error| format!("{name}: {error}"))?;
         let value: Value =
             serde_json::from_str(&text).map_err(|error| format!("{name}: {error}"))?;
@@ -1231,7 +1233,7 @@ pub(super) fn retention_protection(root: &Path) -> Result<Vec<String>> {
         .collect();
     for directory in change_dirs(root, ".specsync/archive/changes").map_err(anyhow::Error::msg)? {
         let path = format!(".specsync/archive/changes/{directory}/finalization.json");
-        let value: Value = serde_json::from_str(&read_record(&local_path(root, &path)?)?)?;
+        let value: Value = serde_json::from_str(&read_native_text(&local_path(root, &path)?)?)?;
         let id = value["change_id"]
             .as_str()
             .filter(|id| directory.ends_with(id))
