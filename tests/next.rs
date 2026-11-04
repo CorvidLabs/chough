@@ -1096,15 +1096,53 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
         assert_eq!(ghost["section_line"], Value::Null, "{ghost}");
         let note = ghost["note"].as_str().unwrap();
         assert!(note.starts_with("cannot be read: symlink"), "{note}");
-        assert_eq!(
-            next["lessons"]["archived_bundles"],
-            json!({"total": 0, "items": []})
-        );
+        let bundles = &next["lessons"]["archived_bundles"];
+        assert_eq!(bundles["total"], 0, "{bundles}");
+        assert_eq!(bundles["items"], json!([]), "{bundles}");
+        let note = bundles["note"].as_str().unwrap();
+        assert!(note.starts_with("cannot be read: "), "{note}");
+        let shown = text(&fixture, &["next"]);
+        assert!(shown.contains("  ghost: specs/ghost/context.md (cannot be read: symlink"));
         assert!(
-            text(&fixture, &["next"])
-                .contains("  ghost: specs/ghost/context.md (cannot be read: symlink")
+            shown.contains(&format!("Archived lesson bundles: {note}")),
+            "{shown}"
         );
     }
+}
+
+/// Review of #78 (non-blocking): one symlinked archive directory makes `library index`
+/// refuse, and `next` surfaces that same error for the archived bundles instead of
+/// silently listing none. SYNTHETIC archives.
+#[cfg(unix)]
+#[test]
+fn next_surfaces_the_error_library_index_refuses_a_symlinked_archive_with() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let base = ".specsync/archive/changes/2026-11-03";
+    fixture.write(
+        &format!("{base}-a/finalization.json"),
+        &json!({"change_id": "a", "timestamp": 100}).to_string(),
+    );
+    fixture.write(&format!("{base}-a/lesson-bundle.md"), "SYNTHETIC lesson\n");
+    let elsewhere = tempfile::tempdir().unwrap();
+    std::fs::write(
+        elsewhere.path().join("finalization.json"),
+        json!({"change_id": "b", "timestamp": 200}).to_string(),
+    )
+    .unwrap();
+    std::os::unix::fs::symlink(elsewhere.path(), fixture.root().join(format!("{base}-b"))).unwrap();
+    let refused = fixture.fails(&["library", "index"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let bundles = &next["lessons"]["archived_bundles"];
+    assert_eq!(bundles["total"], 0, "{bundles}");
+    assert_eq!(bundles["items"], json!([]), "{bundles}");
+    let note = bundles["note"].as_str().unwrap();
+    let error = note.strip_prefix("cannot be read: ").unwrap();
+    assert!(error.contains("symlink"), "{note}");
+    assert!(
+        refused.contains(error),
+        "next: {note}\nlibrary index: {refused}"
+    );
 }
 
 /// Issue 74: `next` names the newest 3 lesson bundles by finalization timestamp, then
