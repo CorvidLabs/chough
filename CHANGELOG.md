@@ -9,7 +9,6 @@ All notable changes to Chough are recorded here. The format follows
 - `chough checkpoint --native-change <id>` asks SpecSync for the change before saving and
   refuses an ID SpecSync does not report (`refused:native-change-unknown`), leaving the
   checkpoint unchanged (#63, found in Kimi's second lab review).
-
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
   next` finds the Lessons heading of a `context.md` over 4 MiB (REQ-cli-034).

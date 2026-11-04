@@ -35,6 +35,44 @@
         }
       },
       "approved_delta_digests": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793755195,
+      "digest": "b7b01edebe164609dd7d6d6765f96a1c9b59e432d9e08cb7cf12b4df08042d4a",
+      "note": "Re-approved as corvid-agent (agent account, not a human approval) under the same authority as the first approval (Leif's 2026-11-03 7:49 AM MT standing authority for bounded fixes to Chough bug tickets and his 11:48 AM MT instruction to fix Kimi's round-2 findings), for the #71 review: the no-spec rationale overstated REQ-cli-005, so this adds a MODIFIED REQ-cli-007 delta naming the native change ID check, refused:native-change-unknown, the byte-identical checkpoint on refusal and the format-only path without SpecSync; public_contract is now yes for the new refusal code; code, tests and other scope are unchanged",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "refuse-a-native-change-id-that-specsync-does-not-know-issue-63",
+        "title": "Refuse a native change ID that SpecSync does not know (issue 63)",
+        "description": "Refuse a native change ID that SpecSync does not know (issue 63)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With SpecSync configured chough checkpoint --native-change for an ID that specsync change status does not report exits non-zero with refused:native-change-unknown naming the ID and the status command and .chough/session.json stays byte-identical even when other updates are in the same call, A failed or timed-out SpecSync read also refuses with nothing saved, An ID that SpecSync reports is saved as before, Without a SpecSync configuration only the existing ID format check applies, docs/cli.md states the refusal and the new test fails on main 4daf861 and fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issue 63 only: no new dependency or schema or output-key change and no change to stage gates or to next/status native reads; no PR until a corvid-agent PR slot is free",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "974eb96b05c1f7de2f77878d678f110a41f01cb96d05959b38b35eb66dea83bf"
+      }
     }
   ],
   "reopenings": []

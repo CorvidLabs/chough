@@ -19,3 +19,9 @@ artifact: testing
   is refused with SpecSync's own "not found" error and the session hash is unchanged;
   the sample's real change still saves.
 - `cargo test --locked` and `fledge lanes run verify` pass.
+
+## Requirement evidence
+
+| Requirement | Test |
+|---|---|
+| REQ-cli-007 | `tests/stages.rs`: `checkpoint_refuses_a_native_change_specsync_does_not_know` and `checkpoint_native_change_without_specsync_keeps_the_format_check`. |

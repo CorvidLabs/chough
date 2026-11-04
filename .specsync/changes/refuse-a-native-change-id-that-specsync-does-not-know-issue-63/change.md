@@ -1,6 +1,6 @@
 ---
 id: refuse-a-native-change-id-that-specsync-does-not-know-issue-63
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 4daf861509b70c14282ac16b5d0547d701e385b2
 ---
@@ -21,4 +21,4 @@ Refuse a native change ID that SpecSync does not know (issue 63)
 
 ## No-spec Rationale
 
-Checkpoint native-change validation within REQ-cli traceability as written: the helper already must validate references against native records before recording; no requirement or criterion text changes; docs/cli.md states the refusal
+Not applicable
