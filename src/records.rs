@@ -765,7 +765,7 @@ fn run_watched(
 /// Stop signals while Chough owns a child or saves what one reported (FLOW-14,
 /// REQ-cli-011).
 #[cfg(unix)]
-pub(super) mod interrupt {
+mod interrupt {
     use std::sync::atomic::{AtomicI32, Ordering};
     use std::sync::{Mutex, PoisonError};
 
@@ -787,11 +787,11 @@ pub(super) mod interrupt {
     /// One watch. Dropping the last one restores the previous dispositions and, when a
     /// stop signal arrived meanwhile, ends Chough by that signal; during a panic it
     /// only restores them.
-    pub(crate) struct Watch(());
+    pub(super) struct Watch(());
 
     /// Note stop signals instead of ending at once. A signal inherited as ignored, or
     /// as blocked in the signal mask, keeps its inherited disposition.
-    pub(crate) fn watch() -> Watch {
+    pub(super) fn watch() -> Watch {
         let mut watching = WATCHING.lock().unwrap_or_else(PoisonError::into_inner);
         watching.0 += 1;
         if watching.0 > 1 {
@@ -830,14 +830,14 @@ pub(super) mod interrupt {
     }
 
     /// Whether a stop signal arrived while a watch was active.
-    pub(crate) fn noted() -> bool {
+    pub(super) fn noted() -> bool {
         NOTED.load(Ordering::SeqCst) != 0
     }
 
     /// End Chough now when a stop signal has arrived: the last point at which a stop
     /// leaves nothing recorded. After it, a stop lets the save finish and then ends
     /// Chough when the last watch ends.
-    pub(crate) fn stop_if_noted() {
+    pub(super) fn stop_if_noted() {
         let signal = NOTED.load(Ordering::SeqCst);
         if signal != 0 {
             restore(&mut WATCHING.lock().unwrap_or_else(PoisonError::into_inner));
@@ -892,15 +892,33 @@ pub(super) mod interrupt {
 
 /// Without Unix signals there is nothing to watch.
 #[cfg(not(unix))]
-pub(super) mod interrupt {
-    pub(crate) struct Watch(());
-    pub(crate) fn watch() -> Watch {
+mod interrupt {
+    pub(super) struct Watch(());
+    pub(super) fn watch() -> Watch {
         Watch(())
     }
-    pub(crate) fn noted() -> bool {
+    pub(super) fn noted() -> bool {
         false
     }
-    pub(crate) fn stop_if_noted() {}
+    pub(super) fn stop_if_noted() {}
+}
+
+/// A stop watch held across a whole operation, such as a case run and its save
+/// (FLOW-14): stop signals are noted, and dropping it ends Chough by a noted signal.
+pub(super) struct StopWatch {
+    _watch: interrupt::Watch,
+}
+
+pub(super) fn stop_watch() -> StopWatch {
+    StopWatch {
+        _watch: interrupt::watch(),
+    }
+}
+
+/// End Chough now by a stop signal noted under a [`StopWatch`]: the last point at
+/// which a stop records nothing.
+pub(super) fn stop_if_noted() {
+    interrupt::stop_if_noted();
 }
 
 /// Run one of Chough's own commands (git) like `Command::output`, with stdin closed

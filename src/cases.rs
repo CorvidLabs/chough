@@ -926,7 +926,7 @@ pub(super) fn run_case(
         .collect();
     // The watch spans the run and the whole save: a stop before the save starts ends
     // Chough with nothing recorded, and Chough's own git calls stop with it (FLOW-14).
-    let _watch = crate::records::interrupt::watch();
+    let _watch = crate::records::stop_watch();
     let started = Instant::now();
     let execution = execute(root, &argv, &env, timeout)?;
     let duration_seconds = started.elapsed().as_secs();
@@ -1042,7 +1042,7 @@ pub(super) fn run_case(
     // The last point where a stop records nothing. From here the artifact and the
     // observation are written without running anything, and a stop that arrives
     // meanwhile ends Chough once both are saved.
-    crate::records::interrupt::stop_if_noted();
+    crate::records::stop_if_noted();
     write_artifact(root, &artifact, &output)?;
     let record = Evidence {
         schema_version: 2,
