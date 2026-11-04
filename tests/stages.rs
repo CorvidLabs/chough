@@ -3172,5 +3172,37 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
     assert_eq!(next["next_valid_action"]["command"], RESET_COMMAND);
 }
 
+/// Review of #78: the previous-cycle rule uses the newest reset by recorded time, not
+/// the last one appended; merged transition logs hold resets out of order.
+#[cfg(unix)]
+#[test]
+fn reset_rule_uses_the_newest_reset_by_time_in_an_out_of_order_log() {
+    let fixture = done_fixture("old-change");
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "intent",
+        "--reason",
+        "Next feature",
+    ]);
+    let log = fixture.read(".chough/transitions.jsonl");
+    let mut reset: Value = serde_json::from_str(log.lines().last().unwrap()).unwrap();
+    assert_eq!(reset["kind"], "reset", "{reset}");
+    let at = reset["at_unix_seconds"].as_u64().unwrap();
+    finalized(&fixture, "old-change", at);
+    // A merge appends an older reset after the newest one.
+    reset["at_unix_seconds"] = json!(at - 100);
+    fixture.write(".chough/transitions.jsonl", &format!("{log}{reset}\n"));
+    while stage(&fixture) != "plan" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(!text.contains("is archived while"), "{text}");
+    assert_eq!(action["command"], NEW_CHANGE, "{action}");
+}
+
 #[cfg(unix)]
 const RESET_COMMAND: &str = "chough stage reset --to intent --reason \"<why>\"";
