@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -651,7 +651,11 @@
     "OBS-tc-cli-stop-reaches-setsid-descendant-2cac6dbe30ea3b5f350bb68b",
     "OBS-tc-cli-stop-reaches-orphaned-descendant-9fbc5d0b7bd58ff99051180f",
     "OBS-tc-cli-git-grace-kill-reported-e8e1bdca1af016ac9a8354fa",
-    "OBS-tc-cli-failed-head-revision-reported-8c849e6a1286d5434e1475cd"
+    "OBS-tc-cli-failed-head-revision-reported-8c849e6a1286d5434e1475cd",
+    "OBS-tc-cli-stop-reaches-setsid-descendant-58a38c5bb484bd787243ced9",
+    "OBS-tc-cli-stop-reaches-orphaned-descendant-c9d3b07eed67b08b31dc2134",
+    "OBS-tc-cli-git-grace-kill-reported-06ec81ee95704c79c644df4b",
+    "OBS-tc-cli-failed-head-revision-reported-7eab7e62b5ab4c4258b53fe4"
   ],
   "bugs": [
     "BUG-0001",
@@ -685,7 +689,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
