@@ -369,8 +369,9 @@ static HELD_LOCKS: Mutex<Vec<(PathBuf, fs::File)>> = Mutex::new(Vec::new());
 /// Take the checkpoint writer lock for the rest of this process (issue 62), so every
 /// read-modify-write of `.chough/session.json` applies its change to the latest
 /// checkpoint. A repeated call is a no-op. After waiting `LOCK_WAIT` it refuses with
-/// nothing saved. Once the lock is held, session temps left by killed writers are
-/// removed (issue 64). `init` takes no lock: it writes a new session that must not
+/// nothing saved. Taking the lock removes nothing: `save_checkpoint` removes session
+/// temps left by killed writers once it holds the lock (issue 64), so a read-only
+/// command that takes the lock leaves them in place. `init` takes no lock: it writes a new session that must not
 /// exist yet, so the first writer after it creates the lock file.
 pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
     let path = checkpoint_lock_path(root)?;
@@ -410,7 +411,7 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
         }
     }
     held.push((path, file));
-    remove_orphaned_session_temps(root)
+    Ok(())
 }
 
 /// Remove `.chough/.session.json.<pid>.tmp` files: the temps `save_checkpoint` writes
@@ -481,6 +482,7 @@ fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
 
 pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
     lock_checkpoint(root)?;
+    remove_orphaned_session_temps(root)?;
     write_replace_bounded(
         root,
         SESSION,

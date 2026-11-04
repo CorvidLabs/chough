@@ -136,10 +136,12 @@ of `validate run` take no lock; `context` and the show forms of `stage`, `consen
 
 Every checkpoint write goes to `.chough/.session.json.<pid>.tmp` and is renamed over
 the session. A temp of that exact name found by a writer holding the lock was left by a
-command killed before it saved; the writer removes it and prints
+command killed before it saved; the writer removes it just before it saves and prints
 `chough: removed .chough/<name> (<bytes> bytes), left by a checkpoint write that was
 stopped before it saved; .chough/session.json was not changed by it` on stderr. The
-killed command's update was never saved. Other temp names are left alone.
+killed command's update was never saved. Other temp names are left alone. Commands
+that only read, including `context` and the show forms that take the lock, remove
+nothing.
 
 | Record | Schema |
 |---|---|
