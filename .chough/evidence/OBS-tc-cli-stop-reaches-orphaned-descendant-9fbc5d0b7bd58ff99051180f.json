@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-stop-reaches-orphaned-descendant-9fbc5d0b7bd58ff99051180f",
+  "criteria": [
+    "FLOW-14"
+  ],
+  "requirements": [
+    "REQ-cli-011"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test stop -- --exact stopping_a_case_run_stops_an_orphan_that_left_the_group for TC-cli-stop-reaches-orphaned-descendant: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-stop-reaches-orphaned-descendant-9fbc5d0b7bd58ff99051180f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-stop-reaches-orphaned-descendant-9fbc5d0b7bd58ff99051180f.log": "d68d5e0fb856f440bfc39bc94c67fcdae63440dfa95eeb74585975c0b4931eb2"
+  },
+  "observed_at_unix_seconds": 1793811064,
+  "snapshot": {
+    "revision": "d777675f0666aa9c122188302200b50d1c5a9716",
+    "dirty": false,
+    "fingerprint": "b46aa8653c84f1ee44467f9b34a499eea6397a191e22c02e83cbfaf70bc7d808",
+    "content": "3bddb207312bb11e33ae30a334bb62f53ce68e6d33e5d05db4d8758dee171c5f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-stop-reaches-orphaned-descendant",
+      "digest": "ae777de1fe4d67e83586c1116c4457bcb0f3c9d388422719561e3db4eae69aec"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stop",
+    "--",
+    "--exact",
+    "stopping_a_case_run_stops_an_orphan_that_left_the_group"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
