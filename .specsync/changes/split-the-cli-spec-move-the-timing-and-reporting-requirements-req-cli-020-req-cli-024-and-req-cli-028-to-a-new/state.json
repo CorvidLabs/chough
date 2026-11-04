@@ -7,10 +7,11 @@
   "title": "Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound",
   "description": "Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound",
   "kind": "refactor",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "70009d64d4611d91d3b96026919c11b97c90d91f",
   "created_at": 1793772008,
-  "updated_at": 1793772107,
+  "updated_at": 1793772270,
   "affected_specs": [
     "cli",
     "reporting"

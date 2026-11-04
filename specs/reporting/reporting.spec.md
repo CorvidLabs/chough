@@ -1,6 +1,6 @@
 ---
 module: reporting
-version: 1
+version: 2
 status: active
 files:
   - src/timing.rs
@@ -79,3 +79,4 @@ transition events. Git and SpecSync supply revisions and native lifecycle times.
 | Version | Date | Changes |
 |---------|------|---------|
 | 1 | 2026-11-04 | Split from cli with REQ-cli-020, REQ-cli-024 and REQ-cli-028 renamed REQ-reporting-001 to REQ-reporting-003, wording unchanged |
+| 2 | 2026-11-04 | split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new: Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound |

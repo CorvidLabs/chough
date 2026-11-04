@@ -1,6 +1,6 @@
 ---
 id: split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new
-state: approved
+state: implementing
 type: refactor
 base_commit: 70009d64d4611d91d3b96026919c11b97c90d91f
 ---

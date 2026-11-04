@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 36
+version: 37
 status: active
 files:
   - src/main.rs
@@ -241,3 +241,4 @@ provider, runtime or hosted service.
 | 34 | 2026-11-04 | stop-what-chough-started-when-chough-is-stopped-issue-75: Stop what Chough started when Chough is stopped (issue 75) |
 | 35 | 2026-11-04 | refuse-a-native-change-id-that-specsync-does-not-know-issue-63: Refuse a native change ID that SpecSync does not know (issue 63) |
 | 36 | 2026-11-04 | refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71: Refuse a native change status reply that names no change ID (issue 63, review thread on #71) |
+| 37 | 2026-11-04 | split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new: Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound |
