@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "#73 (DRIVE-5): chough stage backfill records a gate that already happened, with its original time, quoted evidence and a backfilled flag that timing reports separately",
+  "objective": "#68 (#56, #57, DRIVE-1, DRIVE-7): dotted SpecSync module IDs and hi sub-criterion IDs are accepted, the bundled skill stays free of em and en dashes, and checkpoint --remove-completed corrects one entry",
   "intent_scope": "LIFE",
   "modules": [
     "cli"
