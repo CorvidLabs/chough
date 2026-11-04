@@ -415,4 +415,4 @@ expected = ["tests/spec_split.rs passes: each moved body has its 7bd1b62 SHA-256
 [case.bind]
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "spec_split"]
-expect_output = ["test result: ok. 3 passed; 0 failed"]
+expect_output = ["test result: ok. 5 passed; 0 failed"]

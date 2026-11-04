@@ -1,10 +1,10 @@
-//! The read-only timing report (REQ-cli-020): how long stages, tests, bug fixes and
+//! The read-only timing report (REQ-reporting-001): how long stages, tests, bug fixes and
 //! human gates took, derived from records that already exist. It writes no file, runs
 //! no case and makes no network request; its only external commands are bounded
 //! `specsync change status` reads. Every duration is elapsed wall-clock time, never
 //! effort, and a time no record holds stays unknown, never zero.
 //!
-//! Native reads (REQ-cli-024) are local to one report: each change ID is read at most
+//! Native reads (REQ-reporting-002) are local to one report: each change ID is read at most
 //! once, archived history is read only when the report shows it, and total native
 //! wait is bounded by one budget. None of this applies to gates, `next` or `status`.
 
@@ -26,7 +26,7 @@ use std::time::{Duration, Instant};
 const TRANSITIONS_LIMIT: u64 = 16 * 1_048_576;
 /// Archived changes read for history, most recent first; older ones are skipped.
 const ARCHIVE_HISTORY: usize = 10;
-/// Default whole-report native budget, in seconds (REQ-cli-024).
+/// Default whole-report native budget, in seconds (REQ-reporting-002).
 const NATIVE_BUDGET: u64 = 120;
 const HISTORY_RULE: &str =
     "Archived native history is read only for --cycle all with no --stage, --case or --bug filter.";
@@ -1435,7 +1435,7 @@ fn native_text(change: &Value) -> Vec<String> {
 // The report.
 
 pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
-    // Refused before any record or native read when invalid (REQ-cli-024).
+    // Refused before any record or native read when invalid (REQ-reporting-002).
     let budget = native_budget()?;
     let phase = Instant::now();
     let session = read_session(root)?;

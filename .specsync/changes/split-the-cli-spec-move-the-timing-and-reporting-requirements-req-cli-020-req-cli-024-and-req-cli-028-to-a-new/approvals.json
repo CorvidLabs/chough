@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793772107,
+      "digest": "51cc41fd5ec9bf15993dd506814a6cd04effb41240013757c75aa1d8e504f266",
+      "note": "Agent account corvid-agent records definition approval under the parent agent's instruction of the evening of 2026-11-03 MST (split design for #71: move REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module with wording unchanged and a documented ID mapping; weaken nothing; do not raise the limit), within the standing Chough authority Leif (0xLeif) gave on 2026-11-03 at 7:49 AM MST for bounded fixes through merge, and his asks to finish, review and merge the Chough PRs (t820u, t822u). Leif's split guidance, 2026-11-03 10:05 AM MT: \"we should break stuff apart and decouple it if possible but if things need to be coupled, that's fine.\" No direct human approval of this specific split is claimed. Limits: no wording, binding or test weakening, no limit raise, archived changes, evidence and bug records untouched, no release or deployment. Independent review and final acceptance are arranged by the parent.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
+        "title": "Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound",
+        "description": "Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli",
+          "reporting"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          ".specsync/registry.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/cli.md",
+          "specs/cli/",
+          "specs/reporting/",
+          "src/records.rs",
+          "src/skill.rs",
+          "src/timing.rs",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The ID mapping is documented in docs/FRD.md and the reporting module context; the cases that link only moved requirements move to .chough/cases/reporting.cases.toml under a documented case ID mapping with their bindings unchanged, and each case that also links a requirement staying in cli keeps its cli ID and those links and gains a TC-reporting twin with the identical binding for the moved requirement, so every requirement keeps every case binding it had",
+          "fmt, lint, the full tests, every moved and twinned case and fledge lanes run verify pass",
+          "specs/cli/requirements.md is at most 59000 bytes, the record limit stays 65536 and no requirement, case binding or test is weakened",
+          "specs/reporting is a new module that owns src/timing.rs and tests/timing.rs and holds REQ-reporting-001 to REQ-reporting-003, each with the exact wording of REQ-cli-020, REQ-cli-024 and REQ-cli-028 (their Trace lines unchanged, still naming LIFE-10); the old IDs are removed from specs/cli and become tombstones",
+          "tests/spec_split.rs proves the move lost nothing: every moved requirement body has the SHA-256 it had at main a33c747, every REQ-cli ID from 001 to 034 and 036 is either still in specs/cli or mapped, and a one-time before/after comparison of every cli requirement block is recorded"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "AGENTS.md: preserve existing files and records; never invent results. SpecSync requires REQ-<module>-<number> IDs per delta module and keeps removed IDs as permanent tombstones, so moved requirements get new reporting IDs with a documented mapping. A case links only requirements in its own module's companion, so a case that also links a requirement staying in cli keeps its cli ID and gains a TC-reporting twin with the identical binding. Archived changes, evidence and bug records stay untouched. Precedent: the 2026-11-03 history split (#59). Leif's standing Chough authority (2026-11-03 7:49 AM MST) forbids weakening assertions or gates; the record limit stays 65536",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "56c3bdf52f798baa0045f8f08c140c2674444cf3616c337fb02ebe862c6ea0b7",
+        "reporting": "cf731563b48276515129e0a81c98b6ae6d7792df989b4bbda1b23c08545a18a8"
+      }
+    }
+  ],
+  "reopenings": []
+}

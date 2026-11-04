@@ -1,17 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "#68 (#56, #57, DRIVE-1, DRIVE-7): dotted SpecSync module IDs and hi sub-criterion IDs are accepted, the bundled skill stays free of em and en dashes, and checkpoint --remove-completed corrects one entry",
+  "objective": "Split the cli spec: REQ-cli-020, REQ-cli-024 and REQ-cli-028 move to a new reporting module as REQ-reporting-001 to 003 with wording unchanged, so specs/cli/requirements.md fits the 65536-byte bound after #71 merges main a33c747",
   "intent_scope": "LIFE",
   "modules": [
-    "cli"
+    "cli",
+    "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "scale-independent-archive-authentication-workers-with-the-runner-s-cpus-so-the-archive-check-fits-its-unchanged-budget",
+  "native_change": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -62,15 +63,15 @@
       "REQ-cli-019",
       "REQ-cli-023",
       "REQ-cli-002",
-      "REQ-cli-020",
-      "REQ-cli-024",
+      "REQ-reporting-001",
+      "REQ-reporting-002",
       "REQ-cli-009",
       "REQ-cli-005",
       "REQ-cli-030",
       "REQ-history-002",
       "REQ-history-003",
       "REQ-history-004",
-      "REQ-cli-028",
+      "REQ-reporting-003",
       "REQ-cli-032",
       "REQ-cli-015",
       "REQ-cli-033",
@@ -95,7 +96,9 @@
       "TC-cli-0113",
       "TC-cli-0114",
       "TC-cli-0089",
+      "TC-reporting-0089",
       "TC-cli-0100",
+      "TC-reporting-0100",
       "TC-cli-0126",
       "TC-cli-0127",
       "TC-cli-0128",
@@ -126,9 +129,9 @@
       "TC-history-post-prune-reference",
       "TC-cli-same-second-runs-in-two-git-roots-stay-distinct",
       "TC-cli-independently-added-records-merge-cleanly",
-      "TC-cli-report-case-read-budget",
-      "TC-cli-report-read-invalidation",
-      "TC-cli-report-trace-parity",
+      "TC-reporting-case-read-budget",
+      "TC-reporting-read-invalidation",
+      "TC-reporting-trace-parity",
       "TC-cli-checkpoint-byte-bound-is-131072",
       "TC-cli-observation-pointer-bound-is-400",
       "TC-cli-checkpoint-merge-enforces-the-raised-bounds",
@@ -308,7 +311,9 @@
     "Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases",
     "2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, \"Accept #54 and merge it\" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's.",
     "Agent corvid-agent: chose the retention and transition-history group because it shares no case with a requirement that stays in cli and owns src/history.rs, tests/history.rs and tests/evidence.rs; SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: parent agent instruction 2026-11-03 9:46 AM MT)",
-    "Agent corvid-agent correction: the build->test transition at 2026-11-03 5:05 PM MST repeated the plan->build reason ('Plan approved natively: version 0.2.0 and dated change log only') because stage advance was run twice by mistake. The build edits (Cargo.toml, Cargo.lock, CHANGELOG.md) were made but not yet committed at that move; transitions are immutable, so this records the correction"
+    "Agent corvid-agent correction: the build->test transition at 2026-11-03 5:05 PM MST repeated the plan->build reason ('Plan approved natively: version 0.2.0 and dated change log only') because stage advance was run twice by mistake. The build edits (Cargo.toml, Cargo.lock, CHANGELOG.md) were made but not yet committed at that move; transitions are immutable, so this records the correction",
+    "Agent corvid-agent: chose the timing and reporting group (REQ-cli-020, REQ-cli-024, REQ-cli-028, all LIFE-10, 7,604 bytes) because it owns src/timing.rs and tests/timing.rs and no open train PR before #69 edits it; #69's growth then lands in reporting. SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: the parent agent's split design for #71, 2026-11-03 evening MST, under Leif's standing Chough authority of 7:49 AM MST)",
+    "Agent corvid-agent: Chough checks a case's requirement links against its own module only, so the six cli cases that link a moved requirement and one that stays (TC-cli-0080, 0082, 0088, 0089, 0100, 0104) keep their cli ID and their staying links and each gains a TC-reporting twin with the identical binding for the moved requirement; the nine cases that link only moved requirements move outright. No requirement loses a case binding. Flagged to the reviewer."
   ],
   "open_questions": [],
   "completed": [
@@ -682,5 +687,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: New cycle: #79 (FLOW-14, issue 75), stop what Chough started when Chough is stopped. Built and verified on its branch (verify 9/9, 297 tests at 8f18614); native changes archived at f7d2da5, 688ccc3 and 370d148 after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "Add specs/reporting, move and twin the cases, extend tests/spec_split.rs, then specsync change check --commit"
 }

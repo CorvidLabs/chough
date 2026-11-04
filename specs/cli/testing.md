@@ -88,10 +88,8 @@ updates and edited-copy preservation. No new case number was allocated.
 | REQ-cli-015 | Snapshots keep sources; index lists open bugs and mixed legacy/new snapshots; symlinks refused; random SNAP allocation and timestamp chronology; closeout works with the librarian off | TC-cli-0035, 0036, 0132, TC-cli-slug-snapshot-allocation |
 | REQ-cli-016 | Per-host install and safe updates preserve edits; Kimi mapping reviewed without a new host session; 2756dc2, fb6e487 and identity-main predecessors are known-outdated | TC-cli-0037, 0075, 0106, 0131 |
 | REQ-cli-017 | Schema 2 observations; schema 1 still read; optional content identity validated; mixed legacy/new IDs and exact artifact inheritance | TC-cli-0026, 0028, 0073, 0074, TC-cli-slug-observation-allocation |
-| REQ-cli-020 | Mixed-ID timing from timestamps and stored durations, never lexical IDs or random suffixes; read-only validation resume accounting | Existing timing regressions and mixed-ID fixtures |
 | REQ-cli-021 | Focused next/status parity, bounded forms and one native read; archived-done and archived-not-done actions with precedence; reason-bearing reset/back; bounded decisions/failure/lesson blocks ordered by recorded fields; graded cold-start handoff | TC-cli-0105, 0120 to 0122, 0126 to 0130, 0133 |
 | REQ-cli-023 | Independent-root/repeated-run allocation; random-source/collision refusal; atomic preservation; legacy reads/resume; native manifests, retention, timing and unchanged non-ID shapes | All four slug cases plus cases, optional, evidence, bugs, CLI, timing and package suites |
-| REQ-cli-028 | One lazy case-suite load across observation/reference passes, unchanged legacy/slug digests, new-request source/case/artifact/environment/native-artifact invalidation, missing/retired/duplicate outcomes and exact trace stdout/error/record parity | TC-cli-report-case-read-budget, TC-cli-report-read-invalidation, TC-cli-report-trace-parity; portable tests/next.rs regressions |
 
 Unix-only tests are gated with `cfg(unix)` because they use shell stubs for native
 tools; their cases list only macOS and Linux environments. Windows runs the portable

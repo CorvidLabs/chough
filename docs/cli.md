@@ -764,7 +764,7 @@ completed cycle.
 
 ### Timing native reads
 
-These rules (REQ-cli-024) apply only to `chough timing`. Stage moves, `chough next`
+These rules (REQ-reporting-002, was REQ-cli-024) apply only to `chough timing`. Stage moves, `chough next`
 and `chough status` keep their one authoritative native read with the per-read
 deadline above, and gates still refuse every unknown native state.
 

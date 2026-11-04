@@ -30,9 +30,9 @@ const READER_WAIT: Duration = Duration::from_secs(1);
 const NATIVE_DEADLINE: Duration = Duration::from_secs(120);
 const NATIVE_TIMEOUT_VARIABLE: &str = "CHOUGH_NATIVE_TIMEOUT_SECONDS";
 /// The variable that names the timing report's whole-report native budget; a read
-/// capped by that budget names it when it times out (REQ-cli-024).
+/// capped by that budget names it when it times out (REQ-reporting-002).
 pub(super) const TIMING_BUDGET_VARIABLE: &str = "CHOUGH_TIMING_NATIVE_BUDGET_SECONDS";
-/// `CHOUGH_TRACE=1` turns on the opt-in stderr trace (REQ-cli-024).
+/// `CHOUGH_TRACE=1` turns on the opt-in stderr trace (REQ-reporting-002).
 const TRACE_VARIABLE: &str = "CHOUGH_TRACE";
 /// Longest trace line written, in bytes.
 const TRACE_LINE_LIMIT: usize = 1_024;
@@ -1307,7 +1307,7 @@ pub(super) fn native_json(root: &Path, program: &str, arguments: &[&str]) -> Nat
 }
 
 /// `native_json` with the per-read deadline shortened to `cap` when that is smaller:
-/// the timing report passes its remaining whole-report budget (REQ-cli-024). Gated
+/// the timing report passes its remaining whole-report budget (REQ-reporting-002). Gated
 /// moves, `next` and `status` use `native_json` and never pass a cap.
 pub(super) fn native_json_within(
     root: &Path,

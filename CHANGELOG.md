@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The cli spec module is split again so its requirements companion stays under the
+  65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
+  REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns
+  src/timing.rs and tests/timing.rs, with wording unchanged. Nine cases moved to
+  `.chough/cases/reporting.cases.toml` and six cli cases that also cover requirements
+  staying in cli gained `TC-reporting-` twins. The ID mappings are in docs/FRD.md and
+  specs/reporting/.
 - The hosted SpecSync Archive check reads archived change status with one worker per
   CPU, at least two and at most eight, instead of a fixed two (DRIVE-10). Every
   archive and history snapshot is still authenticated with the same checks, SpecSync

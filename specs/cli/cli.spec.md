@@ -15,7 +15,6 @@ files:
   - src/records.rs
   - src/skill.rs
   - src/stage.rs
-  - src/timing.rs
   - src/validate.rs
   - tests/cli.rs
   - tests/bugs.rs
@@ -23,7 +22,6 @@ files:
   - tests/optional.rs
   - tests/package.rs
   - tests/stages.rs
-  - tests/timing.rs
   - tests/common/mod.rs
   - tests/workflow_authority.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
