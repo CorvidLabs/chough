@@ -11,6 +11,7 @@ files:
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
+  - src/native.rs
   - src/prefs.rs
   - src/records.rs
   - src/skill.rs
@@ -20,6 +21,7 @@ files:
   - tests/cli.rs
   - tests/bugs.rs
   - tests/cases.rs
+  - tests/native.rs
   - tests/optional.rs
   - tests/package.rs
   - tests/stages.rs

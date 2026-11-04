@@ -11,8 +11,8 @@
 use crate::checkpoint::{Session, read_session};
 use crate::evidence::{self, Outcome};
 use crate::records::{
-    NativeJson, TIMING_BUDGET_VARIABLE, local_path, native_json_within, now, print_json,
-    read_log_full, read_record, trace_phase,
+    NativeJson, TIMING_BUDGET_VARIABLE, local_path, now, print_json, read_log_full, read_record,
+    trace_phase,
 };
 use crate::{bugs, stage, validate};
 use anyhow::{Result, bail};
@@ -1049,12 +1049,7 @@ impl NativeReads {
         if remaining.is_zero() {
             return Fetch::BudgetExhausted;
         }
-        let response = native_json_within(
-            root,
-            "specsync",
-            &["change", "status", id, "--json"],
-            Some(remaining),
-        );
+        let response = crate::native::change_status(root, id, Some(remaining));
         self.responses.insert(id.to_string(), response);
         Fetch::Read
     }

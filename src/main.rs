@@ -6,6 +6,7 @@ mod evidence;
 mod history;
 mod identity;
 mod library;
+mod native;
 mod prefs;
 mod records;
 mod skill;
@@ -292,7 +293,7 @@ fn native_read(root: &Path, change: Option<&str>) -> Result<Option<NativeJson>> 
         return Ok(None);
     }
     Ok(Some(match change {
-        Some(change) => native_json(root, "specsync", &["change", "status", change, "--json"]),
+        Some(change) => native::change_status(root, change, None),
         None => native_json(root, "specsync", &["change", "status", "--json"]),
     }))
 }

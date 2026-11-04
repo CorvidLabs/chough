@@ -10,10 +10,7 @@ const ID: &str = "old-change";
 const ARCHIVE: &str = ".specsync/archive/changes/2026-11-01-old-change";
 
 fn transitions(fixture: &Fixture) -> usize {
-    fixture
-        .read(".chough/transitions.jsonl")
-        .lines()
-        .count()
+    fixture.read(".chough/transitions.jsonl").lines().count()
 }
 
 fn stage(fixture: &Fixture) -> String {
@@ -36,8 +33,14 @@ fn archived() -> Fixture {
     fixture.stubs();
     fixture.native("archived");
     fixture.init();
-    fixture.write(&format!("{ARCHIVE}/state.json"), "{\"id\":\"old-change\",\"state\":\"archived\"}\n");
-    fixture.write(&format!("{ARCHIVE}/accepted-state.json"), "{\"id\":\"old-change\",\"state\":\"accepted\"}\n");
+    fixture.write(
+        &format!("{ARCHIVE}/state.json"),
+        "{\"id\":\"old-change\",\"state\":\"archived\"}\n",
+    );
+    fixture.write(
+        &format!("{ARCHIVE}/accepted-state.json"),
+        "{\"id\":\"old-change\",\"state\":\"accepted\"}\n",
+    );
     fixture.write(
         &format!("{ARCHIVE}/verification.json"),
         "{\"passed\":true,\"acceptance_manifest\":{\"schema_version\":1,\"entries\":[]}}\n",
@@ -50,7 +53,14 @@ fn archived() -> Fixture {
 
 #[cfg(unix)]
 fn reset_to_test(fixture: &Fixture) -> Value {
-    fixture.ok(&["stage", "reset", "--to", "test", "--reason", "Archived change"])
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--to",
+        "test",
+        "--reason",
+        "Archived change",
+    ])
 }
 
 #[cfg(unix)]
@@ -61,29 +71,62 @@ fn an_authenticated_archive_is_read_once_and_reused_while_unchanged() {
     assert_eq!(fixture.native_calls(), 1);
     let log = fixture.read(".chough/transitions.jsonl");
     assert!(log.contains("\"native:archived\""), "{log}");
-    assert_eq!(cache_entries(&fixture), 1, "the authenticated read was not recorded");
+    assert_eq!(
+        cache_entries(&fixture),
+        1,
+        "the authenticated read was not recorded"
+    );
 
     let next = fixture.ok(&["next", "--json"]);
-    assert_eq!(fixture.native_calls(), 0, "next re-read an unchanged archive");
-    assert_eq!(next["gate"]["label"], "native:archived-authenticated-cached", "{next:#}");
+    assert_eq!(
+        fixture.native_calls(),
+        0,
+        "next re-read an unchanged archive"
+    );
+    assert_eq!(
+        next["gate"]["label"], "native:archived-authenticated-cached",
+        "{next:#}"
+    );
     let detail = next["gate"]["detail"].as_str().unwrap();
     assert!(detail.contains("authenticated-history"), "{detail}");
     assert!(detail.contains("specsync"), "{detail}");
     assert!(detail.contains("sha256:"), "{detail}");
 
     let status = fixture.ok(&["status", "--json"]);
-    assert_eq!(fixture.native_calls(), 0, "status re-read an unchanged archive");
-    assert_eq!(status["checkpoint"]["gate"]["label"], "native:archived-authenticated-cached");
+    assert_eq!(
+        fixture.native_calls(),
+        0,
+        "status re-read an unchanged archive"
+    );
+    assert_eq!(
+        status["checkpoint"]["gate"]["label"],
+        "native:archived-authenticated-cached"
+    );
 
     let timing = fixture.ok(&["timing", "--json"]);
-    assert_eq!(fixture.native_calls(), 0, "timing re-read an unchanged archive");
+    assert_eq!(
+        fixture.native_calls(),
+        0,
+        "timing re-read an unchanged archive"
+    );
     assert!(timing.to_string().contains("cached"), "{timing:#}");
 
     let advanced = fixture.ok(&["stage", "advance"]);
-    assert_eq!(fixture.native_calls(), 0, "a stage move re-read an unchanged archive");
-    assert_eq!(advanced["applied"]["gate"], "native:archived-authenticated-cached");
+    assert_eq!(
+        fixture.native_calls(),
+        0,
+        "a stage move re-read an unchanged archive"
+    );
+    assert_eq!(
+        advanced["applied"]["gate"],
+        "native:archived-authenticated-cached"
+    );
     assert_eq!(stage(&fixture), "accept");
-    assert!(fixture.read(".chough/transitions.jsonl").contains("native:archived-authenticated-cached"));
+    assert!(
+        fixture
+            .read(".chough/transitions.jsonl")
+            .contains("native:archived-authenticated-cached")
+    );
 }
 
 #[cfg(unix)]
@@ -99,13 +142,20 @@ fn any_changed_input_reads_live_and_a_refused_read_still_refuses() {
     };
 
     // An archive byte that differs from the authenticated one, committed or not.
-    fixture.write(&format!("{ARCHIVE}/state.json"), "{\"id\":\"old-change\",\"state\":\"archived\" }\n");
+    fixture.write(
+        &format!("{ARCHIVE}/state.json"),
+        "{\"id\":\"old-change\",\"state\":\"archived\" }\n",
+    );
     live(&fixture, "uncommitted archive change");
     live(&fixture, "uncommitted archive change, second read");
     fixture.commit("edit archive");
     live(&fixture, "changed archive bytes");
     fixture.ok(&["next", "--json"]);
-    assert_eq!(fixture.native_calls(), 0, "the new authentication was not recorded");
+    assert_eq!(
+        fixture.native_calls(),
+        0,
+        "the new authentication was not recorded"
+    );
 
     // The native policy, the baseline and the SpecSync binary are part of the key.
     fixture.write(".specsync/sdd.json", "{\"enabled\": true }\n");
@@ -169,11 +219,19 @@ fn only_self_contained_authenticated_archives_are_recorded() {
         let fixture = archived();
         match setup {
             "snapshot" => {
-                fs::remove_file(fixture.root().join(format!("{ARCHIVE}/accepted-state.json"))).unwrap();
+                fs::remove_file(
+                    fixture
+                        .root()
+                        .join(format!("{ARCHIVE}/accepted-state.json")),
+                )
+                .unwrap();
                 fixture.commit("legacy");
             }
             "manifest" => {
-                fixture.write(&format!("{ARCHIVE}/verification.json"), "{\"passed\":true}\n");
+                fixture.write(
+                    &format!("{ARCHIVE}/verification.json"),
+                    "{\"passed\":true}\n",
+                );
                 fixture.commit("legacy");
             }
             "nogit" => fs::remove_dir_all(fixture.root().join(".git")).unwrap(),
@@ -212,8 +270,16 @@ fn a_batched_advance_reads_native_status_once() {
     assert_eq!(steps[2]["to"], "accept");
 
     // The target must lie ahead on the main path.
-    assert!(fixture.fails(&["stage", "advance", "--to", "plan"]).contains("ahead"));
-    assert!(fixture.fails(&["stage", "advance", "--to", "explore"]).contains("main stage"));
+    assert!(
+        fixture
+            .fails(&["stage", "advance", "--to", "plan"])
+            .contains("ahead")
+    );
+    assert!(
+        fixture
+            .fails(&["stage", "advance", "--to", "explore"])
+            .contains("main stage")
+    );
     fixture.native_calls();
 }
 

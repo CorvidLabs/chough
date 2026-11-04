@@ -6,6 +6,17 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough next`, `status`, stage moves and `timing` reuse SpecSync's own
+  `authenticated-history` verdict for an unchanged committed archive instead of
+  repeating a status read that takes about 47 s on Raven (REQ-cli-035). The verdict
+  is kept under the Git common directory, keyed by a digest of the archive bytes, the
+  legacy baseline, the native policy and config, the SpecSync binary and the committed
+  tree, and is reused only while its commit is reachable; anything else reads live.
+  Such gates are labelled `native:archived-authenticated-cached`. `chough stage advance
+  --to <stage>` moves through several main stages on one native read and records
+  nothing when any step is refused. REQ-cli-024 and REQ-cli-028 now allow this one
+  cache. From Leif's brief t811u items 2 and 7.
+
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
   next` finds the Lessons heading of a `context.md` over 4 MiB (REQ-cli-034).

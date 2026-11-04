@@ -4,7 +4,7 @@
 use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{
     NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
-    local_path, native_json, now, print_json, read_log_tail, read_native_record, read_record,
+    local_path, now, print_json, read_log_tail, read_native_record, read_record,
 };
 use crate::{bugs, evidence, prefs};
 use anyhow::{Result, bail, ensure};
@@ -62,6 +62,10 @@ pub(super) enum StageCommand {
     Advance {
         #[arg(long)]
         note: Option<String>,
+        /// Move through each main stage up to this one on one native read; every step's
+        /// gate is checked before any transition is recorded.
+        #[arg(long)]
+        to: Option<String>,
     },
     /// Record another iteration within the current stage.
     Iterate {
@@ -234,7 +238,17 @@ fn state_from_response(response: &NativeJson) -> NativeState {
         ));
     };
     match value.pointer("/summary/state").and_then(Value::as_str) {
-        Some(state) => NativeState::State(state.to_string(), value.clone()),
+        Some(state) => {
+            let mut value = value.clone();
+            // Only a reused authenticated archive carries the proof; a live response
+            // that names the key is not trusted for it (REQ-cli-035).
+            if response.section.state != "cached"
+                && let Some(object) = value.as_object_mut()
+            {
+                object.remove(crate::native::MARKER);
+            }
+            NativeState::State(state.to_string(), value)
+        }
         None => NativeState::Unknown(format!(
             "{}: no summary.state in the response",
             response.section.source
@@ -245,11 +259,7 @@ fn state_from_response(response: &NativeJson) -> NativeState {
 pub(super) fn native_state(root: &Path, change: Option<&str>) -> Result<NativeState> {
     Ok(match native_prelude(root, change)? {
         Err(state) => state,
-        Ok(change) => state_from_response(&native_json(
-            root,
-            "specsync",
-            &["change", "status", change, "--json"],
-        )),
+        Ok(change) => state_from_response(&crate::native::change_status(root, change, None)),
     })
 }
 
@@ -415,11 +425,30 @@ fn native_gate(
             .pointer("/summary/terminal_evidence/validity")
             .and_then(Value::as_str);
         return match validity {
-            Some(validity) if ARCHIVE_VALIDITY.contains(&validity) => Gate {
-                allowed: true,
-                label: "native:archived".into(),
-                detail: format!("Native state is archived; its terminal evidence is {validity}."),
-            },
+            Some(validity) if ARCHIVE_VALIDITY.contains(&validity) => {
+                match value.get(crate::native::MARKER) {
+                    Some(proof) => Gate {
+                        allowed: true,
+                        label: "native:archived-authenticated-cached".into(),
+                        detail: format!(
+                            "Native state is archived; its terminal evidence is {validity}. Reused without a live read: {} reported this at unix time {} for the committed archive {} (Git tree {}, reachable commit {}), whose inputs still hash to {}. Any change to them reads live.",
+                            proof["specsync"]["path"].as_str().unwrap_or("specsync"),
+                            proof["authenticated_at_unix_seconds"],
+                            proof["archive"].as_str().unwrap_or("unknown"),
+                            proof["tree"].as_str().unwrap_or("unknown"),
+                            proof["commit"].as_str().unwrap_or("unknown"),
+                            proof["digest"].as_str().unwrap_or("unknown"),
+                        ),
+                    },
+                    None => Gate {
+                        allowed: true,
+                        label: "native:archived".into(),
+                        detail: format!(
+                            "Native state is archived; its terminal evidence is {validity}."
+                        ),
+                    },
+                }
+            }
             other => refused(
                 format!("refused:native-archive-{}", other.unwrap_or("unreported")),
                 format!(
@@ -1271,28 +1300,7 @@ fn move_forward(
             ),
         }
     };
-    let mut gate_label = None;
-    if from == "test" && to == "accept" {
-        let blocking = bugs::open_blocking(root)?;
-        ensure!(
-            blocking.is_empty(),
-            "{kind} refused (refused:blocking-bugs): open acceptance-blocking bugs {}; go back to build, fix and retest",
-            blocking.join(", ")
-        );
-        if let Some(refusal) = unlinked_failure(root, session)? {
-            bail!("{kind} refused (refused:unlinked-failure): {refusal}");
-        }
-    }
-    if let Some(gate) = destination_gate(root, session, &to)? {
-        ensure!(
-            gate.allowed,
-            "{} refused ({}): {}",
-            kind,
-            gate.label,
-            gate.detail
-        );
-        gate_label = Some(gate.label);
-    }
+    let gate_label = forward_step(root, session, kind, (&from, &to), &mut None)?;
     log_transition(
         root,
         session,
@@ -1305,6 +1313,103 @@ fn move_forward(
     session.stage.current = to.clone();
     session.stage.iteration = 1;
     Ok(json!({"kind": kind, "from": from, "to": to, "gate": gate_label}))
+}
+
+/// Check one forward step from `route.0` to `route.1`: acceptance prerequisites and the
+/// destination's native gate. `read` holds the native state once read, so a batch of
+/// steps makes one native read. Returns the gate label to record.
+fn forward_step(
+    root: &Path,
+    session: &Checkpoint,
+    kind: &str,
+    route: (&str, &str),
+    read: &mut Option<NativeState>,
+) -> Result<Option<String>> {
+    let (from, to) = route;
+    if from == "test" && to == "accept" {
+        let blocking = bugs::open_blocking(root)?;
+        ensure!(
+            blocking.is_empty(),
+            "{kind} refused (refused:blocking-bugs): open acceptance-blocking bugs {}; go back to build, fix and retest",
+            blocking.join(", ")
+        );
+        if let Some(refusal) = unlinked_failure(root, session)? {
+            bail!("{kind} refused (refused:unlinked-failure): {refusal}");
+        }
+    }
+    if prerequisite(to).is_none() {
+        return Ok(None);
+    }
+    let state = match read {
+        Some(state) => state.clone(),
+        None => read
+            .insert(native_state(root, session.native_change.as_deref())?)
+            .clone(),
+    };
+    let Some(gate) = gate_for_state(root, session, to, state) else {
+        return Ok(None);
+    };
+    ensure!(
+        gate.allowed,
+        "{} refused ({}): {}",
+        kind,
+        gate.label,
+        gate.detail
+    );
+    Ok(Some(gate.label))
+}
+
+/// `stage advance --to <target>`: every main stage up to `target` on one native read.
+/// All steps are checked before the first transition is recorded, so a refused step
+/// records nothing (REQ-cli-035).
+fn advance_to(
+    root: &Path,
+    session: &mut Checkpoint,
+    target: &str,
+    note: Option<&str>,
+) -> Result<Value> {
+    ensure_active(session)?;
+    ensure_main(session, "advance")?;
+    ensure_no_open_human_gate(session, "advance")?;
+    let from = session.stage.current.clone();
+    let end = position(target).ok_or_else(|| {
+        anyhow::anyhow!(
+            "{target} is not a main stage on the advance path; `--to` takes design, plan, build, test, accept or done"
+        )
+    })?;
+    let start = position(&from).ok_or_else(|| {
+        anyhow::anyhow!("{from} is not on the advance path; `--to` advances main stages only")
+    })?;
+    ensure!(
+        end > start,
+        "{target} is not ahead of {from}; `stage advance --to` only moves forward (use `chough stage back` or `reset` to go back)"
+    );
+    let mut read = None;
+    let mut steps = Vec::new();
+    for index in start..end {
+        let route = (ORDER[index], ORDER[index + 1]);
+        let kind = format!("advance {} -> {}", route.0, route.1);
+        let label = forward_step(root, session, &kind, route, &mut read)
+            .map_err(|error| error.context("nothing was recorded"))?;
+        steps.push((route, label));
+    }
+    let mut applied = Vec::new();
+    for ((step_from, step_to), label) in &steps {
+        log_transition(
+            root,
+            session,
+            "advance",
+            (step_from, step_to),
+            note,
+            label.as_deref(),
+            vec![],
+        )?;
+        applied.push(json!({"from": step_from, "to": step_to, "gate": label}));
+    }
+    session.stage.current = target.to_string();
+    session.stage.iteration = 1;
+    let gate = steps.last().and_then(|(_, label)| label.clone());
+    Ok(json!({"kind": "advance", "from": from, "to": target, "gate": gate, "steps": applied}))
 }
 
 fn move_back(
@@ -1405,16 +1510,14 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     let mut session = read_checkpoint(root)?;
     let applied = match command {
         StageCommand::Show => None,
-        StageCommand::Advance { note } => {
+        StageCommand::Advance { note, to } => {
             if let Some(note) = &note {
                 ensure_text("note", note)?;
             }
-            Some(move_forward(
-                root,
-                &mut session,
-                "advance",
-                note.as_deref(),
-            )?)
+            Some(match to {
+                Some(target) => advance_to(root, &mut session, &target, note.as_deref())?,
+                None => move_forward(root, &mut session, "advance", note.as_deref())?,
+            })
         }
         StageCommand::Skip { reason } => {
             ensure_text("reason", &reason)?;

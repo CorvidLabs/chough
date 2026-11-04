@@ -19,7 +19,7 @@ their JSON.
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). Earlier builds printed the full status JSON here; scripts that read `next_valid_action` now read `.next_valid_action.action` from `next --json`, or use `status`. |
 | `migrate [--stage S]` | Converts a schema 1 session after saving its bytes to `.chough/session.v1.json`; refuses if that backup exists. |
 | `checkpoint` | Show, update or merge: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`, `--merge <base> <ours> <theirs>`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved. |
-| `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While the checkpoint has an open awaiting-human gate, `advance` and `skip` (release → done included) are refused as `refused:awaiting-human` before any native read, naming up to 3 gates; record the decision, then `chough checkpoint --clear-awaiting-human`. There is no bypass; `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are unaffected. |
+| `stage show\|advance [--to STAGE]\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return` | Transitions with reasons and an append-only log. `advance --to STAGE` moves through each main stage up to STAGE (which must lie ahead) on one native read: it checks every step's gate, open human gate and acceptance prerequisite first, then records one `advance` transition per step and reports them under `applied.steps`; any refused step refuses the whole batch with nothing recorded. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates (labelled `native:archived`, or `native:archived-authenticated-cached` when [an authenticated archive is reused](#authenticated-archive-reuse)); done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While the checkpoint has an open awaiting-human gate, `advance` and `skip` (release → done included) are refused as `refused:awaiting-human` before any native read, naming up to 3 gates; record the decision, then `chough checkpoint --clear-awaiting-human`. There is no bypass; `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are unaffected. |
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` allocate an OBS ID when `--observation-id` is omitted and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID allocates the new OBS form; an explicit ID must use that form for a new write. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
@@ -713,7 +713,9 @@ deadline above, and gates still refuse every unknown native state.
 
 - **One read per change.** Each distinct change ID is passed to `specsync change
   status` at most once per report. The response is reused wherever the report shows
-  that change, then discarded: nothing is cached between commands.
+  that change, then discarded. The only result kept between commands is an
+  [authenticated archive](#authenticated-archive-reuse) (REQ-cli-035), whose read
+  shows `status_read` `cached`.
 - **History selection.** Archived history is read only for `--cycle all` with no
   `--stage`, `--case` or `--bug` filter. This changes the output: in 0.1.0 a
   filtered report still listed archived history. A filtered report now reads only
@@ -743,14 +745,48 @@ deadline above, and gates still refuse every unknown native state.
   report, a record or the exit code.
 
 These rules do not make `next` or `status` faster: their one read of an archived
-change still takes as long as SpecSync takes, which measured about 50 s on this
-repository in one sample (see [issue #32](https://github.com/CorvidLabs/chough/issues/32)).
+change takes as long as SpecSync takes, which measured about 50 s on this repository
+in one sample (see [issue #32](https://github.com/CorvidLabs/chough/issues/32)), until
+[authenticated archive reuse](#authenticated-archive-reuse) can serve it.
 
 Gate records also take slots in the recent-transition windows of `chough context`
 (20) and `stage show` (10), so those windows can show fewer stage moves than before.
 
 See the [walkthrough](walkthrough.md) and [exercises](exercises/feature-bug-loop.md).
 
+## Authenticated archive reuse
+
+SpecSync authenticates an archived change against its committed bytes and reachable
+Git history, which can take most of a minute. Chough keeps SpecSync's own verdict so
+that `next`, `status`, stage moves and `timing` do not repeat it while nothing it
+depends on has changed (REQ-cli-035). Chough never decides validity itself.
+
+- **What is recorded.** After a live `specsync change status <id> --json` reports
+  `change.state` and `summary.state` `archived` with
+  `summary.terminal_evidence.validity` `authenticated-history`, Chough writes the
+  response to `<git common dir>/chough/archive-auth/<sha256 of id>.json`, outside the
+  worktree, so it is never tracked, never a SpecSync input and never a Chough record.
+  It records only a single archive directory under `.specsync/archive/changes/` that
+  holds `accepted-state.json` and whose `verification.json` has an acceptance manifest,
+  and only when that directory has no uncommitted change. Legacy archives without a
+  manifest, other validities and failed, timed-out or oversized reads are never
+  recorded.
+- **The key.** A SHA-256 digest over the resolved `specsync` binary's path, size and
+  modification time, the archive directory's Git tree at HEAD, and the relative path,
+  length and bytes of every archive file, `.specsync/archive/legacy-baseline.json`,
+  `.specsync/sdd.json` and the native config. The entry also holds the last commit that
+  touched the archive.
+- **When it is reused.** Only when no active `.specsync/changes/<id>` exists, no input
+  is a symlink, the inputs total at most 64 MiB, the digest and tree match, and the
+  recorded commit still carries that tree and is an ancestor of HEAD. Anything else,
+  including a corrupt entry or a missing Git directory, makes the live read, whose
+  gates and refusals are unchanged. Deleting the directory only costs a live read.
+- **What it says.** The gate label is `native:archived-authenticated-cached` and the
+  detail names the SpecSync binary, when it authenticated the archive, the archive,
+  tree, commit and digest. The response carries the same facts under
+  `chough_archive_authentication`, and its read state is `cached`.
+- **What stays live.** `library archive` validity checks and the approved-delta guard
+  never use it, because they exist to notice a change.
 
 ## Report read diagnostics
 
