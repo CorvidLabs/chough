@@ -11,7 +11,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "accept-dotted-specsync-module-ids-and-hi-sub-criterion-ids-keep-bundled-skill-prose-free-of-em-and-en-dashes-and-remove",
+  "native_change": "scale-independent-archive-authentication-workers-with-the-runner-s-cpus-so-the-archive-check-fits-its-unchanged-budget",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -682,5 +682,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: New cycle: #68 (#56, #57, DRIVE-1, DRIVE-7), dotted IDs and small fixes. Built and verified on its branch (verify passed 9/9 per the independent review at f97323b); native change archived at 16eedcb after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "New cycle from done after reset: New cycle: #80, scale the SpecSync Archive check's status workers with the runner's CPUs (DRIVE-10, Leif's t813u speed direction). Built and verified on its branch (verify 9/9 and change check --commit at ee7318d); native change archived at e6f7af7 after the independent review. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }

@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The hosted SpecSync Archive check reads archived change status with one worker per
+  CPU, at least two and at most eight, instead of a fixed two (DRIVE-10). Every
+  archive and history snapshot is still authenticated with the same checks, SpecSync
+  version and timeouts. On the #71 tree (63 archives) the check took 9 min 56 s with
+  two workers, 5 min 4 s with four and 2 min 54 s with eight on the same machine.
 - Stopping Chough with Ctrl-C, `kill` (SIGTERM) or a hangup during `chough cases run`
   or a native SpecSync read now stops the command it started, that command's process
   group and Chough's own Git commands, including the Git that `stage backfill` and
