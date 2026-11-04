@@ -10,7 +10,7 @@
   "state": "approved",
   "base_commit": "d673efc9fadd00953cf9e42dad96e08f3c76103c",
   "created_at": 1793754312,
-  "updated_at": 1793754405,
+  "updated_at": 1793754632,
   "affected_specs": [
     "cli"
   ],
@@ -26,7 +26,8 @@
     "skills/chough-workflow/references/plan.md",
     "skills/chough-workflow/references/lifecycle.md",
     "skills/chough-workflow/references/accept.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "tests/package.rs"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
