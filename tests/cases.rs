@@ -1718,6 +1718,8 @@ fn delta_fixture(record_change: bool) -> Fixture {
         fixture.ok(&["checkpoint", "--native-change", LINK_CHANGE]);
     }
     approve_deltas(&fixture, &[("cli", LINK_DELTA)]);
+    // `cases run` records the revision it observed.
+    fixture.commit("base");
     fixture
 }
 

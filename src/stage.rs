@@ -707,6 +707,47 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
     }
 }
 
+/// The requirement IDs that the delta of `change` for `module` adds or modifies, read
+/// read-only within SpecSync's bound; none when that delta is missing (REQ-cli-009).
+pub(super) fn delta_requirements(
+    root: &Path,
+    change: &str,
+    module: &str,
+) -> std::result::Result<BTreeSet<String>, String> {
+    let relative = format!(".specsync/changes/{change}/deltas/{module}.md");
+    let Some(bytes) = native_file(root, &relative)? else {
+        return Ok(BTreeSet::new());
+    };
+    let text = String::from_utf8(bytes).map_err(|_| format!("{relative} is not UTF-8"))?;
+    let mut section = "";
+    let mut ids = BTreeSet::new();
+    for line in text.lines().map(str::trim_end) {
+        if let Some(heading) = line.strip_prefix("## ") {
+            section = heading.trim();
+        } else if let Some(rest) = line.strip_prefix("### REQUIREMENT ")
+            && matches!(section, "ADDED" | "MODIFIED")
+            && let Some(id) = rest.split_whitespace().next()
+        {
+            ids.insert(id.to_string());
+        }
+    }
+    Ok(ids)
+}
+
+/// The build gate's native checks for `change`, which a case link to a requirement only
+/// its approved delta holds must pass (REQ-cli-009, REQ-cli-022).
+pub(super) fn approved_change_gate(root: &Path, change: &str, state: &str, value: &Value) -> Gate {
+    native_gate(
+        root,
+        change,
+        "Linking a requirement from the approved delta",
+        Prerequisite::Approved,
+        state,
+        value,
+        &status_command(Some(change)),
+    )
+}
+
 /// The approved-delta result for a report, or why it was not checked.
 pub(super) fn delta_summary(root: &Path, change: Option<&str>, state: &NativeState) -> String {
     let (Some(change), NativeState::State(state, value)) = (change, state) else {

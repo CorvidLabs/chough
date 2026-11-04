@@ -6,6 +6,15 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Cases may link a requirement that the checkpoint's approved native change adds or
+  modifies in its delta for the case module before `specsync change check`
+  materializes it, so failing-first cases run inside Chough (REQ-cli-009, Raven
+  BUG-0004). The change must pass the build gate's native checks; Chough makes one
+  native read per command for this, only when a link misses its companion, and lists
+  such links under `approved_delta_requirements`. A refused link now says why the
+  consulted delta did not resolve it. The testing reference describes how the test
+  stage links failing-first evidence.
+
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
   next` finds the Lessons heading of a `context.md` over 4 MiB (REQ-cli-034).

@@ -663,12 +663,28 @@ same exit code, and the message names the companions searched,
   say to move the case to `.chough/cases/<module>.cases.toml`; `evidence add` says to
   add `--contract specs/<module>/<module>.spec.md`.
 - Otherwise the ID may be a typo, or a requirement an approved native change adds
-  that `specsync change check` has not yet materialized: run that check before running
-  or recording cases that link it, as the [accept order](../skills/chough-workflow/references/accept.md)
-  does first when the delta adds or modifies requirements.
+  that `specsync change check` has not yet materialized: record that change in the
+  checkpoint (see below), or run that check before running or recording cases that
+  link it.
 
-The hint reads neither the checkpoint nor any native delta, and no unresolved link is
-accepted.
+### Approved delta links
+
+`cases check`, `cases run`, `cases record` and `cases select` accept a case
+requirement that the module's `requirements.md` does not hold yet when the
+checkpoint's native change adds or modifies it in its delta for the case file's
+module (`.specsync/changes/<id>/deltas/<module>.md`, under `## ADDED` or
+`## MODIFIED`), so failing-first cases can be linked and run before
+`specsync change check` materializes the delta (Raven BUG-0004). The change must pass
+the same native checks as the move to build: state approved, implementing or
+verifying, `approval_valid` true, `correction_valid` not false and the approved
+deltas unchanged (see [Approved-delta guard](#approved-delta-guard)). Chough makes
+this one native status read per command, only when a link misses its companion, and
+decides no approval itself. `cases check` lists each such link under
+`approved_delta_requirements` with its case, requirement, change and module. When
+the change was consulted and did not resolve a link, the refusal adds
+`the checkpoint's native change <id> was consulted and did not resolve it: <reason>`,
+such as `its cli delta does not add or modify REQ-cli-091` or the build gate refusal.
+`evidence add` still links only requirements in a companion.
 
 `bug add` and `bug update` refuse a scope value given as `--classification` with
 ``; `<value>` is a scope: use --scope <value>``, and a classification given as

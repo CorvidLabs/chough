@@ -68,8 +68,9 @@ boundaries separate.
 
 ## Verification
 
-`specsync change check <id>` materializes the approved delta; run it before cases
-that link requirements the delta adds or modifies. `specsync change check <id>
+`specsync change check <id>` materializes the approved delta. Cases may link the
+requirements it adds or modifies before then while the checkpoint records the
+approved change (see testing.md). `specsync change check <id>
 --commit` also records targeted structural verification; run it after committing the
 source with `.chough/`. Stage new source files first. It does not run the project's
 tests; product checks are separate observations. It refuses an edited delta and
