@@ -36,7 +36,6 @@ All notable changes to Chough are recorded here. The format follows
   stages out of estimates. Older Chough binaries refuse a transition log that holds a
   backfilled record, so upgrade every agent on a project before using it.
 
-## [0.2.0] - 2026-11-03
 - Checkpoint writers in parallel in one clone no longer lose updates (#62): commands
   that change `.chough/session.json` take an exclusive lock (an empty file in the
   system temporary directory, named for the project) for their whole
@@ -47,6 +46,8 @@ All notable changes to Chough are recorded here. The format follows
   within MSRV 1.88. The lock file stays in the temporary directory after use and is
   safe to delete when no Chough command is running; the feature-and-bug exercise
   removes its own on exit.
+
+## [0.2.0] - 2026-11-03
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
