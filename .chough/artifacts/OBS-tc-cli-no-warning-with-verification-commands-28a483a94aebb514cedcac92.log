@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test no_warning_with_verification_commands_disabled_sdd_or_no_native_configuration ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.29s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/verification.rs (target/debug/deps/verification-0d178ce02b50f0d0)

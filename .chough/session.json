@@ -659,7 +659,11 @@
     "OBS-tc-cli-empty-native-verification-is-reported-89e811b60d60b84814aba6cc",
     "OBS-tc-cli-no-warning-with-verification-commands-8071ce2a4357a13b16ac2659",
     "OBS-tc-cli-test-stage-points-to-test-evidence-5f481c7a19e91146a01808b1",
-    "OBS-tc-cli-verification-warning-changes-no-gate-cce83d9687676c797ff397f8"
+    "OBS-tc-cli-verification-warning-changes-no-gate-cce83d9687676c797ff397f8",
+    "OBS-tc-cli-empty-native-verification-is-reported-46195a6bc7a8300b528368d4",
+    "OBS-tc-cli-no-warning-with-verification-commands-28a483a94aebb514cedcac92",
+    "OBS-tc-cli-test-stage-points-to-test-evidence-cf2f6ccf3154bfd07b9c9a73",
+    "OBS-tc-cli-verification-warning-changes-no-gate-3c1e3cdea91343bcdb193449"
   ],
   "bugs": [
     "BUG-0001",
