@@ -364,15 +364,19 @@ fn checkpoint_lock_path(root: &Path) -> Result<PathBuf> {
             .parent()
             .context("the lock directory has no parent")?,
     )?;
-    // Writers race to create it; one that finds it already there carries on.
-    match OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&ignore)
-    {
-        Ok(mut file) => file.write_all(b"*\n")?,
-        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
-        Err(error) => return Err(error).context("creating .chough/local/.gitignore"),
+    if !ignore.exists() {
+        // Write it whole to a temp, then link it into place: a crash never leaves an empty
+        // `.gitignore`, an existing one is never replaced, and a writer that loses the
+        // race to create it carries on (#94 review).
+        let temporary = ignore.with_file_name(format!(".gitignore.{}.tmp", std::process::id()));
+        fs::write(&temporary, b"*\n").context("writing .chough/local/.gitignore")?;
+        let linked = fs::hard_link(&temporary, &ignore);
+        let _ = fs::remove_file(&temporary);
+        match linked {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(error).context("creating .chough/local/.gitignore"),
+        }
     }
     local_path(root, ".chough/local/checkpoint.lock")
 }
