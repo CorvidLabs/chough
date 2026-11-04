@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86",
+  "slug": "show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86",
+  "title": "Show the latest failed native check in next and say when it has not passed for this tree (issue 86)",
+  "description": "Show the latest failed native check in next and say when it has not passed for this tree (issue 86)",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "91a1fdd82a4e314e5037c6256f17199ef0d604f0",
+  "created_at": 1793806262,
+  "updated_at": 1793806302,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/native_check.rs",
+    "src/main.rs",
+    "tests/native_check.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "After a failed native attempt next shows its time and commit and failing commands with exit codes and a later passing attempt replaces it. With the change approved or implementing next says the native check has not passed for this tree and that SpecSync keeps no reason for refusals and names specsync change check. A malformed attempts record is unknown and next makes no extra native read. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded bug fix for issue 86 under LIFE-7 and LIFE-3 as Leif chose on 2026-11-04 (show, state the gap honestly, file upstream); no gate change; no native read added; next stays within 16384 bytes; new code in a small module",
+    "public_contract": "yes"
+  }
+}
