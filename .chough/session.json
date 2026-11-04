@@ -145,7 +145,8 @@
       "TC-cli-knowledge-entries-bounded",
       "TC-cli-archive-summary-fails-closed",
       "TC-history-split-keeps-requirement-wording",
-      "TC-cli-next-searches-large-context-md"
+      "TC-cli-next-searches-large-context-md",
+      "TC-reporting-split-keeps-requirement-wording"
     ],
     "design": [],
     "files": [
@@ -425,7 +426,8 @@
     "Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).",
     "Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections).",
     "PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb",
-    "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)"
+    "Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)",
+    "Materialized the reporting split (cli.spec row 37, reporting.spec row 2); 15 TC-reporting cases, the split-wording case, the 6 cli cases that lost a moved link and TC-history-split-keeps-requirement-wording passed on local-linux-x86_64; 31 of 31 requirement blocks identical before and after (OBS-structural-5bb6149fb7cf310789e97f1c); specs/cli/requirements.md 58091 bytes, specs/reporting/requirements.md 8013; fledge lanes run verify passed 9 of 9 steps (303 tests, 0 failed) on local Linux x86_64"
   ],
   "observations": [
     "tc-cli-0101-1793473306",
@@ -651,7 +653,8 @@
     "OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6",
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
-    "OBS-structural-0ceefdd961ed75d53f1b3742"
+    "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-structural-5bb6149fb7cf310789e97f1c"
   ],
   "bugs": [
     "BUG-0001",
@@ -687,5 +690,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Add specs/reporting, move and twin the cases, extend tests/spec_split.rs, then specsync change check --commit"
+  "next_action": "Push to #71; independent review of the head is arranged by the parent agent; #69 must point its delta at REQ-reporting-002 and REQ-reporting-003 and add its new requirement to reporting"
 }
