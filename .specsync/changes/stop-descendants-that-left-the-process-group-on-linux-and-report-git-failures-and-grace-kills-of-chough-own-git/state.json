@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git",
+  "slug": "stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git",
+  "title": "Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81)",
+  "description": "Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81)",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "91a1fdd82a4e314e5037c6256f17199ef0d604f0",
+  "created_at": 1793810709,
+  "updated_at": 1793810746,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/main.rs",
+    "tests/stop.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "On Linux a stop during cases run also stops a descendant that called setsid and an orphan of the tree. A grace kill after Chough own Git is reported on stderr. A failed git rev-parse HEAD other than no repository or no commit is reported on stderr. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded fix for issue 81 under FLOW-14 and LIFE-7; Linux only for the descendant walk and subreaper; other Unix keeps the group stop; no gate or record change; item 4 is investigated first",
+    "public_contract": "yes"
+  }
+}
