@@ -7,10 +7,11 @@
   "title": "Say when native verification runs no project commands, and point the test stage to recorded test evidence before accept (issue 85)",
   "description": "Say when native verification runs no project commands, and point the test stage to recorded test evidence before accept (issue 85)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "9d5d65b5acb306dde3af1f4166ce5c1b2c068f74",
   "created_at": 1793802700,
-  "updated_at": 1793802779,
+  "updated_at": 1793803494,
   "affected_specs": [
     "cli"
   ],
