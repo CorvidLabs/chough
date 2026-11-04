@@ -1,6 +1,6 @@
 ---
 id: show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
 ---
