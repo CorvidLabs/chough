@@ -21,7 +21,7 @@ Chough's own record bounds; release, tag or publish.
 1. Failing-first tests on main 91a1fdd.
 2. records.rs, context.rs, evidence.rs, library.rs, stage.rs, timing.rs.
 3. Skill bullets and `KNOWN_PREVIOUS` digests; refresh the installed copy.
-4. LIFE-15, D-020, docs/cli.md, docs/architecture.md, docs/FRD.md, CHANGELOG.md, version 0.2.1.
+4. LIFE-15, D-020, docs/cli.md, docs/architecture.md, docs/FRD.md, CHANGELOG.md, version 0.3.0 (Leif chose 0.3.0 on 2026-11-04 because the release also carries new features).
 5. `fledge lanes run verify`, `specsync change check`.
 
 ## Risks

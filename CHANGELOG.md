@@ -6,7 +6,7 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
-## [0.2.1] - 2026-11-04
+## [0.3.0] - 2026-11-04
 
 - Chough's size bounds now apply only to its own records under `.chough/` and to what
   it displays (#100, LIFE-15, REQ-cli-042, REQ-reporting-004). `chough evidence add`,
@@ -358,6 +358,6 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
-[0.2.1]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.1
+[0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0
 [0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
 [0.1.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.1.0
