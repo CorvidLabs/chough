@@ -493,8 +493,8 @@ pub(super) fn read_native_text(path: &Path) -> Result<String> {
             path.display()
         )
     })?;
-    Ok(String::from_utf8(bytes)
-        .with_context(|| format!("native file is not UTF-8: {}", path.display()))?)
+    String::from_utf8(bytes)
+        .with_context(|| format!("native file is not UTF-8: {}", path.display()))
 }
 
 /// Read a native record file read-only within `limit` bytes; `Ok(None)` when it is
