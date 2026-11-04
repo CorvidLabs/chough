@@ -1023,12 +1023,62 @@ mod tests {
         drop(other);
         lock_checkpoint(root.path()).unwrap();
         lock_checkpoint(root.path()).unwrap();
+        // The lock lives in the project (#83, DRIVE-11): only `.chough/local/`, which
+        // Git ignores, is added.
         let records: Vec<_> = fs::read_dir(root.path().join(".chough"))
             .unwrap()
             .map(|entry| entry.unwrap().file_name())
             .collect();
-        assert!(records.is_empty(), "the lock added {records:?} to .chough");
-        // Leave no lock file behind in the system temporary directory.
-        fs::remove_file(checkpoint_lock_path(root.path()).unwrap()).unwrap();
+        assert_eq!(
+            records,
+            vec!["local"],
+            "the lock added {records:?} to .chough"
+        );
+        assert_eq!(
+            checkpoint_lock_path(root.path()).unwrap(),
+            root.path().join(".chough/local/checkpoint.lock")
+        );
+        assert_eq!(
+            fs::read_to_string(root.path().join(".chough/local/.gitignore")).unwrap(),
+            "*\n"
+        );
+    }
+
+    /// Issue #83 item b: in sessions mode the busy refusal names the session file the
+    /// command would write, not `.chough/session.json`.
+    #[test]
+    fn a_busy_refusal_names_the_session_file_being_written() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().canonicalize().unwrap();
+        crate::sessions::run(
+            &root,
+            crate::sessions::SessionCommand::New {
+                key: "alpha".into(),
+                objective: "Ship alpha".into(),
+                intent_scope: String::new(),
+                modules: vec![],
+            },
+        )
+        .unwrap();
+        // `session new` took the lock in this process; hand it to another holder.
+        let path = checkpoint_lock_path(&root).unwrap();
+        HELD_LOCKS
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .retain(|(locked, _)| *locked != path);
+        let other = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&path)
+            .unwrap();
+        <fs::File as fs4::FileExt>::lock(&other).unwrap();
+        let error = lock_for_update(&root).unwrap_err().to_string();
+        assert!(error.starts_with("refused:checkpoint-busy"), "{error}");
+        assert!(error.contains(".chough/sessions/alpha.json"), "{error}");
+        assert!(!error.contains(".chough/session.json"), "{error}");
+        assert!(error.contains("nothing was saved"), "{error}");
+        drop(other);
     }
 }
