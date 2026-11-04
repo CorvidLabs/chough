@@ -687,7 +687,9 @@
     "OBS-tc-cli-next-shows-failed-native-attempt-2bfb3072e6805f30967489bf",
     "OBS-tc-cli-next-says-native-check-not-passed-800a20e123c7d89d21b6de20",
     "OBS-tc-cli-unreadable-native-attempts-unknown-85dac7a79455d716372aa119",
-    "OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a"
+    "OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a",
+    "OBS-tc-cli-failed-native-exit-in-plain-words-f24ede425a3085620101f9d3",
+    "OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b"
   ],
   "bugs": [
     "BUG-0001",
