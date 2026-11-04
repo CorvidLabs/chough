@@ -3208,9 +3208,10 @@ fn reset_rule_uses_the_newest_reset_by_time_in_an_out_of_order_log() {
 /// init` writes), the reset that began this cycle is found even after more than the
 /// 128 recent events `next` shows have been recorded since it, so the archived change
 /// stays the previous cycle's and `next` keeps naming a new native change.
+/// A project with event history (the cursor `chough init` writes) whose archived
+/// `old-change` closed before a reset to plan, followed by `iterations` iterations.
 #[cfg(unix)]
-#[test]
-fn a_reset_beyond_the_recent_history_window_still_starts_this_cycle() {
+fn reset_then_iterated(iterations: usize) -> Fixture {
     let fixture = Fixture::new();
     fixture.stubs();
     fixture.native("archived");
@@ -3231,9 +3232,20 @@ fn a_reset_beyond_the_recent_history_window_still_starts_this_cycle() {
     fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Closeout"]);
     finalized(&fixture, "old-change", 1_700_000_000);
     fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
-    for count in 0..130 {
+    for count in 0..iterations {
         fixture.ok(&["stage", "iterate", "--note", &format!("iteration {count}")]);
     }
+    fixture
+}
+
+/// Leif's review thread on #78: on a project with event history, the reset that began
+/// this cycle is found even after more than the 128 recent events `next` shows have
+/// been recorded since it, so the archived change stays the previous cycle's and
+/// `next` keeps naming a new native change.
+#[cfg(unix)]
+#[test]
+fn a_reset_beyond_the_recent_history_window_still_starts_this_cycle() {
+    let fixture = reset_then_iterated(130);
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     let text = action["action"].as_str().unwrap();
@@ -3241,6 +3253,41 @@ fn a_reset_beyond_the_recent_history_window_still_starts_this_cycle() {
     assert_eq!(action["command"], NEW_CHANGE, "{action}");
     let status = fixture.ok(&["status", "--json"]);
     assert_eq!(status["next_valid_action"], text);
+}
+
+/// The same thread: when the current cycle's history cannot be read whole, `next` says
+/// the cycle is unknown instead of inferring that the archived change closed this cycle
+/// (a reset) or the previous one (a new change).
+#[cfg(unix)]
+#[test]
+fn an_unreadable_cycle_start_is_reported_as_unknown() {
+    let fixture = reset_then_iterated(3);
+    let cycle = fixture.session()["history_cursor"]["cycle"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let dir = fixture
+        .root()
+        .join(format!(".chough/history/cycles/{cycle}"));
+    let root_event = fs::read_dir(&dir)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .find(|path| {
+            let event: Value = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
+            event["parent"].is_null()
+        })
+        .unwrap();
+    fs::remove_file(root_event).unwrap();
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
+        "{text}"
+    );
+    assert_eq!(action["command"], "chough history show", "{action}");
+    assert_ne!(action["command"], RESET_COMMAND, "{action}");
+    assert_ne!(action["command"], NEW_CHANGE, "{action}");
 }
 
 #[cfg(unix)]
