@@ -7,9 +7,10 @@ All notable changes to Chough are recorded here. The format follows
 ## [Unreleased]
 
 - Stopping Chough with Ctrl-C, `kill` (SIGTERM) or a hangup during `chough cases run`
-  or a native SpecSync read now stops the command it started and that command's
-  children, and records nothing partial (FLOW-14, #75). A hard `kill -9` is not
-  covered. Unix only; Windows is unchanged.
+  or a native SpecSync read now stops the command it started, that command's process
+  group and Chough's own Git commands, and records nothing partial, including while a
+  case run saves its result (FLOW-14, #75). A hard `kill -9` is not covered. Unix
+  only; Windows is unchanged.
 - `chough stage backfill --at <time> --commit <rev> --quote <text>` records a move to
   the next main stage that already happened, at its original time with the commit and
   quote it rests on (REQ-cli-036, REQ-history-005). Every advance refusal applies and

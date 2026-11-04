@@ -320,11 +320,14 @@ parent has already exited; such a run returns on time with an incomplete capture
 and those descendants may keep running.
 
 Stopping Chough stops what it started (FLOW-14). On Unix, when Chough gets SIGINT
-(Ctrl-C), SIGTERM (a plain `kill`) or SIGHUP while a case binding or native read runs,
-it stops that command's process group, then ends by the same signal before recording
-anything: no observation, artifact or checkpoint change. A signal Chough inherited as
-ignored (for example under `nohup`) stays ignored. A hard `kill -9` cannot be caught,
-so the command may outlive it; Windows behavior is unchanged.
+(Ctrl-C), SIGTERM (a plain `kill`) or SIGHUP while a case binding, a native read or
+one of its own Git commands runs, it stops that command's process group and ends by
+the same signal. During `cases run` the stop handling lasts through the save: a stop
+before the save begins records nothing (no observation, artifact or checkpoint
+change), and a stop once it has begun lets the artifact and the observation both be
+written first, so a run is never half recorded. A signal Chough inherited as ignored
+(for example under `nohup`) or as blocked keeps that disposition. A hard `kill -9`
+cannot be caught, so a command may outlive it; Windows behavior is unchanged.
 
 A case artifact keeps both streams within 1 MiB in total and ends with a note for
 each stream that did not fit: `[truncated: stdout wrote N bytes; M discarded]`. Case
