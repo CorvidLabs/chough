@@ -362,7 +362,10 @@ fn a_live_reply_cannot_fake_the_authenticated_marker() {
         })
         .unwrap_or_default();
     for entry in &entries {
-        assert!(!entry.contains("FORGED"), "the cache kept the forged proof: {entry}");
+        assert!(
+            !entry.contains("FORGED"),
+            "the cache kept the forged proof: {entry}"
+        );
     }
 
     // The verdict itself was live and authenticated, so later reads may reuse it, but
@@ -376,6 +379,11 @@ fn a_live_reply_cannot_fake_the_authenticated_marker() {
     );
     if label == "native:archived-authenticated-cached" {
         assert_eq!(fixture.native_calls(), 0);
-        assert!(reused["gate"]["detail"].as_str().unwrap().contains("sha256:"));
+        assert!(
+            reused["gate"]["detail"]
+                .as_str()
+                .unwrap()
+                .contains("sha256:")
+        );
     }
 }
