@@ -2694,3 +2694,57 @@ expected = ["tests/next.rs::next_searches_a_context_md_larger_than_4_mib passes"
 adapter = "cargo-test"
 test_target = "next"
 test = "next_searches_a_context_md_larger_than_4_mib"
+
+[[case]]
+id = "TC-cli-done-trims-cold-proof-by-default"
+title = "Entering done trims cold archived proof with the librarian on"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-13", "KNOW-7"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::entering_done_trims_cold_archived_proof_by_default passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "entering_done_trims_cold_archived_proof_by_default"
+
+[[case]]
+id = "TC-cli-retention-manual-opts-out-at-done"
+title = "retention manual opts out of trimming at done"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-13"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "src/prefs.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::retention_manual_opts_out_of_trimming_at_done passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "retention_manual_opts_out_of_trimming_at_done"
+
+[[case]]
+id = "TC-cli-open-change-keeps-proof-at-done"
+title = "An open native change keeps proof and done is still recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-11", "KNOW-13"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::an_open_native_change_keeps_proof_and_the_move_still_succeeds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "an_open_native_change_keeps_proof_and_the_move_still_succeeds"

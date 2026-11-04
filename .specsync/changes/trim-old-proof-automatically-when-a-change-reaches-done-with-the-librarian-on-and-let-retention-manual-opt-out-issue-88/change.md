@@ -1,6 +1,6 @@
 ---
 id: trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 2896f5ada1947a307b9958007a109c06dc3a2831
 ---
