@@ -7,11 +7,11 @@
   "title": "Refuse a native change ID that SpecSync does not know (issue 63)",
   "description": "Refuse a native change ID that SpecSync does not know (issue 63)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "4daf861509b70c14282ac16b5d0547d701e385b2",
   "created_at": 1793732121,
-  "updated_at": 1793756447,
+  "updated_at": 1793757740,
   "affected_specs": [
     "cli"
   ],

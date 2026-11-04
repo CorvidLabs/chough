@@ -1,6 +1,6 @@
 ---
 id: refuse-a-native-change-id-that-specsync-does-not-know-issue-63
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 4daf861509b70c14282ac16b5d0547d701e385b2
 ---
