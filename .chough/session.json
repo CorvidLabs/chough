@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -686,7 +686,9 @@
     "OBS-tc-cli-next-shows-failed-native-attempt-2bfb3072e6805f30967489bf",
     "OBS-tc-cli-next-says-native-check-not-passed-800a20e123c7d89d21b6de20",
     "OBS-tc-cli-unreadable-native-attempts-unknown-85dac7a79455d716372aa119",
-    "OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a"
+    "OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a",
+    "OBS-tc-history-split-keeps-requirement-wording-bf6a059a3c5e4b7ddac83e3d",
+    "OBS-tc-reporting-split-keeps-requirement-wording-61f40e1fbdff85fb82a4ca2c"
   ],
   "bugs": [
     "BUG-0001",
@@ -720,7 +722,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Run the split cases and verify, then close out on Leif decision"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
