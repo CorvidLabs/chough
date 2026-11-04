@@ -1,0 +1,108 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793750652,
+      "digest": "2a980f0059394920c191f7f8b4dd3f6f7178627d2e060f19e827ffbadf7602b7",
+      "note": "Agent corvid-agent approves under Leif's (0xLeif) words 2026-11-03 4:52 PM MST, \"Tag v0.2.0 after #66 lands\" (relayed by the parent agent). Scope: version 0.2.0 and the dated change log only; no tag, publish or release in this change",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0",
+        "title": "Prepare the 0.2.0 release: set the package version to 0.2.0 and date the change log section for 0.2.0",
+        "description": "Prepare the 0.2.0 release: set the package version to 0.2.0 and date the change log section for 0.2.0",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A version bump and change log dating change no requirement; behavior is unchanged",
+        "acceptance_criteria": [
+          "Source: Leif (0xLeif), 2026-11-03 4:52 PM MST: \"Tag v0.2.0 after #66 lands\". #66 merged as 8298e5a.\n- Cargo.toml declares version = \"0.2.0\", Cargo.lock records chough 0.2.0, and `chough --version` built from this commit prints `chough 0.2.0`.\n- CHANGELOG.md: the former Unreleased entries are kept word for word under `## [0.2.0] - 2026-11-03`, a new empty `## [Unreleased]` heading sits above it, and a `[0.2.0]` link points at https://github.com/CorvidLabs/chough/releases/tag/v0.2.0. The 0.1.0 section is unchanged.\n- No behavior, requirement, skill bundle or HI criterion changes; `cargo package --list --locked` lists the same file set as for 0.1.0.\n- Nothing is released by this change itself: the tag, any crates.io publish and the GitHub release are separate steps after merge (docs/releasing.md). The full suite on Ubuntu, macOS and Windows, the MSRV job, the Fledge verify lane, HI and SpecSync checks pass in CI."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793751883,
+      "digest": "2a980f0059394920c191f7f8b4dd3f6f7178627d2e060f19e827ffbadf7602b7",
+      "note": "Agent corvid-agent re-approves the amended definition under Leif's (0xLeif) words 2026-11-03 4:52 PM MST, \"Tag v0.2.0 after #66 lands\" (relayed by the parent agent). Amendment: the 0.2.0 change log section also covers merged #29, #33 and #26, which review 5761319339 found missing; the moved entries stay unchanged. Scope still excludes tag, publish and release",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0",
+        "title": "Prepare the 0.2.0 release: set the package version to 0.2.0 and date the change log section for 0.2.0",
+        "description": "Prepare the 0.2.0 release: set the package version to 0.2.0 and date the change log section for 0.2.0",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A version bump and change log dating change no requirement; behavior is unchanged",
+        "acceptance_criteria": [
+          "Source: Leif (0xLeif), 2026-11-03 4:52 PM MST: \"Tag v0.2.0 after #66 lands\". #66 merged as 8298e5a.\n- Cargo.toml declares version = \"0.2.0\", Cargo.lock records chough 0.2.0, and `chough --version` built from this commit prints `chough 0.2.0`.\n- CHANGELOG.md: the former Unreleased entries are kept word for word under `## [0.2.0] - 2026-11-03`, a new empty `## [Unreleased]` heading sits above it, and a `[0.2.0]` link points at https://github.com/CorvidLabs/chough/releases/tag/v0.2.0. The 0.1.0 section is unchanged.\n- No behavior, requirement, skill bundle or HI criterion changes; `cargo package --list --locked` lists the same file set as for 0.1.0.\n- Nothing is released by this change itself: the tag, any crates.io publish and the GitHub release are separate steps after merge (docs/releasing.md). The full suite on Ubuntu, macOS and Windows, the MSRV job, the Fledge verify lane, HI and SpecSync checks pass in CI."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793751929,
+      "digest": "05941e099fee5ab6cae4b3dd739db8ff0e24edba6cce63c498c82ea51530abfa",
+      "note": "Agent corvid-agent re-approves the amended acceptance criterion under Leif's (0xLeif) words 2026-11-03 4:52 PM MST, \"Tag v0.2.0 after #66 lands\" (relayed by the parent agent). Amendment from review 5761319339: the 0.2.0 change log section keeps the moved entries unchanged and adds entries for merged #29, #33 and #26. The preceding corvid-agent approval at 1793751883 re-pinned the unchanged definition before the criterion edit was applied; this approval pins the amended one. Scope still excludes tag, publish and release",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0",
+        "title": "Prepare the 0.2.0 release: set the package version to 0.2.0 and date the change log section for 0.2.0",
+        "description": "Prepare the 0.2.0 release: set the package version to 0.2.0 and date the change log section for 0.2.0",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A version bump and change log dating change no requirement; behavior is unchanged",
+        "acceptance_criteria": [
+          "Source: Leif (0xLeif), 2026-11-03 4:52 PM MST: \"Tag v0.2.0 after #66 lands\". #66 merged as 8298e5a.\n- Cargo.toml declares version = \"0.2.0\", Cargo.lock records chough 0.2.0, and `chough --version` built from this commit prints `chough 0.2.0`.\n- CHANGELOG.md: `## [0.2.0] - 2026-11-03` holds the former Unreleased entries, moved unchanged, plus entries for the merged changes since v0.1.0 that never touched the change log: #29 (`chough checkpoint --merge` and the `chough-session` Git merge-driver setup), #33 (slug IDs for new cases, observations, validation runs and snapshots) and #26 (`BUG-<slug>-<24 hex>` bug IDs), each written from its pull request and the current docs (found missing by review 5761319339). A new empty `## [Unreleased]` heading sits above it, and a `[0.2.0]` link points at https://github.com/CorvidLabs/chough/releases/tag/v0.2.0. The 0.1.0 section is unchanged.\n- No behavior, requirement, skill bundle or HI criterion changes; `cargo package --list --locked` lists the same file set as for 0.1.0.\n- Nothing is released by this change itself: the tag, any crates.io publish and the GitHub release are separate steps after merge (docs/releasing.md). The full suite on Ubuntu, macOS and Windows, the MSRV job, the Fledge verify lane, HI and SpecSync checks pass in CI."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793753867,
+      "digest": "6b2a00fa0061fb3740cfae6a235687bb455d3dd1f7bd5181333d0ef94530309f",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

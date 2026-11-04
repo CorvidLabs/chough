@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0",
+      "reviewer": "corvid-agent",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "c3fd10d7837eb888bcf2cddadab441fee4d06dd0",
+      "contract_digest": "05941e099fee5ab6cae4b3dd739db8ff0e24edba6cce63c498c82ea51530abfa",
+      "execution_digest": "cb6fcd896ef9bdde2d786ba8128ecb49bf81ef47d2383ea5da06909dc3b6a45b",
+      "workspace_digest": "0d667303ec7ceb611977cd065fac3e808cf50b67e63b5749a84190441092eccf",
+      "timestamp": 1793753859
+    }
+  ]
+}

@@ -6,6 +6,7 @@ use crate::records::{
     Section, ensure_text, head_revision, local_path, now, print_json, read_record, record_names,
     valid_name, write_new, write_replace,
 };
+use crate::records::{valid_criterion_id, valid_reference_id};
 use anyhow::{Context, Result, bail, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
@@ -383,13 +384,13 @@ fn validate(bug: &Bug) -> Result<()> {
         CLASSES.join(", "),
         other_flag(&bug.classification, &SCOPES, "scope")
     );
-    for id in bug
-        .criteria
-        .iter()
-        .chain(&bug.requirements)
-        .chain(&bug.cases)
-        .chain(&bug.observations)
-    {
+    for id in &bug.criteria {
+        ensure!(valid_criterion_id(id), "invalid linked ID {id}");
+    }
+    for id in bug.requirements.iter().chain(&bug.cases) {
+        ensure!(valid_reference_id(id), "invalid linked ID {id}");
+    }
+    for id in &bug.observations {
         ensure!(valid_name(id), "invalid linked ID {id}");
     }
     ensure!(

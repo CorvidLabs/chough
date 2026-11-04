@@ -14,6 +14,24 @@ All notable changes to Chough are recorded here. The format follows
   such links under `approved_delta_requirements`. A refused link now says why the
   consulted delta did not resolve it. The testing reference describes how the test
   stage links failing-first evidence.
+- Dotted SpecSync module IDs such as `chat.service` and hi sub-criterion IDs such as
+  `BOTS-1.a` are accepted by `init`, `checkpoint`, `bugs`, `evidence` and `cases`, and
+  a checkpoint holding them is read by every view (#56, #57). Module and requirement
+  IDs SpecSync refuses, and dotted criterion IDs hi refuses such as `UX-1.A`, are
+  refused. Plain criterion IDs Chough accepted before, such as `UX-012` or `ux-1`,
+  are still accepted so existing checkpoints and bugs stay readable, though hi does
+  not trace them; re-record one with a valid hi ID, such as `UX-12`, to link it. `checkpoint --remove-completed` removes one mistaken completed
+  entry in the same call that adds its correction. A test keeps the bundled workflow
+  skill free of em and en dashes (DRIVE-1, DRIVE-7).
+- `chough stage backfill --at <time> --commit <rev> --quote <text>` records a move to
+  the next main stage that already happened, at its original time with the commit and
+  quote it rests on (REQ-cli-036, REQ-history-005). Every advance refusal applies and
+  native state is read now; it records no human approval or review. `chough timing`
+  lists backfilled moves separately, marks the segments they bound and keeps those
+  stages out of estimates. Older Chough binaries refuse a transition log that holds a
+  backfilled record, so upgrade every agent on a project before using it.
+
+## [0.2.0] - 2026-11-03
 
 - Native SpecSync spec files under `specs/` are read at any size: `chough evidence
   add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
@@ -96,6 +114,29 @@ All notable changes to Chough are recorded here. The format follows
 
 ### Added
 
+- Merge-safe checkpoints: `chough checkpoint --merge <base> <ours> <theirs>` does a
+  bounded three-way merge of a schema 2 `.chough/session.json`. Compatible history
+  and references merge deterministically; current-cycle fields merge only as a whole
+  group, and differing changes are refused with a `current-cycle conflict`
+  diagnostic, leaving every input untouched. The repository declares
+  `.chough/session.json merge=chough-session` in `.gitattributes`; to let Git use
+  the driver, each clone runs `git config --local merge.chough-session.name "Chough
+  schema 2 checkpoint"` and `git config --local merge.chough-session.driver "chough
+  checkpoint --merge %O %A %B"`. `chough init` never changes Git configuration
+  ([#29](https://github.com/CorvidLabs/chough/pull/29)).
+- Readable slug IDs for new records: new cases use curated `TC-<module>-<title-slug>`
+  IDs instead of the next number, and new observations, repeated validation runs and
+  librarian snapshots use `OBS-<slug>-<24 hex>`, `VAL-<slug>-<24 hex>` and
+  `SNAP-<slug>-<24 hex>` with random suffixes, so parallel runs and separate clones
+  keep distinct records. An explicit `evidence add` ID must use the new OBS form for
+  a new write. Existing numeric cases, legacy observations, validation runs and dated
+  snapshots stay readable with no migration; older Chough versions need an upgrade to
+  use the new-form IDs ([#33](https://github.com/CorvidLabs/chough/pull/33)).
+- Collision-resistant bug IDs: every new bug, whether from `bug add` or automatic
+  failure capture, gets `BUG-<title-slug>-<24 hex>`, derived from a hash of its
+  creation fields and never recomputed on update. Legacy `BUG-NNNN` bugs stay valid
+  with no renumbering, and links work across both forms
+  ([#26](https://github.com/CorvidLabs/chough/pull/26)).
 - New-project setup path: `docs/walkthrough.md` now opens with a minimal HI file,
   `specsync init` and `specsync scaffold`, and `specsync change adopt`, and explains what
   `ungated:sdd-disabled` means. README Start here points to it. With SpecSync configured
@@ -252,4 +293,5 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
 [0.1.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.1.0
