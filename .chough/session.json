@@ -706,7 +706,12 @@
     "OBS-tc-cli-failed-native-exit-in-plain-words-f24ede425a3085620101f9d3",
     "OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b",
     "OBS-tc-history-split-keeps-requirement-wording-bf6a059a3c5e4b7ddac83e3d",
-    "OBS-tc-reporting-split-keeps-requirement-wording-61f40e1fbdff85fb82a4ca2c"
+    "OBS-tc-reporting-split-keeps-requirement-wording-61f40e1fbdff85fb82a4ca2c",
+    "OBS-tc-cli-stop-reaches-setsid-descendant-17fd377a0cc60994dea86b8b",
+    "OBS-tc-cli-stop-reaches-orphaned-descendant-c6f2746fbfbc2a25a497c34c",
+    "OBS-tc-cli-stop-test-leaves-other-runs-alone-3deb795837fce1bcfe9a70eb",
+    "OBS-tc-cli-git-grace-kill-reported-97de588d17c22586b8838abc",
+    "OBS-tc-cli-failed-head-revision-reported-df2be0c1a86a5ea60b5f3e36"
   ],
   "bugs": [
     "BUG-0001",
