@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793757438,
+      "digest": "5a7a95b4b3cb5949ce810e74228d09205dfbdf7584a0a579a49aea8ffc393243",
+      "note": "Approved as corvid-agent (agent account, not a human approval) under Leif's 2026-11-03 7:49 AM MT standing authority for bounded fixes to Chough bug tickets and his 6:52 PM MT answer 'File all three as Chough issues and fix the clear bugs as small PRs'; scope is issue 74 and issue 76 items 2 and 5 only: next bundle order and count, and next guidance after a reset or with no native change; limits: no gate, schema, output-key or dependency change, no new product scope, no release",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76",
+        "title": "Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76)",
+        "description": "Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/library.rs",
+          "src/main.rs",
+          "src/stage.rs",
+          "tests/next.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough next names at most 3 archived lesson bundles newest first by finalization timestamp then archive directory so they match the hot set of chough library index and an archive without a readable finalization timestamp sorts as oldest,With SpecSync configured and no native change recorded the command for a refused no-native-change gate is specsync change new instead of a bare specsync change status,After a stage reset while the recorded native change is archived with authenticated terminal evidence and was finalized before that reset next shows the new native change guidance with the specsync change new command at every main stage before done and never the archived-change refusal or another reset,A recorded change finalized after the latest reset keeps the existing archived-change guidance,docs/cli.md states the order and the guidance and each new test fails on main edbc3c1 and fledge lanes run verify passes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded bug fix for issues 74 and 76 (items 2 and 5) only: guidance and ordering in chough next and status; no stage gate or schema or output-key change and no new dependency and no extra native read; issue 75 and items 1 3 4 of issue 76 are out of scope",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "54abeb82428d8fb7e2a65061ab92103e178163d6214f9d382f2decb97a727cbd"
+      }
+    }
+  ],
+  "reopenings": []
+}
