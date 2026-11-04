@@ -6,7 +6,7 @@ use crate::context::hi_export;
 use crate::identity;
 use crate::records::{
     append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
-    print_json, read_record, record_names, valid_name, write_new,
+    print_json, read_record, read_spec_file, record_names, valid_name, write_new,
 };
 use crate::{bugs, prefs, validate};
 use anyhow::{Context, Result, bail, ensure};
@@ -483,7 +483,7 @@ impl RequirementMiss {
 }
 
 /// The module another companion would hold `id` for: `REQ-<module>-<part>`, a valid
-/// module name whose bounded `requirements.md` is not among those searched and holds
+/// module name whose `requirements.md` (read at any size) is not among those searched and holds
 /// the ID as a token. Reads neither the checkpoint nor native deltas.
 fn owning_module(root: &Path, id: &str, searched: &[String]) -> Option<String> {
     let (module, _) = id.strip_prefix("REQ-")?.rsplit_once('-')?;
@@ -492,7 +492,7 @@ fn owning_module(root: &Path, id: &str, searched: &[String]) -> Option<String> {
         return None;
     }
     let path = local_path(root, &companion).ok()?;
-    let text = read_record(&path).ok()?;
+    let text = read_spec_file(&path).ok()?;
     holds_token(&text, id).then(|| module.to_string())
 }
 
@@ -519,7 +519,7 @@ pub(super) fn validate_requirements(
             .join("requirements.md");
         let companion = companion.to_str().context("non-UTF-8 contract companion")?;
         text.push_str(
-            &read_record(&local_path(root, companion)?)
+            &read_spec_file(&local_path(root, companion)?)
                 .context("contract requires its native requirements.md companion")?,
         );
         text.push('\n');

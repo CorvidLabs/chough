@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
+  "implementation_commit": "0df760fb7354821ad841fa3756d52e7fd628b8d9",
+  "implementation_tree": "578c90600f24f3880ba0d150c2d939929283556b",
+  "contract_digest": "72370913855a69985ec956309b2836a30856148159cf0048c4938cb48e18f7c3",
+  "workspace_digest": "e234eb13fc5389a91bfd59b6670cdda27a9a4508df44510b9af1ccee63001082",
+  "closing_digest": "44ff8270b0f6444c53186be6af1184580fbd9c4bee1147ba9d739717c05802bb",
+  "review_digest": "41ad1822c62e81408066f9961734edca6d62bea975b31e77e28d20067f54eb07",
+  "finalization_digest": "dcc4b8b185144db1d7a51ef15d2deb5bf36a4c16f48530e2612724b1386d7273",
+  "timestamp": 1793749261
+}

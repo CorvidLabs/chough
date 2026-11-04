@@ -255,6 +255,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "SKILL.md",
         "0b2c166176af684901005b230da159a4ce4cb926e57a59bf3f6b11d3debfdb3f",
     ),
+    // Main 4daf861, unchanged since 4008346; superseded by the composability guidance.
+    (
+        "references/build.md",
+        "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

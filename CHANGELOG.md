@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Native SpecSync spec files under `specs/` are read at any size: `chough evidence
+  add` no longer refuses a `requirements.md` companion over 65,536 bytes, and `chough
+  next` finds the Lessons heading of a `context.md` over 4 MiB (REQ-cli-034).
+  Every Chough record keeps its bound. Until a later change, `chough library snapshot`
+  keeps its 4 MiB limit. The workflow skill's build reference gains
+  advisory "Keep it composable" guidance; size is a hint, never a gate. Leif decided
+  this on 2026-11-03.
+
 - The librarian is on by default in `knowledge/` at the project root, with a recorded
   opt-out (`chough pref set librarian off --source ...`; KNOW-1, KNOW-5). `library
   index` now writes one regenerated `knowledge/archives/<change-id>.md` entry per

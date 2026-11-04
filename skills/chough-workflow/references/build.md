@@ -14,6 +14,19 @@ definition approved. Then:
 6. Mark the task done in `tasks.md`, then save a checkpoint:
    `chough checkpoint --completed "<increment>" --next-action "<next step>"`.
 
+## Keep it composable
+
+Keep specs and source lean and composable, without being dogmatic about it:
+
+- Split independent behavior into its own spec module and source module. Do not grow
+  one spec for everything. Keep coupled behavior together, because splitting coupled
+  code only adds indirection.
+- Treat a source file heading past about 1,000 lines as a candidate to split along a
+  real seam (a separate responsibility, data type or command), not by line count alone.
+- Spec files have no size limit. Chough reads them at any size. Size is a hint to look
+  for independent parts, never a gate. Chough's own records keep their bounds, so the
+  thing to keep lean is generated proof and logs, not the contract.
+
 ## Ownership
 
 When subagents help, give each explicit files or modules, the relevant contract and

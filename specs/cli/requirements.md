@@ -330,3 +330,13 @@ Acceptance Criteria
 - Apply refuses without authority or with an open change; otherwise it removes only HEAD-identical files, ledger first, and they read as pruned.
 - A validity change restores every removed file byte-identically and refuses.
 
+### REQ-cli-034
+
+Spec files have no size bound. The helper SHALL read a native SpecSync spec file under `specs/`, such as a module's `requirements.md` companion, at any size and SHALL NOT refuse it or skip it for size: `chough evidence add` reads `requirements.md` companions whole, and `chough next` searches a module's `context.md` for its `## Lessons` heading at any size. One reader is a known exception until a later native change lifts it: `chough library snapshot` refuses any file over 4 MiB, spec files included. Native change workspaces under `.specsync/changes/` keep their 4 MiB read bound. Views that display spec text, such as `chough context`, keep their display budgets (16 KiB per section, 128 KiB in total) and mark what they cut. Every Chough record, including the checkpoint, managed JSON, history events, case files, captured output and context sections, SHALL keep its existing bound under REQ-cli-032. The workflow skill SHALL give advisory composability guidance: split independent behavior into its own spec and source module, keep coupled behavior together, and treat a source file nearing about 1,000 lines as a split candidate along a real seam; size SHALL be a hint and never a gate. Human decision: Leif (0xLeif), 2026-11-03 10:05 AM MT: "Spec files can grow to whatever number they want. ... we shouldn't really care about file size for specs." and "we need to have some, you know, good sense of composability but not be crazy about it." Trace: LIFE-11.
+
+Acceptance Criteria
+- `chough evidence add` validates a requirement ID against a requirements companion larger than 4 MiB, and still refuses an ID owned by another module with the same message, never a size refusal.
+- `chough next` finds the Lessons heading of a module `context.md` larger than 4 MiB, and reports `no Lessons section` for one without it, never a size note.
+- A structured record other than the checkpoint over 65,536 bytes and a checkpoint over 131,072 bytes are still refused.
+- The bundled and installed workflow skill build references hold the same composability guidance, and main's previous build reference reads as known-outdated so `chough skill update` refreshes it.
+
