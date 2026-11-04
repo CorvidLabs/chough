@@ -1849,3 +1849,30 @@ fn retention_protects_observations_named_by_unfolded_inbox_entries() {
     fixture.ok(&["inbox", "fold"]);
     assert!(fixture.exists(".chough/evidence/reported.json"));
 }
+
+/// #99 review (REQ-history-009): retention refuses while an unfolded inbox entry cannot be
+/// read, since it may name an observation, and removes nothing; the same as an unreadable
+/// session.
+#[test]
+fn retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha"]);
+    fixture.commit("fixture");
+    for (id, age) in [("n1", 20), ("n2", 21), ("n3", 22), ("old", 40)] {
+        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
+    }
+    fixture.ok(&["consent", "grant", "retention", "--source", "Human: prune"]);
+    assert_eq!(
+        ids(&fixture.ok(&["evidence", "prune"])["eligible"]),
+        set(["old"])
+    );
+    let entry = ".chough/sessions/alpha.inbox/INB-000000000000000000000000.json";
+    fixture.write(entry, "{bad");
+    let before = tree(fixture.root());
+    let refused = fixture.fails(&["evidence", "prune", "--apply"]);
+    assert!(
+        refused.contains("INB-000000000000000000000000"),
+        "{refused}"
+    );
+    assert_eq!(tree(fixture.root()), before);
+}

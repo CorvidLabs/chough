@@ -802,3 +802,72 @@ fn inbox_add_racing_an_archive_never_strands_its_entry() {
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("no open session alpha"), "{stderr}");
 }
+
+/// #99 review (REQ-history-009): an entry is published whole, so an `inbox add` killed
+/// while writing its entry (here by the file-size limit, which stops it at its first
+/// write) leaves no partial entry. `inbox list`, `status`, `next` and `evidence prune`
+/// still work, the temp it left is ignored by Git, and the next checkpoint save removes it.
+#[cfg(unix)]
+#[test]
+fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
+    use std::os::unix::process::ExitStatusExt;
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let kept = add_entry(&fixture, "beta", "decision", "Before the killed add");
+    let killed = std::process::Command::new("sh")
+        .args(["-c", "ulimit -f 0; exec \"$@\"", "sh"])
+        .arg(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args([
+            "inbox",
+            "add",
+            "--session",
+            "beta",
+            "--from",
+            "subagent-1",
+            "--kind",
+            "decision",
+            "--text",
+            "Killed while writing",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        killed.status.signal().is_some(),
+        "the add was not stopped while writing: {killed:?}"
+    );
+    let entries = fixture.ok(&["inbox", "list"])["entries"].clone();
+    let ids: Vec<&str> = entries
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| entry["id"].as_str().unwrap())
+        .collect();
+    assert_eq!(ids, [kept.as_str()]);
+    fixture.ok(&["status"]);
+    fixture.ok(&["next", "--json"]);
+    fixture.ok(&["evidence", "prune"]);
+    let inbox = fixture.root().join(".chough/sessions/beta.inbox");
+    let temps: Vec<String> = fs::read_dir(&inbox)
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .filter(|name| name.ends_with(".tmp"))
+        .collect();
+    assert_eq!(temps.len(), 1, "{temps:?}");
+    fixture.commit("after the killed add");
+    let temp = format!(".chough/sessions/beta.inbox/{}", temps[0]);
+    let ignored = std::process::Command::new("git")
+        .args(["check-ignore", "-q", "--no-index", &temp])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(ignored.success(), "{temp} is not ignored by Git");
+    fixture.ok(&["checkpoint", "--decision", "after the killed add"]);
+    assert!(
+        !inbox.join(&temps[0]).exists(),
+        "{} was left behind",
+        temps[0]
+    );
+    assert_eq!(fixture.ok(&["inbox", "list"])["entries"], entries);
+}
