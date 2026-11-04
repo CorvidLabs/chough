@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88",
+  "slug": "trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88",
+  "title": "Trim old proof automatically when a change reaches done with the librarian on, and let retention manual opt out (issue 88)",
+  "description": "Trim old proof automatically when a change reaches done with the librarian on, and let retention manual opt out (issue 88)",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "2896f5ada1947a307b9958007a109c06dc3a2831",
+  "created_at": 1793812214,
+  "updated_at": 1793812251,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "src/prefs.rs",
+    "src/stage.rs",
+    "tests/librarian_trim.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With defaults stage advance into done reports trimmed and prunes the cold archived proof that library archive would with a ledger entry whose authority names KNOW-13. With retention manual or the librarian off it reports skipped and removes nothing. With a native change open it reports refused naming it and removes nothing and done is still recorded. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded change for issue 88 under KNOW-13 as Leif chose on 2026-11-04 (auto-trim at done, retention manual opts out); the summary rules of REQ-cli-033 and KNOW-10 and KNOW-11 are kept; runs only on the move into done, never in next or status; never undoes the move",
+    "public_contract": "yes"
+  }
+}
