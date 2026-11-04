@@ -1,6 +1,6 @@
 ---
 id: scale-independent-archive-authentication-workers-with-the-runner-s-cpus-so-the-archive-check-fits-its-unchanged-budget
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 1ac2ae228f12201fac910bce3a61837761580a89
 ---
