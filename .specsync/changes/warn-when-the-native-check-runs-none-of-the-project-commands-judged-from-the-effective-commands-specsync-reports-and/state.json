@@ -7,10 +7,11 @@
   "title": "Warn when the native check runs none of the project commands, judged from the effective commands SpecSync reports, and point the test stage to recorded test evidence (issue 85)",
   "description": "Warn when the native check runs none of the project commands, judged from the effective commands SpecSync reports, and point the test stage to recorded test evidence (issue 85)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "1ea894c91144947915dcaccf11aecb0f6ab86751",
   "created_at": 1793807098,
-  "updated_at": 1793807136,
+  "updated_at": 1793807258,
   "affected_specs": [
     "cli"
   ],

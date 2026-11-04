@@ -1,6 +1,6 @@
 ---
 id: warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 1ea894c91144947915dcaccf11aecb0f6ab86751
 ---
