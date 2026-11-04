@@ -166,7 +166,8 @@ impl Fixture {
 # .stub-validity (terminal evidence when archived; none omits it), .stub-next (the
 # native next action), .stub-affected (the quoted modules of change.affected_specs;
 # none omits the change object), .stub-no-spec (true or false) and .stub-fail. When
-# .stub-count exists, every call appends a line to .stub-calls.
+# .stub-count exists, every call appends a line to .stub-calls. summary.id echoes the
+# requested change, as SpecSync's status reply names it.
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
 if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
 state=$(cat .stub-state 2>/dev/null || echo draft)
@@ -185,7 +186,7 @@ change=""
 if [ "$affected" != none ]; then
     change=",\"change\":{\"affected_specs\":[$affected],\"no_spec_change\":$nospec}"
 fi
-printf '{"summary":{"state":"%s","next_action":"%s"%s}%s}\n' "$state" "$next" "$fields" "$change"
+printf '{"summary":{"id":"%s","state":"%s","next_action":"%s"%s}%s}\n' "$3" "$state" "$next" "$fields" "$change"
 "#,
         );
         self.executable("bin/hi");

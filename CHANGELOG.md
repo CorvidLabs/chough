@@ -8,7 +8,9 @@ All notable changes to Chough are recorded here. The format follows
 
 - `chough checkpoint --native-change <id>` asks SpecSync for the change before saving and
   refuses an ID SpecSync does not report (`refused:native-change-unknown`), leaving the
-  checkpoint unchanged (#63, found in Kimi's second lab review).
+  checkpoint unchanged (#63, found in Kimi's second lab review). A reply whose
+  `summary.id` or `change.id` names a different change is refused too
+  (`refused:native-change-mismatch`).
 
 ## [0.2.0] - 2026-11-03
 

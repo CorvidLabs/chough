@@ -679,7 +679,8 @@ fn push_unique(list: &mut Vec<String>, values: Vec<String>) {
 /// Refuse to record a native change SpecSync does not report (issue 63). With SpecSync
 /// configured, `specsync change status <id> --json` must succeed with a JSON response;
 /// a missing change (SpecSync exits non-zero), a failed or timed-out read, or output
-/// that is not JSON refuses before anything is written. What the state means stays
+/// that is not JSON refuses before anything is written, and so does a reply whose
+/// `summary.id` or `change.id` names a different change. What the state means stays
 /// with the stage gates. Without a configuration there is nothing to ask.
 fn ensure_native_change_known(root: &Path, change: &str) -> Result<()> {
     if !stage::native_configured(root)? {
@@ -693,6 +694,21 @@ fn ensure_native_change_known(root: &Path, change: &str) -> Result<()> {
             section.source,
             section.state,
             section.content.trim_end()
+        );
+    }
+    // The reply must be about the requested change: every change ID it names
+    // (`summary.id`, `change.id`) must match. SpecSync 6.1 names both; a reply that
+    // names neither is left to the stage gates, as before.
+    let value = response.value.as_ref().expect("checked above");
+    let named: Vec<&str> = [value.pointer("/summary/id"), value.pointer("/change/id")]
+        .into_iter()
+        .flatten()
+        .map(|id| id.as_str().unwrap_or("a non-text change id"))
+        .collect();
+    if named.iter().any(|id| *id != change) {
+        let reported = named.join(" and ");
+        bail!(
+            "refused:native-change-mismatch: SpecSync was asked for native change {change} but its reply names {reported}, so it was not recorded and the checkpoint is unchanged.\nRun `specsync change status {change} --json` and record the ID it reports.",
         );
     }
     Ok(())

@@ -9,3 +9,4 @@ artifact: tasks
 - [x] `ensure_native_change_known` in src/checkpoint.rs, called by `checkpoint --native-change` before any change is applied
 - [x] docs/cli.md and CHANGELOG.md
 - [x] MODIFIED REQ-cli-007 delta for the refusal, replacing the no-spec rationale (review of #71)
+- [x] Refuse a reply that names a different change ID (`refused:native-change-mismatch`, review of #71)
