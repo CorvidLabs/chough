@@ -49,6 +49,16 @@ All notable changes to Chough are recorded here. The format follows
   not trace them; re-record one with a valid hi ID, such as `UX-12`, to link it. `checkpoint --remove-completed` removes one mistaken completed
   entry in the same call that adds its correction. A test keeps the bundled workflow
   skill free of em and en dashes (DRIVE-1, DRIVE-7).
+- `chough next` now lists the newest 3 archived lesson bundles by recorded
+  finalization time, the same three the librarian marks hot, instead of the last 5 by
+  directory name, which mixed old and new work on a busy day (#74). It reads them with
+  the librarian's own rule, so hidden folders and archives without a readable
+  finalization record are skipped, and a hot archive without a bundle is marked
+  `(missing)`. The new-cycle guidance after a reset uses the newest reset by time.
+- After `chough stage reset` from an archived change, `chough next` keeps the reset's
+  new-cycle guidance at every stage and suggests `specsync change new` instead of the
+  archived gate refusal; at plan with no native change recorded it also suggests
+  `specsync change new` rather than a bare status read (#76, items 2 and 5).
 - `chough stage backfill --at <time> --commit <rev> --quote <text>` records a move to
   the next main stage that already happened, at its original time with the commit and
   quote it rests on (REQ-cli-036, REQ-history-005). Every advance refusal applies and

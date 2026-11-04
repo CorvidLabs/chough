@@ -595,27 +595,31 @@ fn set_mtime(path: &std::path::Path, seconds: u64) {
 }
 
 /// After the suggested reset the archived rule does not suggest another reset, although
-/// the checkpoint still names the archived change until a new one is recorded: at intent
-/// the reset's new-cycle next action shows; at plan the build gate refusal shows, as it
-/// does after a reset from done.
+/// the checkpoint still names the archived change until a new one is recorded: the
+/// reset's new-cycle next action shows at intent, and at plan too, with the command
+/// `specsync change new` rather than the archived gate refusal (issue 76 item 5).
 #[cfg(unix)]
 fn assert_after_reset(fixture: &Fixture, from: &str) {
     let next = fixture.ok(&["next", "--json"]);
     let action = next["next_valid_action"]["action"].as_str().unwrap();
     let current = fixture.session()["stage"]["current"].clone();
     let current = current.as_str().unwrap();
-    if current == "intent" {
-        assert!(
-            action.starts_with(&format!(
-                "Continue intent: New cycle from {from} after reset: "
-            )),
-            "{action}"
+    assert!(
+        action.starts_with(&format!(
+            "Continue {current}: New cycle from {from} after reset: "
+        )),
+        "{action}"
+    );
+    if current != "intent" {
+        assert_eq!(
+            next["next_valid_action"]["command"],
+            "specsync change new \"<outcome>\" --spec <module> --path <path>",
+            "{next}"
         );
-    } else {
-        assert!(
-            action.starts_with("Gate not open (refused:native-archived)"),
-            "{action}"
-        );
+        assert!(!action.contains("refused:native-archived"), "{action}");
+        // The gate itself stays refused: only the guidance changes after the reset.
+        assert_eq!(next["gate"]["label"], "refused:native-archived", "{next}");
+        assert_eq!(next["gate"]["allowed"], false, "{next}");
     }
     assert!(!action.contains("is archived while"), "{action}");
     assert_ne!(next["next_valid_action"]["command"], RESET, "{next}");
@@ -1020,9 +1024,12 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
     fixture.write(".chough/session.json", &session.to_string());
     // Seven archived bundles written out of order, and an archive without one.
     for day in [3, 7, 1, 5, 2, 6, 4] {
+        let dir = format!(".specsync/archive/changes/2026-10-0{day}-change-{day}");
+        fixture.write(&format!("{dir}/lesson-bundle.md"), "SECRET-LESSON-TEXT\n");
         fixture.write(
-            &format!(".specsync/archive/changes/2026-10-0{day}-change-{day}/lesson-bundle.md"),
-            "SECRET-LESSON-TEXT\n",
+            &format!("{dir}/finalization.json"),
+            &json!({"change_id": format!("change-{day}"), "timestamp": 1_790_000_000 + day})
+                .to_string(),
         );
     }
     fixture.write(
@@ -1045,8 +1052,6 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
                 ".specsync/archive/changes/2026-10-07-change-7/lesson-bundle.md",
                 ".specsync/archive/changes/2026-10-06-change-6/lesson-bundle.md",
                 ".specsync/archive/changes/2026-10-05-change-5/lesson-bundle.md",
-                ".specsync/archive/changes/2026-10-04-change-4/lesson-bundle.md",
-                ".specsync/archive/changes/2026-10-03-change-3/lesson-bundle.md",
             ]},
         })
     );
@@ -1057,12 +1062,12 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
         "  docs: specs/docs/context.md (no Lessons section)",
         "  ghost: specs/ghost/context.md (missing)",
         "  native: specs/native/native.3md\n",
-        "Archived lesson bundles (5 of 7, newest first):",
+        "Archived lesson bundles (3 of 7, newest first):",
         "  .specsync/archive/changes/2026-10-07-change-7/lesson-bundle.md",
     ] {
         assert!(shown.contains(line), "missing {line:?} in:\n{shown}");
     }
-    assert!(!shown.contains("2026-10-02-change-2"), "{shown}");
+    assert!(!shown.contains("2026-10-04-change-4"), "{shown}");
     assert!(!raw.contains("SECRET-LESSON-TEXT"), "{raw}");
     assert!(!shown.contains("SECRET-LESSON-TEXT"), "{shown}");
     // Nothing is written: no fold state, ledger or index.
@@ -1091,13 +1096,200 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
         assert_eq!(ghost["section_line"], Value::Null, "{ghost}");
         let note = ghost["note"].as_str().unwrap();
         assert!(note.starts_with("cannot be read: symlink"), "{note}");
-        assert_eq!(
-            next["lessons"]["archived_bundles"],
-            json!({"total": 0, "items": []})
-        );
+        let bundles = &next["lessons"]["archived_bundles"];
+        assert_eq!(bundles["total"], 0, "{bundles}");
+        assert_eq!(bundles["items"], json!([]), "{bundles}");
+        let note = bundles["note"].as_str().unwrap();
+        assert!(note.starts_with("cannot be read: "), "{note}");
+        let shown = text(&fixture, &["next"]);
+        assert!(shown.contains("  ghost: specs/ghost/context.md (cannot be read: symlink"));
         assert!(
-            text(&fixture, &["next"])
-                .contains("  ghost: specs/ghost/context.md (cannot be read: symlink")
+            shown.contains(&format!("Archived lesson bundles: {note}")),
+            "{shown}"
+        );
+    }
+}
+
+/// Review of #78 (non-blocking): one symlinked archive directory makes `library index`
+/// refuse, and `next` surfaces that same error for the archived bundles instead of
+/// silently listing none. SYNTHETIC archives.
+#[cfg(unix)]
+#[test]
+fn next_surfaces_the_error_library_index_refuses_a_symlinked_archive_with() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let base = ".specsync/archive/changes/2026-11-03";
+    fixture.write(
+        &format!("{base}-a/finalization.json"),
+        &json!({"change_id": "a", "timestamp": 100}).to_string(),
+    );
+    fixture.write(&format!("{base}-a/lesson-bundle.md"), "SYNTHETIC lesson\n");
+    let elsewhere = tempfile::tempdir().unwrap();
+    std::fs::write(
+        elsewhere.path().join("finalization.json"),
+        json!({"change_id": "b", "timestamp": 200}).to_string(),
+    )
+    .unwrap();
+    std::os::unix::fs::symlink(elsewhere.path(), fixture.root().join(format!("{base}-b"))).unwrap();
+    let refused = fixture.fails(&["library", "index"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let bundles = &next["lessons"]["archived_bundles"];
+    assert_eq!(bundles["total"], 0, "{bundles}");
+    assert_eq!(bundles["items"], json!([]), "{bundles}");
+    let note = bundles["note"].as_str().unwrap();
+    let error = note.strip_prefix("cannot be read: ").unwrap();
+    assert!(error.contains("symlink"), "{note}");
+    assert!(
+        refused.contains(error),
+        "next: {note}\nlibrary index: {refused}"
+    );
+}
+
+/// Issue 74: `next` names the newest 3 lesson bundles by finalization timestamp, then
+/// directory, the same archives `chough library index` marks hot (KNOW-8), not the
+/// newest by directory name.
+#[test]
+fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
+    let fixture = Fixture::new();
+    fixture.init();
+    // Same-day SYNTHETIC archives finalized in cycle order 1 to 6, whose slug order
+    // differs from that order; "zzz-unfinalized" has no finalization.json.
+    let cycles = [
+        "enforce-rules",
+        "preserve-history",
+        "protect-secrets",
+        "add-bounded-pagination",
+        "search-messages",
+        "export-chats",
+    ];
+    for (index, slug) in cycles.iter().enumerate() {
+        let dir = format!(".specsync/archive/changes/2026-11-03-{slug}");
+        fixture.write(
+            &format!("{dir}/finalization.json"),
+            &json!({"change_id": slug, "timestamp": 1_793_700_000 + 600 * index as u64})
+                .to_string(),
+        );
+        fixture.write(
+            &format!("{dir}/verification.json"),
+            "{\"acceptance_manifest\":{\"entries\":[]}}\n",
+        );
+        fixture.write(&format!("{dir}/lesson-bundle.md"), "SYNTHETIC lesson\n");
+    }
+    fixture.write(
+        ".specsync/archive/changes/2026-11-03-zzz-unfinalized/lesson-bundle.md",
+        "SYNTHETIC lesson\n",
+    );
+
+    let next = fixture.ok(&["next", "--json"]);
+    let path = |slug: &str| format!(".specsync/archive/changes/2026-11-03-{slug}/lesson-bundle.md");
+    assert_eq!(
+        next["lessons"]["archived_bundles"],
+        json!({"total": 6, "items": [
+            path("export-chats"),
+            path("search-messages"),
+            path("add-bounded-pagination"),
+        ]})
+    );
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!(
+            "Archived lesson bundles (3 of 6, newest first):\n  {}\n  {}\n  {}\n",
+            path("export-chats"),
+            path("search-messages"),
+            path("add-bounded-pagination")
+        )),
+        "{shown}"
+    );
+
+    // The librarian's hot archives are the same three.
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/INDEX.md");
+    for (slug, status) in [
+        ("export-chats", "hot"),
+        ("search-messages", "hot"),
+        ("add-bounded-pagination", "hot"),
+        ("protect-secrets", "cold"),
+        ("preserve-history", "cold"),
+        ("enforce-rules", "cold"),
+    ] {
+        assert!(
+            index.contains(&format!(
+                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
+            )),
+            "{slug} {status} in {index}"
+        );
+    }
+}
+
+/// Review of #78: `next` reads the hot archives with the librarian's own rule, so the
+/// newest archive without a lesson bundle is shown as missing, and hidden directories,
+/// archives without a readable finalization naming their change, and invalid records
+/// are not counted. SYNTHETIC archives.
+#[test]
+fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let base = ".specsync/archive/changes/2026-11-03";
+    let archive = |dir: &str, finalization: Option<&str>, bundle: bool| {
+        if let Some(finalization) = finalization {
+            fixture.write(&format!("{base}-{dir}/finalization.json"), finalization);
+        }
+        fixture.write(
+            &format!("{base}-{dir}/verification.json"),
+            "{\"acceptance_manifest\":{\"entries\":[]}}\n",
+        );
+        if bundle {
+            fixture.write(
+                &format!("{base}-{dir}/lesson-bundle.md"),
+                "SYNTHETIC lesson\n",
+            );
+        }
+    };
+    let record =
+        |id: &str, timestamp: Value| json!({"change_id": id, "timestamp": timestamp}).to_string();
+    archive("d", Some(&record("d", json!(300))), false);
+    archive("b", Some(&record("b", json!(200))), true);
+    archive("c", Some(&record("c", json!(200))), true);
+    archive("a", Some(&record("a", json!(100))), true);
+    archive("e", Some(&record("e", json!(50))), true);
+    archive("f", Some(&record("f", json!("bad"))), true);
+    archive("g", Some(&record("another", json!(400))), true);
+    archive("h", None, true);
+    archive("i", Some("{not json"), true);
+    fixture.write(
+        ".specsync/archive/changes/.hidden-z/finalization.json",
+        &record("z", json!(5000)),
+    );
+    fixture.write(
+        ".specsync/archive/changes/.hidden-z/lesson-bundle.md",
+        "SYNTHETIC lesson\n",
+    );
+
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["lessons"]["archived_bundles"],
+        json!({"total": 6, "items": [
+            format!("{base}-d/lesson-bundle.md (missing)"),
+            format!("{base}-c/lesson-bundle.md"),
+            format!("{base}-b/lesson-bundle.md"),
+        ]})
+    );
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!(
+            "Archived lesson bundles (3 of 6, newest first):\n  {base}-d/lesson-bundle.md (missing)\n  {base}-c/lesson-bundle.md\n  {base}-b/lesson-bundle.md\n"
+        )),
+        "{shown}"
+    );
+
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/INDEX.md");
+    for (slug, status) in [("d", "hot"), ("c", "hot"), ("b", "hot"), ("a", "cold")] {
+        assert!(
+            index.contains(&format!(
+                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
+            )),
+            "{slug} {status} in {index}"
         );
     }
 }
@@ -1152,13 +1344,19 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     }
     // 40 archived bundles and 16 modules.
     for index in 0..40 {
+        let dir = format!(
+            ".specsync/archive/changes/2026-{:02}-{:02}-change-with-a-long-descriptive-name-{index:02}",
+            index / 28 + 1,
+            index % 28 + 1
+        );
+        fixture.write(&format!("{dir}/lesson-bundle.md"), "bundle\n");
         fixture.write(
-            &format!(
-                ".specsync/archive/changes/2026-{:02}-{:02}-change-with-a-long-descriptive-name-{index:02}/lesson-bundle.md",
-                index / 28 + 1,
-                index % 28 + 1
-            ),
-            "bundle\n",
+            &format!("{dir}/finalization.json"),
+            &json!({
+                "change_id": format!("change-with-a-long-descriptive-name-{index:02}"),
+                "timestamp": 1_790_000_000 + index,
+            })
+            .to_string(),
         );
     }
     let modules: Vec<String> = (0..16).map(|index| format!("module-{index:02}")).collect();
@@ -1233,7 +1431,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
         (&next["decisions"]["items"], 5),
         (&next["last_failure"]["bugs"]["items"], 3),
         (&next["lessons"]["sources"]["items"], 10),
-        (&next["lessons"]["archived_bundles"]["items"], 5),
+        (&next["lessons"]["archived_bundles"]["items"], 3),
         (&next["awaiting_human"]["items"], 10),
         (&next["blockers"]["items"], 10),
         (&next["observations"]["items"], 10),

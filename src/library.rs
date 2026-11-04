@@ -58,7 +58,7 @@ pub(super) enum LibraryCommand {
     },
 }
 
-const HOT_ARCHIVES: usize = 3;
+pub(super) const HOT_ARCHIVES: usize = 3;
 /// Rows each knowledge entry lists in full before pointing at the manifest.
 const ENTRY_ROWS: usize = 100;
 /// The managed-file bound every generated knowledge file stays within.
@@ -99,25 +99,81 @@ fn read_json(root: &Path, relative: &str) -> std::result::Result<serde_json::Val
     serde_json::from_slice(&bytes).map_err(|error| format!("{relative}: {error}"))
 }
 
-/// Archived changes newest first by (finalization timestamp, directory).
-fn archives(root: &Path) -> Result<Vec<Archive>> {
+/// The change ID and finalization timestamp an archive directory records, when its
+/// `finalization.json` reads within the native bound and its directory name ends with
+/// that ID, the same check `archives` uses.
+pub(super) fn finalized(root: &Path, dir: &str) -> Option<(String, u64)> {
+    let value = read_json(root, &format!("{ARCHIVES}/{dir}/finalization.json")).ok()?;
+    let id = value["change_id"].as_str().filter(|id| dir.ends_with(id))?;
+    Some((id.to_string(), value["timestamp"].as_u64()?))
+}
+
+/// When the archived native change `change` was finalized, if an archive records it.
+pub(super) fn finalized_at(root: &Path, change: &str) -> Option<u64> {
+    sorted_entries(root, ARCHIVES)
+        .ok()?
+        .iter()
+        .filter(|dir| dir.ends_with(change))
+        .filter_map(|dir| finalized(root, dir))
+        .find(|(id, _)| id == change)
+        .map(|(_, timestamp)| timestamp)
+}
+
+/// One archive directory the librarian counts: a UTF-8 name that is not hidden, a
+/// directory, and a `finalization.json` that reads and names a change ID the directory
+/// name ends with.
+pub(super) struct ArchiveDir {
+    pub(super) dir: String,
+    id: String,
+    timestamp: u64,
+    finalization: serde_json::Value,
+    pub(super) lesson_bundle: bool,
+}
+
+/// The archives the librarian counts, newest first by (finalization timestamp,
+/// directory); an unreadable timestamp sorts as 0. This is the one rule `chough next`
+/// and the knowledge index share for the hot archives.
+pub(super) fn archive_order(root: &Path) -> Result<Vec<ArchiveDir>> {
     let mut found = vec![];
     for dir in sorted_entries(root, ARCHIVES)? {
         let base = format!("{ARCHIVES}/{dir}");
         if !local_path(root, &base)?.is_dir() {
             continue;
         }
-        let finalization = read_json(root, &format!("{base}/finalization.json"));
-        let Some(id) = finalization
-            .as_ref()
-            .ok()
-            .and_then(|value| value["change_id"].as_str())
+        let Ok(finalization) = read_json(root, &format!("{base}/finalization.json")) else {
+            continue;
+        };
+        let Some(id) = finalization["change_id"]
+            .as_str()
             .filter(|id| dir.ends_with(id))
             .map(str::to_string)
         else {
             continue;
         };
-        let finalization = finalization.unwrap_or_default();
+        found.push(ArchiveDir {
+            timestamp: finalization["timestamp"].as_u64().unwrap_or(0),
+            lesson_bundle: local_path(root, &format!("{base}/lesson-bundle.md"))?.is_file(),
+            dir,
+            id,
+            finalization,
+        });
+    }
+    found.sort_by(|left, right| (right.timestamp, &right.dir).cmp(&(left.timestamp, &left.dir)));
+    Ok(found)
+}
+
+/// Archived changes newest first by (finalization timestamp, directory).
+fn archives(root: &Path) -> Result<Vec<Archive>> {
+    let mut found = vec![];
+    for ArchiveDir {
+        dir,
+        id,
+        timestamp,
+        finalization,
+        lesson_bundle,
+    } in archive_order(root)?
+    {
+        let base = format!("{ARCHIVES}/{dir}");
         let (verification, manifest_error) =
             match read_json(root, &format!("{base}/verification.json")) {
                 Ok(value) if value["acceptance_manifest"]["entries"].is_array() => (value, None),
@@ -180,10 +236,10 @@ fn archives(root: &Path) -> Result<Vec<Archive>> {
             .unwrap_or_default();
         let text = |value: &serde_json::Value| value.as_str().map(str::to_string);
         found.push(Archive {
-            timestamp: finalization["timestamp"].as_u64().unwrap_or(0),
+            timestamp,
             implementation_commit: text(&finalization["implementation_commit"]),
             verification_commit: text(&verification["commit"]),
-            lesson_bundle: local_path(root, &format!("{base}/lesson-bundle.md"))?.is_file(),
+            lesson_bundle,
             dir,
             id,
             title,

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 38
+version: 39
 status: active
 files:
   - src/main.rs
@@ -243,3 +243,4 @@ provider, runtime or hosted service.
 | 36 | 2026-11-04 | refuse-a-native-change-id-that-specsync-does-not-know-issue-63: Refuse a native change ID that SpecSync does not know (issue 63) |
 | 37 | 2026-11-04 | refuse-a-native-change-status-reply-that-names-no-change-id-issue-63-review-thread-on-71: Refuse a native change status reply that names no change ID (issue 63, review thread on #71) |
 | 38 | 2026-11-04 | split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new: Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound |
+| 39 | 2026-11-04 | order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76: Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76) |

@@ -4,7 +4,8 @@
 use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{
     NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
-    local_path, native_json, now, print_json, read_log_tail, read_native_record, read_record,
+    local_path, native_json, now, print_json, read_log_full, read_log_tail, read_native_record,
+    read_record,
 };
 use crate::{bugs, evidence, prefs};
 use anyhow::{Result, bail, ensure};
@@ -883,35 +884,140 @@ fn archived_and_authenticated(root: &Path, session: &Checkpoint, state: &NativeS
 /// Whether the latest stage transition is a reset, which starts the new cycle: the
 /// checkpoint still names the archived change until a new one is recorded, and the
 /// reset's own next action applies. Gate records start no stage segment and are
-/// skipped; an unreadable log reads as no reset.
-fn reached_by_reset(root: &Path, history: Option<&crate::history::HistoryRead>) -> bool {
+/// skipped; a missing log reads as no reset, and an unreadable legacy log or one too
+/// large to read whole is unknown (`Err`).
+fn reached_by_reset(
+    root: &Path,
+    history: Option<&crate::history::HistoryRead>,
+) -> Result<bool, String> {
     if let Some(read) = history {
-        return read
+        return Ok(read
             .records
             .iter()
             .rev()
             .filter_map(|value| value["kind"].as_str())
             .find(|kind| STAGE_KINDS.contains(kind))
-            .is_some_and(|kind| kind == "reset");
+            .is_some_and(|kind| kind == "reset"));
     }
-    let Ok(path) = local_path(root, TRANSITIONS) else {
-        return false;
-    };
-    let Ok((lines, _)) = read_log_tail(&path, usize::MAX) else {
-        return false;
-    };
-    lines
+    Ok(legacy_transitions(root)?
         .iter()
         .rev()
+        .filter_map(|record| record.get("kind").and_then(Value::as_str))
+        .find(|kind| STAGE_KINDS.contains(kind))
+        .is_some_and(|kind| kind == "reset"))
+}
+
+/// The bound on a legacy transition log read whole, the same 16 MiB the timing
+/// report reads it to.
+const LEGACY_TRANSITIONS_LIMIT: u64 = 16 * 1_048_576;
+
+/// Every record of the legacy transition log, read whole rather than from its 64 KiB
+/// tail, so a reset older than the tail is still found. Only a missing log reads as
+/// empty; an unreadable log, or one beyond the bound, is unknown (`Err`, with why),
+/// never read as no reset.
+fn legacy_transitions(root: &Path) -> Result<Vec<Value>, String> {
+    let path = local_path(root, TRANSITIONS).map_err(|error| format!("{TRANSITIONS}: {error}"))?;
+    // A missing log reads as empty inside `read_log_full`; any other error is unknown.
+    let log = read_log_full(&path, LEGACY_TRANSITIONS_LIMIT)
+        .map_err(|error| format!("{TRANSITIONS}: {error}"))?;
+    if log.skipped_bytes > 0 {
+        return Err(format!(
+            "{TRANSITIONS}: earliest {} bytes skipped beyond the {LEGACY_TRANSITIONS_LIMIT}-byte bound",
+            log.skipped_bytes
+        ));
+    }
+    Ok(log
+        .lines
+        .iter()
         .filter_map(|line| serde_json::from_str::<Value>(line).ok())
-        .filter_map(|record| {
-            record
-                .get("kind")
-                .and_then(Value::as_str)
-                .map(str::to_string)
-        })
-        .find(|kind| STAGE_KINDS.contains(&kind.as_str()))
-        .is_some_and(|kind| kind == "reset")
+        .collect())
+}
+
+/// When the newest reset was recorded, if the transition log names one; an unreadable
+/// legacy log or one too large to read whole is unknown (`Err`).
+fn latest_reset_at(
+    root: &Path,
+    history: Option<&crate::history::HistoryRead>,
+) -> Result<Option<u64>, String> {
+    // The newest reset by recorded time, not the last appended: merged logs can hold
+    // resets out of order. When any reset's time cannot be read, none is trusted and
+    // only the reached-by-reset test applies.
+    fn newest<'a>(records: impl Iterator<Item = &'a Value>) -> Option<u64> {
+        let mut newest = None;
+        for record in records {
+            if record.get("kind").and_then(Value::as_str) != Some("reset") {
+                continue;
+            }
+            let at = record.get("at_unix_seconds").and_then(Value::as_u64)?;
+            newest = newest.max(Some(at));
+        }
+        newest
+    }
+    if let Some(read) = history {
+        return Ok(newest(read.records.iter()));
+    }
+    Ok(newest(legacy_transitions(root)?.iter()))
+}
+
+/// Whether the recorded archived change belongs to the cycle before the latest reset:
+/// the latest stage transition is that reset, or the change's recorded finalization is
+/// no later than it (REQ-cli-021). Without both times only the first test applies.
+///
+/// With event history the current cycle is read whole, by its own walk bounded by the
+/// cycle's capacity (4096 events, 16 MiB), not by the recent window `next` shows: a
+/// reset starts a new cycle as its root event, so a reset followed by more than 128
+/// events is still found. When that walk is partial the answer is unknown (`Err`, with
+/// why), never inferred from an omitted event.
+fn previous_cycle(
+    root: &Path,
+    session: &Checkpoint,
+    history: Option<&crate::history::HistoryRead>,
+) -> Result<bool, String> {
+    let finalized = session
+        .native_change
+        .as_deref()
+        .and_then(|change| crate::library::finalized_at(root, change));
+    let (reached, reset_at) = match (history, session.history_cursor.as_ref()) {
+        (Some(_), Some(cursor)) => {
+            let cycle = crate::history::selected(
+                root,
+                cursor,
+                crate::history::CYCLE_EVENTS,
+                crate::history::CYCLE_BYTES,
+                false,
+            );
+            if !cycle.partial.is_empty() {
+                return Err(cycle.partial.join("; "));
+            }
+            let stages = cycle.records.iter().any(|record| {
+                record["kind"]
+                    .as_str()
+                    .is_some_and(|kind| STAGE_KINDS.contains(&kind))
+            });
+            let resets = cycle.records.iter().any(|record| record["kind"] == "reset");
+            // The first cycle after adoption may continue the anchored legacy log, which
+            // then holds the latest reset; it is read whole, as for a legacy project.
+            let legacy = cursor.legacy.is_some();
+            let reached = reached_by_reset(root, Some(&cycle))?
+                || (!stages && legacy && reached_by_reset(root, None)?);
+            let reset_at = if resets {
+                latest_reset_at(root, Some(&cycle))?
+            } else if legacy {
+                latest_reset_at(root, None)?
+            } else {
+                None
+            };
+            (reached, reset_at)
+        }
+        (history, _) => (
+            reached_by_reset(root, history)?,
+            latest_reset_at(root, history)?,
+        ),
+    };
+    Ok(reached
+        || finalized
+            .zip(reset_at)
+            .is_some_and(|(finalized, reset)| reset >= finalized))
 }
 
 /// The gate for the next main stage and the next valid action, both evaluated on one
@@ -933,6 +1039,16 @@ pub(super) fn assess(
             .and_then(Value::as_str)
             .filter(|text| !text.trim().is_empty()),
         _ => None,
+    };
+    // Read once, and only when an archived change at a main stage needs it.
+    let archived_cycle = std::cell::OnceCell::new();
+    let archived_cycle = || {
+        archived_cycle
+            .get_or_init(|| {
+                (is_main(current) && archived_and_authenticated(root, session, state))
+                    .then(|| previous_cycle(root, session, history))
+            })
+            .clone()
     };
     let action = if session.stage.status == "paused" {
         Action {
@@ -971,20 +1087,48 @@ pub(super) fn assess(
         }
     } else if current == "done" {
         done_action(root, session, state, native_next)
-    } else if is_main(current)
-        && archived_and_authenticated(root, session, state)
-        && !reached_by_reset(root, history)
-    {
+    } else if archived_cycle() == Some(Ok(false)) {
         archived_action(session, state, native_next)
-    } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
+    } else if let Some(Err(why)) = archived_cycle() {
+        // Neither cycle can be established: say so rather than guess either way.
         Action {
             action: format!(
-                "Gate not open ({}): {}",
-                gate.label,
-                action_detail(&gate.detail)
+                "Unknown whether native change {} belongs to this cycle: the current cycle's history cannot be read whole ({why}). Check `chough history show`, then reset for a new cycle or record this cycle's native change.",
+                session.native_change.as_deref().unwrap_or("the native change")
             ),
-            reason: format!("Native state does not allow reaching {to} yet."),
-            command: Some(status_command(session.native_change.as_deref())),
+            reason: "The reset that began this cycle is not in readable history, so the archived change is neither assumed closed with this cycle nor assumed to be the previous one's.".into(),
+            command: Some("chough history show".into()),
+        }
+    } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
+        if archived_cycle() == Some(Ok(true)) {
+            // The archive is the previous cycle's: keep the reset's guidance and name
+            // the new native change, not the archived refusal or another reset.
+            Action {
+                action: format!("Continue {current}: {}", session.next_action),
+                reason: format!(
+                    "Native change {} is archived from before the latest reset, so it belongs to the previous cycle; reaching {to} needs this cycle's new native change ({}).",
+                    session
+                        .native_change
+                        .as_deref()
+                        .unwrap_or("the native change"),
+                    gate.label
+                ),
+                command: Some(NEW_CYCLE_CHANGE.into()),
+            }
+        } else {
+            Action {
+                action: format!(
+                    "Gate not open ({}): {}",
+                    gate.label,
+                    action_detail(&gate.detail)
+                ),
+                reason: format!("Native state does not allow reaching {to} yet."),
+                command: Some(if gate.label == "refused:no-native-change" {
+                    NEW_CYCLE_CHANGE.into()
+                } else {
+                    status_command(session.native_change.as_deref())
+                }),
+            }
         }
     } else {
         Action {
