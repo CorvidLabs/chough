@@ -12,6 +12,8 @@ artifact: testing
   - `retention_manual_opts_out_of_trimming_at_done` (REQ-cli-041): `skipped`, nothing
     removed.
   - `a_librarian_off_project_is_not_trimmed_at_done` (REQ-cli-041): `skipped`.
+  - `a_recorded_retention_off_is_not_trimmed_at_done` (REQ-cli-041, #97 review):
+    `skipped`; fails at 4e755d0.
   - `an_open_native_change_keeps_proof_and_the_move_still_succeeds` (REQ-cli-041):
     `refused` naming the open change; done is recorded; nothing removed.
 - Each fails on main 91a1fdd; `fledge lanes run verify` passes on Linux.
@@ -20,4 +22,4 @@ artifact: testing
 
 | Requirement | Evidence |
 |---|---|
-| REQ-cli-041 | tests/librarian_trim.rs `entering_done_trims_cold_archived_proof_by_default`, `retention_manual_opts_out_of_trimming_at_done`, `a_librarian_off_project_is_not_trimmed_at_done`, `an_open_native_change_keeps_proof_and_the_move_still_succeeds` |
+| REQ-cli-041 | tests/librarian_trim.rs `entering_done_trims_cold_archived_proof_by_default`, `retention_manual_opts_out_of_trimming_at_done`, `a_librarian_off_project_is_not_trimmed_at_done`, `a_recorded_retention_off_is_not_trimmed_at_done`, `an_open_native_change_keeps_proof_and_the_move_still_succeeds` |

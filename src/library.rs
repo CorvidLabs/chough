@@ -909,8 +909,8 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
 /// (KNOW-13): the standing preference KNOW-11 names.
 const LIBRARIAN_DEFAULT: &str = "standing preference: librarian on by default (KNOW-13); opt out with `chough pref set retention manual`";
 
-/// Trim at done (REQ-cli-041, KNOW-13, #88): with the librarian on and `retention` not
-/// `manual`, apply the post-archive summary with the recorded retention authority or
+/// Trim at done (REQ-cli-041, KNOW-13, #88): with the librarian on and `retention` neither
+/// `manual` nor a recorded `off`, apply the post-archive summary with the recorded retention authority or
 /// else the librarian default. Never fails: the result is `trimmed`, `skipped` or
 /// `refused` with its reason, so the move into done never depends on it.
 pub(super) fn trim_at_done(root: &Path) -> serde_json::Value {
@@ -926,8 +926,16 @@ pub(super) fn trim_at_done(root: &Path) -> serde_json::Value {
         Ok(value) => value,
         Err(error) => return refused(format!("{error:#}")),
     };
-    if retention == "manual" {
-        return json!({"status": "skipped", "reason": format!("retention is manual ({origin}); run `chough library archive --apply` when you choose")});
+    // A recorded `off` is a standing preference against removal, like `manual`; only the
+    // unset default lets the librarian trim (#97 review).
+    if retention == "manual" || (retention == "off" && origin != "default") {
+        return json!({"status": "skipped", "reason": format!("retention is {retention} ({origin}); run `chough library archive --apply` when you choose")});
+    }
+    // With the checkpoint readable, the only refusal left in `retention_authority` is
+    // "not authorized", which is where the librarian default applies; any other error
+    // refuses the trim instead of borrowing that authority.
+    if let Err(error) = crate::checkpoint::read_session(root) {
+        return refused(format!("{error:#}"));
     }
     let authority = evidence::retention_authority(root, "trimming at done")
         .unwrap_or_else(|_| LIBRARIAN_DEFAULT.to_string());
