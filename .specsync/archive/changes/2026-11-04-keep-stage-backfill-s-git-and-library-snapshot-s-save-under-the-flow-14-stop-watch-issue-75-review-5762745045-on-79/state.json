@@ -7,11 +7,11 @@
   "title": "Keep stage backfill's Git and library snapshot's save under the FLOW-14 stop watch (issue 75, review 5762745045 on #79)",
   "description": "Keep stage backfill's Git and library snapshot's save under the FLOW-14 stop watch (issue 75, review 5762745045 on #79)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "a2e3bc073970d75e2399f217c9efb122f2c06126",
   "created_at": 1793763119,
-  "updated_at": 1793768565,
+  "updated_at": 1793770042,
   "affected_specs": [
     "cli"
   ],
