@@ -204,11 +204,24 @@ fn point(root: &Path, key: &str) -> Result<()> {
     write_replace_bounded(root, POINTER, &format!("{key}\n"), 512)
 }
 
-/// Move every other open session at stage done to the archive, bytes unchanged.
-fn archive_done(root: &Path, keep: &str) -> Result<Vec<String>> {
+/// The number of unfolded entries in a session's inbox.
+fn unfolded(root: &Path, key: &str) -> Result<usize> {
+    Ok(keys_in(root, &inbox_dir(key))?.len())
+}
+
+/// Move every other open session at stage done to the archive, bytes unchanged. A done
+/// session with unfolded inbox entries stays open, so its entries are not stranded;
+/// it is returned in the second list with its unfolded count.
+fn archive_done(root: &Path, keep: &str) -> Result<(Vec<String>, Vec<serde_json::Value>)> {
     let mut archived = vec![];
+    let mut kept_open = vec![];
     for key in keys_in(root, DIR)? {
         if key == keep || read_at(root, &session_file(&key))?.stage.current != "done" {
+            continue;
+        }
+        let count = unfolded(root, &key)?;
+        if count > 0 {
+            kept_open.push(json!({"key": key, "inbox_unfolded": count}));
             continue;
         }
         let target = local_path(root, &archive_file(&key))?;
@@ -217,7 +230,7 @@ fn archive_done(root: &Path, keep: &str) -> Result<Vec<String>> {
         fs::rename(local_path(root, &session_file(&key))?, &target)?;
         archived.push(key);
     }
-    Ok(archived)
+    Ok((archived, kept_open))
 }
 
 fn ensure_unused(root: &Path, key: &str) -> Result<()> {
@@ -267,10 +280,10 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
                 )?,
                 "session {key} already exists"
             );
-            let archived = archive_done(root, &key)?;
+            let (archived, kept_open) = archive_done(root, &key)?;
             point(root, &key)?;
             print_json(
-                &json!({"schema_version":1,"created":session_file(&key),"active":key,"archived":archived}),
+                &json!({"schema_version":1,"created":session_file(&key),"active":key,"archived":archived,"kept_open":kept_open}),
             )
         }
         SessionCommand::Adopt { key } => {
@@ -309,9 +322,11 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
                 bail!("no session {key}");
             }
             read_at(root, &session_file(&key))?;
-            let archived = archive_done(root, &key)?;
+            let (archived, kept_open) = archive_done(root, &key)?;
             point(root, &key)?;
-            print_json(&json!({"schema_version":1,"active":key,"archived":archived}))
+            print_json(
+                &json!({"schema_version":1,"active":key,"archived":archived,"kept_open":kept_open}),
+            )
         }
         SessionCommand::List => {
             ensure!(
@@ -333,6 +348,7 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
                         "status": session.stage.status,
                         "active": !archived && current.as_deref() == Some(key.as_str()),
                         "archived": archived,
+                        "inbox_unfolded": unfolded(root, &key)?,
                     }));
                 }
             }
@@ -367,6 +383,22 @@ fn pending(root: &Path, key: &str) -> Result<Vec<(String, Entry)>> {
     Ok(entries)
 }
 
+/// The checks `inbox add` makes on `from` and the text, also made again by `fold`.
+fn validate_entry(from: &str, kind: Kind, text: &str) -> Result<()> {
+    ensure!(
+        valid_name(from),
+        "--from uses letters, digits, hyphens, underscores"
+    );
+    match kind {
+        Kind::Observation => ensure!(
+            valid_name(text),
+            "an observation entry names an evidence ID"
+        ),
+        _ => ensure_text("text", text)?,
+    }
+    Ok(())
+}
+
 pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
     ensure!(
         enabled(root)?,
@@ -384,17 +416,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                 local_path(root, &session_file(&session))?.is_file(),
                 "no open session {session}"
             );
-            ensure!(
-                valid_name(&from),
-                "--from uses letters, digits, hyphens, underscores"
-            );
-            match kind {
-                Kind::Observation => ensure!(
-                    valid_name(&text),
-                    "an observation entry names an evidence ID"
-                ),
-                _ => ensure_text("text", &text)?,
-            }
+            validate_entry(&from, kind, &text)?;
             ensure!(
                 keys_in(root, &inbox_dir(&session))?.len() < MAX_INBOX,
                 "the inbox of {session} holds {MAX_INBOX} unfolded entries; fold it first"
@@ -429,25 +451,42 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             let key = active(root)?;
             let entries = pending(root, &key)?;
             let mut session = read_at(root, &session_file(&key))?;
-            for (_, entry) in &entries {
-                let list = match entry.kind.as_str() {
-                    "observation" => &mut session.observations,
-                    "decision" => &mut session.decisions,
-                    "completed" => &mut session.completed,
-                    "question" => &mut session.open_questions,
+            let folded = format!("{}/folded", inbox_dir(&key));
+            // Every entry and every target is checked before the session is saved, so a
+            // refusal changes nothing.
+            let mut targets = vec![];
+            for (file, entry) in &entries {
+                let kind = match entry.kind.as_str() {
+                    "observation" => Kind::Observation,
+                    "decision" => Kind::Decision,
+                    "completed" => Kind::Completed,
+                    "question" => Kind::Question,
                     other => bail!("inbox entry {} has unknown kind {other}", entry.id),
+                };
+                validate_entry(&entry.from, kind, &entry.text)
+                    .with_context(|| format!("invalid inbox entry {file}"))?;
+                let target = local_path(root, &format!("{folded}/{}.json", entry.id))?;
+                ensure!(
+                    !target.exists(),
+                    "{} already folded at {folded}/{}.json; nothing was folded",
+                    entry.id,
+                    entry.id
+                );
+                let list = match kind {
+                    Kind::Observation => &mut session.observations,
+                    Kind::Decision => &mut session.decisions,
+                    Kind::Completed => &mut session.completed,
+                    Kind::Question => &mut session.open_questions,
                 };
                 if !list.contains(&entry.text) {
                     list.push(entry.text.clone());
                 }
+                targets.push((file, target));
             }
             if !entries.is_empty() {
                 checkpoint::save_checkpoint(root, &session)?;
-                let folded = format!("{}/folded", inbox_dir(&key));
                 fs::create_dir_all(local_path(root, &folded)?)?;
-                for (file, entry) in &entries {
-                    let target = local_path(root, &format!("{folded}/{}.json", entry.id))?;
-                    ensure!(!target.exists(), "{} already folded", entry.id);
+                for (file, target) in targets {
                     fs::rename(local_path(root, file)?, target)?;
                 }
             }

@@ -292,9 +292,12 @@ every command uses `.chough/session.json` exactly as before.
 - `chough session use <key>` makes an open session active. `session new` and `session
   use` move every other open session whose stage is `done` to
   `.chough/sessions/archive/<key>.json` with its bytes unchanged and report the keys
-  under `archived`.
+  under `archived`. A done session with unfolded inbox entries stays open, so its
+  entries are not stranded; it is reported under `kept_open` with its
+  `inbox_unfolded` count. Make it active and run `chough inbox fold`, and the next
+  switch archives it.
 - `chough session list` reports each open and archived session's key, objective,
-  native change, stage, status and whether it is active.
+  native change, stage, status, whether it is active and its `inbox_unfolded` count.
 
 The active session is named by `.chough/local/active-session`. That directory holds a
 `.gitignore` of `*`, so the pointer stays local to each worktree. With no pointer the
@@ -333,8 +336,11 @@ entries.
 `chough inbox list` shows the active session's unfolded entries. `chough inbox fold`
 adds them, in ID order, to the active session's observations, decisions, completed
 work or open questions, skipping values already there, saves the session within its
-bounds, then moves each entry to `.chough/sessions/<key>.inbox/folded/`. A rerun after
-an interrupted fold adds nothing twice.
+bounds, then moves each entry to `.chough/sessions/<key>.inbox/folded/`. Before it
+saves, it checks every entry the way `inbox add` does (a valid `from`, text that is not
+blank and within 4096 bytes, an evidence ID for an observation) and that no
+`folded/` target exists; any failure refuses with the session and the inbox unchanged.
+A rerun after an interrupted fold adds nothing twice.
 
 ## Execution bounds
 
