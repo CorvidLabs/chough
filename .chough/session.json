@@ -6,12 +6,12 @@
     "cli"
   ],
   "stage": {
-    "current": "done",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of",
+  "native_change": "prepare-the-0-2-0-release-set-the-package-version-to-0-2-0-and-date-the-change-log-section-for-0-2-0",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -681,5 +681,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "C is archived on #66 (8494b0e). D (next's context.md search at any size) is implemented and verified; the parent requests D's independent review, then review, finalize and the stage moves to done."
+  "next_action": "Set version 0.2.0 and date the change log, run verify, open the release prep PR for independent review"
 }
