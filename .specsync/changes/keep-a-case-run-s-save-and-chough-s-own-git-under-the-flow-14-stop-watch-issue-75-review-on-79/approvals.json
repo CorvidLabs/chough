@@ -1,0 +1,39 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "corvid-agent",
+      "timestamp": 1793760515,
+      "digest": "efcaaf529eca397e36c81c28a96009b56a4b7cc72f7e3d7525145a887dc9a33b",
+      "note": "Approved as corvid-agent (agent account, not a human approval) under Leif's 2026-11-03 7:49 AM MT standing authority for bounded fixes to Chough bug tickets and his 7:07 PM MT confirmation of FLOW-14 (card t819s9328). Call-site wiring that the Chough bot's review 5762369485 on #79 requires.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-a-case-run-s-save-and-chough-s-own-git-under-the-flow-14-stop-watch-issue-75-review-on-79",
+        "title": "Keep a case run's save and Chough's own Git under the FLOW-14 stop watch (issue 75, review on #79)",
+        "description": "Keep a case run's save and Chough's own Git under the FLOW-14 stop watch (issue 75, review on #79)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/cases.rs",
+          "src/evidence.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Call-site wiring for REQ-cli-011 as widened by stop-what-chough-started-when-chough-is-stopped-issue-75: cases.rs holds the stop watch through the save and evidence.rs runs Git through records::run_owned. The requirement text lives in that change.",
+        "acceptance_criteria": [
+          "stopping_a_case_run_while_it_saves_stops_git_and_records_nothing passes: a stop while cases run takes its Git snapshot after the command exits stops that Git and leaves .chough byte-identical,Every other cases and evidence test passes unchanged"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}
