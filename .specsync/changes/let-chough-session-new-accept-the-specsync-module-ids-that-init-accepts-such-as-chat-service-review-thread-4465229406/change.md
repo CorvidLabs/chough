@@ -1,6 +1,6 @@
 ---
 id: let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 290cce3a024425cfd35600a43b8e458beaa89436
 ---
