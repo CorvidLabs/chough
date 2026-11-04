@@ -630,10 +630,19 @@ fn lesson_source(root: &Path, module: &str) -> Value {
 /// (`library::archive_order`), so hidden or non-UTF-8 directories and archives without
 /// a readable `finalization.json` naming their change are not counted. A hot archive
 /// without a `lesson-bundle.md` is shown with `(missing)`. Nothing records which were
-/// folded. An archive directory that `local_path` refuses (a symlink, for one) lists
-/// none.
+/// folded. When the archives cannot be read (a symlinked archive directory, for one),
+/// none is listed and `note` carries the same error `library index` refuses with.
 fn archived_bundles(root: &Path) -> Result<Value> {
-    let found = library::archive_order(root).unwrap_or_default();
+    let found = match library::archive_order(root) {
+        Ok(found) => found,
+        Err(error) => {
+            return Ok(json!({
+                "total": 0,
+                "items": [],
+                "note": cut(&format!("cannot be read: {error:#}")),
+            }));
+        }
+    };
     Ok(json!({
         "total": found.len(),
         "items": found.iter().take(BUNDLE_LIMIT).map(|archive| {
@@ -1055,7 +1064,9 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
     );
     let bundles = &view["lessons"]["archived_bundles"];
     let shown = items(bundles);
-    if total(bundles) == 0 {
+    if let Some(note) = bundles["note"].as_str() {
+        lines.push(format!("Archived lesson bundles: {note}"));
+    } else if total(bundles) == 0 {
         lines.push("Archived lesson bundles: none".into());
     } else {
         lines.push(format!(
