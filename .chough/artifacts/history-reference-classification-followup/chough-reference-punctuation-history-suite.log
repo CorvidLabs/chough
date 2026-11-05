@@ -1,0 +1,30 @@
+   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.76s
+     Running tests/history.rs (target/debug/deps/history-1508931fbdfeaff6)
+
+running 22 tests
+test schema_one_migration_and_adoption_preserve_the_original_backup ... ok
+test new_projects_use_a_cursor_in_the_single_checkpoint ... ok
+test adoption_refuses_future_legacy_payloads_without_changing_any_record ... ok
+test changing_the_legacy_anchor_refuses_writes_without_advancing_state ... ok
+test adoption_preview_preserves_legacy_bytes_and_apply_is_explicit ... ok
+test recent_guidance_does_not_scan_unselected_files_and_maintenance_refuses_symlinks ... ok
+test malformed_receipts_leave_missing_history_unavailable ... ok
+test full_timing_keeps_unselected_tips_out_of_selected_stage_spans ... ok
+test a_failed_checkpoint_save_leaves_an_unselected_orphan_and_preserves_active_state ... ok
+test missing_parents_are_explicit_in_guidance_and_timing ... ok
+test stale_receipt_age_cannot_override_a_recent_selected_closure ... ok
+test cycle_retention_is_read_only_until_authorized_and_revalidates_new_references ... ok
+test directory_references_protect_cycles_across_case_and_separator_aliases ... ok
+test new_protection_prevents_resuming_an_interrupted_plan ... ok
+test interrupted_cleanup_resumes_only_the_identical_receipted_plan ... ok
+test idle_cycle_age_uses_the_selected_closure_and_receipts_record_it ... ok
+test unsafe_or_changed_receipts_cannot_broaden_deletion ... ok
+test real_git_branch_events_survive_while_checkpoint_selection_remains_explicit ... ok
+test real_git_retention_integrates_with_another_branch_new_evidence_and_events ... ok
+test real_git_post_prune_references_report_unavailable_until_exact_restoration ... ok
+test frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply ... ok
+test history_bounds_cover_all_resource_limits ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 44.31s
+

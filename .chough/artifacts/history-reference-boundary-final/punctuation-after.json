@@ -1,0 +1,109 @@
+{
+  "before": {
+    "head": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "source_sha256": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+    "binary_path": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "1795e921589a2fdc6f20e84fea9989f30b1e753f0d36316c3e86ed75593cbb51"
+  },
+  "after": {
+    "head": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "source_sha256": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+    "binary_path": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "1795e921589a2fdc6f20e84fea9989f30b1e753f0d36316c3e86ed75593cbb51"
+  },
+  "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-nnw72wey",
+  "results": [
+    {
+      "variant": "terminal-period",
+      "input_reference": "Retain .chough/history/cycles/CYC-6dbdb2d8202bea3432af2713.\n",
+      "target": ".chough/history/cycles/CYC-6dbdb2d8202bea3432af2713/EVT-f82b680f9e416b8addc746df.json",
+      "target_exists": false,
+      "merge_exit_code": 0,
+      "complete": false,
+      "partial": [
+        {
+          "path": ".chough/history/cycles/CYC-6dbdb2d8202bea3432af2713/EVT-f82b680f9e416b8addc746df.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "target_cycle": {
+        "bytes": 0,
+        "events": 0,
+        "id": "CYC-6dbdb2d8202bea3432af2713",
+        "interrupted": false,
+        "planned_bytes": 522,
+        "protected": [
+          "already pruned",
+          "referenced by .chough/artifacts/post-prune-punctuation.log"
+        ],
+        "tips": [
+          "EVT-f82b680f9e416b8addc746df"
+        ],
+        "unselected_tips": [
+          "EVT-f82b680f9e416b8addc746df"
+        ]
+      },
+      "plain_control_complete": false,
+      "plain_control_partial": [
+        {
+          "path": ".chough/history/cycles/CYC-6dbdb2d8202bea3432af2713/EVT-f82b680f9e416b8addc746df.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-nnw72wey/terminal-period/fixture",
+      "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-nnw72wey/terminal-period"
+    },
+    {
+      "variant": "parenthesized",
+      "input_reference": "Retain (.chough/history/cycles/CYC-1f1bb96ea2b0777743afaad3)\n",
+      "target": ".chough/history/cycles/CYC-1f1bb96ea2b0777743afaad3/EVT-ff016c65204eeefd3d7ab2d1.json",
+      "target_exists": false,
+      "merge_exit_code": 0,
+      "complete": false,
+      "partial": [
+        {
+          "path": ".chough/history/cycles/CYC-1f1bb96ea2b0777743afaad3/EVT-ff016c65204eeefd3d7ab2d1.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "target_cycle": {
+        "bytes": 0,
+        "events": 0,
+        "id": "CYC-1f1bb96ea2b0777743afaad3",
+        "interrupted": false,
+        "planned_bytes": 522,
+        "protected": [
+          "already pruned",
+          "referenced by .chough/artifacts/post-prune-punctuation.log"
+        ],
+        "tips": [
+          "EVT-ff016c65204eeefd3d7ab2d1"
+        ],
+        "unselected_tips": [
+          "EVT-ff016c65204eeefd3d7ab2d1"
+        ]
+      },
+      "plain_control_complete": false,
+      "plain_control_partial": [
+        {
+          "path": ".chough/history/cycles/CYC-1f1bb96ea2b0777743afaad3/EVT-ff016c65204eeefd3d7ab2d1.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-nnw72wey/parenthesized/fixture",
+      "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-post-prune-punctuation-nnw72wey/parenthesized"
+    }
+  ]
+}

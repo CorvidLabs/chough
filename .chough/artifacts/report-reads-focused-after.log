@@ -1,0 +1,13 @@
+   Compiling chough v0.1.0 (/private/tmp/chough-tickets-20261102-JAIhPp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.98s
+     Running tests/next.rs (/tmp/chough-report-reads-target/debug/deps/next-90d5f09c00173ea5)
+
+running 5 tests
+test report_case_reads_are_lazy_when_observations_have_no_case_binding ... ok
+test report_case_reads_are_shared_across_observations_and_references ... ok
+test report_read_context_preserves_missing_retired_and_duplicate_case_outcomes ... ok
+test report_read_context_does_not_survive_the_next_request ... ok
+test report_traces_preserve_stdout_exit_results_and_managed_records ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 1.83s
+

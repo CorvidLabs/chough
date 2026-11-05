@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-history-retention",
+  "observation": "OBS-tc-cli-history-retention-8454544f6f97935199110cce",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test history -- --exact cycle_retention_is_read_only_until_authorized_and_revalidates_new_references for TC-cli-history-retention: passed (exit 0, tests run 1)."
+}

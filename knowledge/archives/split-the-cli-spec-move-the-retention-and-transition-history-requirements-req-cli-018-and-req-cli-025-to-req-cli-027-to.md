@@ -70,7 +70,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-structural-0ceefdd961ed75d53f1b3742 | passed (pruned) (by cycle time) | local-linux-x86_64 |  |
+| OBS-structural-0ceefdd961ed75d53f1b3742 | passed (by cycle time) | local-linux-x86_64 |  |
 | OBS-tc-history-0050-e2f7fb6260b9c1e33efff955 | passed (by cycle time) | local-linux-x86_64 | TC-history-0050 |
 | OBS-tc-history-0051-36287a1c1ee27b53f5e5ed6d | passed (by cycle time) | local-linux-x86_64 | TC-history-0051 |
 | OBS-tc-history-0052-bd3c30a79063f712ebd95029 | passed (by cycle time) | local-linux-x86_64 | TC-history-0052 |
@@ -105,8 +105,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- [artifacts/cli-spec-split/before-7bd1b62.json](../attachments/split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to/artifacts/cli-spec-split/before-7bd1b62.json)
-- [artifacts/cli-spec-split/before-after-comparison.json](../attachments/split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to/artifacts/cli-spec-split/before-after-comparison.json)
-- [artifacts/cli-spec-split/blocks.py](../attachments/split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to/artifacts/cli-spec-split/blocks.py)
-- [artifacts/cli-spec-split/failure-first-before-materialize.log](../attachments/split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to/artifacts/cli-spec-split/failure-first-before-materialize.log)
-- [evidence/OBS-structural-0ceefdd961ed75d53f1b3742.json](../attachments/split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to/evidence/OBS-structural-0ceefdd961ed75d53f1b3742.json)
+- none

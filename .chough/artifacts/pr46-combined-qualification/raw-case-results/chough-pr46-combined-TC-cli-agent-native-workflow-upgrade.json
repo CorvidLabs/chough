@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-agent-native-workflow-upgrade",
+  "observation": "OBS-tc-cli-agent-native-workflow-upgrade-c1356eaa23859ec0fb91b0d9",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test workflow_authority -- --exact workflow_guidance_from_main_825a380_updates_and_preserves_edits for TC-cli-agent-native-workflow-upgrade: passed (exit 0, tests run 1)."
+}

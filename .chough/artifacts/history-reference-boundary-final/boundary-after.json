@@ -1,0 +1,81 @@
+{
+  "before": {
+    "head": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "source_sha256": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+    "binary_path": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "1795e921589a2fdc6f20e84fea9989f30b1e753f0d36316c3e86ed75593cbb51"
+  },
+  "after": {
+    "head": "b25731739beba8a6fe9ad0e8c9e0fb126211da30",
+    "source_sha256": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
+    "binary_path": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+    "binary_sha256": "1795e921589a2fdc6f20e84fea9989f30b1e753f0d36316c3e86ed75593cbb51"
+  },
+  "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cycle-occurrence-boundary-rfsn85j9",
+  "results": [
+    {
+      "variant": "known-file-suffix",
+      "input_reference": "Retain .chough/history/cycles/CYC-763fb976a768cc70a571571f/EVT-2e1f13e21a628f270e3eb10b.json\nRetain .chough/history/cycles/CYC-763fb976a768cc70a571571f/EVT-2e1f13e21a628f270e3eb10b.json.bak\n",
+      "target": ".chough/history/cycles/CYC-763fb976a768cc70a571571f/EVT-2e1f13e21a628f270e3eb10b.json",
+      "target_exists": true,
+      "merge_exit_code": 0,
+      "complete": false,
+      "partial": [
+        {
+          "path": ".chough/history/cycles/CYC-763fb976a768cc70a571571f/EVT-2e1f13e21a628f270e3eb10b.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        },
+        {
+          "path": ".chough/history/cycles/CYC-763fb976a768cc70a571571f/EVT-6a5fc84de969eaa50db5fdca.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "target_cycle": {
+        "bytes": 0,
+        "events": 0,
+        "id": "CYC-763fb976a768cc70a571571f",
+        "interrupted": false,
+        "planned_bytes": 905,
+        "protected": [
+          "already pruned",
+          "referenced by .chough/artifacts/post-prune-punctuation.log",
+          "unselected orphan or unresolved cycle closure"
+        ],
+        "tips": [
+          "EVT-6a5fc84de969eaa50db5fdca"
+        ],
+        "unselected_tips": [
+          "EVT-6a5fc84de969eaa50db5fdca"
+        ]
+      },
+      "after_exact_file_restoration_complete": false,
+      "after_exact_file_restoration_partial": [
+        {
+          "path": ".chough/history/cycles/CYC-763fb976a768cc70a571571f/EVT-6a5fc84de969eaa50db5fdca.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "plain_control_complete": false,
+      "plain_control_partial": [
+        {
+          "path": ".chough/history/cycles/CYC-763fb976a768cc70a571571f/EVT-6a5fc84de969eaa50db5fdca.json",
+          "reason": "referenced receipted history is missing; restore exact event bytes from Git",
+          "sources": [
+            ".chough/artifacts/post-prune-punctuation.log"
+          ]
+        }
+      ],
+      "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cycle-occurrence-boundary-rfsn85j9/known-file-suffix/fixture",
+      "output": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-cycle-occurrence-boundary-rfsn85j9/known-file-suffix"
+    }
+  ]
+}

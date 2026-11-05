@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-history-stale-receipt-age",
+  "observation": "OBS-tc-cli-history-stale-receipt-age-203b265586946389698fd05d",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test history -- --exact stale_receipt_age_cannot_override_a_recent_selected_closure for TC-cli-history-stale-receipt-age: passed (exit 0, tests run 1)."
+}

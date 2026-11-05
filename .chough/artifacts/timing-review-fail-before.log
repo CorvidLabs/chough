@@ -1,0 +1,351 @@
+# revision: cf51d99af245a3060f55c0cb3bd055d02a5c4579 (tests/timing.rs review fixtures added, src unchanged)
+# platform: Darwin arm64
+# date: 2026-11-01T02:11:05Z
+# command: cargo test --test timing
+
+running 12 tests
+test every_transition_kind_yields_the_expected_segments_and_cycles ... ok
+test observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock ... FAILED
+test bug_fix_times_come_from_observations_notes_and_the_retention_ledger ... FAILED
+test gate_records_are_reconciled_with_the_awaiting_human_list ... FAILED
+test gate_records_start_or_end_no_segment_and_give_waiting_time ... ok
+test history_ranges_need_three_samples_and_exclude_idle_time ... ok
+test missing_and_out_of_order_times_are_unknown_never_zero ... FAILED
+test checkpoint_gates_append_one_record_when_opened_and_one_when_cleared ... ok
+test native_times_come_only_from_status_and_native_records_read_read_only ... FAILED
+test a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown ... ok
+test a_case_run_records_its_run_time_and_the_report_shows_it ... ok
+test transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical ... ok
+
+failures:
+
+---- observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock stdout ----
+
+thread 'observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock' (136379816) panicked at tests/timing.rs:1002:5:
+assertion `left == right` failed
+  left: String("elapsed wall-clock")
+ right: "recorded together"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- bug_fix_times_come_from_observations_notes_and_the_retention_ledger stdout ----
+
+thread 'bug_fix_times_come_from_observations_notes_and_the_retention_ledger' (136379806) panicked at tests/timing.rs:884:5:
+assertion `left == right` failed
+  left: Number(1700000300)
+ right: Null
+
+---- gate_records_are_reconciled_with_the_awaiting_human_list stdout ----
+
+thread 'gate_records_are_reconciled_with_the_awaiting_human_list' (136379811) panicked at tests/timing.rs:511:5:
+assertion `left == right` failed: {
+  "before_first_record": {
+    "active": {
+      "label": "unknown",
+      "reason": "no transition before the first record",
+      "seconds": null
+    },
+    "elapsed": {
+      "label": "unknown",
+      "reason": "no transition before the first record",
+      "seconds": null
+    },
+    "end": {
+      "unix_seconds": 1700000000,
+      "unknown": null,
+      "utc": "2023-11-14T22:13:20Z"
+    },
+    "entered_by": null,
+    "iteration": 1,
+    "ongoing": false,
+    "side": false,
+    "stage": "intent",
+    "start": {
+      "unix_seconds": null,
+      "unknown": "no transition before the first record",
+      "utc": null
+    },
+    "state": "active",
+    "visit": 1,
+    "waiting": {
+      "label": "unknown",
+      "reason": "no transition before the first record",
+      "seconds": null
+    }
+  },
+  "bugs": [],
+  "cycles": [
+    {
+      "completed": false,
+      "end": null,
+      "idle": {
+        "label": "elapsed wall-clock",
+        "reason": null,
+        "seconds": 0
+      },
+      "iterations": 0,
+      "number": 1,
+      "segments": [
+        {
+          "active": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 100
+          },
+          "elapsed": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 1000
+          },
+          "end": {
+            "unix_seconds": 1700001000,
+            "unknown": null,
+            "utc": "2023-11-14T22:30:00Z"
+          },
+          "entered_by": "advance",
+          "iteration": 1,
+          "ongoing": false,
+          "side": false,
+          "stage": "design",
+          "start": {
+            "unix_seconds": 1700000000,
+            "unknown": null,
+            "utc": "2023-11-14T22:13:20Z"
+          },
+          "state": "active",
+          "visit": 1,
+          "waiting": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 900
+          }
+        },
+        {
+          "active": {
+            "label": "ongoing",
+            "reason": null,
+            "seconds": 0
+          },
+          "elapsed": {
+            "label": "ongoing",
+            "reason": null,
+            "seconds": 93498035
+          },
+          "end": {
+            "unix_seconds": 1793499035,
+            "unknown": null,
+            "utc": "2026-11-01T02:10:35Z"
+          },
+          "entered_by": "advance",
+          "iteration": 1,
+          "ongoing": true,
+          "side": false,
+          "stage": "plan",
+          "start": {
+            "unix_seconds": 1700001000,
+            "unknown": null,
+            "utc": "2023-11-14T22:30:00Z"
+          },
+          "state": "active",
+          "visit": 1,
+          "waiting": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 93498035
+          }
+        }
+      ],
+      "side_visits": 0,
+      "stages": [
+        {
+          "active": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 100
+          },
+          "iterations": 0,
+          "paused": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          },
+          "side": false,
+          "stage": "design",
+          "stage_time": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 1000
+          },
+          "visits": 1,
+          "waiting": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 900
+          }
+        },
+        {
+          "active": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          },
+          "iterations": 0,
+          "paused": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          },
+          "side": false,
+          "stage": "plan",
+          "stage_time": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 93498035
+          },
+          "visits": 1,
+          "waiting": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 93498035
+          }
+        }
+      ],
+      "start": {
+        "unix_seconds": 1700000000,
+        "unknown": null,
+        "utc": "2023-11-14T22:13:20Z"
+      }
+    }
+  ],
+  "estimates": {
+    "bug_fixes": {
+      "label": "too few to estimate (0 recorded bug fix times; at least 3 needed)",
+      "max": null,
+      "median": null,
+      "min": null,
+      "samples": 0
+    },
+    "gates": {
+      "label": "too few to estimate (0 recorded human gate waiting times; at least 3 needed)",
+      "max": null,
+      "median": null,
+      "min": null,
+      "samples": 0
+    },
+    "stages": []
+  },
+  "filters": {
+    "bug": null,
+    "case": null,
+    "cycle": "all",
+    "stage": null
+  },
+  "gates": [
+    {
+      "closed": null,
+      "gate": "Review",
+      "opened": {
+        "unix_seconds": 1700000100,
+        "unknown": null,
+        "utc": "2023-11-14T22:15:00Z"
+      },
+      "state": "open",
+      "waiting": {
+        "label": "ongoing",
+        "reason": null,
+        "seconds": 93498935
+      }
+    }
+  ],
+  "generated_at": {
+    "unix_seconds": 1793499035,
+    "unknown": null,
+    "utc": "2026-11-01T02:10:35Z"
+  },
+  "labels": {
+    "durations": "Every duration is elapsed wall-clock time, not effort.",
+    "estimates": "Estimates come from recorded history and are not targets; fewer than 3 samples are too few to estimate.",
+    "idle": "Time in done until the next reset is idle between cycles: not stage time and not an estimate sample.",
+    "recorded_together": "Start and end share a second, usually records written together; not instant work.",
+    "unknown": "A time no record holds is unknown (null in JSON), never zero.",
+    "validation": "Validation run time is the total run wall-clock, including intervals and resumes, not per-test time.",
+    "waiting": "Waiting on a human is the time a recorded awaiting-human gate was open; it never says who decided or what."
+  },
+  "native": {
+    "current": null,
+    "detail": "No native SpecSync configuration; native lifecycle times are unknown.",
+    "history": [],
+    "skipped_archived": 0,
+    "state": "not-configured"
+  },
+  "partial": [],
+  "schema_version": 1,
+  "tests": [],
+  "transitions": {
+    "bound_bytes": 16777216,
+    "records": 4,
+    "skipped_bytes": 0,
+    "unreadable_lines": 0,
+    "unrecognised_kinds": 0
+  },
+  "validation_runs": []
+}
+  left: 1
+ right: 2
+
+---- missing_and_out_of_order_times_are_unknown_never_zero stdout ----
+
+thread 'missing_and_out_of_order_times_are_unknown_never_zero' (136379814) panicked at tests/timing.rs:606:9:
+assertion `left == right` failed: {
+  "active": {
+    "label": "elapsed wall-clock",
+    "reason": null,
+    "seconds": 1000
+  },
+  "elapsed": {
+    "label": "elapsed wall-clock",
+    "reason": null,
+    "seconds": 1000
+  },
+  "end": {
+    "unix_seconds": 1700001000,
+    "unknown": null,
+    "utc": "2023-11-14T22:30:00Z"
+  },
+  "entered_by": "advance",
+  "iteration": 1,
+  "ongoing": false,
+  "side": false,
+  "stage": "design",
+  "start": {
+    "unix_seconds": 1700000000,
+    "unknown": null,
+    "utc": "2023-11-14T22:13:20Z"
+  },
+  "state": "active",
+  "visit": 1,
+  "waiting": {
+    "label": "elapsed wall-clock",
+    "reason": null,
+    "seconds": 0
+  }
+}
+  left: String("elapsed wall-clock")
+ right: "unknown"
+
+---- native_times_come_only_from_status_and_native_records_read_read_only stdout ----
+
+thread 'native_times_come_only_from_status_and_native_records_read_read_only' (136379815) panicked at tests/timing.rs:1197:5:
+assertion `left == right` failed
+  left: [(String("definition"), String("reopened")), (String("finalization"), String("reopened"))]
+ right: [(String("definition"), String("current")), (String("finalization"), String("reopened"))]
+
+
+failures:
+    bug_fix_times_come_from_observations_notes_and_the_retention_ledger
+    gate_records_are_reconciled_with_the_awaiting_human_list
+    missing_and_out_of_order_times_are_unknown_never_zero
+    native_times_come_only_from_status_and_native_records_read_read_only
+    observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock
+
+test result: FAILED. 7 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.54s
+

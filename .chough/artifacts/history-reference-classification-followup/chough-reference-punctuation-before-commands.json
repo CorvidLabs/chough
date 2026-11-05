@@ -1,0 +1,28 @@
+[
+  {
+    "command": [
+      "/Users/leif/.cargo/bin/cargo",
+      "test",
+      "--test",
+      "history",
+      "real_git_post_prune_references_report_unavailable_until_exact_restoration",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit_code": 101
+  },
+  {
+    "command": [
+      "/Users/leif/.cargo/bin/cargo",
+      "test",
+      "--test",
+      "history",
+      "frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit_code": 101
+  }
+]

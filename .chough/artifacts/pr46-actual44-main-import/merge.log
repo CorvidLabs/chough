@@ -1,0 +1,18 @@
+Auto-merging .chough/cases/cli.cases.toml
+CONFLICT (content): Merge conflict in .chough/cases/cli.cases.toml
+Auto-merging .chough/session.json
+CONFLICT (content): Merge conflict in .chough/session.json
+Auto-merging .chough/transitions.jsonl
+CONFLICT (content): Merge conflict in .chough/transitions.jsonl
+Auto-merging CHANGELOG.md
+Auto-merging docs/FRD.md
+CONFLICT (content): Merge conflict in docs/FRD.md
+Auto-merging docs/ROADMAP.md
+Auto-merging docs/cli.md
+Auto-merging specs/cli/cli.spec.md
+CONFLICT (content): Merge conflict in specs/cli/cli.spec.md
+Auto-merging specs/cli/context.md
+CONFLICT (content): Merge conflict in specs/cli/context.md
+Auto-merging specs/cli/requirements.md
+CONFLICT (content): Merge conflict in specs/cli/requirements.md
+Automatic merge failed; fix conflicts and then commit the result.

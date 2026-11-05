@@ -1,0 +1,9 @@
+{
+  "case": "TC-cli-history-closing-reset-age",
+  "observation": "OBS-tc-cli-history-closing-reset-age-d37a31e065b6fa5f2fb84a6f",
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test history -- --exact idle_cycle_age_uses_the_selected_closure_and_receipts_record_it for TC-cli-history-closing-reset-age: passed (exit 0, tests run 1)."
+}

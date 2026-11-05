@@ -1,0 +1,13 @@
+{
+  "revision": "489ecf50fc5ddb113a9a1053a2efa26c8a07f677",
+  "binary": "/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate/target/debug/chough",
+  "binary_sha256": "1b84d7716da950b85a9849eab8bba70f0c6fcc499e6c066cc86d4bfdcb7e2d2e",
+  "recorded_at_unix_seconds": 1793643034,
+  "fixture": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-bt_2bwcv/fixture",
+  "old_cycle": "CYC-37e6ed74685a097a53b4f3ca",
+  "old_event_path": "/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/chough-idle-cycle-age-before-bt_2bwcv/fixture/.chough/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json",
+  "old_cycle_eligible": false,
+  "old_event_exists_after_apply": true,
+  "removed": [],
+  "apply_complete": true
+}
