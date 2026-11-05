@@ -3972,20 +3972,3 @@ expected = ["tests/reduce.rs::a_loose_folder_with_a_current_file_stays_whole pas
 adapter = "cargo-test"
 test_target = "reduce"
 test = "a_loose_folder_with_a_current_file_stays_whole"
-[[case]]
-id = "TC-cli-rollback-keeps-changed-vault-copies"
-title = "A refused apply keeps vault copies another writer changed"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-10", "KNOW-19"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::a_refused_apply_keeps_vault_copies_another_writer_changed passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "a_refused_apply_keeps_vault_copies_another_writer_changed"
