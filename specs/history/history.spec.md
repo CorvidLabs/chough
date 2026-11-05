@@ -1,6 +1,6 @@
 ---
 module: history
-version: 6
+version: 7
 status: active
 files:
   - src/history.rs
@@ -86,3 +86,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 4 | 2026-11-04 | keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer: Keep one session per objective or native change under .chough/sessions with append-only transitions, an active pointer, automatic archiving and an append-only subagent inbox (DRIVE-3) |
 | 5 | 2026-11-04 | show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no: Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84) |
 | 6 | 2026-11-04 | keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy: Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83) |
+| 7 | 2026-11-04 | remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that: Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82) |

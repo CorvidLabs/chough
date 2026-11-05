@@ -392,7 +392,10 @@ Only the active session is written, so there is still one writable checkpoint.
 Each command resolves the active session once and saves to that same session, so a
 `chough session use` in another process partway through a command does not redirect
 its save; if the session it resolved is archived or removed meanwhile, it refuses and
-saves nothing.
+saves nothing, and removes the history events it had written since it last found the file
+in place, so no orphan event is left and an event a save may have written is never
+removed (#82). Chough's own `session use` and `session new` wait for a running writer,
+so only something outside Chough, such as a Git checkout, can move the file mid-command.
 Transitions of each session are its own immutable history cycle, so two branches that
 record work in different sessions merge without a conflict. Two edits of the same
 session still merge with the [checkpoint merge driver](#checkpoint-merges); declare

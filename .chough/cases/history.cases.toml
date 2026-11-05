@@ -418,6 +418,60 @@ argv = ["cargo", "test", "--locked", "--test", "spec_split"]
 expect_output = ["test result: ok. 4 passed; 0 failed"]
 
 [[case]]
+id = "TC-history-session-use-waits-for-stage-advance"
+title = "session use waits for a running stage advance"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-history-008"]
+paths = ["src/sessions.rs", "src/history.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_use_waits_for_a_running_stage_advance passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_use_waits_for_a_running_stage_advance"
+
+[[case]]
+id = "TC-history-vanished-session-leaves-no-event"
+title = "A save refused because the session vanished leaves no event"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-7"]
+requirements = ["REQ-history-008"]
+paths = ["src/sessions.rs", "src/history.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_save_refused_because_the_session_vanished_leaves_no_event passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_save_refused_because_the_session_vanished_leaves_no_event"
+
+[[case]]
+id = "TC-history-saved-event-survives-a-move"
+title = "A saved event survives a move of its checkpoint, inside or outside the session stores"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-7"]
+requirements = ["REQ-history-008"]
+paths = ["src/history.rs", "src/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["both src/sessions.rs saved-event unit tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "saved_event"]
+expect_output = ["test result: ok. 2 passed; 0 failed"]
+
+[[case]]
 id = "TC-history-no-sessions-local-holds-only-lock"
 title = "A project without sessions gains only the Git-ignored lock in .chough/local"
 status = "active"

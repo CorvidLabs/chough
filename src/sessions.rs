@@ -250,19 +250,33 @@ fn active(root: &Path) -> Result<String> {
 /// that is archived or removed meanwhile is refused rather than written again.
 pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
     if let Some(relative) = pinned(root) {
-        if relative != checkpoint::SESSION {
-            ensure!(
-                local_path(root, &relative)?.is_file(),
-                "{relative} was archived or removed while this command ran; nothing was saved"
-            );
+        // The checkpoint this command resolved vanished while it ran: archived, removed,
+        // or (for a legacy writer) adopted into sessions mode, so `.chough/session.json`
+        // would otherwise be written again. Nothing is saved, and the history events this
+        // command published are removed so no orphan is left (#82, REQ-history-008).
+        let vanished = if relative == checkpoint::SESSION {
+            enabled(root)?.then(|| {
+                format!(
+                    "{} was adopted into {DIR} while this command ran",
+                    checkpoint::SESSION
+                )
+            })
+        } else {
+            (!local_path(root, &relative)?.is_file())
+                .then(|| format!("{relative} was archived or removed while this command ran"))
+        };
+        if let Some(why) = vanished {
+            // Only events published since the checkpoint was last found in place go.
+            let events = match crate::history::discard_published(root) {
+                0 => String::new(),
+                1 => "; the history event it had written was removed".into(),
+                count => format!("; the {count} history events it had written were removed"),
+            };
+            bail!("{why}; nothing was saved{events}");
         }
-        // A legacy writer re-checks the mode: sessions adopted after it resolved
-        // `.chough/session.json` would otherwise get that file written again.
-        ensure!(
-            relative != checkpoint::SESSION || !enabled(root)?,
-            "{} was adopted into {DIR} while this command ran; nothing was saved",
-            checkpoint::SESSION
-        );
+        // Found in place: a save resolves here just before it writes, so from now on the
+        // events published so far may be saved and are never removed (second #96 review).
+        crate::history::retire_published(root);
         return Ok(relative);
     }
     let relative = if enabled(root)? {
@@ -697,6 +711,65 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// #96 review (REQ-history-008): a session file that moves away after a successful
+    /// save keeps the event that save points to; the cleanup removes only events no save
+    /// may have written.
+    #[test]
+    fn a_vanish_after_a_successful_save_keeps_the_saved_event() {
+        saved_event_survives_a_move_to(&archive_file("alpha"));
+    }
+
+    /// Second #96 review (REQ-history-008): the same holds when the saved file is moved
+    /// somewhere Chough never looks for a checkpoint, so keeping the event cannot depend
+    /// on finding the saved checkpoint again.
+    #[test]
+    fn a_move_outside_the_session_stores_after_a_save_keeps_the_saved_event() {
+        saved_event_survives_a_move_to(".chough/saved-alpha.json");
+    }
+
+    /// Save one event on session alpha, move alpha's file to `destination`, then resolve
+    /// the checkpoint again: the refusal must keep the saved event.
+    fn saved_event_survives_a_move_to(destination: &str) {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().canonicalize().unwrap();
+        run(
+            &root,
+            SessionCommand::New {
+                key: "alpha".into(),
+                objective: "Ship alpha".into(),
+                intent_scope: String::new(),
+                modules: vec![],
+            },
+        )
+        .unwrap();
+        unpin(&root);
+        let mut session = checkpoint::read_checkpoint(&root).unwrap();
+        let transition: crate::stage::Transition = serde_json::from_value(json!({
+            "schema_version": 1, "at_unix_seconds": 1, "kind": "iterate",
+            "from": "intent", "to": "intent"
+        }))
+        .unwrap();
+        crate::history::append(&root, &mut session, transition).unwrap();
+        checkpoint::save_checkpoint(&root, &session).unwrap();
+        let cursor = session.history_cursor.clone().unwrap();
+        let cycle = root.join(format!(".chough/history/cycles/{}", cursor.cycle));
+        // The cleanup may remove the cycle directory too; count it as empty then.
+        let count = || fs::read_dir(&cycle).map_or(0, |entries| entries.count());
+        let saved = count();
+        assert!(saved >= 1);
+        let moved = root.join(destination);
+        fs::create_dir_all(moved.parent().unwrap()).unwrap();
+        fs::rename(root.join(session_file("alpha")), &moved).unwrap();
+        let error = checkpoint_path(&root).unwrap_err().to_string();
+        assert!(error.contains("nothing was saved"), "{error}");
+        assert_eq!(
+            count(),
+            saved,
+            "the saved event was removed after a move to {destination}"
+        );
+        unpin(&root);
+    }
 
     /// Leif's review thread on #77: a `session use` in another process partway through
     /// `inbox fold` must not save the folded session or its inbox decisions into the

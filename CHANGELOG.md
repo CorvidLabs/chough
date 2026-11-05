@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A command whose save is refused because its session file was archived, removed or
+  adopted while it ran now also removes the history events it had written, so no orphan
+  `EVT-` file is left (#82, REQ-history-008). A regression test shows `session use` waits
+  for a running `stage advance`.
+
 - The checkpoint writer lock now lives in the project, at `.chough/local/checkpoint.lock`
   (Git-ignored), instead of the system temporary directory, so writers with different
   `TMPDIR` values, or a temp cleaner, can no longer split it and lose updates (#83,

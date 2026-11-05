@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 2 tests
+test sessions::tests::a_move_outside_the_session_stores_after_a_save_keeps_the_saved_event ... ok
+test sessions::tests::a_vanish_after_a_successful_save_keeps_the_saved_event ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 51 filtered out; finished in 0.02s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running unittests src/main.rs (target/debug/deps/chough-3e1dffa7dd88e895)

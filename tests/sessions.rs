@@ -842,6 +842,120 @@ fn session_new_accepts_the_module_ids_init_accepts() {
     }
 }
 
+/// Session alpha at plan with an approved native change, whose stub `specsync` runs
+/// `before` first on each call; beta is a second open session. Returns alpha's cycle.
+#[cfg(unix)]
+fn alpha_at_plan(fixture: &Fixture, before: &str) -> String {
+    fixture.stubs();
+    fixture.native("approved");
+    sessions(fixture);
+    fixture.ok(&["session", "use", "alpha"]);
+    fixture.ok(&["checkpoint", "--native-change", "alpha-change"]);
+    fixture.no_spec_approval("alpha-change");
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fs::rename(
+        fixture.root().join("bin/specsync"),
+        fixture.root().join("bin/specsync-stub"),
+    )
+    .unwrap();
+    fixture.write(
+        "bin/specsync",
+        &format!("#!/bin/sh\n{before}\nexec ./bin/specsync-stub \"$@\"\n"),
+    );
+    fixture.executable("bin/specsync");
+    cycle(fixture, "alpha")
+}
+
+/// Issue #82 (REQ-history-008): #77's writer lock makes `session use` wait for a
+/// running `stage advance`, so Chough itself never archives or switches a session
+/// under a command and no orphan event is left. Guards the lock; passes at 75a732d.
+#[cfg(unix)]
+#[test]
+fn session_use_waits_for_a_running_stage_advance() {
+    use std::process::{Command, Stdio};
+    use std::time::{Duration, Instant};
+    let fixture = Fixture::new();
+    let cycle = alpha_at_plan(&fixture, "[ -e .slow ] && touch running && sleep 2");
+    let before = events(&fixture, &cycle);
+    fixture.write(".slow", "");
+    let spawn = |args: &[&str]| {
+        Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(fixture.root())
+            .args(args)
+            .env(
+                "PATH",
+                std::env::join_paths(std::iter::once(fixture.root().join("bin")).chain(
+                    std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()),
+                ))
+                .unwrap(),
+            )
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap()
+    };
+    let mut advance = spawn(&["stage", "advance"]);
+    let started = Instant::now();
+    while !fixture.exists("running") {
+        assert!(
+            started.elapsed() < Duration::from_secs(30),
+            "the native read never started"
+        );
+        std::thread::sleep(Duration::from_millis(20));
+    }
+    let switch = spawn(&["session", "use", "beta"])
+        .wait_with_output()
+        .unwrap();
+    assert!(
+        advance.try_wait().unwrap().is_some(),
+        "session use finished while stage advance still held the checkpoint"
+    );
+    assert!(
+        switch.status.success(),
+        "{}",
+        String::from_utf8_lossy(&switch.stderr)
+    );
+    let advanced = advance.wait_with_output().unwrap();
+    assert!(
+        advanced.status.success(),
+        "{}",
+        String::from_utf8_lossy(&advanced.stderr)
+    );
+    assert_eq!(
+        json(&fixture, ".chough/sessions/alpha.json")["stage"]["current"],
+        "build"
+    );
+    assert_eq!(
+        events(&fixture, &cycle),
+        before + 1,
+        "exactly the advance's event"
+    );
+}
+
+/// Issue #82 (REQ-history-008, Leif's 2026-11-04 choice): when something outside Chough
+/// moves the session file away during `stage advance`, the refused save leaves no
+/// orphan event: the event that command published is removed.
+#[cfg(unix)]
+#[test]
+fn a_save_refused_because_the_session_vanished_leaves_no_event() {
+    let fixture = Fixture::new();
+    let cycle = alpha_at_plan(
+        &fixture,
+        "if [ -e .vanish ]; then rm .vanish; mkdir -p .chough/sessions/archive; mv .chough/sessions/alpha.json .chough/sessions/archive/alpha.json; fi",
+    );
+    let before = events(&fixture, &cycle);
+    fixture.write(".vanish", "");
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("nothing was saved"), "{refused}");
+    assert_eq!(events(&fixture, &cycle), before, "an orphan event was left");
+    assert!(
+        !fixture.exists(".chough/sessions/alpha.json"),
+        "alpha.json was recreated"
+    );
+}
+
 /// Issue #83 (REQ-history-007, #94 review): in sessions mode `.chough/local/` holds only
 /// `.gitignore`, `checkpoint.lock` and `active-session`, and Git ignores all three.
 #[test]

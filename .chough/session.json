@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Keep the checkpoint writer lock in the project, name the file being written when busy, and specify serialized writers and .chough/local (issue #83, DRIVE-11)",
+  "objective": "Expect each archive own modules in the approval guard test so a history-only archive passes (#96 CI)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -12,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy",
+  "native_change": "expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -322,7 +322,8 @@
     "2026-11-04 Leif (0xLeif) chose \"Make the check faster\" for the hosted SpecSync Archive job (10-minute limit, timed out on #93), over raising the limit to 30 minutes or merging past the timeout.",
     "PR #103 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record that review as 0xLeif, archive, and merge #103 once its CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
     "PR #90 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
-    "PR #94 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision."
+    "PR #94 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
+    "PR #96 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -662,6 +663,15 @@
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
     "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-tc-history-session-use-waits-for-stage-advance-8d5b88b4cc3e91aace5a6776",
+    "OBS-tc-history-vanished-session-leaves-no-event-c5ccd24d83c6fc6547cc6672",
+    "OBS-tc-history-session-use-waits-for-stage-advance-e3eea25c5c0affb98bc95ced",
+    "OBS-tc-history-vanished-session-leaves-no-event-b0f53c9d58b1db781869cc2b",
+    "OBS-tc-history-session-use-waits-for-stage-advance-7a6125f3f1d9481f96b3a50f",
+    "OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150",
+    "OBS-tc-history-session-use-waits-for-stage-advance-8e1828e1ef1ea18d03e12611",
+    "OBS-tc-history-vanished-session-leaves-no-event-24bdee4af1db73b71a608106",
+    "OBS-tc-history-saved-event-survives-a-move-eb5e5bb43523ac1d191b24dc",
     "OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f",
     "OBS-tc-cli-checkpoint-lock-in-project-ignored-0bdc620d8d275a5e98ff7902",
     "OBS-tc-cli-adopt-race-writers-save-or-refuse-3f4a73ec4215638a4a9c7bda",
@@ -762,7 +772,10 @@
     "OBS-tc-cli-checkpoint-lock-in-project-ignored-1ddc842c3ee553366e3ceb78",
     "OBS-tc-cli-adopt-race-writers-save-or-refuse-7d1291c36ffdf8c4cf60cb7b",
     "OBS-tc-history-no-sessions-local-holds-only-lock-f915ba8e80bb2294e9b22d21",
-    "OBS-tc-history-sessions-local-holds-pointer-and-lock-2aaa399277d671d5225a7ef1"
+    "OBS-tc-history-sessions-local-holds-pointer-and-lock-2aaa399277d671d5225a7ef1",
+    "OBS-tc-history-session-use-waits-for-stage-advance-4c890f364cc991fffefcc5ee",
+    "OBS-tc-history-vanished-session-leaves-no-event-5e23de5747a1561f81cd99a0",
+    "OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f"
   ],
   "bugs": [
     "BUG-0001",
@@ -798,5 +811,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #94 when hosted checks are green"
+  "next_action": "Merge PR #96 when hosted checks are green"
 }

@@ -1358,9 +1358,20 @@ fn the_guard_accepts_every_archived_approval_in_this_repository() {
         let next = fixture.ok(&["next", "--json"]);
         assert_eq!(next["gate"]["label"], "native:approved", "{id}: {next}");
         let deltas = next["native"]["approved_deltas"].as_str().unwrap();
+        // Unchanged deltas name only modules in this archive's approved scope, which may
+        // be history alone (#96, #99), not always cli.
+        let modules: Vec<&str> = scope["affected_specs"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|module| module.as_str().unwrap())
+            .collect();
+        let unchanged = deltas
+            .strip_prefix("unchanged: ")
+            .map(|listed| listed.split(", ").all(|module| modules.contains(&module)));
         assert!(
-            deltas.starts_with("unchanged: cli") || deltas.starts_with("no semantic deltas"),
-            "{id}: {deltas}"
+            unchanged == Some(true) || deltas == "no semantic deltas (no_spec_change)",
+            "{id}: {deltas} (approved scope {modules:?})"
         );
         checked += 1;
     }

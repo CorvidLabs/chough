@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-session-use-waits-for-stage-advance-4c890f364cc991fffefcc5ee",
+  "criteria": [
+    "DRIVE-3"
+  ],
+  "requirements": [
+    "REQ-history-008"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact session_use_waits_for_a_running_stage_advance for TC-history-session-use-waits-for-stage-advance: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-session-use-waits-for-stage-advance-4c890f364cc991fffefcc5ee.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-session-use-waits-for-stage-advance-4c890f364cc991fffefcc5ee.log": "86de95ed75962eb51c2c567a6e0c1f293997033942f2c3dd3039409147e8e87d"
+  },
+  "observed_at_unix_seconds": 1793842254,
+  "snapshot": {
+    "revision": "b28b529fc2a628583c180c4a72052c830fc92719",
+    "dirty": false,
+    "fingerprint": "3c065c37cef5f3208d93feb8d22632370c79d3c8d2b24c95605ff522a0d301e7",
+    "content": "89e08413accb376661a8323e68d963c1a9d73cd2418d642b0aa78439f13b7bc7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-session-use-waits-for-stage-advance",
+      "digest": "23bd977fb17863da5c7e0fef3e4740c83ef8439cc2b319ba181d8ea743ab5935"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "session_use_waits_for_a_running_stage_advance"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 3
+}

@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_save_refused_because_the_session_vanished_leaves_no_event ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.21s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/sessions.rs (target/debug/deps/sessions-e0ce9e33fcdf49c3)

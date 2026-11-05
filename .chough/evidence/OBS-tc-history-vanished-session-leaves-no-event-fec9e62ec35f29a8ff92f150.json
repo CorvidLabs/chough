@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150",
+  "criteria": [
+    "DRIVE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-008"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact a_save_refused_because_the_session_vanished_leaves_no_event for TC-history-vanished-session-leaves-no-event: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150.log": "e57811b5fa2cd152b0b183514f573a48cead93ca7e5792010360ac1bc7b550d2"
+  },
+  "observed_at_unix_seconds": 1793812796,
+  "snapshot": {
+    "revision": "97cc6cbedfc77cd7d76e112c54f6ff9db4c7356a",
+    "dirty": false,
+    "fingerprint": "5668631b7c9b962d6060b9e92fca3dba371359cc0c24322ae8ee06c2e174e953",
+    "content": "07fc13dcb335a33a3caf2bbca0e4f435ff421a6e5208cf1ea131ee60eb70aeec"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-vanished-session-leaves-no-event",
+      "digest": "c619773ff54a5880e0b2663ab619dd1b65e719a9cd2c0a2b6bc5579a5d066218"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "a_save_refused_because_the_session_vanished_leaves_no_event"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
