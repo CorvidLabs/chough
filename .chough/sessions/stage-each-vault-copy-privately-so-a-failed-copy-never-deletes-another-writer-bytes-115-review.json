@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-708a6699db912c08721d8387",
-    "head": "EVT-78f9d9778e50a826c917c22e",
+    "head": "EVT-24375bb66b52c79e9a70626e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,10 +30,14 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-failed-copy-keeps-other-writer-ac77298375f085b47ae7a1d3"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Stage copies privately and link them into place against the failing unit test"
 }

@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review (active; `specsync change status stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-491 recorded; most recent:
+492 recorded; most recent:
 
+- OBS-tc-cli-failed-copy-keeps-other-writer-ac77298375f085b47ae7a1d3 ProductTest Passed in local-linux-aarch64 at 8a87a1d468be
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-ad4356ae97e0d1fc8a02a87b ProductTest Passed in local-linux-aarch64 at 7f113f4ec6a5
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-product-test-deeab5eb9295ffe50f291b9e ProductTest Passed in local-linux-aarch64 at 5793431b5f81
 - OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef ProductTest Passed in local-linux-aarch64 at 0caabbe46358
-- OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7 ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 
 ## Briefs
 
