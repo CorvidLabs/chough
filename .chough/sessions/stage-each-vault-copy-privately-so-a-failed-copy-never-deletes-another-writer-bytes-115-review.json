@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-708a6699db912c08721d8387",
-    "head": "EVT-24375bb66b52c79e9a70626e",
+    "head": "EVT-d86f8994e19e316ac08c7e4e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -27,7 +27,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "PR #115 staging fix: Leif (0xLeif) recorded his native review (pass) at e3f6aa44 through the orc, 2026-11-05 10:57 MST: Record and merge."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -35,9 +37,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Stage copies privately and link them into place against the failing unit test"
 }

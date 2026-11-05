@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 55
-archived_changes: 91
+archived_changes: 92
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-91 archived changes, newest first.
+92 archived changes, newest first.
 
+- [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](../archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)
 - [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](../archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110)
 - [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](../archives/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.md) Union-merge only the generated knowledge notes, and cover the vault code of the index fix
 - [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](../archives/move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit.md) Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement
@@ -42,5 +43,4 @@ this note only links them.
 - [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](../archives/never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file.md) Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)
 - [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](../archives/keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files.md) Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files
 - [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](../archives/keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout.md) Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout)
-- [move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge](../archives/move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge.md) Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)
-- 81 more on the [timeline](../timeline.md)
+- 82 more on the [timeline](../timeline.md)
