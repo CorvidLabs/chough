@@ -7,11 +7,11 @@
   "title": "Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83)",
   "description": "Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "d9269bec6ea0bc6c9e6c9f37bb9a6f6a05cd5024",
   "created_at": 1793809253,
-  "updated_at": 1793841800,
+  "updated_at": 1793841875,
   "affected_specs": [
     "cli",
     "history"
