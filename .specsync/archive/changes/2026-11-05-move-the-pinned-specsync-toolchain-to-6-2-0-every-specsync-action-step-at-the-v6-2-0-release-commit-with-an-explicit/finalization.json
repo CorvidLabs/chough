@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit",
+  "implementation_commit": "22f2e49b4616434c473d3de019f9c51d7538f342",
+  "implementation_tree": "a16fc27b4185d8e84d223132365b2c7738f152db",
+  "contract_digest": "31228d5232b4c4ce9704949ee5c6f7f6598fbd60eb831341935f48007aece6ea",
+  "workspace_digest": "d88850fc07d8185a70beafe739daadf8aa31811a595eb8fee89bbc35cca4b770",
+  "closing_digest": "3eef34f32ecdffff8be0fb9933c12b80fb5e18b3ba785138f1c6c500632cf257",
+  "review_digest": "a3e2cb476ad71a71848bf60083537fa20c9663fea85251fae468e4deeea5189f",
+  "finalization_digest": "f9cda26c9e07c25708a52c8b4fde69200615ae33e0ade265a79448946a10a121",
+  "timestamp": 1793896397
+}

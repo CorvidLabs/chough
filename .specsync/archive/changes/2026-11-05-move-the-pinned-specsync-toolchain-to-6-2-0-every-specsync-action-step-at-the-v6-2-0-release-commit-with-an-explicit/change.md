@@ -1,6 +1,6 @@
 ---
 id: move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit
-state: implementing
+state: archived
 type: operations
 base_commit: ded0e9ef4ec27f634d5175c4601f65b7e5f5b694
 ---

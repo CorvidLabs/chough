@@ -7,11 +7,11 @@
   "title": "Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement",
   "description": "Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement",
   "kind": "operations",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "ded0e9ef4ec27f634d5175c4601f65b7e5f5b694",
   "created_at": 1793893198,
-  "updated_at": 1793896294,
+  "updated_at": 1793896402,
   "affected_specs": [
     "cli"
   ],
