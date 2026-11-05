@@ -1,6 +1,6 @@
 ---
 id: never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file
-state: implementing
+state: archived
 type: bug_fix
 base_commit: d165b0a20d05f29c884e6970a30fb50b88c950fd
 ---

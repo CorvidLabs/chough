@@ -7,11 +7,11 @@
   "title": "Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)",
   "description": "Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "d165b0a20d05f29c884e6970a30fb50b88c950fd",
   "created_at": 1793886686,
-  "updated_at": 1793887120,
+  "updated_at": 1793887574,
   "affected_specs": [
     "cli"
   ],
