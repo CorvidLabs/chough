@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 107
+archived_changes: 109
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review) (hot)
+- [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110) (hot)
 - [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](archives/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.md) Union-merge only the generated knowledge notes, and cover the vault code of the index fix (hot)
-- [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](archives/move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit.md) Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement (hot)
-- [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](archives/keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline.md) Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline (hot)
+- [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](archives/move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit.md) Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement (cold)
+- [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](archives/keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline.md) Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline (cold)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files (cold)
 - [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](archives/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.md) No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12) (cold)
 - [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](archives/adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog.md) Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog (cold)
 - [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](archives/let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded.md) Let a session started after legacy history adoption write events while the adopted legacy log stays guarded (cold)
 - [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](archives/never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file.md) Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s) (cold)
-- [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](archives/keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files.md) Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files (cold)
-- [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](archives/keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout.md) Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout) (cold)
-- All 107 archived changes, by month: [timeline.md](timeline.md)
+- All 109 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,8 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](../.specsync/archive/changes/2026-11-05-stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review/lesson-bundle.md)
+- [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](../.specsync/archive/changes/2026-11-05-keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110/lesson-bundle.md)
 - [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](../.specsync/archive/changes/2026-11-05-union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix/lesson-bundle.md)
 - [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](../.specsync/archive/changes/2026-11-05-move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit/lesson-bundle.md)
 - [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](../.specsync/archive/changes/2026-11-05-keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline/lesson-bundle.md)
@@ -79,8 +81,6 @@ Archived lesson bundles:
 - [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](../.specsync/archive/changes/2026-11-05-adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog/lesson-bundle.md)
 - [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](../.specsync/archive/changes/2026-11-05-let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded/lesson-bundle.md)
 - [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](../.specsync/archive/changes/2026-11-05-never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file/lesson-bundle.md)
-- [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](../.specsync/archive/changes/2026-11-05-keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files/lesson-bundle.md)
-- [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](../.specsync/archive/changes/2026-11-05-keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -95,8 +95,11 @@ Archived lesson bundles:
 
 ## Observations
 
-489 recorded; most recent:
+492 recorded; most recent:
 
+- OBS-tc-cli-failed-copy-keeps-other-writer-ac77298375f085b47ae7a1d3 ProductTest Passed in local-linux-aarch64 at 8a87a1d468be
+- OBS-tc-cli-rollback-keeps-changed-vault-copies-ad4356ae97e0d1fc8a02a87b ProductTest Passed in local-linux-aarch64 at 7f113f4ec6a5
+- OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
 - OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
@@ -104,9 +107,6 @@ Archived lesson bundles:
 - OBS-product-test-deeab5eb9295ffe50f291b9e ProductTest Passed in local-linux-aarch64 at 5793431b5f81
 - OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef ProductTest Passed in local-linux-aarch64 at 0caabbe46358
-- OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7 ProductTest Passed in local-linux-aarch64 at 0caabbe46358
-- OBS-product-test-5d86bc7f549cf14c727d5614 ProductTest Passed in local-linux-aarch64 at 893824d45587
-- OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c ProductTest Passed in local-linux-aarch64 at f131ebeee492
 
 ## Briefs
 

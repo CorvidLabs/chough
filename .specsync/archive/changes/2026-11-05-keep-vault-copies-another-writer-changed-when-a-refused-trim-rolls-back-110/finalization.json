@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110",
+  "implementation_commit": "217cdbd5fc97a2d7ed58d355217e9d74ac540838",
+  "implementation_tree": "93aaafc83f3e299011d29ab0733ea6f703009b34",
+  "contract_digest": "ecfce7a9d9a276b6ca5a88dcfefd75baeb2dc5795bdbe60e63edd662a4c3517f",
+  "workspace_digest": "bf8c064594e6e875ba2f3814c963894bff0406138c36c5a444bb220ef294ea79",
+  "closing_digest": "2acbf0ab21650b762d95e84a7a3a443a96c0a50997c9a20c0b011e807ca75a4c",
+  "review_digest": "4b0e051c1c577c898ebb96a258ef91a663ce5749ac35bf1b68b4ece4c4805e55",
+  "finalization_digest": "99549096e9733acb40a425104459bb5ea916008da929ff368d2672adaac72252",
+  "timestamp": 1793899115
+}

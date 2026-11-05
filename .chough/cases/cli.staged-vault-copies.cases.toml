@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-failed-copy-keeps-other-writer"
+title = "A failed vault copy never deletes another writer's bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "KNOW-19"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the chough unit test evidence::tests::a_failed_copy_never_deletes_another_writers_bytes passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "evidence::tests::a_failed_copy_never_deletes_another_writers_bytes"]
+expect_output = ["test evidence::tests::a_failed_copy_never_deletes_another_writers_bytes ... ok", "1 passed"]

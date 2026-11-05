@@ -1,0 +1,43 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-14bc1c69d2ba6af85d888d1f",
+    "head": "EVT-69c7cca58960a23ed3dc0fea",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Keep vault copies another writer changed when a refused trim rolls back (#110)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110",
+  "references": {
+    "criteria": [
+      "KNOW-10",
+      "KNOW-19"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "PR #115 (#110) accepted by Leif (0xLeif), 2026-11-05 10:18 MST through the orc: Record and merge; his native review (pass) recorded at 217cdbd5."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [
+    "OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Make the rollback claim, compare and keep changed copies against the failing test"
+}

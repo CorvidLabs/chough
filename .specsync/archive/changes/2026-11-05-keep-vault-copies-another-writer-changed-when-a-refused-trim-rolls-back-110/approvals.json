@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793898296,
+      "digest": "ecfce7a9d9a276b6ca5a88dcfefd75baeb2dc5795bdbe60e63edd662a4c3517f",
+      "note": "#110 P1; Leif: release after #112, #114, #110 (2026-11-05)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110",
+        "title": "Keep vault copies another writer changed when a refused trim rolls back (110)",
+        "description": "Keep vault copies another writer changed when a refused trim rolls back (110)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/evidence.rs",
+          "tests/evidence.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-046 and KNOW-10: a restore must not delete another writer's bytes; no requirement text changes.",
+        "acceptance_criteria": [
+          "A refused trim apply removes only the vault copies it created that still hold the bytes and mode it wrote; a copy another writer changed is kept as written and named in the refusal; the source is restored either way. The new test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #110 (P1); Leif: release 0.4.0 after #112, #114 and #110 (2026-11-05 09:43 MST, via the orc).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793899115,
+      "digest": "2acbf0ab21650b762d95e84a7a3a443a96c0a50997c9a20c0b011e807ca75a4c",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

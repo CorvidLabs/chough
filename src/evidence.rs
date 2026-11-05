@@ -1977,6 +1977,18 @@ fn hold_path(relative: &str) -> String {
 /// [`HOLD_DIR`], so later writes to its path cannot be lost, then compared and deleted at
 /// once. Bytes that differ are put back without replacing anything and refused.
 fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
+    remove_verified_as(root, relative, expected, None)
+}
+
+/// [`remove_verified`], also requiring `permissions` when given: a vault copy a refused
+/// apply created is removed only while it still holds the bytes and mode it was written
+/// with, so a copy another writer changed is kept (#110).
+fn remove_verified_as(
+    root: &Path,
+    relative: &str,
+    expected: &[u8],
+    permissions: Option<&fs::Permissions>,
+) -> Result<()> {
     let path = local_path(root, relative)?;
     let holds = local_path(root, HOLD_DIR)?;
     fs::create_dir_all(&holds)?;
@@ -1988,7 +2000,10 @@ fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
     );
     fs::rename(&path, &hold).with_context(|| format!("removing {relative}"))?;
     let actual = fs::read(&hold).with_context(|| format!("re-reading {relative}"));
-    if actual.as_deref().ok() == Some(expected) {
+    let same_mode = permissions.is_none_or(|expected| {
+        fs::symlink_metadata(&hold).is_ok_and(|metadata| metadata.permissions() == *expected)
+    });
+    if same_mode && actual.as_deref().ok() == Some(expected) {
         fs::remove_file(&hold).with_context(|| format!("removing {relative}"))?;
         let _ = fs::remove_dir(&holds);
         return Ok(());
@@ -2002,6 +2017,73 @@ fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
             "{relative} changed during the apply and could not be put back without replacing a file written meanwhile ({error}); its changed bytes are kept at {}",
             hold.display()
         ),
+    }
+}
+
+/// What [`place_copy`] did at a vault destination.
+#[derive(Debug, PartialEq, Eq)]
+enum Placed {
+    /// This apply created the copy; a refused apply removes it while it is unchanged.
+    Created,
+    /// The same bytes were already there; they are not this apply's to remove.
+    AlreadyThere,
+}
+
+/// Put `content` at `path` without ever replacing what is there. The copy is written and
+/// given its mode (`finish`) in a private staging file beside `path`, then hard-linked into
+/// place, which fails rather than replace a file. A failure at any step removes only the
+/// staging file, so another writer's bytes at `path` are never deleted (#115 review).
+/// Different bytes already at `path` are refused and kept.
+fn place_copy(
+    path: &Path,
+    content: &[u8],
+    finish: impl FnOnce(&Path) -> std::io::Result<()>,
+) -> Result<Placed> {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static STAGED: AtomicU64 = AtomicU64::new(0);
+    let name = path
+        .file_name()
+        .context("a vault copy needs a file name")?
+        .to_string_lossy()
+        .into_owned();
+    let staged = path.with_file_name(format!(
+        ".{name}.chough-copy-{}-{}.tmp",
+        std::process::id(),
+        STAGED.fetch_add(1, Ordering::Relaxed)
+    ));
+    let staged_copy = (|| -> std::io::Result<()> {
+        use std::io::Write;
+        let mut copy = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&staged)?;
+        copy.write_all(content)?;
+        drop(copy);
+        finish(&staged)
+    })();
+    if let Err(error) = staged_copy {
+        let _ = fs::remove_file(&staged);
+        return Err(error.into());
+    }
+    let linked = fs::hard_link(&staged, path);
+    let _ = fs::remove_file(&staged);
+    match linked {
+        Ok(()) => Ok(Placed::Created),
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            let existing = fs::read(path).with_context(|| {
+                format!(
+                    "reading {}, which appeared during the apply",
+                    path.display()
+                )
+            })?;
+            ensure!(
+                existing == content,
+                "{} appeared during the apply with different bytes; a move never overwrites",
+                path.display()
+            );
+            Ok(Placed::AlreadyThere)
+        }
+        Err(error) => Err(error.into()),
     }
 }
 
@@ -2597,7 +2679,7 @@ pub(super) fn archive_summary(
             let head = head_revision(root);
             let at = now()?;
             let mut held: Vec<(String, Vec<u8>, fs::Permissions)> = vec![];
-            let mut copies: Vec<String> = vec![];
+            let mut copies: Vec<(String, Vec<u8>, fs::Permissions)> = vec![];
             let mut recorded: Vec<String> = vec![];
             let removal: Result<()> = (|| {
                 for (candidate, evidence, record_digest, bytes, moves) in &prepared {
@@ -2669,32 +2751,12 @@ pub(super) fn archive_summary(
                             if let Some(parent) = path.parent() {
                                 fs::create_dir_all(parent)?;
                             }
-                            match fs::OpenOptions::new()
-                                .write(true)
-                                .create_new(true)
-                                .open(&path)
-                            {
-                                Ok(mut copy) => {
-                                    use std::io::Write;
-                                    copies.push(target.clone());
-                                    copy.write_all(content)
-                                        .with_context(|| format!("moving {file} to {target}"))?;
-                                    fs::set_permissions(&path, permissions.clone())
-                                        .with_context(|| format!("moving {file} to {target}"))?;
-                                }
-                                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                                    let existing = fs::read(&path).with_context(|| {
-                                        format!("reading {target}, which appeared during the apply")
-                                    })?;
-                                    ensure!(
-                                        existing == *content,
-                                        "{target} appeared during the apply with different bytes; a move never overwrites, so {file} was not moved"
-                                    );
-                                }
-                                Err(error) => {
-                                    return Err(error)
-                                        .with_context(|| format!("moving {file} to {target}"));
-                                }
+                            let placed = place_copy(&path, content, |staged| {
+                                fs::set_permissions(staged, permissions.clone())
+                            })
+                            .with_context(|| format!("moving {file} to {target}"))?;
+                            if placed == Placed::Created {
+                                copies.push((target.clone(), content.clone(), permissions.clone()));
                             }
                         }
                         remove_verified(root, file, content)?;
@@ -2754,10 +2816,13 @@ pub(super) fn archive_summary(
                         }
                     }
                 }
-                // The vault copies of a refused apply are removed again.
-                for copy in &copies {
-                    if let Ok(path) = local_path(root, copy) {
-                        let _ = fs::remove_file(path);
+                // The vault copies of a refused apply are removed again, each only while it
+                // still holds the bytes and mode this apply wrote: a copy another writer
+                // changed meanwhile is kept as written (#110).
+                let mut changed_copies = vec![];
+                for (copy, content, permissions) in &copies {
+                    if remove_verified_as(root, copy, content, Some(permissions)).is_err() {
+                        changed_copies.push(copy.clone());
                     }
                 }
                 let failure = if kept.is_empty() {
@@ -2766,6 +2831,14 @@ pub(super) fn archive_summary(
                     format!(
                         "{failure}; not restored because a file was written there meanwhile, kept as written, removed bytes recoverable from Git HEAD: {}",
                         kept.join(", ")
+                    )
+                };
+                let failure = if changed_copies.is_empty() {
+                    failure
+                } else {
+                    format!(
+                        "{failure}; vault copies another writer changed after this apply created them were kept as written: {}",
+                        changed_copies.join(", ")
                     )
                 };
                 for id in &recorded {
@@ -2929,6 +3002,49 @@ mod tests {
             );
             assert!(seen.insert(hold.to_path_buf()), "{record}");
         }
+    }
+
+    #[test]
+    fn a_failed_copy_never_deletes_another_writers_bytes() {
+        // #115 review P1: another writer replaces the attachment just before setting the
+        // copy's mode fails; the refusal must keep that writer's bytes.
+        let root = tempfile::tempdir().unwrap();
+        let path = root.path().join("attachments/a2/evidence/manual.json");
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let error = place_copy(&path, b"ours\n", |_| {
+            fs::write(&path, "another writer\n")?;
+            Err(std::io::Error::other("set_permissions failed"))
+        })
+        .unwrap_err();
+        assert!(
+            format!("{error:#}").contains("set_permissions failed"),
+            "{error:#}"
+        );
+        assert_eq!(fs::read_to_string(&path).unwrap(), "another writer\n");
+        let left: Vec<_> = fs::read_dir(path.parent().unwrap()).unwrap().collect();
+        assert_eq!(left.len(), 1, "no staged copy is left behind");
+
+        // A failure before anyone else writes leaves nothing behind.
+        let other = root.path().join("attachments/a2/evidence/other.json");
+        place_copy(&other, b"ours\n", |_| {
+            Err(std::io::Error::other("set_permissions failed"))
+        })
+        .unwrap_err();
+        assert!(!other.exists());
+        assert_eq!(fs::read_dir(other.parent().unwrap()).unwrap().count(), 1);
+
+        // A finished copy is created; identical bytes already there are not ours.
+        assert_eq!(
+            place_copy(&other, b"ours\n", |_| Ok(())).unwrap(),
+            Placed::Created
+        );
+        assert_eq!(fs::read_to_string(&other).unwrap(), "ours\n");
+        assert_eq!(
+            place_copy(&other, b"ours\n", |_| Ok(())).unwrap(),
+            Placed::AlreadyThere
+        );
+        assert!(place_copy(&other, b"theirs\n", |_| Ok(())).is_err());
+        assert_eq!(fs::read_to_string(&other).unwrap(), "ours\n");
     }
 
     #[test]
