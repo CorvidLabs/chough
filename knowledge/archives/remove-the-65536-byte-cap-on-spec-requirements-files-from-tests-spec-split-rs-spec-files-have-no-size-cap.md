@@ -45,8 +45,12 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-history-split-keeps-requirement-wording-bf6a059a3c5e4b7ddac83e3d | passed (by cycle time) | local-linux-aarch64 | TC-history-split-keeps-requirement-wording |
+| OBS-tc-reporting-split-keeps-requirement-wording-61f40e1fbdff85fb82a4ca2c | passed (by cycle time) | local-linux-aarch64 | TC-reporting-split-keeps-requirement-wording |
 
 ## Bugs
 

@@ -45,8 +45,13 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+3 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-crlf-readme-unmatched-backtick |
+| OBS-tc-cli-vault-inline-trace-crlf-comments-70ae88664f84301800f9b4ce | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-inline-trace-crlf-comments |
+| OBS-tc-cli-vault-readme-upgrade-85fa1399093164743e01658e | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-readme-upgrade |
 
 ## Bugs
 

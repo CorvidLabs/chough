@@ -50,8 +50,15 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+5 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-failed-head-revision-reported-df2be0c1a86a5ea60b5f3e36 | passed (by cycle time) | local-linux-aarch64 | TC-cli-failed-head-revision-reported |
+| OBS-tc-cli-git-grace-kill-reported-97de588d17c22586b8838abc | passed (by cycle time) | local-linux-aarch64 | TC-cli-git-grace-kill-reported |
+| OBS-tc-cli-stop-reaches-orphaned-descendant-c6f2746fbfbc2a25a497c34c | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-orphaned-descendant |
+| OBS-tc-cli-stop-reaches-setsid-descendant-17fd377a0cc60994dea86b8b | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-setsid-descendant |
+| OBS-tc-cli-stop-test-leaves-other-runs-alone-3deb795837fce1bcfe9a70eb | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-test-leaves-other-runs-alone |
 
 ## Bugs
 

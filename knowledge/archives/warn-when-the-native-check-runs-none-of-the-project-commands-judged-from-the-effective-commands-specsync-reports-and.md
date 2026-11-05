@@ -49,8 +49,17 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+7 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-no-warning-when-project-command-runs-c111efd2af50bb26d1d62933 | passed (by cycle time) | local-linux-aarch64 | TC-cli-no-warning-when-project-command-runs |
+| OBS-tc-cli-only-specsync-native-commands-reported-a6f781b3fc560e8967ba166b | passed (by cycle time) | local-linux-aarch64 | TC-cli-only-specsync-native-commands-reported |
+| OBS-tc-cli-sdd-policy-over-record-bound-f414334149bb55fd3fa8ab5c | passed (by cycle time) | local-linux-aarch64 | TC-cli-sdd-policy-over-record-bound |
+| OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba | passed (by cycle time) | local-linux-aarch64 | TC-cli-test-stage-points-to-test-evidence |
+| OBS-tc-cli-unrun-configured-commands-counted-3095ad0b82067184bb392ef8 | passed (by cycle time) | local-linux-aarch64 | TC-cli-unrun-configured-commands-counted |
+| OBS-tc-cli-verification-warning-changes-no-gate-db3f4125917b884186628c8c | passed (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-changes-no-gate |
+| OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40 | passed (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-within-next-bound |
 
 ## Bugs
 

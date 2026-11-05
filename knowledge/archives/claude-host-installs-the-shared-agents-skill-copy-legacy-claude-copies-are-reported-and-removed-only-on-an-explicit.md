@@ -71,6 +71,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+20 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58 | passed | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
@@ -81,6 +83,26 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd | not-run (pruned) | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-db41ac5fca1248aa46335397 | passed | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee | failed | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
+| OBS-tc-cli-archive-summary-apply-017af1fee70a2b18d13ce95a | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-73bd07d530eac90204447d25 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-80a2a6e3c6ec8bc4e18a7a26 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-eb8be0166a59ac65618579ef | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-fails-closed-d96abea42ebd8134f6a36f36 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
+| OBS-tc-cli-archive-summary-preview-1f2c89765aee431f36668db2 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-8f893d16e89c4e10f42fdec2 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-b9b8f9d5b85bc0d07e74d888 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-d0a76434022c89c7008e8d0a | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-knowledge-archive-entries-5f87ff8883f726e6614de2db | passed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6 | passed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-794db939bed655f623b8a44b | passed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8 | failed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-e16e5b4bb89ce6ef2835c056 | passed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef | passed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
+| OBS-tc-cli-librarian-default-on-knowledge-12316a36b3c0df407410b76a | passed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-2dcb29dd56d16f75384484c1 | passed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834 | failed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-ab75b0dd66df0f5ca429d3fc | passed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423 | passed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
 
 ## Bugs
 

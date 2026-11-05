@@ -51,8 +51,15 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+5 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-adopt-race-writers-save-or-refuse-7d1291c36ffdf8c4cf60cb7b | passed (by cycle time) | local-linux-aarch64 | TC-cli-adopt-race-writers-save-or-refuse |
+| OBS-tc-cli-checkpoint-lock-in-project-ignored-1ddc842c3ee553366e3ceb78 | passed (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-lock-in-project-ignored |
+| OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-a4f17c2165e94f21c1ea94e9 | passed (by cycle time) | local-linux-aarch64 | TC-cli-writers-share-the-project-lock-across-tmpdir |
+| OBS-tc-history-no-sessions-local-holds-only-lock-f915ba8e80bb2294e9b22d21 | passed (by cycle time) | local-linux-aarch64 | TC-history-no-sessions-local-holds-only-lock |
+| OBS-tc-history-sessions-local-holds-pointer-and-lock-2aaa399277d671d5225a7ef1 | passed (by cycle time) | local-linux-aarch64 | TC-history-sessions-local-holds-pointer-and-lock |
 
 ## Bugs
 

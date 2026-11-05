@@ -50,8 +50,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-done-trims-cold-proof-by-default-4c5fc87d107ee513fe4e9d62 | passed (by cycle time) | local-linux-aarch64 | TC-cli-done-trims-cold-proof-by-default |
+| OBS-tc-cli-open-change-keeps-proof-at-done-b72b5200b873c85e09d7871f | passed (by cycle time) | local-linux-aarch64 | TC-cli-open-change-keeps-proof-at-done |
+| OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049 | passed (by cycle time) | local-linux-aarch64 | TC-cli-recorded-retention-off-not-trimmed-at-done |
+| OBS-tc-cli-retention-manual-opts-out-at-done-989840dd1b48e3eb9ac57fd0 | passed (by cycle time) | local-linux-aarch64 | TC-cli-retention-manual-opts-out-at-done |
 
 ## Bugs
 

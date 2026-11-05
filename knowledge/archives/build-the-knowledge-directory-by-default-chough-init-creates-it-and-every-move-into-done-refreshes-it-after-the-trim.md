@@ -50,8 +50,22 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+12 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-done-refreshes-knowledge-after-trim-090588c1f04585baf1ae892f | passed (by cycle time) | local-linux-aarch64 | TC-cli-done-refreshes-knowledge-after-trim |
+| OBS-tc-cli-done-refreshes-knowledge-after-trim-1bbadd90c2ca76a8d85bb8d1 | passed (by cycle time) | local-linux-aarch64 | TC-cli-done-refreshes-knowledge-after-trim |
+| OBS-tc-cli-done-refreshes-knowledge-untrimmed-50cedd62da9c6f29313bebb0 | passed (by cycle time) | local-linux-aarch64 | TC-cli-done-refreshes-knowledge-untrimmed |
+| OBS-tc-cli-done-refreshes-knowledge-untrimmed-9786e2750bc874bc3868f5c2 | passed (by cycle time) | local-linux-aarch64 | TC-cli-done-refreshes-knowledge-untrimmed |
+| OBS-tc-cli-init-builds-knowledge-4023ba8c510c42a473afc62b | passed (by cycle time) | local-linux-aarch64 | TC-cli-init-builds-knowledge |
+| OBS-tc-cli-init-builds-knowledge-57e70bd460a47ca89bafbf93 | passed (by cycle time) | local-linux-aarch64 | TC-cli-init-builds-knowledge |
+| OBS-tc-cli-init-preserves-knowledge-57c64e82893a8531b6d6c07f | passed (by cycle time) | local-linux-aarch64 | TC-cli-init-preserves-knowledge |
+| OBS-tc-cli-init-preserves-knowledge-a13f8931a11963cb39ade869 | passed (by cycle time) | local-linux-aarch64 | TC-cli-init-preserves-knowledge |
+| OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943 | passed (by cycle time) | local-linux-aarch64 | TC-cli-init-unbounded-knowledge-refused |
+| OBS-tc-cli-init-unbounded-knowledge-refused-db6fc909a3ede2188f94798c | passed (by cycle time) | local-linux-aarch64 | TC-cli-init-unbounded-knowledge-refused |
+| OBS-tc-cli-librarian-off-no-knowledge-at-done-0bb04ef01e904ce54277c22c | passed (by cycle time) | local-linux-aarch64 | TC-cli-librarian-off-no-knowledge-at-done |
+| OBS-tc-cli-librarian-off-no-knowledge-at-done-a0770facc80d2a1e222765bf | passed (by cycle time) | local-linux-aarch64 | TC-cli-librarian-off-no-knowledge-at-done |
 
 ## Bugs
 

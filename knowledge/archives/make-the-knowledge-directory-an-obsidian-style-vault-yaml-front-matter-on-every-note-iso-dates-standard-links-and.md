@@ -51,8 +51,24 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+14 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-vault-archive-note-properties-83bbace1d2609853521adc32 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-archive-note-properties |
+| OBS-tc-cli-vault-archive-note-properties-dcc9b50cfda66aed8bbaaabf | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-archive-note-properties |
+| OBS-tc-cli-vault-front-matter-on-every-note-7d367ae40088b3228672012a | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-front-matter-on-every-note |
+| OBS-tc-cli-vault-front-matter-on-every-note-be7fc474642bac3ef7ab9f14 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-front-matter-on-every-note |
+| OBS-tc-cli-vault-intent-notes-95d2176a5c7c5126318c62d3 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-intent-notes |
+| OBS-tc-cli-vault-intent-notes-f8310b6c5f06c9010e10a153 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-intent-notes |
+| OBS-tc-cli-vault-links-resolve-184e2ee0ff66a3dd1e4a662a | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-links-resolve |
+| OBS-tc-cli-vault-links-resolve-41a77ccaf7e4b7d0404f7613 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-links-resolve |
+| OBS-tc-cli-vault-module-notes-07f158d65e620008195603c1 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-module-notes |
+| OBS-tc-cli-vault-module-notes-e588fc8d1289da045f1ba6f7 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-module-notes |
+| OBS-tc-cli-vault-regenerates-identically-3e4c15ac6ecfd41dff19feef | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-regenerates-identically |
+| OBS-tc-cli-vault-regenerates-identically-88331deea5050c18b2d830a2 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-regenerates-identically |
+| OBS-tc-cli-vault-rules-note-478766da1fcf97af1b19a762 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-rules-note |
+| OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-rules-note |
 
 ## Bugs
 

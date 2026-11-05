@@ -45,8 +45,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-vault-front-matter-on-every-note-f8fbe0db6dd11ac19c5a7d8e | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-front-matter-on-every-note |
+| OBS-tc-cli-vault-inline-trace-crlf-comments-36e6427dcbc604a9dd82b1cc | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-inline-trace-crlf-comments |
+| OBS-tc-cli-vault-readme-upgrade-c9d7d78ad861c6645c363c2c | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-readme-upgrade |
+| OBS-tc-cli-vault-trace-and-family-forms-73213166ceb28b3db7342d3b | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-trace-and-family-forms |
 
 ## Bugs
 
