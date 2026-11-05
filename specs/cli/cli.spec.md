@@ -18,6 +18,7 @@ files:
   - src/skill.rs
   - src/stage.rs
   - src/validate.rs
+  - src/vault.rs
   - tests/cli.rs
   - tests/bugs.rs
   - tests/cases.rs
@@ -34,6 +35,8 @@ files:
   - tests/librarian_trim.rs
   - tests/native_check.rs
   - tests/verification.rs
+  - tests/knowledge_default.rs
+  - tests/vault.rs
 
 db_tables: []
 depends_on: []
