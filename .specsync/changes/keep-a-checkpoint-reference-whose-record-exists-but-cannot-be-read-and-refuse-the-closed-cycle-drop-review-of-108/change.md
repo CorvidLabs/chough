@@ -1,6 +1,6 @@
 ---
 id: keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 784b1406d9e5b4b3a53176c3772aaeb003483412
 ---
