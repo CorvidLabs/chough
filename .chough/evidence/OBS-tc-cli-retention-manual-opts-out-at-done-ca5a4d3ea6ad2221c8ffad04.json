@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-retention-manual-opts-out-at-done-ca5a4d3ea6ad2221c8ffad04",
+  "criteria": [
+    "KNOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-041"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test librarian_trim -- --exact retention_manual_opts_out_of_trimming_at_done for TC-cli-retention-manual-opts-out-at-done: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-retention-manual-opts-out-at-done-ca5a4d3ea6ad2221c8ffad04.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-retention-manual-opts-out-at-done-ca5a4d3ea6ad2221c8ffad04.log": "f79519f437c1b6950425050e97a8b3a0d0e23d0fd8a54a6de9a5cbedff924465"
+  },
+  "observed_at_unix_seconds": 1793812417,
+  "snapshot": {
+    "revision": "457a4af979db7874b1c88212c04928e8254f3b33",
+    "dirty": false,
+    "fingerprint": "b519ca556e59de6e392dfa2bb1891fa62750b4d88a3c5178afdeba501ec3c949",
+    "content": "1cdce5713d60226e5309afea45907992a7b0da3c30b4e0f1c170bb322220fd5d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-retention-manual-opts-out-at-done",
+      "digest": "1133916329d7062cf47f0d5fc6bc7053a112a83a40af00914661860e674c33f3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "librarian_trim",
+    "--",
+    "--exact",
+    "retention_manual_opts_out_of_trimming_at_done"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

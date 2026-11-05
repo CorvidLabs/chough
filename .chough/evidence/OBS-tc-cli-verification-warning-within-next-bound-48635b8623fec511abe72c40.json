@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40",
+  "criteria": [
+    "FLOW-15",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-038"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test verification -- --exact the_warning_stays_within_the_next_bound for TC-cli-verification-warning-within-next-bound: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40.log": "ca23ff8a41cae62a78a7354e9a5e0192a7ea7bc983b6575eef40b22f65fe0da3"
+  },
+  "observed_at_unix_seconds": 1793830618,
+  "snapshot": {
+    "revision": "a2c1cf8e60aaec6c1f8bcd325f6179362bb5e587",
+    "dirty": false,
+    "fingerprint": "94272c5df99949e0f43fbc35d66909d67f57930375c354aade0768a3e9574036",
+    "content": "5741ac81246d0660ea0216a160833c4b485e12dc2b94346055bc87c29d249e47"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-verification-warning-within-next-bound",
+      "digest": "70c9125f05500449d77e3f3fc8862943e26788910c501e6ec086507d11ac6901"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "verification",
+    "--",
+    "--exact",
+    "the_warning_stays_within_the_next_bound"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

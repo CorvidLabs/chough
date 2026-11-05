@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "c51de0157cd645cc65fe1464575bdb5a63e5ddaf",
+  "contract_digest": "fb0899550161890e898a31ae92822ffd7ccdb1978c86544d983b1fddf2b281d8",
+  "execution_digest": "5efac8aa17e4cd1496d68788f47caff0bd3972ca255c17b149040bc82b8247db",
+  "workspace_digest": "33998b2768bd0b1537e5ce31122378622bd9ae3d7a8bc5e325474e644e2bc5a9",
+  "timestamp": 1793836197
+}

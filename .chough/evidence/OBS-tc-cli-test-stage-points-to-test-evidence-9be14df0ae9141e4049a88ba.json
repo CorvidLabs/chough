@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba",
+  "criteria": [
+    "FLOW-15",
+    "FLOW-6"
+  ],
+  "requirements": [
+    "REQ-cli-038"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test verification -- --exact the_test_stage_points_to_recorded_test_evidence_before_accept for TC-cli-test-stage-points-to-test-evidence: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba.log": "231ef84df14578b0a5ec9286d4a6b42d9ca196979ef656e4133a199ab60cf12c"
+  },
+  "observed_at_unix_seconds": 1793830615,
+  "snapshot": {
+    "revision": "a2c1cf8e60aaec6c1f8bcd325f6179362bb5e587",
+    "dirty": false,
+    "fingerprint": "94272c5df99949e0f43fbc35d66909d67f57930375c354aade0768a3e9574036",
+    "content": "5741ac81246d0660ea0216a160833c4b485e12dc2b94346055bc87c29d249e47"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-test-stage-points-to-test-evidence",
+      "digest": "30e606ba0c87efd446e8ebccc555a4b374cb163e32d56f20458c75b088beb15b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "verification",
+    "--",
+    "--exact",
+    "the_test_stage_points_to_recorded_test_evidence_before_accept"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

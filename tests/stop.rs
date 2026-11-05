@@ -489,7 +489,7 @@ fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
 
 /// A `git` stand-in that, once `armed` exists, leaves `sleep {seconds}` running in the
 /// background holding its output pipes, runs the real Git, marks itself and exits.
-fn hold_git(fixture: &Fixture, seconds: u32) {
+fn hold_git(fixture: &Fixture, seconds: impl std::fmt::Display) {
     fixture.write(
         "bin/git",
         &format!(
@@ -586,4 +586,167 @@ fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
         fs::read_to_string(outputs.path().join("stderr")).unwrap()
     );
     assert!(started.elapsed() < Duration::from_secs(30));
+}
+
+/// A `sleep` argument only this fixture uses: `base` seconds plus a fraction made of this
+/// test process's ID, a per-process counter and the clock's nanoseconds, each fixed width
+/// so no identity is a prefix of another. The tests below find, check and reap their
+/// processes by `sleep <identity>`, so the same tests running in another worktree at the
+/// same time, and any other `sleep`, are never matched (#95 review).
+fn identity(base: u32) -> String {
+    static NEXT: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+    let next = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .subsec_nanos();
+    format!(
+        "{base}.{:010}{:04}{nanos:09}",
+        std::process::id(),
+        next % 10_000
+    )
+}
+
+/// Kills the processes whose command line contains this fixture's `sleep <identity>`
+/// when dropped, so a failing assertion never leaves the test's sleep behind.
+struct Reap(String);
+
+impl Drop for Reap {
+    fn drop(&mut self) {
+        let _ = Command::new("pkill")
+            .args(["-KILL", "-f", &self.0])
+            .status();
+    }
+}
+
+/// Issue #81 item 1 (REQ-cli-011, FLOW-14): a descendant that left the process group
+/// with `setsid` is stopped too, on Linux.
+#[cfg(target_os = "linux")]
+#[test]
+fn stopping_a_case_run_stops_a_descendant_that_left_the_group() {
+    stop_a_descendant_that_left_the_group();
+}
+
+/// #95 review: a stop test finds and reaps only its own fixture's processes. A process
+/// whose command line is `sleep 691`, as when this suite runs in a second worktree at the
+/// same time, is neither taken for a survivor nor killed.
+#[cfg(target_os = "linux")]
+#[test]
+fn a_stop_test_leaves_another_runs_processes_alone() {
+    struct Decoy(Child);
+    impl Drop for Decoy {
+        fn drop(&mut self) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+    let mut decoy = Decoy(Command::new("sleep").arg("691").spawn().unwrap());
+    stop_a_descendant_that_left_the_group();
+    assert!(
+        decoy.0.try_wait().unwrap().is_none(),
+        "the stop test killed another run's sleep 691"
+    );
+}
+
+#[cfg(target_os = "linux")]
+fn stop_a_descendant_that_left_the_group() {
+    let sleep = format!("sleep {}", identity(691));
+    let _reap = Reap(sleep.clone());
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    let argv = format!("[\"sh\", \"-c\", \"setsid {sleep} & touch running; sleep 692 & wait\"]");
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{}", command_case("TC-cli-0001", &argv, "never")),
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    assert_stopped(
+        &fixture,
+        &["cases", "run", "TC-cli-0001", "--environment", "local"],
+        "TERM",
+        libc::SIGTERM,
+        &sleep,
+    );
+}
+
+/// Issue #81 item 1: a `setsid` descendant whose parent exited at once (a double fork)
+/// is orphaned; Chough is its subreaper on Linux, so a stop finds and stops it too.
+#[cfg(target_os = "linux")]
+#[test]
+fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
+    let sleep = format!("sleep {}", identity(695));
+    let _reap = Reap(sleep.clone());
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    let argv = format!("[\"sh\", \"-c\", \"(setsid {sleep} &); touch running; sleep 696 & wait\"]");
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!("{HEADER}{}", command_case("TC-cli-0001", &argv, "never")),
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    assert_stopped(
+        &fixture,
+        &["cases", "run", "TC-cli-0001", "--environment", "local"],
+        "TERM",
+        libc::SIGTERM,
+        &sleep,
+    );
+}
+
+/// Issue #81 item 3 (REQ-cli-011): when a descendant of Chough's own Git holds its
+/// output past the grace period and is stopped, Chough says so on stderr.
+#[test]
+fn a_grace_kill_after_git_is_reported() {
+    let seconds = identity(681);
+    let _reap = Reap(format!("sleep {seconds}"));
+    let fixture = snapshot_fixture();
+    hold_git(&fixture, &seconds);
+    let output = fixture.run(&[
+        "library",
+        "snapshot",
+        "notes.md",
+        "--reason",
+        "keep the note",
+    ]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(
+        stderr.contains("stopped a process that kept Git's output open"),
+        "{stderr}"
+    );
+}
+
+/// Issue #81 item 2 (REQ-cli-011): a failed `git rev-parse HEAD` is reported on stderr
+/// and the move is still recorded; with no repository at all nothing is said.
+#[test]
+fn a_failed_head_revision_is_reported() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.commit("fixture");
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ \"$1\" = rev-parse ] && [ \"$2\" = HEAD ]; then echo 'fatal: simulated failure' >&2; exit 1; fi\nexec '{}' \"$@\"\n",
+            real_git()
+        ),
+    );
+    fixture.executable("bin/git");
+    let output = fixture.run(&["stage", "advance"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(
+        stderr.contains("could not read the Git revision") && stderr.contains("simulated failure"),
+        "{stderr}"
+    );
+
+    let plain = Fixture::new();
+    plain.hi_stand_in();
+    plain.init();
+    let output = plain.run(&["stage", "advance"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "{stderr}");
+    assert!(!stderr.contains("Git revision"), "no repository: {stderr}");
 }

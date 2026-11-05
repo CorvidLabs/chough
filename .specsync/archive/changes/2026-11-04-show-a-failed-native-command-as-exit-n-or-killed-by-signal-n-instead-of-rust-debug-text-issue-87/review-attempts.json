@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "952e6dc945c89031a230bae34ebab9c028ee4f7c",
+      "contract_digest": "cef5db9c6ab8e7dece492b7e96257baba001f59527f3aadcb263091bfc0d33ee",
+      "execution_digest": "eae84ed2adfa3d92447659e7ac66b78181e13b1e0ac084bb831f14318a83d60c",
+      "workspace_digest": "9674872f9e8423f36584c287574112111a120c398728567008423ecedfc0e300",
+      "timestamp": 1793835118
+    }
+  ]
+}

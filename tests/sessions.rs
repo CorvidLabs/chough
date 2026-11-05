@@ -707,6 +707,105 @@ fn orphaned_session_file_temps_are_removed_and_ignored() {
     assert!(fixture.exists(".chough/sessions/alpha.json"));
 }
 
+/// Issue #84: a subagent's question folded from the inbox is shown by `next` and
+/// `status`, not parked silently in `open_questions` (LIFE-3).
+#[test]
+fn a_folded_inbox_question_appears_in_next() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let question = "Should SAVE20 stack with SAVE10?";
+    add_entry(&fixture, "alpha", "question", question);
+    fixture.ok(&["inbox", "fold"]);
+    let output = fixture.run(&["next"]);
+    assert!(output.status.success());
+    let next = String::from_utf8(output.stdout).unwrap();
+    assert!(next.contains(question), "{next}");
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(view["open_questions"]["items"][0], question, "{view:#}");
+    let status = fixture.ok(&["status"]);
+    assert_eq!(status["checkpoint"]["open_questions"][0], question);
+}
+
+/// Issue #84 item a: an archived session is listed with status `archived`, not the
+/// `active` stage status it was archived with.
+#[test]
+fn session_list_reports_an_archived_session_as_archived() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    finish(&fixture, "alpha");
+    fixture.ok(&["session", "use", "beta"]);
+    assert!(fixture.exists(".chough/sessions/archive/alpha.json"));
+    let list = fixture.ok(&["session", "list"]);
+    let entry = |key: &str, archived: bool| {
+        list["sessions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["key"] == key && entry["archived"] == archived)
+            .cloned()
+            .unwrap_or_else(|| panic!("{key} missing: {list:#}"))
+    };
+    assert_eq!(entry("alpha", true)["status"], "archived", "{list:#}");
+    assert_eq!(entry("alpha", true)["stage"], "done");
+    assert_eq!(entry("beta", false)["status"], "active", "{list:#}");
+}
+
+/// Issue #84 item b, as Leif chose on 2026-11-04: an observation entry whose ID has no
+/// evidence record is still added, with a warning naming it, and `inbox list` marks it.
+#[test]
+fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.write(".chough/evidence/OBS-recorded.json", "{}\n");
+    let output = fixture.run(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "observation",
+        "--text",
+        "OBS-bogus",
+    ]);
+    assert!(output.status.success(), "the entry is still added");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("OBS-bogus") && stderr.contains("no record"),
+        "{stderr}"
+    );
+    let output = fixture.run(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "observation",
+        "--text",
+        "OBS-recorded",
+    ]);
+    assert!(output.status.success());
+    assert!(
+        !String::from_utf8_lossy(&output.stderr).contains("no record"),
+        "a recorded observation gets no warning"
+    );
+    let list = fixture.ok(&["inbox", "list"]);
+    let recorded = |text: &str| {
+        list["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["text"] == text)
+            .map(|entry| entry["recorded"].clone())
+            .unwrap_or_else(|| panic!("{text} missing: {list:#}"))
+    };
+    assert_eq!(recorded("OBS-bogus"), false, "{list:#}");
+    assert_eq!(recorded("OBS-recorded"), true, "{list:#}");
+}
+
 #[test]
 fn session_new_accepts_the_module_ids_init_accepts() {
     // Review thread 4465229406: `session new --module chat.service` was refused while

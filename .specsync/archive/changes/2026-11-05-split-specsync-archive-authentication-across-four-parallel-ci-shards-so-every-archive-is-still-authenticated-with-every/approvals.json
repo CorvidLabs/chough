@@ -1,0 +1,48 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793839553,
+      "digest": "e1cf452bd5968fe8fe2995240f6c4edb148052bf3050c9c4232fc7fdd7234af1",
+      "note": "Leif chose Make the check faster for the SpecSync Archive job, 2026-11-04 (DRIVE-10)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "split-specsync-archive-authentication-across-four-parallel-ci-shards-so-every-archive-is-still-authenticated-with-every",
+        "title": "Split SpecSync Archive authentication across four parallel CI shards so every archive is still authenticated with every check unchanged within the unchanged 10-minute job limit",
+        "description": "Split SpecSync Archive authentication across four parallel CI shards so every archive is still authenticated with every check unchanged within the unchanged 10-minute job limit",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/scripts/check-specsync-archive.py",
+          ".github/scripts/test-specsync-archive.py",
+          ".github/workflows/ci.yml",
+          "CHANGELOG.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "CI-only change: the hosted Archive inspection is split into shards; Chough product behavior and requirements are unchanged.",
+        "acceptance_criteria": [
+          "With --shard K/N each shard authenticates the sorted archives at positions K, K+N and so on, so N shards read every archive exactly once; shard 1 also walks every PR revision and refuses an omitted archive; every shard refuses an active change, an unhealthy audit, a wrong SpecSync version and an invalid result; --shard defaults to 1/1 with output unchanged; ci.yml runs four shards, each with the unchanged 10-minute limit; the new tests fail before the change and the existing fixtures pass; the hosted shards pass on this PR."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif (0xLeif) 2026-11-04 chose Make the check faster for the SpecSync Archive job, which took 7 to 10 minutes and timed out on #93 at 10 minutes. DRIVE-10: every archive authenticated with every check unchanged, within the unchanged job limit. Each native archive status read takes about 26 to 35 seconds inside SpecSync, so the reads are split across runners rather than skipped.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793840226,
+      "digest": "a8dc72b547f590feca3d35696d3919f16806b9859517dd4e744ca3ba562594e5",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

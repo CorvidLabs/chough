@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-archived-change-md-over-record-bound-d377e40063d48ac2f5cae75c",
+  "criteria": [
+    "LIFE-15"
+  ],
+  "requirements": [
+    "REQ-cli-042"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact an_archived_change_md_over_the_record_bound_is_read for TC-cli-archived-change-md-over-record-bound: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-archived-change-md-over-record-bound-d377e40063d48ac2f5cae75c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-archived-change-md-over-record-bound-d377e40063d48ac2f5cae75c.log": "de42bf312556ec03fab92799879bac0893be58e766543aecb55fee96e8d74dc1"
+  },
+  "observed_at_unix_seconds": 1793824749,
+  "snapshot": {
+    "revision": "a3ed589db6e436359ec9ad0d925f3ee8375b7b38",
+    "dirty": false,
+    "fingerprint": "3b44c8c1dec1a2571ffda111b664e0bb4e483128a4750abd8b5d4377709905e2",
+    "content": "fb610d88dee4a7859ebb7cd068309bc934037b5e2416d5674b222bee70fdce72"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-archived-change-md-over-record-bound",
+      "digest": "ad93413dda428fad4cc5c2825764d4d708d3bf5f07875f52b19541ae6a6f95e4"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "an_archived_change_md_over_the_record_bound_is_read"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

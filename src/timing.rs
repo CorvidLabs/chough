@@ -12,7 +12,7 @@ use crate::checkpoint::{Session, read_session};
 use crate::evidence::{self, Outcome};
 use crate::records::{
     NativeJson, TIMING_BUDGET_VARIABLE, local_path, native_json_within, now, print_json,
-    read_log_full, read_record, trace_phase,
+    read_log_full, read_native_text, trace_phase,
 };
 use crate::{bugs, stage, validate};
 use anyhow::{Result, bail};
@@ -991,13 +991,14 @@ fn bug_rows(root: &Path, only: Option<&str>, partial: &mut Vec<Value>) -> Vec<Bu
 // ---------------------------------------------------------------------------
 // Native lifecycle times, read only.
 
-/// Read one native record file within the record bound; its parsed JSON, or why not.
+/// Read one native record file within SpecSync's own 4 MiB artifact bound, never
+/// Chough's 64 KiB record bound (LIFE-15); its parsed JSON, or why not.
 fn native_record(root: &Path, relative: &str) -> Result<Value, String> {
     let path = local_path(root, relative).map_err(|_| "record unreadable".to_string())?;
     if !path.is_file() {
         return Err("no native record".into());
     }
-    let text = read_record(&path).map_err(|error| {
+    let text = read_native_text(&path).map_err(|error| {
         if error.to_string().contains("exceeds") {
             "record over its bound".to_string()
         } else {

@@ -2748,3 +2748,525 @@ expected = ["tests/cli.rs::legacy_writers_racing_adopt_each_save_or_refuse_with_
 adapter = "cargo-test"
 test_target = "cli"
 test = "legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved"
+
+[[case]]
+id = "TC-cli-next-shows-open-questions"
+title = "next and status show open questions"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::open_questions_appear_in_next_and_status passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "open_questions_appear_in_next_and_status"
+
+[[case]]
+id = "TC-cli-folded-inbox-question-in-next"
+title = "A folded inbox question appears in next"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "DRIVE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_folded_inbox_question_appears_in_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_folded_inbox_question_appears_in_next"
+
+[[case]]
+id = "TC-cli-done-trims-cold-proof-by-default"
+title = "Entering done trims cold archived proof with the librarian on"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-13", "KNOW-7"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::entering_done_trims_cold_archived_proof_by_default passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "entering_done_trims_cold_archived_proof_by_default"
+
+[[case]]
+id = "TC-cli-retention-manual-opts-out-at-done"
+title = "retention manual opts out of trimming at done"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-13"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "src/prefs.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::retention_manual_opts_out_of_trimming_at_done passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "retention_manual_opts_out_of_trimming_at_done"
+
+[[case]]
+id = "TC-cli-open-change-keeps-proof-at-done"
+title = "An open native change keeps proof and done is still recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-11", "KNOW-13"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::an_open_native_change_keeps_proof_and_the_move_still_succeeds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "an_open_native_change_keeps_proof_and_the_move_still_succeeds"
+
+[[case]]
+id = "TC-cli-recorded-retention-off-not-trimmed-at-done"
+title = "A recorded retention off is not trimmed at done"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-13", "KNOW-11"]
+requirements = ["REQ-cli-041"]
+paths = ["src/library.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::a_recorded_retention_off_is_not_trimmed_at_done passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "a_recorded_retention_off_is_not_trimmed_at_done"
+
+[[case]]
+id = "TC-cli-hi-export-over-16-kib-validates"
+title = "Criteria validate against a HI family export over 16 KiB; a retired criterion is still refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15", "LIFE-6"]
+requirements = ["REQ-cli-042"]
+paths = ["src/context.rs", "src/evidence.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::criteria_validate_against_a_hi_family_export_over_16_kib passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "criteria_validate_against_a_hi_family_export_over_16_kib"
+
+[[case]]
+id = "TC-cli-archived-finalization-over-record-bound"
+title = "Retention reads an archived finalization.json over 64 KiB"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/evidence.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::an_archived_finalization_over_the_record_bound_is_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "an_archived_finalization_over_the_record_bound_is_read"
+
+[[case]]
+id = "TC-cli-archived-change-md-over-record-bound"
+title = "library index reads an archived change.md over 64 KiB"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/library.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::an_archived_change_md_over_the_record_bound_is_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "an_archived_change_md_over_the_record_bound_is_read"
+
+[[case]]
+id = "TC-cli-sdd-policy-over-record-bound"
+title = "A disabled SDD policy over 64 KiB is read, not refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/stage.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::an_sdd_policy_over_the_record_bound_is_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "an_sdd_policy_over_the_record_bound_is_read"
+
+[[case]]
+id = "TC-cli-display-cut-points-to-source"
+title = "Display cuts say display only and send the reader to the complete source"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15"]
+requirements = ["REQ-cli-042"]
+paths = ["src/records.rs", "src/context.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::display_truncation_points_to_the_complete_source passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "display_truncation_points_to_the_complete_source"
+
+[[case]]
+id = "TC-cli-skill-bounds-never-justify-native-edits"
+title = "The skill says Chough bounds never justify editing HI, specs or SpecSync files"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-15", "LIFE-4"]
+requirements = ["REQ-cli-042"]
+paths = ["skills/chough-workflow/SKILL.md", "skills/chough-workflow/references/build.md", "src/skill.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::the_skill_says_chough_bounds_never_justify_editing_native_sources passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "the_skill_says_chough_bounds_never_justify_editing_native_sources"
+
+[[case]]
+id = "TC-cli-stop-reaches-setsid-descendant"
+title = "A stop also stops a descendant that left the process group"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "src/main.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::stopping_a_case_run_stops_a_descendant_that_left_the_group passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "stopping_a_case_run_stops_a_descendant_that_left_the_group"
+
+[[case]]
+id = "TC-cli-stop-reaches-orphaned-descendant"
+title = "A stop also stops an orphan that left the process group"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "src/main.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::stopping_a_case_run_stops_an_orphan_that_left_the_group passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "stopping_a_case_run_stops_an_orphan_that_left_the_group"
+
+[[case]]
+id = "TC-cli-stop-test-leaves-other-runs-alone"
+title = "A stop test checks and reaps only its own fixture's processes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::a_stop_test_leaves_another_runs_processes_alone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "a_stop_test_leaves_another_runs_processes_alone"
+
+[[case]]
+id = "TC-cli-git-grace-kill-reported"
+title = "A grace kill after Chough's own Git is reported"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "FLOW-14"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::a_grace_kill_after_git_is_reported passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "a_grace_kill_after_git_is_reported"
+
+[[case]]
+id = "TC-cli-failed-head-revision-reported"
+title = "A failed git rev-parse HEAD is reported"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-011"]
+paths = ["src/records.rs", "tests/stop.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stop.rs::a_failed_head_revision_is_reported passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stop"
+test = "a_failed_head_revision_is_reported"
+
+[[case]]
+id = "TC-cli-failed-native-exit-in-plain-words"
+title = "A failed native command is shown as exit N"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-003"]
+paths = ["src/records.rs", "tests/native_failure.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_failure.rs::a_failed_native_read_shows_its_exit_in_plain_words passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_failure"
+test = "a_failed_native_read_shows_its_exit_in_plain_words"
+
+[[case]]
+id = "TC-cli-native-killed-by-signal-says-so"
+title = "A native command ended by a signal is shown as killed by signal N"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-003"]
+paths = ["src/records.rs", "tests/native_failure.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_failure.rs::a_native_read_killed_by_a_signal_says_so passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_failure"
+test = "a_native_read_killed_by_a_signal_says_so"
+
+[[case]]
+id = "TC-cli-next-shows-failed-native-attempt"
+title = "next shows the latest failed native check attempt"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-3"]
+requirements = ["REQ-cli-039"]
+paths = ["src/native_check.rs", "src/main.rs", "tests/native_check.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_check.rs::a_failed_native_attempt_is_shown_in_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_check"
+test = "a_failed_native_attempt_is_shown_in_next"
+
+[[case]]
+id = "TC-cli-next-says-native-check-not-passed"
+title = "next says when the native check has not passed for this tree"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-039"]
+paths = ["src/native_check.rs", "src/main.rs", "tests/native_check.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_check.rs::next_says_when_the_native_check_has_not_passed_for_this_tree passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_check"
+test = "next_says_when_the_native_check_has_not_passed_for_this_tree"
+
+[[case]]
+id = "TC-cli-unreadable-native-attempts-unknown"
+title = "An unreadable attempts record is unknown and adds no native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-039"]
+paths = ["src/native_check.rs", "src/main.rs", "tests/native_check.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_check.rs::an_unreadable_attempts_record_is_unknown_and_adds_no_native_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_check"
+test = "an_unreadable_attempts_record_is_unknown_and_adds_no_native_read"
+
+[[case]]
+id = "TC-cli-verifying-tree-moved-not-passed"
+title = "A verifying change whose tree moved is shown as not passed for this tree"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-039"]
+paths = ["src/native_check.rs", "src/main.rs", "tests/native_check.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_check.rs::a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native_check"
+test = "a_verifying_change_whose_tree_moved_has_not_passed_for_this_tree"
+
+[[case]]
+id = "TC-cli-only-specsync-native-commands-reported"
+title = "next and status warn when the native check runs only SpecSync commands"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "LIFE-7"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::a_check_that_runs_only_specsync_commands_is_reported passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "a_check_that_runs_only_specsync_commands_is_reported"
+
+[[case]]
+id = "TC-cli-unrun-configured-commands-counted"
+title = "Configured commands the native check does not run are counted"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::configured_commands_the_check_does_not_run_are_counted passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "configured_commands_the_check_does_not_run_are_counted"
+
+[[case]]
+id = "TC-cli-no-warning-when-project-command-runs"
+title = "No warning when a project command runs or the list is unknown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::no_warning_when_a_project_command_runs_or_the_list_is_unknown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "no_warning_when_a_project_command_runs_or_the_list_is_unknown"
+
+[[case]]
+id = "TC-cli-test-stage-points-to-test-evidence"
+title = "The test stage points to recorded test evidence before accept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "FLOW-6"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_test_stage_points_to_recorded_test_evidence_before_accept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_test_stage_points_to_recorded_test_evidence_before_accept"
+
+[[case]]
+id = "TC-cli-verification-warning-changes-no-gate"
+title = "The verification warning changes no gate and adds no native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/stage.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_warning_changes_no_gate_and_adds_no_native_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_warning_changes_no_gate_and_adds_no_native_read"
+
+[[case]]
+id = "TC-cli-verification-warning-within-next-bound"
+title = "The native verification warning keeps next within its bound"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-15", "LIFE-3"]
+requirements = ["REQ-cli-038"]
+paths = ["src/policy.rs", "src/main.rs", "tests/verification.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/verification.rs::the_warning_stays_within_the_next_bound passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "verification"
+test = "the_warning_stays_within_the_next_bound"

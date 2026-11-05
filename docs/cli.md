@@ -23,7 +23,7 @@ their JSON.
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` allocate an OBS ID when `--observation-id` is omitted and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID allocates the new OBS form; an explicit ID must use that form for a new write. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
-| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto. Only `always`, `standing` and `auto` authorize without a run consent. |
+| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto, manual (manual opts out of trimming at done, KNOW-13). Only `always`, `standing` and `auto` authorize without a run consent, except that with the librarian on, an unset `retention` lets the trim at done run (see [Post-archive summary](#post-archive-summary)); `manual` or a recorded `off` stops it. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. A new run receives a VAL ID and every attempt receives a new OBS ID. `resume ID` continues a new or legacy run under its original ID; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
 | `library init\|snapshot PATH... --reason R\|index\|archive [--apply]` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` (new and legacy dated snapshots, archived changes newest first with the newest 3 marked hot, a lessons index of pointers, and any earlier `library/` folder listed as is) and one `archives/<change-id>.md` entry per archived native change. `archive` previews, or with `--apply` performs, the post-archive summary; see [Post-archive summary](#post-archive-summary). No gate reads the knowledge directory. |
@@ -131,6 +131,14 @@ records, and are read at any size; size is a composability hint, never a gate.
 `next` searches a module's `context.md` for its Lessons heading at any size. One
 reader is a known exception until a later change lifts it: `library snapshot`
 refuses any file over 4 MiB (REQ-cli-034).
+These bounds apply only to Chough's own records under `.chough/` and to what Chough
+displays (REQ-cli-042, LIFE-15). Native sources are never cut for a decision: criteria
+are validated against the complete `hi export -- <FAMILY>` output (up to 4 MiB), and
+SpecSync's own files, such as an archived `finalization.json` or `change.md`,
+`.specsync/sdd.json` and the change records `timing` reads, are read within SpecSync's
+4 MiB change-artifact bound. A display section cut at its budget says so and sends you
+to the complete source. Never shorten HI intent or criteria, specs or SpecSync files to
+fit a Chough bound; a native source that exceeds one is a Chough bug to report.
 Native SpecSync status is parsed from its complete output up to 4 MiB and displayed
 up to 16 KiB; `status` carries the parsed state and next action in `native_summary`
 and `next` in `native`. Larger output is reported as `oversized` and refuses gated
@@ -370,6 +378,7 @@ every command uses `.chough/session.json` exactly as before.
   switch archives it.
 - `chough session list` reports each open and archived session's key, objective,
   native change, stage, status, whether it is active and its `inbox_unfolded` count.
+  An archived session's status is `archived`; an open one's is its stage status (#84).
 
 The active session is named by `.chough/local/active-session`. That directory holds a
 `.gitignore` of `*`, so the pointer stays local to each worktree. It also holds the
@@ -405,7 +414,10 @@ chough inbox add --session <key> --from <name> --kind observation|decision|compl
 Each call creates `.chough/sessions/<key>.inbox/INB-<24 hex>.json` with
 `schema_version`, `id`, `session`, `from`, `kind`, `text` and
 `recorded_at_unix_seconds`, and never replaces a file. For an observation, the text is
-its evidence ID (record the observation with `chough evidence add` first). An entry
+its evidence ID (record the observation with `chough evidence add` first). An ID with
+no record in `.chough/evidence/` is still added, because a subagent may report before
+this tree has the record, but `inbox add` warns on stderr naming it, and `inbox list`
+marks each observation entry `recorded: true` or `false` (#84). An entry
 has no approval, review, consent, gate or stage field and a record with any other
 field is refused, so a subagent cannot clear a gate or move a stage through it; stage
 gates still come from native SpecSync state. A session holds at most 200 unfolded
@@ -443,10 +455,19 @@ and those descendants may keep running.
 Stopping Chough stops what it started (FLOW-14). On Unix, when Chough gets SIGINT
 (Ctrl-C), SIGTERM (a plain `kill`) or SIGHUP while a case binding, a native read or
 one of its own Git commands runs, it stops that command's process group and ends by
-the same signal. It keeps watching until the command's output closes: when a
+the same signal. On Linux it also stops every process below that command by parent
+links, including one that left the group with `setsid`, and, because the `chough`
+binary is the child subreaper of what it starts, one whose parent exited after starting
+it (a double fork) (#81). Because Chough is that subreaper for the whole run, a stop
+for a deadline or a held pipe also stops an orphan re-parented to Chough earlier in the
+same run, for example a detached `git gc --auto` left by one of its Git commands. It keeps watching until the command's output closes: when a
 descendant still holds the output of one of Chough's own Git commands after Git exits,
 a signal still stops the group, and without one Chough stops the group 2 seconds after
-Git exits and goes on with Git's output. During `cases run` the stop handling lasts through the save: a stop
+Git exits, says so on stderr (`chough: stopped a process that kept Git's output open 2 s
+after Git exited`), and goes on with Git's output. When `git rev-parse HEAD` fails for
+a reason other than no repository or a HEAD with no commit, Chough says so on stderr
+(`chough: could not read the Git revision (...)`) and saves the record without a
+revision. During `cases run` the stop handling lasts through the save: a stop
 before the save begins records nothing (no observation, artifact or checkpoint
 change), and a stop once it has begun lets the artifact and the observation both be
 written first, so a run is never half recorded. A signal Chough inherited as ignored
@@ -464,7 +485,10 @@ Native section states are `observed`; `failed` for a non-zero exit or output tha
 stayed open and could not be read completely; `unavailable` when the command cannot
 start or `CHOUGH_NATIVE_TIMEOUT_SECONDS` is not a whole number from 1 to 3600 (the
 command is then not run); `timed-out`; and, for JSON status, `oversized` and
-`invalid-output`. Each state other than `observed` leaves lifecycle state unknown,
+`invalid-output`. A `failed` section's content starts with how the command ended, in
+plain words: `exit <code>`, `killed by signal <number>`, `timed out` or `no exit
+status`, then its bounded output (#87). Each state other than `observed` leaves
+lifecycle state unknown,
 and gated transitions refuse it as `refused:native-unknown`. Without a SpecSync
 configuration, status reports `not-configured` and transitions are not natively gated.
 With SpecSync configured and SDD enabled but no native change recorded, gated
@@ -483,9 +507,11 @@ stage on that response, and shows:
 | `schema_version`, `view` | `1` and `next` |
 | `objective`, `stage` | The objective; current stage, status, iteration and side-stage callers |
 | `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`; with SpecSync configured but SDD off, as `specsync init` leaves it, the reason is ``native SDD is disabled; run `specsync change adopt` to gate stages``, and the `ungated:sdd-disabled` gate detail says the same); unknown values are `null` |
+| `native_check` | For a recorded native change with a workspace under `.specsync/changes/`, otherwise `null`: `last_attempt` (the latest attempt in its `verification-attempts.json` by timestamp: `passed`, `at_unix_seconds`, a 12-character `commit` and `failed_commands` with at most 3 `command` and `exit_code` entries and their `total`, or `null`), `not_passed_for_tree` (native state `approved` or `implementing`, or `verifying` while SpecSync's `handoff.readiness` from the same read is not `safe`, which it reports when the tree moved after the last check; a `verifying` reply with no readiness gives an "unknown" note instead), `note` and `unknown` (why the record could not be read; never shown as no failure). SpecSync 6.1.2 records an attempt only when a verification command runs; a refusal before verifying, such as incomplete tasks or missing requirement evidence, leaves no record or reason, so the note names `specsync change check <id>` (#86). It reads that one local file and no native command |
+| `native_verification_warning` | A sentence when the native check runs none of the project's commands, judged from the change's effective commands in the status read, otherwise `null`; `status` carries the same key. See [Native verification that runs no project command](#native-verification-that-runs-no-project-command) |
 | `next_valid_action` | `action`, `reason` and, when one applies, `command`; `status` reports the same `action` as its `next_valid_action` |
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
-| `awaiting_human`, `blockers`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest |
+| `awaiting_human`, `blockers`, `open_questions`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest. `open_questions` are the checkpoint's, from `checkpoint --question` or a folded inbox question; `status` reports all of them in its `checkpoint` section |
 | `observations` | `needs_attention_total` and `items` (referenced and `historical`, `pruned` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest checkpoint decisions, newest first; see [Decision prefixes](#decision-prefixes) |
 | `last_failure` | `{"id", "observed_at_unix_seconds", "summary", "bugs": {"total", "items": [{"id", "status"}]}}` for the failed observation with the greatest recorded `observed_at_unix_seconds` (ties to the greater ID), with at most 3 bugs that link it by their observations, note observations or regression baseline, by bug ID; `null` when no observation failed. No freshness label is computed; run `chough status` or the case for that |
@@ -506,6 +532,23 @@ of each source and records nothing: no fold state, ledger or index. Every orderi
 comes from recorded fields or names (checkpoint order, recorded observation time and
 ID, bug ID, archive directory name), never from file modification times or directory
 order, so the same records give byte-identical output in both forms.
+
+### Native verification that runs no project command
+
+`specsync change status --json` reports the commands a change's native check runs as
+`summary.verification_commands`. When SDD is enabled and every one of them is
+SpecSync's own (`specsync check --spec <module>` and the like), the check runs none of
+the project's commands, so its "verified" does not show that the project's tests ran
+(#85, FLOW-15). `chough next` then prints a `Warning:` line under the native change, and
+`next --json` and `chough status` carry the sentence as `native_verification_warning`
+(otherwise `null`). It is judged from that list, not from `.specsync/sdd.json`:
+SpecSync 6.1.2's `change check` does not run the `verification_commands` configured
+there (CorvidLabs/spec-sync#848), so configured commands the list leaves out are counted
+in the warning instead of hiding it. It uses the status read already made, adds none,
+says nothing when the list is absent, and is advice only: every stage move is allowed
+or refused exactly as without it. At the test stage, when nothing else stops it, `next`
+keeps `Continue test: <next action>`, says recorded test evidence is needed before
+accept, and names `chough cases run <case-id> --environment <env>`.
 
 ### Decision prefixes
 
@@ -707,6 +750,16 @@ verification commits, requirement IDs, acceptance criteria, each `.chough/` path
 archive first listed with its manifest digest and where its bytes are now, observation
 outcomes, linked bugs and the lesson bundle) and lets the raw proof go once it is safely
 in Git (REQ-cli-033).
+
+With the librarian on (the default), `chough stage advance` into done applies this
+summary right after the move is saved (REQ-cli-041, KNOW-13, #88): it uses a recorded
+retention consent or `retention auto` when there is one, otherwise the librarian default
+as the standing preference KNOW-11 names, and keeps every rule below (ledger first,
+validity restore, nothing removed while a native change is open). The result is
+reported as `applied.librarian_trim` with status `trimmed` (and the summary), `skipped`
+(librarian off, `chough pref set retention manual`, or a recorded `retention off`) or `refused` with its reason; it
+never undoes the move into done. It reads native status only for cold archives whose
+files it would remove, and runs only on that move, never inside `next` or `status`.
 
 - Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
   path an earlier archive already listed is counted but detailed only in that earlier
