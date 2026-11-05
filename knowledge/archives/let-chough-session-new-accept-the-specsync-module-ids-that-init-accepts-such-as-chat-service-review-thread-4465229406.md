@@ -49,10 +49,10 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-folded-inbox-question-in-next-6ba7f2bb72784ad17f373066 | passed (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
-| OBS-tc-cli-next-shows-open-questions-e0e2d02ccd995729ce44ce74 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
-| OBS-tc-history-archived-session-listed-archived-4c905b8471e89e3ef4e171f2 | passed (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
-| OBS-tc-history-unrecorded-inbox-observation-warns-9ace138ec6bef9b0b5d73bba | passed (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
+| OBS-tc-cli-folded-inbox-question-in-next-6ba7f2bb72784ad17f373066 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
+| OBS-tc-cli-next-shows-open-questions-e0e2d02ccd995729ce44ce74 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
+| OBS-tc-history-archived-session-listed-archived-4c905b8471e89e3ef4e171f2 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
+| OBS-tc-history-unrecorded-inbox-observation-warns-9ace138ec6bef9b0b5d73bba | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
 
 ## Bugs
 

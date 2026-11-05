@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 42
-archived_changes: 79
+archived_changes: 80
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-79 archived changes, newest first.
+80 archived changes, newest first.
 
+- [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](../archives/keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls.md) Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout)
 - [reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes](../archives/reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes.md) Reduce old observation proof: drop closed-cycle checkpoint references at done, trim superseded runs of cold changes, attribute unlisted proof to its change by cycle time, and read archive validity in parallel
 - [recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace](../archives/recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace.md) Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107)
 - [ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier](../archives/ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier.md) Ignore Trace mentions in backticks, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of 107 at 5326ec4)

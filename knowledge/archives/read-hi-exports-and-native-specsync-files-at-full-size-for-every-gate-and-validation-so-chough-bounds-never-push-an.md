@@ -57,97 +57,97 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-adopt-race-writers-save-or-refuse-3f4a73ec4215638a4a9c7bda | passed (by cycle time) | local-linux-aarch64 | TC-cli-adopt-race-writers-save-or-refuse |
-| OBS-tc-cli-adopt-race-writers-save-or-refuse-538709fd2dd881f8dcba1a15 | passed (by cycle time) | local-linux-aarch64 | TC-cli-adopt-race-writers-save-or-refuse |
-| OBS-tc-cli-adopt-race-writers-save-or-refuse-cee32e8bd90b5bf80b6fea91 | passed (by cycle time) | local-linux-aarch64 | TC-cli-adopt-race-writers-save-or-refuse |
+| OBS-tc-cli-adopt-race-writers-save-or-refuse-3f4a73ec4215638a4a9c7bda | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-adopt-race-writers-save-or-refuse |
+| OBS-tc-cli-adopt-race-writers-save-or-refuse-538709fd2dd881f8dcba1a15 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-adopt-race-writers-save-or-refuse |
+| OBS-tc-cli-adopt-race-writers-save-or-refuse-cee32e8bd90b5bf80b6fea91 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-adopt-race-writers-save-or-refuse |
 | OBS-tc-cli-archived-change-md-over-record-bound-d377e40063d48ac2f5cae75c | passed (by cycle time) | local-macos-arm64 | TC-cli-archived-change-md-over-record-bound |
 | OBS-tc-cli-archived-finalization-over-record-bound-906cd0685af8870d1495df2d | passed (by cycle time) | local-macos-arm64 | TC-cli-archived-finalization-over-record-bound |
-| OBS-tc-cli-checkpoint-lock-in-project-ignored-0bdc620d8d275a5e98ff7902 | passed (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-lock-in-project-ignored |
-| OBS-tc-cli-checkpoint-lock-in-project-ignored-2099148f28e0cbd6e416986d | passed (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-lock-in-project-ignored |
-| OBS-tc-cli-checkpoint-lock-in-project-ignored-cb46fef679422a8954e0bda0 | passed (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-lock-in-project-ignored |
+| OBS-tc-cli-checkpoint-lock-in-project-ignored-0bdc620d8d275a5e98ff7902 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-lock-in-project-ignored |
+| OBS-tc-cli-checkpoint-lock-in-project-ignored-2099148f28e0cbd6e416986d | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-lock-in-project-ignored |
+| OBS-tc-cli-checkpoint-lock-in-project-ignored-cb46fef679422a8954e0bda0 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-lock-in-project-ignored |
 | OBS-tc-cli-display-cut-points-to-source-d7a36e91a1d1b9ef94c5e1d6 | passed (by cycle time) | local-macos-arm64 | TC-cli-display-cut-points-to-source |
-| OBS-tc-cli-done-trims-cold-proof-by-default-90c448571845e4610ecddb0e | passed (by cycle time) | local-linux-aarch64 | TC-cli-done-trims-cold-proof-by-default |
-| OBS-tc-cli-done-trims-cold-proof-by-default-c304ea1236d56275d8bedece | passed (by cycle time) | local-linux-aarch64 | TC-cli-done-trims-cold-proof-by-default |
-| OBS-tc-cli-failed-head-revision-reported-7eab7e62b5ab4c4258b53fe4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-failed-head-revision-reported |
-| OBS-tc-cli-failed-head-revision-reported-8c849e6a1286d5434e1475cd | passed (by cycle time) | local-linux-aarch64 | TC-cli-failed-head-revision-reported |
-| OBS-tc-cli-failed-head-revision-reported-bafb385fdbf7f4903292ad9d | passed (by cycle time) | local-linux-aarch64 | TC-cli-failed-head-revision-reported |
-| OBS-tc-cli-failed-native-exit-in-plain-words-06ae1b849145ad876228e84b | passed (by cycle time) | local-linux-aarch64 | TC-cli-failed-native-exit-in-plain-words |
-| OBS-tc-cli-folded-inbox-question-in-next-5b2bc7e3201f57a1fba07dc2 | passed (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
-| OBS-tc-cli-folded-inbox-question-in-next-90529049c269a72617c2087f | not-run (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
-| OBS-tc-cli-folded-inbox-question-in-next-df085ce68897ec65347b04ff | passed (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
-| OBS-tc-cli-git-grace-kill-reported-06ec81ee95704c79c644df4b | passed (by cycle time) | local-linux-aarch64 | TC-cli-git-grace-kill-reported |
-| OBS-tc-cli-git-grace-kill-reported-8f9b2da484850e1a1389d402 | passed (by cycle time) | local-linux-aarch64 | TC-cli-git-grace-kill-reported |
-| OBS-tc-cli-git-grace-kill-reported-e8e1bdca1af016ac9a8354fa | passed (by cycle time) | local-linux-aarch64 | TC-cli-git-grace-kill-reported |
+| OBS-tc-cli-done-trims-cold-proof-by-default-90c448571845e4610ecddb0e | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-done-trims-cold-proof-by-default |
+| OBS-tc-cli-done-trims-cold-proof-by-default-c304ea1236d56275d8bedece | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-done-trims-cold-proof-by-default |
+| OBS-tc-cli-failed-head-revision-reported-7eab7e62b5ab4c4258b53fe4 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-failed-head-revision-reported |
+| OBS-tc-cli-failed-head-revision-reported-8c849e6a1286d5434e1475cd | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-failed-head-revision-reported |
+| OBS-tc-cli-failed-head-revision-reported-bafb385fdbf7f4903292ad9d | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-failed-head-revision-reported |
+| OBS-tc-cli-failed-native-exit-in-plain-words-06ae1b849145ad876228e84b | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-failed-native-exit-in-plain-words |
+| OBS-tc-cli-folded-inbox-question-in-next-5b2bc7e3201f57a1fba07dc2 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
+| OBS-tc-cli-folded-inbox-question-in-next-90529049c269a72617c2087f | not-run (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
+| OBS-tc-cli-folded-inbox-question-in-next-df085ce68897ec65347b04ff | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
+| OBS-tc-cli-git-grace-kill-reported-06ec81ee95704c79c644df4b | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-git-grace-kill-reported |
+| OBS-tc-cli-git-grace-kill-reported-8f9b2da484850e1a1389d402 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-git-grace-kill-reported |
+| OBS-tc-cli-git-grace-kill-reported-e8e1bdca1af016ac9a8354fa | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-git-grace-kill-reported |
 | OBS-tc-cli-hi-export-over-16-kib-validates-9502b194da369ee1e7a7788b | passed (by cycle time) | local-macos-arm64 | TC-cli-hi-export-over-16-kib-validates |
-| OBS-tc-cli-native-killed-by-signal-says-so-b734a4db7e3e4908defda993 | passed (by cycle time) | local-linux-aarch64 | TC-cli-native-killed-by-signal-says-so |
-| OBS-tc-cli-next-says-native-check-not-passed-40a734bd0dfe7429c34fe5ce | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-says-native-check-not-passed |
-| OBS-tc-cli-next-says-native-check-not-passed-600ffabe452b6763ae7a0294 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-says-native-check-not-passed |
-| OBS-tc-cli-next-says-native-check-not-passed-a993b10925c8375fc863d104 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-says-native-check-not-passed |
-| OBS-tc-cli-next-shows-failed-native-attempt-5e444635131ec2e4b81da15c | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-failed-native-attempt |
-| OBS-tc-cli-next-shows-failed-native-attempt-6bd5b3755edf4dc4091997fc | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-failed-native-attempt |
-| OBS-tc-cli-next-shows-failed-native-attempt-b827e14bce095297d27bbf98 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-failed-native-attempt |
-| OBS-tc-cli-next-shows-open-questions-3c08a49ba503200a398cda5e | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
-| OBS-tc-cli-next-shows-open-questions-850ce5e95a31660021528693 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
-| OBS-tc-cli-next-shows-open-questions-cef41dadbb83e8a6924b9567 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
-| OBS-tc-cli-next-shows-open-questions-dd8010a4477ee0d3a4d928d4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
-| OBS-tc-cli-no-warning-when-project-command-runs-55739ea2664c133f36b5fc6a | passed (by cycle time) | local-linux-aarch64 | TC-cli-no-warning-when-project-command-runs |
-| OBS-tc-cli-no-warning-when-project-command-runs-85e565e6c5a6f3c4309e9bb5 | passed (by cycle time) | local-linux-aarch64 | TC-cli-no-warning-when-project-command-runs |
-| OBS-tc-cli-only-specsync-native-commands-reported-4d926aca8f4dd992da154813 | passed (by cycle time) | local-linux-aarch64 | TC-cli-only-specsync-native-commands-reported |
-| OBS-tc-cli-only-specsync-native-commands-reported-db301353e5b919ab6aa7fee4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-only-specsync-native-commands-reported |
-| OBS-tc-cli-open-change-keeps-proof-at-done-028f9cba4da3709613949b39 | passed (by cycle time) | local-linux-aarch64 | TC-cli-open-change-keeps-proof-at-done |
-| OBS-tc-cli-open-change-keeps-proof-at-done-ebfd158217a8895808c2edfa | passed (by cycle time) | local-linux-aarch64 | TC-cli-open-change-keeps-proof-at-done |
-| OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-cf4068ce301e6405fd93ea04 | passed (by cycle time) | local-linux-aarch64 | TC-cli-recorded-retention-off-not-trimmed-at-done |
-| OBS-tc-cli-retention-manual-opts-out-at-done-bfb0848eaeafa5c56d02b670 | passed (by cycle time) | local-linux-aarch64 | TC-cli-retention-manual-opts-out-at-done |
-| OBS-tc-cli-retention-manual-opts-out-at-done-ca5a4d3ea6ad2221c8ffad04 | passed (by cycle time) | local-linux-aarch64 | TC-cli-retention-manual-opts-out-at-done |
+| OBS-tc-cli-native-killed-by-signal-says-so-b734a4db7e3e4908defda993 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-native-killed-by-signal-says-so |
+| OBS-tc-cli-next-says-native-check-not-passed-40a734bd0dfe7429c34fe5ce | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-says-native-check-not-passed |
+| OBS-tc-cli-next-says-native-check-not-passed-600ffabe452b6763ae7a0294 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-says-native-check-not-passed |
+| OBS-tc-cli-next-says-native-check-not-passed-a993b10925c8375fc863d104 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-says-native-check-not-passed |
+| OBS-tc-cli-next-shows-failed-native-attempt-5e444635131ec2e4b81da15c | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-failed-native-attempt |
+| OBS-tc-cli-next-shows-failed-native-attempt-6bd5b3755edf4dc4091997fc | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-failed-native-attempt |
+| OBS-tc-cli-next-shows-failed-native-attempt-b827e14bce095297d27bbf98 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-failed-native-attempt |
+| OBS-tc-cli-next-shows-open-questions-3c08a49ba503200a398cda5e | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
+| OBS-tc-cli-next-shows-open-questions-850ce5e95a31660021528693 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
+| OBS-tc-cli-next-shows-open-questions-cef41dadbb83e8a6924b9567 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
+| OBS-tc-cli-next-shows-open-questions-dd8010a4477ee0d3a4d928d4 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
+| OBS-tc-cli-no-warning-when-project-command-runs-55739ea2664c133f36b5fc6a | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-no-warning-when-project-command-runs |
+| OBS-tc-cli-no-warning-when-project-command-runs-85e565e6c5a6f3c4309e9bb5 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-no-warning-when-project-command-runs |
+| OBS-tc-cli-only-specsync-native-commands-reported-4d926aca8f4dd992da154813 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-only-specsync-native-commands-reported |
+| OBS-tc-cli-only-specsync-native-commands-reported-db301353e5b919ab6aa7fee4 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-only-specsync-native-commands-reported |
+| OBS-tc-cli-open-change-keeps-proof-at-done-028f9cba4da3709613949b39 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-open-change-keeps-proof-at-done |
+| OBS-tc-cli-open-change-keeps-proof-at-done-ebfd158217a8895808c2edfa | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-open-change-keeps-proof-at-done |
+| OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-cf4068ce301e6405fd93ea04 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-recorded-retention-off-not-trimmed-at-done |
+| OBS-tc-cli-retention-manual-opts-out-at-done-bfb0848eaeafa5c56d02b670 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-retention-manual-opts-out-at-done |
+| OBS-tc-cli-retention-manual-opts-out-at-done-ca5a4d3ea6ad2221c8ffad04 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-retention-manual-opts-out-at-done |
 | OBS-tc-cli-sdd-policy-over-record-bound-e3bf3b47053e38e0b75aca90 | passed (by cycle time) | local-macos-arm64 | TC-cli-sdd-policy-over-record-bound |
 | OBS-tc-cli-skill-bounds-never-justify-native-edits-d589a026470f6dd7764629ec | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-bounds-never-justify-native-edits |
-| OBS-tc-cli-stop-reaches-orphaned-descendant-9fbc5d0b7bd58ff99051180f | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-orphaned-descendant |
-| OBS-tc-cli-stop-reaches-orphaned-descendant-c9d3b07eed67b08b31dc2134 | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-orphaned-descendant |
-| OBS-tc-cli-stop-reaches-orphaned-descendant-d0f26579ca237b11fc389565 | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-orphaned-descendant |
-| OBS-tc-cli-stop-reaches-setsid-descendant-2cac6dbe30ea3b5f350bb68b | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-setsid-descendant |
-| OBS-tc-cli-stop-reaches-setsid-descendant-58a38c5bb484bd787243ced9 | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-setsid-descendant |
-| OBS-tc-cli-stop-reaches-setsid-descendant-813dc48659d065cd823e54cd | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-setsid-descendant |
-| OBS-tc-cli-stop-test-leaves-other-runs-alone-c9cd077f84e2ce3708a08ea4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-stop-test-leaves-other-runs-alone |
-| OBS-tc-cli-test-stage-points-to-test-evidence-6544aa866a4dc8b52bc808d4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-test-stage-points-to-test-evidence |
-| OBS-tc-cli-test-stage-points-to-test-evidence-6f69b040a07c343bf5aad629 | passed (by cycle time) | local-linux-aarch64 | TC-cli-test-stage-points-to-test-evidence |
-| OBS-tc-cli-unreadable-native-attempts-unknown-1227807aec1843d01bb7e8b8 | passed (by cycle time) | local-linux-aarch64 | TC-cli-unreadable-native-attempts-unknown |
-| OBS-tc-cli-unreadable-native-attempts-unknown-228e142cd4cde86ed3da9c79 | passed (by cycle time) | local-linux-aarch64 | TC-cli-unreadable-native-attempts-unknown |
-| OBS-tc-cli-unreadable-native-attempts-unknown-65a82a5e4caa525911cebe87 | passed (by cycle time) | local-linux-aarch64 | TC-cli-unreadable-native-attempts-unknown |
-| OBS-tc-cli-unrun-configured-commands-counted-0c3631e5ab7a2f35bf5b855c | passed (by cycle time) | local-linux-aarch64 | TC-cli-unrun-configured-commands-counted |
-| OBS-tc-cli-unrun-configured-commands-counted-f4e5ca97dda2fa3c7e3e8e3f | passed (by cycle time) | local-linux-aarch64 | TC-cli-unrun-configured-commands-counted |
-| OBS-tc-cli-verification-warning-changes-no-gate-6c3032963ef43d641024293c | passed (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-changes-no-gate |
-| OBS-tc-cli-verification-warning-changes-no-gate-87ff7366f63ea32c9bc69a97 | passed (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-changes-no-gate |
-| OBS-tc-cli-verification-warning-within-next-bound-637980c01bae0d36cb4d9362 | passed (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-within-next-bound |
-| OBS-tc-cli-verifying-tree-moved-not-passed-13ab547b1117f29618125ca2 | passed (by cycle time) | local-linux-aarch64 | TC-cli-verifying-tree-moved-not-passed |
-| OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2 | passed (by cycle time) | local-linux-aarch64 | TC-cli-verifying-tree-moved-not-passed |
-| OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-29895514910c9e4213091c7e | passed (by cycle time) | local-linux-aarch64 | TC-cli-writers-share-the-project-lock-across-tmpdir |
-| OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f | passed (by cycle time) | local-linux-aarch64 | TC-cli-writers-share-the-project-lock-across-tmpdir |
-| OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-e091efae8c4adcc2f332caf1 | passed (by cycle time) | local-linux-aarch64 | TC-cli-writers-share-the-project-lock-across-tmpdir |
-| OBS-tc-history-archived-session-listed-archived-0b7bf375ca63dc707c766b52 | passed (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
-| OBS-tc-history-archived-session-listed-archived-4e686867790d809618fa88a3 | passed (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
-| OBS-tc-history-archived-session-listed-archived-8236c0dede0fa96f94dad2bc | passed (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
-| OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-a8ac5ce3b372ea92e0c03b82 | passed (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-killed-leaves-no-partial-entry |
-| OBS-tc-history-inbox-add-never-stranded-by-archive-377f3bb35fa0f5673b6b31d8 | passed (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-never-stranded-by-archive |
-| OBS-tc-history-inbox-add-never-stranded-by-archive-5ac1c767aa6accc7cc5c79d1 | passed (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-never-stranded-by-archive |
-| OBS-tc-history-no-sessions-local-holds-only-lock-402366b688bab3db8d7a6439 | passed (by cycle time) | local-linux-aarch64 | TC-history-no-sessions-local-holds-only-lock |
-| OBS-tc-history-no-sessions-local-holds-only-lock-4053859ff887aeda5e1bb648 | passed (by cycle time) | local-linux-aarch64 | TC-history-no-sessions-local-holds-only-lock |
-| OBS-tc-history-no-sessions-local-holds-only-lock-86f8471b898d99df69e20948 | passed (by cycle time) | local-linux-aarch64 | TC-history-no-sessions-local-holds-only-lock |
-| OBS-tc-history-retention-protects-inbox-observations-109154d26ff8100c774a82e2 | passed (by cycle time) | local-linux-aarch64 | TC-history-retention-protects-inbox-observations |
-| OBS-tc-history-retention-protects-inbox-observations-8fec8fc27a1216fdcb7aea4d | passed (by cycle time) | local-linux-aarch64 | TC-history-retention-protects-inbox-observations |
-| OBS-tc-history-retention-refuses-unreadable-inbox-entry-b7606d5bec75f2a5dcaa8347 | passed (by cycle time) | local-linux-aarch64 | TC-history-retention-refuses-unreadable-inbox-entry |
-| OBS-tc-history-saved-event-survives-a-move-eb5e5bb43523ac1d191b24dc | passed (by cycle time) | local-linux-aarch64 | TC-history-saved-event-survives-a-move |
-| OBS-tc-history-session-use-waits-for-stage-advance-7a6125f3f1d9481f96b3a50f | passed (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
-| OBS-tc-history-session-use-waits-for-stage-advance-8d5b88b4cc3e91aace5a6776 | passed (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
-| OBS-tc-history-session-use-waits-for-stage-advance-8e1828e1ef1ea18d03e12611 | passed (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
-| OBS-tc-history-session-use-waits-for-stage-advance-e3eea25c5c0affb98bc95ced | passed (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
-| OBS-tc-history-sessions-local-holds-pointer-and-lock-d4fcee9a422d26b637466ec1 | passed (by cycle time) | local-linux-aarch64 | TC-history-sessions-local-holds-pointer-and-lock |
-| OBS-tc-history-unrecorded-inbox-observation-warns-3998957716bafb08a9ea4fd8 | passed (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
-| OBS-tc-history-unrecorded-inbox-observation-warns-acf794d9b07dbfb1fa6deac7 | passed (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
-| OBS-tc-history-unrecorded-inbox-observation-warns-d2820cefe3e32277d797126e | passed (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
-| OBS-tc-history-vanished-session-leaves-no-event-24bdee4af1db73b71a608106 | passed (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
-| OBS-tc-history-vanished-session-leaves-no-event-b0f53c9d58b1db781869cc2b | passed (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
-| OBS-tc-history-vanished-session-leaves-no-event-c5ccd24d83c6fc6547cc6672 | passed (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
-| OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150 | passed (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
+| OBS-tc-cli-stop-reaches-orphaned-descendant-9fbc5d0b7bd58ff99051180f | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-orphaned-descendant |
+| OBS-tc-cli-stop-reaches-orphaned-descendant-c9d3b07eed67b08b31dc2134 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-orphaned-descendant |
+| OBS-tc-cli-stop-reaches-orphaned-descendant-d0f26579ca237b11fc389565 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-orphaned-descendant |
+| OBS-tc-cli-stop-reaches-setsid-descendant-2cac6dbe30ea3b5f350bb68b | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-setsid-descendant |
+| OBS-tc-cli-stop-reaches-setsid-descendant-58a38c5bb484bd787243ced9 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-setsid-descendant |
+| OBS-tc-cli-stop-reaches-setsid-descendant-813dc48659d065cd823e54cd | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-stop-reaches-setsid-descendant |
+| OBS-tc-cli-stop-test-leaves-other-runs-alone-c9cd077f84e2ce3708a08ea4 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-stop-test-leaves-other-runs-alone |
+| OBS-tc-cli-test-stage-points-to-test-evidence-6544aa866a4dc8b52bc808d4 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-test-stage-points-to-test-evidence |
+| OBS-tc-cli-test-stage-points-to-test-evidence-6f69b040a07c343bf5aad629 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-test-stage-points-to-test-evidence |
+| OBS-tc-cli-unreadable-native-attempts-unknown-1227807aec1843d01bb7e8b8 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-unreadable-native-attempts-unknown |
+| OBS-tc-cli-unreadable-native-attempts-unknown-228e142cd4cde86ed3da9c79 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-unreadable-native-attempts-unknown |
+| OBS-tc-cli-unreadable-native-attempts-unknown-65a82a5e4caa525911cebe87 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-unreadable-native-attempts-unknown |
+| OBS-tc-cli-unrun-configured-commands-counted-0c3631e5ab7a2f35bf5b855c | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-unrun-configured-commands-counted |
+| OBS-tc-cli-unrun-configured-commands-counted-f4e5ca97dda2fa3c7e3e8e3f | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-unrun-configured-commands-counted |
+| OBS-tc-cli-verification-warning-changes-no-gate-6c3032963ef43d641024293c | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-changes-no-gate |
+| OBS-tc-cli-verification-warning-changes-no-gate-87ff7366f63ea32c9bc69a97 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-changes-no-gate |
+| OBS-tc-cli-verification-warning-within-next-bound-637980c01bae0d36cb4d9362 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-within-next-bound |
+| OBS-tc-cli-verifying-tree-moved-not-passed-13ab547b1117f29618125ca2 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-verifying-tree-moved-not-passed |
+| OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-verifying-tree-moved-not-passed |
+| OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-29895514910c9e4213091c7e | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-writers-share-the-project-lock-across-tmpdir |
+| OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-writers-share-the-project-lock-across-tmpdir |
+| OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-e091efae8c4adcc2f332caf1 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-writers-share-the-project-lock-across-tmpdir |
+| OBS-tc-history-archived-session-listed-archived-0b7bf375ca63dc707c766b52 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
+| OBS-tc-history-archived-session-listed-archived-4e686867790d809618fa88a3 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
+| OBS-tc-history-archived-session-listed-archived-8236c0dede0fa96f94dad2bc | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
+| OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-a8ac5ce3b372ea92e0c03b82 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-killed-leaves-no-partial-entry |
+| OBS-tc-history-inbox-add-never-stranded-by-archive-377f3bb35fa0f5673b6b31d8 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-never-stranded-by-archive |
+| OBS-tc-history-inbox-add-never-stranded-by-archive-5ac1c767aa6accc7cc5c79d1 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-never-stranded-by-archive |
+| OBS-tc-history-no-sessions-local-holds-only-lock-402366b688bab3db8d7a6439 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-no-sessions-local-holds-only-lock |
+| OBS-tc-history-no-sessions-local-holds-only-lock-4053859ff887aeda5e1bb648 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-no-sessions-local-holds-only-lock |
+| OBS-tc-history-no-sessions-local-holds-only-lock-86f8471b898d99df69e20948 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-no-sessions-local-holds-only-lock |
+| OBS-tc-history-retention-protects-inbox-observations-109154d26ff8100c774a82e2 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-retention-protects-inbox-observations |
+| OBS-tc-history-retention-protects-inbox-observations-8fec8fc27a1216fdcb7aea4d | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-retention-protects-inbox-observations |
+| OBS-tc-history-retention-refuses-unreadable-inbox-entry-b7606d5bec75f2a5dcaa8347 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-retention-refuses-unreadable-inbox-entry |
+| OBS-tc-history-saved-event-survives-a-move-eb5e5bb43523ac1d191b24dc | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-saved-event-survives-a-move |
+| OBS-tc-history-session-use-waits-for-stage-advance-7a6125f3f1d9481f96b3a50f | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
+| OBS-tc-history-session-use-waits-for-stage-advance-8d5b88b4cc3e91aace5a6776 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
+| OBS-tc-history-session-use-waits-for-stage-advance-8e1828e1ef1ea18d03e12611 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
+| OBS-tc-history-session-use-waits-for-stage-advance-e3eea25c5c0affb98bc95ced | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
+| OBS-tc-history-sessions-local-holds-pointer-and-lock-d4fcee9a422d26b637466ec1 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-sessions-local-holds-pointer-and-lock |
+| OBS-tc-history-unrecorded-inbox-observation-warns-3998957716bafb08a9ea4fd8 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
+| OBS-tc-history-unrecorded-inbox-observation-warns-acf794d9b07dbfb1fa6deac7 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
+| OBS-tc-history-unrecorded-inbox-observation-warns-d2820cefe3e32277d797126e | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
+| OBS-tc-history-vanished-session-leaves-no-event-24bdee4af1db73b71a608106 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
+| OBS-tc-history-vanished-session-leaves-no-event-b0f53c9d58b1db781869cc2b | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
+| OBS-tc-history-vanished-session-leaves-no-event-c5ccd24d83c6fc6547cc6672 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
+| OBS-tc-history-vanished-session-leaves-no-event-fec9e62ec35f29a8ff92f150 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
 | OBS-tc-reporting-approval-ledger-over-record-bound-0269a0274febd6c04572f055 | passed (by cycle time) | local-macos-arm64 | TC-reporting-approval-ledger-over-record-bound |
 
 ## Bugs

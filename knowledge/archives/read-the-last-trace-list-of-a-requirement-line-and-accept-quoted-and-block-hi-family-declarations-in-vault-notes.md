@@ -52,7 +52,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-vault-archive-note-properties-09d31a0bf88a0a12a889c4f8 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-archive-note-properties |
 | OBS-tc-cli-vault-intent-notes-0e6e8d167b5b83b31575b126 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-intent-notes |
 | OBS-tc-cli-vault-sub-criterion-ids-cd88575df8e8a44ade413d51 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-sub-criterion-ids |
-| OBS-tc-cli-vault-trace-and-family-forms-b7f23b9ad0491722c8b3df07 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-trace-and-family-forms |
+| OBS-tc-cli-vault-trace-and-family-forms-b7f23b9ad0491722c8b3df07 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-trace-and-family-forms |
 
 ## Bugs
 

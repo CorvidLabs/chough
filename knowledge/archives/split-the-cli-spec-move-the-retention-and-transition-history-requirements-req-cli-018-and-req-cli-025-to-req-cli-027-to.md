@@ -92,7 +92,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-history-post-prune-reference-afa62c261a8ddb3016816d17 | passed (by cycle time) | local-linux-x86_64 | TC-history-post-prune-reference |
 | OBS-tc-history-retention-c450f7191a9e89e69c521e4a | passed (by cycle time) | local-linux-x86_64 | TC-history-retention |
 | OBS-tc-history-retention-revalidation-e66770734a192d4be574b9cf | passed (by cycle time) | local-linux-x86_64 | TC-history-retention-revalidation |
-| OBS-tc-history-split-keeps-requirement-wording-0f85c5fa642b0c61c2577206 | passed (by cycle time) | local-linux-x86_64 | TC-history-split-keeps-requirement-wording |
+| OBS-tc-history-split-keeps-requirement-wording-0f85c5fa642b0c61c2577206 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-history-split-keeps-requirement-wording |
 | OBS-tc-history-stale-receipt-age-1bde7d98d803fc1ffaa12992 | passed (by cycle time) | local-linux-x86_64 | TC-history-stale-receipt-age |
 
 ## Bugs

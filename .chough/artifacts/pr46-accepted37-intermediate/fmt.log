@@ -1,3 +1,0 @@
-COMMAND ["fledge", "run", "fmt"]
-▶️ Running task: fmt
-✅ fmt (0.6s)
