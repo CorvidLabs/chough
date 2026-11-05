@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-4b0f212f24c265fad98f8682",
-    "head": "EVT-a73f8c3931cc6a9bde8d9a65",
+    "head": "EVT-b03ccd067fbbe74d6c3ea62e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,7 +26,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "ROADMAP 0.4.0 change (#117) accepted by Leif (0xLeif): Record and merge, 2026-11-05 via the orc; his native review (pass) recorded at 844f0266."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -34,9 +36,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Record the install observation, verify, and open the docs PR"
 }
