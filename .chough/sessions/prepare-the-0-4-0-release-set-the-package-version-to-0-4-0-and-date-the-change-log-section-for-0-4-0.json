@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-766b1557a60c7beaeaf72ba4",
-    "head": "EVT-7b5c413ca50969db8d561635",
+    "head": "EVT-98e714eaeb5d1b8c8525c6e1",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -29,10 +29,16 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-structural-ce74f6d127b1f262c869b327",
+    "OBS-dry-run-2d42138c5939105291d8aed7"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)",
+    "Leif approves the v0.4.0 tag, crates.io publish and GitHub release (separate decisions after merge)"
+  ],
   "run_consents": [],
   "next_action": "Package checks and verify, then bring Leif the release gate"
 }

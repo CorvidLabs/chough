@@ -1,0 +1,28 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-ce74f6d127b1f262c869b327",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-001"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "chough --version reports chough 0.4.0; cargo package --list --locked lists only src/ (20), skills/ (24), Cargo.toml, Cargo.lock, README.md, LICENSE and the generated .cargo_vcs_info.json and Cargo.toml.orig.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1793902753,
+  "snapshot": {
+    "revision": "5959fe239d859aa0b86d0cb187d55a7571fcbb7f",
+    "dirty": false,
+    "fingerprint": "26d239877419919d566ab04610f1aceb281cbd14ab0b2c8abddfebcbe721c107",
+    "content": "d5803939595342f5258aa12eea2e717f3a1dabcb5596ffc51dac529011f6af19"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated"
+}

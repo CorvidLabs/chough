@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0 (active; `specsync change status prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,10 @@ Archived lesson bundles:
 
 ## Observations
 
-492 recorded; most recent:
+494 recorded; most recent:
 
+- OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
+- OBS-structural-ce74f6d127b1f262c869b327 Structural Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-tc-cli-failed-copy-keeps-other-writer-ac77298375f085b47ae7a1d3 ProductTest Passed in local-linux-aarch64 at 8a87a1d468be
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-ad4356ae97e0d1fc8a02a87b ProductTest Passed in local-linux-aarch64 at 7f113f4ec6a5
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
@@ -105,8 +107,6 @@ Archived lesson bundles:
 - OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
 - OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
 - OBS-product-test-deeab5eb9295ffe50f291b9e ProductTest Passed in local-linux-aarch64 at 5793431b5f81
-- OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e ProductTest Passed in local-linux-aarch64 at 0caabbe46358
-- OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 
 ## Briefs
 
