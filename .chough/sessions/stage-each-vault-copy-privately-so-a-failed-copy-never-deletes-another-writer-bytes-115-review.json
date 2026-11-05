@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-708a6699db912c08721d8387",
+    "head": "EVT-78f9d9778e50a826c917c22e",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Stage vault copies privately so a failed copy never deletes another writer's bytes (#115 review P1)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review",
+  "references": {
+    "criteria": [
+      "KNOW-10",
+      "KNOW-19"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Stage copies privately and link them into place against the failing unit test"
+}

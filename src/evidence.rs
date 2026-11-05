@@ -2020,6 +2020,57 @@ fn remove_verified_as(
     }
 }
 
+/// What [`place_copy`] did at a vault destination.
+#[derive(Debug, PartialEq, Eq)]
+enum Placed {
+    /// This apply created the copy; a refused apply removes it while it is unchanged.
+    Created,
+    /// The same bytes were already there; they are not this apply's to remove.
+    AlreadyThere,
+}
+
+/// Put `content` at `path` without ever replacing what is there. `finish` sets the copy's
+/// mode. Different bytes already at `path` are refused and kept.
+fn place_copy(
+    path: &Path,
+    content: &[u8],
+    _permissions: &fs::Permissions,
+    finish: impl FnOnce(&Path) -> std::io::Result<()>,
+) -> Result<Placed> {
+    match fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(path)
+    {
+        Ok(mut copy) => {
+            use std::io::Write;
+            // This apply created the copy, so one it could not finish writing is removed
+            // at once.
+            let written = copy.write_all(content).and_then(|()| finish(path));
+            if let Err(error) = written {
+                let _ = fs::remove_file(path);
+                return Err(error.into());
+            }
+            Ok(Placed::Created)
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            let existing = fs::read(path).with_context(|| {
+                format!(
+                    "reading {}, which appeared during the apply",
+                    path.display()
+                )
+            })?;
+            ensure!(
+                existing == content,
+                "{} appeared during the apply with different bytes; a move never overwrites",
+                path.display()
+            );
+            Ok(Placed::AlreadyThere)
+        }
+        Err(error) => Err(error.into()),
+    }
+}
+
 /// Classify observation sets that archived manifests list: candidates (listed only by
 /// cold archives, no protection left once age and the latest-archive reason are set
 /// aside, every file committed identically at HEAD), protected sets with reasons, and
@@ -2684,42 +2735,12 @@ pub(super) fn archive_summary(
                             if let Some(parent) = path.parent() {
                                 fs::create_dir_all(parent)?;
                             }
-                            match fs::OpenOptions::new()
-                                .write(true)
-                                .create_new(true)
-                                .open(&path)
-                            {
-                                Ok(mut copy) => {
-                                    use std::io::Write;
-                                    // This apply created the copy, so one it could not
-                                    // finish writing is removed at once.
-                                    let written = copy.write_all(content).and_then(|()| {
-                                        fs::set_permissions(&path, permissions.clone())
-                                    });
-                                    if let Err(error) = written {
-                                        let _ = fs::remove_file(&path);
-                                        return Err(error)
-                                            .with_context(|| format!("moving {file} to {target}"));
-                                    }
-                                    copies.push((
-                                        target.clone(),
-                                        content.clone(),
-                                        permissions.clone(),
-                                    ));
-                                }
-                                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                                    let existing = fs::read(&path).with_context(|| {
-                                        format!("reading {target}, which appeared during the apply")
-                                    })?;
-                                    ensure!(
-                                        existing == *content,
-                                        "{target} appeared during the apply with different bytes; a move never overwrites, so {file} was not moved"
-                                    );
-                                }
-                                Err(error) => {
-                                    return Err(error)
-                                        .with_context(|| format!("moving {file} to {target}"));
-                                }
+                            let placed = place_copy(&path, content, &permissions, |staged| {
+                                fs::set_permissions(staged, permissions.clone())
+                            })
+                            .with_context(|| format!("moving {file} to {target}"))?;
+                            if placed == Placed::Created {
+                                copies.push((target.clone(), content.clone(), permissions.clone()));
                             }
                         }
                         remove_verified(root, file, content)?;
@@ -2965,6 +2986,50 @@ mod tests {
             );
             assert!(seen.insert(hold.to_path_buf()), "{record}");
         }
+    }
+
+    #[test]
+    fn a_failed_copy_never_deletes_another_writers_bytes() {
+        // #115 review P1: another writer replaces the attachment just before setting the
+        // copy's mode fails; the refusal must keep that writer's bytes.
+        let root = tempfile::tempdir().unwrap();
+        let path = root.path().join("attachments/a2/evidence/manual.json");
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let permissions = fs::metadata(root.path()).unwrap().permissions();
+        let error = place_copy(&path, b"ours\n", &permissions, |_| {
+            fs::write(&path, "another writer\n")?;
+            Err(std::io::Error::other("set_permissions failed"))
+        })
+        .unwrap_err();
+        assert!(
+            format!("{error:#}").contains("set_permissions failed"),
+            "{error:#}"
+        );
+        assert_eq!(fs::read_to_string(&path).unwrap(), "another writer\n");
+        let left: Vec<_> = fs::read_dir(path.parent().unwrap()).unwrap().collect();
+        assert_eq!(left.len(), 1, "no staged copy is left behind");
+
+        // A failure before anyone else writes leaves nothing behind.
+        let other = root.path().join("attachments/a2/evidence/other.json");
+        place_copy(&other, b"ours\n", &permissions, |_| {
+            Err(std::io::Error::other("set_permissions failed"))
+        })
+        .unwrap_err();
+        assert!(!other.exists());
+        assert_eq!(fs::read_dir(other.parent().unwrap()).unwrap().count(), 1);
+
+        // A finished copy is created; identical bytes already there are not ours.
+        assert_eq!(
+            place_copy(&other, b"ours\n", &permissions, |_| Ok(())).unwrap(),
+            Placed::Created
+        );
+        assert_eq!(fs::read_to_string(&other).unwrap(), "ours\n");
+        assert_eq!(
+            place_copy(&other, b"ours\n", &permissions, |_| Ok(())).unwrap(),
+            Placed::AlreadyThere
+        );
+        assert!(place_copy(&other, b"theirs\n", &permissions, |_| Ok(())).is_err());
+        assert_eq!(fs::read_to_string(&other).unwrap(), "ours\n");
     }
 
     #[test]
