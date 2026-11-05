@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The `SpecSync Archive` shards now split the PR history walk as well as archive
+  authentication (#105, DRIVE-10). Shard K inventories every fourth PR revision from
+  position K and refuses a change omitted from any of them, so a long pull request no
+  longer leaves shard 1 walking every revision alone. On the 361-revision #99
+  candidate, shard 1 went from 268.6 s to 72.7 s on 4 CPUs, and
+  the slowest shard takes 88.8 s. Every native check and
+  the 10-minute limit are unchanged, and each shard reports the revisions it walked.
+
 ## [0.4.0] - 2026-11-05
 
 - A refused trim no longer deletes vault attachments another writer changed (#110,

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105",
+  "slug": "spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105",
+  "title": "Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105)",
+  "description": "Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "a688800ee100a77c50119e2ce17530c64a1e0fe8",
+  "created_at": 1793916731,
+  "updated_at": 1793917760,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".github/scripts/check-specsync-archive.py",
+    ".github/scripts/test-specsync-archive.py",
+    ".github/workflows/ci.yml",
+    "docs/ci.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within DRIVE-10: the archive inspector keeps every check and the unchanged job limit; no requirement text changes.",
+  "acceptance_criteria": [
+    "Each SpecSync Archive shard walks only its share of the PR revisions (positions K, K+N, ... of the base and rev-list, repeats once), refuses any change in them that was omitted instead of archived, keeps every other check, and reports walked and total revisions with authenticated and total archives. The three new tests fail first, every existing fixture passes, the long #99 candidate is measured again per phase on Linux with 4 CPUs, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #105 (P2, DRIVE-10); Leif: order after #110 is #105 (after #114), then reduction (2026-11-05, via the orc); keep the ten-minute limit and every native check.",
+    "public_contract": "no"
+  }
+}

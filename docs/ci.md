@@ -56,10 +56,16 @@ Hosted CI runs the inspector as four parallel jobs, `SpecSync Archive (1/4)` to
 (`--shard K/4`). Every shard runs the audit, the active-roster check and the version
 and protocol checks. Shard K authenticates the archives at positions K, K+4 and so
 on, sorted by ID, so the four together authenticate every archive exactly once.
-Shard 1 also walks every PR revision and refuses an omitted archive. One native
-archive status read costs tens of seconds inside SpecSync, which is why the reads are
-spread across runners and not skipped (DRIVE-10). Locally the default `--shard 1/1`
-does all of it in one run, with unchanged output.
+The PR history walk is split the same way (#105). Shard K inventories the revisions at
+positions K, K+4 and so on of the trusted base followed by `git rev-list --reverse
+base..HEAD`, each once. It refuses any change in them that was omitted instead of
+archived, so the four together walk every revision. A change that exists only in
+revisions another shard walks is found by that shard alone, which is why all four jobs
+must pass. Each shard prints `walked R of T PR revision(s); A of B archive(s)
+authenticated` as its coverage. Native reads cost about 0.65 s per historical roster
+and seconds to tens of seconds per archive status, which is why the reads are spread
+across runners and not skipped (DRIVE-10). Locally the default `--shard 1/1` does all
+of it in one run, with unchanged output.
 
 `authenticated-history` is a native structural provenance result. It does not
 authenticate a human identity. Actor names, model text, files named review, and

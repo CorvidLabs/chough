@@ -203,6 +203,13 @@ def shard_ids(change_ids, shard):
     return sorted(change_ids)[index - 1::total]
 
 
+def shard_revisions(revisions, shard):
+    """This shard's PR revisions: positions K, K+N, ... of the revisions in walk order,
+    each walked once, so N shards together inventory every revision exactly once."""
+    index, total = shard
+    return list(dict.fromkeys(revisions))[index - 1::total]
+
+
 def authenticate_archives(binary, root, obligations, current_archives, shard=(1, 1)):
     for change_id in sorted(obligations):
         if change_id not in current_archives:
@@ -271,11 +278,14 @@ def inspect(root, base, binary, shard=(1, 1)):
 
     current_archives = archives(root)
     obligations = set(current_archives)
-    # Shard 1 walks every PR revision; other shards only authenticate their slice of
-    # the current archives, which the walk's obligations must all be part of.
-    revisions = [base] + git(root, "rev-list", "--reverse", f"{base}..HEAD").splitlines()
-    if shard[0] != 1:
-        revisions = []
+    # Each shard walks its share of the PR revisions (#105) and refuses any change in
+    # them that was omitted instead of archived; together the shards walk every
+    # revision. A passing shard's obligations are exactly the current archives, so
+    # every shard authenticates the same partition of them.
+    history = list(dict.fromkeys(
+        [base] + git(root, "rev-list", "--reverse", f"{base}..HEAD").splitlines()
+    ))
+    revisions = shard_revisions(history, shard)
     # One temporary clone retains object/ancestry evidence while leaving the
     # checked source and its lifecycle bytes untouched. Nothing is executed from
     # historical product source; only the pinned native readers inspect it.
@@ -283,7 +293,7 @@ def inspect(root, base, binary, shard=(1, 1)):
         with tempfile.TemporaryDirectory(prefix="chough-archive-inventory-") as temporary:
             snapshot = Path(temporary) / "history"
             git(root, "clone", "--quiet", "--shared", "--no-checkout", str(root), str(snapshot))
-            for revision in dict.fromkeys(revisions):
+            for revision in revisions:
                 git(snapshot, "checkout", "--quiet", "--detach", "--force", revision)
                 obligations.update(roster(binary, snapshot, historical=True))
                 obligations.update(archives(snapshot))
@@ -293,8 +303,9 @@ def inspect(root, base, binary, shard=(1, 1)):
         print(f"All native changes are archived; {len(obligations)} archive(s) authenticated by SpecSync.")
     else:
         print(
-            f"Shard {shard[0]}/{shard[1]}: {len(shard_ids(obligations, shard))} of {len(obligations)} "
-            "archive(s) authenticated by SpecSync; the other shards authenticate the rest."
+            f"Shard {shard[0]}/{shard[1]}: walked {len(revisions)} of {len(history)} PR revision(s); "
+            f"{len(shard_ids(obligations, shard))} of {len(obligations)} archive(s) authenticated "
+            "by SpecSync; the other shards walk and authenticate the rest."
         )
     print("Other checks and genuine human review remain required before merge.")
 
