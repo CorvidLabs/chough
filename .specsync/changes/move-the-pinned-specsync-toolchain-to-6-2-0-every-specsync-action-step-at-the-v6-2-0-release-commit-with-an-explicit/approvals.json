@@ -1,0 +1,49 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "claude",
+      "timestamp": 1793893595,
+      "digest": "31228d5232b4c4ce9704949ee5c6f7f6598fbd60eb831341935f48007aece6ea",
+      "note": "Agent-recorded on Leif (0xLeif)'s \"approve scope\", orc tab 2026-11-05 08:46 MST via t18; covers intent coverage (LIFE-9, no new criterion) and this exact scope",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit",
+        "title": "Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement",
+        "description": "Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/scripts/check-specsync-archive.py",
+          ".github/scripts/test-specsync-archive.py",
+          ".github/workflows/ci.yml",
+          ".specsync/config.toml",
+          "AGENTS.md",
+          "CHANGELOG.md",
+          "README.md",
+          "docs/DECISIONS.md",
+          "docs/ci.md",
+          "docs/integrations.md",
+          "tests/package.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Toolchain pin move only: REQ-cli-019 already requires the README, agent instructions and CI to name agreeing versions and names no version number; Chough behavior and requirements are unchanged.",
+        "acceptance_criteria": [
+          "Every SpecSync Action step in .github/workflows/ci.yml (the Archive gate and the Fledge / HI / SpecSync and SpecSync Archive and CI gate fixtures jobs) uses CorvidLabs/spec-sync@40dcf33a6b0f0b55dcb7f17e8e98be9d55fa2c56 # v6.2.0 with version '6.2.0' passed explicitly; README.md (install command), AGENTS.md, .github/scripts/check-specsync-archive.py, .github/scripts/test-specsync-archive.py, docs/ci.md, docs/integrations.md and .specsync/config.toml name SpecSync 6.2.0 and docs/DECISIONS.md records the move; no other current 6.1.x pin remains while recorded exercises keep the versions they observed; tests/package.rs tool_and_rust_version_pins_agree passes on 6.2.0; fledge lanes run verify and the CI gate fixtures pass locally with SpecSync 6.2.0; and the hosted PR checks pass, with SpecSync step durations compared against the latest main run"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Task from session t18 (2026-11-05): move to SpecSync 6.2.0 through a proper SpecSync change; out of scope: other Chough behavior changes; never merge or approve gates as the agent or tag or release. The v6.2.0 tag action.yml still defaults to 6.1.2 so every step passes version '6.2.0'. D-019 and REQ-cli-019: pins agree across README.md and AGENTS.md and CI and are checked by tests/package.rs. specs/cli/context.md lessons: human gates are plain text in tasks; change check refuses while tasks are open; recorded exercises and lessons keep the versions they observed. SpecSync 6.2.0 still declares rust-version 1.89.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}

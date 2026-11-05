@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-6dc8ffaacc564476b2a56fe6",
+    "head": "EVT-670b55901e7db0ab8b7eef8e",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Move the pinned SpecSync toolchain to 6.2.0 (Action commit 40dcf33a, explicit version 6.2.0 on every step) with every pin kept in agreement",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit",
+  "references": {
+    "criteria": [
+      "LIFE-9"
+    ],
+    "requirements": [
+      "REQ-cli-019"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "2026-11-05: Leif (0xLeif) approved intent coverage (LIFE-9, REQ-cli-019, D-019, no new HI criterion) and the scope of move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit with \"approve scope\" in the orc tab at 08:46 MST, relayed by t18. Claude recorded the native definition approval as actor claude citing that reply. No merge, tag or release."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Human scope approval of the native change, then build"
+}

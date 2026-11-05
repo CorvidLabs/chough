@@ -24,10 +24,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      # v6.1.2 is the first release with the archive gate inputs (#832).
-      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
+      # Archive gate inputs shipped in v6.1.2 (#832); this step pins v6.2.0.
+      - uses: CorvidLabs/spec-sync@40dcf33a6b0f0b55dcb7f17e8e98be9d55fa2c56 # v6.2.0
         with:
-          version: '6.1.2'
+          version: '6.2.0'
           archive-gate-only: 'true'
 
   product:
@@ -85,11 +85,11 @@ jobs:
       - uses: CorvidLabs/fledge@b648ea2a622221d4f2ffbc7ba7aa829e6cf13a51
         with:
           version: v1.8.0
-      # Lifecycle writers and CI use SpecSync 6.1.2. The v6.1.2 Action tag keeps a
-      # 6.1.1 omitted-input default, so the binary version is passed explicitly.
-      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
+      # Lifecycle writers and CI use SpecSync 6.2.0. The v6.2.0 Action tag keeps a
+      # 6.1.2 omitted-input default, so the binary version is passed explicitly.
+      - uses: CorvidLabs/spec-sync@40dcf33a6b0f0b55dcb7f17e8e98be9d55fa2c56 # v6.2.0
         with:
-          version: '6.1.2'
+          version: '6.2.0'
           strict: 'true'
           require-coverage: '100'
       - run: cargo install human-intent --version 0.8.0 --locked
@@ -112,9 +112,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
+      - uses: CorvidLabs/spec-sync@40dcf33a6b0f0b55dcb7f17e8e98be9d55fa2c56 # v6.2.0
         with:
-          version: '6.1.2'
+          version: '6.2.0'
           strict: 'true'
           require-coverage: '100'
       # Independent of product checks and draft/path/stage classification.
@@ -134,9 +134,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: CorvidLabs/spec-sync@d08d2746f635bc26900601376d7392395d07faa9 # v6.1.2
+      - uses: CorvidLabs/spec-sync@40dcf33a6b0f0b55dcb7f17e8e98be9d55fa2c56 # v6.2.0
         with:
-          version: '6.1.2'
+          version: '6.2.0'
           strict: 'true'
           require-coverage: '100'
       - run: python3 .github/scripts/test-specsync-archive.py

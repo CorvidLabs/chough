@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The pinned SpecSync toolchain is now 6.2.0. Every SpecSync Action step in CI uses the
+  v6.2.0 release commit with `version: '6.2.0'`, and the README install command,
+  AGENTS.md, the archive scripts and the CI and integration docs name 6.2.0 (D-021).
 - Old proof now moves into the knowledge vault (REQ-cli-046; KNOW-18, KNOW-19). Loose
   artifacts that no record references, such as folders kept from earlier pull requests,
   are summarized and trimmed once their change is cold, and an open bug keeps its
