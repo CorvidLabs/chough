@@ -303,6 +303,58 @@ fn trace_lists_and_family_declarations_are_read_in_every_valid_form() {
     }
 }
 
+/// corvid-agent review at 5326ec4: `Trace:` inside backticks is a mention, before or after
+/// the real list, and CRLF front matter and YAML comments still give the family.
+#[test]
+fn inline_trace_mentions_crlf_and_comments_do_not_hide_criteria_or_families() {
+    let fixture = vault();
+    fixture.write(
+        "hi/ux.md",
+        "---\r\nhi: 1\r\nfamilies: [UX]\r\n---\r\n\r\n# UX\r\n\r\n## Criteria\r\n\r\n- **UX-1**  One.\r\n",
+    );
+    fixture.write(
+        "hi/send.md",
+        "---\nhi: 1\nfamilies: [SEND] # send flows\n---\n\n# Send\n\n## Criteria\n\n- **SEND-2**  Two.\n",
+    );
+    fixture.write(
+        "specs/cli/requirements.md",
+        "# Requirements\n\n### REQ-cli-001\n\nThe helper SHALL keep one checkpoint. Trace: KNOW-1, LIFE-2.\n\n### REQ-cli-002\n\nIt SHALL do it. Trace: UX-1, SEND-2. Readers grep the `Trace:` lines.\n",
+    );
+    archive(&fixture, 2, "a3", &["cli"], &["REQ-cli-002"]);
+    fixture.ok(&["library", "index"]);
+    let a3 = fixture.read("knowledge/archives/a3.md");
+    assert!(
+        front_matter(&a3).contains("criteria:\n  - SEND-2\n  - UX-1"),
+        "{a3}"
+    );
+    assert!(a3.contains("[UX-1](../intent/ux.md)"), "{a3}");
+    assert!(a3.contains("[SEND-2](../intent/send.md)"), "{a3}");
+    for (note, family) in [("ux", "UX"), ("send", "SEND")] {
+        let text = fixture.read(&format!("knowledge/intent/{note}.md"));
+        assert!(
+            front_matter(&text).contains(&format!("families:\n  - {family}\n")),
+            "{text}"
+        );
+    }
+}
+
+/// Review 5779587370: a README byte-identical to the template an earlier Chough generated
+/// is upgraded to the current one; an edited README is left alone.
+#[test]
+fn an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept() {
+    let fixture = vault();
+    let earlier = include_str!("fixtures/knowledge-readme-at-8fbbbe7.md");
+    fixture.write("knowledge/README.md", earlier);
+    fixture.ok(&["library", "index"]);
+    let readme = fixture.read("knowledge/README.md");
+    assert!(front_matter(&readme).contains("type: readme"), "{readme}");
+    let edited = format!("{earlier}\nOur own note.\n");
+    fixture.write("knowledge/README.md", &edited);
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "init"]);
+    assert_eq!(fixture.read("knowledge/README.md"), edited);
+}
+
 #[test]
 fn the_rules_note_links_rules_skills_and_decisions_that_exist() {
     let fixture = vault();

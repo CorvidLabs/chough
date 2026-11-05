@@ -500,6 +500,7 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
 /// refusal leaves no half-built folder. Returns whether `README.md` was created.
 fn ensure_built(root: &Path, dir: &str) -> Result<bool> {
     let files = build(root, dir)?;
+    upgrade_readme(root, dir)?;
     let created_readme = write_new(root, &format!("{dir}/README.md"), README)?;
     fs::create_dir_all(local_path(root, &format!("{dir}/briefs"))?)?;
     write_all(root, dir, files)?;
@@ -563,9 +564,30 @@ pub(super) fn refresh_at_done(root: &Path) -> serde_json::Value {
     }
 }
 
+/// SHA-256 digests of the knowledge README that earlier releases generated; a README with
+/// exactly those bytes is upgraded to the current template, and any other is kept.
+const KNOWN_PREVIOUS_README: &[&str] = &[
+    // Main 8fbbbe7 (#106), before the vault front matter (REQ-cli-044).
+    "5365c2f960fb72b71fe9e2ccfbbc9e29f638a8d324714c808e9502dcdc135b2f",
+];
+
+/// Replace a README byte-identical to an earlier generated template (review of #107).
+fn upgrade_readme(root: &Path, dir: &str) -> Result<()> {
+    let relative = format!("{dir}/README.md");
+    if local_path(root, &relative)?.is_file()
+        && crate::records::file_digest(root, &relative)
+            .is_ok_and(|digest| KNOWN_PREVIOUS_README.contains(&digest.as_str()))
+    {
+        write_replace(root, &relative, README)?;
+    }
+    Ok(())
+}
+
 /// Regenerate every archived-change entry and the index.
 fn regenerate(root: &Path, dir: &str) -> Result<()> {
-    write_all(root, dir, build(root, dir)?)
+    let files = build(root, dir)?;
+    upgrade_readme(root, dir)?;
+    write_all(root, dir, files)
 }
 
 /// Every generated knowledge file, built and bounded in memory before anything is written.

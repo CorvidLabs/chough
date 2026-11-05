@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier",
+  "implementation_commit": "bc61e626dd217d3a1783a87ff7cf96d8ddbbc4a8",
+  "implementation_tree": "59e99776f75843d55216ced591ed498680748c50",
+  "contract_digest": "3abaeb0bb8ea28968fba67b32b9ef49181508c99483f485b30e4f5b7db254dfa",
+  "workspace_digest": "27258ef1ab4ed540d3fe88e74ee7b3ebfb3492b0a82d382f98f9773d15eee12a",
+  "closing_digest": "73a55149f0645f602a936144ec21142fca3db8f26a2fd2292a7ecbb225473520",
+  "review_digest": "42b5052d4a6f143be1048dd87090bc388a0c100d5bab77fabcb00e98d587d11c",
+  "finalization_digest": "39841ad0f0901db8cb3a754644e10f09ef0237e75b6fad4a44c6315e19968239",
+  "timestamp": 1793851330
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier",
+  "slug": "ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier",
+  "title": "Ignore Trace mentions in backticks, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of 107 at 5326ec4)",
+  "description": "Ignore Trace mentions in backticks, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of 107 at 5326ec4)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "5326ec48b4ae856543e4d8cabd7c06b29daef0e5",
+  "created_at": 1793851040,
+  "updated_at": 1793851330,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/vault.rs",
+    "src/library.rs",
+    "tests/vault.rs",
+    "tests/fixtures/knowledge-readme-at-8fbbbe7.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-044: every generated note has front matter and every traced criterion and HI family is read; no requirement text changes.",
+  "acceptance_criteria": [
+    "A Trace list is read whether an inline backticked Trace mention comes before or after it; HI files with CRLF line endings or a YAML comment after the families list give their family; a knowledge README byte-identical to the template generated at 8fbbbe7 is upgraded to the current template by library index and init, and an edited README is left byte-identical. The new tests fail first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "corvid-agent review at 5326ec4 and the 0xLeif agent review 5779587370 on #107. Leif (0xLeif): Yes, record and merge for #107 (2026-11-04).",
+    "public_contract": "no"
+  }
+}
