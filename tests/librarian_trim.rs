@@ -240,3 +240,73 @@ fn a_recorded_retention_off_is_not_trimmed_at_done() {
     assert!(fixture.exists(".chough/evidence/cold-a.json"));
     assert!(!fixture.exists(".chough/pruned.jsonl"));
 }
+
+/// REQ-cli-043: the move into done regenerates the knowledge directory after the trim,
+/// so the trimmed proof's summary is in `knowledge/`, even in a project that never built it.
+#[test]
+fn entering_done_refreshes_the_knowledge_entries_after_the_trim() {
+    let fixture = at_accept();
+    let _ = std::fs::remove_dir_all(fixture.root().join("knowledge"));
+    let moved = fixture.ok(&["stage", "advance"]);
+    let refresh = &moved["applied"]["librarian_index"];
+    assert_eq!(refresh["status"], "refreshed", "{moved:#}");
+    assert_eq!(refresh["index"], "knowledge/INDEX.md", "{moved:#}");
+    assert_eq!(
+        moved["applied"]["librarian_trim"]["status"], "trimmed",
+        "{moved:#}"
+    );
+    assert!(fixture.exists("knowledge/README.md") && fixture.exists("knowledge/INDEX.md"));
+    let entry = fixture.read("knowledge/archives/a1.md");
+    assert!(
+        entry.contains("cold-a") && entry.contains("pruned"),
+        "{entry}"
+    );
+}
+
+/// REQ-cli-043: with nothing trimmed, the index is still refreshed at done.
+#[test]
+fn done_refreshes_the_knowledge_index_when_nothing_is_trimmed() {
+    let fixture = at_accept();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "retention",
+        "manual",
+        "--source",
+        "Human: trim old proof only when I ask",
+    ]);
+    let _ = std::fs::remove_dir_all(fixture.root().join("knowledge"));
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["librarian_trim"]["status"], "skipped",
+        "{moved:#}"
+    );
+    assert_eq!(
+        moved["applied"]["librarian_index"]["status"], "refreshed",
+        "{moved:#}"
+    );
+    assert!(fixture.exists("knowledge/archives/a5.md"));
+    assert!(fixture.exists(".chough/evidence/cold-a.json"));
+}
+
+/// REQ-cli-043: with the librarian off nothing is built at done.
+#[test]
+fn a_librarian_off_project_gets_no_knowledge_directory_at_done() {
+    let fixture = at_accept();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "Human: no librarian here",
+    ]);
+    let _ = std::fs::remove_dir_all(fixture.root().join("knowledge"));
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    assert_eq!(
+        moved["applied"]["librarian_index"]["status"], "skipped",
+        "{moved:#}"
+    );
+    assert!(!fixture.exists("knowledge"));
+}

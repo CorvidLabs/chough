@@ -1,0 +1,45 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793846575,
+      "digest": "fef90ee6c8deb70c1b8aa1736def1b6871703b93dcc9b0f379b5867f8f6aac37",
+      "note": "Leif answered yes (2026-11-04) to folding the day lessons into the history lesson source",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "record-the-2026-11-04-retention-lessons-in-the-history-lesson-source",
+        "title": "Record the 2026-11-04 retention lessons in the history lesson source",
+        "description": "Record the 2026-11-04 retention lessons in the history lesson source",
+        "kind": "documentation",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "specs/history/context.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Lessons only: the history module lesson source gains two supported 2026-11-04 lessons; no requirement text changes.",
+        "acceptance_criteria": [
+          "specs/history/context.md Lessons gains the two supported 2026-11-04 retention lessons (the slow trim at done and trimmed proof without a committed knowledge folder), each with a certainty label, source, future use and limits; no requirement text changes; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif (0xLeif) 2026-11-04: yes to folding the day lessons into the cli and history lesson sources, and Yes, record and merge for #106. Lessons only (KNOW-12).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793846688,
+      "digest": "bd3b916ee38b5a1349d09b13e02a29fd961e1fb2238745e6b3db166dd7abe463",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

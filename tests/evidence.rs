@@ -1435,6 +1435,8 @@ fn knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_n
 
     // An index that cannot be bounded refuses before anything is written.
     let fresh = knowledge_fixture();
+    // `chough init` in the fixture built the folder (REQ-cli-043); start without it.
+    fs::remove_dir_all(fresh.root().join("knowledge")).unwrap();
     for (index, id) in ["a1", "a2", "a3", "a4", "a5"].iter().enumerate() {
         let change = format!(
             ".specsync/archive/changes/2026-0{}-01-{id}/change.md",

@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "record-the-2026-11-04-retention-lessons-in-the-history-lesson-source",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "a9e43f9a690a7ade4c4fe8a2f381c32214adc5ad",
+  "contract_digest": "fef90ee6c8deb70c1b8aa1736def1b6871703b93dcc9b0f379b5867f8f6aac37",
+  "execution_digest": "cdf9b8d8c95caf66c3e114131d86ace8f7c728d79bf8cc8160f9fe8d633ade0c",
+  "workspace_digest": "7c5611b5a46b2da446fe6fcb62fe7d3f750f056b7894f3406fe51801ed5e3678",
+  "timestamp": 1793846682
+}

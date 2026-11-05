@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "record-the-2026-11-04-retention-lessons-in-the-history-lesson-source",
+  "implementation_commit": "a9e43f9a690a7ade4c4fe8a2f381c32214adc5ad",
+  "implementation_tree": "0fd5cab90cf0cf1f6bace33d7546c117aab1b4a0",
+  "contract_digest": "fef90ee6c8deb70c1b8aa1736def1b6871703b93dcc9b0f379b5867f8f6aac37",
+  "workspace_digest": "7c5611b5a46b2da446fe6fcb62fe7d3f750f056b7894f3406fe51801ed5e3678",
+  "closing_digest": "bd3b916ee38b5a1349d09b13e02a29fd961e1fb2238745e6b3db166dd7abe463",
+  "review_digest": "96335c3ef40b766df7cf22a9a0a8a2805ba7ba56ee23eb1820cd86477f7c5016",
+  "finalization_digest": "778e6300cc53426548e3f2e25826fcb86b0d1c94f10f5788874aae5e3b5efd4d",
+  "timestamp": 1793846688
+}

@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- With the librarian on (the default), the knowledge directory now exists and stays
+  current (REQ-cli-043, KNOW-1, KNOW-5). `chough init` creates `knowledge/`
+  create-only, and every `chough stage advance` into done regenerates it after the trim,
+  whether or not anything was trimmed, reporting `applied.librarian_index`. Before
+  this, only `library init` and `library index` built it, and the trim at done wrote
+  entries only when it removed something. Chough's own repository had no `knowledge/`
+  while its trims left ledger entries pointing to summaries that were never committed;
+  it now commits the folder. The workflow skill says to commit the folder with the
+  checkpoint, and to regenerate it after a merge conflict. The cli and history lesson
+  sources gain the lessons from 2026-11-04.
 - `inbox add` now takes the checkpoint writer lock, so a concurrent `session use` can no
   longer archive the session between its check and its write and strand the entry, and
   evidence retention protects observations named by unfolded inbox entries (#98,

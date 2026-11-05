@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Lock inbox add against archiving, and protect observations named by unfolded inbox entries from retention (issue #98)",
+  "objective": "Record the 2026-11-04 retention lessons in the history lesson source (KNOW-12)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -12,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention",
+  "native_change": "record-the-2026-11-04-retention-lessons-in-the-history-lesson-source",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -324,7 +324,9 @@
     "PR #90 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "PR #94 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "PR #96 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
-    "PR #99 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision."
+    "PR #99 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-04 Leif (0xLeif) answered \"yes\" to: build and commit knowledge/ in Chough repo, make librarian on by default create it at init and refresh it when the trim runs at done, and fold the 2026-11-04 lessons into the cli and history lesson sources.",
+    "PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -786,7 +788,19 @@
     "OBS-tc-history-inbox-add-never-stranded-by-archive-891e97c992b1d7ddebee43e9",
     "OBS-tc-history-retention-protects-inbox-observations-dda925f7c2a9bbe696e203f5",
     "OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-1e1c9a84f30583853e117adf",
-    "OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7"
+    "OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7",
+    "OBS-tc-cli-init-builds-knowledge-57e70bd460a47ca89bafbf93",
+    "OBS-tc-cli-init-preserves-knowledge-a13f8931a11963cb39ade869",
+    "OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943",
+    "OBS-tc-cli-done-refreshes-knowledge-after-trim-090588c1f04585baf1ae892f",
+    "OBS-tc-cli-done-refreshes-knowledge-untrimmed-50cedd62da9c6f29313bebb0",
+    "OBS-tc-cli-librarian-off-no-knowledge-at-done-0bb04ef01e904ce54277c22c",
+    "OBS-tc-cli-init-builds-knowledge-4023ba8c510c42a473afc62b",
+    "OBS-tc-cli-init-preserves-knowledge-57c64e82893a8531b6d6c07f",
+    "OBS-tc-cli-init-unbounded-knowledge-refused-db6fc909a3ede2188f94798c",
+    "OBS-tc-cli-done-refreshes-knowledge-after-trim-1bbadd90c2ca76a8d85bb8d1",
+    "OBS-tc-cli-done-refreshes-knowledge-untrimmed-9786e2750bc874bc3868f5c2",
+    "OBS-tc-cli-librarian-off-no-knowledge-at-done-a0770facc80d2a1e222765bf"
   ],
   "bugs": [
     "BUG-0001",
@@ -822,5 +836,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #99 when hosted checks are green"
+  "next_action": "Merge PR #106 when hosted checks are green"
 }

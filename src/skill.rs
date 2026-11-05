@@ -281,6 +281,16 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/build.md",
         "4d0bf24ddd5e55493658339c76750a639a15997c4290a492cacda3550874f035",
     ),
+    // Main f7e5764; superseded by the knowledge-directory guidance (REQ-cli-043): init
+    // creates the folder, done refreshes it, and it is committed with the checkpoint.
+    (
+        "references/accept.md",
+        "472396403a4f716f0183ec2c3495ac0ecf0dc412c1b61bb850cee767765e1f6a",
+    ),
+    (
+        "references/librarian.md",
+        "772b6900528a84ad0c76638ad91536865ab7d62883d05eb49a8f7841896c2740",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

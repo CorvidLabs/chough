@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim",
+  "slug": "build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim",
+  "title": "Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources",
+  "description": "Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "f7e576410539c2922330afd773b64fa5df4d9636",
+  "created_at": 1793845717,
+  "updated_at": 1793846384,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "src/main.rs",
+    "src/stage.rs",
+    "src/skill.rs",
+    "tests/knowledge_default.rs",
+    "tests/librarian_trim.rs",
+    "tests/evidence.rs",
+    "tests/optional.rs",
+    "skills/chough-workflow/references/librarian.md",
+    "skills/chough-workflow/references/accept.md",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With the librarian on, chough init creates knowledge/ with README.md, INDEX.md, briefs/ and one entry per archived change, preserves an existing folder, and still succeeds writing no knowledge file when the index cannot be bounded. stage advance into done regenerates the index and entries after the trim whether or not anything was trimmed, reporting applied.librarian_index refreshed, skipped with the librarian off, or refused with its reason, and never undoes the move. Chough own repository commits its knowledge/ folder, and the cli and history lesson sources gain the supported 2026-11-04 lessons with certainty labels. The new tests fail first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif (0xLeif) 2026-11-04 answered yes to: build and commit knowledge/ here, make librarian on by default create it at init and refresh it when the trim runs at done, and fold the 2026-11-04 lessons into the cli and history lesson sources. KNOW-1, KNOW-4, KNOW-5, KNOW-12, KNOW-13. Create-only at init; the move into done never depends on it; no gate reads it.",
+    "public_contract": "yes"
+  }
+}

@@ -55,9 +55,10 @@ Do not commit between review and finalize. Only then clear the gate with `chough
 checkpoint --clear-awaiting-human` and run `chough stage advance`, which moves accept
 to done; it is refused until native state is `archived`. Record the actual acceptance
 source in the checkpoint after archival, preserving the verification window above.
-Push the archive commit and
-the checkpoint on the same pull request, wait for required checks, then merge through
-the repository's normal process. If several changes share a pull request, review and
+With the librarian on, the move into done
+also refreshes the knowledge directory; commit it with the checkpoint. Push the archive
+commit, the checkpoint and the knowledge directory on the same pull request, wait for
+required checks, then merge through the repository's normal process. If several changes share a pull request, review and
 finalize them one at a time. If evidence went stale, use the recovery action that
 `specsync change status` names. Finishing never enters release.
 

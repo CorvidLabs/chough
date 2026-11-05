@@ -979,7 +979,8 @@ fn the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off() {
     fixture.init();
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(next["knowledge"]["librarian"], "on");
-    assert_eq!(next["knowledge"]["index"], serde_json::Value::Null);
+    // REQ-cli-043: init builds the knowledge directory with the librarian on.
+    assert_eq!(next["knowledge"]["index"], "knowledge/INDEX.md");
     fixture.ok(&["library", "init"]);
     assert!(fixture.exists("knowledge/README.md"));
     assert!(fixture.exists("knowledge/INDEX.md"));
