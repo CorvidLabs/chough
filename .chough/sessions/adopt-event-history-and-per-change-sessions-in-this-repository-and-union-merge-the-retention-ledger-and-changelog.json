@@ -1,7 +1,7 @@
 {
   "history_cursor": {
-    "cycle": "CYC-155f8f1f753de8296b4b4846",
-    "head": null,
+    "cycle": "CYC-121adf353cfbd87545e0a127",
+    "head": "EVT-80c33030d14d28844bb9a5ed",
     "legacy": {
       "digest": "ab8cf9bf4b314c6b3374339164ef302cb1c129dab8dd6df2133276b73407fdf5",
       "bytes": 219674,
@@ -9,7 +9,7 @@
     }
   },
   "schema_version": 2,
-  "objective": "Adopt event history and per-change sessions in this repository and union-merge the ledger and changelog (DRIVE-12, DRIVE-3)",
+  "objective": "Let a session started after legacy history adoption write events (found adopting sessions here)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -21,7 +21,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog",
+  "native_change": "let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -360,7 +360,8 @@
     "PR #109 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real move into the vault on this repository) and merge #109 after #108 once CI is green, he answered Yes, record and merge. Claude recorded the native review as 0xLeif on that decision.",
     "PR #109 closeout-trim fix accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: asked whether to record his review of this fix as 0xLeif, finalize it, rerun the trim on this repository and merge #109 once CI is green and corvid-agent approves, he answered Yes, record and merge. Claude recorded the native review as 0xLeif on that decision.",
     "PR #109 Windows-path and file-mode fix accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: told of 3 new P1s from his review agent, he chose Record both, then merge: record his review of this fix as 0xLeif and finalize it without the done move (so no trim runs with the P1s), fix the P1s in a new change, record that review too once Linux verify passes, close out, and merge #109 on green CI including Windows and corvid-agent approval. Claude recorded the native review as 0xLeif on that decision.",
-    "PR #109 P1 fix (never overwrite an attachment, folder references protect their files, a mixed-age folder stays) accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: he chose Record both, then merge, which covers recording his review of this fix as 0xLeif once Linux verify passed (438 passed, 0 failed), closing out with the trim, and merging #109 on green CI including Windows and corvid-agent approval. Claude recorded the native review as 0xLeif on that decision."
+    "PR #109 P1 fix (never overwrite an attachment, folder references protect their files, a mixed-age folder stays) accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: he chose Record both, then merge, which covers recording his review of this fix as 0xLeif once Linux verify passed (438 passed, 0 failed), closing out with the trim, and merging #109 on green CI including Windows and corvid-agent approval. Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-05: the adoption change is paused at build. Its simulation found that chough session new, in a project that adopted a legacy transition log, writes a cursor with no legacy anchor, so its first transition refuses (legacy history anchor changed). Fix that first in its own bug-fix change, then resume the adoption."
   ],
   "open_questions": [],
   "completed": [
@@ -519,5 +520,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Apply history adopt and session adopt, edit .gitattributes and AGENTS.md, run the merge simulation and verify"
+  "next_action": "Fix verify_anchor against the failing test, verify, then resume the adoption change"
 }

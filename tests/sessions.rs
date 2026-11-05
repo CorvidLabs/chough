@@ -1119,3 +1119,39 @@ fn in_sessions_mode_local_holds_only_the_pointer_and_the_lock() {
         String::from_utf8_lossy(&tracked.stdout)
     );
 }
+
+/// Adopting sessions on this repository: after a legacy project adopts its transition
+/// log and its checkpoint, a session started with `session new` writes events to its own
+/// cycle. The frozen legacy log stays guarded by the anchor the adopting session
+/// recorded, and is not part of the new session's history (REQ-history-006).
+#[test]
+fn a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    let log = fixture.read(".chough/transitions.jsonl");
+    assert!(!log.trim().is_empty(), "the legacy project has a log");
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(events(&fixture, &cycle(&fixture, "other")), 1);
+    assert_eq!(fixture.read(".chough/transitions.jsonl"), log);
+    // Its history is its own: history walks read the legacy log only through a cursor
+    // that carries the anchor, and the new session's does not.
+    assert!(json(&fixture, ".chough/sessions/other.json")["history_cursor"]["legacy"].is_null());
+
+    // A changed legacy log still refuses new writes, in either session.
+    fixture.write(".chough/transitions.jsonl", &format!("{log}\n"));
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("legacy history anchor changed"),
+        "{refused}"
+    );
+    fixture.ok(&["session", "use", "legacy"]);
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("legacy history anchor changed"),
+        "{refused}"
+    );
+}
