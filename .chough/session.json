@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Keep trimming when an earlier removal releases a shared artifact, and count stub status calls under a lock (#108 closeout)",
+  "objective": "Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of #108)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls",
+  "native_change": "keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -495,5 +495,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #108 when hosted checks are green"
+  "next_action": "Fix against the failing test, verify and close out"
 }
