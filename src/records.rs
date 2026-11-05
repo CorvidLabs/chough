@@ -578,6 +578,8 @@ pub(super) struct Limits {
 pub(super) struct Captured {
     /// The exit code; None when the command timed out or ended by a signal.
     pub(super) exit_code: Option<i32>,
+    /// On Unix, the signal that ended the command; None when it exited or timed out.
+    pub(super) signal: Option<i32>,
     pub(super) timed_out: bool,
     pub(super) stdout: Vec<u8>,
     pub(super) stdout_total: u64,
@@ -846,6 +848,11 @@ fn run_watched(
             None
         } else {
             status.and_then(|status| status.code())
+        },
+        signal: if timed_out {
+            None
+        } else {
+            status.and_then(terminating_signal)
         },
         timed_out,
         stdout,
@@ -1199,10 +1206,31 @@ fn native_deadline(value: Option<&OsStr>) -> Result<Duration, String> {
         })
 }
 
+/// The signal that ended a command, on Unix.
+#[cfg(unix)]
+fn terminating_signal(status: std::process::ExitStatus) -> Option<i32> {
+    std::os::unix::process::ExitStatusExt::signal(&status)
+}
+
+#[cfg(not(unix))]
+fn terminating_signal(_: std::process::ExitStatus) -> Option<i32> {
+    None
+}
+
+/// How a command ended, in plain words (REQ-cli-003, #87).
+fn ended(output: &Captured) -> String {
+    match (output.exit_code, output.signal) {
+        (Some(code), _) => format!("exit {code}"),
+        (None, Some(signal)) => format!("killed by signal {signal}"),
+        (None, None) if output.timed_out => "timed out".into(),
+        (None, None) => "no exit status".into(),
+    }
+}
+
 fn failure(output: &Captured) -> String {
     format!(
-        "exit={:?}\n{}\n{}",
-        output.exit_code,
+        "{}\n{}\n{}",
+        ended(output),
         bounded_capture(&output.stdout, output.stdout_total),
         bounded_capture(&output.stderr, output.stderr_total)
     )

@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A failed native command is now shown as `exit 2` or `killed by signal 15` instead of
+  Rust's debug form `exit=Some(2)` or `exit=None`, in `status`, `next` and stage refusals
+  (#87, REQ-cli-003).
+
 - CI: the hosted SpecSync Archive check runs as four parallel jobs,
   `SpecSync Archive (1/4)` to `(4/4)`. Each authenticates a quarter of the native
   archives and keeps the 10-minute limit, and shard 1 also walks every PR revision.

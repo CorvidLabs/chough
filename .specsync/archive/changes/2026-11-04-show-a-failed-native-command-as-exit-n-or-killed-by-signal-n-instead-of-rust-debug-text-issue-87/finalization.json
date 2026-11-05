@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87",
+  "implementation_commit": "952e6dc945c89031a230bae34ebab9c028ee4f7c",
+  "implementation_tree": "a0a90f8bd3990aa5a7666a322346e23adc26bc7f",
+  "contract_digest": "cef5db9c6ab8e7dece492b7e96257baba001f59527f3aadcb263091bfc0d33ee",
+  "workspace_digest": "9674872f9e8423f36584c287574112111a120c398728567008423ecedfc0e300",
+  "closing_digest": "55933e5b32a9784c1f4be1d37d4d60ff4ac6949f3e319390008b0e9dce5e00b2",
+  "review_digest": "7a9c511609277c0bd449edfb02b8ed09f15c988a7740595b1c99f493e394a45c",
+  "finalization_digest": "e772d4fea06b1976f5e8fd32b269a5fae55f81f482b680d8fbe9326552259c00",
+  "timestamp": 1793835124
+}
