@@ -11,11 +11,12 @@ intent = "hi check --json"
 spec = "specsync check --strict --require-coverage 100 --force"
 audit = "specsync change audit"
 cases = "cargo run --quiet --locked -- cases check"
+knowledge = "cargo run --quiet --locked -- library index --check"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
 ci-archive-fixtures = "python3 .github/scripts/test-specsync-archive.py"
 [lanes.ci]
 description = "Run full CI pipeline"
-steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "exercise", "build"]
+steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]
 
 [lanes.check]
 description = "Quick quality check"
@@ -30,4 +31,4 @@ steps = ["fmt", "check", "intent", "spec", "audit"]
 
 [lanes.verify]
 description = "Product, structural, native lifecycle and case-definition verification"
-steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "exercise", "build"]
+steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]

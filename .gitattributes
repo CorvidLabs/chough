@@ -12,3 +12,8 @@
 # (DRIVE-12).
 .chough/pruned.jsonl merge=union
 CHANGELOG.md merge=union
+
+# Bug records merge field by field; generated knowledge is union-merged and rebuilt
+# (`chough library index --check` in the verify lane), DRIVE-12.
+.chough/bugs/*.json merge=chough-bug
+knowledge/** merge=union

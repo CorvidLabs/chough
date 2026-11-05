@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Parallel pull requests no longer conflict in files Chough writes (REQ-cli-047,
+  DRIVE-12). Each change can add its cases in its own
+  `.chough/cases/<module>.<part>.cases.toml`. `chough library index --check` fails
+  naming stale generated knowledge, so the vault can union-merge and be rebuilt; this
+  repository's verify and ci lanes run it. `chough bug merge` is a Git merge driver for
+  bug records. It keeps both sides' notes and observations and leaves a real
+  disagreement, such as two different statuses, to a human.
 - Old proof now moves into the knowledge vault (REQ-cli-046; KNOW-18, KNOW-19). Loose
   artifacts that no record references, such as folders kept from earlier pull requests,
   are summarized and trimmed once their change is cold, and an open bug keeps its

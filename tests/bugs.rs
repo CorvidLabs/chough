@@ -795,8 +795,8 @@ fn two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict() {
     fixture.init();
     let added = json(&add_bug(&fixture, &[]));
     let id = added["id"].as_str().unwrap().to_string();
-    let base: Value =
-        serde_json::from_str(&fixture.read(&format!(".chough/bugs/{id}.json"))).unwrap();
+    let original = fixture.read(&format!(".chough/bugs/{id}.json"));
+    let base: Value = serde_json::from_str(&original).unwrap();
     let at = base["updated_at_unix_seconds"].as_u64().unwrap();
     let write = |name: &str, value: &Value| {
         fixture.write(
@@ -855,7 +855,15 @@ fn two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict() {
     );
     assert_eq!(merged["status"], "verified");
     assert_eq!(merged["updated_at_unix_seconds"], json!(at + 20));
-    assert_eq!(text, serde_json::to_string_pretty(&merged).unwrap() + "\n");
+    // Written the way bug commands write a record: their field order, pretty, one newline.
+    let fields = |text: &str| -> Vec<String> {
+        text.lines()
+            .filter(|line| line.starts_with("  \"") && !line.starts_with("   "))
+            .map(|line| line.split('"').nth(1).unwrap().to_string())
+            .collect()
+    };
+    assert_eq!(fields(&text), fields(&original));
+    assert!(text.ends_with("}\n") && !text.ends_with("\n\n"));
 
     // Two different status changes are a human's call.
     let mut ours = base.clone();

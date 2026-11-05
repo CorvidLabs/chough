@@ -23,13 +23,17 @@ the same checkpoint (DRIVE-3, DRIVE-12):
 - Transitions are immutable event files. The legacy `.chough/transitions.jsonl` is
   frozen behind a digest anchor; never edit it. The retention ledger and
   `CHANGELOG.md` merge with Git's union driver.
-- Set up the session merge driver once per clone:
-  `git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"`.
-- Still conflicting, until fixed: a module's spec change log and `requirements.md`
-  (SpecSync, CorvidLabs/spec-sync#862). Keep both sides' rows, renumber yours after
-  main's, set `version:` to the last row, and keep requirement IDs unique. Also
-  `.chough/cases/<module>.cases.toml` (keep both sides' cases) and generated
-  `knowledge/` notes (take either side, then run `chough library index`).
+- Add a change's cases in a file of its own,
+  `.chough/cases/<module>.<change-topic>.cases.toml`, not in the shared module file.
+- Set up both Chough merge drivers once per clone:
+  `git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"`
+  and `git config --local merge.chough-bug.driver "chough bug merge %O %A %B"`.
+- After merging main into a branch, run `chough library index` and commit `knowledge/`.
+  It union-merges, and the verify lane's `library index --check` fails until it is
+  rebuilt.
+- Still conflicting, until SpecSync fixes it: a module's spec change log and
+  `requirements.md` (CorvidLabs/spec-sync#862). Keep both sides' rows, renumber yours
+  after main's, set `version:` to the last row, and keep requirement IDs unique.
 
 HI owns human wording and criterion IDs. SpecSync owns contracts, companions,
 changes, approval, verification, review and archives; meaningful files need an active

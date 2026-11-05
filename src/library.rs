@@ -49,7 +49,12 @@ pub(super) enum LibraryCommand {
         reason: String,
     },
     /// Regenerate the deterministic INDEX.md and the archived-change entries.
-    Index,
+    Index {
+        /// Write nothing; fail naming each generated file that is missing or differs from
+        /// a rebuild (line endings ignored), so a merged vault is rebuilt before CI passes.
+        #[arg(long)]
+        check: bool,
+    },
     /// Preview (default) or apply the post-archive summary: proof only cold archived
     /// changes list, committed identically at HEAD, kept as a summary entry.
     Archive {
@@ -793,6 +798,21 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
     Ok(files)
 }
 
+/// Each generated file that is missing or differs from a rebuild, with CRLF read as LF so
+/// a Windows checkout of a current file is current (REQ-cli-047, DRIVE-12).
+fn stale_files(root: &Path, dir: &str) -> Result<Vec<String>> {
+    let mut stale = vec![];
+    for (relative, content) in build(root, dir)? {
+        let current = fs::read(local_path(root, &relative)?)
+            .ok()
+            .map(|bytes| String::from_utf8_lossy(&bytes).replace("\r\n", "\n"));
+        if current.as_deref() != Some(content.as_str()) {
+            stale.push(relative);
+        }
+    }
+    Ok(stale)
+}
+
 fn write_all(root: &Path, dir: &str, files: Vec<(String, String)>) -> Result<()> {
     fs::create_dir_all(local_path(root, &format!("{dir}/archives"))?)?;
     for (relative, content) in files {
@@ -1243,9 +1263,20 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
             regenerate(root, &dir)?;
             print_json(&value)
         }
-        LibraryCommand::Index => {
+        LibraryCommand::Index { check: false } => {
             regenerate(root, &dir)?;
             print_json(&json!({"schema_version": 1, "index": format!("{dir}/INDEX.md")}))
+        }
+        LibraryCommand::Index { check: true } => {
+            let stale = stale_files(root, &dir)?;
+            ensure!(
+                stale.is_empty(),
+                "the knowledge directory is not what its sources generate; rebuild it with `chough library index` and commit it: {}",
+                stale.join(", ")
+            );
+            print_json(
+                &json!({"schema_version": 1, "index": format!("{dir}/INDEX.md"), "current": true}),
+            )
         }
         LibraryCommand::Archive { apply } => {
             let authority = if apply {
