@@ -1,6 +1,6 @@
 ---
 id: keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 7934800355522c0c5f31f1898c4720c0dae7f786
 ---
