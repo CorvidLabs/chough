@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-cf5191b57dba90dfc0749c22",
-    "head": "EVT-f30a5cd28cc356c7abca3d84",
+    "head": "EVT-7739ad501c01fea193cba8d7",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -27,7 +27,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "PR #112 index-bound fix: Leif (0xLeif) recorded his native review (pass) at d4cdacd1 from the orc tab, 2026-11-05, under Widen #112 with the fix and Yes, record and merge."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -35,9 +37,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
