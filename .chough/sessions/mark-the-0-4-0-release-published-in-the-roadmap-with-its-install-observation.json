@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-4b0f212f24c265fad98f8682",
+    "head": "EVT-8b2eb715595148cb1bf902ba",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Mark Chough 0.4.0 published in the roadmap with its clean install observation",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation",
+  "references": {
+    "criteria": [
+      "LIFE-1"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Record the install observation, verify, and open the docs PR"
+}
