@@ -280,6 +280,7 @@ fn a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim() {
     );
 }
 
+<<<<<<< HEAD
 /// Adds `paths` to cold a1's verification manifest.
 fn list_in_a1(fixture: &Fixture, paths: &[&str]) {
     let path = ".specsync/archive/changes/2026-01-01-a1/verification.json";
@@ -487,4 +488,33 @@ fn key_items_of_a_cold_change_move_into_the_vault() {
         ledger.contains("knowledge/attachments/a1/evidence/m1.json"),
         "{ledger}"
     );
+=======
+/// Review of #108: a current-cycle reference whose record exists but cannot be read is
+/// kept, and the step reports `refused` instead of dropping it; done still completes.
+#[test]
+fn an_unreadable_record_keeps_its_reference_and_refuses_the_drop() {
+    let fixture = project("0");
+    let reset = json!({
+        "schema_version": 1, "at_unix_seconds": now() - 15 * DAY, "kind": "reset",
+        "from": "done", "to": "plan", "reason": "fixture cycle",
+    });
+    let path = fixture.root().join(".chough/transitions.jsonl");
+    let mut log = std::fs::read_to_string(&path).unwrap_or_default();
+    log.push_str(&(reset.to_string() + "\n"));
+    std::fs::write(&path, log).unwrap();
+    fixture.write(".chough/evidence/u3.json", "{ not json\n");
+    set_checkpoint(&fixture, &["r2", "u3"]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    let references = &moved["applied"]["checkpoint_references"];
+    assert_eq!(references["status"], "refused", "{moved:#}");
+    assert!(
+        references["reason"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("u3"),
+        "{moved:#}"
+    );
+    assert_eq!(fixture.session()["observations"], json!(["r2", "u3"]));
+>>>>>>> origin/claude/know/reduce-proof
 }

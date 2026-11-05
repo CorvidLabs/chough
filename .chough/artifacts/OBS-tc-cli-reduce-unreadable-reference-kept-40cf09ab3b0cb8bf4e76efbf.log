@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test an_unreadable_record_keeps_its_reference_and_refuses_the_drop ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.27s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/reduce.rs (target/debug/deps/reduce-6897a57339d76bf7)

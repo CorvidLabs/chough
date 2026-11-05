@@ -939,11 +939,24 @@ fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value 
     let Some(start) = current_cycle_start(root, session) else {
         return json!({"status": "skipped", "reason": "no reset time can be read, so no cycle is known to be closed"});
     };
-    let (kept, dropped): (Vec<String>, Vec<String>) = session
-        .observations
-        .iter()
-        .cloned()
-        .partition(|id| crate::evidence::observed_at(root, id).is_some_and(|at| at >= start));
+    // Only a missing record may be dropped; an existing record that cannot be read keeps
+    // every reference and refuses the step (review of #108).
+    let mut kept = vec![];
+    let mut dropped = vec![];
+    let mut unreadable = vec![];
+    for id in &session.observations {
+        match crate::evidence::observed_at(root, id) {
+            Ok(Some(at)) if at >= start => kept.push(id.clone()),
+            Ok(_) => dropped.push(id.clone()),
+            Err(error) => unreadable.push(format!("{id}: {error:#}")),
+        }
+    }
+    if !unreadable.is_empty() {
+        return json!({"status": "refused", "reason": format!(
+            "a referenced observation record cannot be read, so no reference was dropped ({})",
+            unreadable.join("; ")
+        )});
+    }
     if dropped.is_empty() {
         return json!({"status": "unchanged"});
     }

@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793855597,
+      "digest": "8bcc1a3cfc0b3793d0883ca055721918a703d4c42820aab0ae65037eb559f4a9",
+      "note": "Review of #108; Leif: Yes, record and merge for #108 (2026-11-04)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108",
+        "title": "Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108)",
+        "description": "Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/evidence.rs",
+          "src/stage.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-045: only a missing record may be dropped; an unreadable one is kept and the step refused; no requirement text changes.",
+        "acceptance_criteria": [
+          "At done, a current-cycle checkpoint reference whose record exists but cannot be read is kept, the step reports refused naming it, no reference is dropped, and done is still recorded; a missing record is still dropped. The new test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "corvid-agent review 5780146055 and the 0xLeif review thread on #108 (src/stage.rs:946). Leif (0xLeif): Yes, record and merge for #108 (2026-11-04).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793855827,
+      "digest": "71ff75cc2256eb369d2c471abbd07a3269ad0dd538c168c360a807f5c5083456",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
