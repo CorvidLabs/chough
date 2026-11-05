@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 43
+version: 44
 status: active
 files:
   - src/main.rs
@@ -252,3 +252,4 @@ provider, runtime or hosted service.
 | 41 | 2026-11-04 | warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and: Warn when the native check runs none of the project commands, judged from the effective commands SpecSync reports, and point the test stage to recorded test evidence (issue 85) |
 | 42 | 2026-11-04 | show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86: Show the latest failed native check in next and say when it has not passed for this tree (issue 86) |
 | 43 | 2026-11-04 | show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87: Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87) |
+| 44 | 2026-11-04 | stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git: Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81) |

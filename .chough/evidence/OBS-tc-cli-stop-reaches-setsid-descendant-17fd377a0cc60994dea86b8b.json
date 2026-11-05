@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-stop-reaches-setsid-descendant-17fd377a0cc60994dea86b8b",
+  "criteria": [
+    "FLOW-14"
+  ],
+  "requirements": [
+    "REQ-cli-011"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test stop -- --exact stopping_a_case_run_stops_a_descendant_that_left_the_group for TC-cli-stop-reaches-setsid-descendant: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-stop-reaches-setsid-descendant-17fd377a0cc60994dea86b8b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-stop-reaches-setsid-descendant-17fd377a0cc60994dea86b8b.log": "e0192ae5065d20587165a848190fae96cf68a233377d35a6bf108a1a853c8af3"
+  },
+  "observed_at_unix_seconds": 1793835930,
+  "snapshot": {
+    "revision": "996e7de2d2e7dcfb839ef8eb19de4f01196a466b",
+    "dirty": false,
+    "fingerprint": "97e05e3b789525be6730b2a43962a273f7a4db3e067884bbb3ba6bedb96765bf",
+    "content": "01fb3f4687d86590049b38180d70aedf9325431883f65228c36b13907bed0e1c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-stop-reaches-setsid-descendant",
+      "digest": "b0631c2de0e0348d389adce2297d389d16f661d1f0d88cfdb916726b316ff7da"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stop",
+    "--",
+    "--exact",
+    "stopping_a_case_run_stops_a_descendant_that_left_the_group"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

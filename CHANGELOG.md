@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Stopping Chough on Linux now also stops what its command started outside the process
+  group: a descendant that called `setsid`, and one whose parent exited (the `chough`
+  binary is now the child subreaper of what it starts). Chough says on stderr when it
+  stops a process that kept its own Git's output open, and when `git rev-parse HEAD`
+  fails for a reason other than no repository or no commit (#81, FLOW-14, REQ-cli-011),
+  including when `git` is not installed, which was silent before.
+
 - A failed native command is now shown as `exit 2` or `killed by signal 15` instead of
   Rust's debug form `exit=Some(2)` or `exit=None`, in `status`, `next` and stage refusals
   (#87, REQ-cli-003).
