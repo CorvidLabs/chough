@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-121adf353cfbd87545e0a127",
-    "head": "EVT-be7fce3ca3f47584093216c9",
+    "head": "EVT-9a1d17e1fa4dd4b5df20c159",
     "legacy": {
       "digest": "ab8cf9bf4b314c6b3374339164ef302cb1c129dab8dd6df2133276b73407fdf5",
       "bytes": 219674,
@@ -16,7 +16,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "accept",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
