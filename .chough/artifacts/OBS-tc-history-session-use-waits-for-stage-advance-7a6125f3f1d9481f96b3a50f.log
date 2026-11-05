@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test session_use_waits_for_a_running_stage_advance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 2.10s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/sessions.rs (target/debug/deps/sessions-b31417905ee5f418)

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no",
+  "slug": "show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no",
+  "title": "Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)",
+  "description": "Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "290cce3a024425cfd35600a43b8e458beaa89436",
+  "created_at": 1793804818,
+  "updated_at": 1793841276,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/sessions.rs",
+    "tests/next.rs",
+    "tests/sessions.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough next shows the checkpoint open questions in text and JSON bounded to 10 with their total and chough status reports them,A question folded from a session inbox appears in next,session list reports an archived session with status archived,inbox add of an observation entry whose ID has no evidence record still adds it and warns on stderr naming the ID and inbox list marks it recorded false,Each new test fails on 290cce3 and fledge lanes run verify passes on Linux"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded bug fix for issue 84 under LIFE-3 and DRIVE-3; item b is a warning only, as Leif chose on 2026-11-04; stacked on #77 at 290cce3 because items a and b live in its sessions code; no gate change; the next view stays within 16384 bytes; inbox entries still never edit a session",
+    "public_contract": "yes"
+  }
+}

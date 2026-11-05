@@ -270,6 +270,17 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/lifecycle.md",
         "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711",
     ),
+    // Main 91a1fdd (v0.2.0 bundle, unchanged since); superseded by the native-source
+    // guidance (issue #100, LIFE-15): Chough's bounds never justify editing HI intent,
+    // specs or SpecSync files.
+    (
+        "SKILL.md",
+        "5d7f85aa72b3bba8e5d83b593556bcdee244939b31038ed3e6000783aac5c4ea",
+    ),
+    (
+        "references/build.md",
+        "4d0bf24ddd5e55493658339c76750a639a15997c4290a492cacda3550874f035",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

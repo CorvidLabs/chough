@@ -359,7 +359,16 @@ fn a_project_without_sessions_is_unchanged() {
     fixture.ok(&["init", "--objective", "Plain"]);
     fixture.ok(&["stage", "advance"]);
     assert!(!fixture.exists(".chough/sessions"));
-    assert!(!fixture.exists(".chough/local"));
+    // The checkpoint writer lock lives in `.chough/local/` in every project (#83,
+    // REQ-history-007): it holds only the lock and its `.gitignore`, both ignored by
+    // Git, so no tracked or session file changes.
+    let mut local: Vec<String> = fs::read_dir(fixture.root().join(".chough/local"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    local.sort();
+    assert_eq!(local, [".gitignore", "checkpoint.lock"]);
+    assert_eq!(fixture.read(".chough/local/.gitignore"), "*\n");
     assert!(fixture.fails(&["inbox", "fold"]).contains("sessions"));
 }
 
@@ -698,6 +707,105 @@ fn orphaned_session_file_temps_are_removed_and_ignored() {
     assert!(fixture.exists(".chough/sessions/alpha.json"));
 }
 
+/// Issue #84: a subagent's question folded from the inbox is shown by `next` and
+/// `status`, not parked silently in `open_questions` (LIFE-3).
+#[test]
+fn a_folded_inbox_question_appears_in_next() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let question = "Should SAVE20 stack with SAVE10?";
+    add_entry(&fixture, "alpha", "question", question);
+    fixture.ok(&["inbox", "fold"]);
+    let output = fixture.run(&["next"]);
+    assert!(output.status.success());
+    let next = String::from_utf8(output.stdout).unwrap();
+    assert!(next.contains(question), "{next}");
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(view["open_questions"]["items"][0], question, "{view:#}");
+    let status = fixture.ok(&["status"]);
+    assert_eq!(status["checkpoint"]["open_questions"][0], question);
+}
+
+/// Issue #84 item a: an archived session is listed with status `archived`, not the
+/// `active` stage status it was archived with.
+#[test]
+fn session_list_reports_an_archived_session_as_archived() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    finish(&fixture, "alpha");
+    fixture.ok(&["session", "use", "beta"]);
+    assert!(fixture.exists(".chough/sessions/archive/alpha.json"));
+    let list = fixture.ok(&["session", "list"]);
+    let entry = |key: &str, archived: bool| {
+        list["sessions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["key"] == key && entry["archived"] == archived)
+            .cloned()
+            .unwrap_or_else(|| panic!("{key} missing: {list:#}"))
+    };
+    assert_eq!(entry("alpha", true)["status"], "archived", "{list:#}");
+    assert_eq!(entry("alpha", true)["stage"], "done");
+    assert_eq!(entry("beta", false)["status"], "active", "{list:#}");
+}
+
+/// Issue #84 item b, as Leif chose on 2026-11-04: an observation entry whose ID has no
+/// evidence record is still added, with a warning naming it, and `inbox list` marks it.
+#[test]
+fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.write(".chough/evidence/OBS-recorded.json", "{}\n");
+    let output = fixture.run(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "observation",
+        "--text",
+        "OBS-bogus",
+    ]);
+    assert!(output.status.success(), "the entry is still added");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("OBS-bogus") && stderr.contains("no record"),
+        "{stderr}"
+    );
+    let output = fixture.run(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "observation",
+        "--text",
+        "OBS-recorded",
+    ]);
+    assert!(output.status.success());
+    assert!(
+        !String::from_utf8_lossy(&output.stderr).contains("no record"),
+        "a recorded observation gets no warning"
+    );
+    let list = fixture.ok(&["inbox", "list"]);
+    let recorded = |text: &str| {
+        list["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["text"] == text)
+            .map(|entry| entry["recorded"].clone())
+            .unwrap_or_else(|| panic!("{text} missing: {list:#}"))
+    };
+    assert_eq!(recorded("OBS-bogus"), false, "{list:#}");
+    assert_eq!(recorded("OBS-recorded"), true, "{list:#}");
+}
+
 #[test]
 fn session_new_accepts_the_module_ids_init_accepts() {
     // Review thread 4465229406: `session new --module chat.service` was refused while
@@ -870,4 +978,144 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
         temps[0]
     );
     assert_eq!(fixture.ok(&["inbox", "list"])["entries"], entries);
+}
+
+/// Session alpha at plan with an approved native change, whose stub `specsync` runs
+/// `before` first on each call; beta is a second open session. Returns alpha's cycle.
+#[cfg(unix)]
+fn alpha_at_plan(fixture: &Fixture, before: &str) -> String {
+    fixture.stubs();
+    fixture.native("approved");
+    sessions(fixture);
+    fixture.ok(&["session", "use", "alpha"]);
+    fixture.ok(&["checkpoint", "--native-change", "alpha-change"]);
+    fixture.no_spec_approval("alpha-change");
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fs::rename(
+        fixture.root().join("bin/specsync"),
+        fixture.root().join("bin/specsync-stub"),
+    )
+    .unwrap();
+    fixture.write(
+        "bin/specsync",
+        &format!("#!/bin/sh\n{before}\nexec ./bin/specsync-stub \"$@\"\n"),
+    );
+    fixture.executable("bin/specsync");
+    cycle(fixture, "alpha")
+}
+
+/// Issue #82 (REQ-history-008): #77's writer lock makes `session use` wait for a
+/// running `stage advance`, so Chough itself never archives or switches a session
+/// under a command and no orphan event is left. Guards the lock; passes at 75a732d.
+#[cfg(unix)]
+#[test]
+fn session_use_waits_for_a_running_stage_advance() {
+    use std::process::{Command, Stdio};
+    use std::time::{Duration, Instant};
+    let fixture = Fixture::new();
+    let cycle = alpha_at_plan(&fixture, "[ -e .slow ] && touch running && sleep 2");
+    let before = events(&fixture, &cycle);
+    fixture.write(".slow", "");
+    let spawn = |args: &[&str]| {
+        Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(fixture.root())
+            .args(args)
+            .env(
+                "PATH",
+                std::env::join_paths(std::iter::once(fixture.root().join("bin")).chain(
+                    std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()),
+                ))
+                .unwrap(),
+            )
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap()
+    };
+    let mut advance = spawn(&["stage", "advance"]);
+    let started = Instant::now();
+    while !fixture.exists("running") {
+        assert!(
+            started.elapsed() < Duration::from_secs(30),
+            "the native read never started"
+        );
+        std::thread::sleep(Duration::from_millis(20));
+    }
+    let switch = spawn(&["session", "use", "beta"])
+        .wait_with_output()
+        .unwrap();
+    assert!(
+        advance.try_wait().unwrap().is_some(),
+        "session use finished while stage advance still held the checkpoint"
+    );
+    assert!(
+        switch.status.success(),
+        "{}",
+        String::from_utf8_lossy(&switch.stderr)
+    );
+    let advanced = advance.wait_with_output().unwrap();
+    assert!(
+        advanced.status.success(),
+        "{}",
+        String::from_utf8_lossy(&advanced.stderr)
+    );
+    assert_eq!(
+        json(&fixture, ".chough/sessions/alpha.json")["stage"]["current"],
+        "build"
+    );
+    assert_eq!(
+        events(&fixture, &cycle),
+        before + 1,
+        "exactly the advance's event"
+    );
+}
+
+/// Issue #82 (REQ-history-008, Leif's 2026-11-04 choice): when something outside Chough
+/// moves the session file away during `stage advance`, the refused save leaves no
+/// orphan event: the event that command published is removed.
+#[cfg(unix)]
+#[test]
+fn a_save_refused_because_the_session_vanished_leaves_no_event() {
+    let fixture = Fixture::new();
+    let cycle = alpha_at_plan(
+        &fixture,
+        "if [ -e .vanish ]; then rm .vanish; mkdir -p .chough/sessions/archive; mv .chough/sessions/alpha.json .chough/sessions/archive/alpha.json; fi",
+    );
+    let before = events(&fixture, &cycle);
+    fixture.write(".vanish", "");
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("nothing was saved"), "{refused}");
+    assert_eq!(events(&fixture, &cycle), before, "an orphan event was left");
+    assert!(
+        !fixture.exists(".chough/sessions/alpha.json"),
+        "alpha.json was recreated"
+    );
+}
+
+/// Issue #83 (REQ-history-007, #94 review): in sessions mode `.chough/local/` holds only
+/// `.gitignore`, `checkpoint.lock` and `active-session`, and Git ignores all three.
+#[test]
+fn in_sessions_mode_local_holds_only_the_pointer_and_the_lock() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.ok(&["checkpoint", "--decision", "Take the lock"]);
+    let mut local: Vec<String> = fs::read_dir(fixture.root().join(".chough/local"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    local.sort();
+    assert_eq!(local, [".gitignore", "active-session", "checkpoint.lock"]);
+    fixture.commit("fixture");
+    let tracked = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["ls-files", ".chough/local"])
+        .output()
+        .unwrap();
+    assert!(
+        tracked.stdout.is_empty(),
+        "{}",
+        String::from_utf8_lossy(&tracked.stdout)
+    );
 }

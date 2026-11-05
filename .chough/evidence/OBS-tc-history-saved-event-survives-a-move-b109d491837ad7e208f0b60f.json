@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f",
+  "criteria": [
+    "DRIVE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-008"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --bin chough saved_event for TC-history-saved-event-survives-a-move: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f.log": "4de49651ba5cc57d39f4832ac69cc7a3814910b1e288fe5623eae85906e30a2c"
+  },
+  "observed_at_unix_seconds": 1793842267,
+  "snapshot": {
+    "revision": "b28b529fc2a628583c180c4a72052c830fc92719",
+    "dirty": false,
+    "fingerprint": "3c065c37cef5f3208d93feb8d22632370c79d3c8d2b24c95605ff522a0d301e7",
+    "content": "89e08413accb376661a8323e68d963c1a9d73cd2418d642b0aa78439f13b7bc7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-saved-event-survives-a-move",
+      "digest": "43fbebe5c411531c869713962ca35fa93c0460366ede42473f7726ff2a757ee7"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--bin",
+    "chough",
+    "saved_event"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 9
+}

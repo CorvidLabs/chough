@@ -153,6 +153,84 @@ pub(super) fn new_cursor(root: &Path) -> Result<Cursor> {
     })
 }
 
+/// What this process published, per project root, since it last found its checkpoint in
+/// place: event paths with the SHA-256 of their bytes, and cycle directories it reserved
+/// (#82, REQ-history-008). `retire_published` forgets them when a save may write them;
+/// `discard_published` removes them when the command's save is refused because its
+/// checkpoint vanished.
+static PUBLISHED: std::sync::Mutex<Published> = std::sync::Mutex::new(Published {
+    events: Vec::new(),
+    directories: Vec::new(),
+});
+
+#[derive(Default)]
+struct Published {
+    /// Project root, project-relative event path and the SHA-256 of the bytes written.
+    events: Vec<(std::path::PathBuf, String, Vec<u8>)>,
+    /// Project root and project-relative cycle directory reserved.
+    directories: Vec<(std::path::PathBuf, String)>,
+}
+
+/// Take this process's published events and reserved cycle directories under `root` out
+/// of the record, leaving other roots' entries.
+fn take_published(root: &Path) -> Published {
+    let mut published = PUBLISHED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    let (events, others): (Vec<_>, Vec<_>) = std::mem::take(&mut published.events)
+        .into_iter()
+        .partition(|(owner, _, _)| owner == root);
+    published.events = others;
+    let (directories, other_dirs): (Vec<_>, Vec<_>) = std::mem::take(&mut published.directories)
+        .into_iter()
+        .partition(|(owner, _)| owner == root);
+    published.directories = other_dirs;
+    Published {
+        events,
+        directories,
+    }
+}
+
+/// Forget what this process published under `root`: the command found its checkpoint in
+/// place, and every save does so just before it writes, so a save may now point to those
+/// events and they are never this command's to remove (second #96 review). A save that
+/// then fails for another reason keeps REQ-history-002's unselected orphan.
+pub(super) fn retire_published(root: &Path) {
+    take_published(root);
+}
+
+/// Remove the events this process published under `root` since it last found its
+/// checkpoint in place, when their bytes are unchanged, then the cycle directories it
+/// reserved there when they are empty; returns how many events it removed. Called only
+/// when a save is refused because the checkpoint the command resolved was archived,
+/// removed or adopted meanwhile (REQ-history-008); any other failed save keeps
+/// REQ-history-002's unselected orphan. No save can point to these events: the
+/// checkpoint has not been in place since they were published.
+pub(super) fn discard_published(root: &Path) -> usize {
+    let Published {
+        events,
+        directories,
+    } = take_published(root);
+    let mut removed = 0;
+    for (_, relative, digest) in events {
+        let Ok(path) = local_path(root, &relative) else {
+            continue;
+        };
+        if fs::read(&path).is_ok_and(|bytes| Sha256::digest(&bytes).to_vec() == digest)
+            && fs::remove_file(&path).is_ok()
+        {
+            removed += 1;
+        }
+    }
+    for (_, relative) in directories.into_iter().rev() {
+        if let Ok(path) = local_path(root, &relative) {
+            // Fails, and so keeps the directory, unless it is empty.
+            let _ = fs::remove_dir(path);
+        }
+    }
+    removed
+}
+
 fn reserve_cursor(root: &Path, cycle: String) -> Result<Cursor> {
     ensure!(valid_id(&cycle, "CYC-"), "invalid allocated cycle identity");
     let directory = format!("{ROOT}/cycles/{cycle}");
@@ -161,6 +239,11 @@ fn reserve_cursor(root: &Path, cycle: String) -> Result<Cursor> {
     local_path(root, &directory)?;
     fs::create_dir(path)
         .context("history cycle collision or directory creation failure; no retry")?;
+    PUBLISHED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .directories
+        .push((root.to_path_buf(), directory));
     Ok(Cursor {
         cycle,
         head: None,
@@ -706,6 +789,11 @@ fn append_using(
         publish(root, &path, &content)?,
         "history collision at {path}; no retry or overwrite"
     );
+    PUBLISHED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .events
+        .push((root.to_path_buf(), path, Sha256::digest(&content).to_vec()));
     cursor.head = Some(id);
     session.history_cursor = Some(cursor);
     Ok(())

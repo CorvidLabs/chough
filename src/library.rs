@@ -185,9 +185,11 @@ fn archives(root: &Path) -> Result<Vec<Archive>> {
                 ),
                 Err(error) => (serde_json::Value::Null, Some(error)),
             };
+        // A native SpecSync file, read within SpecSync's bound and never Chough's
+        // 64 KiB record bound (LIFE-15).
         let change = local_path(root, &format!("{base}/change.md"))
             .ok()
-            .and_then(|path| read_record(&path).ok())
+            .and_then(|path| crate::records::read_native_text(&path).ok())
             .unwrap_or_default();
         let base_commit = change
             .lines()
@@ -900,40 +902,83 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
             } else {
                 None
             };
-            let found = archives(root)?;
-            let unreadable: Vec<String> = found
-                .iter()
-                .filter_map(|archive| {
-                    archive
-                        .manifest_error
-                        .as_ref()
-                        .map(|error| format!("{}: {error}", archive.id))
-                })
-                .collect();
-            ensure!(
-                unreadable.is_empty(),
-                "archived verification manifests could not be read, so nothing can be classified safely: {}",
-                unreadable.join("; ")
-            );
-            let listed: Vec<evidence::ListedArchive> = found
-                .into_iter()
-                .enumerate()
-                .map(|(index, archive)| evidence::ListedArchive {
-                    id: archive.id,
-                    hot: index < HOT_ARCHIVES,
-                    paths: archive.all_paths.into_iter().collect(),
-                })
-                .collect();
-            let write = |root: &Path| regenerate(root, &dir);
-            print_json(&evidence::archive_summary(
-                root,
-                &listed,
-                &dir,
-                authority.as_deref(),
-                &write,
-            )?)
+            print_json(&archive_value(root, &dir, authority.as_deref())?)
         }
     }
+}
+
+/// The authority recorded when trimming at done relies on the librarian default
+/// (KNOW-13): the standing preference KNOW-11 names.
+const LIBRARIAN_DEFAULT: &str = "standing preference: librarian on by default (KNOW-13); opt out with `chough pref set retention manual`";
+
+/// Trim at done (REQ-cli-041, KNOW-13, #88): with the librarian on and `retention` neither
+/// `manual` nor a recorded `off`, apply the post-archive summary with the recorded retention authority or
+/// else the librarian default. Never fails: the result is `trimmed`, `skipped` or
+/// `refused` with its reason, so the move into done never depends on it.
+pub(super) fn trim_at_done(root: &Path) -> serde_json::Value {
+    let refused = |reason: String| json!({"status": "refused", "reason": reason});
+    let librarian = match prefs::effective(root, "librarian") {
+        Ok((value, _)) => value,
+        Err(error) => return refused(format!("{error:#}")),
+    };
+    if librarian != "on" {
+        return json!({"status": "skipped", "reason": "the librarian is off"});
+    }
+    let (retention, origin) = match prefs::effective(root, "retention") {
+        Ok(value) => value,
+        Err(error) => return refused(format!("{error:#}")),
+    };
+    // A recorded `off` is a standing preference against removal, like `manual`; only the
+    // unset default lets the librarian trim (#97 review).
+    if retention == "manual" || (retention == "off" && origin != "default") {
+        return json!({"status": "skipped", "reason": format!("retention is {retention} ({origin}); run `chough library archive --apply` when you choose")});
+    }
+    // With the checkpoint readable, the only refusal left in `retention_authority` is
+    // "not authorized", which is where the librarian default applies; any other error
+    // refuses the trim instead of borrowing that authority.
+    if let Err(error) = crate::checkpoint::read_session(root) {
+        return refused(format!("{error:#}"));
+    }
+    let authority = evidence::retention_authority(root, "trimming at done")
+        .unwrap_or_else(|_| LIBRARIAN_DEFAULT.to_string());
+    let summary = enabled_dir(root).and_then(|dir| archive_value(root, &dir, Some(&authority)));
+    match summary {
+        Ok(summary) => json!({"status": "trimmed", "authority": authority, "summary": summary}),
+        Err(error) => {
+            json!({"status": "refused", "authority": authority, "reason": format!("{error:#}")})
+        }
+    }
+}
+
+/// `chough library archive`: the post-archive summary, previewed or, with `authority`,
+/// applied (REQ-cli-033).
+fn archive_value(root: &Path, dir: &str, authority: Option<&str>) -> Result<serde_json::Value> {
+    let found = archives(root)?;
+    let unreadable: Vec<String> = found
+        .iter()
+        .filter_map(|archive| {
+            archive
+                .manifest_error
+                .as_ref()
+                .map(|error| format!("{}: {error}", archive.id))
+        })
+        .collect();
+    ensure!(
+        unreadable.is_empty(),
+        "archived verification manifests could not be read, so nothing can be classified safely: {}",
+        unreadable.join("; ")
+    );
+    let listed: Vec<evidence::ListedArchive> = found
+        .into_iter()
+        .enumerate()
+        .map(|(index, archive)| evidence::ListedArchive {
+            id: archive.id,
+            hot: index < HOT_ARCHIVES,
+            paths: archive.all_paths.into_iter().collect(),
+        })
+        .collect();
+    let write = |root: &Path| regenerate(root, dir);
+    evidence::archive_summary(root, &listed, dir, authority, &write)
 }
 
 /// The knowledge pointer for start and resume views: the librarian state and the index.

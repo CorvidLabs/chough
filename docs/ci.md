@@ -51,6 +51,16 @@ Source/lifecycle hashes and Git status must remain unchanged by inspection. Late
 legitimate source or unrelated commits do not stale an authenticated historical
 archive; old behavioral evidence is not re-run against current HEAD.
 
+Hosted CI runs the inspector as four parallel jobs, `SpecSync Archive (1/4)` to
+`SpecSync Archive (4/4)`, each with the unchanged 10-minute limit
+(`--shard K/4`). Every shard runs the audit, the active-roster check and the version
+and protocol checks. Shard K authenticates the archives at positions K, K+4 and so
+on, sorted by ID, so the four together authenticate every archive exactly once.
+Shard 1 also walks every PR revision and refuses an omitted archive. One native
+archive status read costs tens of seconds inside SpecSync, which is why the reads are
+spread across runners and not skipped (DRIVE-10). Locally the default `--shard 1/1`
+does all of it in one run, with unchanged output.
+
 `authenticated-history` is a native structural provenance result. It does not
 authenticate a human identity. Actor names, model text, files named review, and
 synthetic fixture approvals do not establish genuine human acceptance. The gate
@@ -86,7 +96,7 @@ requiring these exact contexts:
 - `MSRV / 1.88.0`
 - `Fledge / HI / SpecSync`
 - `CI gate fixtures`
-- `SpecSync Archive`
+- `SpecSync Archive (1/4)` to `SpecSync Archive (4/4)`
 
 A CI job and an enforced merge rule are separate. On 2026-10-31 the compact main
 branch response reported `protected: true` with empty required-check context and

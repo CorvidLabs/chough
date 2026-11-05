@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that",
+  "slug": "remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that",
+  "title": "Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)",
+  "description": "Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "75a732d8243181c375ee3c4f2651408ff9b41ab2",
+  "created_at": 1793811446,
+  "updated_at": 1793842286,
+  "affected_specs": [
+    "history"
+  ],
+  "affected_paths": [
+    "src/history.rs",
+    "src/sessions.rs",
+    "tests/sessions.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A stage advance whose session file is moved away during its native read refuses with nothing saved and leaves no new event file. Session use started during a stage advance waits for it. Each new test fails where stated and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded fix for issue 82 as Leif chose on 2026-11-04 (test the lock and clean up); stacked on 77 at 75a732d; only events this command published and whose bytes are unchanged are removed; any other failed save keeps the unselected orphan of REQ-history-002",
+    "public_contract": "yes"
+  }
+}

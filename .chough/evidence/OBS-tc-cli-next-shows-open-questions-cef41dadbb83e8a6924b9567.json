@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-next-shows-open-questions-cef41dadbb83e8a6924b9567",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test next -- --exact open_questions_appear_in_next_and_status for TC-cli-next-shows-open-questions: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-next-shows-open-questions-cef41dadbb83e8a6924b9567.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-next-shows-open-questions-cef41dadbb83e8a6924b9567.log": "fb518c9599aaa6ae4df561c63e5dfcf5e3c5d55d095cbfff2e8834dac17ae0ae"
+  },
+  "observed_at_unix_seconds": 1793805318,
+  "snapshot": {
+    "revision": "2cf5b64ae36962d45925366d98edb8b1289923ae",
+    "dirty": false,
+    "fingerprint": "ee928f819148811472a6c7fba52e3a6083f21f69a17accac56b8b096f51ba692",
+    "content": "d0dd9c8b07c4e1a68fb42d8cfac7c83617042bde7eb5a387676bc0fba0d9edd2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-next-shows-open-questions",
+      "digest": "54cc13fb505e10ac2eb5bb9023e8a8f61e2736acd8246dfa8db0b5da68e02f68"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "open_questions_appear_in_next_and_status"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

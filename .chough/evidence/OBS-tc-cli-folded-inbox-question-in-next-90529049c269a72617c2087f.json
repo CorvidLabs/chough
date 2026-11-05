@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-folded-inbox-question-in-next-90529049c269a72617c2087f",
+  "criteria": [
+    "LIFE-3",
+    "DRIVE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "not-run",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact a_folded_inbox_question_appears_in_next for TC-cli-folded-inbox-question-in-next: not-run (exit 101, tests run 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-folded-inbox-question-in-next-90529049c269a72617c2087f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-folded-inbox-question-in-next-90529049c269a72617c2087f.log": "3a1b9312f785a7134e33db04366c07abc284508213f87b8a66ed8e77085999f8"
+  },
+  "observed_at_unix_seconds": 1793807551,
+  "snapshot": {
+    "revision": "d4cc00b809ba8cf91150f51bcf954870ec01eb9c",
+    "dirty": true,
+    "fingerprint": "437c003416234d93a755fc62504acb2e5931f25f92ab61d4f4b895b9329e9c56",
+    "content": "cead0d2f518993780594d05918279bf92a9354985a988718e40fa294fa8a177e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-folded-inbox-question-in-next",
+      "digest": "69acb3e60c83f369a36e6d064cf7cf90be45b82dfb6ce65eef50ae871617dd38"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "a_folded_inbox_question_appears_in_next"
+  ],
+  "exit_code": 101,
+  "tests_run": 0,
+  "limitations": [
+    "cargo exited 101 before reporting any test result: a build or environment failure, not an assertion about the behavior",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

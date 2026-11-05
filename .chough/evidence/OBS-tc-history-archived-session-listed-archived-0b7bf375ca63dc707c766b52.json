@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-archived-session-listed-archived-0b7bf375ca63dc707c766b52",
+  "criteria": [
+    "DRIVE-3"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact session_list_reports_an_archived_session_as_archived for TC-history-archived-session-listed-archived: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-archived-session-listed-archived-0b7bf375ca63dc707c766b52.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-archived-session-listed-archived-0b7bf375ca63dc707c766b52.log": "222daba9937f7a029091c57fbb26972bd7eef83ff62ac78835a2cf8194ae9309"
+  },
+  "observed_at_unix_seconds": 1793805896,
+  "snapshot": {
+    "revision": "6c509fb6b889ef84e094c47646d4fd54640577c3",
+    "dirty": true,
+    "fingerprint": "ab5d76a4b41f2970a91ed33a068bb5becf9ab7069c818838526a2684b46faacc",
+    "content": "06c137aa10ae9dad7f13c5be02dff995dbf53518d6f9552e583b0b53d316b2e8"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-archived-session-listed-archived",
+      "digest": "91312bb20156fb4d9d2da4c2c0ad66cd3ab05559d6deccd0c95113c249d27007"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "session_list_reports_an_archived_session_as_archived"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

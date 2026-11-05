@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86",
+  "implementation_commit": "ac7047b8935cb51e05629174ba116d4783023406",
+  "implementation_tree": "1ff1582955e0ddb7e9ccb2fe770578e29309d3ce",
+  "contract_digest": "13c0ba9b264cd120ccd3371d7fd3146b4f54bded8b01e9c7aa1803f0f4aef763",
+  "workspace_digest": "946c7c6d4b5dad28a151b884dffe593b7cfa30c34a4eee1666e498563f42e0e4",
+  "closing_digest": "9dfd12fce97ffce4b8358a20b6c190c4b2c21546e175fa7439b7220a9b2b77e4",
+  "review_digest": "0f49d152ad7ddbb4c73ebd8c1cbc93ec93411280603aeafa96a624300a660013",
+  "finalization_digest": "fdbfdc1aa4b3f3ed6564df77ec37c9d29fd99f04fc38d71c0e21fa4b9f216bb6",
+  "timestamp": 1793834884
+}

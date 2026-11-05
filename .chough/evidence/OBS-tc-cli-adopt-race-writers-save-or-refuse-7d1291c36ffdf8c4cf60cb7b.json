@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-adopt-race-writers-save-or-refuse-7d1291c36ffdf8c4cf60cb7b",
+  "criteria": [
+    "DRIVE-11",
+    "DRIVE-3"
+  ],
+  "requirements": [
+    "REQ-cli-040"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test cli -- --exact legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved for TC-cli-adopt-race-writers-save-or-refuse: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-adopt-race-writers-save-or-refuse-7d1291c36ffdf8c4cf60cb7b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-adopt-race-writers-save-or-refuse-7d1291c36ffdf8c4cf60cb7b.log": "963db615dad0746fd0068e466ffa5441ad9a8942775d7f51425c2b2100fae31f"
+  },
+  "observed_at_unix_seconds": 1793841782,
+  "snapshot": {
+    "revision": "5809127b98419a59dd9981fe5f3b1709132aa732",
+    "dirty": false,
+    "fingerprint": "22a26366b42bc44c43f15d0529238230471e72b7ea3f19d1db3d2b9738ad0c09",
+    "content": "741a632d0ba61f0782a6282ae557f85b9854142f8e0d01d2e94fd3c11a4f16a6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-adopt-race-writers-save-or-refuse",
+      "digest": "6bad00f6977089d7a9f6bc9ecd26256d17d4506b614fc14a4be97483366fb90c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

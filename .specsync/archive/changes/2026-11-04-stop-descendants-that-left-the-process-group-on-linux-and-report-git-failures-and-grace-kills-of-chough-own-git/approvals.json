@@ -1,0 +1,92 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793810746,
+      "digest": "969a782d295e6afa1e009e850249f1871161115efbca2be96a0eb4b29394210b",
+      "note": "Recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'), under his standing approval that morning for bounded Chough bug fixes and his brief to fix issues 81 to 88 one PR each (Linux only). Scope: issue 81 items 1 to 3 under FLOW-14 and LIFE-7; item 4 investigated. Limits: no gate or record change, no release. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git",
+        "title": "Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81)",
+        "description": "Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/main.rs",
+          "src/records.rs",
+          "tests/stop.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "On Linux a stop during cases run also stops a descendant that called setsid and an orphan of the tree. A grace kill after Chough own Git is reported on stderr. A failed git rev-parse HEAD other than no repository or no commit is reported on stderr. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded fix for issue 81 under FLOW-14 and LIFE-7; Linux only for the descendant walk and subreaper; other Unix keeps the group stop; no gate or record change; item 4 is investigated first",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "a3a309ee53d34ff990b8fff4f55f11bebc3a7680a59087fee99378a9d4490f47"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793812999,
+      "digest": "969a782d295e6afa1e009e850249f1871161115efbca2be96a0eb4b29394210b",
+      "note": "Re-approval recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'): REQ-cli-011's trace lists LIFE-7 once instead of twice, a #95 review nit; scope and behavior unchanged. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git",
+        "title": "Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81)",
+        "description": "Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/main.rs",
+          "src/records.rs",
+          "tests/stop.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "On Linux a stop during cases run also stops a descendant that called setsid and an orphan of the tree. A grace kill after Chough own Git is reported on stderr. A failed git rev-parse HEAD other than no repository or no commit is reported on stderr. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded fix for issue 81 under FLOW-14 and LIFE-7; Linux only for the descendant walk and subreaper; other Unix keeps the group stop; no gate or record change; item 4 is investigated first",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "eb488ba54bd6309835560b52ee2fcf5366531d01c1d02efee973cff88254917d"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793835959,
+      "digest": "603c294697c2857e82bf89801914d897ed125eac097329b5663b04969c42c1d4",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

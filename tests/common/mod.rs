@@ -18,18 +18,12 @@ impl Drop for Fixture {
     }
 }
 
-/// The lock file Chough uses for this project: the system temporary directory, named
-/// for the SHA-256 of the canonical `.chough` path (see `checkpoint_lock_path` in
-/// src/checkpoint.rs). `None` when the project has no `.chough` directory.
+/// The lock file Chough uses for this project: `.chough/local/checkpoint.lock` (#83,
+/// DRIVE-11). `None` when the project has no `.chough` directory.
 pub(super) fn checkpoint_lock_path(root: &Path) -> Option<std::path::PathBuf> {
-    use sha2::{Digest, Sha256};
-    let canonical = fs::canonicalize(root.join(".chough")).ok()?;
-    let digest = Sha256::digest(canonical.to_string_lossy().as_bytes());
-    let name: String = digest[..16]
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
-    Some(std::env::temp_dir().join(format!("chough-checkpoint-{name}.lock")))
+    root.join(".chough")
+        .is_dir()
+        .then(|| root.join(".chough/local/checkpoint.lock"))
 }
 
 /// Remove a project's checkpoint lock file, if any; for test cleanup only.
@@ -195,7 +189,8 @@ impl Fixture {
 # .stub-approval (true, false or none to omit), .stub-correction (true or false),
 # .stub-validity (terminal evidence when archived; none omits it), .stub-next (the
 # native next action), .stub-affected (the quoted modules of change.affected_specs;
-# none omits the change object), .stub-no-spec (true or false) and .stub-fail. When
+# none omits the change object), .stub-no-spec (true or false), .stub-verification (a JSON
+# array reported as summary.verification_commands; absent omits it) and .stub-fail. When
 # .stub-count exists, every call appends a line to .stub-calls. summary.id echoes the
 # requested change, as SpecSync's status reply names it.
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
@@ -208,6 +203,7 @@ next=$(cat .stub-next 2>/dev/null || echo "stub next action for $state")
 affected=$(cat .stub-affected 2>/dev/null || echo '')
 nospec=$(cat .stub-no-spec 2>/dev/null || echo true)
 fields=",\"correction_valid\":$correction"
+if [ -f .stub-verification ]; then fields="$fields,\"verification_commands\":$(cat .stub-verification)"; fi
 if [ "$approval" != none ]; then fields="$fields,\"approval_valid\":$approval"; fi
 if [ "$state" = archived ] && [ "$validity" != none ]; then
     fields="$fields,\"terminal_evidence\":{\"validity\":\"$validity\"}"

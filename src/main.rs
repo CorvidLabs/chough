@@ -6,6 +6,8 @@ mod evidence;
 mod history;
 mod identity;
 mod library;
+mod native_check;
+mod policy;
 mod prefs;
 mod records;
 mod sessions;
@@ -160,6 +162,8 @@ enum EvidenceCommand {
 }
 
 fn main() -> Result<()> {
+    // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
+    records::become_subreaper();
     let cli = Cli::parse();
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
@@ -419,9 +423,18 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             "valid_transitions": stage::valid_transitions(checkpoint),
             "awaiting_human": checkpoint.awaiting_human,
             "blockers": checkpoint.blockers,
+            "open_questions": checkpoint.open_questions,
             "references": checkpoint.references,
         }),
     };
+    let verification_warning = policy::verification_warning(
+        root,
+        assessment
+            .native
+            .as_ref()
+            .and_then(|native| native.value.as_ref())
+            .and_then(|value| value.pointer("/summary/verification_commands")),
+    )?;
     let (native_status, native_summary) = match &assessment.native {
         None => (serde_json::to_value(not_configured())?, Value::Null),
         Some(native) => (
@@ -445,6 +458,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
         "native_summary": native_summary,
+        "native_verification_warning": verification_warning,
         "snapshot": match &current { Ok(value) => serde_json::to_value(value)?, Err(error) => json!({"unknown": error.to_string()}) },
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,
@@ -474,9 +488,10 @@ const BUNDLE_LIMIT: usize = library::HOT_ARCHIVES;
 const DECISION_KINDS: [&str; 3] = ["decided", "rejected", "failed"];
 const ARCHIVED_CHANGES: &str = ".specsync/archive/changes";
 /// The lists the next view may shorten, each with its total kept, as JSON pointers.
-const LISTS: [&str; 8] = [
+const LISTS: [&str; 9] = [
     "/awaiting_human/items",
     "/blockers/items",
+    "/open_questions/items",
     "/blocking_bugs/items",
     "/observations/items",
     "/decisions/items",
@@ -755,7 +770,9 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "iteration": checkpoint.stage.iteration,
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
+        "native_check": native_check::view(root, change.as_deref(), summary)?,
         "native": native,
+        "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         "next_valid_action": {
             "action": cut(&assessment.action.action),
             "reason": cut(&assessment.action.reason),
@@ -764,6 +781,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut(&gate.label), "detail": cut(&gate.detail)})),
         "awaiting_human": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.awaiting_human).iter()),
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
+        "open_questions": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.open_questions).iter()),
         "blocking_bugs": listed(assessment.blocking.iter()),
         "other_open_bugs": assessment.open_bugs.len().saturating_sub(assessment.blocking.len()),
         "observations": {
@@ -862,6 +880,9 @@ fn next_text(view: &Value) -> String {
             text(&native["terminal_evidence"])
         ));
     }
+    if let Some(warning) = view["native_verification_warning"].as_str() {
+        lines.push(format!("Warning: {warning}"));
+    }
     if native["next_action"].is_string() {
         lines.push(format!(
             "  Native next action: {}",
@@ -874,6 +895,7 @@ fn next_text(view: &Value) -> String {
             text(&native["approved_deltas"])
         ));
     }
+    lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
     lines.push(format!("Next: {}", text(&action["action"])));
     lines.push(format!("  Why: {}", text(&action["reason"])));
@@ -891,7 +913,11 @@ fn next_text(view: &Value) -> String {
         ));
         lines.push(format!("  {}", text(&gate["detail"])));
     }
-    for (key, title) in [("awaiting_human", "Human gates"), ("blockers", "Blockers")] {
+    for (key, title) in [
+        ("awaiting_human", "Human gates"),
+        ("blockers", "Blockers"),
+        ("open_questions", "Open questions"),
+    ] {
         let total = view[key]["total"].as_u64().unwrap_or(0);
         let items = view[key]["items"].as_array().cloned().unwrap_or_default();
         if total == 0 {
