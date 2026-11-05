@@ -3684,3 +3684,21 @@ expected = ["tests/reduce.rs::a_shared_artifact_released_by_an_earlier_removal_d
 adapter = "cargo-test"
 test_target = "reduce"
 test = "a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim"
+
+[[case]]
+id = "TC-cli-reduce-unreadable-reference-kept"
+title = "An unreadable record keeps its checkpoint reference and refuses the closed-cycle drop"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-16"]
+requirements = ["REQ-cli-045"]
+paths = ["src/evidence.rs", "src/stage.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::an_unreadable_record_keeps_its_reference_and_refuses_the_drop passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "an_unreadable_record_keeps_its_reference_and_refuses_the_drop"

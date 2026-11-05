@@ -1695,17 +1695,17 @@ pub(super) fn ledger_records(root: &Path) -> Result<BTreeMap<String, Value>> {
     Ok(records)
 }
 
-/// Outcome, environment and cases of a present observation, for knowledge entries.
-/// When a present observation record was observed; None when it has no readable record.
-pub(super) fn observed_at(root: &Path, id: &str) -> Option<u64> {
-    if !is_present(root, id).ok()? {
-        return None;
+/// When an observation record was observed: None when it has no record, and an error
+/// when a record exists but cannot be read (review of #108), so callers never treat an
+/// unreadable record as a missing one.
+pub(super) fn observed_at(root: &Path, id: &str) -> Result<Option<u64>> {
+    if !is_present(root, id)? {
+        return Ok(None);
     }
-    load(root, id)
-        .ok()
-        .map(|evidence| evidence.observed_at_unix_seconds)
+    Ok(Some(load(root, id)?.observed_at_unix_seconds))
 }
 
+/// Outcome, environment and cases of a present observation, for knowledge entries.
 pub(super) fn observation_summary(root: &Path, id: &str) -> Option<(String, String, Vec<String>)> {
     if !is_present(root, id).ok()? {
         return None;
