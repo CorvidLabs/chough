@@ -1,6 +1,6 @@
 ---
 id: list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 16dc3294fc8e91a3f6a116914412fe8714a28ddd
 ---
