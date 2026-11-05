@@ -284,6 +284,8 @@ struct VaultContext {
     traces: std::collections::BTreeMap<String, Vec<String>>,
     families: std::collections::BTreeMap<String, String>,
     modules: Vec<String>,
+    /// Present records no archive lists, by the archive whose cycle they fall in (KNOW-20).
+    attributed: std::collections::BTreeMap<String, Vec<String>>,
 }
 
 /// The knowledge entry for one archived change: generated, deterministic, not a ledger.
@@ -377,6 +379,29 @@ list is the native manifest [verification.json](../../{base}/verification.json).
             first.len() - shown
         ));
     }
+    // Records no archive lists that fall in this change's cycle (KNOW-20): present ones,
+    // and pruned ones the ledger marks as attributed to this archive.
+    let mut attributed: Vec<String> = vault
+        .attributed
+        .get(&archive.id)
+        .cloned()
+        .unwrap_or_default();
+    for entry in ledger.values() {
+        let owned = entry["attributed"].is_string()
+            && entry["archives"]
+                .as_array()
+                .is_some_and(|ids| ids.iter().any(|id| id == archive.id.as_str()));
+        if let (true, Some(id)) = (owned, entry["id"].as_str()) {
+            attributed.push(id.to_string());
+        }
+    }
+    attributed.sort();
+    attributed.dedup();
+    attributed.retain(|id| !observations.contains(id));
+    let attributed_total = attributed.len();
+    attributed.truncate(rows_limit);
+    let by_cycle: std::collections::BTreeSet<String> = attributed.iter().cloned().collect();
+    observations.extend(attributed);
     let mut rows = String::new();
     for id in &observations {
         let (outcome, environment, cases) = match evidence::observation_summary(root, id) {
@@ -397,6 +422,11 @@ list is the native manifest [verification.json](../../{base}/verification.json).
                 ),
                 None => ("unavailable".into(), "?".into(), vec![]),
             },
+        };
+        let outcome = if by_cycle.contains(id) {
+            format!("{outcome} (by cycle time)")
+        } else {
+            outcome
         };
         rows.push_str(&format!(
             "| {id} | {outcome} | {environment} | {} |\n",
@@ -467,7 +497,7 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
 ## Acceptance criteria\n\n{criteria}\n\
 ## Listed .chough files\n\n{files_note} Location is where the bytes are now.\n\n\
 | Path | Digest | Location |\n|---|---|---|\n{files}\n\
-## Observations\n\n| ID | Outcome | Environment | Cases |\n|---|---|---|---|\n{rows}\n\
+## Observations\n\n{attributed_note}| ID | Outcome | Environment | Cases |\n|---|---|---|---|\n{rows}\n\
 ## Bugs\n\n{bugs}",
         id = archive.id,
         title = one_line(&archive.title),
@@ -492,6 +522,18 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
         files_note = files_note,
         files = files,
         rows = rows,
+        attributed_note = if attributed_total == 0 {
+            String::new()
+        } else {
+            format!(
+                "{attributed_total} records that no archive lists were observed in this change's cycle and are marked \"by cycle time\" (KNOW-20){}.\n\n",
+                if attributed_total > by_cycle.len() {
+                    format!("; {} are not shown", attributed_total - by_cycle.len())
+                } else {
+                    String::new()
+                }
+            )
+        },
         bugs = list(&bugs),
     ))
 }
@@ -607,6 +649,19 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
         traces: crate::vault::traces(root)?,
         families: crate::vault::family_notes(&intent),
         modules: crate::vault::modules(root)?,
+        attributed: evidence::attributed_records(
+            root,
+            &found
+                .iter()
+                .enumerate()
+                .map(|(index, archive)| evidence::ListedArchive {
+                    id: archive.id.clone(),
+                    hot: index < HOT_ARCHIVES,
+                    paths: archive.all_paths.iter().cloned().collect(),
+                    finalized: archive.timestamp,
+                })
+                .collect::<Vec<_>>(),
+        )?,
     };
     // Cumulative manifests repeat earlier proof; each entry details what it first listed.
     let mut seen = std::collections::BTreeSet::new();
@@ -1194,6 +1249,7 @@ fn archive_value(root: &Path, dir: &str, authority: Option<&str>) -> Result<serd
             id: archive.id,
             hot: index < HOT_ARCHIVES,
             paths: archive.all_paths.into_iter().collect(),
+            finalized: archive.timestamp,
         })
         .collect();
     let write = |root: &Path| regenerate(root, dir);

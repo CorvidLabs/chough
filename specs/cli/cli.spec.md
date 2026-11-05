@@ -37,6 +37,7 @@ files:
   - tests/verification.rs
   - tests/knowledge_default.rs
   - tests/vault.rs
+  - tests/reduce.rs
 
 db_tables: []
 depends_on: []

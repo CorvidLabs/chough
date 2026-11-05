@@ -20,6 +20,15 @@ trace it; and `rules.md` with the rules, skills and decisions. Notes point to so
 and never copy lesson or criterion text. Open the folder in Obsidian to follow the
 links and backlinks.
 
+Old proof leaves `.chough/` as changes go cold (REQ-cli-033, REQ-cli-045):
+- At done, the checkpoint drops references to proof from earlier cycles; the archives
+  and the vault keep them.
+- Of the routine runs of one case and environment, only the newest run and the newest
+  failure stay protected. Older runs of a cold change are summarized and trimmed.
+- Proof that no archive lists belongs to the change whose cycle it was observed in, and
+  follows the same rules once that change is cold.
+- Every removal is ledgered first in `.chough/pruned.jsonl`, and the bytes stay in Git.
+
 ## From any stage
 
 Enter it as a side stage and return to the caller:

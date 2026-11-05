@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Old observation proof now leaves `.chough/` as changes go cold (REQ-cli-033,
+  REQ-cli-045; KNOW-16, KNOW-17, KNOW-20). At done, the checkpoint drops references
+  from closed cycles. The post-archive summary trims routine runs that a newer run of
+  the same case and environment supersedes, keeping the newest run and the newest
+  failure. Proof no archive lists is attributed to the change whose cycle it was
+  observed in, and its knowledge note lists it. Archive validity is read in parallel.
 - The knowledge directory is now an Obsidian-style vault (REQ-cli-044, KNOW-14,
   KNOW-15). Every note starts with YAML front matter (`id`, `title`, `type`, `tags`, and
   for an archived change its status, ISO date, modules, requirements, traced HI criteria
