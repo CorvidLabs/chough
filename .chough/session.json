@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Build the knowledge directory by default (init creates it, done refreshes it) and fold the 2026-11-04 lessons into the lesson sources (KNOW-1, KNOW-5, KNOW-12)",
+  "objective": "Record the 2026-11-04 retention lessons in the history lesson source (KNOW-12)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim",
+  "native_change": "record-the-2026-11-04-retention-lessons-in-the-history-lesson-source",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -836,5 +836,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #106 when hosted checks are green"
+  "next_action": "Approve, verify and close out"
 }
