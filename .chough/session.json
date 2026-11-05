@@ -781,7 +781,11 @@
     "OBS-tc-history-sessions-local-holds-pointer-and-lock-2aaa399277d671d5225a7ef1",
     "OBS-tc-history-session-use-waits-for-stage-advance-4c890f364cc991fffefcc5ee",
     "OBS-tc-history-vanished-session-leaves-no-event-5e23de5747a1561f81cd99a0",
-    "OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f"
+    "OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f",
+    "OBS-tc-history-inbox-add-never-stranded-by-archive-891e97c992b1d7ddebee43e9",
+    "OBS-tc-history-retention-protects-inbox-observations-dda925f7c2a9bbe696e203f5",
+    "OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-1e1c9a84f30583853e117adf",
+    "OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7"
   ],
   "bugs": [
     "BUG-0001",

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7",
+  "criteria": [
+    "DRIVE-3",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-history-009"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read for TC-history-retention-refuses-unreadable-inbox-entry: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7.log": "6b003eef5c25644d49d08fde2ca0b4f53adb4f8f598860d7d0a5b1780791ad55"
+  },
+  "observed_at_unix_seconds": 1793842589,
+  "snapshot": {
+    "revision": "157f77a6a8be11b9c2c7270e8d6511c39242659b",
+    "dirty": false,
+    "fingerprint": "30aa4f556ac08039043dfa28476235802d514cc249b9f3a7428c92fad3f2c77d",
+    "content": "50bdfc54522a2290afdb17ceb5ba66c9d91bfbcfc41e1e8a30c7f4a4d100b8fd"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-retention-refuses-unreadable-inbox-entry",
+      "digest": "50f8643ab6327f06ed0a9fa4b192f48a75b15fe4d2c9813d1f932e951767d683"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
