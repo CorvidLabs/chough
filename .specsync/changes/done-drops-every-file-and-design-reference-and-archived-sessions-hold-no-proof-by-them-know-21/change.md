@@ -1,6 +1,6 @@
 ---
 id: done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21
-state: approved
+state: implementing
 type: feature
 base_commit: 9991d09cb153ac409a43c5071ad5371ddd53fe49
 ---
