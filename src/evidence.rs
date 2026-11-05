@@ -2070,15 +2070,18 @@ fn still_unprotected(
         candidate.id
     );
     let (pending, protected, _) = summary_protections(root, archives, Some(native.clone()))?;
-    // The record is removed last, so it is still present here; artifacts this apply
-    // already removed drop out of the current set, which may list no file beyond the plan.
+    // The record is removed last, so it is still present here. Every planned file still
+    // present must still belong to this set alone; files this apply already removed drop
+    // out. The set may gain a file an earlier removal released from a shared artifact:
+    // only planned files are ever removed, so the gained one simply stays.
     if pending.iter().any(|current| {
         current.id == candidate.id
             && current.files.first() == candidate.files.first()
-            && current
+            && candidate
                 .files
                 .iter()
-                .all(|file| candidate.files.contains(file))
+                .filter(|file| local_path(root, file).is_ok_and(|path| path.exists()))
+                .all(|file| current.files.contains(file))
     }) {
         return Ok(());
     }

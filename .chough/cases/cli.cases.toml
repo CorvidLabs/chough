@@ -3666,3 +3666,21 @@ expected = ["tests/reduce.rs::native_validity_reads_run_in_parallel passes"]
 adapter = "cargo-test"
 test_target = "reduce"
 test = "native_validity_reads_run_in_parallel"
+
+[[case]]
+id = "TC-cli-reduce-shared-artifact-released"
+title = "A shared artifact released by an earlier removal does not stop the trim"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "KNOW-17"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim"
