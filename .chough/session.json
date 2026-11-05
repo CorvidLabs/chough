@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -466,7 +466,13 @@
     "OBS-tc-cli-vault-loose-group-gains-released-file-4449f38c94d0f999085cff0b",
     "OBS-tc-cli-vault-loose-file-protected-mid-apply-4bfe9381d60c5289785180d1",
     "OBS-tc-cli-vault-loose-artifacts-trimmed-474da4e40d6182199944c68f",
-    "OBS-tc-cli-reduce-shared-artifact-released-2756f1650ab5eb23ee8ec4a6"
+    "OBS-tc-cli-reduce-shared-artifact-released-2756f1650ab5eb23ee8ec4a6",
+    "OBS-tc-cli-vault-long-archive-short-folder-0d98a50af925362894e22e17",
+    "OBS-tc-cli-vault-attachment-path-bound-bc1d9ce47c3449a68dc7e779",
+    "OBS-tc-cli-vault-moved-key-item-mode-e4ff67be5fe6fcd51bba2bbf",
+    "OBS-tc-cli-vault-restore-keeps-mode-143c5fc6eaf123c03ff7dd44",
+    "OBS-tc-cli-vault-loose-artifacts-trimmed-941a5a81cc5320c943c4307b",
+    "OBS-tc-cli-vault-key-items-move-869f928765c2620518754975"
   ],
   "bugs": [
     "BUG-0001",
@@ -500,7 +506,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Implement against the failing tests, verify on Linux, close out (the trim reruns), push and watch Windows CI"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
