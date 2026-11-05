@@ -2029,30 +2029,46 @@ enum Placed {
     AlreadyThere,
 }
 
-/// Put `content` at `path` without ever replacing what is there. `finish` sets the copy's
-/// mode. Different bytes already at `path` are refused and kept.
+/// Put `content` at `path` without ever replacing what is there. The copy is written and
+/// given its mode (`finish`) in a private staging file beside `path`, then hard-linked into
+/// place, which fails rather than replace a file. A failure at any step removes only the
+/// staging file, so another writer's bytes at `path` are never deleted (#115 review).
+/// Different bytes already at `path` are refused and kept.
 fn place_copy(
     path: &Path,
     content: &[u8],
-    _permissions: &fs::Permissions,
     finish: impl FnOnce(&Path) -> std::io::Result<()>,
 ) -> Result<Placed> {
-    match fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(path)
-    {
-        Ok(mut copy) => {
-            use std::io::Write;
-            // This apply created the copy, so one it could not finish writing is removed
-            // at once.
-            let written = copy.write_all(content).and_then(|()| finish(path));
-            if let Err(error) = written {
-                let _ = fs::remove_file(path);
-                return Err(error.into());
-            }
-            Ok(Placed::Created)
-        }
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static STAGED: AtomicU64 = AtomicU64::new(0);
+    let name = path
+        .file_name()
+        .context("a vault copy needs a file name")?
+        .to_string_lossy()
+        .into_owned();
+    let staged = path.with_file_name(format!(
+        ".{name}.chough-copy-{}-{}.tmp",
+        std::process::id(),
+        STAGED.fetch_add(1, Ordering::Relaxed)
+    ));
+    let staged_copy = (|| -> std::io::Result<()> {
+        use std::io::Write;
+        let mut copy = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&staged)?;
+        copy.write_all(content)?;
+        drop(copy);
+        finish(&staged)
+    })();
+    if let Err(error) = staged_copy {
+        let _ = fs::remove_file(&staged);
+        return Err(error.into());
+    }
+    let linked = fs::hard_link(&staged, path);
+    let _ = fs::remove_file(&staged);
+    match linked {
+        Ok(()) => Ok(Placed::Created),
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
             let existing = fs::read(path).with_context(|| {
                 format!(
@@ -2735,7 +2751,7 @@ pub(super) fn archive_summary(
                             if let Some(parent) = path.parent() {
                                 fs::create_dir_all(parent)?;
                             }
-                            let placed = place_copy(&path, content, &permissions, |staged| {
+                            let placed = place_copy(&path, content, |staged| {
                                 fs::set_permissions(staged, permissions.clone())
                             })
                             .with_context(|| format!("moving {file} to {target}"))?;
@@ -2995,8 +3011,7 @@ mod tests {
         let root = tempfile::tempdir().unwrap();
         let path = root.path().join("attachments/a2/evidence/manual.json");
         fs::create_dir_all(path.parent().unwrap()).unwrap();
-        let permissions = fs::metadata(root.path()).unwrap().permissions();
-        let error = place_copy(&path, b"ours\n", &permissions, |_| {
+        let error = place_copy(&path, b"ours\n", |_| {
             fs::write(&path, "another writer\n")?;
             Err(std::io::Error::other("set_permissions failed"))
         })
@@ -3011,7 +3026,7 @@ mod tests {
 
         // A failure before anyone else writes leaves nothing behind.
         let other = root.path().join("attachments/a2/evidence/other.json");
-        place_copy(&other, b"ours\n", &permissions, |_| {
+        place_copy(&other, b"ours\n", |_| {
             Err(std::io::Error::other("set_permissions failed"))
         })
         .unwrap_err();
@@ -3020,15 +3035,15 @@ mod tests {
 
         // A finished copy is created; identical bytes already there are not ours.
         assert_eq!(
-            place_copy(&other, b"ours\n", &permissions, |_| Ok(())).unwrap(),
+            place_copy(&other, b"ours\n", |_| Ok(())).unwrap(),
             Placed::Created
         );
         assert_eq!(fs::read_to_string(&other).unwrap(), "ours\n");
         assert_eq!(
-            place_copy(&other, b"ours\n", &permissions, |_| Ok(())).unwrap(),
+            place_copy(&other, b"ours\n", |_| Ok(())).unwrap(),
             Placed::AlreadyThere
         );
-        assert!(place_copy(&other, b"theirs\n", &permissions, |_| Ok(())).is_err());
+        assert!(place_copy(&other, b"theirs\n", |_| Ok(())).is_err());
         assert_eq!(fs::read_to_string(&other).unwrap(), "ours\n");
     }
 
