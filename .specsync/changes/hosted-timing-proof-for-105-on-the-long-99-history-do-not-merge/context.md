@@ -15,3 +15,8 @@ It is #99's final head `6a9bfad6` plus one commit (`d0480d65`), which copies thr
 The aim is a hosted run of the four `SpecSync Archive` shards on issue #105's recorded long candidate: 361 PR revisions over trusted base `8b7f8bf6`, with 86 archives.
 
 The first hosted run, 42128424556, refused correctly at the native audit, because no change covered those paths. Leif chose "A: add a native change" (2026-11-05 16:22 MST, via the orc): cover the three paths, with nothing relaxed. This change adds one archive (87).
+
+After Leif's review and finalization, outside this change:
+- collect the four hosted shard timings and post them on #105;
+- close #119 unmerged;
+- delete its branch and the temporary base branch.
