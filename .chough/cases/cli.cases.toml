@@ -3522,3 +3522,21 @@ expected = ["tests/vault.rs::sub_criterion_ids_are_listed_and_traced_in_whole_tr
 adapter = "cargo-test"
 test_target = "vault"
 test = "sub_criterion_ids_are_listed_and_traced_in_whole_trace_lists"
+
+[[case]]
+id = "TC-cli-vault-trace-and-family-forms"
+title = "Vault notes read the last Trace list and every valid HI family declaration"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-15", "KNOW-14"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::trace_lists_and_family_declarations_are_read_in_every_valid_form passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "trace_lists_and_family_declarations_are_read_in_every_valid_form"

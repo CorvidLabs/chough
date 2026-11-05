@@ -218,10 +218,11 @@ pub(super) fn traces(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
                 current = id.starts_with("REQ-").then(|| id.to_string());
                 continue;
             }
-            let (Some(requirement), Some(index)) = (current.as_ref(), line.find("Trace:")) else {
+            let (Some(requirement), Some(index)) = (current.as_ref(), line.rfind("Trace:")) else {
                 continue;
             };
-            // The list runs to the end of its sentence; IDs such as `UX-1.a` contain dots.
+            // The real list is the last `Trace:` on the line (the text may mention it inline)
+            // and runs to the end of its sentence; IDs such as `UX-1.a` contain dots.
             let rest = &line[index + "Trace:".len()..];
             let list = rest.split(". ").next().unwrap_or_default();
             let ids: &mut Vec<String> = found.entry(requirement.clone()).or_default();
@@ -276,20 +277,7 @@ pub(super) fn intent_files(root: &Path) -> Result<Vec<IntentFile>> {
     let mut files = vec![];
     for name in names {
         let text = read(root, &format!("hi/{name}")).unwrap_or_default();
-        let families = text
-            .lines()
-            .take_while(|line| !line.starts_with("# "))
-            .find_map(|line| line.strip_prefix("families:"))
-            .map(|list| {
-                list.trim()
-                    .trim_start_matches('[')
-                    .trim_end_matches(']')
-                    .split(',')
-                    .map(|family| family.trim().to_string())
-                    .filter(|family| !family.is_empty())
-                    .collect()
-            })
-            .unwrap_or_default();
+        let families = families(&text);
         let criteria = text
             .lines()
             .filter_map(|line| line.strip_prefix("- **"))
@@ -303,6 +291,44 @@ pub(super) fn intent_files(root: &Path) -> Result<Vec<IntentFile>> {
         });
     }
     Ok(files)
+}
+
+/// The families an HI file declares in its front matter, in any form hi accepts: a flow
+/// list (`[UX]` or `["UX"]`) or a block list (`families:` then `  - UX`).
+fn families(text: &str) -> Vec<String> {
+    let header: Vec<&str> = text
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.split("\n---").next())
+        .map(|block| block.lines().collect())
+        .unwrap_or_default();
+    let clean = |item: &str| {
+        item.trim()
+            .trim_matches(|c| c == '"' || c == '\'')
+            .to_string()
+    };
+    let Some(index) = header.iter().position(|line| line.starts_with("families:")) else {
+        return vec![];
+    };
+    let inline = header[index]["families:".len()..].trim();
+    let found: Vec<String> = if inline.is_empty() {
+        header[index + 1..]
+            .iter()
+            .take_while(|line| line.starts_with(' ') || line.starts_with('-'))
+            .filter_map(|line| line.trim().strip_prefix('-'))
+            .map(clean)
+            .collect()
+    } else {
+        inline
+            .trim_start_matches('[')
+            .trim_end_matches(']')
+            .split(',')
+            .map(clean)
+            .collect()
+    };
+    found
+        .into_iter()
+        .filter(|family| !family.is_empty())
+        .collect()
 }
 
 /// The intent note stem for each HI family.
