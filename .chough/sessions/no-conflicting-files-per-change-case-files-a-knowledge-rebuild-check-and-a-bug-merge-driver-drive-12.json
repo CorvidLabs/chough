@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-f06e8dce4eaaf14572f03f1f",
-    "head": "EVT-4946f3b8b4c7fb6ea046b60f",
+    "head": "EVT-19ff18102dd95f837d452652",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,10 +30,16 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7",
+    "OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef",
+    "OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Implement the case loader, library index --check and bug merge against the failing tests"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
