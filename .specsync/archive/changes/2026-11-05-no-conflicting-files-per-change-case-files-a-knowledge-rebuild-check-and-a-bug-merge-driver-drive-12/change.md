@@ -1,6 +1,6 @@
 ---
 id: no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12
-state: implementing
+state: archived
 type: feature
 base_commit: eb35dd3a1d9ca5ce12dee7fd50e7224432241fee
 ---

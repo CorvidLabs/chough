@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "fa6bab4853a5bfe5dab775ccf837cb86ce7a9c38",
+  "contract_digest": "3bd3d949c4c05838fcc445cfe4a178e3e2a9eb30eb2046fb0c414f0921658cd6",
+  "execution_digest": "3210d3165defdd8ab2149bfeff9c9d1ad42a437cb09ae0c841a65d94436ef11d",
+  "workspace_digest": "b68ab536faf3091c3589227318e3d139fa6d929c50f4764551520a4829673825",
+  "timestamp": 1793893493
+}

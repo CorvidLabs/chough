@@ -7,11 +7,11 @@
   "title": "No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)",
   "description": "No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "eb35dd3a1d9ca5ce12dee7fd50e7224432241fee",
   "created_at": 1793892715,
-  "updated_at": 1793893492,
+  "updated_at": 1793893531,
   "affected_specs": [
     "cli"
   ],
