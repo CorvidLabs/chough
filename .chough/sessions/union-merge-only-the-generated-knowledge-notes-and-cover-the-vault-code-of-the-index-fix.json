@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-a984327cb5a95913f9cfa12f",
-    "head": "EVT-5ba2d464ab47c883b929c8f0",
+    "head": "EVT-e547d9e7d3dd05475e32a33e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,7 +26,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "PR #112 union-scope fix: Leif (0xLeif) recorded his native review (Record pass) at 2d81d3d2 through the orc, 2026-11-05, under Yes, record and merge."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -34,9 +36,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
