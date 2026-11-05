@@ -7,10 +7,11 @@
   "title": "Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched",
   "description": "Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "8fbbbe71951f9145b91313c7cbde6524d709734a",
   "created_at": 1793847640,
-  "updated_at": 1793847776,
+  "updated_at": 1793848364,
   "affected_specs": [
     "cli"
   ],

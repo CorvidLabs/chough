@@ -1,6 +1,6 @@
 ---
 id: make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and
-state: approved
+state: implementing
 type: feature
 base_commit: 8fbbbe71951f9145b91313c7cbde6524d709734a
 ---
