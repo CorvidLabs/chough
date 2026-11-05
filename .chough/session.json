@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Ignore backticked Trace mentions, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of #107 at 5326ec4)",
+  "objective": "Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal in Trace lists (#107 Windows CI)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier",
+  "native_change": "recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -870,5 +870,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #107 when hosted checks are green"
+  "next_action": "Fix against the failing test, verify and close out"
 }
