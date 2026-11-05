@@ -1,4 +1,47 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793922341,
+      "digest": "4f792586ae3f37b6204bcbbe760bb230b42e574cb0308a6bec9148dac8aec71c",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21",
+        "title": "Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21)",
+        "description": "Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/evidence.rs",
+          "src/stage.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": "KNOW-21 (Leif chose Drop all at done, 2026-11-05 16:29 MST): REQ-cli-045 widens from observations to file and design references and retention ignores archived sessions references.",
+        "acceptance_criteria": [
+          "stage advance into done drops every file and design reference from the checkpoint and reports them as dropped_files and dropped_design, keeps current-cycle observation references under the KNOW-16 rule, and a cold loose folder a dropped reference held is then trimmed; retention ignores an archived session file and design references without rewriting it. Both new tests fail first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-21; Leif chose Drop all at done (2026-11-05 16:29 MST, via the orc); the KNOW-16 observation rule, the #108 unreadable-record refusal and REQ-cli-046 protections otherwise unchanged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "a3eab3f0f01f1d3e1c41f47ffdb9e0664dc60dddcc874cc0cec3fe6ad85697c7"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-045": "7149cd6155a7e2aad7d4fef57ca4a38458620544dfcc0125d961b8003df2b443"
+      }
+    }
+  ],
   "reopenings": []
 }
