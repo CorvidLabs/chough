@@ -444,3 +444,38 @@ fn the_vault_regenerates_identically() {
     fixture.ok(&["library", "index"]);
     assert_eq!(read(), first);
 }
+
+/// DRIVE-12: generated knowledge can merge with Git's union driver, because a rebuild
+/// check names any stale or missing generated file and writes nothing.
+#[test]
+fn index_check_names_stale_files_and_passes_after_a_rebuild() {
+    let fixture = vault();
+    fixture.ok(&["library", "index", "--check"]);
+
+    let index = fixture.read("knowledge/INDEX.md");
+    let merged = format!("{index}\n- a line a union merge kept\n");
+    fixture.write("knowledge/INDEX.md", &merged);
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(
+        error.contains("knowledge/INDEX.md") && error.contains("chough library index"),
+        "{error}"
+    );
+    assert_eq!(
+        fixture.read("knowledge/INDEX.md"),
+        merged,
+        "the check writes nothing"
+    );
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "index", "--check"]);
+
+    // A CRLF checkout of a current note is current.
+    let note = "knowledge/archives/a1.md";
+    let text = fixture.read(note);
+    fixture.write(note, &text.replace('\n', "\r\n"));
+    fixture.ok(&["library", "index", "--check"]);
+
+    // A missing generated note is named.
+    fs::remove_file(fixture.root().join(note)).unwrap();
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(error.contains(note), "{error}");
+}

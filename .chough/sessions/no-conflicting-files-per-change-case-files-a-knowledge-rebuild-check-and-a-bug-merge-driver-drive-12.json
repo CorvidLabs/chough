@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-f06e8dce4eaaf14572f03f1f",
+    "head": "EVT-4946f3b8b4c7fb6ea046b60f",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12",
+  "references": {
+    "criteria": [
+      "DRIVE-12",
+      "DRIVE-3"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Implement the case loader, library index --check and bug merge against the failing tests"
+}
