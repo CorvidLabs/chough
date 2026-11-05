@@ -7,10 +7,11 @@
   "title": "Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105)",
   "description": "Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "a688800ee100a77c50119e2ce17530c64a1e0fe8",
   "created_at": 1793916731,
-  "updated_at": 1793916807,
+  "updated_at": 1793917236,
   "affected_specs": [
     "cli"
   ],

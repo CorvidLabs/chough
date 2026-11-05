@@ -1,6 +1,6 @@
 ---
 id: spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105
-state: approved
+state: implementing
 type: bug_fix
 base_commit: a688800ee100a77c50119e2ce17530c64a1e0fe8
 ---
