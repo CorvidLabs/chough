@@ -1,6 +1,6 @@
 ---
 id: keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 99c02a57e1279237e6e2f80099d8bab1d6074dc4
 ---
