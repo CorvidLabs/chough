@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-bf814057a6be38b4aa6dad01",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Done drops every file and design reference from the checkpoint, and retention ignores archived sessions references (KNOW-21)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21",
+  "references": {
+    "criteria": [
+      "KNOW-21",
+      "KNOW-16"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve the definition, then implement against the two failing tests"
+}

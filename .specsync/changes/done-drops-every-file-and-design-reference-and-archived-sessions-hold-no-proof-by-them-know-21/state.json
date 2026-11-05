@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21",
+  "slug": "done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21",
+  "title": "Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21)",
+  "description": "Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "9991d09cb153ac409a43c5071ad5371ddd53fe49",
+  "created_at": 1793921962,
+  "updated_at": 1793922024,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/stage.rs",
+    "src/evidence.rs",
+    "src/sessions.rs",
+    "tests/reduce.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": "KNOW-21 (Leif chose Drop all at done, 2026-11-05 16:29 MST): REQ-cli-045 widens from observations to file and design references and retention ignores archived sessions references.",
+  "acceptance_criteria": [
+    "stage advance into done drops every file and design reference from the checkpoint and reports them as dropped_files and dropped_design, keeps current-cycle observation references under the KNOW-16 rule, and a cold loose folder a dropped reference held is then trimmed; retention ignores an archived session file and design references without rewriting it. Both new tests fail first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "KNOW-21; Leif chose Drop all at done (2026-11-05 16:29 MST, via the orc); the KNOW-16 observation rule, the #108 unreadable-record refusal and REQ-cli-046 protections otherwise unchanged.",
+    "public_contract": "yes"
+  }
+}
