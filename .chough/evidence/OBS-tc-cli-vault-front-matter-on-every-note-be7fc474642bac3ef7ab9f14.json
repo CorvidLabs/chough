@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-front-matter-on-every-note-be7fc474642bac3ef7ab9f14",
+  "criteria": [
+    "KNOW-14"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test vault -- --exact every_generated_vault_note_starts_with_front_matter for TC-cli-vault-front-matter-on-every-note: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-front-matter-on-every-note-be7fc474642bac3ef7ab9f14.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-front-matter-on-every-note-be7fc474642bac3ef7ab9f14.log": "c6a1d044a8dfa5c3316153cca354d44251c571a8a6fb48f31c3d3f1147c5fc41"
+  },
+  "observed_at_unix_seconds": 1793848370,
+  "snapshot": {
+    "revision": "6d931d87545617baa95e27d4751a6c9c89266b88",
+    "dirty": false,
+    "fingerprint": "dbe2f0376d89b04ad69b94874c414f24e694fae0537b4a8a94d29978477ed916",
+    "content": "f4519724fd843afe43e02d1db37cae6c125b94bf8768d103c327fccb4e94041e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-front-matter-on-every-note",
+      "digest": "e9bb0d5fa9ca7ab6b4551c51939900b6e88e647f44eb9ddfe548f49422145fd0"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "every_generated_vault_note_starts_with_front_matter"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
