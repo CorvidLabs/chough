@@ -279,3 +279,212 @@ fn a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim() {
         "a shared log is never planned"
     );
 }
+
+/// Adds `paths` to cold a1's verification manifest.
+fn list_in_a1(fixture: &Fixture, paths: &[&str]) {
+    let path = ".specsync/archive/changes/2026-01-01-a1/verification.json";
+    let mut verification: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    let entries = verification["acceptance_manifest"]["entries"]
+        .as_array_mut()
+        .unwrap();
+    for listed in paths {
+        entries.push(json!({"path": listed, "kind": "file", "payload_digest": ZERO}));
+    }
+    fixture.write(path, &serde_json::to_string_pretty(&verification).unwrap());
+}
+
+/// Commits everything with author and committer dates `age_days` ago.
+fn commit_aged(fixture: &Fixture, message: &str, age_days: u64) {
+    let date = format!("@{} +0000", now() - age_days * DAY);
+    for args in [
+        vec!["add", "--all"],
+        vec!["commit", "--quiet", "-m", message],
+    ] {
+        let status = std::process::Command::new("git")
+            .args(&args)
+            .current_dir(fixture.root())
+            .env("GIT_AUTHOR_DATE", &date)
+            .env("GIT_COMMITTER_DATE", &date)
+            .status()
+            .unwrap();
+        assert!(status.success());
+    }
+}
+
+fn bug(fixture: &Fixture, id: &str, status: &str, fixture_path: &str) {
+    let record = json!({
+        "schema_version": 1, "id": id, "title": "Fixture bug", "symptom": "s", "trigger": "t",
+        "expected": "e", "actual": "a", "criteria": ["LIFE-1"], "requirements": ["REQ-cli-001"],
+        "cases": [], "environment": "local", "revision": null, "steps": [], "fixture": fixture_path,
+        "observations": [], "impact": "low", "classification": "product-defect", "scope": "in-scope",
+        "status": status, "regression_baseline": null, "duplicate_of": null, "related": [],
+        "source": "fixture", "notes": [], "created_at_unix_seconds": now() - 70 * DAY,
+        "updated_at_unix_seconds": now() - 70 * DAY,
+    });
+    fixture.write(
+        &format!(".chough/bugs/{id}.json"),
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+}
+
+/// KNOW-18: loose artifacts that no record references are summarized and trimmed once the
+/// change that made them is cold: listed only by a cold archive, or committed in a cold
+/// change's cycle. Loose artifacts of current work, or named by an open bug, stay.
+#[test]
+fn loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/listed-pr/out.log", "listed\n");
+    fixture.write(".chough/artifacts/bug-repro.log", "repro\n");
+    list_in_a1(
+        &fixture,
+        &[
+            ".chough/artifacts/listed-pr/out.log",
+            ".chough/artifacts/bug-repro.log",
+        ],
+    );
+    bug(
+        &fixture,
+        "BUG-0001",
+        "open",
+        ".chough/artifacts/bug-repro.log",
+    );
+    fixture.commit("listed loose artifacts");
+    fixture.write(".chough/artifacts/old-pr/notes.log", "old\n");
+    commit_aged(&fixture, "an old pull request folder", 55);
+    fixture.write(".chough/artifacts/new-pr/notes.log", "new\n");
+    fixture.commit("current work");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(
+        !fixture.exists(".chough/artifacts/listed-pr/out.log"),
+        "{trim:#}"
+    );
+    assert!(
+        !fixture.exists(".chough/artifacts/old-pr/notes.log"),
+        "{trim:#}"
+    );
+    assert!(
+        fixture.exists(".chough/artifacts/new-pr/notes.log"),
+        "current work stays"
+    );
+    assert!(
+        fixture.exists(".chough/artifacts/bug-repro.log"),
+        "an open bug keeps its fixture"
+    );
+    let ledger: Vec<Value> = fixture
+        .read(".chough/pruned.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    let old = ledger
+        .iter()
+        .find(|entry| entry["id"] == "artifact:old-pr")
+        .expect("old-pr ledgered");
+    assert_eq!(old["kind"], "loose-artifact", "{old:#}");
+    assert_eq!(old["archives"], json!(["a2"]), "{old:#}");
+    assert!(
+        ledger
+            .iter()
+            .any(|entry| entry["id"] == "artifact:listed-pr" && entry["archives"] == json!(["a1"]))
+    );
+    let note = fixture.read("knowledge/archives/a2.md");
+    assert!(
+        note.contains(".chough/artifacts/old-pr/notes.log"),
+        "{note}"
+    );
+}
+
+/// KNOW-18: a fixture named by a closed bug is no longer held.
+#[test]
+fn a_closed_bug_releases_its_loose_fixture() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/bug-repro.log", "repro\n");
+    list_in_a1(&fixture, &[".chough/artifacts/bug-repro.log"]);
+    bug(
+        &fixture,
+        "BUG-0001",
+        "verified",
+        ".chough/artifacts/bug-repro.log",
+    );
+    fixture.commit("closed bug fixture");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["librarian_trim"]["status"], "trimmed",
+        "{moved:#}"
+    );
+    assert!(!fixture.exists(".chough/artifacts/bug-repro.log"));
+}
+
+/// KNOW-19: key items move into the vault: a manual observation with its screenshot, and
+/// the failure log of an older failed run, under the cold change's attachments.
+#[test]
+fn key_items_of_a_cold_change_move_into_the_vault() {
+    let fixture = project("0");
+    // m1: a manual observation with a screenshot, listed by cold a1.
+    obs(&fixture, "m1", 64, "TC-m", "passed");
+    let path = ".chough/evidence/m1.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["method"] = json!("manual");
+    record["artifacts"] = json!([".chough/artifacts/m1-screen.png"]);
+    record["artifact_fingerprints"] = json!({".chough/artifacts/m1-screen.png": ZERO});
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.write(".chough/artifacts/m1-screen.png", "png bytes\n");
+    // r0: an older failed run of TC-a (r3 is the newest failure) with its log.
+    obs(&fixture, "r0", 75, "TC-a", "failed");
+    let path = ".chough/evidence/r0.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["artifacts"] = json!([".chough/artifacts/r0.log"]);
+    record["artifact_fingerprints"] = json!({".chough/artifacts/r0.log": ZERO});
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.write(".chough/artifacts/r0.log", "failure first\n");
+    list_in_a1(
+        &fixture,
+        &[".chough/evidence/m1.json", ".chough/evidence/r0.json"],
+    );
+    fixture.commit("key items");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    for (gone, kept) in [
+        (
+            ".chough/evidence/m1.json",
+            "knowledge/attachments/a1/evidence/m1.json",
+        ),
+        (
+            ".chough/artifacts/m1-screen.png",
+            "knowledge/attachments/a1/artifacts/m1-screen.png",
+        ),
+        (
+            ".chough/artifacts/r0.log",
+            "knowledge/attachments/a1/artifacts/r0.log",
+        ),
+    ] {
+        assert!(!fixture.exists(gone), "{gone} left: {trim:#}");
+        assert!(fixture.exists(kept), "{kept} missing: {trim:#}");
+    }
+    assert!(
+        !fixture.exists(".chough/evidence/r0.json"),
+        "a routine record is not a key item"
+    );
+    assert!(!fixture.exists("knowledge/attachments/a1/evidence/r0.json"));
+    let note = fixture.read("knowledge/archives/a1.md");
+    assert!(
+        note.contains("[artifacts/m1-screen.png](../attachments/a1/artifacts/m1-screen.png)"),
+        "{note}"
+    );
+    let ledger = fixture.read(".chough/pruned.jsonl");
+    assert!(
+        ledger.contains("knowledge/attachments/a1/evidence/m1.json"),
+        "{ledger}"
+    );
+}

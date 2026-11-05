@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge",
+  "slug": "move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge",
+  "title": "Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)",
+  "description": "Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)",
+  "kind": "feature",
+  "state": "approved",
+  "base_commit": "784b1406d9e5b4b3a53176c3772aaeb003483412",
+  "created_at": 1793855384,
+  "updated_at": 1793855459,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "src/attachments.rs",
+    "src/library.rs",
+    "src/vault.rs",
+    "src/main.rs",
+    "src/skill.rs",
+    "tests/reduce.rs",
+    "tests/evidence.rs",
+    "tests/librarian_trim.rs",
+    "tests/vault.rs",
+    "skills/chough-workflow/references/librarian.md",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Loose artifact entries no record references are trimmed and ledgered as loose artifacts once the change that listed or made them is cold, and listed in its knowledge note; entries of current work, named by the checkpoint or an open bug, or listed by a hot archive stay; a closed bug releases its fixture. Key items of a cold change (manual or agent-assisted observations whose only protection is being non-routine, failed-run logs, screenshots and failure-first logs) move to knowledge/attachments/<archive>/, mapped in the ledger and linked from the note. New tests fail first, the trim on this repository is measured, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Leif (0xLeif) chose Loose artifact folders (KNOW-18) and Key items move (KNOW-19), confirmed KNOW-16 to KNOW-19 (Yes, build it), and on 2026-11-04 asked that artifacts and evidence actually be transitioned into the knowledge vault. Ledger first, the KNOW-10 restore check, no removal while a change is open, and bytes in Git stay.",
+    "public_contract": "yes"
+  }
+}
