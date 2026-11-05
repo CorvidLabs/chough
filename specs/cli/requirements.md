@@ -430,10 +430,12 @@ Loose artifacts and vault attachments. The post-archive summary of REQ-cli-033 S
 - the artifacts of a failed run;
 - screenshots (png, jpg, jpeg, gif, webp, svg) and failure-first logs among artifacts.
 
-Each key item SHALL move to `knowledge/attachments/<archive>/<path under .chough/>` before its original is removed. The ledger entry SHALL map each moved file to its attachment, a restore SHALL delete the copies it made, and the archive's knowledge note SHALL list its loose artifacts and link its attachments (KNOW-19). Trace: KNOW-18, KNOW-19, KNOW-20, KNOW-9, KNOW-10.
+Each key item SHALL move to `knowledge/attachments/<folder>/<path under .chough/>` before its original is removed. The folder SHALL be the archive ID when the ID has at most 24 characters; otherwise it SHALL be the ID's first 16 characters, cut back to before the last hyphen among them when there is one, then `-` and the first 8 hexadecimal digits of the SHA-256 of the ID, so attachment paths stay short enough to check out on Windows. A key item whose attachment path would be longer than 220 characters SHALL stay in `.chough/`, and its set SHALL be reported protected with that reason. A moved file and a file restored after a refused apply SHALL keep their permissions. The ledger entry SHALL map each moved file to its attachment, a restore SHALL delete the copies it made, and the archive's knowledge note SHALL list its loose artifacts and link its attachments (KNOW-19). Trace: KNOW-18, KNOW-19, KNOW-20, KNOW-9, KNOW-10.
 
 Acceptance Criteria
 - A loose artifact entry listed only by a cold archive, and one first committed in a cold archive's cycle, are trimmed and ledgered as loose artifacts with that archive, and the archive's note lists their files. One first committed after the newest archive, and one named by an open bug's fixture, stay.
 - The loose fixture of a verified bug is trimmed.
-- A manual observation with a screenshot, and the log of an older failed run, owned by a cold archive, move to `knowledge/attachments/<archive>/`. They are gone from `.chough/`, mapped in the ledger and linked from the archive's note. A routine record is removed, not moved.
+- A manual observation with a screenshot, and the log of an older failed run, owned by a cold archive, move to the archive's attachments folder. They are gone from `.chough/`, mapped in the ledger and linked from the archive's note. A routine record is removed, not moved.
+- An archive ID longer than 24 characters gets an attachments folder of at most 25 characters, the same on every run, and no attachment path is longer than 220 characters: a key item that would exceed it stays in `.chough/`, and its set is reported protected with that reason.
+- An executable key item keeps its executable bit in the vault, and an executable file that an apply removed and then restored after a refusal comes back executable.
 

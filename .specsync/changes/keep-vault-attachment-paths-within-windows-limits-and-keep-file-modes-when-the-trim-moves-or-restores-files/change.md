@@ -1,6 +1,6 @@
 ---
 id: keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 8a91c5c491321e1ddd5575e99412459c7bdec7f4
 ---

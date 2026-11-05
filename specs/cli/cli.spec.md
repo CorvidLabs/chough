@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 52
+version: 53
 status: active
 files:
   - src/main.rs
@@ -268,3 +268,4 @@ provider, runtime or hosted service.
 | 50 | 2026-11-05 | make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and: Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched |
 | 51 | 2026-11-05 | reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes: Reduce old observation proof: drop closed-cycle checkpoint references at done, trim superseded runs of cold changes, attribute unlisted proof to its change by cycle time, and read archive validity in parallel |
 | 52 | 2026-11-05 | move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge: Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19) |
+| 53 | 2026-11-05 | keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files: Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files |

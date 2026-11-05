@@ -7,10 +7,11 @@
   "title": "Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files",
   "description": "Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "8a91c5c491321e1ddd5575e99412459c7bdec7f4",
   "created_at": 1793885552,
-  "updated_at": 1793885793,
+  "updated_at": 1793885991,
   "affected_specs": [
     "cli"
   ],
