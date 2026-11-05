@@ -16,6 +16,7 @@ criteria:
   - KNOW-16
   - KNOW-17
   - KNOW-20
+  - KNOW-21
   - KNOW-7
   - KNOW-8
   - KNOW-9
@@ -37,7 +38,7 @@ verification records, the retention ledger and Git stay authoritative.
 - Status: cold (hot = the 3 most recently finalized archived changes)
 - Finalized: 2026-11-05T04:34:11Z
 - Modules: [cli](../modules/cli.md)
-- Criteria: [KNOW-10](../intent/knowledge.md), [KNOW-11](../intent/knowledge.md), [KNOW-13](../intent/knowledge.md), [KNOW-16](../intent/knowledge.md), [KNOW-17](../intent/knowledge.md), [KNOW-20](../intent/knowledge.md), [KNOW-7](../intent/knowledge.md), [KNOW-8](../intent/knowledge.md), [KNOW-9](../intent/knowledge.md), [LIFE-8](../intent/life.md)
+- Criteria: [KNOW-10](../intent/knowledge.md), [KNOW-11](../intent/knowledge.md), [KNOW-13](../intent/knowledge.md), [KNOW-16](../intent/knowledge.md), [KNOW-17](../intent/knowledge.md), [KNOW-20](../intent/knowledge.md), [KNOW-21](../intent/knowledge.md), [KNOW-7](../intent/knowledge.md), [KNOW-8](../intent/knowledge.md), [KNOW-9](../intent/knowledge.md), [LIFE-8](../intent/life.md)
 - Base commit: 5326ec48b4ae856543e4d8cabd7c06b29daef0e5
 - Implementation commit: d0da297eec980c7b10df314b61d753603615a77f
 - Verification commit: d0da297eec980c7b10df314b61d753603615a77f

@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bf814057a6be38b4aa6dad01",
-    "head": "EVT-b4135ab478e584680ab7f720",
+    "head": "EVT-1d6dec04169e684345316704",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,10 +30,15 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-done-drops-file-and-design-refs-7fd113db7423ebb35826babb",
+    "OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve the definition, then implement against the two failing tests"
 }

@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21 (active; `specsync change status done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,10 @@ Archived lesson bundles:
 
 ## Observations
 
-495 recorded; most recent:
+497 recorded; most recent:
 
+- OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
+- OBS-tc-cli-done-drops-file-and-design-refs-7fd113db7423ebb35826babb ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 - OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 InstallationObservation Passed in macos-arm64-cargo-1.95.0 at 2082dddff420
 - OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-structural-ce74f6d127b1f262c869b327 Structural Passed in local-linux-aarch64 at 5959fe239d85
@@ -105,8 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
-- OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
-- OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
 
 ## Briefs
 
