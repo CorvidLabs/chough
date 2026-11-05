@@ -1,0 +1,41 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793921017,
+      "digest": "bec66603be53959974a5e3e322f7b577c06d8f50f258c3d47d9c0eddbc641bbc",
+      "note": "Proof-only change for #105; Leif chose A: add a native change (2026-11-05 16:22 MST, via the orc)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "hosted-timing-proof-for-105-on-the-long-99-history-do-not-merge",
+        "title": "Hosted timing proof for 105 on the long 99 history (do not merge)",
+        "description": "Hosted timing proof for 105 on the long 99 history (do not merge)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/scripts/check-specsync-archive.py",
+          ".github/scripts/test-specsync-archive.py",
+          ".github/workflows/ci.yml"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Draft proof branch only, never merged: carries the #118 archive inspector, fixtures and CI wiring onto #99 final head so the hosted shards walk its 361 revisions; no requirement text changes.",
+        "acceptance_criteria": [
+          "The three proof paths are covered by this change and match #118 head e18e0941; with nothing relaxed the four hosted SpecSync Archive shards run on the 361-revision #99 history and their durations and counts are posted on #105."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Draft proof #119, never merged; Leif: Yes, draft PR for proof (15:28 MST) and A: add a native change, nothing relaxed (16:22 MST), 2026-11-05 via the orc.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}
