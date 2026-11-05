@@ -7,11 +7,11 @@
   "title": "Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107)",
   "description": "Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "94ebefc04e6910f066800cc34698a6c2b3a101bd",
   "created_at": 1793850156,
-  "updated_at": 1793850309,
+  "updated_at": 1793850460,
   "affected_specs": [
     "cli"
   ],

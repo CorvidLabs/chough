@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "804e5cbec9033ad15d7cb3eb2904eaaa9e3c4a3d",
+  "contract_digest": "022a4723e1f58fb192249eacc454c609707c2581c78148aeab3e5e68a5f28b28",
+  "execution_digest": "d4f7d2218191170290d036d316ab615ac761c7837d395a64e7d6357b85a325f9",
+  "workspace_digest": "bccde6da2c5b6f3064b4e7ab0f92452f0b236dc8102ec87dc7e25609bfc21012",
+  "timestamp": 1793850454
+}
