@@ -780,6 +780,20 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
         })
         .collect();
     let mut notes = crate::vault::module_notes(root, dir, &touches)?;
+    let timeline: Vec<crate::vault::TimelineEntry> = found
+        .iter()
+        .enumerate()
+        .map(|(index, archive)| crate::vault::TimelineEntry {
+            id: &archive.id,
+            title: &archive.title,
+            finalized: archive.timestamp,
+            hot: index < HOT_ARCHIVES,
+            bundle: archive
+                .lesson_bundle
+                .then(|| format!("{ARCHIVES}/{}/lesson-bundle.md", archive.dir)),
+        })
+        .collect();
+    notes.extend(crate::vault::timeline_notes(dir, &timeline));
     notes.extend(crate::vault::intent_notes(dir, &intent, &touches));
     notes.push(crate::vault::rules_note(root, dir)?);
     for (relative, content) in &notes {
@@ -916,8 +930,9 @@ fn index(
         .into_iter()
         .map(|name| format!("{name} (active; `specsync change status {name}`)"))
         .collect();
-    let archived = found
+    let mut archived: Vec<String> = found
         .iter()
+        .take(crate::vault::RECENT)
         .enumerate()
         .map(|(index, archive)| {
             format!(
@@ -942,9 +957,16 @@ fn index(
             format!("{module}: [{path}](../{path}){detail}")
         })
         .collect();
-    let bundles = found
+    if found.len() > crate::vault::RECENT {
+        archived.push(format!(
+            "All {} archived changes, by month: [timeline.md](timeline.md)",
+            found.len()
+        ));
+    }
+    let mut bundles: Vec<String> = found
         .iter()
         .filter(|archive| archive.lesson_bundle)
+        .take(crate::vault::RECENT)
         .map(|archive| {
             format!(
                 "[{id}](../{ARCHIVES}/{dir}/lesson-bundle.md)",
@@ -953,6 +975,9 @@ fn index(
             )
         })
         .collect();
+    if found.iter().filter(|archive| archive.lesson_bundle).count() > crate::vault::RECENT {
+        bundles.push("Every lesson bundle is on its change's [timeline](timeline.md) entry".into());
+    }
     let mut earlier = vec![];
     if dir != "library" {
         let mut stack = vec!["library".to_string()];

@@ -540,12 +540,24 @@ fn the_index_stays_bounded_and_a_monthly_timeline_lists_every_archive() {
             "{timeline}"
         );
     }
-    let pages: Vec<String> = ["2026-10", "2026-11"]
-        .iter()
-        .map(|month| fixture.read(&format!("knowledge/timeline/{month}.md")))
+    // A full month continues on further pages; every page is within the bound.
+    let mut names: Vec<String> = fs::read_dir(fixture.root().join("knowledge/timeline"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
-    for page in &pages {
-        assert!(page.starts_with("---\n") && page.len() <= 65_536);
+    names.sort();
+    assert!(names.len() > 2, "{names:?}");
+    let pages: Vec<String> = names
+        .iter()
+        .map(|name| fixture.read(&format!("knowledge/timeline/{name}")))
+        .collect();
+    for (name, page) in names.iter().zip(&pages) {
+        assert!(page.starts_with("---\n") && page.len() <= 65_536, "{name}");
+        let stem = name.trim_end_matches(".md");
+        assert!(
+            timeline.contains(&format!("](timeline/{stem}.md)")),
+            "{stem}: {timeline}"
+        );
     }
     for id in &ids {
         let link = format!("../archives/{id}.md");
@@ -555,6 +567,6 @@ fn the_index_stays_bounded_and_a_monthly_timeline_lists_every_archive() {
             "{id}"
         );
     }
-    assert!(pages[1].contains("lesson-bundle.md"));
+    assert!(pages.iter().all(|page| page.contains("lesson-bundle.md")));
     fixture.ok(&["library", "index", "--check"]);
 }

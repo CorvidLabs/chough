@@ -816,9 +816,10 @@ Markdown links, so it reads the same in Obsidian and on GitHub:
 
 | Note | `type` | Links |
 |---|---|---|
-| `INDEX.md` | `index` | Living sources, the rules, module and intent notes, every archived change, lessons, open bugs |
+| `INDEX.md` | `index` | Living sources, the rules, module and intent notes, the 10 newest archived changes and lesson bundles with a link to the timeline, open bugs |
+| `timeline.md` | `timeline` | One page per month (`timeline/<YYYY-MM>.md`, continued on `-p2` and later pages so each stays under 65,536 bytes) listing every archived change with its date, status and lesson bundle |
 | `archives/<change>.md` | `archived-change` | Its archive, lesson bundle, module notes and the intent notes of the HI criteria its requirements trace |
-| `modules/<module>.md` | `module` | The module's spec, requirements, context and lessons (with a count), and every archived change that touched it |
+| `modules/<module>.md` | `module` | The module's spec, requirements, context and lessons (with a count), and the 10 newest archived changes that touched it, with a count of the rest |
 | `intent/<file>.md` | `intent` | The HI file, and per criterion ID the archived changes whose requirements trace it |
 | `rules.md` | `rules` | `AGENTS.md`, `CLAUDE.md`, `hi/AGENTS.md`, the workflow skill, `docs/DECISIONS.md`, each module's context and `.specsync/sdd.json`, when present |
 
