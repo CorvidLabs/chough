@@ -20,3 +20,14 @@ KNOW-22 to KNOW-28.
 3. Implement the drop and the retention rule.
 4. Update docs/cli.md, docs/FRD.md and the CHANGELOG. Add the per-change case file.
 5. Run the dry run on this repository, verify on Linux, and close out.
+
+## Risks
+
+- After done, the checkpoint no longer shows file and design references. The native archive keeps the paths the change touched.
+- A test that relied on the done trim for reference protection must use a trim before done.
+
+## Constraints consulted
+
+- KNOW-21, KNOW-16, KNOW-13.
+- REQ-cli-041, REQ-cli-045, REQ-cli-046.
+- Leif's "Drop all at done" (2026-11-05 16:29 MST).
