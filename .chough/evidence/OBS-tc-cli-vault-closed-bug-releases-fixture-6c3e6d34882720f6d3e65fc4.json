@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-closed-bug-releases-fixture-6c3e6d34882720f6d3e65fc4",
+  "criteria": [
+    "KNOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-046"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact a_closed_bug_releases_its_loose_fixture for TC-cli-vault-closed-bug-releases-fixture: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-closed-bug-releases-fixture-6c3e6d34882720f6d3e65fc4.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-closed-bug-releases-fixture-6c3e6d34882720f6d3e65fc4.log": "a1344d33a2c9668260813efee7c8a766127fb70e0f7a70eafd9602883f0dfd00"
+  },
+  "observed_at_unix_seconds": 1793857129,
+  "snapshot": {
+    "revision": "927d67499811bd01fc2bbbe2784e0d6005d4eab5",
+    "dirty": false,
+    "fingerprint": "f9e320472db8f22080a6263c1f1015ecf16f4d471ad3f596efffc4612f522289",
+    "content": "cfb34928dea77100b984a8f67fde0f7cf8e804cdfa2e7456cdbd0a238fca9c97"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-closed-bug-releases-fixture",
+      "digest": "a16a04346fcbf41129f443a7533f577475a51611a63ce18bd404384db24bc445"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "a_closed_bug_releases_its_loose_fixture"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

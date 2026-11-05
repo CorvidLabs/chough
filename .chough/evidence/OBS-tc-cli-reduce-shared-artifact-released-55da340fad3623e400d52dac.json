@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-reduce-shared-artifact-released-55da340fad3623e400d52dac",
+  "criteria": [
+    "KNOW-10",
+    "KNOW-17"
+  ],
+  "requirements": [
+    "REQ-cli-033"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim for TC-cli-reduce-shared-artifact-released: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-reduce-shared-artifact-released-55da340fad3623e400d52dac.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-reduce-shared-artifact-released-55da340fad3623e400d52dac.log": "0d957f8df551083b8b1b74f18b2f47400c1446b4f73713c6c969612e64dc716a"
+  },
+  "observed_at_unix_seconds": 1793857133,
+  "snapshot": {
+    "revision": "927d67499811bd01fc2bbbe2784e0d6005d4eab5",
+    "dirty": false,
+    "fingerprint": "f9e320472db8f22080a6263c1f1015ecf16f4d471ad3f596efffc4612f522289",
+    "content": "cfb34928dea77100b984a8f67fde0f7cf8e804cdfa2e7456cdbd0a238fca9c97"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-reduce-shared-artifact-released",
+      "digest": "3d5846068d8ab61aabf6217416cdb55916fdc1d6ea1110dd5a35c5881083c2f1"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
