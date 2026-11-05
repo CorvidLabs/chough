@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 5
-archived_changes: 12
+archived_changes: 13
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched history
 
-12 archived changes, newest first.
+13 archived changes, newest first.
 
+- [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files
 - [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](../archives/adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog.md) Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog
 - [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](../archives/let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded.md) Let a session started after legacy history adoption write events while the adopted legacy log stays guarded
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](../archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source
@@ -42,5 +43,4 @@ this note only links them.
 - [show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no](../archives/show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no.md) Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)
 - [remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap](../archives/remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap.md) Remove the 65536-byte cap on spec requirements files from tests/spec_split.rs (spec files have no size cap)
 - [let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406](../archives/let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406.md) Let chough session new accept the SpecSync module IDs that init accepts, such as chat.service (review thread 4465229406 on #77)
-- [keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer](../archives/keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer.md) Keep one session per objective or native change under .chough/sessions with append-only transitions, an active pointer, automatic archiving and an append-only subagent inbox (DRIVE-3)
-- 2 more on the [timeline](../timeline.md)
+- 3 more on the [timeline](../timeline.md)
