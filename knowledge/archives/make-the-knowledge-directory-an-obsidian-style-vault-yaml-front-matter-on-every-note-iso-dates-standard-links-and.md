@@ -8,7 +8,12 @@ modules:
   - cli
 requirements:
   - REQ-cli-044
-criteria: []
+criteria:
+  - KNOW-12
+  - KNOW-14
+  - KNOW-15
+  - KNOW-3
+  - KNOW-4
 base_commit: "8fbbbe71951f9145b91313c7cbde6524d709734a"
 implementation_commit: "a3fe73e2e0320ad8127ecb263abc6190e7cf2943"
 verification_commit: "a3fe73e2e0320ad8127ecb263abc6190e7cf2943"
@@ -26,7 +31,7 @@ verification records, the retention ledger and Git stay authoritative.
 - Status: hot (hot = the 3 most recently finalized archived changes)
 - Finalized: 2026-11-05T03:19:34Z
 - Modules: [cli](../modules/cli.md)
-- Criteria: none traced
+- Criteria: [KNOW-12](../intent/knowledge.md), [KNOW-14](../intent/knowledge.md), [KNOW-15](../intent/knowledge.md), [KNOW-3](../intent/knowledge.md), [KNOW-4](../intent/knowledge.md)
 - Base commit: 8fbbbe71951f9145b91313c7cbde6524d709734a
 - Implementation commit: a3fe73e2e0320ad8127ecb263abc6190e7cf2943
 - Verification commit: a3fe73e2e0320ad8127ecb263abc6190e7cf2943
