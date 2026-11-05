@@ -1,6 +1,6 @@
 ---
 id: expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 322a2e134fac0e4290b53b7dfa211fef6a6bde0c
 ---
