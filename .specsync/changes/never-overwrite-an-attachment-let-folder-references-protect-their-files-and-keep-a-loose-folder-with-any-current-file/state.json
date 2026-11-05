@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
+  "slug": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
+  "title": "Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)",
+  "description": "Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "d165b0a20d05f29c884e6970a30fb50b88c950fd",
+  "created_at": 1793886686,
+  "updated_at": 1793886764,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/reduce.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Moves into the vault never overwrite: an identical attachment is kept and survives a refused apply, a different one keeps both files and protects the set, and one written during the apply refuses it. A folder named by the checkpoint or an open bug keeps the loose files and observation sets inside it. A loose folder with any current file stays whole. The new tests fail first, fledge lanes run verify passes on Linux, and the trim reruns on this repository at closeout."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Three P1 threads from Leif's review agent on #109 (2026-11-05). Leif chose Record both, then merge. No trim runs on this repository until this change is closed out.",
+    "public_contract": "yes"
+  }
+}
