@@ -15,6 +15,7 @@ mod skill;
 mod stage;
 mod timing;
 mod validate;
+mod vault;
 
 use anyhow::{Context, Result, ensure};
 use checkpoint::{SESSION, Session, new_checkpoint, read_session};

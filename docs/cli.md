@@ -753,6 +753,31 @@ Pruned and unavailable observations never count as current, passed or verifying
 evidence: bug verification ignores them, `bug update --status verified` needs a present
 passed observation, and validation runs keep their recorded counts.
 
+## Knowledge vault
+
+The knowledge directory is an Obsidian-style vault (REQ-cli-044, KNOW-14, KNOW-15).
+Every generated note starts with YAML front matter and links with standard relative
+Markdown links, so it reads the same in Obsidian and on GitHub:
+
+| Note | `type` | Links |
+|---|---|---|
+| `INDEX.md` | `index` | Living sources, the rules, module and intent notes, every archived change, lessons, open bugs |
+| `archives/<change>.md` | `archived-change` | Its archive, lesson bundle, module notes and the intent notes of the HI criteria its requirements trace |
+| `modules/<module>.md` | `module` | The module's spec, requirements, context and lessons (with a count), and every archived change that touched it |
+| `intent/<file>.md` | `intent` | The HI file, and per criterion ID the archived changes whose requirements trace it |
+| `rules.md` | `rules` | `AGENTS.md`, `CLAUDE.md`, `hi/AGENTS.md`, the workflow skill, `docs/DECISIONS.md`, each module's context and `.specsync/sdd.json`, when present |
+
+An archived-change note's front matter gives:
+- `status` (hot or cold) and `finalized` (ISO 8601 UTC);
+- `modules`, from the archive's affected specs;
+- `requirements`;
+- `criteria`, the IDs that those requirements' `Trace:` lines name;
+- its base, implementation and verification commits.
+
+Titles and commits are double-quoted strings. Notes point to their sources and never
+copy lesson or criterion text. Only files that exist are linked, regeneration is
+byte-identical, and no gate reads the vault.
+
 ## Post-archive summary
 
 `chough library archive` keeps one regenerated summary per archived native change in

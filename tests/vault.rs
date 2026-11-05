@@ -22,8 +22,10 @@ fn archive(fixture: &Fixture, index: usize, id: &str, modules: &[&str], requirem
     );
     fixture.write(
         &format!("{dir}/state.json"),
-        &serde_json::to_string_pretty(&json!({"id": id, "state": "archived", "affected_specs": modules}))
-            .unwrap(),
+        &serde_json::to_string_pretty(
+            &json!({"id": id, "state": "archived", "affected_specs": modules}),
+        )
+        .unwrap(),
     );
     fixture.write(
         &format!("{dir}/verification.json"),
@@ -64,12 +66,18 @@ fn vault() -> Fixture {
         "specs/cli/context.md",
         "# Context\n\n## Decisions\n\n- One.\n\n## Lessons\n\n2026-01-01, first lesson (verified): text one.\n\n2026-01-02, second lesson (observation): text two.\n",
     );
-    fixture.write("specs/history/history.spec.md", "---\nmodule: history\n---\n\n# history\n");
+    fixture.write(
+        "specs/history/history.spec.md",
+        "---\nmodule: history\n---\n\n# history\n",
+    );
     fixture.write(
         "specs/history/requirements.md",
         "# Requirements\n\n### REQ-history-001\n\nRetention SHALL keep references. Trace: KNOW-7.\n",
     );
-    fixture.write("specs/history/context.md", "# Context\n\n## Lessons\n\nNone yet.\n");
+    fixture.write(
+        "specs/history/context.md",
+        "# Context\n\n## Lessons\n\nNone yet.\n",
+    );
     fixture.write("AGENTS.md", "# Agents\n");
     fixture.write("docs/DECISIONS.md", "# Decisions\n");
     archive(&fixture, 0, "a1", &["cli", "history"], &["REQ-cli-001"]);
@@ -135,7 +143,10 @@ fn an_archived_change_note_carries_its_properties_and_links() {
         "criteria:\n  - KNOW-1\n  - LIFE-2",
         &format!("implementation_commit: \"{}\"", "1".repeat(40)),
     ] {
-        assert!(properties.contains(expected), "missing {expected:?} in\n{properties}");
+        assert!(
+            properties.contains(expected),
+            "missing {expected:?} in\n{properties}"
+        );
     }
     let body = &text[properties.len()..];
     for link in [
@@ -166,8 +177,15 @@ fn module_notes_link_their_sources_lessons_and_archived_changes() {
     assert!(!cli.contains("[a2](../archives/a2.md)"), "{cli}");
     assert!(!cli.contains("text one"), "lesson text copied:\n{cli}");
     let history = fixture.read("knowledge/modules/history.md");
-    for expected in ["[a1](../archives/a1.md)", "[a2](../archives/a2.md)", "0 lessons"] {
-        assert!(history.contains(expected), "missing {expected:?} in\n{history}");
+    for expected in [
+        "[a1](../archives/a1.md)",
+        "[a2](../archives/a2.md)",
+        "0 lessons",
+    ] {
+        assert!(
+            history.contains(expected),
+            "missing {expected:?} in\n{history}"
+        );
     }
 }
 
@@ -178,7 +196,10 @@ fn intent_notes_link_each_criterion_to_the_changes_that_trace_it() {
     let properties = front_matter(&knowledge);
     assert!(properties.contains("type: intent"), "{properties}");
     assert!(properties.contains("families:\n  - KNOW"), "{properties}");
-    assert!(knowledge.contains("[hi/knowledge.md](../../hi/knowledge.md)"), "{knowledge}");
+    assert!(
+        knowledge.contains("[hi/knowledge.md](../../hi/knowledge.md)"),
+        "{knowledge}"
+    );
     let line = |id: &str| {
         knowledge
             .lines()
@@ -186,11 +207,23 @@ fn intent_notes_link_each_criterion_to_the_changes_that_trace_it() {
             .unwrap_or_else(|| panic!("no {id} line in\n{knowledge}"))
             .to_string()
     };
-    assert!(line("KNOW-1").contains("[a1](../archives/a1.md)"), "{knowledge}");
-    assert!(line("KNOW-7").contains("[a2](../archives/a2.md)"), "{knowledge}");
-    assert!(!knowledge.contains("secret wording"), "criterion text copied:\n{knowledge}");
+    assert!(
+        line("KNOW-1").contains("[a1](../archives/a1.md)"),
+        "{knowledge}"
+    );
+    assert!(
+        line("KNOW-7").contains("[a2](../archives/a2.md)"),
+        "{knowledge}"
+    );
+    assert!(
+        !knowledge.contains("secret wording"),
+        "criterion text copied:\n{knowledge}"
+    );
     let life = fixture.read("knowledge/intent/life.md");
-    assert!(life.contains("**LIFE-2**") && life.contains("[a1](../archives/a1.md)"), "{life}");
+    assert!(
+        life.contains("**LIFE-2**") && life.contains("[a1](../archives/a1.md)"),
+        "{life}"
+    );
 }
 
 #[test]
@@ -206,7 +239,10 @@ fn the_rules_note_links_rules_skills_and_decisions_that_exist() {
     ] {
         assert!(rules.contains(expected), "missing {expected:?} in\n{rules}");
     }
-    assert!(!rules.contains("CLAUDE.md"), "a missing file was linked:\n{rules}");
+    assert!(
+        !rules.contains("CLAUDE.md"),
+        "a missing file was linked:\n{rules}"
+    );
     let index = fixture.read("knowledge/INDEX.md");
     for expected in [
         "[rules.md](rules.md)",

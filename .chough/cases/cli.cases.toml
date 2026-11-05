@@ -3378,3 +3378,129 @@ expected = ["tests/librarian_trim.rs::a_librarian_off_project_gets_no_knowledge_
 adapter = "cargo-test"
 test_target = "librarian_trim"
 test = "a_librarian_off_project_gets_no_knowledge_directory_at_done"
+
+[[case]]
+id = "TC-cli-vault-front-matter-on-every-note"
+title = "Every generated vault note starts with front matter"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::every_generated_vault_note_starts_with_front_matter passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "every_generated_vault_note_starts_with_front_matter"
+
+[[case]]
+id = "TC-cli-vault-archive-note-properties"
+title = "An archived-change note carries its properties and links"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14", "KNOW-15"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::an_archived_change_note_carries_its_properties_and_links passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "an_archived_change_note_carries_its_properties_and_links"
+
+[[case]]
+id = "TC-cli-vault-module-notes"
+title = "Module notes link their sources, lessons and archived changes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-15", "KNOW-12"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::module_notes_link_their_sources_lessons_and_archived_changes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "module_notes_link_their_sources_lessons_and_archived_changes"
+
+[[case]]
+id = "TC-cli-vault-intent-notes"
+title = "Intent notes link each criterion to the changes that trace it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-15", "KNOW-3"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::intent_notes_link_each_criterion_to_the_changes_that_trace_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "intent_notes_link_each_criterion_to_the_changes_that_trace_it"
+
+[[case]]
+id = "TC-cli-vault-rules-note"
+title = "The rules note links the rules, skills and decisions that exist"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-15"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::the_rules_note_links_rules_skills_and_decisions_that_exist passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "the_rules_note_links_rules_skills_and_decisions_that_exist"
+
+[[case]]
+id = "TC-cli-vault-links-resolve"
+title = "Every Markdown link in the vault resolves"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::every_markdown_link_in_the_vault_resolves passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "every_markdown_link_in_the_vault_resolves"
+
+[[case]]
+id = "TC-cli-vault-regenerates-identically"
+title = "The vault regenerates byte-identically"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-4"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::the_vault_regenerates_identically passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "the_vault_regenerates_identically"
