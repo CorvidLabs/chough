@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-14bc1c69d2ba6af85d888d1f",
-    "head": "EVT-498de828e2d410a9b78a3ff8",
+    "head": "EVT-60ca14073193f9b842b21de4",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,10 +30,14 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Make the rollback claim, compare and keep changed copies against the failing test"
 }
