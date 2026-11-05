@@ -7,11 +7,11 @@
   "title": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
   "description": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "75a732d8243181c375ee3c4f2651408ff9b41ab2",
   "created_at": 1793815828,
-  "updated_at": 1793842594,
+  "updated_at": 1793842602,
   "affected_specs": [
     "history"
   ],
