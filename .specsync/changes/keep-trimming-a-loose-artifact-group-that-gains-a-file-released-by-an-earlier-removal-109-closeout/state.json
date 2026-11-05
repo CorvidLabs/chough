@@ -7,10 +7,11 @@
   "title": "Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout)",
   "description": "Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "6009d42756364fd1c338b215ac8539c1b2a0d0b0",
   "created_at": 1793857930,
-  "updated_at": 1793857961,
+  "updated_at": 1793858303,
   "affected_specs": [
     "cli"
   ],
