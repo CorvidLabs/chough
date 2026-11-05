@@ -1,0 +1,60 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793855459,
+      "digest": "80166470016d4e3fbb3dddd9a413e6cd7fe0e3fc4f17965692f96b87b4d3ee56",
+      "note": "Leif chose Loose artifact folders and Key items move, confirmed KNOW-16 to KNOW-19, and asked that artifacts and evidence transition to the vault (2026-11-04)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge",
+        "title": "Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)",
+        "description": "Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/librarian.md",
+          "src/attachments.rs",
+          "src/evidence.rs",
+          "src/library.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "src/vault.rs",
+          "tests/evidence.rs",
+          "tests/librarian_trim.rs",
+          "tests/reduce.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Loose artifact entries no record references are trimmed and ledgered as loose artifacts once the change that listed or made them is cold, and listed in its knowledge note; entries of current work, named by the checkpoint or an open bug, or listed by a hot archive stay; a closed bug releases its fixture. Key items of a cold change (manual or agent-assisted observations whose only protection is being non-routine, failed-run logs, screenshots and failure-first logs) move to knowledge/attachments/<archive>/, mapped in the ledger and linked from the note. New tests fail first, the trim on this repository is measured, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Leif (0xLeif) chose Loose artifact folders (KNOW-18) and Key items move (KNOW-19), confirmed KNOW-16 to KNOW-19 (Yes, build it), and on 2026-11-04 asked that artifacts and evidence actually be transitioned into the knowledge vault. Ledger first, the KNOW-10 restore check, no removal while a change is open, and bytes in Git stay.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "55069ae6da95b0b6efb7e6f273049043c7d2838760fa30bc71ef18aac2f76a5b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793857600,
+      "digest": "3c8b815935ed52b7397a2cbba29ba7530824d78b1c91d4afbe32bc031ccf5ee1",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

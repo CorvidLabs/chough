@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout",
+  "implementation_commit": "6e0a8357cb0d6e048826edc6c67aa26b9dce6b2c",
+  "implementation_tree": "b5ac178742791260835b4f18fa570d8b16b7d814",
+  "contract_digest": "b5174f6984a6bee71ecaf78b4b85af8f4d170f7a77c698addbc633e3b5be8329",
+  "workspace_digest": "3e26bf0f9dd5ce6a8047b6498fd2380aa49a26f2c253df12e3357c490d3fa67e",
+  "closing_digest": "a395c8de24e1e60289970415f605a9870bed487a82e0909d0694f0f4fe324ce1",
+  "review_digest": "0a610da555eabea97ce241ccfabe929f2743fb632b4f86a39c95009fc1b0f1a8",
+  "finalization_digest": "b319dddfcdfdc6bdce40e1ffc854762a6fe353fa78f5a36e2227b3097a60a3b3",
+  "timestamp": 1793884116
+}

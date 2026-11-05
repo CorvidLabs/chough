@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-attachment-written-mid-apply-8ac66844b8bf0a7895308665",
+  "criteria": [
+    "KNOW-19",
+    "KNOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-046"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact an_attachment_written_during_the_apply_refuses_it for TC-cli-vault-attachment-written-mid-apply: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-attachment-written-mid-apply-8ac66844b8bf0a7895308665.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-attachment-written-mid-apply-8ac66844b8bf0a7895308665.log": "fee3c153a5021984cb32c2055d97a3c6315dc069fe1922b0230e5be927adcb0e"
+  },
+  "observed_at_unix_seconds": 1793887094,
+  "snapshot": {
+    "revision": "3e1ee4bacc11a982a9ea044ad56d584431eb8002",
+    "dirty": false,
+    "fingerprint": "53ae23a8ce5fbc5691fa62e2e3acf1b972ae018b8203fe7694673323f9ad6c77",
+    "content": "dbe8aa69059e021a9baedcc059acd843115bd2dfde604098c006f521c7791b70"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-attachment-written-mid-apply",
+      "digest": "934ea42cf011129822eccfd95174437681ed33c8722f6c85f07c514d40eb9c49"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "an_attachment_written_during_the_apply_refuses_it"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

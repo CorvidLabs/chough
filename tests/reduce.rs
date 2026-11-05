@@ -280,6 +280,228 @@ fn a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim() {
     );
 }
 
+/// Adds `paths` to cold a1's verification manifest.
+fn list_in_a1(fixture: &Fixture, paths: &[&str]) {
+    list_in(fixture, ".specsync/archive/changes/2026-01-01-a1", paths);
+}
+
+/// Adds `paths` to the verification manifest of the archive in `dir`.
+fn list_in(fixture: &Fixture, dir: &str, paths: &[&str]) {
+    let path = &format!("{dir}/verification.json");
+    let mut verification: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    let entries = verification["acceptance_manifest"]["entries"]
+        .as_array_mut()
+        .unwrap();
+    for listed in paths {
+        entries.push(json!({"path": listed, "kind": "file", "payload_digest": ZERO}));
+    }
+    fixture.write(path, &serde_json::to_string_pretty(&verification).unwrap());
+}
+
+/// Commits everything with author and committer dates `age_days` ago.
+fn commit_aged(fixture: &Fixture, message: &str, age_days: u64) {
+    let date = format!("@{} +0000", now() - age_days * DAY);
+    for args in [
+        vec!["add", "--all"],
+        vec!["commit", "--quiet", "-m", message],
+    ] {
+        let status = std::process::Command::new("git")
+            .args([
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.invalid",
+                "-c",
+                "commit.gpgsign=false",
+            ])
+            .args(&args)
+            .current_dir(fixture.root())
+            .env("GIT_AUTHOR_DATE", &date)
+            .env("GIT_COMMITTER_DATE", &date)
+            .status()
+            .unwrap();
+        assert!(status.success());
+    }
+}
+
+fn bug(fixture: &Fixture, id: &str, status: &str, fixture_path: &str) {
+    let record = json!({
+        "schema_version": 1, "id": id, "title": "Fixture bug", "symptom": "s", "trigger": "t",
+        "expected": "e", "actual": "a", "criteria": ["LIFE-1"], "requirements": ["REQ-cli-001"],
+        "cases": [], "environment": "local", "revision": null, "steps": [], "fixture": fixture_path,
+        "observations": [], "impact": "low", "classification": "product-defect", "scope": "in-scope",
+        "status": status, "regression_baseline": null, "duplicate_of": null, "related": [],
+        "source": "fixture", "notes": [], "created_at_unix_seconds": now() - 70 * DAY,
+        "updated_at_unix_seconds": now() - 70 * DAY,
+    });
+    fixture.write(
+        &format!(".chough/bugs/{id}.json"),
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+}
+
+/// KNOW-18: loose artifacts that no record references are summarized and trimmed once the
+/// change that made them is cold: listed only by a cold archive, or committed in a cold
+/// change's cycle. Loose artifacts of current work, or named by an open bug, stay.
+#[test]
+fn loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/listed-pr/out.log", "listed\n");
+    fixture.write(".chough/artifacts/bug-repro.log", "repro\n");
+    list_in_a1(
+        &fixture,
+        &[
+            ".chough/artifacts/listed-pr/out.log",
+            ".chough/artifacts/bug-repro.log",
+        ],
+    );
+    bug(
+        &fixture,
+        "BUG-0001",
+        "open",
+        ".chough/artifacts/bug-repro.log",
+    );
+    fixture.commit("listed loose artifacts");
+    fixture.write(".chough/artifacts/old-pr/notes.log", "old\n");
+    commit_aged(&fixture, "an old pull request folder", 55);
+    fixture.write(".chough/artifacts/new-pr/notes.log", "new\n");
+    fixture.commit("current work");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(
+        !fixture.exists(".chough/artifacts/listed-pr/out.log"),
+        "{trim:#}"
+    );
+    assert!(
+        !fixture.exists(".chough/artifacts/old-pr/notes.log"),
+        "{trim:#}"
+    );
+    assert!(
+        fixture.exists(".chough/artifacts/new-pr/notes.log"),
+        "current work stays"
+    );
+    assert!(
+        fixture.exists(".chough/artifacts/bug-repro.log"),
+        "an open bug keeps its fixture"
+    );
+    let ledger: Vec<Value> = fixture
+        .read(".chough/pruned.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    let old = ledger
+        .iter()
+        .find(|entry| entry["id"] == "artifact:old-pr")
+        .expect("old-pr ledgered");
+    assert_eq!(old["kind"], "loose-artifact", "{old:#}");
+    assert_eq!(old["archives"], json!(["a2"]), "{old:#}");
+    assert!(
+        ledger
+            .iter()
+            .any(|entry| entry["id"] == "artifact:listed-pr" && entry["archives"] == json!(["a1"]))
+    );
+    let note = fixture.read("knowledge/archives/a2.md");
+    assert!(
+        note.contains(".chough/artifacts/old-pr/notes.log"),
+        "{note}"
+    );
+}
+
+/// KNOW-18: a fixture named by a closed bug is no longer held.
+#[test]
+fn a_closed_bug_releases_its_loose_fixture() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/bug-repro.log", "repro\n");
+    list_in_a1(&fixture, &[".chough/artifacts/bug-repro.log"]);
+    bug(
+        &fixture,
+        "BUG-0001",
+        "verified",
+        ".chough/artifacts/bug-repro.log",
+    );
+    fixture.commit("closed bug fixture");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["librarian_trim"]["status"], "trimmed",
+        "{moved:#}"
+    );
+    assert!(!fixture.exists(".chough/artifacts/bug-repro.log"));
+}
+
+/// KNOW-19: key items move into the vault: a manual observation with its screenshot, and
+/// the failure log of an older failed run, under the cold change's attachments.
+#[test]
+fn key_items_of_a_cold_change_move_into_the_vault() {
+    let fixture = project("0");
+    // m1: a manual observation with a screenshot, listed by cold a1.
+    obs(&fixture, "m1", 64, "TC-m", "passed");
+    let path = ".chough/evidence/m1.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["method"] = json!("manual");
+    record["artifacts"] = json!([".chough/artifacts/m1-screen.png"]);
+    record["artifact_fingerprints"] = json!({".chough/artifacts/m1-screen.png": ZERO});
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.write(".chough/artifacts/m1-screen.png", "png bytes\n");
+    // r0: an older failed run of TC-a (r3 is the newest failure) with its log.
+    obs(&fixture, "r0", 75, "TC-a", "failed");
+    let path = ".chough/evidence/r0.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["artifacts"] = json!([".chough/artifacts/r0.log"]);
+    record["artifact_fingerprints"] = json!({".chough/artifacts/r0.log": ZERO});
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.write(".chough/artifacts/r0.log", "failure first\n");
+    list_in_a1(
+        &fixture,
+        &[".chough/evidence/m1.json", ".chough/evidence/r0.json"],
+    );
+    fixture.commit("key items");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    for (gone, kept) in [
+        (
+            ".chough/evidence/m1.json",
+            "knowledge/attachments/a1/evidence/m1.json",
+        ),
+        (
+            ".chough/artifacts/m1-screen.png",
+            "knowledge/attachments/a1/artifacts/m1-screen.png",
+        ),
+        (
+            ".chough/artifacts/r0.log",
+            "knowledge/attachments/a1/artifacts/r0.log",
+        ),
+    ] {
+        assert!(!fixture.exists(gone), "{gone} left: {trim:#}");
+        assert!(fixture.exists(kept), "{kept} missing: {trim:#}");
+    }
+    assert!(
+        !fixture.exists(".chough/evidence/r0.json"),
+        "a routine record is not a key item"
+    );
+    assert!(!fixture.exists("knowledge/attachments/a1/evidence/r0.json"));
+    let note = fixture.read("knowledge/archives/a1.md");
+    assert!(
+        note.contains("[artifacts/m1-screen.png](../attachments/a1/artifacts/m1-screen.png)"),
+        "{note}"
+    );
+    let ledger = fixture.read(".chough/pruned.jsonl");
+    assert!(
+        ledger.contains("knowledge/attachments/a1/evidence/m1.json"),
+        "{ledger}"
+    );
+}
+
 /// Review of #108: a current-cycle reference whose record exists but cannot be read is
 /// kept, and the step reports `refused` instead of dropping it; done still completes.
 #[test]
@@ -307,4 +529,450 @@ fn an_unreadable_record_keeps_its_reference_and_refuses_the_drop() {
         "{moved:#}"
     );
     assert_eq!(fixture.session()["observations"], json!(["r2", "u3"]));
+}
+
+/// #109 closeout on this repository: removing the runs that shared a log inside a loose
+/// folder left that log to the folder's loose group, which then listed a file before its
+/// planned ones, and the re-check refused the whole trim. A loose group that gains a file
+/// is still safe to trim: only its planned files go.
+#[test]
+fn a_loose_folder_that_gains_a_released_file_is_still_trimmed() {
+    let fixture = project("0");
+    for id in ["r1", "r2"] {
+        let path = format!(".chough/evidence/{id}.json");
+        let mut record: Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+        record["artifacts"] = json!([".chough/artifacts/x/a-shared.log"]);
+        record["artifact_fingerprints"] = json!({".chough/artifacts/x/a-shared.log": ZERO});
+        fixture.write(
+            &path,
+            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+        );
+    }
+    fixture.write(".chough/artifacts/x/a-shared.log", "shared\n");
+    fixture.write(".chough/artifacts/x/z-loose.log", "loose\n");
+    list_in_a1(&fixture, &[".chough/artifacts/x/z-loose.log"]);
+    fixture.commit("a loose folder with a shared log");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(pruned(trim).contains(&"artifact:x".to_string()), "{trim:#}");
+    assert!(!fixture.exists(".chough/artifacts/x/z-loose.log"));
+    assert!(
+        fixture.exists(".chough/artifacts/x/a-shared.log"),
+        "an unplanned file stays"
+    );
+}
+
+/// The other side of the case above: a planned loose file that an open bug names partway
+/// through the apply still refuses the trim, and everything planned is restored.
+#[test]
+fn a_loose_file_protected_during_the_apply_refuses_the_trim() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/a-first.log", "first\n");
+    fixture.write(".chough/artifacts/x/z-second.log", "second\n");
+    list_in_a1(
+        &fixture,
+        &[
+            ".chough/artifacts/x/a-first.log",
+            ".chough/artifacts/x/z-second.log",
+        ],
+    );
+    fixture.commit("a loose folder");
+    set_checkpoint(&fixture, &[]);
+    // An open bug naming z-second.log, held back until the apply has planned.
+    bug(
+        &fixture,
+        "BUG-0009",
+        "open",
+        ".chough/artifacts/x/z-second.log",
+    );
+    fixture.write(".stub-bug", &fixture.read(".chough/bugs/BUG-0009.json"));
+    std::fs::remove_file(fixture.root().join(".chough/bugs/BUG-0009.json")).unwrap();
+    // A Git stand-in that, on the first unfiltered stdin hash (the HEAD check of the bytes
+    // held for removal, after planning), files that bug: another agent's report.
+    let real_git = String::from_utf8(
+        std::process::Command::new("sh")
+            .args(["-c", "command -v git"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ \"$1 $2 $3\" = \"hash-object --no-filters --stdin\" ] && [ -f .stub-bug ]; then\n  cp .stub-bug .chough/bugs/BUG-0009.json && rm .stub-bug\nfi\nexec '{}' \"$@\"\n",
+            real_git.trim()
+        ),
+    );
+    fixture.executable("bin/git");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert!(
+        !fixture.exists(".stub-bug"),
+        "the hook did not run: {trim:#}"
+    );
+    assert_eq!(trim["status"], "refused", "{trim:#}");
+    let reason = trim["reason"].as_str().unwrap_or_default();
+    assert!(
+        reason.contains("protections changed during removal") && reason.contains("artifact:x"),
+        "{trim:#}"
+    );
+    assert_eq!(fixture.read(".chough/artifacts/x/a-first.log"), "first\n");
+    assert_eq!(fixture.read(".chough/artifacts/x/z-second.log"), "second\n");
+    assert!(!fixture.exists(".chough/removing"));
+}
+
+/// Renames cold a1 to `id`, keeping its date, manifest and finalization; returns its
+/// directory.
+fn rename_a1(fixture: &Fixture, id: &str) -> String {
+    let dir = format!(".specsync/archive/changes/2026-01-01-{id}");
+    std::fs::rename(
+        fixture
+            .root()
+            .join(".specsync/archive/changes/2026-01-01-a1"),
+        fixture.root().join(&dir),
+    )
+    .unwrap();
+    for name in ["finalization.json", "change.md"] {
+        let path = format!("{dir}/{name}");
+        let text = fixture
+            .read(&path)
+            .replace("\"change_id\": \"a1\"", &format!("\"change_id\": \"{id}\""))
+            .replace("id: a1\n", &format!("id: {id}\n"));
+        fixture.write(&path, &text);
+    }
+    dir
+}
+
+fn mode(fixture: &Fixture, path: &str) -> u32 {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::metadata(fixture.root().join(path))
+        .unwrap()
+        .permissions()
+        .mode()
+        & 0o777
+}
+
+/// #109 on Windows: attachments of a long archive ID go under a short, stable folder, so
+/// the vault can be checked out there.
+#[test]
+fn key_items_of_a_long_archive_id_move_under_a_short_folder() {
+    let fixture = project("0");
+    let id = "a1-a-long-archived-change-id-that-windows-paths-cannot-repeat";
+    let dir = rename_a1(&fixture, id);
+    fixture.write(".chough/artifacts/x/screen.png", "png\n");
+    list_in(&fixture, &dir, &[".chough/artifacts/x/screen.png"]);
+    fixture.commit("a long archive id");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    let folder = std::fs::read_dir(fixture.root().join("knowledge/attachments"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .find(|name| name.starts_with("a1-a-long-"))
+        .unwrap_or_else(|| panic!("no short folder: {trim:#}"));
+    let digest = folder.strip_prefix("a1-a-long-").unwrap();
+    assert!(
+        digest.len() == 8 && digest.chars().all(|c| c.is_ascii_hexdigit()),
+        "{folder}"
+    );
+    let attachment = format!("knowledge/attachments/{folder}/artifacts/x/screen.png");
+    assert_eq!(fixture.read(&attachment), "png\n");
+    assert!(!fixture.exists(".chough/artifacts/x/screen.png"));
+    let note = fixture.read(&format!("knowledge/archives/{id}.md"));
+    assert!(
+        note.contains(&format!("../attachments/{folder}/artifacts/x/screen.png")),
+        "{note}"
+    );
+}
+
+/// A key item whose attachment path would pass 220 characters stays, protected with that
+/// reason, rather than writing a path a Windows clone cannot hold.
+#[test]
+fn a_key_item_whose_attachment_path_is_too_long_stays() {
+    let fixture = project("0");
+    let file = format!(".chough/artifacts/x/{}-failure-first.log", "n".repeat(190));
+    fixture.write(&file, "fail\n");
+    list_in_a1(&fixture, &[file.as_str()]);
+    fixture.commit("a long key item");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(fixture.exists(&file), "{trim:#}");
+    let protected = trim["summary"]["protected"].as_array().unwrap();
+    let entry = protected
+        .iter()
+        .find(|entry| entry["id"] == "artifact:x")
+        .unwrap_or_else(|| panic!("artifact:x not protected: {trim:#}"));
+    assert!(
+        entry["reasons"]
+            .to_string()
+            .contains("longer than 220 characters"),
+        "{entry:#}"
+    );
+}
+
+/// corvid-agent on #109: a key item keeps its mode in the vault.
+#[test]
+fn a_moved_key_item_keeps_its_mode() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/failure-first.sh", "#!/bin/sh\n");
+    fixture.executable(".chough/artifacts/x/failure-first.sh");
+    list_in_a1(&fixture, &[".chough/artifacts/x/failure-first.sh"]);
+    fixture.commit("an executable key item");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    let attachment = "knowledge/attachments/a1/artifacts/x/failure-first.sh";
+    assert_eq!(fixture.read(attachment), "#!/bin/sh\n");
+    assert_eq!(mode(&fixture, attachment), 0o755);
+}
+
+/// corvid-agent on #109: the refused first closeout trim restored two scripts as 0644.
+/// A restore puts back the mode with the bytes.
+#[test]
+fn a_refused_apply_restores_files_with_their_modes() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/run.sh", "#!/bin/sh\n");
+    fixture.executable(".chough/artifacts/x/run.sh");
+    list_in_a1(&fixture, &[".chough/artifacts/x/run.sh"]);
+    fixture.commit("an executable loose script");
+    set_checkpoint(&fixture, &[]);
+    // A SpecSync stand-in whose terminal evidence validity changes once the script is
+    // gone, so the apply is refused after removing it.
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nv=authenticated-history\n[ -e .chough/artifacts/x/run.sh ] || v=unauthenticated\nprintf '{\"summary\":{\"id\":\"%s\",\"state\":\"archived\",\"approval_valid\":true,\"correction_valid\":true,\"terminal_evidence\":{\"validity\":\"%s\"}},\"acceptance_entries\":[]}\\n' \"$3\" \"$v\"\n",
+    );
+    fixture.executable("bin/specsync");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "refused", "{trim:#}");
+    assert!(
+        trim["reason"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("validity"),
+        "{trim:#}"
+    );
+    assert_eq!(fixture.read(".chough/artifacts/x/run.sh"), "#!/bin/sh\n");
+    assert_eq!(mode(&fixture, ".chough/artifacts/x/run.sh"), 0o755);
+}
+
+/// A Git stand-in that runs `action` once, on the first unfiltered stdin hash: the HEAD
+/// check of the bytes held for removal, after planning and before any removal.
+fn after_planning(fixture: &Fixture, action: &str) {
+    let real_git = String::from_utf8(
+        std::process::Command::new("sh")
+            .args(["-c", "command -v git"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    fixture.write(".stub-pending", "");
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ \"$1 $2 $3\" = \"hash-object --no-filters --stdin\" ] && [ -f .stub-pending ]; then\n  rm .stub-pending\n  {action}\nfi\nexec '{}' \"$@\"\n",
+            real_git.trim()
+        ),
+    );
+    fixture.executable("bin/git");
+}
+
+/// A SpecSync stand-in whose terminal evidence validity changes once `gone` is removed,
+/// so the apply is refused after removing it.
+fn refuse_once_removed(fixture: &Fixture, gone: &str) {
+    fixture.write(
+        "bin/specsync",
+        &format!(
+            "#!/bin/sh\nv=authenticated-history\n[ -e {gone} ] || v=unauthenticated\nprintf '{{\"summary\":{{\"id\":\"%s\",\"state\":\"archived\",\"approval_valid\":true,\"correction_valid\":true,\"terminal_evidence\":{{\"validity\":\"%s\"}}}},\"acceptance_entries\":[]}}\\n' \"$3\" \"$v\"\n"
+        ),
+    );
+    fixture.executable("bin/specsync");
+}
+
+fn protection<'a>(trim: &'a Value, id: &str) -> &'a Value {
+    trim["summary"]["protected"]
+        .as_array()
+        .and_then(|entries| entries.iter().find(|entry| entry["id"] == id))
+        .unwrap_or_else(|| panic!("{id} is not protected: {trim:#}"))
+}
+
+/// #109 review P1: a move never overwrites an attachment that holds other bytes.
+#[test]
+fn an_attachment_holding_other_bytes_keeps_both_files() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/screen.png", "png\n");
+    fixture.write(
+        "knowledge/attachments/a1/artifacts/x/screen.png",
+        "another agent's proof\n",
+    );
+    list_in_a1(&fixture, &[".chough/artifacts/x/screen.png"]);
+    fixture.commit("an occupied attachment");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert_eq!(fixture.read(".chough/artifacts/x/screen.png"), "png\n");
+    assert_eq!(
+        fixture.read("knowledge/attachments/a1/artifacts/x/screen.png"),
+        "another agent's proof\n"
+    );
+    assert!(
+        protection(trim, "artifact:x")["reasons"]
+            .to_string()
+            .contains("different bytes"),
+        "{trim:#}"
+    );
+}
+
+/// #109 review P1: an attachment another writer creates during the apply refuses it, and
+/// both files are kept.
+#[test]
+fn an_attachment_written_during_the_apply_refuses_it() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/screen.png", "png\n");
+    list_in_a1(&fixture, &[".chough/artifacts/x/screen.png"]);
+    fixture.commit("a key item");
+    set_checkpoint(&fixture, &[]);
+    after_planning(
+        &fixture,
+        "mkdir -p knowledge/attachments/a1/artifacts/x && printf 'written meanwhile\\n' > knowledge/attachments/a1/artifacts/x/screen.png",
+    );
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert!(
+        !fixture.exists(".stub-pending"),
+        "the hook did not run: {trim:#}"
+    );
+    assert_eq!(trim["status"], "refused", "{trim:#}");
+    assert_eq!(fixture.read(".chough/artifacts/x/screen.png"), "png\n");
+    assert_eq!(
+        fixture.read("knowledge/attachments/a1/artifacts/x/screen.png"),
+        "written meanwhile\n"
+    );
+}
+
+/// #109 review P1: an identical attachment already in place is not this apply's copy, so
+/// a refused apply leaves it.
+#[test]
+fn an_identical_attachment_in_place_survives_a_refused_apply() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/screen.png", "png\n");
+    fixture.write("knowledge/attachments/a1/artifacts/x/screen.png", "png\n");
+    list_in_a1(&fixture, &[".chough/artifacts/x/screen.png"]);
+    fixture.commit("an attachment already in place");
+    set_checkpoint(&fixture, &[]);
+    refuse_once_removed(&fixture, ".chough/artifacts/x/screen.png");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "refused", "{trim:#}");
+    assert_eq!(fixture.read(".chough/artifacts/x/screen.png"), "png\n");
+    assert_eq!(
+        fixture.read("knowledge/attachments/a1/artifacts/x/screen.png"),
+        "png\n"
+    );
+}
+
+/// #109 review P1: an open bug whose fixture is a folder keeps the files inside it.
+#[test]
+fn an_open_bug_folder_fixture_protects_its_files() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/open-repro/out.log", "repro\n");
+    list_in_a1(&fixture, &[".chough/artifacts/open-repro/out.log"]);
+    bug(&fixture, "BUG-0001", "open", ".chough/artifacts/open-repro");
+    fixture.commit("an open bug's folder fixture");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(
+        fixture.exists(".chough/artifacts/open-repro/out.log"),
+        "{trim:#}"
+    );
+    assert!(
+        protection(trim, "artifact:open-repro")["reasons"]
+            .to_string()
+            .contains("BUG-0001"),
+        "{trim:#}"
+    );
+}
+
+/// #109 review P1: a checkpoint reference to a folder keeps the loose files and the
+/// observation sets inside it, and a sibling folder sharing its prefix is not covered.
+#[test]
+fn a_checkpoint_folder_reference_protects_loose_files_and_observation_sets() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/kept/loose.log", "loose\n");
+    fixture.write(".chough/artifacts/kept-not/loose.log", "other\n");
+    // Superseded run r1, listed by cold a1, keeps its log in the folder.
+    let path = ".chough/evidence/r1.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["artifacts"] = json!([".chough/artifacts/kept/r1.log"]);
+    record["artifact_fingerprints"] = json!({".chough/artifacts/kept/r1.log": ZERO});
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.write(".chough/artifacts/kept/r1.log", "r1\n");
+    list_in_a1(
+        &fixture,
+        &[
+            ".chough/artifacts/kept/loose.log",
+            ".chough/artifacts/kept-not/loose.log",
+        ],
+    );
+    fixture.commit("a checkpoint-named folder");
+    fixture.ok(&["checkpoint", "--file", ".chough/artifacts/kept"]);
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(
+        fixture.exists(".chough/artifacts/kept/loose.log"),
+        "{trim:#}"
+    );
+    assert!(fixture.exists(".chough/evidence/r1.json"), "{trim:#}");
+    assert!(fixture.exists(".chough/artifacts/kept/r1.log"), "{trim:#}");
+    assert!(!pruned(trim).contains(&"r1".to_string()), "{trim:#}");
+    assert!(
+        !fixture.exists(".chough/artifacts/kept-not/loose.log"),
+        "a sibling sharing the prefix is not inside the folder: {trim:#}"
+    );
+}
+
+/// #109 review P1: one cold-listed file does not make a folder's current files cold.
+#[test]
+fn a_loose_folder_with_a_current_file_stays_whole() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/reused/a-old.log", "old\n");
+    list_in_a1(&fixture, &[".chough/artifacts/reused/a-old.log"]);
+    fixture.commit("an old listed log");
+    fixture.write(".chough/artifacts/reused/current.log", "current\n");
+    fixture.commit("current work in the same folder");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(
+        fixture.exists(".chough/artifacts/reused/current.log"),
+        "{trim:#}"
+    );
+    assert!(
+        fixture.exists(".chough/artifacts/reused/a-old.log"),
+        "{trim:#}"
+    );
+    assert!(
+        protection(trim, "artifact:reused")["reasons"]
+            .to_string()
+            .contains("current.log"),
+        "{trim:#}"
+    );
 }

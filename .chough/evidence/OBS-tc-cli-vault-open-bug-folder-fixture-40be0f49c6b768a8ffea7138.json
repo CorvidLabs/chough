@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-open-bug-folder-fixture-40be0f49c6b768a8ffea7138",
+  "criteria": [
+    "KNOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-046"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact an_open_bug_folder_fixture_protects_its_files for TC-cli-vault-open-bug-folder-fixture: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-open-bug-folder-fixture-40be0f49c6b768a8ffea7138.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-open-bug-folder-fixture-40be0f49c6b768a8ffea7138.log": "a3dd1944bed4e583aa950c5b22b3fa485166a9960284f7dee1b9331fe518ca7a"
+  },
+  "observed_at_unix_seconds": 1793887100,
+  "snapshot": {
+    "revision": "3e1ee4bacc11a982a9ea044ad56d584431eb8002",
+    "dirty": false,
+    "fingerprint": "53ae23a8ce5fbc5691fa62e2e3acf1b972ae018b8203fe7694673323f9ad6c77",
+    "content": "dbe8aa69059e021a9baedcc059acd843115bd2dfde604098c006f521c7791b70"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-open-bug-folder-fixture",
+      "digest": "2c99236503836d04fb43e93c574cae3822fedd724ddbf3dbe5f0f54982299dea"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "an_open_bug_folder_fixture_protects_its_files"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

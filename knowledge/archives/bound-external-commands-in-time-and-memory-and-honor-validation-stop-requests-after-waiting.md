@@ -101,3 +101,11 @@ verification records, the retention ledger and Git stay authoritative.
 - BUG-0009 verified (references bug-0009-repro-1, bug-0009-fixed-1, tc-cli-0048-1793482740)
 - BUG-0010 verified (references bug-0010-repro-1, bug-0010-fixed-1, tc-cli-0045-1793482731, tc-cli-0046-1793482734, tc-cli-0047-1793482738)
 - BUG-0011 verified (references bug-0011-repro-1, bug-0011-fixed-1, tc-cli-0049-1793482745)
+
+## Loose artifacts
+
+- none
+
+## Attachments
+
+- none

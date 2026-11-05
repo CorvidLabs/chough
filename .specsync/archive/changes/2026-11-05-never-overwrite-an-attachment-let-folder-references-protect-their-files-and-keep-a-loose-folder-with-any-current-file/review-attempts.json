@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "c402031bffd49fe40845984b3e36cde32c75525c",
+      "contract_digest": "01eaf639ea77644b4a2d3498c93367f9d93a1d087e244cfc00758e67a6965d2b",
+      "execution_digest": "ea534b21347d3bd0b85517270b1e955a11a7729632c2e2e5f32eba1b8f340577",
+      "workspace_digest": "fe9f7f5ecfc231692143c645fee4c3aa5b8cee7e93a02423399a1b7ca8ab02ca",
+      "timestamp": 1793887530
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of #108)",
+  "objective": "Fix the three P1s from the #109 review: never overwrite an attachment, folder references protect their files, a loose folder with a current file stays",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -12,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108",
+  "native_change": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -56,7 +56,9 @@
       "KNOW-15",
       "KNOW-16",
       "KNOW-17",
-      "KNOW-20"
+      "KNOW-20",
+      "KNOW-18",
+      "KNOW-19"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -342,7 +344,12 @@
     "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #107; this fix for hosted Windows CI is part of #107. Claude recorded the native review as 0xLeif on that decision.",
     "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real trim on this repository) and merge #108 after #107 once CI is green, he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
     "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #108; this fix for the closeout trim is part of #108. Claude recorded the native review as 0xLeif on that decision.",
-    "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #108; this fix for its review is part of #108. Claude recorded the native review as 0xLeif on that decision."
+    "2026-11-04 Leif (0xLeif): make sure all artifacts and evidence are deleted and transitioned over to the knowledge vault, sessions are unique with no merge conflicts, and we learn from everything; I think we should do it.",
+    "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #108; this fix for its review is part of #108. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #109 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real move into the vault on this repository) and merge #109 after #108 once CI is green, he answered Yes, record and merge. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #109 closeout-trim fix accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: asked whether to record his review of this fix as 0xLeif, finalize it, rerun the trim on this repository and merge #109 once CI is green and corvid-agent approves, he answered Yes, record and merge. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #109 Windows-path and file-mode fix accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: told of 3 new P1s from his review agent, he chose Record both, then merge: record his review of this fix as 0xLeif and finalize it without the done move (so no trim runs with the P1s), fix the P1s in a new change, record that review too once Linux verify passes, close out, and merge #109 on green CI including Windows and corvid-agent approval. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #109 P1 fix (never overwrite an attachment, folder references protect their files, a mixed-age folder stays) accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: he chose Record both, then merge, which covers recording his review of this fix as 0xLeif once Linux verify passed (438 passed, 0 failed), closing out with the trim, and merging #109 on green CI including Windows and corvid-agent approval. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -458,8 +465,14 @@
     "Issue #100: native sources read at full size; LIFE-15, D-020, REQ-cli-042, REQ-reporting-004; 0.2.1 prep"
   ],
   "observations": [
-    "OBS-tc-cli-reduce-unreadable-reference-kept-40cf09ab3b0cb8bf4e76efbf",
-    "OBS-tc-cli-reduce-done-drops-closed-cycle-refs-3ba31f9a64331388b32a94e0"
+    "OBS-tc-cli-vault-occupied-attachment-kept-87debad9f96921655f24ef43",
+    "OBS-tc-cli-vault-attachment-written-mid-apply-8ac66844b8bf0a7895308665",
+    "OBS-tc-cli-vault-identical-attachment-survives-restore-85737badc0018637401c5091",
+    "OBS-tc-cli-vault-open-bug-folder-fixture-40be0f49c6b768a8ffea7138",
+    "OBS-tc-cli-vault-checkpoint-folder-reference-9d9b841a600378779290dd6e",
+    "OBS-tc-cli-vault-mixed-age-folder-stays-2efd9baf3b7e0a7b17ac0e49",
+    "OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81",
+    "OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008"
   ],
   "bugs": [
     "BUG-0001",
@@ -495,5 +508,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #108 when hosted checks are green"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }

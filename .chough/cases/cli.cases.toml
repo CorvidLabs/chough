@@ -3702,3 +3702,273 @@ expected = ["tests/reduce.rs::an_unreadable_record_keeps_its_reference_and_refus
 adapter = "cargo-test"
 test_target = "reduce"
 test = "an_unreadable_record_keeps_its_reference_and_refuses_the_drop"
+
+[[case]]
+id = "TC-cli-vault-loose-artifacts-trimmed"
+title = "Loose artifacts of a cold change are trimmed; current or bug-held ones stay"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-18", "KNOW-20"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay"
+
+[[case]]
+id = "TC-cli-vault-closed-bug-releases-fixture"
+title = "A closed bug releases its loose fixture"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-18"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_closed_bug_releases_its_loose_fixture passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_closed_bug_releases_its_loose_fixture"
+
+[[case]]
+id = "TC-cli-vault-key-items-move"
+title = "Key items of a cold change move into the vault"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::key_items_of_a_cold_change_move_into_the_vault passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "key_items_of_a_cold_change_move_into_the_vault"
+
+[[case]]
+id = "TC-cli-vault-loose-group-gains-released-file"
+title = "A loose artifact group that gains a file released by an earlier removal is still trimmed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "KNOW-18"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_loose_folder_that_gains_a_released_file_is_still_trimmed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_loose_folder_that_gains_a_released_file_is_still_trimmed"
+
+[[case]]
+id = "TC-cli-vault-loose-file-protected-mid-apply"
+title = "A planned loose file protected during the apply refuses the trim and restores it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "KNOW-18"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_loose_file_protected_during_the_apply_refuses_the_trim passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_loose_file_protected_during_the_apply_refuses_the_trim"
+
+[[case]]
+id = "TC-cli-vault-long-archive-short-folder"
+title = "Key items of a long archive ID move under a short, stable attachments folder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::key_items_of_a_long_archive_id_move_under_a_short_folder passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "key_items_of_a_long_archive_id_move_under_a_short_folder"
+
+[[case]]
+id = "TC-cli-vault-attachment-path-bound"
+title = "A key item whose attachment path would pass 220 characters stays, protected"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19", "KNOW-10"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_key_item_whose_attachment_path_is_too_long_stays passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_key_item_whose_attachment_path_is_too_long_stays"
+
+[[case]]
+id = "TC-cli-vault-moved-key-item-mode"
+title = "A key item moved into the vault keeps its mode"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_moved_key_item_keeps_its_mode passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_moved_key_item_keeps_its_mode"
+
+[[case]]
+id = "TC-cli-vault-restore-keeps-mode"
+title = "A refused apply restores removed files with their modes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_refused_apply_restores_files_with_their_modes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_refused_apply_restores_files_with_their_modes"
+
+[[case]]
+id = "TC-cli-vault-occupied-attachment-kept"
+title = "An attachment that already holds other bytes keeps both files and its set"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19", "KNOW-10"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::an_attachment_holding_other_bytes_keeps_both_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "an_attachment_holding_other_bytes_keeps_both_files"
+
+[[case]]
+id = "TC-cli-vault-attachment-written-mid-apply"
+title = "An attachment written during the apply refuses it and both files are kept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19", "KNOW-10"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::an_attachment_written_during_the_apply_refuses_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "an_attachment_written_during_the_apply_refuses_it"
+
+[[case]]
+id = "TC-cli-vault-identical-attachment-survives-restore"
+title = "An identical attachment already in place survives a refused apply"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19", "KNOW-10"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::an_identical_attachment_in_place_survives_a_refused_apply passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "an_identical_attachment_in_place_survives_a_refused_apply"
+
+[[case]]
+id = "TC-cli-vault-open-bug-folder-fixture"
+title = "An open bug whose fixture is a folder protects the files inside it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-18"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::an_open_bug_folder_fixture_protects_its_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "an_open_bug_folder_fixture_protects_its_files"
+
+[[case]]
+id = "TC-cli-vault-checkpoint-folder-reference"
+title = "A checkpoint folder reference protects the loose files and observation sets inside it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-18", "KNOW-16"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_checkpoint_folder_reference_protects_loose_files_and_observation_sets passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_checkpoint_folder_reference_protects_loose_files_and_observation_sets"
+
+[[case]]
+id = "TC-cli-vault-mixed-age-folder-stays"
+title = "A loose folder with a cold-listed file and a current file stays whole"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-18", "KNOW-20"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_loose_folder_with_a_current_file_stays_whole passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_loose_folder_with_a_current_file_stays_whole"

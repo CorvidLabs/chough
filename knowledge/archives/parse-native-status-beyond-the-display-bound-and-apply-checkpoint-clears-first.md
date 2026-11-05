@@ -73,3 +73,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 - BUG-0004 verified (references bug-0004-repro-1, bug-0004-fixed-1, tc-cli-0038-1793475511)
 - BUG-0005 verified (references bug-0005-repro-1, tc-cli-0039-1793475513)
+
+## Loose artifacts
+
+- none
+
+## Attachments
+
+- none

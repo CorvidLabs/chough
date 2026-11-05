@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
+  "implementation_commit": "c402031bffd49fe40845984b3e36cde32c75525c",
+  "implementation_tree": "49bc5d36a54ced4ad0ff4a4e8408ea2cef2c37d7",
+  "contract_digest": "01eaf639ea77644b4a2d3498c93367f9d93a1d087e244cfc00758e67a6965d2b",
+  "workspace_digest": "fe9f7f5ecfc231692143c645fee4c3aa5b8cee7e93a02423399a1b7ca8ab02ca",
+  "closing_digest": "eaf80ee24d267664b34683001bbd4dcbcd7f8791fd7968fc51049fb5fc87bdc3",
+  "review_digest": "515565a57268d5d5fcd11d0794d88d8ea78ce0045c5b0134020584ea45de82b6",
+  "finalization_digest": "c107263ad00c24d5ce33495d9554db86a3558f2c9b4a719ee8fe21e78974f2a0",
+  "timestamp": 1793887538
+}

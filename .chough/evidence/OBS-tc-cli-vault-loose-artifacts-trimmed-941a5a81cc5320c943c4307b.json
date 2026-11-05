@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-loose-artifacts-trimmed-941a5a81cc5320c943c4307b",
+  "criteria": [
+    "KNOW-18",
+    "KNOW-20"
+  ],
+  "requirements": [
+    "REQ-cli-046"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay for TC-cli-vault-loose-artifacts-trimmed: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-loose-artifacts-trimmed-941a5a81cc5320c943c4307b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-loose-artifacts-trimmed-941a5a81cc5320c943c4307b.log": "766be9b484d78c95d5d63baaeee583ed39083aa3c440d3cef46fe557da1d51ed"
+  },
+  "observed_at_unix_seconds": 1793886017,
+  "snapshot": {
+    "revision": "126d0e3f4d0b67379592c64275de44daafafb1c4",
+    "dirty": false,
+    "fingerprint": "72734797bae56b9a4b8ebb5c3acd219965469078b766508ec6b019321aade3a6",
+    "content": "693b05461ec9e209c836cc4621f499c6810063977f70486eca534e36f7bdaa0f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-loose-artifacts-trimmed",
+      "digest": "cd62449a094ebcd56443669944c29661a4487cf249db876b449e1d527e88c35d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

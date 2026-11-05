@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout",
+  "slug": "keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout",
+  "title": "Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout)",
+  "description": "Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "6009d42756364fd1c338b215ac8539c1b2a0d0b0",
+  "created_at": 1793857930,
+  "updated_at": 1793884141,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/reduce.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-046: only planned files are removed and each is still loose; no requirement text changes.",
+  "acceptance_criteria": [
+    "A loose artifact group that gains a file because an earlier removal in the same apply released it is still trimmed: its planned files are removed and the released file stays; the re-check still refuses when a planned loose file becomes referenced or protected. The new test fails first, the trim on this repository then completes, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The #109 closeout trim on this repository was refused (protections changed during removal: artifact:handoff-cold-start: its files changed) and restored 172 files. Leif (0xLeif): Yes, record and merge for #109 (2026-11-04).",
+    "public_contract": "no"
+  }
+}

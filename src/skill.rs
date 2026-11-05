@@ -295,10 +295,16 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "references/librarian.md",
         "452a33f87dfb0c729ac98c790dbac47f811ae474ef693d0792a204bddf5e6772",
-    ), // #107; superseded by the observation-reduction guidance (REQ-cli-033, REQ-cli-045).
+    ),
+    // #107; superseded by the observation-reduction guidance (REQ-cli-033, REQ-cli-045).
     (
         "references/librarian.md",
         "1a5274fb0e08800f0f11efa530ed2c68422d2cb818ded653714e3e489fd8f762",
+    ),
+    // #108; superseded by the vault-attachments guidance (REQ-cli-046).
+    (
+        "references/librarian.md",
+        "b9887069d8d37460e96c2fb73da125dedb61bae1f6af4c48fa37becf351349ae",
     ),
 ];
 

@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793886764,
+      "digest": "01eaf639ea77644b4a2d3498c93367f9d93a1d087e244cfc00758e67a6965d2b",
+      "note": "#109 review P1s; Leif: Record both, then merge (2026-11-05)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
+        "title": "Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)",
+        "description": "Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/evidence.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Moves into the vault never overwrite: an identical attachment is kept and survives a refused apply, a different one keeps both files and protects the set, and one written during the apply refuses it. A folder named by the checkpoint or an open bug keeps the loose files and observation sets inside it. A loose folder with any current file stays whole. The new tests fail first, fledge lanes run verify passes on Linux, and the trim reruns on this repository at closeout."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Three P1 threads from Leif's review agent on #109 (2026-11-05). Leif chose Record both, then merge. No trim runs on this repository until this change is closed out.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "49f7ad4bf58faa552a2abda31df3a64709f427bca31af0ceb52d2d55383daa30"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793887538,
+      "digest": "eaf80ee24d267664b34683001bbd4dcbcd7f8791fd7968fc51049fb5fc87bdc3",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

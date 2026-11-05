@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 96
+archived_changes: 100
 tags:
   - chough/index
 ---
@@ -47,9 +47,13 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
-- [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](archives/keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108.md) Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108) (hot)
-- [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](archives/keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls.md) Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout) (hot)
-- [reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes](archives/reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes.md) Reduce old observation proof: drop closed-cycle checkpoint references at done, trim superseded runs of cold changes, attribute unlisted proof to its change by cycle time, and read archive validity in parallel (hot)
+- [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](archives/never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file.md) Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s) (hot)
+- [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](archives/keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files.md) Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files (hot)
+- [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](archives/keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout.md) Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout) (hot)
+- [move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge](archives/move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge.md) Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19) (cold)
+- [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](archives/keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108.md) Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108) (cold)
+- [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](archives/keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls.md) Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout) (cold)
+- [reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes](archives/reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes.md) Reduce old observation proof: drop closed-cycle checkpoint references at done, trim superseded runs of cold changes, attribute unlisted proof to its change by cycle time, and read archive validity in parallel (cold)
 - [recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace](archives/recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace.md) Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107) (cold)
 - [ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier](archives/ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier.md) Ignore Trace mentions in backticks, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of 107 at 5326ec4) (cold)
 - [read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes](archives/read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes.md) Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107) (cold)
@@ -156,6 +160,10 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](../.specsync/archive/changes/2026-11-05-never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file/lesson-bundle.md)
+- [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](../.specsync/archive/changes/2026-11-05-keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files/lesson-bundle.md)
+- [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](../.specsync/archive/changes/2026-11-05-keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout/lesson-bundle.md)
+- [move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge](../.specsync/archive/changes/2026-11-05-move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge/lesson-bundle.md)
 - [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](../.specsync/archive/changes/2026-11-05-keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108/lesson-bundle.md)
 - [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](../.specsync/archive/changes/2026-11-05-keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls/lesson-bundle.md)
 - [reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes](../.specsync/archive/changes/2026-11-05-reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes/lesson-bundle.md)
@@ -265,18 +273,18 @@ Archived lesson bundles:
 
 ## Observations
 
-503 recorded; most recent:
+482 recorded; most recent:
 
-- OBS-tc-cli-reduce-done-drops-closed-cycle-refs-3ba31f9a64331388b32a94e0 ProductTest Passed in local-linux-aarch64 at 0ad86da8bd59
-- OBS-tc-cli-reduce-unreadable-reference-kept-40cf09ab3b0cb8bf4e76efbf ProductTest Passed in local-linux-aarch64 at 0ad86da8bd59
-- OBS-tc-cli-reduce-attributed-by-cycle-time-1198e495948f5f5742d9956c ProductTest Passed in local-linux-aarch64 at aa73e7de3e53
-- OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259 ProductTest Passed in local-linux-aarch64 at aa73e7de3e53
-- OBS-tc-cli-reduce-shared-artifact-released-532820cadd76b87255af1384 ProductTest Passed in local-linux-aarch64 at aa73e7de3e53
-- OBS-tc-cli-reduce-parallel-validity-3198c87d139cc220722c9d3f ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
-- OBS-tc-cli-reduce-done-drops-closed-cycle-refs-b5573d86f433ffa606e8fcdc ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
-- OBS-tc-cli-reduce-attributed-by-cycle-time-50dd467ac3aa60dc22e14c3a ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
-- OBS-tc-cli-reduce-superseded-runs-c2386f1a35968fc79e456ea0 ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
-- OBS-tc-cli-vault-inline-trace-crlf-comments-70ae88664f84301800f9b4ce ProductTest Passed in local-linux-aarch64 at ed70bb5d38bc
+- OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-mixed-age-folder-stays-2efd9baf3b7e0a7b17ac0e49 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-checkpoint-folder-reference-9d9b841a600378779290dd6e ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-open-bug-folder-fixture-40be0f49c6b768a8ffea7138 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-identical-attachment-survives-restore-85737badc0018637401c5091 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-attachment-written-mid-apply-8ac66844b8bf0a7895308665 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-occupied-attachment-kept-87debad9f96921655f24ef43 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
+- OBS-tc-cli-vault-key-items-move-869f928765c2620518754975 ProductTest Passed in local-linux-aarch64 at 126d0e3f4d0b
+- OBS-tc-cli-vault-loose-artifacts-trimmed-941a5a81cc5320c943c4307b ProductTest Passed in local-linux-aarch64 at 126d0e3f4d0b
 
 ## Briefs
 

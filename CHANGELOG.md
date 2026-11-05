@@ -6,6 +6,19 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Old proof now moves into the knowledge vault (REQ-cli-046; KNOW-18, KNOW-19). Loose
+  artifacts that no record references, such as folders kept from earlier pull requests,
+  are summarized and trimmed once their change is cold, and an open bug keeps its
+  fixture. Key items move into `knowledge/attachments/<change>/` and are linked from the
+  change's note instead of being deleted: manual and agent-assisted observations, failed
+  runs' logs, screenshots and failure-first logs. On this repository the preview found
+  42 loose groups (259 files, 6.1 MB) and 36 observation sets, with 165 files moving to
+  the vault. An archive ID over 24 characters gets a short, stable attachments folder (a
+  readable prefix and 8 hex digits), and a key item whose attachment path would pass 220
+  characters stays where it is, so the vault checks out on Windows. Moved and restored
+  files keep their permissions. A move never overwrites an attachment that is already
+  there. A folder named by the checkpoint or an open bug protects what it contains, and a
+  loose folder with any current file stays whole.
 - Old observation proof now leaves `.chough/` as changes go cold (REQ-cli-033,
   REQ-cli-045; KNOW-16, KNOW-17, KNOW-20). At done, the checkpoint drops references
   from closed cycles. The post-archive summary trims routine runs that a newer run of

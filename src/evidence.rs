@@ -8,7 +8,7 @@ use crate::records::{
     append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
     print_json, read_native_text, read_record, read_spec_file, record_names, valid_name, write_new,
 };
-use crate::records::{valid_module_name, valid_reference_id};
+use crate::records::{digest_bytes, valid_module_name, valid_reference_id};
 use crate::{bugs, prefs, validate};
 use anyhow::{Context, Result, bail, ensure};
 use clap::ValueEnum;
@@ -1290,6 +1290,21 @@ fn file_key(path: &str) -> String {
         .to_lowercase()
 }
 
+/// What `map` records for `key` and for each folder that contains it: the case-folded
+/// canonical keys of [`file_key`], cut at `/`, so `a/b` names `a/b/c` but not `a/bc`
+/// (#109 review: a bug fixture or checkpoint reference may name a folder).
+fn naming<'a, V>(map: &'a BTreeMap<String, V>, key: &str) -> impl Iterator<Item = &'a V> {
+    let mut ancestors = vec![key.to_string()];
+    let mut rest = key;
+    while let Some((parent, _)) = rest.rsplit_once('/') {
+        ancestors.push(parent.to_string());
+        rest = parent;
+    }
+    ancestors
+        .into_iter()
+        .filter_map(move |ancestor| map.get(&ancestor))
+}
+
 fn file_size(path: &Path) -> u64 {
     fs::symlink_metadata(path)
         .ok()
@@ -1452,7 +1467,7 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
             }
         }
         for key in &keys {
-            for source in named_files.get(key).into_iter().flatten() {
+            for source in naming(&named_files, key).flatten() {
                 if !reasons.contains(source) {
                     reasons.push(source.clone());
                 }
@@ -1485,7 +1500,7 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
                 .is_some_and(|path| path.starts_with(&format!("{ARTIFACTS_DIR}/")));
             if !inside
                 || artifact_users.get(&key) != Some(&1)
-                || named_files.contains_key(&key)
+                || naming(&named_files, &key).next().is_some()
                 || !removable_keys.insert(key)
             {
                 continue;
@@ -1789,7 +1804,70 @@ struct SummaryCandidate {
     listed_by: Vec<String>,
     /// Owned by cycle time rather than listed by a manifest (KNOW-20).
     attributed: bool,
+    /// A loose artifact group rather than an observation set (KNOW-18).
+    loose: bool,
+    /// A non-routine set whose only protection was being non-routine: it moves whole
+    /// into the vault (KNOW-19).
+    move_all: bool,
+    /// A failed run: its artifacts move into the vault (KNOW-19).
+    move_artifacts: bool,
     bytes: u64,
+}
+
+/// The files of a candidate that move into the vault instead of being removed, with
+/// their attachment paths (KNOW-19): a non-routine set whole, a failed run's artifacts,
+/// screenshots and failure-first logs.
+fn candidate_moves(candidate: &SummaryCandidate, knowledge_dir: &str) -> BTreeMap<String, String> {
+    candidate
+        .files
+        .iter()
+        .enumerate()
+        .filter(|(index, file)| {
+            candidate.move_all
+                || (candidate.move_artifacts && (candidate.loose || *index > 0))
+                || crate::attachments::is_key_item(file)
+        })
+        .map(|(_, file)| {
+            (
+                file.clone(),
+                crate::attachments::attachment(knowledge_dir, &candidate.archives[0], file),
+            )
+        })
+        .collect()
+}
+
+const LOOSE_REASON: &str = "archived-summary: loose artifacts no observation record references, owned by a cold archived change (outside the newest 3), summarized in the knowledge directory and committed identically at HEAD; key items move into its attachments; bytes stay recoverable from Git";
+
+/// The first commit time of every file under `.chough/artifacts/`, read once per project
+/// per process: an apply makes no commit, so it cannot change during one (KNOW-20).
+fn first_commits(root: &Path) -> BTreeMap<String, u64> {
+    use std::sync::{Mutex, OnceLock};
+    static CACHE: OnceLock<Mutex<BTreeMap<std::path::PathBuf, BTreeMap<String, u64>>>> =
+        OnceLock::new();
+    let cache = CACHE.get_or_init(|| Mutex::new(BTreeMap::new()));
+    let mut cache = cache
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    cache
+        .entry(root.to_path_buf())
+        .or_insert_with(|| {
+            git(
+                root,
+                &[
+                    "log",
+                    "--diff-filter=A",
+                    "--format=@%ct",
+                    "--name-only",
+                    "--",
+                    crate::attachments::ARTIFACTS_DIR,
+                ],
+            )
+            .map(|output| {
+                crate::attachments::parse_first_commits(&String::from_utf8_lossy(&output.stdout))
+            })
+            .unwrap_or_default()
+        })
+        .clone()
 }
 
 /// The blob each of `files` has in HEAD's tree; untracked files are absent.
@@ -1935,8 +2013,74 @@ fn summary_plan(
     root: &Path,
     archives: &[ListedArchive],
     native: Option<Native>,
+    knowledge_dir: &str,
 ) -> Result<SummaryPlan> {
-    let (pending, protected, native) = summary_protections(root, archives, native)?;
+    let (pending, mut protected, native) = summary_protections(root, archives, native, None)?;
+    // A key item whose attachment path would be too long for a Windows checkout stays,
+    // and so does its set: nothing of it moves or is removed (REQ-cli-046, #109).
+    let (pending, too_long): (Vec<SummaryCandidate>, Vec<SummaryCandidate>) =
+        pending.into_iter().partition(|candidate| {
+            candidate_moves(candidate, knowledge_dir)
+                .values()
+                .all(|target| target.chars().count() <= crate::attachments::MAX_ATTACHMENT_PATH)
+        });
+    // A move never overwrites (#109 review): an attachment already holding other bytes
+    // keeps both files and its set; one holding the same bytes needs no copy.
+    let (pending, occupied): (Vec<SummaryCandidate>, Vec<(SummaryCandidate, Vec<String>)>) = {
+        let mut free = vec![];
+        let mut occupied = vec![];
+        for candidate in pending {
+            let mut differing = vec![];
+            for (file, target) in candidate_moves(&candidate, knowledge_dir) {
+                let target_path = local_path(root, &target)?;
+                if fs::symlink_metadata(&target_path).is_err() {
+                    continue;
+                }
+                let same = fs::read(&target_path).ok().is_some_and(|existing| {
+                    local_path(root, &file)
+                        .ok()
+                        .and_then(|source| fs::read(source).ok())
+                        .is_some_and(|source| source == existing)
+                });
+                if !same {
+                    differing.push(target);
+                }
+            }
+            if differing.is_empty() {
+                free.push(candidate);
+            } else {
+                occupied.push((candidate, differing));
+            }
+        }
+        (free, occupied)
+    };
+    for (candidate, differing) in occupied {
+        protected.push(json!({
+            "id": candidate.id,
+            "kind": if candidate.loose { "loose-artifact" } else { "observation" },
+            "archives": candidate.archives,
+            "reasons": [format!(
+                "its attachment already holds different bytes, and a move never overwrites: {}",
+                differing.join(", ")
+            )],
+        }));
+    }
+    for candidate in too_long {
+        let long: Vec<String> = candidate_moves(&candidate, knowledge_dir)
+            .into_values()
+            .filter(|target| target.chars().count() > crate::attachments::MAX_ATTACHMENT_PATH)
+            .collect();
+        protected.push(json!({
+            "id": candidate.id,
+            "kind": if candidate.loose { "loose-artifact" } else { "observation" },
+            "archives": candidate.archives,
+            "reasons": [format!(
+                "attachment path longer than {} characters, which a Windows checkout cannot hold: {}",
+                crate::attachments::MAX_ATTACHMENT_PATH,
+                long.join(", ")
+            )],
+        }));
+    }
     let all: Vec<String> = pending
         .iter()
         .flat_map(|candidate| candidate.files.iter().cloned())
@@ -1975,6 +2119,7 @@ fn summary_protections(
     root: &Path,
     archives: &[ListedArchive],
     native: Option<Native>,
+    loose_only: Option<&BTreeSet<String>>,
 ) -> Result<(Vec<SummaryCandidate>, Vec<Value>, Native)> {
     let classification = classify_with(root, now()?, native)?;
     let keyed: Vec<(&ListedArchive, BTreeSet<String>)> = archives
@@ -2010,10 +2155,14 @@ fn summary_protections(
             listing.clone()
         };
         let superseded = !classification.newest_run.contains(&evidence.id);
+        // A non-routine set (manual, agent-assisted, a human observation) is a key item:
+        // when that is its only protection it moves into the vault (KNOW-19).
+        let key_item = non_routine(evidence);
         let mut reasons: Vec<String> = set
             .reasons
             .iter()
             .filter(|reason| *reason != "recent" && !reason.starts_with("native archive "))
+            .filter(|reason| Some(*reason) != key_item.as_ref())
             // Only the newest run of a case and environment stays protected as newest
             // (KNOW-17); the newest failure keeps its own protection.
             .filter(|reason| !(superseded && *reason == "newest"))
@@ -2039,12 +2188,149 @@ fn summary_protections(
                 listed_by: listing.iter().map(|archive| archive.id.clone()).collect(),
                 archives: cold,
                 attributed,
+                loose: false,
+                move_all: key_item.is_some(),
+                move_artifacts: evidence.outcome == Outcome::Failed,
                 bytes: set.bytes,
             });
         } else {
             protected.push(json!({
                 "id": evidence.id,
                 "cases": case_ids(evidence),
+                "archives": cold,
+                "reasons": reasons,
+            }));
+        }
+    }
+    // Loose artifacts no record references belong to the cold change that lists them or
+    // whose cycle their first commit falls in (KNOW-18, KNOW-20).
+    let referenced: BTreeSet<String> = classification
+        .sets
+        .iter()
+        .flat_map(|set| {
+            set.evidence
+                .artifacts
+                .iter()
+                .map(|artifact| file_key(artifact))
+        })
+        .collect();
+    let is_referenced = |file: &str| {
+        let key = file_key(file);
+        referenced.contains(&key)
+            || referenced
+                .iter()
+                .any(|folder| key.starts_with(&format!("{folder}/")))
+    };
+    let named = file_references(root)?;
+    let held: BTreeMap<String, String> = crate::attachments::open_bug_fixtures(root)?
+        .into_iter()
+        .map(|(bug, fixture)| (file_key(&fixture), format!("{bug} open")))
+        .collect();
+    let first = first_commits(root);
+    // The re-check of a loose group judges only its planned files: a file an earlier
+    // removal released into the folder is never removed, so its own age or names cannot
+    // protect the planned ones (#109 review).
+    let considered = |file: &str| {
+        is_referenced(file) || loose_only.is_some_and(|planned| !planned.contains(file))
+    };
+    for group in crate::attachments::loose_groups(root, &considered)? {
+        let keys: Vec<String> = group.files.iter().map(|file| file_key(file)).collect();
+        let mut reasons: Vec<String> = vec![];
+        for key in &keys {
+            for source in naming(&named, key).flatten() {
+                if !source.starts_with("BUG-") && !reasons.contains(source) {
+                    reasons.push(source.clone());
+                }
+            }
+            for bug in naming(&held, key) {
+                if !reasons.contains(bug) {
+                    reasons.push(bug.clone());
+                }
+            }
+        }
+        // Each file is owned on its own: by the archives that list it, or else by the
+        // cycle its own first commit falls in (#109 review: one cold-listed file must not
+        // make a current sibling cold).
+        let mut listing: Vec<&ListedArchive> = vec![];
+        let mut owners: Vec<&ListedArchive> = vec![];
+        let mut attributed = false;
+        let mut current: Vec<&String> = vec![];
+        for (file, key) in group.files.iter().zip(&keys) {
+            let listed: Vec<&ListedArchive> = keyed
+                .iter()
+                .filter(|(_, paths)| paths.contains(key))
+                .map(|(archive, _)| *archive)
+                .collect();
+            let owned: Vec<&ListedArchive> = if listed.is_empty() {
+                match first
+                    .get(file)
+                    .and_then(|added| owner_by_cycle(archives, *added))
+                {
+                    Some(owner) => {
+                        attributed = true;
+                        vec![owner]
+                    }
+                    None => {
+                        current.push(file);
+                        vec![]
+                    }
+                }
+            } else {
+                listed.clone()
+            };
+            for archive in listed {
+                if !listing.iter().any(|known| known.id == archive.id) {
+                    listing.push(archive);
+                }
+            }
+            for archive in owned {
+                if !owners.iter().any(|known| known.id == archive.id) {
+                    owners.push(archive);
+                }
+            }
+        }
+        // All current or uncommitted: current work, left alone as before. Some: the folder
+        // stays whole, and says why.
+        if current.len() == group.files.len() {
+            continue;
+        }
+        if !current.is_empty() {
+            reasons.push(format!(
+                "current work: first committed after the newest archive, or not committed: {}",
+                current
+                    .iter()
+                    .map(|file| file.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ));
+        }
+        reasons.extend(
+            owners
+                .iter()
+                .filter(|archive| archive.hot)
+                .map(|archive| format!("hot archive {}", archive.id)),
+        );
+        let cold: Vec<String> = owners
+            .iter()
+            .filter(|archive| !archive.hot)
+            .map(|archive| archive.id.clone())
+            .collect();
+        if reasons.is_empty() {
+            pending.push(SummaryCandidate {
+                id: group.id,
+                files: group.files,
+                listed_by: listing.iter().map(|archive| archive.id.clone()).collect(),
+                archives: cold,
+                attributed,
+                loose: true,
+                move_all: false,
+                move_artifacts: false,
+                bytes: group.bytes,
+            });
+        } else {
+            protected.push(json!({
+                "id": group.id,
+                "kind": "loose-artifact",
                 "archives": cold,
                 "reasons": reasons,
             }));
@@ -2069,14 +2355,22 @@ fn still_unprotected(
         open.join(", "),
         candidate.id
     );
-    let (pending, protected, _) = summary_protections(root, archives, Some(native.clone()))?;
-    // The record is removed last, so it is still present here. Every planned file still
-    // present must still belong to this set alone; files this apply already removed drop
-    // out. The set may gain a file an earlier removal released from a shared artifact:
-    // only planned files are ever removed, so the gained one simply stays.
+    let planned: BTreeSet<String> = candidate.files.iter().cloned().collect();
+    let (pending, protected, _) = summary_protections(
+        root,
+        archives,
+        Some(native.clone()),
+        candidate.loose.then_some(&planned),
+    )?;
+    // The first planned file (an observation set's record) is removed last, so it is still
+    // present here. Every planned file still present must still belong to this set alone;
+    // files this apply already removed drop out. The set may gain a file an earlier removal
+    // released from a shared artifact: only planned files are ever removed, so the gained
+    // one simply stays. A loose group lists its files by path, so a gained file can sort
+    // before its planned first file (#109 closeout); only an observation set must keep it.
     if pending.iter().any(|current| {
         current.id == candidate.id
-            && current.files.first() == candidate.files.first()
+            && (candidate.loose || current.files.first() == candidate.files.first())
             && candidate
                 .files
                 .iter()
@@ -2179,14 +2473,16 @@ pub(super) fn archive_summary(
         protected,
         uncommitted,
         native,
-    } = summary_plan(root, archives, None)?;
+    } = summary_plan(root, archives, None, knowledge_dir)?;
     let entry_path = |archive: &str| format!("{knowledge_dir}/archives/{archive}.md");
     let listed: Vec<Value> = eligible
         .iter()
         .map(|candidate| {
             json!({
                 "id": candidate.id,
+                "kind": if candidate.loose { "loose-artifact" } else { "observation" },
                 "files": candidate.files,
+                "moves": candidate_moves(candidate, knowledge_dir),
                 "archives": candidate.archives,
                 "bytes": candidate.bytes,
                 "knowledge": entry_path(&candidate.archives[0]),
@@ -2229,7 +2525,7 @@ pub(super) fn archive_summary(
                 "a native change opened during the validity check ({}); nothing was removed",
                 open.join(", ")
             );
-            let fresh = summary_plan(root, archives, Some(native.clone()))?;
+            let fresh = summary_plan(root, archives, Some(native.clone()), knowledge_dir)?;
             let gained: Vec<String> = eligible
                 .iter()
                 .filter(|candidate| {
@@ -2263,13 +2559,18 @@ pub(super) fn archive_summary(
             // Read everything removal needs before the first ledger line is written.
             let mut prepared = vec![];
             for candidate in &eligible {
-                let evidence = load(root, &candidate.id)?;
+                let evidence = if candidate.loose {
+                    None
+                } else {
+                    Some(load(root, &candidate.id)?)
+                };
                 let record_digest = file_digest(root, &candidate.files[0])?;
                 let mut bytes = vec![];
                 for file in &candidate.files {
                     bytes.push((file.clone(), fs::read(local_path(root, file)?)?));
                 }
-                prepared.push((candidate, evidence, record_digest, bytes));
+                let moves = candidate_moves(candidate, knowledge_dir);
+                prepared.push((candidate, evidence, record_digest, bytes, moves));
             }
             // The native validity check runs external processes; a file may have changed
             // since the plan found it identical at HEAD. Check the exact bytes held for
@@ -2280,7 +2581,7 @@ pub(super) fn archive_summary(
                 .collect();
             let tracked = head_blobs(root, &files)?;
             let mut changed = vec![];
-            for (_, _, _, bytes) in &prepared {
+            for (_, _, _, bytes, _) in &prepared {
                 for (file, content) in bytes {
                     if tracked.get(file) != Some(&blob_of(root, content)?) {
                         changed.push(file.clone());
@@ -2295,11 +2596,13 @@ pub(super) fn archive_summary(
             write_entries(root)?;
             let head = head_revision(root);
             let at = now()?;
-            let mut held: Vec<(String, Vec<u8>)> = vec![];
+            let mut held: Vec<(String, Vec<u8>, fs::Permissions)> = vec![];
+            let mut copies: Vec<String> = vec![];
             let mut recorded: Vec<String> = vec![];
             let removal: Result<()> = (|| {
-                for (candidate, evidence, record_digest, bytes) in &prepared {
-                    let entry = json!({
+                for (candidate, evidence, record_digest, bytes, moves) in &prepared {
+                    let entry = if let Some(evidence) = evidence {
+                        let mut entry = json!({
                         "schema_version": 1,
                         "id": candidate.id,
                         "cases": case_ids(evidence),
@@ -2318,7 +2621,33 @@ pub(super) fn archive_summary(
                         "policy": policy(Some(authority)),
                         "head": head,
                         "pruned_at_unix_seconds": at,
-                    });
+                        });
+                        if !moves.is_empty() {
+                            entry["moved"] = json!(moves);
+                        }
+                        entry
+                    } else {
+                        let mut digests = BTreeMap::new();
+                        for (file, content) in bytes {
+                            digests.insert(file.clone(), digest_bytes(content));
+                        }
+                        json!({
+                            "schema_version": 1,
+                            "kind": "loose-artifact",
+                            "id": candidate.id,
+                            "artifacts": digests,
+                            "record_digest": record_digest,
+                            "removed": candidate.files,
+                            "moved": moves,
+                            "archives": candidate.archives,
+                            "attributed": candidate.attributed.then_some("cycle time"),
+                            "knowledge": entry_path(&candidate.archives[0]),
+                            "reason": LOOSE_REASON,
+                            "policy": policy(Some(authority)),
+                            "head": head,
+                            "pruned_at_unix_seconds": at,
+                        })
+                    };
                     append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
                     recorded.push(candidate.id.clone());
                     // Artifacts first and the record last, so the set stays classifiable.
@@ -2327,8 +2656,49 @@ pub(super) fn archive_summary(
                         // updating the checkpoint, a bug link, an open change), so they are
                         // checked again right before every removal.
                         still_unprotected(root, archives, &native, candidate)?;
+                        // Its permissions go with the bytes, to the vault copy and to a
+                        // restore (KNOW-10, #109 review).
+                        let permissions = fs::symlink_metadata(local_path(root, file)?)
+                            .with_context(|| format!("reading the permissions of {file}"))?
+                            .permissions();
+                        // A key item is copied into the vault before its original goes. The
+                        // copy is create-only: what is already there is never overwritten,
+                        // and only a copy this apply created is removed by a restore.
+                        if let Some(target) = moves.get(file) {
+                            let path = local_path(root, target)?;
+                            if let Some(parent) = path.parent() {
+                                fs::create_dir_all(parent)?;
+                            }
+                            match fs::OpenOptions::new()
+                                .write(true)
+                                .create_new(true)
+                                .open(&path)
+                            {
+                                Ok(mut copy) => {
+                                    use std::io::Write;
+                                    copies.push(target.clone());
+                                    copy.write_all(content)
+                                        .with_context(|| format!("moving {file} to {target}"))?;
+                                    fs::set_permissions(&path, permissions.clone())
+                                        .with_context(|| format!("moving {file} to {target}"))?;
+                                }
+                                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                                    let existing = fs::read(&path).with_context(|| {
+                                        format!("reading {target}, which appeared during the apply")
+                                    })?;
+                                    ensure!(
+                                        existing == *content,
+                                        "{target} appeared during the apply with different bytes; a move never overwrites, so {file} was not moved"
+                                    );
+                                }
+                                Err(error) => {
+                                    return Err(error)
+                                        .with_context(|| format!("moving {file} to {target}"));
+                                }
+                            }
+                        }
                         remove_verified(root, file, content)?;
-                        held.push((file.clone(), content.clone()));
+                        held.push((file.clone(), content.clone(), permissions));
                     }
                 }
                 Ok(())
@@ -2358,7 +2728,7 @@ pub(super) fn archive_summary(
                 // Restore with create-new: a file a writer recreated meanwhile is kept, and
                 // the removed bytes stay recoverable from HEAD, where they were verified.
                 let mut kept = vec![];
-                for (file, bytes) in &held {
+                for (file, bytes, permissions) in &held {
                     let path = local_path(root, file)?;
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent)?;
@@ -2373,6 +2743,8 @@ pub(super) fn archive_summary(
                             target
                                 .write_all(bytes)
                                 .with_context(|| format!("restoring {file}"))?;
+                            fs::set_permissions(&path, permissions.clone())
+                                .with_context(|| format!("restoring {file}"))?;
                         }
                         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
                             kept.push(file.clone());
@@ -2380,6 +2752,12 @@ pub(super) fn archive_summary(
                         Err(error) => {
                             return Err(error).with_context(|| format!("restoring {file}"));
                         }
+                    }
+                }
+                // The vault copies of a refused apply are removed again.
+                for copy in &copies {
+                    if let Ok(path) = local_path(root, copy) {
+                        let _ = fs::remove_file(path);
                     }
                 }
                 let failure = if kept.is_empty() {

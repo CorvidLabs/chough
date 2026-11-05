@@ -99,8 +99,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/cold-start-review.md` | 6a9229820cae30780388230f243ab4b3432d2afdd783eb51755219c172609537 | working tree |
-| `.chough/artifacts/cold-start-transcript.md` | 7e1765d2099e33ffcd95a85e631e5fefb386e29479dff450fd1e37bc94fa0cff | working tree |
+| `.chough/artifacts/cold-start-review.md` | 6a9229820cae30780388230f243ab4b3432d2afdd783eb51755219c172609537 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/cold-start-transcript.md` | 7e1765d2099e33ffcd95a85e631e5fefb386e29479dff450fd1e37bc94fa0cff | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/artifacts/tc-cli-0001-1793473246.log` | 0b1a2fc7482a23df13fe70cb7199c11a9631b5ba2805f4cf849b230723991f66 | working tree |
 | `.chough/artifacts/tc-cli-0002-1793473249.log` | 8e9bb66024fd3eed6a817dc17290d929bba98b80af4fb160177161eb7c1b224a | working tree |
 | `.chough/artifacts/tc-cli-0003-1793473250.log` | f668730073596b4cac6ff6c4bef914cd3ef60fc9b0ee3bc33057494a59830d71 | working tree |
@@ -139,7 +139,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/tc-cli-0036-1793473304.log` | e0a75d5188aaf3f7667aafb7ab1200ebad97801c2ee6373b588b11bfb90c24e3 | working tree |
 | `.chough/artifacts/tc-cli-0037-1793473305.log` | 303fa1a404b919e1aaa12e184d69e871370f96a9775401917aa939535293647a | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/tc-cli-0101-1793473306.log` | 4e8cb2d95bc7c9af800f369f8220cae7ad58fc8fecbf575000dd3103a60d49ac | working tree |
-| `.chough/artifacts/wording-review.md` | 34f615c43836fab9305fd3215cd581fb9bc52bdbfc540dd1b06abd263e355c82 | working tree |
+| `.chough/artifacts/wording-review.md` | 34f615c43836fab9305fd3215cd581fb9bc52bdbfc540dd1b06abd263e355c82 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/bugs/BUG-0001.json` | c2236d3bed0d7f5e676b5c46ef81fc9c0ecdc591b729488437de033613d79dbe | working tree |
 | `.chough/bugs/BUG-0002.json` | db61e166d98be2f306b11a9719fca5585bdd4a03dc6b42dbbab363ca4389bea4 | working tree (changed since archive) |
 | `.chough/bugs/BUG-0003.json` | 16d20ed1f9811007426fc774e14515b39ef04fd519b5a536285811c385a4f653 | working tree (changed since archive) |
@@ -182,8 +182,8 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/evidence/tc-cli-0036-1793473304.json` | 00c23c0ddd77969dca9fe3c3caea8e631b5e03434fe9ced83212f23c7d287380 | working tree |
 | `.chough/evidence/tc-cli-0037-1793473305.json` | 27951a260cd2f9caf5efc09a2e6ed4b7c5a6c81b8fb83fab0246e02ab24dc33f | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/evidence/tc-cli-0101-1793473306.json` | c850ecbbff47be42d81c5f7af7e64d66a93662ef53700877da4e1eb3e194b954 | working tree |
-| `.chough/evidence/tc-cli-0102-1793473383.json` | d07aa8918427f09a8f8387786b2bb98a15d080143a194e52b044f38ef3499ad1 | working tree |
-| `.chough/evidence/tc-cli-0103-1793473384.json` | a0e89e505931504cac991e9a9e0f904e306ba2ecb1126137c17afcd02ff161be | working tree |
+| `.chough/evidence/tc-cli-0102-1793473383.json` | d07aa8918427f09a8f8387786b2bb98a15d080143a194e52b044f38ef3499ad1 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/evidence/tc-cli-0103-1793473384.json` | a0e89e505931504cac991e9a9e0f904e306ba2ecb1126137c17afcd02ff161be | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/session.json` | 1da20687f8f655b98ebac927e750cbd310df8f80b5a801fafbcaa370b8c26ca7 | working tree (changed since archive) |
 | `.chough/session.v1.json` | 0f9c14355e318584ad9110d44057ba949016837f4756f4e32c8b5f79f635bf6a | working tree |
 | `.chough/transitions.jsonl` | 9dc41fe77ccc694001ebac2a578337c3e5019e4cebfb424be9a6fe4c353cce2d | working tree (changed since archive) |
@@ -230,9 +230,17 @@ verification records, the retention ledger and Git stay authoritative.
 | tc-cli-0036-1793473304 | passed | local-macos-arm64 | TC-cli-0036 |
 | tc-cli-0037-1793473305 | passed (pruned) | local-macos-arm64 | TC-cli-0037 |
 | tc-cli-0101-1793473306 | passed | local-macos-arm64 | TC-cli-0101 |
-| tc-cli-0102-1793473383 | passed | codex-0.153.4-macos-arm64 | TC-cli-0102 |
-| tc-cli-0103-1793473384 | passed | repository-text | TC-cli-0103 |
+| tc-cli-0102-1793473383 | passed (pruned) | codex-0.153.4-macos-arm64 | TC-cli-0102 |
+| tc-cli-0103-1793473384 | passed (pruned) | repository-text | TC-cli-0103 |
 
 ## Bugs
+
+- none
+
+## Loose artifacts
+
+- none
+
+## Attachments
 
 - none

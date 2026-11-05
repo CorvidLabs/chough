@@ -833,6 +833,43 @@ failure stay protected as newest (KNOW-17); older runs of a cold change are trim
 Validity is checked only for archives whose manifests list a removed file. Those reads
 run in parallel, at most 8 at once, because each costs tens of seconds inside SpecSync.
 
+The summary also covers loose artifacts (REQ-cli-046, KNOW-18): each top-level entry
+under `.chough/artifacts/` whose files no observation record references. Each of its
+files belongs to the archives that list it, or else, by cycle time, to the archive whose
+cycle that file's first Git commit falls in. The entry stays while any of its files:
+- is named by the checkpoint, itself or through a folder that contains it;
+- is named the same way as the fixture of an open bug (a closed bug, meaning verified,
+  duplicate or wont-fix, releases it);
+- belongs to a hot archive;
+- is not committed identically at HEAD;
+- was first committed after the newest archive, or has no commit, so a folder that mixes
+  old and current files stays whole.
+
+A folder the checkpoint or an open bug names protects the observation sets whose files it
+contains too. When a removal earlier in the same apply releases a file into an eligible
+folder, only the planned files are judged again and removed; the released one stays.
+
+It is ledgered as `kind: loose-artifact` with ID `artifact:<entry>`.
+
+Key items move into the vault instead of being removed (KNOW-19):
+- a non-routine observation (manual, agent-assisted or a human observation) whose only
+  protection was being non-routine moves whole;
+- a failed run's artifacts move;
+- so do screenshots and failure-first logs.
+
+Each goes to `knowledge/attachments/<folder>/<path under .chough/>` before the
+original is removed. The folder is the archive ID when it has at most 24 characters;
+a longer ID gives its first 16 characters, cut back to before the last hyphen among
+them, then `-` and 8 hex digits of its SHA-256 (for example `claude-host-65ab2407`), so
+paths stay short enough to check out on Windows. A key item whose attachment path would
+be longer than 220 characters stays in `.chough/`, and its set is listed as protected
+with that reason. Moved and restored files keep their permissions. A move never
+overwrites: an attachment that already holds the same bytes is kept, and a restore
+leaves it; one that holds different bytes keeps both files, and its set is listed as
+protected; one that appears during the apply refuses it. The ledger maps each moved file
+(`moved`), and a restore deletes only the copies that apply created. The preview lists each candidate's `moves`. An archive's note gains
+"Loose artifacts" and "Attachments" sections with links.
+
 - Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
   path an earlier archive already listed is counted but detailed only in that earlier
   entry, and at most 100 rows are listed in full; the rest are counted and left to the

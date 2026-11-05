@@ -1,8 +1,0 @@
-{
-  "phase": "after all16cases were recorded passed",
-  "failure": "The wrapper attempted result.observation for the agent-assisted record response, which uses recorded:path instead. It stopped after saving the16thpassed result.",
-  "resolution": "Index the already existing recorded path. Do not rerun or duplicate the case.",
-  "raw_manual_result": "raw-case-results/chough-pr46-combined-TC-cli-skill-orders-the-change-check-before-new-requirement-cases.json",
-  "original_wrapper": "chough-pr46-run-final-cases-v2.py",
-  "product_or_expected_outcome_changes": false
-}

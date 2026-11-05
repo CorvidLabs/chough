@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793885793,
+      "digest": "90b1369a06c97adbc6ecffe64983f9c3e95d664d1a7405814ef74fb3424a3ecc",
+      "note": "#109 CI (Windows checkout) and corvid-agent review; Leif: Yes, record and merge for #109 and its fixes (2026-11-05)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files",
+        "title": "Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files",
+        "description": "Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/attachments.rs",
+          "src/evidence.rs",
+          "src/library.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Vault attachments of an archive whose ID has more than 24 characters go under a stable folder of at most 25 characters, and no attachment path passes 220 characters (a key item that would stays, protected with that reason), so the repository checks out on Windows. Moved and restored files keep their permissions. The new tests fail first, Windows CI checks the branch out, fledge lanes run verify passes on Linux, and the trim reruns on this repository at closeout."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif (0xLeif) answered Yes, record and merge for #109 and its fixes, and chose Widen KNOW-19 (2026-11-05). Windows CI failed checking out 246-character attachment paths; corvid-agent requested changes for lost file modes.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "d64e50219133a2f87ec6b1dc9e38a5b2e819304aedde5fbe99163182673af592"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793886463,
+      "digest": "e743997e942a925c5712ba369bda74a69c4bb210fa63b64987ddccd71dbbb5f7",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

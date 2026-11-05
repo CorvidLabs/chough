@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "6e0a8357cb0d6e048826edc6c67aa26b9dce6b2c",
+      "contract_digest": "b5174f6984a6bee71ecaf78b4b85af8f4d170f7a77c698addbc633e3b5be8329",
+      "execution_digest": "6c907336e17083b9335e4ade826a7b18f88a0bf068fa5f73286890fabf605c2c",
+      "workspace_digest": "3e26bf0f9dd5ce6a8047b6498fd2380aa49a26f2c253df12e3357c490d3fa67e",
+      "timestamp": 1793884110
+    }
+  ]
+}

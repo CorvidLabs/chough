@@ -102,9 +102,9 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-0129-08c6e61ca8f7e0865500e390 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0129 |
 | OBS-tc-cli-0129-b02e534792e95c7c2cda92f8 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0129 |
 | OBS-tc-cli-0129-b3ac4638dccce96f0e2e9bb7 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0129 |
-| OBS-tc-cli-0132-17c38625ba5484583682f70f | passed (by cycle time) | repository-text | TC-cli-0132 |
-| OBS-tc-cli-0132-6b025b023ab4af885ceae705 | passed (by cycle time) | repository-text | TC-cli-0132 |
-| OBS-tc-cli-0132-7133170065cd82d33b75fc0c | passed (by cycle time) | repository-text | TC-cli-0132 |
+| OBS-tc-cli-0132-17c38625ba5484583682f70f | passed (pruned) (by cycle time) | repository-text | TC-cli-0132 |
+| OBS-tc-cli-0132-6b025b023ab4af885ceae705 | passed (pruned) (by cycle time) | repository-text | TC-cli-0132 |
+| OBS-tc-cli-0132-7133170065cd82d33b75fc0c | passed (pruned) (by cycle time) | repository-text | TC-cli-0132 |
 | OBS-tc-cli-archive-summary-apply-465a5ced86757278000c06b1 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
 | OBS-tc-cli-archive-summary-apply-4e665b795db0a452a23d0a8b | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
 | OBS-tc-cli-archive-summary-apply-66bed82fb1a5443eafa179ed | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
@@ -176,3 +176,15 @@ verification records, the retention ledger and Git stay authoritative.
 ## Bugs
 
 - none
+
+## Loose artifacts
+
+- none
+
+## Attachments
+
+- [artifacts/tc-cli-0132/reviewer-note-ab2bce3.md](../attachments/context-2cfeff24/artifacts/tc-cli-0132/reviewer-note-ab2bce3.md)
+- [evidence/OBS-tc-cli-0132-17c38625ba5484583682f70f.json](../attachments/context-2cfeff24/evidence/OBS-tc-cli-0132-17c38625ba5484583682f70f.json)
+- [evidence/OBS-tc-cli-0132-6b025b023ab4af885ceae705.json](../attachments/context-2cfeff24/evidence/OBS-tc-cli-0132-6b025b023ab4af885ceae705.json)
+- [evidence/OBS-tc-cli-0132-7133170065cd82d33b75fc0c.json](../attachments/context-2cfeff24/evidence/OBS-tc-cli-0132-7133170065cd82d33b75fc0c.json)
+- [evidence/handoff-cold-start-frozen-pair-1.json](../attachments/context-2cfeff24/evidence/handoff-cold-start-frozen-pair-1.json)
