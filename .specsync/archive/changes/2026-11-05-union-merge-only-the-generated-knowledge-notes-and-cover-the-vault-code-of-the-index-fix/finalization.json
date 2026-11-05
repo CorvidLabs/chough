@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix",
+  "implementation_commit": "2d81d3d290e9faa91178adb148ce706a988eb6a6",
+  "implementation_tree": "5d071f2285494d1d4fc9b7b4da89ba9a2fb6eb5b",
+  "contract_digest": "ff0dac40791a778961eadbc1647455f17be908ecc236ebed563e18c15ae77f56",
+  "workspace_digest": "7fff88c205fd78e6d6141a64302331c0ce58e06b6eedbd499baea2cfb450b6ca",
+  "closing_digest": "f82f241c8f0a4d013ce1afc275eb34f89f8c9e34917730cc704aa7576a22a170",
+  "review_digest": "ae40c44e9d66d6c1e72a3aefdbaf7bbfc3113953130a2e53f8dfbcbffbbc63b0",
+  "finalization_digest": "7328abd238a01f69740bbbf981f3f6386b2eb61b6de605596a100b2af17ff583",
+  "timestamp": 1793897927
+}

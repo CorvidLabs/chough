@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "2d81d3d290e9faa91178adb148ce706a988eb6a6",
+  "contract_digest": "ff0dac40791a778961eadbc1647455f17be908ecc236ebed563e18c15ae77f56",
+  "execution_digest": "82d4e3585d13b903d6ffb71402981dfdf7eb5563d5c79bc9ab49831dd12c97bb",
+  "workspace_digest": "7fff88c205fd78e6d6141a64302331c0ce58e06b6eedbd499baea2cfb450b6ca",
+  "timestamp": 1793897863
+}
