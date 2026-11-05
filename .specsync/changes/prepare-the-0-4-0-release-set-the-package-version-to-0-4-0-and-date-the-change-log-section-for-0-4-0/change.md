@@ -1,6 +1,6 @@
 ---
 id: prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0
-state: approved
+state: implementing
 type: operations
 base_commit: 1eacdfd17eefe093f797d5fc8fe2dd0e09248bd6
 ---
