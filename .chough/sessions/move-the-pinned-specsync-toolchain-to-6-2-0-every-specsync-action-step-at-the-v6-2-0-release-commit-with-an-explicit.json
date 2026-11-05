@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-6dc8ffaacc564476b2a56fe6",
-    "head": "EVT-670b55901e7db0ab8b7eef8e",
+    "head": "EVT-1c0f594ca90e0110863475c9",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -33,10 +33,14 @@
   ],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-product-test-efc8d08578411f2174668043"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review (acceptance) of the SpecSync 6.2.0 pin change by Leif (0xLeif), after hosted CI on the PR"
+  ],
   "run_consents": [],
-  "next_action": "Human scope approval of the native change, then build"
+  "next_action": "Push, open PR, report to t18 at the acceptance gate; after the human review is recorded: specsync change finalize, then compare SpecSync step durations"
 }
