@@ -78,7 +78,7 @@ fn pin(root: &Path, relative: &str) {
 }
 
 pub(super) const DIR: &str = ".chough/sessions";
-const ARCHIVE: &str = ".chough/sessions/archive";
+pub(super) const ARCHIVE: &str = ".chough/sessions/archive";
 const LOCAL: &str = ".chough/local";
 const POINTER: &str = ".chough/local/active-session";
 const INBOX_LIMIT: u64 = 16_384;

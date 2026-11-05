@@ -344,13 +344,55 @@ fn anchor(root: &Path) -> Result<Option<Anchor>> {
 }
 
 fn verify_anchor(root: &Path, cursor: &Cursor) -> Result<()> {
+    let current = anchor(root)
+        .context("legacy history anchor changed or is unreadable; restore the recorded bytes")?;
+    let recorded = match (&cursor.legacy, &current) {
+        // A session started after the project adopted a legacy log records no anchor of
+        // its own: the log is the project's past, not this session's. Its writes are
+        // guarded by the anchor an adopting session recorded (REQ-history-006).
+        (None, Some(current)) => adopted_anchor(root, current)?,
+        (recorded, _) => recorded.clone(),
+    };
     ensure!(
-        anchor(root).context(
-            "legacy history anchor changed or is unreadable; restore the recorded bytes"
-        )? == cursor.legacy,
+        current == recorded,
         "legacy history anchor changed; restore the recorded legacy bytes before writing events"
     );
     Ok(())
+}
+
+/// `current` when an open or archived session's cursor recorded it as its legacy anchor,
+/// else None. Only a checkpoint within the session size bound is read.
+fn adopted_anchor(root: &Path, current: &Anchor) -> Result<Option<Anchor>> {
+    for dir in [crate::sessions::DIR, crate::sessions::ARCHIVE] {
+        let path = local_path(root, dir)?;
+        let Ok(entries) = fs::read_dir(&path) else {
+            continue;
+        };
+        let mut names: Vec<String> = entries
+            .filter_map(|entry| entry.ok()?.file_name().into_string().ok())
+            .filter(|name| name.ends_with(".json") && !name.starts_with('.'))
+            .collect();
+        names.sort();
+        for name in names {
+            let Ok(bytes) = bounded_bytes(
+                root,
+                &format!("{dir}/{name}"),
+                crate::checkpoint::SESSION_LIMIT,
+            ) else {
+                continue;
+            };
+            let recorded = serde_json::from_slice::<Value>(&bytes)
+                .ok()
+                .and_then(|session| {
+                    serde_json::from_value::<Anchor>(session["history_cursor"]["legacy"].clone())
+                        .ok()
+                });
+            if recorded.as_ref() == Some(current) {
+                return Ok(recorded);
+            }
+        }
+    }
+    Ok(None)
 }
 
 fn load_event(root: &Path, cycle: &str, id: &str, budget: u64) -> Result<(Event, u64)> {
