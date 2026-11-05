@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 89
+archived_changes: 90
 tags:
   - chough/index
 ---
@@ -47,9 +47,10 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid](archives/list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid.md) List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107) (hot)
 - [make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and](archives/make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and.md) Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched (hot)
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source (hot)
-- [build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim](archives/build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim.md) Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources (hot)
+- [build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim](archives/build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim.md) Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources (cold)
 - [expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes](archives/expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes.md) Expect each archive own modules in the approval guard test so a history-only archive passes (cold)
 - [lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention](archives/lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention.md) Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98) (cold)
 - [remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that](archives/remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that.md) Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82) (cold)
@@ -149,6 +150,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid](../.specsync/archive/changes/2026-11-05-list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid/lesson-bundle.md)
 - [make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and](../.specsync/archive/changes/2026-11-05-make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and/lesson-bundle.md)
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](../.specsync/archive/changes/2026-11-05-record-the-2026-11-04-retention-lessons-in-the-history-lesson-source/lesson-bundle.md)
 - [build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim](../.specsync/archive/changes/2026-11-05-build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim/lesson-bundle.md)
@@ -251,18 +253,18 @@ Archived lesson bundles:
 
 ## Observations
 
-846 recorded; most recent:
+850 recorded; most recent:
 
+- OBS-tc-cli-vault-links-resolve-b9f6b0b9f29b9d26b3cbf33d ProductTest Passed in local-linux-aarch64 at 6821c795c70a
+- OBS-tc-cli-vault-intent-notes-6e82cb588007fbe32a8a2a8a ProductTest Passed in local-linux-aarch64 at 6821c795c70a
+- OBS-tc-cli-vault-archive-note-properties-13120cf549be60dcd5c3a757 ProductTest Passed in local-linux-aarch64 at 6821c795c70a
+- OBS-tc-cli-vault-sub-criterion-ids-966dc28ae04274debbb7eab4 ProductTest Passed in local-linux-aarch64 at 6821c795c70a
 - OBS-tc-cli-vault-regenerates-identically-88331deea5050c18b2d830a2 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
 - OBS-tc-cli-vault-links-resolve-184e2ee0ff66a3dd1e4a662a ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
 - OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
 - OBS-tc-cli-vault-intent-notes-f8310b6c5f06c9010e10a153 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
 - OBS-tc-cli-vault-module-notes-07f158d65e620008195603c1 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
 - OBS-tc-cli-vault-archive-note-properties-83bbace1d2609853521adc32 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
-- OBS-tc-cli-vault-front-matter-on-every-note-7d367ae40088b3228672012a ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
-- OBS-tc-cli-vault-regenerates-identically-3e4c15ac6ecfd41dff19feef ProductTest Passed in local-linux-aarch64 at 6d931d875456
-- OBS-tc-cli-vault-links-resolve-41a77ccaf7e4b7d0404f7613 ProductTest Passed in local-linux-aarch64 at 6d931d875456
-- OBS-tc-cli-vault-rules-note-478766da1fcf97af1b19a762 ProductTest Passed in local-linux-aarch64 at 6d931d875456
 
 ## Briefs
 

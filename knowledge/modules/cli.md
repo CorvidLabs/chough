@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 42
-archived_changes: 74
+archived_changes: 75
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-74 archived changes, newest first.
+75 archived changes, newest first.
 
+- [list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid](../archives/list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid.md) List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107)
 - [make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and](../archives/make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and.md) Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched
 - [build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim](../archives/build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim.md) Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources
 - [expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes](../archives/expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes.md) Expect each archive own modules in the approval guard test so a history-only archive passes
