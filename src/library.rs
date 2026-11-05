@@ -12,6 +12,7 @@ use anyhow::{Context, Result, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use sha2::Digest as _;
 use std::fs;
 use std::path::Path;
 
@@ -574,10 +575,16 @@ const KNOWN_PREVIOUS_README: &[&str] = &[
 /// Replace a README byte-identical to an earlier generated template (review of #107).
 fn upgrade_readme(root: &Path, dir: &str) -> Result<()> {
     let relative = format!("{dir}/README.md");
-    if local_path(root, &relative)?.is_file()
-        && crate::records::file_digest(root, &relative)
-            .is_ok_and(|digest| KNOWN_PREVIOUS_README.contains(&digest.as_str()))
-    {
+    let path = local_path(root, &relative)?;
+    // The digest is over LF line endings, so a CRLF checkout (Windows `core.autocrlf`)
+    // of the untouched template is recognized too.
+    let untouched = path.is_file()
+        && fs::read(&path).is_ok_and(|bytes| {
+            let text = String::from_utf8_lossy(&bytes).replace("\r\n", "\n");
+            let digest = format!("{:x}", sha2::Sha256::digest(text.as_bytes()));
+            KNOWN_PREVIOUS_README.contains(&digest.as_str())
+        });
+    if untouched {
         write_replace(root, &relative, README)?;
     }
     Ok(())

@@ -355,6 +355,25 @@ fn an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept() {
     assert_eq!(fixture.read("knowledge/README.md"), edited);
 }
 
+/// Windows CI on #107: an untouched earlier README checked out with CRLF line endings is
+/// still recognized; and an unmatched backtick does not hide the Trace list after it.
+#[test]
+fn crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list() {
+    let fixture = vault();
+    let earlier = include_str!("fixtures/knowledge-readme-at-8fbbbe7.md").replace("\r\n", "\n");
+    fixture.write("knowledge/README.md", &earlier.replace('\n', "\r\n"));
+    fixture.write(
+        "specs/cli/requirements.md",
+        "# Requirements\n\n### REQ-cli-001\n\nThe helper SHALL keep one checkpoint. Trace: KNOW-1, LIFE-2.\n\n### REQ-cli-002\n\nUse the ` key to jump. Trace: KNOW-7.\n",
+    );
+    archive(&fixture, 2, "a3", &["cli"], &["REQ-cli-002"]);
+    fixture.ok(&["library", "index"]);
+    let readme = fixture.read("knowledge/README.md");
+    assert!(front_matter(&readme).contains("type: readme"), "{readme}");
+    let a3 = fixture.read("knowledge/archives/a3.md");
+    assert!(front_matter(&a3).contains("criteria:\n  - KNOW-7"), "{a3}");
+}
+
 #[test]
 fn the_rules_note_links_rules_skills_and_decisions_that_exist() {
     let fixture = vault();
