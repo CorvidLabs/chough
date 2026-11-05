@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-56e051c383113168194f6037",
-    "head": "EVT-3e565f995ab2028a19b72573",
+    "head": "EVT-ac9cb5699aceff88acb120e2",
     "legacy": {
       "digest": "ab8cf9bf4b314c6b3374339164ef302cb1c129dab8dd6df2133276b73407fdf5",
       "bytes": 219674,
@@ -16,7 +16,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -486,7 +486,8 @@
     "OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81",
     "OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008",
     "OBS-tc-history-session-after-legacy-adoption-4b6f7eb1047f7f9fd028d20d",
-    "OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c"
+    "OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c",
+    "OBS-product-test-5d86bc7f549cf14c727d5614"
   ],
   "bugs": [
     "BUG-0001",
