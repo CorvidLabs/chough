@@ -742,7 +742,11 @@
     "OBS-tc-cli-done-trims-cold-proof-by-default-4c5fc87d107ee513fe4e9d62",
     "OBS-tc-cli-retention-manual-opts-out-at-done-989840dd1b48e3eb9ac57fd0",
     "OBS-tc-cli-open-change-keeps-proof-at-done-b72b5200b873c85e09d7871f",
-    "OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049"
+    "OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049",
+    "OBS-tc-cli-next-shows-open-questions-4ae1ae4b89f8d37c870aacfa",
+    "OBS-tc-cli-folded-inbox-question-in-next-0674eb2c525a207ecd1f8fc7",
+    "OBS-tc-history-archived-session-listed-archived-745b95673d38746da24a9658",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1"
   ],
   "bugs": [
     "BUG-0001",
