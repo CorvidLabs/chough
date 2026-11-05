@@ -1,6 +1,6 @@
 ---
 id: record-the-2026-11-04-retention-lessons-in-the-history-lesson-source
-state: implementing
+state: archived
 type: documentation
 base_commit: 2660d7e3a6a2e9ab01f7d304f48a3b51fabc0ba5
 ---
