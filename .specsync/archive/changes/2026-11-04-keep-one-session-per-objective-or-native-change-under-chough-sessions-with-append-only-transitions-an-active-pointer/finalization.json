@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer",
+  "implementation_commit": "ad5c48a454f5dff525a3891ad0e9565719f9c13d",
+  "implementation_tree": "752f052c6a7c7fd4c5798a712457c29ca0ebf95a",
+  "contract_digest": "810cf24f6b7742fe439fae63ff48418b5155cb28ce182b15c992b37de823fadb",
+  "workspace_digest": "ef8636ab69a646d2769d3fe85ffbcd7fec4cee82d2a189ed3802b1b4f94c38c3",
+  "closing_digest": "b3a6a1fa596d76933a37358dfe05561da401f7048bbb8e6651167ef12e9cf39e",
+  "review_digest": "f6c9549905fc4d31f4670a1f1d6f55880efb7539f97060464df7c087b70eedf5",
+  "finalization_digest": "61aba105d26f77a0d4d596b8500dbcdc57ba1581903988eb8dcacd2928604f5e",
+  "timestamp": 1793778982
+}

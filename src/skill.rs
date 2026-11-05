@@ -260,6 +260,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/build.md",
         "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a",
     ),
+    // Main edbc3c1 (v0.2.0); superseded by the sessions guidance (REQ-history-006).
+    (
+        "references/checkpoint.md",
+        "00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d",
+    ),
     // Main edbc3c1 (v0.2.0); superseded by the backfill guidance (REQ-cli-036).
     (
         "references/lifecycle.md",

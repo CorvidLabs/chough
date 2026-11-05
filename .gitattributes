@@ -5,3 +5,5 @@
 *.3md linguist-language=Text
 
 .chough/session.json merge=chough-session
+.chough/sessions/*.json merge=chough-session
+.chough/sessions/archive/*.json merge=chough-session

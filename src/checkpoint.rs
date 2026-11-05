@@ -1,4 +1,5 @@
-//! The single canonical checkpoint: `.chough/session.json`.
+//! The single canonical checkpoint: `.chough/session.json`, or the active session
+//! file under `.chough/sessions/` (REQ-cli-037).
 
 use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, native_json, print_json, read_bounded_record,
@@ -328,7 +329,7 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
     Ok(())
 }
 
-fn parse(content: &str) -> Result<Session> {
+pub(super) fn parse(content: &str) -> Result<Session> {
     let value: Value = serde_json::from_str(content).context("invalid session record")?;
     match value.get("schema_version").and_then(Value::as_u64) {
         Some(1) => {
@@ -348,7 +349,7 @@ fn parse(content: &str) -> Result<Session> {
 }
 
 pub(super) fn read_session(root: &Path) -> Result<Session> {
-    let path = local_path(root, SESSION)?;
+    let path = local_path(root, &crate::sessions::checkpoint_path(root)?)?;
     parse(&read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?)
 }
 
@@ -454,15 +455,26 @@ fn remove_orphaned_session_temps(root: &Path) -> Result<()> {
             "chough: removed .chough/{name} ({bytes} bytes), left by a checkpoint write that was stopped before it saved; {SESSION} was not changed by it"
         );
     }
+    crate::sessions::remove_orphaned_temps(root)
+}
+
+/// Take the checkpoint writer lock before a read-modify-write, in either mode: when
+/// `.chough/session.json` exists or, in sessions mode (REQ-cli-037), when
+/// `.chough/sessions/` exists, so a save never lands on a stale read and `session
+/// adopt` cannot run between a legacy writer's read and its save. It is taken before
+/// the checkpoint path is resolved, so the mode is read under the lock. Without
+/// either there is no checkpoint to update.
+pub(super) fn lock_for_update(root: &Path) -> Result<()> {
+    if local_path(root, SESSION)?.is_file() || crate::sessions::enabled(root)? {
+        lock_checkpoint(root)?;
+    }
     Ok(())
 }
 
 /// Read a schema 2 checkpoint for a command that changes workflow state, holding the
 /// checkpoint writer lock from before the read until the process exits.
 pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {
-    if local_path(root, SESSION)?.is_file() {
-        lock_checkpoint(root)?;
-    }
+    lock_for_update(root)?;
     read_checkpoint_unlocked(root)
 }
 
@@ -493,7 +505,7 @@ pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
     remove_orphaned_session_temps(root)?;
     write_replace_bounded(
         root,
-        SESSION,
+        &crate::sessions::checkpoint_path(root)?,
         &serialize_checkpoint(session)?,
         SESSION_LIMIT,
     )
@@ -504,10 +516,8 @@ pub(super) fn migrate(root: &Path, initial_stage: &str) -> Result<()> {
         stage::is_main(initial_stage),
         "migration stage must be a main stage"
     );
-    let path = local_path(root, SESSION)?;
-    if path.is_file() {
-        lock_checkpoint(root)?;
-    }
+    lock_for_update(root)?;
+    let path = local_path(root, &crate::sessions::checkpoint_path(root)?)?;
     let original = read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?;
     let session = match parse(&original)? {
         Session::V2(_) => {

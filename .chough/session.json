@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Trim old proof automatically when a change reaches done with the librarian on, opt out with retention manual (issue #88, KNOW-13)",
+  "objective": "Split the cli spec: REQ-cli-020, REQ-cli-024 and REQ-cli-028 move to a new reporting module as REQ-reporting-001 to 003 with wording unchanged, so specs/cli/requirements.md fits the 65536-byte bound",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -12,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88",
+  "native_change": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -763,5 +763,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #97 when hosted checks are green"
+  "next_action": "New cycle from done after reset: Native change let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406 archived after Chough bot review 5770708343 (agent review); recording test, accept and done. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
 }

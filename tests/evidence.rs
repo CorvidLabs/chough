@@ -1752,3 +1752,62 @@ fn a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply() {
     assert!(!fixture.exists(".chough/removing"));
     assert_eq!(fixture.ok(&["status"])["removal_holds"], json!([]));
 }
+
+/// Retention protects what every open and archived session references, not only the
+/// active one, and fails closed when a session cannot be read.
+#[test]
+fn retention_protects_what_inactive_and_archived_sessions_reference() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha"]);
+    fixture.commit("fixture");
+    for (id, age) in [
+        ("n1", 20),
+        ("n2", 21),
+        ("n3", 22),
+        ("alpha-old", 40),
+        ("beta-old", 41),
+        ("gamma-old", 42),
+        ("loose", 43),
+    ] {
+        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
+    }
+    fixture.ok(&["checkpoint", "--observation", "alpha-old"]);
+    fixture.ok(&["session", "new", "gamma"]);
+    fixture.ok(&["checkpoint", "--observation", "gamma-old"]);
+    // gamma's bytes move to the archive, as a switch archives a done session.
+    fs::create_dir_all(fixture.root().join(".chough/sessions/archive")).unwrap();
+    fs::rename(
+        fixture.root().join(".chough/sessions/gamma.json"),
+        fixture.root().join(".chough/sessions/archive/gamma.json"),
+    )
+    .unwrap();
+    fixture.ok(&["session", "new", "beta"]);
+    fixture.ok(&["checkpoint", "--observation", "beta-old"]);
+
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert_eq!(ids(&preview["eligible"]), set(["loose"]), "{preview:#}");
+    assert_eq!(reasons(&preview, "beta-old"), vec!["checkpoint"]);
+    assert_eq!(reasons(&preview, "alpha-old"), vec!["session alpha"]);
+    assert_eq!(
+        reasons(&preview, "gamma-old"),
+        vec!["archived session gamma"]
+    );
+
+    fixture.ok(&["consent", "grant", "retention", "--source", "Human: prune"]);
+    let applied = fixture.ok(&["evidence", "prune", "--apply"]);
+    assert_eq!(applied["pruned"], json!(["loose"]));
+    for id in ["alpha-old", "beta-old", "gamma-old"] {
+        assert!(
+            fixture.exists(&format!(".chough/evidence/{id}.json")),
+            "{id}"
+        );
+    }
+
+    // A session that cannot be read protects everything: nothing is removed.
+    write_obs(&fixture, &Obs::run("later", "TC-a", "passed", 44));
+    fixture.write(".chough/sessions/delta.json", "not a session\n");
+    let before = tree(fixture.root());
+    let refused = fixture.fails(&["evidence", "prune", "--apply"]);
+    assert!(refused.contains("delta"), "{refused}");
+    assert_eq!(tree(fixture.root()), before);
+}
