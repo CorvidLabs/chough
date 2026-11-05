@@ -33,7 +33,8 @@
   "observations": [
     "OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7",
     "OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef",
-    "OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e"
+    "OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e",
+    "OBS-product-test-deeab5eb9295ffe50f291b9e"
   ],
   "bugs": [],
   "blockers": [],
