@@ -1290,6 +1290,21 @@ fn file_key(path: &str) -> String {
         .to_lowercase()
 }
 
+/// What `map` records for `key` and for each folder that contains it: the case-folded
+/// canonical keys of [`file_key`], cut at `/`, so `a/b` names `a/b/c` but not `a/bc`
+/// (#109 review: a bug fixture or checkpoint reference may name a folder).
+fn naming<'a, V>(map: &'a BTreeMap<String, V>, key: &str) -> impl Iterator<Item = &'a V> {
+    let mut ancestors = vec![key.to_string()];
+    let mut rest = key;
+    while let Some((parent, _)) = rest.rsplit_once('/') {
+        ancestors.push(parent.to_string());
+        rest = parent;
+    }
+    ancestors
+        .into_iter()
+        .filter_map(move |ancestor| map.get(&ancestor))
+}
+
 fn file_size(path: &Path) -> u64 {
     fs::symlink_metadata(path)
         .ok()
@@ -1452,7 +1467,7 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
             }
         }
         for key in &keys {
-            for source in named_files.get(key).into_iter().flatten() {
+            for source in naming(&named_files, key).flatten() {
                 if !reasons.contains(source) {
                     reasons.push(source.clone());
                 }
@@ -1485,7 +1500,7 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
                 .is_some_and(|path| path.starts_with(&format!("{ARTIFACTS_DIR}/")));
             if !inside
                 || artifact_users.get(&key) != Some(&1)
-                || named_files.contains_key(&key)
+                || naming(&named_files, &key).next().is_some()
                 || !removable_keys.insert(key)
             {
                 continue;
@@ -2000,7 +2015,7 @@ fn summary_plan(
     native: Option<Native>,
     knowledge_dir: &str,
 ) -> Result<SummaryPlan> {
-    let (pending, mut protected, native) = summary_protections(root, archives, native)?;
+    let (pending, mut protected, native) = summary_protections(root, archives, native, None)?;
     // A key item whose attachment path would be too long for a Windows checkout stays,
     // and so does its set: nothing of it moves or is removed (REQ-cli-046, #109).
     let (pending, too_long): (Vec<SummaryCandidate>, Vec<SummaryCandidate>) =
@@ -2009,6 +2024,47 @@ fn summary_plan(
                 .values()
                 .all(|target| target.chars().count() <= crate::attachments::MAX_ATTACHMENT_PATH)
         });
+    // A move never overwrites (#109 review): an attachment already holding other bytes
+    // keeps both files and its set; one holding the same bytes needs no copy.
+    let (pending, occupied): (Vec<SummaryCandidate>, Vec<(SummaryCandidate, Vec<String>)>) = {
+        let mut free = vec![];
+        let mut occupied = vec![];
+        for candidate in pending {
+            let mut differing = vec![];
+            for (file, target) in candidate_moves(&candidate, knowledge_dir) {
+                let target_path = local_path(root, &target)?;
+                if fs::symlink_metadata(&target_path).is_err() {
+                    continue;
+                }
+                let same = fs::read(&target_path).ok().is_some_and(|existing| {
+                    local_path(root, &file)
+                        .ok()
+                        .and_then(|source| fs::read(source).ok())
+                        .is_some_and(|source| source == existing)
+                });
+                if !same {
+                    differing.push(target);
+                }
+            }
+            if differing.is_empty() {
+                free.push(candidate);
+            } else {
+                occupied.push((candidate, differing));
+            }
+        }
+        (free, occupied)
+    };
+    for (candidate, differing) in occupied {
+        protected.push(json!({
+            "id": candidate.id,
+            "kind": if candidate.loose { "loose-artifact" } else { "observation" },
+            "archives": candidate.archives,
+            "reasons": [format!(
+                "its attachment already holds different bytes, and a move never overwrites: {}",
+                differing.join(", ")
+            )],
+        }));
+    }
     for candidate in too_long {
         let long: Vec<String> = candidate_moves(&candidate, knowledge_dir)
             .into_values()
@@ -2063,6 +2119,7 @@ fn summary_protections(
     root: &Path,
     archives: &[ListedArchive],
     native: Option<Native>,
+    loose_only: Option<&BTreeSet<String>>,
 ) -> Result<(Vec<SummaryCandidate>, Vec<Value>, Native)> {
     let classification = classify_with(root, now()?, native)?;
     let keyed: Vec<(&ListedArchive, BTreeSet<String>)> = archives
@@ -2170,38 +2227,83 @@ fn summary_protections(
         .map(|(bug, fixture)| (file_key(&fixture), format!("{bug} open")))
         .collect();
     let first = first_commits(root);
-    for group in crate::attachments::loose_groups(root, &is_referenced)? {
+    // The re-check of a loose group judges only its planned files: a file an earlier
+    // removal released into the folder is never removed, so its own age or names cannot
+    // protect the planned ones (#109 review).
+    let considered = |file: &str| {
+        is_referenced(file) || loose_only.is_some_and(|planned| !planned.contains(file))
+    };
+    for group in crate::attachments::loose_groups(root, &considered)? {
         let keys: Vec<String> = group.files.iter().map(|file| file_key(file)).collect();
         let mut reasons: Vec<String> = vec![];
         for key in &keys {
-            for source in named.get(key).into_iter().flatten() {
+            for source in naming(&named, key).flatten() {
                 if !source.starts_with("BUG-") && !reasons.contains(source) {
                     reasons.push(source.clone());
                 }
             }
-            if let Some(bug) = held.get(key)
-                && !reasons.contains(bug)
-            {
-                reasons.push(bug.clone());
+            for bug in naming(&held, key) {
+                if !reasons.contains(bug) {
+                    reasons.push(bug.clone());
+                }
             }
         }
-        let listing: Vec<&ListedArchive> = keyed
-            .iter()
-            .filter(|(_, paths)| keys.iter().any(|key| paths.contains(key)))
-            .map(|(archive, _)| *archive)
-            .collect();
-        let attributed = listing.is_empty();
-        let owners: Vec<&ListedArchive> = if attributed {
-            let Some(added) = group.files.iter().filter_map(|file| first.get(file)).min() else {
-                continue;
+        // Each file is owned on its own: by the archives that list it, or else by the
+        // cycle its own first commit falls in (#109 review: one cold-listed file must not
+        // make a current sibling cold).
+        let mut listing: Vec<&ListedArchive> = vec![];
+        let mut owners: Vec<&ListedArchive> = vec![];
+        let mut attributed = false;
+        let mut current: Vec<&String> = vec![];
+        for (file, key) in group.files.iter().zip(&keys) {
+            let listed: Vec<&ListedArchive> = keyed
+                .iter()
+                .filter(|(_, paths)| paths.contains(key))
+                .map(|(archive, _)| *archive)
+                .collect();
+            let owned: Vec<&ListedArchive> = if listed.is_empty() {
+                match first
+                    .get(file)
+                    .and_then(|added| owner_by_cycle(archives, *added))
+                {
+                    Some(owner) => {
+                        attributed = true;
+                        vec![owner]
+                    }
+                    None => {
+                        current.push(file);
+                        vec![]
+                    }
+                }
+            } else {
+                listed.clone()
             };
-            match owner_by_cycle(archives, *added) {
-                Some(owner) => vec![owner],
-                None => continue,
+            for archive in listed {
+                if !listing.iter().any(|known| known.id == archive.id) {
+                    listing.push(archive);
+                }
             }
-        } else {
-            listing.clone()
-        };
+            for archive in owned {
+                if !owners.iter().any(|known| known.id == archive.id) {
+                    owners.push(archive);
+                }
+            }
+        }
+        // All current or uncommitted: current work, left alone as before. Some: the folder
+        // stays whole, and says why.
+        if current.len() == group.files.len() {
+            continue;
+        }
+        if !current.is_empty() {
+            reasons.push(format!(
+                "current work: first committed after the newest archive, or not committed: {}",
+                current
+                    .iter()
+                    .map(|file| file.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ));
+        }
         reasons.extend(
             owners
                 .iter()
@@ -2253,7 +2355,13 @@ fn still_unprotected(
         open.join(", "),
         candidate.id
     );
-    let (pending, protected, _) = summary_protections(root, archives, Some(native.clone()))?;
+    let planned: BTreeSet<String> = candidate.files.iter().cloned().collect();
+    let (pending, protected, _) = summary_protections(
+        root,
+        archives,
+        Some(native.clone()),
+        candidate.loose.then_some(&planned),
+    )?;
     // The first planned file (an observation set's record) is removed last, so it is still
     // present here. Every planned file still present must still belong to this set alone;
     // files this apply already removed drop out. The set may gain a file an earlier removal
@@ -2553,17 +2661,41 @@ pub(super) fn archive_summary(
                         let permissions = fs::symlink_metadata(local_path(root, file)?)
                             .with_context(|| format!("reading the permissions of {file}"))?
                             .permissions();
-                        // A key item is copied into the vault before its original goes.
+                        // A key item is copied into the vault before its original goes. The
+                        // copy is create-only: what is already there is never overwritten,
+                        // and only a copy this apply created is removed by a restore.
                         if let Some(target) = moves.get(file) {
                             let path = local_path(root, target)?;
                             if let Some(parent) = path.parent() {
                                 fs::create_dir_all(parent)?;
                             }
-                            fs::write(&path, content)
-                                .with_context(|| format!("moving {file} to {target}"))?;
-                            copies.push(target.clone());
-                            fs::set_permissions(&path, permissions.clone())
-                                .with_context(|| format!("moving {file} to {target}"))?;
+                            match fs::OpenOptions::new()
+                                .write(true)
+                                .create_new(true)
+                                .open(&path)
+                            {
+                                Ok(mut copy) => {
+                                    use std::io::Write;
+                                    copies.push(target.clone());
+                                    copy.write_all(content)
+                                        .with_context(|| format!("moving {file} to {target}"))?;
+                                    fs::set_permissions(&path, permissions.clone())
+                                        .with_context(|| format!("moving {file} to {target}"))?;
+                                }
+                                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                                    let existing = fs::read(&path).with_context(|| {
+                                        format!("reading {target}, which appeared during the apply")
+                                    })?;
+                                    ensure!(
+                                        existing == *content,
+                                        "{target} appeared during the apply with different bytes; a move never overwrites, so {file} was not moved"
+                                    );
+                                }
+                                Err(error) => {
+                                    return Err(error)
+                                        .with_context(|| format!("moving {file} to {target}"));
+                                }
+                            }
                         }
                         remove_verified(root, file, content)?;
                         held.push((file.clone(), content.clone(), permissions));

@@ -16,7 +16,9 @@ All notable changes to Chough are recorded here. The format follows
   the vault. An archive ID over 24 characters gets a short, stable attachments folder (a
   readable prefix and 8 hex digits), and a key item whose attachment path would pass 220
   characters stays where it is, so the vault checks out on Windows. Moved and restored
-  files keep their permissions.
+  files keep their permissions. A move never overwrites an attachment that is already
+  there. A folder named by the checkpoint or an open bug protects what it contains, and a
+  loose folder with any current file stays whole.
 - Old observation proof now leaves `.chough/` as changes go cold (REQ-cli-033,
   REQ-cli-045; KNOW-16, KNOW-17, KNOW-20). At done, the checkpoint drops references
   from closed cycles. The post-archive summary trims routine runs that a newer run of

@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Keep vault attachment paths within Windows limits and keep file modes on move and restore (#109 CI and review)",
+  "objective": "Fix the three P1s from the #109 review: never overwrite an attachment, folder references protect their files, a loose folder with a current file stays",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files",
+  "native_change": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -509,5 +509,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from accept after reset: Windows-path and file-mode fix archived; the done move and its trim wait for the fix of 3 P1s from the #109 review, at Leif's choice. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "Implement against the failing tests, verify on Linux, record Leif's review, close out (the trim reruns), push and merge on green CI and approval"
 }
