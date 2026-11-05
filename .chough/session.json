@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -341,7 +341,8 @@
     "2026-11-04 Leif (0xLeif) chose By cycle time for proof no archive lists (KNOW-20) and said: go ahead and build the reduction PR.",
     "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #107; this fix for hosted Windows CI is part of #107. Claude recorded the native review as 0xLeif on that decision.",
     "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real trim on this repository) and merge #108 after #107 once CI is green, he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
-    "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #108; this fix for the closeout trim is part of #108. Claude recorded the native review as 0xLeif on that decision."
+    "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #108; this fix for the closeout trim is part of #108. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #108; this fix for its review is part of #108. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -457,9 +458,6 @@
     "Issue #100: native sources read at full size; LIFE-15, D-020, REQ-cli-042, REQ-reporting-004; 0.2.1 prep"
   ],
   "observations": [
-    "OBS-tc-cli-reduce-shared-artifact-released-532820cadd76b87255af1384",
-    "OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259",
-    "OBS-tc-cli-reduce-attributed-by-cycle-time-1198e495948f5f5742d9956c",
     "OBS-tc-cli-reduce-unreadable-reference-kept-40cf09ab3b0cb8bf4e76efbf",
     "OBS-tc-cli-reduce-done-drops-closed-cycle-refs-3ba31f9a64331388b32a94e0"
   ],
@@ -495,9 +493,7 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+  "next_action": "Merge PR #108 when hosted checks are green"
 }
