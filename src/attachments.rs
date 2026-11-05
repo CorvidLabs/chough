@@ -5,6 +5,7 @@
 
 use crate::records::local_path;
 use anyhow::Result;
+use sha2::Digest as _;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::Path;
@@ -31,15 +32,30 @@ pub(super) fn is_key_item(path: &str) -> bool {
         || FAILURE_FIRST.iter().any(|marker| name.contains(marker))
 }
 
-/// The attachments folder of an archive (REQ-cli-046).
+/// The longest attachment path the summary writes: Windows refuses a checkout path of
+/// 260 characters or more, so this leaves 39 for the folder a clone sits in (#109).
+pub(super) const MAX_ATTACHMENT_PATH: usize = 220;
+
+/// The attachments folder of an archive (REQ-cli-046): the ID when it has at most 24
+/// characters, otherwise its first 16 cut back to before the last hyphen among them, then
+/// `-` and 8 hex digits of its SHA-256. At most 25 characters, and the same on every run.
 pub(super) fn attachment_folder(archive: &str) -> String {
-    archive.to_string()
+    if archive.chars().count() <= 24 {
+        return archive.to_string();
+    }
+    let head: String = archive.chars().take(16).collect();
+    let prefix = match head.rfind('-') {
+        Some(cut) if cut > 0 => &head[..cut],
+        _ => head.as_str(),
+    };
+    let digest = format!("{:x}", sha2::Sha256::digest(archive.as_bytes()));
+    format!("{prefix}-{}", &digest[..8])
 }
 
-/// Where a file under `.chough/` moves in the vault: `<dir>/attachments/<archive>/<rest>`.
+/// Where a file under `.chough/` moves in the vault: `<dir>/attachments/<folder>/<rest>`.
 pub(super) fn attachment(dir: &str, archive: &str, file: &str) -> String {
     let rest = file.strip_prefix(".chough/").unwrap_or(file);
-    format!("{dir}/attachments/{archive}/{rest}")
+    format!("{dir}/attachments/{}/{rest}", attachment_folder(archive))
 }
 
 /// The oldest commit time per file in `git log --diff-filter=A --format=@%ct --name-only`
@@ -138,9 +154,9 @@ pub(super) fn open_bug_fixtures(root: &Path) -> Result<Vec<(String, String)>> {
         .collect())
 }
 
-/// The files under `attachments/<archive>/` of the knowledge directory, sorted.
+/// The files under the archive's attachments folder of the knowledge directory, sorted.
 pub(super) fn attachments_of(root: &Path, dir: &str, archive: &str) -> Vec<String> {
-    let base = format!("{dir}/attachments/{archive}");
+    let base = format!("{dir}/attachments/{}", attachment_folder(archive));
     let Ok(path) = local_path(root, &base) else {
         return vec![];
     };

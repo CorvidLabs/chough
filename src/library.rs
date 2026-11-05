@@ -547,7 +547,8 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
 /// The loose artifacts this archive owned that the summary trimmed or moved (KNOW-18),
 /// from the retention ledger, with where each file's bytes are now.
 fn loose_rows(archive: &Archive, vault: &VaultContext, rows_limit: usize) -> String {
-    let base = format!("{}/attachments/{}/", vault.dir, archive.id);
+    let folder = crate::attachments::attachment_folder(&archive.id);
+    let base = format!("{}/attachments/{folder}/", vault.dir);
     let mut rows = vec![];
     for entry in vault.ledger.values() {
         let owned = entry["kind"] == "loose-artifact"
@@ -565,7 +566,7 @@ fn loose_rows(archive: &Archive, vault: &VaultContext, rows_limit: usize) -> Str
             let location = match entry["moved"][file].as_str() {
                 Some(target) => {
                     let rest = target.strip_prefix(&base).unwrap_or(target);
-                    format!("moved to [{rest}](../attachments/{}/{rest})", archive.id)
+                    format!("moved to [{rest}](../attachments/{folder}/{rest})")
                 }
                 None => format!("Git {head}"),
             };
@@ -593,7 +594,8 @@ fn attachment_rows(
     vault: &VaultContext,
     rows_limit: usize,
 ) -> String {
-    let base = format!("{}/attachments/{}/", vault.dir, archive.id);
+    let folder = crate::attachments::attachment_folder(&archive.id);
+    let base = format!("{}/attachments/{folder}/", vault.dir);
     let files = crate::attachments::attachments_of(root, &vault.dir, &archive.id);
     if files.is_empty() {
         return "- none\n".into();
@@ -603,14 +605,13 @@ fn attachment_rows(
         .take(rows_limit)
         .map(|file| {
             let rest = file.strip_prefix(&base).unwrap_or(file);
-            format!("- [{rest}](../attachments/{}/{rest})\n", archive.id)
+            format!("- [{rest}](../attachments/{folder}/{rest})\n")
         })
         .collect();
     if files.len() > rows_limit {
         text.push_str(&format!(
-            "- {} more under attachments/{}/\n",
+            "- {} more under attachments/{folder}/\n",
             files.len() - rows_limit,
-            archive.id
         ));
     }
     text

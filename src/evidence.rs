@@ -1998,8 +1998,33 @@ fn summary_plan(
     root: &Path,
     archives: &[ListedArchive],
     native: Option<Native>,
+    knowledge_dir: &str,
 ) -> Result<SummaryPlan> {
-    let (pending, protected, native) = summary_protections(root, archives, native)?;
+    let (pending, mut protected, native) = summary_protections(root, archives, native)?;
+    // A key item whose attachment path would be too long for a Windows checkout stays,
+    // and so does its set: nothing of it moves or is removed (REQ-cli-046, #109).
+    let (pending, too_long): (Vec<SummaryCandidate>, Vec<SummaryCandidate>) =
+        pending.into_iter().partition(|candidate| {
+            candidate_moves(candidate, knowledge_dir)
+                .values()
+                .all(|target| target.chars().count() <= crate::attachments::MAX_ATTACHMENT_PATH)
+        });
+    for candidate in too_long {
+        let long: Vec<String> = candidate_moves(&candidate, knowledge_dir)
+            .into_values()
+            .filter(|target| target.chars().count() > crate::attachments::MAX_ATTACHMENT_PATH)
+            .collect();
+        protected.push(json!({
+            "id": candidate.id,
+            "kind": if candidate.loose { "loose-artifact" } else { "observation" },
+            "archives": candidate.archives,
+            "reasons": [format!(
+                "attachment path longer than {} characters, which a Windows checkout cannot hold: {}",
+                crate::attachments::MAX_ATTACHMENT_PATH,
+                long.join(", ")
+            )],
+        }));
+    }
     let all: Vec<String> = pending
         .iter()
         .flat_map(|candidate| candidate.files.iter().cloned())
@@ -2340,7 +2365,7 @@ pub(super) fn archive_summary(
         protected,
         uncommitted,
         native,
-    } = summary_plan(root, archives, None)?;
+    } = summary_plan(root, archives, None, knowledge_dir)?;
     let entry_path = |archive: &str| format!("{knowledge_dir}/archives/{archive}.md");
     let listed: Vec<Value> = eligible
         .iter()
@@ -2392,7 +2417,7 @@ pub(super) fn archive_summary(
                 "a native change opened during the validity check ({}); nothing was removed",
                 open.join(", ")
             );
-            let fresh = summary_plan(root, archives, Some(native.clone()))?;
+            let fresh = summary_plan(root, archives, Some(native.clone()), knowledge_dir)?;
             let gained: Vec<String> = eligible
                 .iter()
                 .filter(|candidate| {
@@ -2463,7 +2488,7 @@ pub(super) fn archive_summary(
             write_entries(root)?;
             let head = head_revision(root);
             let at = now()?;
-            let mut held: Vec<(String, Vec<u8>)> = vec![];
+            let mut held: Vec<(String, Vec<u8>, fs::Permissions)> = vec![];
             let mut copies: Vec<String> = vec![];
             let mut recorded: Vec<String> = vec![];
             let removal: Result<()> = (|| {
@@ -2523,6 +2548,11 @@ pub(super) fn archive_summary(
                         // updating the checkpoint, a bug link, an open change), so they are
                         // checked again right before every removal.
                         still_unprotected(root, archives, &native, candidate)?;
+                        // Its permissions go with the bytes, to the vault copy and to a
+                        // restore (KNOW-10, #109 review).
+                        let permissions = fs::symlink_metadata(local_path(root, file)?)
+                            .with_context(|| format!("reading the permissions of {file}"))?
+                            .permissions();
                         // A key item is copied into the vault before its original goes.
                         if let Some(target) = moves.get(file) {
                             let path = local_path(root, target)?;
@@ -2532,9 +2562,11 @@ pub(super) fn archive_summary(
                             fs::write(&path, content)
                                 .with_context(|| format!("moving {file} to {target}"))?;
                             copies.push(target.clone());
+                            fs::set_permissions(&path, permissions.clone())
+                                .with_context(|| format!("moving {file} to {target}"))?;
                         }
                         remove_verified(root, file, content)?;
-                        held.push((file.clone(), content.clone()));
+                        held.push((file.clone(), content.clone(), permissions));
                     }
                 }
                 Ok(())
@@ -2564,7 +2596,7 @@ pub(super) fn archive_summary(
                 // Restore with create-new: a file a writer recreated meanwhile is kept, and
                 // the removed bytes stay recoverable from HEAD, where they were verified.
                 let mut kept = vec![];
-                for (file, bytes) in &held {
+                for (file, bytes, permissions) in &held {
                     let path = local_path(root, file)?;
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent)?;
@@ -2578,6 +2610,8 @@ pub(super) fn archive_summary(
                             use std::io::Write;
                             target
                                 .write_all(bytes)
+                                .with_context(|| format!("restoring {file}"))?;
+                            fs::set_permissions(&path, permissions.clone())
                                 .with_context(|| format!("restoring {file}"))?;
                         }
                         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {

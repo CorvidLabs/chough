@@ -3792,3 +3792,75 @@ expected = ["tests/reduce.rs::a_loose_file_protected_during_the_apply_refuses_th
 adapter = "cargo-test"
 test_target = "reduce"
 test = "a_loose_file_protected_during_the_apply_refuses_the_trim"
+
+[[case]]
+id = "TC-cli-vault-long-archive-short-folder"
+title = "Key items of a long archive ID move under a short, stable attachments folder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::key_items_of_a_long_archive_id_move_under_a_short_folder passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "key_items_of_a_long_archive_id_move_under_a_short_folder"
+
+[[case]]
+id = "TC-cli-vault-attachment-path-bound"
+title = "A key item whose attachment path would pass 220 characters stays, protected"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19", "KNOW-10"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_key_item_whose_attachment_path_is_too_long_stays passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_key_item_whose_attachment_path_is_too_long_stays"
+
+[[case]]
+id = "TC-cli-vault-moved-key-item-mode"
+title = "A key item moved into the vault keeps its mode"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_moved_key_item_keeps_its_mode passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_moved_key_item_keeps_its_mode"
+
+[[case]]
+id = "TC-cli-vault-restore-keeps-mode"
+title = "A refused apply restores removed files with their modes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_refused_apply_restores_files_with_their_modes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_refused_apply_restores_files_with_their_modes"

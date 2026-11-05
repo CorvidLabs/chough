@@ -852,8 +852,13 @@ Key items move into the vault instead of being removed (KNOW-19):
 - a failed run's artifacts move;
 - so do screenshots and failure-first logs.
 
-Each goes to `knowledge/attachments/<archive>/<path under .chough/>` before the
-original is removed. The ledger maps each moved file (`moved`), and a restore deletes
+Each goes to `knowledge/attachments/<folder>/<path under .chough/>` before the
+original is removed. The folder is the archive ID when it has at most 24 characters;
+a longer ID gives its first 16 characters, cut back to before the last hyphen among
+them, then `-` and 8 hex digits of its SHA-256 (for example `claude-host-65ab2407`), so
+paths stay short enough to check out on Windows. A key item whose attachment path would
+be longer than 220 characters stays in `.chough/`, and its set is listed as protected
+with that reason. Moved and restored files keep their permissions. The ledger maps each moved file (`moved`), and a restore deletes
 the copies. The preview lists each candidate's `moves`. An archive's note gains
 "Loose artifacts" and "Attachments" sections with links.
 
