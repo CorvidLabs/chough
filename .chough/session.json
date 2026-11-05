@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -819,7 +819,11 @@
     "OBS-tc-cli-vault-intent-notes-f8310b6c5f06c9010e10a153",
     "OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c",
     "OBS-tc-cli-vault-links-resolve-184e2ee0ff66a3dd1e4a662a",
-    "OBS-tc-cli-vault-regenerates-identically-88331deea5050c18b2d830a2"
+    "OBS-tc-cli-vault-regenerates-identically-88331deea5050c18b2d830a2",
+    "OBS-tc-cli-vault-sub-criterion-ids-966dc28ae04274debbb7eab4",
+    "OBS-tc-cli-vault-archive-note-properties-13120cf549be60dcd5c3a757",
+    "OBS-tc-cli-vault-intent-notes-6e82cb588007fbe32a8a2a8a",
+    "OBS-tc-cli-vault-links-resolve-b9f6b0b9f29b9d26b3cbf33d"
   ],
   "bugs": [
     "BUG-0001",
@@ -853,7 +857,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Fix against the failing test, verify and close out"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }

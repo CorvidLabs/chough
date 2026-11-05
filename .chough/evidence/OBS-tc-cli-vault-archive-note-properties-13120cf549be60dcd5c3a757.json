@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-archive-note-properties-13120cf549be60dcd5c3a757",
+  "criteria": [
+    "KNOW-14",
+    "KNOW-15"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test vault -- --exact an_archived_change_note_carries_its_properties_and_links for TC-cli-vault-archive-note-properties: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-archive-note-properties-13120cf549be60dcd5c3a757.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-archive-note-properties-13120cf549be60dcd5c3a757.log": "fe6e3d8259e43d654a474f6e3f141469b4f21b335020cf835dbf94badc95fad3"
+  },
+  "observed_at_unix_seconds": 1793849490,
+  "snapshot": {
+    "revision": "6821c795c70a733a3ea643beadf6e1a9cad8346a",
+    "dirty": false,
+    "fingerprint": "9f7fe692685e976c64cf12123e3ddb29917808bb13285c4a4c65108335b3ba67",
+    "content": "8ac5259a4a8a8bd8f30d35fdca50683ff823e4d64bd2d95d8553a2f332680bf5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-archive-note-properties",
+      "digest": "d1575ef33986393d3198cb4a5517d16c1f85404304d4fa2169f5d78088ccef2a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "an_archived_change_note_carries_its_properties_and_links"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
