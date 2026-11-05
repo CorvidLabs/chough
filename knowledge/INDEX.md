@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 100
+archived_changes: 102
 tags:
   - chough/index
 ---
@@ -47,9 +47,11 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](archives/adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog.md) Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog (hot)
+- [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](archives/let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded.md) Let a session started after legacy history adoption write events while the adopted legacy log stays guarded (hot)
 - [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](archives/never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file.md) Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s) (hot)
-- [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](archives/keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files.md) Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files (hot)
-- [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](archives/keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout.md) Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout) (hot)
+- [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](archives/keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files.md) Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files (cold)
+- [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](archives/keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout.md) Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout) (cold)
 - [move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge](archives/move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge.md) Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19) (cold)
 - [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](archives/keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108.md) Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108) (cold)
 - [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](archives/keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls.md) Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout) (cold)
@@ -160,6 +162,8 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](../.specsync/archive/changes/2026-11-05-adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog/lesson-bundle.md)
+- [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](../.specsync/archive/changes/2026-11-05-let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded/lesson-bundle.md)
 - [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](../.specsync/archive/changes/2026-11-05-never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file/lesson-bundle.md)
 - [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](../.specsync/archive/changes/2026-11-05-keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files/lesson-bundle.md)
 - [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](../.specsync/archive/changes/2026-11-05-keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout/lesson-bundle.md)
@@ -275,6 +279,9 @@ Archived lesson bundles:
 
 482 recorded; most recent:
 
+- OBS-product-test-5d86bc7f549cf14c727d5614 ProductTest Passed in local-linux-aarch64 at 893824d45587
+- OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c ProductTest Passed in local-linux-aarch64 at f131ebeee492
+- OBS-tc-history-session-after-legacy-adoption-4b6f7eb1047f7f9fd028d20d ProductTest Passed in local-linux-aarch64 at 53e2a87c7df3
 - OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 - OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 - OBS-tc-cli-vault-mixed-age-folder-stays-2efd9baf3b7e0a7b17ac0e49 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
@@ -282,9 +289,6 @@ Archived lesson bundles:
 - OBS-tc-cli-vault-open-bug-folder-fixture-40be0f49c6b768a8ffea7138 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 - OBS-tc-cli-vault-identical-attachment-survives-restore-85737badc0018637401c5091 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 - OBS-tc-cli-vault-attachment-written-mid-apply-8ac66844b8bf0a7895308665 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
-- OBS-tc-cli-vault-occupied-attachment-kept-87debad9f96921655f24ef43 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
-- OBS-tc-cli-vault-key-items-move-869f928765c2620518754975 ProductTest Passed in local-linux-aarch64 at 126d0e3f4d0b
-- OBS-tc-cli-vault-loose-artifacts-trimmed-941a5a81cc5320c943c4307b ProductTest Passed in local-linux-aarch64 at 126d0e3f4d0b
 
 ## Briefs
 

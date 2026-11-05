@@ -112,7 +112,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 - `.chough/artifacts/bug40-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/bug43-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/handoff-cold-start/real-repo-kimi-1/expected-facts.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
+- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
 - `.chough/artifacts/history-cycle-directory-history-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-cycle-directory-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-cycle-directory-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
@@ -209,8 +210,7 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-test.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-reference-boundary-final/observation-ids.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-reference-boundary-final/pre-verify-native-0.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-reference-boundary-final/pre-verify-native-1.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- 138 more are listed in .chough/pruned.jsonl
+- 141 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 

@@ -614,3 +614,21 @@ expected = ["tests/sessions.rs::an_unrecorded_inbox_observation_is_added_with_a_
 adapter = "cargo-test"
 test_target = "sessions"
 test = "an_unrecorded_inbox_observation_is_added_with_a_warning"
+
+[[case]]
+id = "TC-history-session-after-legacy-adoption"
+title = "A session started after legacy history adoption writes events while the legacy log stays guarded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-12"]
+requirements = ["REQ-history-006"]
+paths = ["src/history.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded"

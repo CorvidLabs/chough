@@ -16,6 +16,7 @@ criteria:
   - DRIVE-9
   - DRIVE-10
   - DRIVE-11
+  - DRIVE-12
 tags:
   - chough/intent
 ---
@@ -39,3 +40,4 @@ archived changes whose requirements trace it.
 - **DRIVE-9**: none yet
 - **DRIVE-10**: none yet
 - **DRIVE-11**: [keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy](../archives/keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy.md)
+- **DRIVE-12**: none yet

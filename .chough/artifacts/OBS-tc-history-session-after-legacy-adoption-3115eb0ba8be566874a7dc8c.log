@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.07s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/sessions.rs (target/debug/deps/sessions-e0ce9e33fcdf49c3)

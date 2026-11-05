@@ -1,0 +1,21 @@
+  a changed: .chough/history/cycles/CYC-7e480d4b8dde4a3c9bbf7424/EVT-1ad86dd24f4ea7bf4f6a4c1e.json
+  a changed: .chough/history/cycles/CYC-7e480d4b8dde4a3c9bbf7424/EVT-628b01f72f17cc165e5a7fab.json
+  a changed: .chough/history/cycles/CYC-7e480d4b8dde4a3c9bbf7424/EVT-ffe493d22d5ee0ac382dc718.json
+  a changed: .chough/pruned.jsonl
+  a changed: .chough/sessions/sim-change-a.json
+  a changed: CHANGELOG.md
+  b changed: .chough/history/cycles/CYC-478ea78c4b521c2abc9aa5f3/EVT-0de97c178d969db099d4b5b2.json
+  b changed: .chough/history/cycles/CYC-478ea78c4b521c2abc9aa5f3/EVT-2f3e43567a81a78ccccded2d.json
+  b changed: .chough/history/cycles/CYC-478ea78c4b521c2abc9aa5f3/EVT-c7f8debf91018be666331b94.json
+  b changed: .chough/pruned.jsonl
+  b changed: .chough/sessions/sim-change-b.json
+  b changed: CHANGELOG.md
+conflicts (sessions at f0eddbd0):
+merge-tree exit: 0
+merged result (sim-a merges sim-b):
+Auto-merging .chough/pruned.jsonl
+Auto-merging CHANGELOG.md
+  merge: clean
+  CHANGELOG bullets kept: 2
+  ledger lines kept: 2
+  sessions: 3

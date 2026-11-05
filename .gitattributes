@@ -7,3 +7,8 @@
 .chough/session.json merge=chough-session
 .chough/sessions/*.json merge=chough-session
 .chough/sessions/archive/*.json merge=chough-session
+
+# Append-only JSON lines and changelog bullets merge by keeping both sides' lines
+# (DRIVE-12).
+.chough/pruned.jsonl merge=union
+CHANGELOG.md merge=union

@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793889180,
+      "digest": "9282273bea0e64fd1ec212bbf489910c485572c4fb638622d688489bc574f0b1",
+      "note": "Leif: Adopt + new criterion (2026-11-05)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog",
+        "title": "Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog",
+        "description": "Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog",
+        "kind": "migration",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          ".gitattributes",
+          "AGENTS.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Repository migration onto existing behavior (REQ-history-006, REQ-history-007, DRIVE-3): no requirement text changes.",
+        "acceptance_criteria": [
+          "This repository runs Chough with event history and one session per change: the legacy transition log and migration backup stay byte for byte, the checkpoint moves to .chough/sessions/ byte for byte, and AGENTS.md tells agents to start each pull request with chough session new. The retention ledger and CHANGELOG.md merge with Git union. A simulated pair of parallel pull requests conflicts in .chough/ and CHANGELOG.md on main and merges with none of those conflicts on this branch; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Leif (0xLeif) chose Adopt + new criterion (2026-11-05): adopt sessions and event history on main first, union merges for the ledger and CHANGELOG.md, DRIVE-12 for the product fixes. Adoption must land on main before other branches diverge.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793891758,
+      "digest": "09d2c299dca130c202a8978160d91a89e4479cf9d4fb12840ef3f1aa7062371e",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

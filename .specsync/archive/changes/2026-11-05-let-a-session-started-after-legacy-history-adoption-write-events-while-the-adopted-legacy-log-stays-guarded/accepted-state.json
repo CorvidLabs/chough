@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded",
+  "slug": "let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded",
+  "title": "Let a session started after legacy history adoption write events while the adopted legacy log stays guarded",
+  "description": "Let a session started after legacy history adoption write events while the adopted legacy log stays guarded",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "88466daafc72145962cade5c7406a9fa84fe570f",
+  "created_at": 1793890412,
+  "updated_at": 1793891523,
+  "affected_specs": [
+    "history"
+  ],
+  "affected_paths": [
+    "src/history.rs",
+    "tests/sessions.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-history-006 and the history adoption requirement: a new session must write events, and unexpected legacy changes still refuse writes; no requirement text changes.",
+  "acceptance_criteria": [
+    "In a project that adopted a legacy transition log, a session started with chough session new writes events to its own cycle; the legacy log keeps its bytes, stays out of the new session's history, and a change to it still refuses writes in every session. The new test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Found while adopting sessions on this repository (DRIVE-12), which Leif chose (Adopt + new criterion, 2026-11-05).",
+    "public_contract": "no"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog",
+  "implementation_commit": "6c6608863cf4bdf4efad9eb7a24515935c970b48",
+  "implementation_tree": "d2c92805d37b5042097f603e5444a9638dc3a609",
+  "contract_digest": "9282273bea0e64fd1ec212bbf489910c485572c4fb638622d688489bc574f0b1",
+  "workspace_digest": "8ddf1e753a3e967a62b3ea2b24643b4e07a2819fdefcbdecc8541889ef1185a9",
+  "closing_digest": "09d2c299dca130c202a8978160d91a89e4479cf9d4fb12840ef3f1aa7062371e",
+  "review_digest": "f6054e9bcf67f6d29232445ac4324c4d3e5c2a027b59d4538c2fae2cf84076d4",
+  "finalization_digest": "681a1208950897d28775e0c00dfd7c3d477c140b4fb8d885da1c27e63136f0b7",
+  "timestamp": 1793891758
+}
