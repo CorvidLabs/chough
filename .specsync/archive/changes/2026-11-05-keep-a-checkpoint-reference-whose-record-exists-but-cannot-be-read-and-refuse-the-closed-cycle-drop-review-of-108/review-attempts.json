@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "c1eb3073d535efd95245b5e238f42c7d3e906542",
+      "contract_digest": "8bcc1a3cfc0b3793d0883ca055721918a703d4c42820aab0ae65037eb559f4a9",
+      "execution_digest": "6e04f7e1ec2620bfbceb0dbd8d1a26f22f620a244c1f03ecadcc2f9efa9e42f0",
+      "workspace_digest": "29aec8c5708dece0502fbec874af576c90881644414b2a7f89615b898cb5b6ce",
+      "timestamp": 1793855820
+    }
+  ]
+}
