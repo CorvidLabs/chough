@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "188f96b2fc6a387dfb32e9d7bd6c1f984c3face6",
+  "contract_digest": "05d17f9389e8293e27a8230fe624421ba3a15a679bb9a7a905cc6e3445cd1f66",
+  "execution_digest": "50b24ee75546a18f12204e38dc09f4bf8b71331e1b67070862cc35846c357e43",
+  "workspace_digest": "c13536fb2e605202abd59da9da7d3b3ed6f198e09733d13378d81e05ea3936ad",
+  "timestamp": 1793917715
+}
