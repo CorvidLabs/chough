@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Make the knowledge directory an Obsidian-style vault: front matter on every note, ISO dates, standard links, module, intent and rules notes (KNOW-14, KNOW-15)",
+  "objective": "List HI sub-criterion IDs in vault notes, read Trace lists whole, and correct the KNOW-14 wording (corvid-agent review of #107)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and",
+  "native_change": "list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -330,7 +330,8 @@
     "2026-11-04 Leif (0xLeif) answered \"yes\" to: build and commit knowledge/ in Chough repo, make librarian on by default create it at init and refresh it when the trim runs at done, and fold the 2026-11-04 lessons into the cli and history lesson sources.",
     "PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
     "2026-11-04 Leif (0xLeif) chose \"Front matter + MD links\" for an Obsidian-style knowledge vault, asked that it compound everything (\"we need to learn, grow, rules, skills, and compound knowledge of all this project and all things.. spec-sync lessons, hi.. changes.. etc all things!!\"), chose to let old checkpoint refs, older newest-per-case runs and loose artifact folders be reduced, and chose \"Key items move\" to knowledge/attachments; captured as KNOW-14 to KNOW-19.",
-    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif, archive it and merge #107 once CI is green, then start the reduction change (KNOW-16 to 19)?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision."
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif, archive it and merge #107 once CI is green, then start the reduction change (KNOW-16 to 19)?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-04 Leif (0xLeif) chose \"Fix the wording\" for KNOW-14 (only archived-change notes carry status, dates and commits) and confirmed KNOW-16 to KNOW-19 (\"Yes, build it\") after corvid-agent asked for an explicit confirmation."
   ],
   "open_questions": [],
   "completed": [
@@ -854,5 +855,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #107 when hosted checks are green"
+  "next_action": "Fix against the failing test, verify and close out"
 }
