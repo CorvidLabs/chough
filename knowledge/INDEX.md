@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix (active; `specsync change status union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-487 recorded; most recent:
+488 recorded; most recent:
 
+- OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
 - OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
 - OBS-product-test-deeab5eb9295ffe50f291b9e ProductTest Passed in local-linux-aarch64 at 5793431b5f81
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-product-test-5d86bc7f549cf14c727d5614 ProductTest Passed in local-linux-aarch64 at 893824d45587
 - OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c ProductTest Passed in local-linux-aarch64 at f131ebeee492
 - OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
-- OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 
 ## Briefs
 
