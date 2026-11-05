@@ -1,0 +1,43 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-766b1557a60c7beaeaf72ba4",
+    "head": "EVT-630e5e4098c55beaf4a5753d",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Prepare the Chough 0.4.0 release (version and dated change log)",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0",
+  "references": {
+    "criteria": [
+      "LIFE-1"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "0.4.0 release prep accepted by Leif (0xLeif): review recorded (pass) at a789da26; Approve all steps for Chough 0.4.0 (2026-11-05 11:26 MST, via the orc)."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [
+    "OBS-structural-ce74f6d127b1f262c869b327",
+    "OBS-dry-run-2d42138c5939105291d8aed7"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Package checks and verify, then bring Leif the release gate"
+}

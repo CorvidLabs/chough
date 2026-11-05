@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0",
+  "implementation_commit": "a789da26fa3e2675a05a6962739dc8a8c16cf517",
+  "implementation_tree": "56db1e65333b1c9b034f0e3be7d17d1b4b292005",
+  "contract_digest": "7287b51b228e5452371a519087cec9d3c7b576468432c03b8160fb43af055905",
+  "workspace_digest": "53620fd4b21606a1914f18f99f688ec06f1c2c7068d114a07f05c6898eb093a1",
+  "closing_digest": "6ffcfa90d2baec12ef2853deffe3069fb0aa6672df881dea46df5569799f8ba8",
+  "review_digest": "921c72be268fc8136df86e2883a5cdfe063d82f56b978f25c3abc2981a8c781e",
+  "finalization_digest": "9d63ed31f99ffdad1e1513ea05aae4b526d9307007e545106f7ab33fc570ba50",
+  "timestamp": 1793904571
+}
