@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -842,7 +842,11 @@
     "OBS-tc-cli-vault-front-matter-on-every-note-f8fbe0db6dd11ac19c5a7d8e",
     "OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2",
     "OBS-tc-cli-vault-readme-upgrade-85fa1399093164743e01658e",
-    "OBS-tc-cli-vault-inline-trace-crlf-comments-70ae88664f84301800f9b4ce"
+    "OBS-tc-cli-vault-inline-trace-crlf-comments-70ae88664f84301800f9b4ce",
+    "OBS-tc-cli-reduce-superseded-runs-c2386f1a35968fc79e456ea0",
+    "OBS-tc-cli-reduce-attributed-by-cycle-time-50dd467ac3aa60dc22e14c3a",
+    "OBS-tc-cli-reduce-done-drops-closed-cycle-refs-b5573d86f433ffa606e8fcdc",
+    "OBS-tc-cli-reduce-parallel-validity-3198c87d139cc220722c9d3f"
   ],
   "bugs": [
     "BUG-0001",
@@ -876,7 +880,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Implement against the failing tests in tests/reduce.rs"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
