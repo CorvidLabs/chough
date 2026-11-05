@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -467,7 +467,11 @@
     "OBS-tc-cli-vault-loose-artifacts-trimmed-56a8278d63dfe84b5c53c47a",
     "OBS-tc-cli-vault-closed-bug-releases-fixture-6c3e6d34882720f6d3e65fc4",
     "OBS-tc-cli-vault-key-items-move-a416edd1a6617d1f5400d74f",
-    "OBS-tc-cli-reduce-shared-artifact-released-55da340fad3623e400d52dac"
+    "OBS-tc-cli-reduce-shared-artifact-released-55da340fad3623e400d52dac",
+    "OBS-tc-cli-vault-loose-group-gains-released-file-4449f38c94d0f999085cff0b",
+    "OBS-tc-cli-vault-loose-file-protected-mid-apply-4bfe9381d60c5289785180d1",
+    "OBS-tc-cli-vault-loose-artifacts-trimmed-474da4e40d6182199944c68f",
+    "OBS-tc-cli-reduce-shared-artifact-released-2756f1650ab5eb23ee8ec4a6"
   ],
   "bugs": [
     "BUG-0001",
@@ -501,7 +505,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Fix the re-check against the failing test, verify and close out (the trim runs again)"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
