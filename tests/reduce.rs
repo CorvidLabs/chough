@@ -243,3 +243,39 @@ fn native_validity_reads_run_in_parallel() {
         "validity reads ran one at a time (at most {most} at once)"
     );
 }
+
+/// The trim on Chough's own repository (#108 closeout): two eligible sets shared one log,
+/// so removing the first left the log to the second, and the per-file re-check refused
+/// the whole trim. A set that gains a file is still safe to trim: only planned files go.
+#[test]
+fn a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim() {
+    let fixture = project("0");
+    for (id, own) in [("r1", "r1.log"), ("r2", "r2.log")] {
+        let path = format!(".chough/evidence/{id}.json");
+        let mut record: Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+        let mut fingerprints = serde_json::Map::new();
+        for log in ["shared.log", own] {
+            let artifact = format!(".chough/artifacts/{log}");
+            fixture.write(&artifact, &format!("{log}\n"));
+            fingerprints.insert(artifact, json!(ZERO));
+        }
+        record["artifacts"] = json!(fingerprints.keys().collect::<Vec<_>>());
+        record["artifact_fingerprints"] = Value::Object(fingerprints);
+        fixture.write(
+            &path,
+            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+        );
+    }
+    fixture.commit("shared log");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    for id in ["r1", "r2"] {
+        assert!(pruned(trim).contains(&id.to_string()), "{id}: {trim:#}");
+        assert!(!fixture.exists(&format!(".chough/artifacts/{id}.log")));
+    }
+    assert!(
+        fixture.exists(".chough/artifacts/shared.log"),
+        "a shared log is never planned"
+    );
+}

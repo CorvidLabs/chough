@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Reduce old observation proof: closed-cycle checkpoint references at done, superseded runs, cycle-time attribution of unlisted proof, parallel validity (KNOW-16, KNOW-17, KNOW-20)",
+  "objective": "Keep trimming when an earlier removal releases a shared artifact, and count stub status calls under a lock (#108 closeout)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes",
+  "native_change": "keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -498,5 +498,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #108 when hosted checks are green"
+  "next_action": "Fix the re-check against the failing test, verify and close out (the trim runs again)"
 }
