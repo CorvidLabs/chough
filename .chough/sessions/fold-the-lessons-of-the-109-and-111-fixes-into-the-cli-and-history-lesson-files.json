@@ -1,0 +1,40 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-64805309cd2dbbb63a199473",
+    "head": "EVT-032d6569c80181e48c5236cb",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Fold the lessons of the #109 and #111 fixes into the cli and history lesson files",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files",
+  "references": {
+    "criteria": [
+      "KNOW-15",
+      "KNOW-24"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Check the sources, verify, and take this to accept beside the DRIVE-12 change"
+}
