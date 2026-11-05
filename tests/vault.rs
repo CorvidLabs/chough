@@ -479,3 +479,82 @@ fn index_check_names_stale_files_and_passes_after_a_rebuild() {
     let error = fixture.fails(&["library", "index", "--check"]);
     assert!(error.contains(note), "{error}");
 }
+
+/// #112: the index listed every archived change and outgrew its 65,536-byte bound at 104
+/// archives here. It lists the newest, and a monthly timeline lists every one (KNOW-28).
+#[test]
+fn the_index_stays_bounded_and_a_monthly_timeline_lists_every_archive() {
+    let fixture = vault();
+    let october = 1_792_022_400; // 2026-10-15
+    let november = 1_793_836_800; // 2026-11-05
+    let mut ids = vec![];
+    for index in 0..300 {
+        let id = format!("{index:03}-{}", "a-long-archived-change-id-".repeat(4));
+        let at = if index < 150 { october } else { november } + index as u64 * 60;
+        let dir = format!(".specsync/archive/changes/2026-10-15-{id}");
+        fixture.write(
+            &format!("{dir}/finalization.json"),
+            &format!(
+                "{{\"schema_version\": 2, \"change_id\": \"{id}\", \"timestamp\": {at}, \"implementation_commit\": \"{}\"}}\n",
+                "1".repeat(40)
+            ),
+        );
+        fixture.write(
+            &format!("{dir}/state.json"),
+            &serde_json::to_string_pretty(
+                &json!({"id": id, "state": "archived", "affected_specs": ["cli"]}),
+            )
+            .unwrap(),
+        );
+        fixture.write(
+            &format!("{dir}/verification.json"),
+            &serde_json::to_string_pretty(&json!({
+                "commit": "2".repeat(40), "passed": true, "requirement_ids": ["REQ-cli-001"],
+                "acceptance_manifest": {"schema_version": 1, "entries": []},
+            }))
+            .unwrap(),
+        );
+        fixture.write(
+            &format!("{dir}/change.md"),
+            &format!("---\nid: {id}\nstate: archived\n---\n\n# Title of {id}\n"),
+        );
+        fixture.write(&format!("{dir}/lesson-bundle.md"), "# Lesson bundle\n");
+        ids.push(id);
+    }
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/INDEX.md");
+    assert!(index.len() <= 65_536, "INDEX.md is {} bytes", index.len());
+    assert_eq!(
+        ids.iter()
+            .filter(|id| index.contains(&format!("archives/{id}.md")))
+            .count(),
+        10,
+        "INDEX.md lists the 10 newest"
+    );
+    assert!(index.contains("](timeline.md)"), "{index}");
+    let timeline = fixture.read("knowledge/timeline.md");
+    assert!(timeline.starts_with("---\n"), "{timeline}");
+    for month in ["2026-11", "2026-10"] {
+        assert!(
+            timeline.contains(&format!("](timeline/{month}.md)")),
+            "{timeline}"
+        );
+    }
+    let pages: Vec<String> = ["2026-10", "2026-11"]
+        .iter()
+        .map(|month| fixture.read(&format!("knowledge/timeline/{month}.md")))
+        .collect();
+    for page in &pages {
+        assert!(page.starts_with("---\n") && page.len() <= 65_536);
+    }
+    for id in &ids {
+        let link = format!("../archives/{id}.md");
+        assert_eq!(
+            pages.iter().filter(|page| page.contains(&link)).count(),
+            1,
+            "{id}"
+        );
+    }
+    assert!(pages[1].contains("lesson-bundle.md"));
+    fixture.ok(&["library", "index", "--check"]);
+}

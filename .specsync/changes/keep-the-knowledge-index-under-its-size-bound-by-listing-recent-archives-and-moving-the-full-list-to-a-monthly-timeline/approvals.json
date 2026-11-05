@@ -1,0 +1,40 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793895829,
+      "digest": "e8af6de9d6e3ea64803de1e1d2df126b78600c18213995e9865823f75f94d631",
+      "note": "Leif: Widen #112 with the fix (2026-11-05 09:21 MST)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline",
+        "title": "Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline",
+        "description": "Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/cli.md",
+          "src/library.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-043 and REQ-cli-044 (the index stays within the entry bound); the timeline is part of confirmed KNOW-28. No requirement text changes.",
+        "acceptance_criteria": [
+          "With hundreds of archived changes, library index succeeds: INDEX.md stays within 65,536 bytes listing the 10 newest archived changes and lesson bundles and linking timeline.md; timeline.md links one page per month, and each archive appears once with its date and lesson bundle, every page within the bound. The new test fails first, fledge lanes run verify passes on Linux, and the refresh runs at closeout on this repository."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif chose Widen #112 with the fix (2026-11-05 09:21 MST, via the orc); KNOW-28 confirmed earlier.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-cf5191b57dba90dfc0749c22",
+    "head": "EVT-50487dec0ab218aeaf777bdb",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Keep the knowledge index under its size bound: recent archives in INDEX.md, the full list on a monthly timeline (KNOW-28)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline",
+  "references": {
+    "criteria": [
+      "KNOW-28",
+      "KNOW-14"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Implement the bounded index and the monthly timeline against the failing test"
+}

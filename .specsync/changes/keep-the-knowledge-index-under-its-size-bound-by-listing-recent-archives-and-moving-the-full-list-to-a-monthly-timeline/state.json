@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline",
+  "slug": "keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline",
+  "title": "Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline",
+  "description": "Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "7934800355522c0c5f31f1898c4720c0dae7f786",
+  "created_at": 1793895740,
+  "updated_at": 1793895829,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "tests/vault.rs",
+    "docs/cli.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-043 and REQ-cli-044 (the index stays within the entry bound); the timeline is part of confirmed KNOW-28. No requirement text changes.",
+  "acceptance_criteria": [
+    "With hundreds of archived changes, library index succeeds: INDEX.md stays within 65,536 bytes listing the 10 newest archived changes and lesson bundles and linking timeline.md; timeline.md links one page per month, and each archive appears once with its date and lesson bundle, every page within the bound. The new test fails first, fledge lanes run verify passes on Linux, and the refresh runs at closeout on this repository."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif chose Widen #112 with the fix (2026-11-05 09:21 MST, via the orc); KNOW-28 confirmed earlier.",
+    "public_contract": "no"
+  }
+}
