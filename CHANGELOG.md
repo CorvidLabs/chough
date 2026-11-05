@@ -6,6 +6,49 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- With the librarian on (the default), `chough stage advance` into done now trims cold
+  archived proof right after the move, under the same post-archive summary rules (ledger
+  first, validity restore, nothing removed while a native change is open), and reports it
+  as `applied.librarian_trim`. `chough pref set retention manual` opts out (#88, KNOW-13,
+  REQ-cli-041).
+
+- Stopping Chough on Linux now also stops what its command started outside the process
+  group: a descendant that called `setsid`, and one whose parent exited (the `chough`
+  binary is now the child subreaper of what it starts). Chough says on stderr when it
+  stops a process that kept its own Git's output open, and when `git rev-parse HEAD`
+  fails for a reason other than no repository or no commit (#81, FLOW-14, REQ-cli-011),
+  including when `git` is not installed, which was silent before.
+
+- A failed native command is now shown as `exit 2` or `killed by signal 15` instead of
+  Rust's debug form `exit=Some(2)` or `exit=None`, in `status`, `next` and stage refusals
+  (#87, REQ-cli-003).
+
+- CI: the hosted SpecSync Archive check runs as four parallel jobs,
+  `SpecSync Archive (1/4)` to `(4/4)`. Each authenticates a quarter of the native
+  archives and keeps the 10-minute limit, and shard 1 also walks every PR revision.
+  Every archive is still authenticated with every check unchanged (DRIVE-10). The
+  single job had reached 7 to 10 minutes and timed out on a 91-commit PR, because each
+  archive status read costs tens of seconds inside SpecSync.
+  `check-specsync-archive.py --shard K/N` defaults to 1/1, which behaves as before.
+- `chough next` now shows the native check: the latest attempt SpecSync recorded for the
+  open change, with its time, commit and failing commands with exit codes, and, while
+  the change is approved or implementing, that the check has not passed for this tree.
+  SpecSync keeps no reason when it refuses before verifying (for example incomplete
+  tasks), so `next` names `specsync change check <id>` instead of implying no failure
+  (#86, REQ-cli-039). A `verifying` change whose tree moved after its last check, which
+  SpecSync reports through `handoff.readiness`, is also shown as not passed for this tree.
+  It reads one local file and adds no native read.
+
+- `chough next` and `chough status` now warn when the native check runs none of the
+  project's commands, judged from the effective `verification_commands` SpecSync reports
+  in the status read they already make (only `specsync check …`), and count commands
+  configured in `.specsync/sdd.json` that SpecSync 6.1.2 does not run
+  (CorvidLabs/spec-sync#848). At the test stage `next` points to recording test
+  evidence with `chough cases run` before accept (#85, FLOW-15, REQ-cli-038). No gate
+  changes and no native read is added; the warning names at most 3 commands, each cut,
+  so `next` stays within its bound. The `.specsync/sdd.json` reader moved from
+  src/stage.rs to a small src/policy.rs. Replaces the closed #89.
+
 ## [0.3.0] - 2026-11-04
 
 - Chough's size bounds now apply only to its own records under `.chough/` and to what

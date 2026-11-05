@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-failed-native-exit-in-plain-words-06ae1b849145ad876228e84b",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-003"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test native_failure -- --exact a_failed_native_read_shows_its_exit_in_plain_words for TC-cli-failed-native-exit-in-plain-words: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-failed-native-exit-in-plain-words-06ae1b849145ad876228e84b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-failed-native-exit-in-plain-words-06ae1b849145ad876228e84b.log": "aed89805f22451bcac097f89225f83d43d8f0feafeca474e0eff1f2a0f99af6f"
+  },
+  "observed_at_unix_seconds": 1793808119,
+  "snapshot": {
+    "revision": "8c4f230cdd6a26d13f46a930bb5f894fa2ccf80e",
+    "dirty": true,
+    "fingerprint": "2ab745811b8e83488541391d06afa5a8b97311f5255dbb956ee99d73a106d3e4",
+    "content": "a40d4ddedf83a4b5ded159060754a539bfbe454193e652bf4a4297a18849c8e0"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-failed-native-exit-in-plain-words",
+      "digest": "1e089336e22e6a26f175136ce4eff1d6c95a1fbe1a561ce7a2e7d2da5593fe5c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "native_failure",
+    "--",
+    "--exact",
+    "a_failed_native_read_shows_its_exit_in_plain_words"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

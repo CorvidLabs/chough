@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87",
+  "slug": "show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87",
+  "title": "Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87)",
+  "description": "Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "91a1fdd82a4e314e5037c6256f17199ef0d604f0",
+  "created_at": 1793807944,
+  "updated_at": 1793835143,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "tests/cli.rs",
+    "tests/native_failure.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A native command that exits 2 is shown as exit 2 in status and next and never as Some. A native command ended by SIGTERM is shown as killed by signal 15. Each new test fails on main 91a1fdd and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded bug fix for issue 87 under LIFE-7; wording only; the native section state and every gate are unchanged",
+    "public_contract": "yes"
+  }
+}

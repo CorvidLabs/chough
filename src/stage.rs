@@ -2,10 +2,10 @@
 //! records transitions and refuses those that native state does not allow.
 
 use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
+use crate::policy::{Policy, sdd_policy};
 use crate::records::{
     NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
     local_path, native_json, now, print_json, read_log_full, read_log_tail, read_native_record,
-    read_native_text,
 };
 use crate::{bugs, evidence, prefs};
 use anyhow::{Result, bail, ensure};
@@ -171,67 +171,6 @@ pub(super) enum NativeState {
     NoChange,
     State(String, Value),
     Unknown(String),
-}
-
-const POLICY: &str = ".specsync/sdd.json";
-
-/// SpecSync 6.1's `SddPolicy` shape, deserialized only to apply SpecSync's own rules:
-/// missing fields take these defaults (SDD enabled), unknown fields are accepted, and a
-/// wrong type or a duplicate key makes the policy invalid.
-#[derive(Deserialize)]
-#[serde(default)]
-#[allow(dead_code)]
-struct PolicyFile {
-    version: u32,
-    enabled: bool,
-    require_change_for_meaningful_files: bool,
-    meaningful_paths: Vec<String>,
-    ignored_paths: Vec<String>,
-    verification_commands: Vec<String>,
-    custom_artifacts: std::collections::BTreeMap<String, String>,
-    principles_file: Option<String>,
-}
-
-impl Default for PolicyFile {
-    fn default() -> Self {
-        Self {
-            version: 2,
-            enabled: true,
-            require_change_for_meaningful_files: true,
-            meaningful_paths: vec![],
-            ignored_paths: vec![],
-            verification_commands: vec![],
-            custom_artifacts: Default::default(),
-            principles_file: None,
-        }
-    }
-}
-
-enum Policy {
-    /// No policy file: SDD is not adopted.
-    Absent,
-    Enabled(bool),
-    Invalid(String),
-}
-
-fn sdd_policy(root: &Path) -> Result<Policy> {
-    let path = local_path(root, POLICY)?;
-    if !path.exists() {
-        return Ok(Policy::Absent);
-    }
-    // SpecSync's policy file: read within SpecSync's bound, not Chough's (LIFE-15).
-    let text = match read_native_text(&path) {
-        Ok(text) => text,
-        Err(error) => {
-            return Ok(Policy::Invalid(format!(
-                "{POLICY} cannot be read: {error:#}"
-            )));
-        }
-    };
-    Ok(match serde_json::from_str::<PolicyFile>(&text) {
-        Ok(policy) => Policy::Enabled(policy.enabled),
-        Err(error) => Policy::Invalid(format!("{POLICY} is not a valid SpecSync policy: {error}")),
-    })
 }
 
 /// Whether the project has a native SpecSync configuration.
@@ -1131,6 +1070,13 @@ pub(super) fn assess(
                 }),
             }
         }
+    } else if current == "test" {
+        // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
+        Action {
+            action: format!("Continue test: {}", session.next_action),
+            reason: "Recorded test evidence is needed before accept: run the affected cases (`chough cases list` shows them) or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
+            command: Some("chough cases run <case-id> --environment <env>".into()),
+        }
     } else {
         Action {
             action: format!("Continue {current}: {}", session.next_action),
@@ -1801,7 +1747,7 @@ fn move_back(
 
 pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     let mut session = read_checkpoint(root)?;
-    let applied = match command {
+    let mut applied = match command {
         StageCommand::Show => None,
         StageCommand::Advance { note } => {
             if let Some(note) = &note {
@@ -2001,6 +1947,14 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     };
     if applied.is_some() {
         save_checkpoint(root, &session)?;
+    }
+    // REQ-cli-041 (KNOW-13): after the move into done is saved, trim old proof; the
+    // result is reported and never undoes the move.
+    if let Some(applied) = applied
+        .as_mut()
+        .filter(|applied| applied["kind"] == "advance" && applied["to"] == "done")
+    {
+        applied["librarian_trim"] = crate::library::trim_at_done(root);
     }
     report(root, &session, applied)
 }

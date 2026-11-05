@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "d596976a188e69381fdf5f0bac245f8877873ede",
+      "contract_digest": "58b9cf1beadd3fe33ceb4f0537f5045bba67e2ad4285e716ecf80e6740f31b9f",
+      "execution_digest": "6d76ae3c34bb5fd73892561e45dba69ad201b7e3c5c8eddfbcfad22ef2b36075",
+      "workspace_digest": "4a6d97a8350a75da6842ca052585fd58808994275c4166088c77a39658662a87",
+      "timestamp": 1793835646
+    }
+  ]
+}
