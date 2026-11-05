@@ -282,7 +282,12 @@ fn a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim() {
 
 /// Adds `paths` to cold a1's verification manifest.
 fn list_in_a1(fixture: &Fixture, paths: &[&str]) {
-    let path = ".specsync/archive/changes/2026-01-01-a1/verification.json";
+    list_in(fixture, ".specsync/archive/changes/2026-01-01-a1", paths);
+}
+
+/// Adds `paths` to the verification manifest of the archive in `dir`.
+fn list_in(fixture: &Fixture, dir: &str, paths: &[&str]) {
+    let path = &format!("{dir}/verification.json");
     let mut verification: Value = serde_json::from_str(&fixture.read(path)).unwrap();
     let entries = verification["acceptance_manifest"]["entries"]
         .as_array_mut()
@@ -301,6 +306,14 @@ fn commit_aged(fixture: &Fixture, message: &str, age_days: u64) {
         vec!["commit", "--quiet", "-m", message],
     ] {
         let status = std::process::Command::new("git")
+            .args([
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.invalid",
+                "-c",
+                "commit.gpgsign=false",
+            ])
             .args(&args)
             .current_dir(fixture.root())
             .env("GIT_AUTHOR_DATE", &date)
@@ -609,4 +622,144 @@ fn a_loose_file_protected_during_the_apply_refuses_the_trim() {
     assert_eq!(fixture.read(".chough/artifacts/x/a-first.log"), "first\n");
     assert_eq!(fixture.read(".chough/artifacts/x/z-second.log"), "second\n");
     assert!(!fixture.exists(".chough/removing"));
+}
+
+/// Renames cold a1 to `id`, keeping its date, manifest and finalization; returns its
+/// directory.
+fn rename_a1(fixture: &Fixture, id: &str) -> String {
+    let dir = format!(".specsync/archive/changes/2026-01-01-{id}");
+    std::fs::rename(
+        fixture
+            .root()
+            .join(".specsync/archive/changes/2026-01-01-a1"),
+        fixture.root().join(&dir),
+    )
+    .unwrap();
+    for name in ["finalization.json", "change.md"] {
+        let path = format!("{dir}/{name}");
+        let text = fixture
+            .read(&path)
+            .replace("\"change_id\": \"a1\"", &format!("\"change_id\": \"{id}\""))
+            .replace("id: a1\n", &format!("id: {id}\n"));
+        fixture.write(&path, &text);
+    }
+    dir
+}
+
+fn mode(fixture: &Fixture, path: &str) -> u32 {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::metadata(fixture.root().join(path))
+        .unwrap()
+        .permissions()
+        .mode()
+        & 0o777
+}
+
+/// #109 on Windows: attachments of a long archive ID go under a short, stable folder, so
+/// the vault can be checked out there.
+#[test]
+fn key_items_of_a_long_archive_id_move_under_a_short_folder() {
+    let fixture = project("0");
+    let id = "a1-a-long-archived-change-id-that-windows-paths-cannot-repeat";
+    let dir = rename_a1(&fixture, id);
+    fixture.write(".chough/artifacts/x/screen.png", "png\n");
+    list_in(&fixture, &dir, &[".chough/artifacts/x/screen.png"]);
+    fixture.commit("a long archive id");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    let folder = std::fs::read_dir(fixture.root().join("knowledge/attachments"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .find(|name| name.starts_with("a1-a-long-"))
+        .unwrap_or_else(|| panic!("no short folder: {trim:#}"));
+    let digest = folder.strip_prefix("a1-a-long-").unwrap();
+    assert!(
+        digest.len() == 8 && digest.chars().all(|c| c.is_ascii_hexdigit()),
+        "{folder}"
+    );
+    let attachment = format!("knowledge/attachments/{folder}/artifacts/x/screen.png");
+    assert_eq!(fixture.read(&attachment), "png\n");
+    assert!(!fixture.exists(".chough/artifacts/x/screen.png"));
+    let note = fixture.read(&format!("knowledge/archives/{id}.md"));
+    assert!(
+        note.contains(&format!("../attachments/{folder}/artifacts/x/screen.png")),
+        "{note}"
+    );
+}
+
+/// A key item whose attachment path would pass 220 characters stays, protected with that
+/// reason, rather than writing a path a Windows clone cannot hold.
+#[test]
+fn a_key_item_whose_attachment_path_is_too_long_stays() {
+    let fixture = project("0");
+    let file = format!(".chough/artifacts/x/{}-failure-first.log", "n".repeat(190));
+    fixture.write(&file, "fail\n");
+    list_in_a1(&fixture, &[file.as_str()]);
+    fixture.commit("a long key item");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(fixture.exists(&file), "{trim:#}");
+    let protected = trim["summary"]["protected"].as_array().unwrap();
+    let entry = protected
+        .iter()
+        .find(|entry| entry["id"] == "artifact:x")
+        .unwrap_or_else(|| panic!("artifact:x not protected: {trim:#}"));
+    assert!(
+        entry["reasons"]
+            .to_string()
+            .contains("longer than 220 characters"),
+        "{entry:#}"
+    );
+}
+
+/// corvid-agent on #109: a key item keeps its mode in the vault.
+#[test]
+fn a_moved_key_item_keeps_its_mode() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/failure-first.sh", "#!/bin/sh\n");
+    fixture.executable(".chough/artifacts/x/failure-first.sh");
+    list_in_a1(&fixture, &[".chough/artifacts/x/failure-first.sh"]);
+    fixture.commit("an executable key item");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    let attachment = "knowledge/attachments/a1/artifacts/x/failure-first.sh";
+    assert_eq!(fixture.read(attachment), "#!/bin/sh\n");
+    assert_eq!(mode(&fixture, attachment), 0o755);
+}
+
+/// corvid-agent on #109: the refused first closeout trim restored two scripts as 0644.
+/// A restore puts back the mode with the bytes.
+#[test]
+fn a_refused_apply_restores_files_with_their_modes() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/run.sh", "#!/bin/sh\n");
+    fixture.executable(".chough/artifacts/x/run.sh");
+    list_in_a1(&fixture, &[".chough/artifacts/x/run.sh"]);
+    fixture.commit("an executable loose script");
+    set_checkpoint(&fixture, &[]);
+    // A SpecSync stand-in whose terminal evidence validity changes once the script is
+    // gone, so the apply is refused after removing it.
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nv=authenticated-history\n[ -e .chough/artifacts/x/run.sh ] || v=unauthenticated\nprintf '{\"summary\":{\"id\":\"%s\",\"state\":\"archived\",\"approval_valid\":true,\"correction_valid\":true,\"terminal_evidence\":{\"validity\":\"%s\"}},\"acceptance_entries\":[]}\\n' \"$3\" \"$v\"\n",
+    );
+    fixture.executable("bin/specsync");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "refused", "{trim:#}");
+    assert!(
+        trim["reason"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("validity"),
+        "{trim:#}"
+    );
+    assert_eq!(fixture.read(".chough/artifacts/x/run.sh"), "#!/bin/sh\n");
+    assert_eq!(mode(&fixture, ".chough/artifacts/x/run.sh"), 0o755);
 }

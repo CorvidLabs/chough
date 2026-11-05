@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Keep trimming a loose artifact group that gains a file released by an earlier removal (#109 closeout)",
+  "objective": "Keep vault attachment paths within Windows limits and keep file modes on move and restore (#109 CI and review)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout",
+  "native_change": "keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -502,5 +502,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+  "next_action": "Implement against the failing tests, verify on Linux, close out (the trim reruns), push and watch Windows CI"
 }

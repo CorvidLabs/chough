@@ -31,6 +31,11 @@ pub(super) fn is_key_item(path: &str) -> bool {
         || FAILURE_FIRST.iter().any(|marker| name.contains(marker))
 }
 
+/// The attachments folder of an archive (REQ-cli-046).
+pub(super) fn attachment_folder(archive: &str) -> String {
+    archive.to_string()
+}
+
 /// Where a file under `.chough/` moves in the vault: `<dir>/attachments/<archive>/<rest>`.
 pub(super) fn attachment(dir: &str, archive: &str, file: &str) -> String {
     let rest = file.strip_prefix(".chough/").unwrap_or(file);
@@ -167,6 +172,31 @@ mod tests {
         assert_eq!(
             attachment("knowledge", "a1", ".chough/artifacts/x/y.log"),
             "knowledge/attachments/a1/artifacts/x/y.log"
+        );
+    }
+
+    #[test]
+    fn long_archive_ids_get_a_short_stable_folder() {
+        assert_eq!(attachment_folder("a1"), "a1");
+        assert_eq!(
+            attachment_folder("twenty-four-characters-x"),
+            "twenty-four-characters-x"
+        );
+        assert_eq!(
+            attachment_folder("claude-host-installs-the-shared-agents-skill-copy"),
+            "claude-host-65ab2407"
+        );
+        assert_eq!(
+            attachment_folder("abcdefghijklmnopqrstuvwxyz"),
+            "abcdefghijklmnop-71c480df"
+        );
+        assert_eq!(
+            attachment(
+                "knowledge",
+                "claude-host-installs-the-shared-agents-skill-copy",
+                ".chough/evidence/OBS-a.json"
+            ),
+            "knowledge/attachments/claude-host-65ab2407/evidence/OBS-a.json"
         );
     }
 
