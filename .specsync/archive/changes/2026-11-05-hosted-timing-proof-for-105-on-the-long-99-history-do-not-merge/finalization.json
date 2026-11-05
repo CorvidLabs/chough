@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "hosted-timing-proof-for-105-on-the-long-99-history-do-not-merge",
+  "implementation_commit": "069e840911d1bc41515fac72428bc24556b6e8dc",
+  "implementation_tree": "bc12ff8408a02c9e12de817c6a732d5865ac6afc",
+  "contract_digest": "bec66603be53959974a5e3e322f7b577c06d8f50f258c3d47d9c0eddbc641bbc",
+  "workspace_digest": "71331665a50226c88db7c8d78a7c14dc95198312e3acdd5c70fc3045657ba23f",
+  "closing_digest": "54f262673883130e3348e5e651d739a1e671b0e16625fa71d2355d00111363f0",
+  "review_digest": "1120b44aeb50f6b823bbf925c9efefde56a8cf1a2d5569890b322a1a617adc99",
+  "finalization_digest": "d6c422672bf65e395946d548629b522163633d680ec268754cad98f3f14b610a",
+  "timestamp": 1793921151
+}

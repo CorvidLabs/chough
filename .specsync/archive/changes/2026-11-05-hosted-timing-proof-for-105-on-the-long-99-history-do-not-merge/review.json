@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "hosted-timing-proof-for-105-on-the-long-99-history-do-not-merge",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "069e840911d1bc41515fac72428bc24556b6e8dc",
+  "contract_digest": "bec66603be53959974a5e3e322f7b577c06d8f50f258c3d47d9c0eddbc641bbc",
+  "execution_digest": "bf3498d4d9f5ff516ca47e62b292c41e85f7f5e9c159e329c6503c674f06a152",
+  "workspace_digest": "71331665a50226c88db7c8d78a7c14dc95198312e3acdd5c70fc3045657ba23f",
+  "timestamp": 1793921062
+}

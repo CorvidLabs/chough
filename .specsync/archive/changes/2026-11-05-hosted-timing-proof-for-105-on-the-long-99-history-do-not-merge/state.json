@@ -7,11 +7,11 @@
   "title": "Hosted timing proof for 105 on the long 99 history (do not merge)",
   "description": "Hosted timing proof for 105 on the long 99 history (do not merge)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "d0480d65f9420068d17f74488a5c74bf0118450e",
   "created_at": 1793920973,
-  "updated_at": 1793921035,
+  "updated_at": 1793921152,
   "affected_specs": [
     "cli"
   ],
