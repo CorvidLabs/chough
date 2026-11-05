@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files",
+  "implementation_commit": "c1d88c1a6a752703f98bd5f015fe7421f7c8f450",
+  "implementation_tree": "775f925a4b96a517ed1ab6dbfcc8f5e78c95b699",
+  "contract_digest": "0ea2fbc7f89ad993269da67a78003734f17f88fcfcb8be93aad906847bf363de",
+  "workspace_digest": "8677f7ab722207b39cb83acccaea407cb70dc8d5434e6c38ffb6c098980b9df6",
+  "closing_digest": "d71fa9037d647ec3db314e2a60a0e9ce9acbe9b44a3d38389e69ed07d4079839",
+  "review_digest": "277985f23ba214d83e323ffeda1e2911074ff965db91bb6b30afe51c6d6c06b3",
+  "finalization_digest": "ffdff88ee1c3bebc743e0ac37085295013e9bb66412f16c678b6ec3c859f4818",
+  "timestamp": 1793896013
+}

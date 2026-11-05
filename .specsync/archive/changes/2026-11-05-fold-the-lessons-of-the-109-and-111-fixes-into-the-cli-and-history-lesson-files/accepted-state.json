@@ -7,11 +7,11 @@
   "title": "Fold the lessons of the 109 and 111 fixes into the cli and history lesson files",
   "description": "Fold the lessons of the 109 and 111 fixes into the cli and history lesson files",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "4143558d3f99af0be75ed53eeb6dd4e77b6ef395",
   "created_at": 1793893285,
-  "updated_at": 1793896006,
+  "updated_at": 1793896013,
   "affected_specs": [
     "cli",
     "history"

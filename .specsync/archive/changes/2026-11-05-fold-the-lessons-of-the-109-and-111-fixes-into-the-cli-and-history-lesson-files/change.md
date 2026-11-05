@@ -1,6 +1,6 @@
 ---
 id: fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files
-state: implementing
+state: archived
 type: documentation
 base_commit: 4143558d3f99af0be75ed53eeb6dd4e77b6ef395
 ---
