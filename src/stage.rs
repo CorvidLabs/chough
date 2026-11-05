@@ -1747,7 +1747,7 @@ fn move_back(
 
 pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     let mut session = read_checkpoint(root)?;
-    let applied = match command {
+    let mut applied = match command {
         StageCommand::Show => None,
         StageCommand::Advance { note } => {
             if let Some(note) = &note {
@@ -1947,6 +1947,14 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     };
     if applied.is_some() {
         save_checkpoint(root, &session)?;
+    }
+    // REQ-cli-041 (KNOW-13): after the move into done is saved, trim old proof; the
+    // result is reported and never undoes the move.
+    if let Some(applied) = applied
+        .as_mut()
+        .filter(|applied| applied["kind"] == "advance" && applied["to"] == "done")
+    {
+        applied["librarian_trim"] = crate::library::trim_at_done(root);
     }
     report(root, &session, applied)
 }

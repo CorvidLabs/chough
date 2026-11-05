@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 44
+version: 45
 status: active
 files:
   - src/main.rs
@@ -30,6 +30,7 @@ files:
   - tests/fixtures/workflow-at-825a380-lifecycle.md
   - tests/fixtures/workflow-at-edbc3c1-lifecycle.md
   - tests/next.rs
+  - tests/librarian_trim.rs
   - tests/native_check.rs
   - tests/verification.rs
 
@@ -253,3 +254,4 @@ provider, runtime or hosted service.
 | 42 | 2026-11-04 | show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86: Show the latest failed native check in next and say when it has not passed for this tree (issue 86) |
 | 43 | 2026-11-04 | show-a-failed-native-command-as-exit-n-or-killed-by-signal-n-instead-of-rust-debug-text-issue-87: Show a failed native command as exit N or killed by signal N instead of Rust debug text (issue 87) |
 | 44 | 2026-11-04 | stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git: Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81) |
+| 45 | 2026-11-04 | trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88: Trim old proof automatically when a change reaches done with the librarian on, and let retention manual opt out (issue 88) |

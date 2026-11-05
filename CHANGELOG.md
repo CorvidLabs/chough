@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- With the librarian on (the default), `chough stage advance` into done now trims cold
+  archived proof right after the move, under the same post-archive summary rules (ledger
+  first, validity restore, nothing removed while a native change is open), and reports it
+  as `applied.librarian_trim`. `chough pref set retention manual` opts out (#88, KNOW-13,
+  REQ-cli-041).
+
 - Stopping Chough on Linux now also stops what its command started outside the process
   group: a descendant that called `setsid`, and one whose parent exited (the `chough`
   binary is now the child subreaper of what it starts). Chough says on stderr when it

@@ -136,6 +136,7 @@ Additional native requirements:
 |---|---|---|---|
 | REQ-cli-038 | `next` and `status` warn when the effective native commands are only SpecSync's own, counting configured commands it does not run; the test stage points to recorded test evidence; no gate change and no added native read | FLOW-15, FLOW-6, LIFE-7 | tests/verification.rs |
 | REQ-cli-039 | `next` shows the latest native check attempt SpecSync recorded and says when the check has not passed for this tree, with no extra native read | LIFE-7, LIFE-3 | tests/native_check.rs |
+| REQ-cli-041 | `stage advance` into done trims cold archived proof with the librarian on unless `retention` is `manual`, reported as `applied.librarian_trim`, never undoing the move | KNOW-13, KNOW-11, KNOW-7, KNOW-5 | tests/librarian_trim.rs |
 | REQ-reporting-002 (was REQ-cli-024) | Bounded, deduplicated timing native reads with explicit excluded/unknown history | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-history-002 (was REQ-cli-025) | Explicit adoption, immutable events and a cursor in the single checkpoint/current-cycle group | LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13 | tests/history.rs; real Git branch fixture; schema migration regressions |
 | REQ-history-003 (was REQ-cli-026) | Bounded readers/cycles and protected whole-cycle retention with honest partial history | LIFE-3, LIFE-7, LIFE-8, LIFE-10, FLOW-13 | tests/history.rs boundary, receipt, interruption and integration fixtures |
