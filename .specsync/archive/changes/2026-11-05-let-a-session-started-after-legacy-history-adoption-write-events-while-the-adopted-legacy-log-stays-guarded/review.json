@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "93922cf12df3bb17c81ff9290cb9065b24c18b7e",
+  "contract_digest": "6aea81ba15ac6b44a420c6053d1c51947aafc062df1a5512bb32587d19c19cd5",
+  "execution_digest": "1c18a52d0776a72531daa475bde5db2f59b5f3b6f3499e97a892328bdee17497",
+  "workspace_digest": "8ddf1e753a3e967a62b3ea2b24643b4e07a2819fdefcbdecc8541889ef1185a9",
+  "timestamp": 1793891518
+}

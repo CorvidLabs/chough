@@ -1,6 +1,6 @@
 ---
 id: let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 88466daafc72145962cade5c7406a9fa84fe570f
 ---

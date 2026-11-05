@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded",
+  "implementation_commit": "93922cf12df3bb17c81ff9290cb9065b24c18b7e",
+  "implementation_tree": "28336348ebfed56b0cb92109a3e09f661cbdd535",
+  "contract_digest": "6aea81ba15ac6b44a420c6053d1c51947aafc062df1a5512bb32587d19c19cd5",
+  "workspace_digest": "8ddf1e753a3e967a62b3ea2b24643b4e07a2819fdefcbdecc8541889ef1185a9",
+  "closing_digest": "42f57235f100b8329e92c930506d27ff20f6288c0839ef1c02704544181aac3f",
+  "review_digest": "6a5567c22dc29d7bca5eafabb23ed9b4e21c5785e31d54d5208b68075efbaddd",
+  "finalization_digest": "422b4dc22e08e42e7387c7bc2fd7a27c5e2143913fc645ea48a6bfac1ee45845",
+  "timestamp": 1793891523
+}
