@@ -1,18 +1,27 @@
 {
+  "history_cursor": {
+    "cycle": "CYC-155f8f1f753de8296b4b4846",
+    "head": null,
+    "legacy": {
+      "digest": "ab8cf9bf4b314c6b3374339164ef302cb1c129dab8dd6df2133276b73407fdf5",
+      "bytes": 219674,
+      "lines": 602
+    }
+  },
   "schema_version": 2,
-  "objective": "Fix the three P1s from the #109 review: never overwrite an attachment, folder references protect their files, a loose folder with a current file stays",
+  "objective": "Adopt event history and per-change sessions in this repository and union-merge the ledger and changelog (DRIVE-12, DRIVE-3)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file",
+  "native_change": "adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -58,7 +67,9 @@
       "KNOW-17",
       "KNOW-20",
       "KNOW-18",
-      "KNOW-19"
+      "KNOW-19",
+      "DRIVE-12",
+      "DRIVE-3"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -508,5 +519,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+  "next_action": "Apply history adopt and session adopt, edit .gitattributes and AGENTS.md, run the merge simulation and verify"
 }
