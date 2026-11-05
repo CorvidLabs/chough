@@ -1,6 +1,6 @@
 ---
 id: reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes
-state: implementing
+state: archived
 type: feature
 base_commit: 5326ec48b4ae856543e4d8cabd7c06b29daef0e5
 ---
