@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-readme-upgrade-c9d7d78ad861c6645c363c2c",
+  "criteria": [
+    "KNOW-14",
+    "KNOW-4"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test vault -- --exact an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept for TC-cli-vault-readme-upgrade: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-readme-upgrade-c9d7d78ad861c6645c363c2c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-readme-upgrade-c9d7d78ad861c6645c363c2c.log": "745b7293b89589402b204be57bc65e248a23d2f1bae6f0259f547ed86f890238"
+  },
+  "observed_at_unix_seconds": 1793851199,
+  "snapshot": {
+    "revision": "ff8e44967b2f213301e4b16e9e2a368854cba3bc",
+    "dirty": false,
+    "fingerprint": "30a14cb62f1b0e201e0061195cf252c8b767c4e71fb8af3adf9a84b644655dba",
+    "content": "42a6625dfae83af667aebc5b721da77b7dba294f27079318577c58fa873ad698"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-readme-upgrade",
+      "digest": "a6e71643d31c94e4d1c5fb98a47b0e3ced781f291de2e4d7ac159b2a3c7be57c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

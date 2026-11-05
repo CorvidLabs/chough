@@ -1,0 +1,48 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793849398,
+      "digest": "cf01c0edf286eafe7da0d9e41db905f4b3c247fbe61c868e093ad99e2d992833",
+      "note": "corvid-agent review of #107; Leif chose Fix the wording for KNOW-14 (2026-11-04)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid",
+        "title": "List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107)",
+        "description": "List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "hi/knowledge.md",
+          "src/records.rs",
+          "src/vault.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-044: the vault must list each criterion ID, including HI sub-criterion IDs; no requirement text changes.",
+        "acceptance_criteria": [
+          "Vault intent notes list HI sub-criterion IDs such as UX-1.a, a Trace list such as UX-1.a, UX-2. credits both IDs and never UX-1, the archive note front matter lists both, and KNOW-14 says every note has at least id, title, type and tags while an archived-change note also gives status, dates, modules, criteria, requirements and commits. The new test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "corvid-agent review 5779445909 on #107 (two required fixes). Leif (0xLeif) chose Fix the wording for KNOW-14 on 2026-11-04 and Yes, record and merge for #107. Reuse records::hi_criterion_id (DRIVE-1).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793849626,
+      "digest": "3b579f4b2a31047525dd07e6a676e5a4b4caca25e5688831f3e3864ec3c52b50",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

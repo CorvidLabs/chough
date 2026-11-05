@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793850262,
+      "digest": "022a4723e1f58fb192249eacc454c609707c2581c78148aeab3e5e68a5f28b28",
+      "note": "Reviews of #107 at 94ebefc; Leif: Yes, record and merge for #107 (2026-11-04)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes",
+        "title": "Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107)",
+        "description": "Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/vault.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-044: the vault must credit the criteria each requirement traces and link every HI file; no requirement text changes.",
+        "acceptance_criteria": [
+          "A requirement that mentions Trace: inline before its real Trace list is credited from the real list, so this repository REQ-cli-044 credits KNOW-14 and KNOW-15; HI files declaring families quoted or as a YAML block list link to their intent notes; the new test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "corvid-agent review 5779563953 and the 0xLeif agent review on #107 at 94ebefc. Leif (0xLeif): Yes, record and merge for #107 (2026-11-04).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793850460,
+      "digest": "ea10b729dbfb3d9ebdd7f52302bf6e34cf8f87799ffd709c17a64ad44409d245",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

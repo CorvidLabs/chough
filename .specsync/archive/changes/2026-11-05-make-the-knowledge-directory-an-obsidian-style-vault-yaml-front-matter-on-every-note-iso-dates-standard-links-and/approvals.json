@@ -1,0 +1,62 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793847776,
+      "digest": "1d62b7d35237ebfb95cc4625e71c079bf8d2dd258edb0353c0f994c23db72336",
+      "note": "Leif chose Front matter + MD links and asked the vault to compound everything (2026-11-04); KNOW-14, KNOW-15",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and",
+        "title": "Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched",
+        "description": "Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "INTENT.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "hi/knowledge.md",
+          "skills/chough-workflow/references/librarian.md",
+          "src/library.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "src/vault.rs",
+          "tests/evidence.rs",
+          "tests/knowledge_default.rs",
+          "tests/librarian_trim.rs",
+          "tests/next.rs",
+          "tests/optional.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Every generated knowledge note starts with YAML front matter (id, title, type, tags, and for an archived change status, ISO 8601 finalized date, modules, requirements, HI criteria traced by those requirements and commits). Archived-change notes link their modules and criteria. modules/<module>.md links the module spec, requirements, context and lesson count and the archived changes that touched it; intent/<family>.md links the HI file and, per criterion ID, the archived changes whose requirements trace it, without copying criterion text; rules.md links the rules, skills and decisions that exist. Every relative Markdown link in the vault resolves, regeneration is byte-identical, and no gate reads it. KNOW-14 to KNOW-19 are captured in hi. New tests fail first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif (0xLeif) 2026-11-04 chose Front matter + MD links and asked for the vault to compound everything (KNOW-14, KNOW-15). Points to sources instead of restating them (KNOW-3, KNOW-12); deterministic (KNOW-4); new code in a small module because src/library.rs is over 1,000 lines. The reduction choices (KNOW-16 to KNOW-19) are captured here and implemented in a later change.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "d498e4e04bf9f5136b05fc3f37df973391f6711924aa0afde03956adbd72315a"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793848774,
+      "digest": "0df80cb6b9b77e3129662fd6c0ba714c0b51efd613e8316e16e11b6981d76f41",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

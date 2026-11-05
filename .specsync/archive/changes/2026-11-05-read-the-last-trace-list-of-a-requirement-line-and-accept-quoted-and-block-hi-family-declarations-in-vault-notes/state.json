@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes",
+  "slug": "read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes",
+  "title": "Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107)",
+  "description": "Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "94ebefc04e6910f066800cc34698a6c2b3a101bd",
+  "created_at": 1793850156,
+  "updated_at": 1793850482,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/vault.rs",
+    "tests/vault.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-044: the vault must credit the criteria each requirement traces and link every HI file; no requirement text changes.",
+  "acceptance_criteria": [
+    "A requirement that mentions Trace: inline before its real Trace list is credited from the real list, so this repository REQ-cli-044 credits KNOW-14 and KNOW-15; HI files declaring families quoted or as a YAML block list link to their intent notes; the new test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "corvid-agent review 5779563953 and the 0xLeif agent review on #107 at 94ebefc. Leif (0xLeif): Yes, record and merge for #107 (2026-11-04).",
+    "public_contract": "no"
+  }
+}

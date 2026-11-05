@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test every_markdown_link_in_the_vault_resolves ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.04s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/vault.rs (target/debug/deps/vault-62bbd7c8fb0823d6)

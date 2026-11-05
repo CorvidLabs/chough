@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Record the 2026-11-04 retention lessons in the history lesson source (KNOW-12)",
+  "objective": "Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal in Trace lists (#107 Windows CI)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -12,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "record-the-2026-11-04-retention-lessons-in-the-history-lesson-source",
+  "native_change": "recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -51,7 +51,9 @@
       "LIFE-13",
       "LIFE-14",
       "LIFE-15",
-      "DRIVE-10"
+      "DRIVE-10",
+      "KNOW-14",
+      "KNOW-15"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -326,7 +328,14 @@
     "PR #96 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "PR #99 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "2026-11-04 Leif (0xLeif) answered \"yes\" to: build and commit knowledge/ in Chough repo, make librarian on by default create it at init and refresh it when the trim runs at done, and fold the 2026-11-04 lessons into the cli and history lesson sources.",
-    "PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision."
+    "PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-04 Leif (0xLeif) chose \"Front matter + MD links\" for an Obsidian-style knowledge vault, asked that it compound everything (\"we need to learn, grow, rules, skills, and compound knowledge of all this project and all things.. spec-sync lessons, hi.. changes.. etc all things!!\"), chose to let old checkpoint refs, older newest-per-case runs and loose artifact folders be reduced, and chose \"Key items move\" to knowledge/attachments; captured as KNOW-14 to KNOW-19.",
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif, archive it and merge #107 once CI is green, then start the reduction change (KNOW-16 to 19)?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-04 Leif (0xLeif) chose \"Fix the wording\" for KNOW-14 (only archived-change notes carry status, dates and commits) and confirmed KNOW-16 to KNOW-19 (\"Yes, build it\") after corvid-agent asked for an explicit confirmation.",
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107 and chose 'Fix the wording' for KNOW-14 after corvid-agent's review; this fix is part of #107. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107; this fix for the reviews at 94ebefc is part of #107. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107; this fix for the review at 5326ec4 is part of #107. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #107; this fix for hosted Windows CI is part of #107. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -800,7 +809,36 @@
     "OBS-tc-cli-init-unbounded-knowledge-refused-db6fc909a3ede2188f94798c",
     "OBS-tc-cli-done-refreshes-knowledge-after-trim-1bbadd90c2ca76a8d85bb8d1",
     "OBS-tc-cli-done-refreshes-knowledge-untrimmed-9786e2750bc874bc3868f5c2",
-    "OBS-tc-cli-librarian-off-no-knowledge-at-done-a0770facc80d2a1e222765bf"
+    "OBS-tc-cli-librarian-off-no-knowledge-at-done-a0770facc80d2a1e222765bf",
+    "OBS-tc-cli-vault-front-matter-on-every-note-be7fc474642bac3ef7ab9f14",
+    "OBS-tc-cli-vault-archive-note-properties-dcc9b50cfda66aed8bbaaabf",
+    "OBS-tc-cli-vault-module-notes-e588fc8d1289da045f1ba6f7",
+    "OBS-tc-cli-vault-intent-notes-95d2176a5c7c5126318c62d3",
+    "OBS-tc-cli-vault-rules-note-478766da1fcf97af1b19a762",
+    "OBS-tc-cli-vault-links-resolve-41a77ccaf7e4b7d0404f7613",
+    "OBS-tc-cli-vault-regenerates-identically-3e4c15ac6ecfd41dff19feef",
+    "OBS-tc-cli-vault-front-matter-on-every-note-7d367ae40088b3228672012a",
+    "OBS-tc-cli-vault-archive-note-properties-83bbace1d2609853521adc32",
+    "OBS-tc-cli-vault-module-notes-07f158d65e620008195603c1",
+    "OBS-tc-cli-vault-intent-notes-f8310b6c5f06c9010e10a153",
+    "OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c",
+    "OBS-tc-cli-vault-links-resolve-184e2ee0ff66a3dd1e4a662a",
+    "OBS-tc-cli-vault-regenerates-identically-88331deea5050c18b2d830a2",
+    "OBS-tc-cli-vault-sub-criterion-ids-966dc28ae04274debbb7eab4",
+    "OBS-tc-cli-vault-archive-note-properties-13120cf549be60dcd5c3a757",
+    "OBS-tc-cli-vault-intent-notes-6e82cb588007fbe32a8a2a8a",
+    "OBS-tc-cli-vault-links-resolve-b9f6b0b9f29b9d26b3cbf33d",
+    "OBS-tc-cli-vault-trace-and-family-forms-b7f23b9ad0491722c8b3df07",
+    "OBS-tc-cli-vault-sub-criterion-ids-cd88575df8e8a44ade413d51",
+    "OBS-tc-cli-vault-archive-note-properties-09d31a0bf88a0a12a889c4f8",
+    "OBS-tc-cli-vault-intent-notes-0e6e8d167b5b83b31575b126",
+    "OBS-tc-cli-vault-inline-trace-crlf-comments-36e6427dcbc604a9dd82b1cc",
+    "OBS-tc-cli-vault-readme-upgrade-c9d7d78ad861c6645c363c2c",
+    "OBS-tc-cli-vault-trace-and-family-forms-73213166ceb28b3db7342d3b",
+    "OBS-tc-cli-vault-front-matter-on-every-note-f8fbe0db6dd11ac19c5a7d8e",
+    "OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2",
+    "OBS-tc-cli-vault-readme-upgrade-85fa1399093164743e01658e",
+    "OBS-tc-cli-vault-inline-trace-crlf-comments-70ae88664f84301800f9b4ce"
   ],
   "bugs": [
     "BUG-0001",
@@ -836,5 +874,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #106 when hosted checks are green"
+  "next_action": "Merge PR #107 when hosted checks are green"
 }

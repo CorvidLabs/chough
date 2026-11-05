@@ -186,7 +186,7 @@ pub(super) fn valid_module_name(value: &str) -> bool {
 /// alternate number and lowercase letters, starting with a number, such as `LIFE-3`,
 /// `UX-12.a` or `SEND-1.a.1.b`. A number level fits in 32 bits and has no leading zero.
 /// Like hi, it sets no length limit; the record bounds still apply.
-fn hi_criterion_id(value: &str) -> bool {
+pub(super) fn hi_criterion_id(value: &str) -> bool {
     let Some((family, rest)) = value.split_once('-') else {
         return false;
     };

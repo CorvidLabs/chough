@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The knowledge directory is now an Obsidian-style vault (REQ-cli-044, KNOW-14,
+  KNOW-15). Every note starts with YAML front matter (`id`, `title`, `type`, `tags`, and
+  for an archived change its status, ISO date, modules, requirements, traced HI criteria
+  and commits) and links with standard Markdown links that resolve. New notes connect
+  everything: `modules/<module>.md`, `intent/<file>.md` (each criterion ID with the
+  changes that trace it) and `rules.md` (rules, skills, decisions, policy). The index
+  links only files that exist. KNOW-14 to KNOW-19 capture Leif's vault and reduction
+  choices; the reduction (KNOW-16 to KNOW-19) comes in a later change.
 - With the librarian on (the default), the knowledge directory now exists and stays
   current (REQ-cli-043, KNOW-1, KNOW-5). `chough init` creates `knowledge/`
   create-only, and every `chough stage advance` into done regenerates it after the trim,

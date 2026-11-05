@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "4425f19d5ae6eeff3df0dca8f5fea2ab4b068f98",
+  "contract_digest": "1e0881d2390290976f48644bbf93a30bd298edd1dc82902b6a255a378e16dcee",
+  "execution_digest": "ca1637a93bdb41f0ce286b068da2d06c3116732ab873d8139e62d7647afbae82",
+  "workspace_digest": "29b13fbb0294d6211107dedfc7fcafed27ab917c77466b31c71b488c0723a18b",
+  "timestamp": 1793852331
+}

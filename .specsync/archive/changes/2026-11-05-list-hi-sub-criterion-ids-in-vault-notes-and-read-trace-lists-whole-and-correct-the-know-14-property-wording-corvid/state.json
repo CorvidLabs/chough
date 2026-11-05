@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid",
+  "slug": "list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid",
+  "title": "List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107)",
+  "description": "List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "16dc3294fc8e91a3f6a116914412fe8714a28ddd",
+  "created_at": 1793849340,
+  "updated_at": 1793849646,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/vault.rs",
+    "src/records.rs",
+    "tests/vault.rs",
+    "hi/knowledge.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-044: the vault must list each criterion ID, including HI sub-criterion IDs; no requirement text changes.",
+  "acceptance_criteria": [
+    "Vault intent notes list HI sub-criterion IDs such as UX-1.a, a Trace list such as UX-1.a, UX-2. credits both IDs and never UX-1, the archive note front matter lists both, and KNOW-14 says every note has at least id, title, type and tags while an archived-change note also gives status, dates, modules, criteria, requirements and commits. The new test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "corvid-agent review 5779445909 on #107 (two required fixes). Leif (0xLeif) chose Fix the wording for KNOW-14 on 2026-11-04 and Yes, record and merge for #107. Reuse records::hi_criterion_id (DRIVE-1).",
+    "public_contract": "no"
+  }
+}

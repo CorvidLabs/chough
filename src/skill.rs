@@ -291,6 +291,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/librarian.md",
         "772b6900528a84ad0c76638ad91536865ab7d62883d05eb49a8f7841896c2740",
     ),
+    // Main 8fbbbe7; superseded by the knowledge-vault guidance (REQ-cli-044).
+    (
+        "references/librarian.md",
+        "452a33f87dfb0c729ac98c790dbac47f811ae474ef693d0792a204bddf5e6772",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

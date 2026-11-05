@@ -11,6 +11,15 @@ it after the trim (`applied.librarian_index`), so each archived change has its e
 Commit it with the checkpoint. It is generated: on a merge conflict inside it, take
 either side and run `chough library index` to regenerate it.
 
+It is an Obsidian-style vault (REQ-cli-044). Every note starts with YAML front matter
+(`id`, `title`, `type`, `tags`, ISO dates) and links with standard Markdown links:
+`archives/<change>.md` per archived change, with its modules, requirements and traced
+HI criteria; `modules/<module>.md` with the module's sources, lesson count and the
+changes that touched it; `intent/<file>.md` with each criterion ID and the changes that
+trace it; and `rules.md` with the rules, skills and decisions. Notes point to sources
+and never copy lesson or criterion text. Open the folder in Obsidian to follow the
+links and backlinks.
+
 ## From any stage
 
 Enter it as a side stage and return to the caller:

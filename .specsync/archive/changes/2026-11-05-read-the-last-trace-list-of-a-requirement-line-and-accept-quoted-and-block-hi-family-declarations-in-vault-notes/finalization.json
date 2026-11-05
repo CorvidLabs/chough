@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes",
+  "implementation_commit": "804e5cbec9033ad15d7cb3eb2904eaaa9e3c4a3d",
+  "implementation_tree": "c21e2e226b733a532aa894e7611fe2955dc8dceb",
+  "contract_digest": "022a4723e1f58fb192249eacc454c609707c2581c78148aeab3e5e68a5f28b28",
+  "workspace_digest": "bccde6da2c5b6f3064b4e7ab0f92452f0b236dc8102ec87dc7e25609bfc21012",
+  "closing_digest": "ea10b729dbfb3d9ebdd7f52302bf6e34cf8f87799ffd709c17a64ad44409d245",
+  "review_digest": "2a623d8c59e8687924e950f705b8d0b1c68b3b93ee8914c541fab33a62e02e13",
+  "finalization_digest": "c9474f6aa1140ee0515b4ae59dd2bd2119056220f00a879d4bed9e7e6b326a78",
+  "timestamp": 1793850460
+}
