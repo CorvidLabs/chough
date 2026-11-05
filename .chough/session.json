@@ -756,7 +756,12 @@
     "OBS-tc-cli-next-shows-open-questions-4ae1ae4b89f8d37c870aacfa",
     "OBS-tc-cli-folded-inbox-question-in-next-0674eb2c525a207ecd1f8fc7",
     "OBS-tc-history-archived-session-listed-archived-745b95673d38746da24a9658",
-    "OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1"
+    "OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1",
+    "OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-a4f17c2165e94f21c1ea94e9",
+    "OBS-tc-cli-checkpoint-lock-in-project-ignored-1ddc842c3ee553366e3ceb78",
+    "OBS-tc-cli-adopt-race-writers-save-or-refuse-7d1291c36ffdf8c4cf60cb7b",
+    "OBS-tc-history-no-sessions-local-holds-only-lock-f915ba8e80bb2294e9b22d21",
+    "OBS-tc-history-sessions-local-holds-pointer-and-lock-2aaa399277d671d5225a7ef1"
   ],
   "bugs": [
     "BUG-0001",
