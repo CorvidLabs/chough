@@ -316,7 +316,11 @@ def main():
         safe_native_tree(root)
         before = fingerprint(root)
         try:
-            inspect(root, args.base, binary, shard)
+            # The default 1/1 run calls inspect exactly as before sharding existed.
+            if shard == (1, 1):
+                inspect(root, args.base, binary)
+            else:
+                inspect(root, args.base, binary, shard)
         finally:
             if fingerprint(root) != before:
                 raise GateError("Native inspection changed the source or lifecycle bytes")
