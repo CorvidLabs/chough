@@ -221,12 +221,11 @@ pub(super) fn traces(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
             let (Some(requirement), Some(index)) = (current.as_ref(), line.find("Trace:")) else {
                 continue;
             };
-            let list = line[index + "Trace:".len()..]
-                .split('.')
-                .next()
-                .unwrap_or_default();
+            // The list runs to the end of its sentence; IDs such as `UX-1.a` contain dots.
+            let rest = &line[index + "Trace:".len()..];
+            let list = rest.split(". ").next().unwrap_or_default();
             let ids: &mut Vec<String> = found.entry(requirement.clone()).or_default();
-            for id in list.split(',').map(str::trim) {
+            for id in list.split(',').map(|id| id.trim().trim_end_matches('.')) {
                 if is_criterion(id) && !ids.iter().any(|known| known == id) {
                     ids.push(id.to_string());
                 }
@@ -236,13 +235,9 @@ pub(super) fn traces(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     Ok(found)
 }
 
+/// An HI criterion ID, including sub-criteria such as `UX-1.a` (DRIVE-1).
 fn is_criterion(id: &str) -> bool {
-    id.split_once('-').is_some_and(|(family, number)| {
-        !family.is_empty()
-            && family.chars().all(|c| c.is_ascii_uppercase())
-            && !number.is_empty()
-            && number.chars().all(|c| c.is_ascii_digit() || c == '.')
-    })
+    crate::records::hi_criterion_id(id)
 }
 
 /// The sorted HI criterion IDs an archive's requirements trace.

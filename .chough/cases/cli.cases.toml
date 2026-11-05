@@ -3504,3 +3504,21 @@ expected = ["tests/vault.rs::the_vault_regenerates_identically passes"]
 adapter = "cargo-test"
 test_target = "vault"
 test = "the_vault_regenerates_identically"
+
+[[case]]
+id = "TC-cli-vault-sub-criterion-ids"
+title = "Vault notes list HI sub-criterion IDs and read Trace lists whole"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-15", "KNOW-14"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "src/records.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::sub_criterion_ids_are_listed_and_traced_in_whole_trace_lists passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "sub_criterion_ids_are_listed_and_traced_in_whole_trace_lists"

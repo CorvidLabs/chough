@@ -260,7 +260,10 @@ fn sub_criterion_ids_are_listed_and_traced_in_whole_trace_lists() {
     };
     assert!(line("UX-1.a").contains("[a3](../archives/a3.md)"), "{ux}");
     assert!(line("UX-2").contains("[a3](../archives/a3.md)"), "{ux}");
-    assert!(!line("UX-1").contains("a3"), "UX-1 credited for UX-1.a:\n{ux}");
+    assert!(
+        !line("UX-1").contains("a3"),
+        "UX-1 credited for UX-1.a:\n{ux}"
+    );
 }
 
 #[test]
