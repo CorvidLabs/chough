@@ -7,11 +7,11 @@
   "title": "Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)",
   "description": "Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "290cce3a024425cfd35600a43b8e458beaa89436",
   "created_at": 1793804818,
-  "updated_at": 1793841263,
+  "updated_at": 1793841276,
   "affected_specs": [
     "cli",
     "history"
