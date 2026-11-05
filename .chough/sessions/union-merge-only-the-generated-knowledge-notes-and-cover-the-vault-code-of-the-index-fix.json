@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-a984327cb5a95913f9cfa12f",
-    "head": "EVT-16f0910ec6396b629ff6340e",
+    "head": "EVT-5ba2d464ab47c883b929c8f0",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -29,10 +29,14 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Narrow the union driver to generated notes, verify, and bring the review gate to the orc"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
