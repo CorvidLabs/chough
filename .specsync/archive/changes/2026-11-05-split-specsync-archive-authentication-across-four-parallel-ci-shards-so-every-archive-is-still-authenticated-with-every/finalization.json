@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "split-specsync-archive-authentication-across-four-parallel-ci-shards-so-every-archive-is-still-authenticated-with-every",
+  "implementation_commit": "8c02e6780c4128d04c067ae7757c98ff48478252",
+  "implementation_tree": "fbde298256417a483397e9fd8374f7f4cf4b1940",
+  "contract_digest": "e1cf452bd5968fe8fe2995240f6c4edb148052bf3050c9c4232fc7fdd7234af1",
+  "workspace_digest": "84677aea7b7ef0ac2fc470132392778e49f913583915005a4931bf7d957d1e18",
+  "closing_digest": "a8dc72b547f590feca3d35696d3919f16806b9859517dd4e744ca3ba562594e5",
+  "review_digest": "1a3c74293c97815479b4b5790f9ec59420541fc45ef4b09dc47ef77910bd13c0",
+  "finalization_digest": "4d45f5013f7fd156cbc9dfe63462483b3c37995bb9f1531227d88f5d85682ed5",
+  "timestamp": 1793840226
+}
