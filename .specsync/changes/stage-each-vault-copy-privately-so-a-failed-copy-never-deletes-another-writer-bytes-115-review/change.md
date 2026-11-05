@@ -1,6 +1,6 @@
 ---
 id: stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review
-state: approved
+state: implementing
 type: bug_fix
 base_commit: a6cfd3298d70b8b3ce6e2de92a25c817c4cbb324
 ---

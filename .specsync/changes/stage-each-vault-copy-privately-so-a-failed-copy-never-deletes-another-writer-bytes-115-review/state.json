@@ -7,10 +7,11 @@
   "title": "Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)",
   "description": "Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "a6cfd3298d70b8b3ce6e2de92a25c817c4cbb324",
   "created_at": 1793901067,
-  "updated_at": 1793901153,
+  "updated_at": 1793901249,
   "affected_specs": [
     "cli"
   ],
