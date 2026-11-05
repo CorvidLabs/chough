@@ -1,6 +1,6 @@
 ---
 id: recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 6b2dfb557fe939b6b2d98e3fd50006d1dae4442e
 ---

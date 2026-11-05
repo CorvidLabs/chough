@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace",
+  "slug": "recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace",
+  "title": "Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107)",
+  "description": "Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "6b2dfb557fe939b6b2d98e3fd50006d1dae4442e",
+  "created_at": 1793852020,
+  "updated_at": 1793852342,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/vault.rs",
+    "src/library.rs",
+    "tests/vault.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-044: the README upgrade must hold on every supported platform and every traced criterion is read; no requirement text changes.",
+  "acceptance_criteria": [
+    "An untouched earlier knowledge README checked out with CRLF line endings is upgraded like the LF one, so the README test passes on Windows; an edited README is still kept; a requirement line with one unmatched backtick before its Trace list still credits that list. The new test fails first and fledge lanes run verify passes on Linux; hosted Windows passes."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Hosted Product / windows-latest failed an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept on #107 at 6b2dfb5 (the fixture is checked out with CRLF); corvid-agent non-blocking note 1 at 6b2dfb5. Leif (0xLeif): Yes, record and merge for #107.",
+    "public_contract": "no"
+  }
+}
