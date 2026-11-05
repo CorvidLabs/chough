@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review",
+  "slug": "stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review",
+  "title": "Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)",
+  "description": "Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "a6cfd3298d70b8b3ce6e2de92a25c817c4cbb324",
+  "created_at": 1793901067,
+  "updated_at": 1793901459,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-046 and KNOW-10, the same class as #110: a failed copy must not delete another writer's bytes; no requirement text changes.",
+  "acceptance_criteria": [
+    "A vault copy is written and given its mode in a private staging file and then linked into place without replacing anything, so a failed write or mode change removes only the staging file and never another writer's bytes at the destination. The new unit test fails first, the evidence and reduce suites pass, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif agent review of #115 at 628f974b (P1) and corvid-agent re-review at a6cfd329; Leif: Record and merge for #115 (2026-11-05 10:18 MST).",
+    "public_contract": "no"
+  }
+}
