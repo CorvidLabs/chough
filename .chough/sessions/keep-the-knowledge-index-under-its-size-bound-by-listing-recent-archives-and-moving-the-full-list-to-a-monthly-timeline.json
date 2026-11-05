@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-cf5191b57dba90dfc0749c22",
-    "head": "EVT-50487dec0ab218aeaf777bdb",
+    "head": "EVT-f30a5cd28cc356c7abca3d84",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,10 +30,14 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Implement the bounded index and the monthly timeline against the failing test"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
