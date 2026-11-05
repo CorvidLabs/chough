@@ -1,6 +1,6 @@
 ---
 id: split-specsync-archive-authentication-across-four-parallel-ci-shards-so-every-archive-is-still-authenticated-with-every
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 166a8f52caa772fa6bb33361e195772f0005e2f4
 ---
