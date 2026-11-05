@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -462,7 +462,10 @@
     "OBS-tc-cli-reduce-superseded-runs-c2386f1a35968fc79e456ea0",
     "OBS-tc-cli-reduce-attributed-by-cycle-time-50dd467ac3aa60dc22e14c3a",
     "OBS-tc-cli-reduce-done-drops-closed-cycle-refs-b5573d86f433ffa606e8fcdc",
-    "OBS-tc-cli-reduce-parallel-validity-3198c87d139cc220722c9d3f"
+    "OBS-tc-cli-reduce-parallel-validity-3198c87d139cc220722c9d3f",
+    "OBS-tc-cli-reduce-shared-artifact-released-532820cadd76b87255af1384",
+    "OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259",
+    "OBS-tc-cli-reduce-attributed-by-cycle-time-1198e495948f5f5742d9956c"
   ],
   "bugs": [
     "BUG-0001",
@@ -496,7 +499,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Fix the re-check against the failing test, verify and close out (the trim runs again)"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
