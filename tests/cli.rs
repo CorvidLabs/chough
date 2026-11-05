@@ -679,6 +679,16 @@ fn aggregate_context_budget_is_explicit() {
             .iter()
             .any(|section| section["state"] == "omitted-budget")
     );
+    // The budget is a display bound: its markers send the reader to the source and
+    // never ask for a shorter one (LIFE-15).
+    for state in ["omitted-budget", "truncated-budget"] {
+        let section = sections
+            .iter()
+            .find(|section| section["state"] == state)
+            .unwrap();
+        let shown = section["content"].as_str().unwrap();
+        assert!(shown.contains("never shorten"), "{state}: {shown}");
+    }
     let source_bytes: usize = sections
         .iter()
         .map(|section| section["content"].as_str().unwrap().len())
@@ -1098,7 +1108,7 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     let (report, _) = next(None);
     assert_eq!(report["native_specsync"]["state"], "failed");
     let shown = report["native_specsync"]["content"].as_str().unwrap();
-    assert!(shown.starts_with("exit=Some(2)"), "{shown}");
+    assert!(shown.starts_with("exit 2\n"), "{shown}");
     assert!(shown.contains("[truncated at 16384 bytes"), "{shown}");
     assert!(shown.len() < 17_000, "{}", shown.len());
 }
@@ -2264,4 +2274,223 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
             .collect();
         assert!(locks.is_empty(), "{args:?} exit {status} left {locks:?}");
     }
+}
+
+/// Issue #100 (LIFE-15): a HI family export over Chough's 16 KiB display bound is parsed
+/// in full to validate criteria. Shortening the human's intent is never the remedy.
+#[test]
+fn criteria_validate_against_a_hi_family_export_over_16_kib() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    let intent = "The owner own words about this family, kept whole. ".repeat(800);
+    let criteria: Vec<Value> = (1..=40)
+        .map(|n| json!({"id": format!("LIFE-{n}"), "text": format!("Criterion {n}: {intent}")}))
+        .filter(|criterion| criterion["id"] != "LIFE-2")
+        .collect();
+    let export = json!({
+        "hi": 1,
+        "export": 1,
+        "files": [{"intent": intent, "criteria": criteria, "retired": [{"id": "LIFE-2"}]}]
+    })
+    .to_string();
+    assert!(export.len() > 16_384 * 4, "{}", export.len());
+    common::stand_in(&fixture.root().join("bin"), "hi", &export);
+    let add = |id: &str, criterion: &str| {
+        fixture.run(&[
+            "evidence",
+            "add",
+            id,
+            "--criterion",
+            criterion,
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "test-local",
+            "--summary",
+            "Observed against a large family",
+        ])
+    };
+    // The last criterion sits far past the first 16 KiB of the export.
+    let accepted = add("OBS-product-test-000000000000000000000100", "LIFE-40");
+    assert!(
+        accepted.status.success(),
+        "{}",
+        String::from_utf8_lossy(&accepted.stderr)
+    );
+    let refused = add("OBS-product-test-000000000000000000000101", "LIFE-2");
+    let stderr = String::from_utf8_lossy(&refused.stderr);
+    assert!(!refused.status.success());
+    assert!(
+        stderr.contains("unknown or retired criterion: LIFE-2"),
+        "{stderr}"
+    );
+    assert!(!stderr.contains("16384"), "{stderr}");
+    // `cases check` validates a case's criterion links through the same full export.
+    let case = |criterion: &str| {
+        format!(
+            "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Large family\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"{criterion}\"]\nrequirements = [\"REQ-cli-001\"]\npaths = [\"src/\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"git prints its version\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"git\", \"--version\"]\nexpect_output = [\"git version\"]\n"
+        )
+    };
+    fixture.write(".chough/cases/cli.cases.toml", &case("LIFE-40"));
+    fixture.ok(&["cases", "check"]);
+    fixture.write(".chough/cases/cli.cases.toml", &case("LIFE-2"));
+    let refused = fixture.run(&["cases", "check"]);
+    assert!(!refused.status.success());
+    assert!(
+        String::from_utf8_lossy(&refused.stderr).contains("unknown or retired criterion"),
+        "{}",
+        String::from_utf8_lossy(&refused.stderr)
+    );
+}
+
+impl Fixture {
+    /// An evidence fixture whose SpecSync stand-in reports `big-change` archived with no
+    /// acceptance entries, and the archive directory of that change.
+    fn big_archive(&self) -> &'static str {
+        self.evidence_fixture();
+        common::stand_in(
+            &self.root().join("bin"),
+            "specsync",
+            r#"{"summary":{"id":"big-change","state":"archived"},"acceptance_entries":[]}"#,
+        );
+        let archive = ".specsync/archive/changes/2026-11-04-big-change";
+        self.write(
+            &format!("{archive}/finalization.json"),
+            "{\"schema_version\": 2, \"change_id\": \"big-change\", \"timestamp\": 100}\n",
+        );
+        archive
+    }
+}
+
+/// Issue #100 (LIFE-15): SpecSync's own files are read within SpecSync's bound, never
+/// Chough's 65,536-byte record bound. Retention reads an archived `finalization.json`
+/// larger than that bound to find the latest native manifest.
+#[test]
+fn an_archived_finalization_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    let archive = fixture.big_archive();
+    let finalization = json!({
+        "schema_version": 2,
+        "change_id": "big-change",
+        "timestamp": 100,
+        "note": "x".repeat(70_000)
+    })
+    .to_string();
+    assert!(finalization.len() > 65_536);
+    fixture.write(&format!("{archive}/finalization.json"), &finalization);
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert_eq!(preview["native"]["state"], "observed", "{preview:#}");
+    assert!(
+        preview["native"]["detail"]
+            .as_str()
+            .is_some_and(|detail| !detail.contains("65536")),
+        "{preview:#}"
+    );
+}
+
+/// Issue #100 (LIFE-15): the librarian reads an archived `change.md` larger than the
+/// record bound for its title and criteria instead of silently dropping them.
+#[test]
+fn an_archived_change_md_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    let archive = fixture.big_archive();
+    fixture.write(
+        &format!("{archive}/verification.json"),
+        "{\"acceptance_manifest\":{\"entries\":[]}}\n",
+    );
+    fixture.write(
+        &format!("{archive}/change.md"),
+        &format!(
+            "---\nid: big-change\nstate: archived\n---\n\n# A large archived change\n\n## Acceptance Criteria\n\n- It is read whole\n\n## Notes\n\n{}\n",
+            "x".repeat(70_000)
+        ),
+    );
+    fixture.ok(&["library", "index"]);
+    let entry =
+        fs::read_to_string(fixture.root().join("knowledge/archives/big-change.md")).unwrap();
+    assert!(entry.contains("A large archived change"), "{entry}");
+    assert!(entry.contains("It is read whole"), "{entry}");
+}
+
+/// Issue #100 (LIFE-15): a `.specsync/sdd.json` policy larger than the record bound is
+/// SpecSync's to judge; a valid disabled policy is not refused as unreadable.
+#[test]
+fn an_sdd_policy_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    fixture.write(
+        ".specsync/sdd.json",
+        &format!("{}{{\"enabled\": false}}\n", " ".repeat(70_000)),
+    );
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    let advanced = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        advanced["applied"]["gate"], "ungated:sdd-disabled",
+        "{advanced:#}"
+    );
+}
+
+/// Display bounds stay, and their marker sends the reader to the complete source rather
+/// than suggesting the source should shrink (LIFE-15).
+#[test]
+fn display_truncation_points_to_the_complete_source() {
+    let fixture = Fixture::new();
+    fixture.write("INTENT.md", &"Intent kept whole. ".repeat(2_000));
+    fixture.native_fixtures();
+    fixture.init();
+    let context = fixture.ok(&["context", "--json"]);
+    let intent = context["sections"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|section| section["source"] == "INTENT.md")
+        .unwrap();
+    let shown = intent["content"].as_str().unwrap();
+    assert!(
+        shown.contains("[truncated at 16384 bytes for display only"),
+        "{shown}"
+    );
+    assert!(shown.contains("read the complete source"), "{shown}");
+    assert!(shown.contains("never shorten the source"), "{shown}");
+}
+
+/// Issue #100 (LIFE-15): the workflow skill says that Chough's bounds never justify
+/// editing HI, specs or SpecSync files, and that an oversized native source is a Chough
+/// bug to report. The installed copy carries the same words.
+#[test]
+fn the_skill_says_chough_bounds_never_justify_editing_native_sources() {
+    let bundle = Path::new(env!("CARGO_MANIFEST_DIR")).join("skills/chough-workflow");
+    let skill = fs::read_to_string(bundle.join("SKILL.md")).unwrap();
+    let build = fs::read_to_string(bundle.join("references/build.md")).unwrap();
+    for (name, text) in [("SKILL.md", &skill), ("build.md", &build)] {
+        let flat = text.split_whitespace().collect::<Vec<_>>().join(" ");
+        assert!(
+            flat.contains("HI intent or criteria, specs") && flat.contains("SpecSync"),
+            "{name}"
+        );
+        assert!(flat.contains("report a Chough bug"), "{name}");
+    }
+    let flat = skill.split_whitespace().collect::<Vec<_>>().join(" ");
+    assert!(
+        flat.contains("Chough's size bounds cover only its `.chough/` records and displays"),
+        "{skill}"
+    );
+    let fixture = Fixture::new();
+    fixture.init();
+    assert_eq!(
+        fs::read_to_string(
+            fixture
+                .root()
+                .join(".agents/skills/chough-workflow/SKILL.md")
+        )
+        .unwrap(),
+        skill
+    );
 }

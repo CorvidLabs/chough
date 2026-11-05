@@ -13,6 +13,68 @@ All notable changes to Chough are recorded here. The format follows
   `archived`. `inbox add` of an observation ID with no evidence record still adds the
   entry but warns, and `inbox list` marks observation entries `recorded: true|false`
   (#84, LIFE-3, DRIVE-3, REQ-cli-021, REQ-history-006).
+
+- With the librarian on (the default), `chough stage advance` into done now trims cold
+  archived proof right after the move, under the same post-archive summary rules (ledger
+  first, validity restore, nothing removed while a native change is open), and reports it
+  as `applied.librarian_trim`. `chough pref set retention manual` opts out (#88, KNOW-13,
+  REQ-cli-041).
+
+- Stopping Chough on Linux now also stops what its command started outside the process
+  group: a descendant that called `setsid`, and one whose parent exited (the `chough`
+  binary is now the child subreaper of what it starts). Chough says on stderr when it
+  stops a process that kept its own Git's output open, and when `git rev-parse HEAD`
+  fails for a reason other than no repository or no commit (#81, FLOW-14, REQ-cli-011),
+  including when `git` is not installed, which was silent before.
+
+- A failed native command is now shown as `exit 2` or `killed by signal 15` instead of
+  Rust's debug form `exit=Some(2)` or `exit=None`, in `status`, `next` and stage refusals
+  (#87, REQ-cli-003).
+
+- CI: the hosted SpecSync Archive check runs as four parallel jobs,
+  `SpecSync Archive (1/4)` to `(4/4)`. Each authenticates a quarter of the native
+  archives and keeps the 10-minute limit, and shard 1 also walks every PR revision.
+  Every archive is still authenticated with every check unchanged (DRIVE-10). The
+  single job had reached 7 to 10 minutes and timed out on a 91-commit PR, because each
+  archive status read costs tens of seconds inside SpecSync.
+  `check-specsync-archive.py --shard K/N` defaults to 1/1, which behaves as before.
+- `chough next` now shows the native check: the latest attempt SpecSync recorded for the
+  open change, with its time, commit and failing commands with exit codes, and, while
+  the change is approved or implementing, that the check has not passed for this tree.
+  SpecSync keeps no reason when it refuses before verifying (for example incomplete
+  tasks), so `next` names `specsync change check <id>` instead of implying no failure
+  (#86, REQ-cli-039). A `verifying` change whose tree moved after its last check, which
+  SpecSync reports through `handoff.readiness`, is also shown as not passed for this tree.
+  It reads one local file and adds no native read.
+
+- `chough next` and `chough status` now warn when the native check runs none of the
+  project's commands, judged from the effective `verification_commands` SpecSync reports
+  in the status read they already make (only `specsync check …`), and count commands
+  configured in `.specsync/sdd.json` that SpecSync 6.1.2 does not run
+  (CorvidLabs/spec-sync#848). At the test stage `next` points to recording test
+  evidence with `chough cases run` before accept (#85, FLOW-15, REQ-cli-038). No gate
+  changes and no native read is added; the warning names at most 3 commands, each cut,
+  so `next` stays within its bound. The `.specsync/sdd.json` reader moved from
+  src/stage.rs to a small src/policy.rs. Replaces the closed #89.
+
+## [0.3.0] - 2026-11-04
+
+- Chough's size bounds now apply only to its own records under `.chough/` and to what
+  it displays (#100, LIFE-15, REQ-cli-042, REQ-reporting-004). `chough evidence add`,
+  `chough cases check` and `chough cases run` validate criteria against the complete
+  `hi export -- <FAMILY>` output (up to 4 MiB) instead of its 16 KiB display section,
+  so a HI family over 16 KiB no longer fails with "native HI family export is invalid
+  or exceeds 16384 bytes". An archived `finalization.json` (`evidence prune`, history
+  retention), an archived `change.md` (`library index`, which silently dropped its
+  title and criteria), `.specsync/sdd.json` (stage gates) and the native records
+  `timing` reads are read within SpecSync's 4 MiB bound instead of the 64 KiB record
+  bound. Display cuts in `chough context` and native output now say they are for
+  display only and send you to the complete source. The workflow skill says Chough's
+  bounds never justify editing HI intent or criteria, specs or SpecSync files; report
+  a native source over a Chough bound as a Chough bug. Every Chough record keeps its
+  bound. Leif reported this after an agent shortened his HI intent in
+  CorvidLabs/jackdaw to fit the 16 KiB bound: "Chough should only reduce and do all
+  that for its own files in .chough and not the specs, not the human intent."
 - The cli spec module is split again so its requirements companion stays under the
   65,536-byte record bound: REQ-cli-020, REQ-cli-024 and REQ-cli-028 are now
   REQ-reporting-001 to REQ-reporting-003 in the new `reporting` module, which owns
@@ -362,5 +424,6 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0
 [0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
 [0.1.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.1.0

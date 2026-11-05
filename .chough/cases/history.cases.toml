@@ -410,12 +410,12 @@ requirements = ["REQ-history-001", "REQ-history-002", "REQ-history-003", "REQ-hi
 paths = ["specs/cli/requirements.md", "specs/history/requirements.md", "tests/spec_split.rs"]
 environments = ["local-linux-x86_64", "local-macos-arm64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
-expected = ["tests/spec_split.rs passes: each moved body has its 7bd1b62 SHA-256 under its new ID, every REQ-cli-001 to 032 is in cli or mapped, and both companions fit 65536 bytes"]
+expected = ["tests/spec_split.rs passes: each moved body has its 7bd1b62 SHA-256 under its new ID, every REQ-cli-001 to 032 is in cli or mapped"]
 
 [case.bind]
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "spec_split"]
-expect_output = ["test result: ok. 5 passed; 0 failed"]
+expect_output = ["test result: ok. 4 passed; 0 failed"]
 
 [[case]]
 id = "TC-history-archived-session-listed-archived"

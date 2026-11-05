@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git",
+  "implementation_commit": "379889dae305174186f89ca79640a4fce787d78a",
+  "implementation_tree": "747fda528058e7d7c0ec01a7b5f08e80b8c166b4",
+  "contract_digest": "969a782d295e6afa1e009e850249f1871161115efbca2be96a0eb4b29394210b",
+  "workspace_digest": "4a3fa511b8285f78304f762d725bf6808667543c847f4fcf32270935e843e698",
+  "closing_digest": "603c294697c2857e82bf89801914d897ed125eac097329b5663b04969c42c1d4",
+  "review_digest": "2da3ff4d5ac873fe38d42eea07586529f81d0b21de014e4025483874a3d88edd",
+  "finalization_digest": "48713c14d381fbb0c7e529105045b017bd12745d8c2ffba498ca867d4ae36a72",
+  "timestamp": 1793835959
+}

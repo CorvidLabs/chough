@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "split-specsync-archive-authentication-across-four-parallel-ci-shards-so-every-archive-is-still-authenticated-with-every",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "8c02e6780c4128d04c067ae7757c98ff48478252",
+      "contract_digest": "e1cf452bd5968fe8fe2995240f6c4edb148052bf3050c9c4232fc7fdd7234af1",
+      "execution_digest": "d7a47b81125b7696356cb05e86cc8031f2caace1bf7da85bfa7987363a3f7804",
+      "workspace_digest": "84677aea7b7ef0ac2fc470132392778e49f913583915005a4931bf7d957d1e18",
+      "timestamp": 1793840217
+    }
+  ]
+}

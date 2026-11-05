@@ -6,6 +6,8 @@ mod evidence;
 mod history;
 mod identity;
 mod library;
+mod native_check;
+mod policy;
 mod prefs;
 mod records;
 mod sessions;
@@ -160,6 +162,8 @@ enum EvidenceCommand {
 }
 
 fn main() -> Result<()> {
+    // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
+    records::become_subreaper();
     let cli = Cli::parse();
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
@@ -423,6 +427,14 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             "references": checkpoint.references,
         }),
     };
+    let verification_warning = policy::verification_warning(
+        root,
+        assessment
+            .native
+            .as_ref()
+            .and_then(|native| native.value.as_ref())
+            .and_then(|value| value.pointer("/summary/verification_commands")),
+    )?;
     let (native_status, native_summary) = match &assessment.native {
         None => (serde_json::to_value(not_configured())?, Value::Null),
         Some(native) => (
@@ -446,6 +458,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
         "native_summary": native_summary,
+        "native_verification_warning": verification_warning,
         "snapshot": match &current { Ok(value) => serde_json::to_value(value)?, Err(error) => json!({"unknown": error.to_string()}) },
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,
@@ -757,7 +770,9 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "iteration": checkpoint.stage.iteration,
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
+        "native_check": native_check::view(root, change.as_deref(), summary)?,
         "native": native,
+        "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         "next_valid_action": {
             "action": cut(&assessment.action.action),
             "reason": cut(&assessment.action.reason),
@@ -865,6 +880,9 @@ fn next_text(view: &Value) -> String {
             text(&native["terminal_evidence"])
         ));
     }
+    if let Some(warning) = view["native_verification_warning"].as_str() {
+        lines.push(format!("Warning: {warning}"));
+    }
     if native["next_action"].is_string() {
         lines.push(format!(
             "  Native next action: {}",
@@ -877,6 +895,7 @@ fn next_text(view: &Value) -> String {
             text(&native["approved_deltas"])
         ));
     }
+    lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
     lines.push(format!("Next: {}", text(&action["action"])));
     lines.push(format!("  Why: {}", text(&action["reason"])));

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-003"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test native_failure -- --exact a_native_read_killed_by_a_signal_says_so for TC-cli-native-killed-by-signal-says-so: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b.log": "7f6e9b87ba831918eed887b8c2c17fc0179b73616c349f9c86668c93e5d3ad0f"
+  },
+  "observed_at_unix_seconds": 1793835112,
+  "snapshot": {
+    "revision": "9482bdfbd7a4c5642dd6f6d2aad828684d5155c2",
+    "dirty": false,
+    "fingerprint": "c214f91d7918773b09a98dc9eb2b8e284a3cc03c83982c73807ac5630e428b4a",
+    "content": "898701bc0247e48a448a47263584b07297683967165d39ff27f07cb48647c329"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-native-killed-by-signal-says-so",
+      "digest": "3aa2c9ffacbad62e17e7bea40f0693875db6a1dea4603a98cbdaaf508ef585f0"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "native_failure",
+    "--",
+    "--exact",
+    "a_native_read_killed_by_a_signal_says_so"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

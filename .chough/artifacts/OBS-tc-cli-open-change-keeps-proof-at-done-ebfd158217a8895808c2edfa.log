@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test an_open_native_change_keeps_proof_and_the_move_still_succeeds ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.09s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running tests/librarian_trim.rs (target/debug/deps/librarian_trim-2f81e45f435bb3f0)
