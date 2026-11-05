@@ -280,7 +280,6 @@ fn a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim() {
     );
 }
 
-<<<<<<< HEAD
 /// Adds `paths` to cold a1's verification manifest.
 fn list_in_a1(fixture: &Fixture, paths: &[&str]) {
     let path = ".specsync/archive/changes/2026-01-01-a1/verification.json";
@@ -488,7 +487,8 @@ fn key_items_of_a_cold_change_move_into_the_vault() {
         ledger.contains("knowledge/attachments/a1/evidence/m1.json"),
         "{ledger}"
     );
-=======
+}
+
 /// Review of #108: a current-cycle reference whose record exists but cannot be read is
 /// kept, and the step reports `refused` instead of dropping it; done still completes.
 #[test]
@@ -516,5 +516,4 @@ fn an_unreadable_record_keeps_its_reference_and_refuses_the_drop() {
         "{moved:#}"
     );
     assert_eq!(fixture.session()["observations"], json!(["r2", "u3"]));
->>>>>>> origin/claude/know/reduce-proof
 }
