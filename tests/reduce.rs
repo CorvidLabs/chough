@@ -517,3 +517,36 @@ fn an_unreadable_record_keeps_its_reference_and_refuses_the_drop() {
     );
     assert_eq!(fixture.session()["observations"], json!(["r2", "u3"]));
 }
+
+/// #109 closeout on this repository: removing the runs that shared a log inside a loose
+/// folder left that log to the folder's loose group, which then listed a file before its
+/// planned ones, and the re-check refused the whole trim. A loose group that gains a file
+/// is still safe to trim: only its planned files go.
+#[test]
+fn a_loose_folder_that_gains_a_released_file_is_still_trimmed() {
+    let fixture = project("0");
+    for id in ["r1", "r2"] {
+        let path = format!(".chough/evidence/{id}.json");
+        let mut record: Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+        record["artifacts"] = json!([".chough/artifacts/x/a-shared.log"]);
+        record["artifact_fingerprints"] = json!({".chough/artifacts/x/a-shared.log": ZERO});
+        fixture.write(
+            &path,
+            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+        );
+    }
+    fixture.write(".chough/artifacts/x/a-shared.log", "shared\n");
+    fixture.write(".chough/artifacts/x/z-loose.log", "loose\n");
+    list_in_a1(&fixture, &[".chough/artifacts/x/z-loose.log"]);
+    fixture.commit("a loose folder with a shared log");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    assert!(pruned(trim).contains(&"artifact:x".to_string()), "{trim:#}");
+    assert!(!fixture.exists(".chough/artifacts/x/z-loose.log"));
+    assert!(
+        fixture.exists(".chough/artifacts/x/a-shared.log"),
+        "an unplanned file stays"
+    );
+}

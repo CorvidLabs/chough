@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)",
+  "objective": "Keep trimming a loose artifact group that gains a file released by an earlier removal (#109 closeout)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge",
+  "native_change": "keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -503,5 +503,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #109 when hosted checks are green"
+  "next_action": "Fix the re-check against the failing test, verify and close out (the trim runs again)"
 }
