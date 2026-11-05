@@ -1,0 +1,34 @@
+specsync 6.2.0
+4
+== shard 1/4
+Other checks and genuine human review remain required before merge.
+rc=0 total=268.6s
+   234.8s   362x native list hist
+   175.7s    22x native status
+    22.5s     1x authenticate_archives
+     4.3s   362x git checkout
+     3.6s   363x archives
+     2.8s   364x safe_native_tree
+     0.4s     1x native audit
+     0.2s     2x fingerprint
+     0.1s     2x git status
+     0.0s     1x native list
+     0.0s     1x git clone
+     0.0s     3x git rev-parse
+     0.0s     1x git rev-list
+     0.0s     1x git merge-base
+== shard 2/4
+Shard 2/4: 22 of 86 archive(s) authenticated by SpecSync; the other shards authenticate the rest.
+Other checks and genuine human review remain required before merge.
+rc=0 total=4.9s
+    31.8s    22x native status
+     4.5s     1x authenticate_archives
+     0.2s     1x native audit
+     0.1s     2x fingerprint
+     0.0s     2x safe_native_tree
+     0.0s     2x git status
+     0.0s     1x native list
+     0.0s     1x archives
+     0.0s     3x git rev-parse
+     0.0s     1x git rev-list
+     0.0s     1x git merge-base

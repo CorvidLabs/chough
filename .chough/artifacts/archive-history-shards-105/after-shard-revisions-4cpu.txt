@@ -1,0 +1,70 @@
+specsync 6.2.0
+4
+== shard 1/4
+Other checks and genuine human review remain required before merge.
+rc=0 total=72.7s
+    64.2s    91x native list hist
+    32.8s    22x native status
+     4.6s     1x authenticate_archives
+     1.8s    91x git checkout
+     0.9s    92x archives
+     0.7s    93x safe_native_tree
+     0.2s     1x native audit
+     0.1s     2x fingerprint
+     0.0s     2x git status
+     0.0s     1x native list
+     0.0s     1x git clone
+     0.0s     3x git rev-parse
+     0.0s     1x git rev-list
+     0.0s     1x git merge-base
+== shard 2/4
+Other checks and genuine human review remain required before merge.
+rc=0 total=73.5s
+    63.4s    91x native list hist
+    43.0s    22x native status
+     6.1s     1x authenticate_archives
+     1.9s    91x git checkout
+     1.0s    92x archives
+     0.8s    93x safe_native_tree
+     0.2s     1x native audit
+     0.1s     2x fingerprint
+     0.0s     2x git status
+     0.0s     1x native list
+     0.0s     1x git clone
+     0.0s     3x git rev-parse
+     0.0s     1x git rev-list
+     0.0s     1x git merge-base
+== shard 3/4
+Other checks and genuine human review remain required before merge.
+rc=0 total=81.9s
+    71.2s    90x native list hist
+    43.1s    21x native status
+     6.1s     1x authenticate_archives
+     2.2s    90x git checkout
+     1.1s    91x archives
+     0.9s    92x safe_native_tree
+     0.3s     1x native audit
+     0.1s     2x fingerprint
+     0.0s     2x git status
+     0.0s     1x native list
+     0.0s     1x git clone
+     0.0s     3x git rev-parse
+     0.0s     1x git rev-list
+     0.0s     1x git merge-base
+== shard 4/4
+Other checks and genuine human review remain required before merge.
+rc=0 total=88.8s
+    78.6s    90x native list hist
+    41.3s    21x native status
+     5.8s     1x authenticate_archives
+     2.0s    90x git checkout
+     1.0s    91x archives
+     0.9s    92x safe_native_tree
+     0.3s     1x native audit
+     0.1s     2x fingerprint
+     0.0s     2x git status
+     0.0s     1x git clone
+     0.0s     1x native list
+     0.0s     3x git rev-parse
+     0.0s     1x git rev-list
+     0.0s     1x git merge-base

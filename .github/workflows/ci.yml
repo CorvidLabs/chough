@@ -96,8 +96,9 @@ jobs:
       - run: fledge lanes run verify
 
   archive:
-    # Authentication of every archive is split across four parallel jobs, each with the
-    # unchanged 10-minute limit; shard 1 also walks every PR revision (DRIVE-10).
+    # Authentication of every archive and the walk of every PR revision are split
+    # across four parallel jobs, each with the unchanged 10-minute limit (DRIVE-10,
+    # #105). All four must pass: an omission is found by the shard that walks it.
     name: SpecSync Archive (${{ matrix.shard }}/4)
     needs: archive-gate
     runs-on: ubuntu-latest
