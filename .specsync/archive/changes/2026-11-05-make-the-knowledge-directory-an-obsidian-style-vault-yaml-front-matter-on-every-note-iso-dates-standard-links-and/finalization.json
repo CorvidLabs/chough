@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and",
+  "implementation_commit": "a3fe73e2e0320ad8127ecb263abc6190e7cf2943",
+  "implementation_tree": "863830e6195c429e1062f146bd9e0fcddec29df2",
+  "contract_digest": "1d62b7d35237ebfb95cc4625e71c079bf8d2dd258edb0353c0f994c23db72336",
+  "workspace_digest": "1a16e7d49cc454aba59589f5937b7ca51cbec4e12b67533accc7a36a432a6e2b",
+  "closing_digest": "0df80cb6b9b77e3129662fd6c0ba714c0b51efd613e8316e16e11b6981d76f41",
+  "review_digest": "684ee641d54ae4616fa1e8dd677a2ec26203bab47db33e4019a58c400c140a0d",
+  "finalization_digest": "da3f48d9c04a0a3c2ae032425aa3e7edfcf27fd0fe6a073ae80f0f4073fe64ee",
+  "timestamp": 1793848774
+}
