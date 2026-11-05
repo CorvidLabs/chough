@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation",
+  "implementation_commit": "844f026681dfa9349d2115882763ab04c2111456",
+  "implementation_tree": "b84cb57d3dc10fbf49d60db1e45f89eee6459912",
+  "contract_digest": "be8756eeae9bbad0974ab91fdf6b68bf7ee5f744eb4e25c3550e33525f43d0f2",
+  "workspace_digest": "4be32b3141a89a0b5e981cc964cf2b30203e144c74102b5479a37c9a77d8db90",
+  "closing_digest": "1b3f9ab4323be930fe24f07aedd830104129924b558b4e884dd7a30fa265e9dd",
+  "review_digest": "5128509b1b3cd444ae5e9b48dde50baea27c419ffb765f887ec989c980ec143d",
+  "finalization_digest": "c76bde0fb8ac0cf755a0310fec1fc785670e4c9b870dd812485c5cb422e6f045",
+  "timestamp": 1793914811
+}

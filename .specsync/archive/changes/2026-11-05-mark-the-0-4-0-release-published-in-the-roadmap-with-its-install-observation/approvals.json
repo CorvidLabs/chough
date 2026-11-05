@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793905791,
+      "digest": "be8756eeae9bbad0974ab91fdf6b68bf7ee5f744eb4e25c3550e33525f43d0f2",
+      "note": "Leif: Approve all steps for Chough 0.4.0 (2026-11-05 11:26 MST)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation",
+        "title": "Mark the 0.4.0 release published in the roadmap with its install observation",
+        "description": "Mark the 0.4.0 release published in the roadmap with its install observation",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/ROADMAP.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Documentation of a completed release; no contract changes.",
+        "acceptance_criteria": [
+          "docs/ROADMAP.md has a 0.4.0 release row naming the v0.4.0 tag at 69950c7, release prep PR #116, crates.io chough 0.4.0, the GitHub release and the clean install result, and the clean install is recorded as an installation observation; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif: Approve all steps for Chough 0.4.0 (2026-11-05 11:26 MST) and Yes, run them now, via the orc; step 6 is the ROADMAP docs PR, merge on green.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793914811,
+      "digest": "1b3f9ab4323be930fe24f07aedd830104129924b558b4e884dd7a30fa265e9dd",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
