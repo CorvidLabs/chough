@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "OBS-installation-observation-eed34b5fe7378f8d4bf93fa4",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-001"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "installation-observation",
+  "outcome": "passed",
+  "environment": "macos-arm64-cargo-1.95.0",
+  "summary": "Clean cargo install chough --version 0.4.0 --locked into an empty root on macOS 26.5.2 arm64 with cargo 1.95.0 exited 0; the installed chough --version printed chough 0.4.0.",
+  "artifacts": [
+    ".chough/artifacts/release-0.4.0/clean-install-macos-arm64.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/release-0.4.0/clean-install-macos-arm64.log": "d57071857d5f71e74d1bccd2f91540f1ac869ec1fea72768839e79b554d37293"
+  },
+  "observed_at_unix_seconds": 1793905799,
+  "snapshot": {
+    "revision": "2082dddff4204a93c7539e39d3c4ede385178b02",
+    "dirty": false,
+    "fingerprint": "095fe47347e860eac9a5117b303e55cb1ede2626c3d8e86db1237c8b5097abcd",
+    "content": "82186ba9f5ca9e57ef1247e951d6bc5869d410126907e329b4c2864912084227"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "manual",
+  "limitations": [
+    "Run by the agent on Leif's Mac; one platform."
+  ]
+}

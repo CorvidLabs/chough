@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-4b0f212f24c265fad98f8682",
-    "head": "EVT-8b2eb715595148cb1bf902ba",
+    "head": "EVT-a73f8c3931cc6a9bde8d9a65",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -29,10 +29,14 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-installation-observation-eed34b5fe7378f8d4bf93fa4"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Record the install observation, verify, and open the docs PR"
 }

@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation (active; `specsync change status mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-494 recorded; most recent:
+495 recorded; most recent:
 
+- OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 InstallationObservation Passed in macos-arm64-cargo-1.95.0 at 2082dddff420
 - OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-structural-ce74f6d127b1f262c869b327 Structural Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-tc-cli-failed-copy-keeps-other-writer-ac77298375f085b47ae7a1d3 ProductTest Passed in local-linux-aarch64 at 8a87a1d468be
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
 - OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
 - OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
-- OBS-product-test-deeab5eb9295ffe50f291b9e ProductTest Passed in local-linux-aarch64 at 5793431b5f81
 
 ## Briefs
 
