@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 55
-archived_changes: 92
+archived_changes: 93
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-92 archived changes, newest first.
+93 archived changes, newest first.
 
+- [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](../archives/prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0.md) Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0
 - [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](../archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)
 - [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](../archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110)
 - [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](../archives/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.md) Union-merge only the generated knowledge notes, and cover the vault code of the index fix
@@ -42,5 +43,4 @@ this note only links them.
 - [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](../archives/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.md) No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)
 - [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](../archives/never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file.md) Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s)
 - [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](../archives/keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files.md) Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files
-- [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](../archives/keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout.md) Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout)
-- 82 more on the [timeline](../timeline.md)
+- 83 more on the [timeline](../timeline.md)

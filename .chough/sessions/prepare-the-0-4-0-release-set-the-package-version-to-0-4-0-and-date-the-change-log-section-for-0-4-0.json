@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-766b1557a60c7beaeaf72ba4",
-    "head": "EVT-98e714eaeb5d1b8c8525c6e1",
+    "head": "EVT-630e5e4098c55beaf4a5753d",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,7 +26,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "0.4.0 release prep accepted by Leif (0xLeif): review recorded (pass) at a789da26; Approve all steps for Chough 0.4.0 (2026-11-05 11:26 MST, via the orc)."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -35,10 +37,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)",
-    "Leif approves the v0.4.0 tag, crates.io publish and GitHub release (separate decisions after merge)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Package checks and verify, then bring Leif the release gate"
 }
