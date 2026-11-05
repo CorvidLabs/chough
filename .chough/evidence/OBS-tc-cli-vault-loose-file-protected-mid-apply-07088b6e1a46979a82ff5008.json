@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008",
+  "criteria": [
+    "KNOW-10",
+    "KNOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-046"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact a_loose_file_protected_during_the_apply_refuses_the_trim for TC-cli-vault-loose-file-protected-mid-apply: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008.log": "6692c943985985e440654048adf74b23fd46efbe7ac52b25e0cd75a7924250bb"
+  },
+  "observed_at_unix_seconds": 1793887113,
+  "snapshot": {
+    "revision": "3e1ee4bacc11a982a9ea044ad56d584431eb8002",
+    "dirty": false,
+    "fingerprint": "53ae23a8ce5fbc5691fa62e2e3acf1b972ae018b8203fe7694673323f9ad6c77",
+    "content": "dbe8aa69059e021a9baedcc059acd843115bd2dfde604098c006f521c7791b70"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-loose-file-protected-mid-apply",
+      "digest": "0122bfbfeba24e54a0463f40ad07880fc9f1b7c0fc9ed695a8e2b682d0283c77"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "a_loose_file_protected_during_the_apply_refuses_the_trim"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

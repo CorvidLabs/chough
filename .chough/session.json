@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -473,7 +473,15 @@
     "OBS-tc-cli-vault-moved-key-item-mode-e4ff67be5fe6fcd51bba2bbf",
     "OBS-tc-cli-vault-restore-keeps-mode-143c5fc6eaf123c03ff7dd44",
     "OBS-tc-cli-vault-loose-artifacts-trimmed-941a5a81cc5320c943c4307b",
-    "OBS-tc-cli-vault-key-items-move-869f928765c2620518754975"
+    "OBS-tc-cli-vault-key-items-move-869f928765c2620518754975",
+    "OBS-tc-cli-vault-occupied-attachment-kept-87debad9f96921655f24ef43",
+    "OBS-tc-cli-vault-attachment-written-mid-apply-8ac66844b8bf0a7895308665",
+    "OBS-tc-cli-vault-identical-attachment-survives-restore-85737badc0018637401c5091",
+    "OBS-tc-cli-vault-open-bug-folder-fixture-40be0f49c6b768a8ffea7138",
+    "OBS-tc-cli-vault-checkpoint-folder-reference-9d9b841a600378779290dd6e",
+    "OBS-tc-cli-vault-mixed-age-folder-stays-2efd9baf3b7e0a7b17ac0e49",
+    "OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81",
+    "OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008"
   ],
   "bugs": [
     "BUG-0001",
@@ -507,7 +515,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Implement against the failing tests, verify on Linux, record Leif's review, close out (the trim reruns), push and merge on green CI and approval"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-identical-attachment-survives-restore-85737badc0018637401c5091",
+  "criteria": [
+    "KNOW-19",
+    "KNOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-046"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact an_identical_attachment_in_place_survives_a_refused_apply for TC-cli-vault-identical-attachment-survives-restore: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-identical-attachment-survives-restore-85737badc0018637401c5091.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-identical-attachment-survives-restore-85737badc0018637401c5091.log": "580f4cec475ce1d43abd0ad07c2077c4192b0f839a83f58d0859090a45c0316c"
+  },
+  "observed_at_unix_seconds": 1793887097,
+  "snapshot": {
+    "revision": "3e1ee4bacc11a982a9ea044ad56d584431eb8002",
+    "dirty": false,
+    "fingerprint": "53ae23a8ce5fbc5691fa62e2e3acf1b972ae018b8203fe7694673323f9ad6c77",
+    "content": "dbe8aa69059e021a9baedcc059acd843115bd2dfde604098c006f521c7791b70"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-identical-attachment-survives-restore",
+      "digest": "38ccd8a701276fc5b89dd4e8c949c5c34bd9294f68bb8ffd28a17d95991fd803"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "an_identical_attachment_in_place_survives_a_refused_apply"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
