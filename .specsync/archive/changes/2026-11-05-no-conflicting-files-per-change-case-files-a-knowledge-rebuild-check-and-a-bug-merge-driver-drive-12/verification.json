@@ -1,0 +1,194 @@
+{
+  "timestamp": 1793893491,
+  "commit": "fa6bab4853a5bfe5dab775ccf837cb86ce7a9c38",
+  "contract_digest": "3bd3d949c4c05838fcc445cfe4a178e3e2a9eb30eb2046fb0c414f0921658cd6",
+  "execution_digest": "3210d3165defdd8ab2149bfeff9c9d1ad42a437cb09ae0c841a65d94436ef11d",
+  "workspace_digest": "b68ab536faf3091c3589227318e3d139fa6d929c50f4764551520a4829673825",
+  "acceptance_input_digest": "f6fbc95b8a3d2efb4c6b9c5ad4c3c3850affa87027ce6aa0a61c349ae0546021",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".gitattributes",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "43e9a70ad0e81241dc5cc40a156642e9c0372b2242ab0a6fc3cbec43bc6e950a",
+        "entry_digest": "ffa71ad226b96a0cb79ddb6418d405d03fc3a35670d20680e9bb83106e3ad85f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0b023565b426f0aaf719b9be5c757d7283cbb10872077eab63cb3b275e8bfd57",
+        "entry_digest": "03c0bd1db921d18c23808b63a68cd37846d88eae07ced9da69c5e25e3d4b07e7",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "18a08146f99bbd07004633587911c1b98f50b6a9f79fa6bd642a3a16542b9d04",
+        "entry_digest": "ebc6abd635173018b33ca73dd6767f2c7157fa2576b3832754f262cb6f5c38ff",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/FRD.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "89e16ea619546522fbfa81f62e5fa095b3e9250e75e6be86c3630c4d290b9657",
+        "entry_digest": "8bfecc71de962004d0d11bb0e8d7518574436127b36c1982c06b61dc64c52816",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/cli.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ee9d1358f1ff0515ec5497df699788e0265df0eb1a076966995e11c15d70ec08",
+        "entry_digest": "f6330ef0c9885e1a44de21a56a024a4241c17f7dc45e1f55cec24a3faf0b81e8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "fledge.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "731ba2aaf8cf075099a4ce1397b49369611d7c9caf76183ce1273502a8620ee5",
+        "entry_digest": "9046b9ecd53df9b979f5f96270f3b690c8346fa1d1b1e3db014ca1f9bfce0851",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "721fbc0aba89c8c4db8766df0f69d4eb5494cbdfaa83c968463f93e345cf39a9",
+        "entry_digest": "90cc172320e3faeee631c220d80b59b81beb49806858bd2fb077ec0072755b26",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e2cc31622d7140aed086260b801580fcb43ea297a315251233ebcee16fb24d5a",
+        "entry_digest": "0b158659811b5d93e4857c3ff8c8bc7d5059377aa75f23bcf3d9938e656375cf",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "916558f226341e4ace45b38d486c1ad4d634d01a822b2ce276954d1f98a27837",
+        "entry_digest": "cf6b47d3ebe898393374eab4eb7f96ffe8efcf1ddcd7c121712020a478a818ec",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b985579a811edb2a6bc0e0c910b3f740ecddbe3c9bbe13889df3189be5cbcf71",
+        "entry_digest": "f443b79834aa52dc9bf3ae6c1b2ab31250d78580365f5f65241823cb752e1d0e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "81981334217575dc0177c17ab95d77aa775fe08d1ddb40c2f52bc151200ecc14",
+        "entry_digest": "049d772c295a4f5cceffbd77dfc21b8fb4fad85be75db617772fe3ba057b130b",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/bugs.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c22084895f50bcfed5555a13b6e0a74c05e46db78ba661cce190332a22ae6c71",
+        "entry_digest": "c1aa296d24e8bad48dd8a4c7cf90580d9c82fe6061fa68fc7c8fb9bdf8cbca14",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/cases.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b89b2005f7bdb41d98dc8022947a61e74efab9f9055d85ca54ff0249aababe23",
+        "entry_digest": "0233bb74404bb9be0d74031fd2860d11d395c05487f42f3c95d5263d952558ab",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/library.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f91726a6215b47ca07f67ce5a0caf5beace853eb2f23cc0071e6f12419df2d59",
+        "entry_digest": "d410c3b4107cf3b8362e3e0d19f15178460f0fed24ef2ebd4d04f216f6c30bb2",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/bugs.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f6988c2914f90cc20fd97eaf07464f76b05875a9a83cc7b26d73492f89501b91",
+        "entry_digest": "3bc1cfff27685458ec5cf8bcaccb3620960906613eb52a306d15dafa0ede0a46",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/cases.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6f765a738b43d26731a6ce958a82942834cb7d38d9d652ca24077212aaaa743d",
+        "entry_digest": "216e699327b51fc2f38e449fd79da8d2cf222be1272d9f070d6943ce8ab6119b",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/vault.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "bdc05f6586261b70b3f015b2196fe0085fd151c225b969619cafd56954b63a17",
+        "entry_digest": "65c960b2cde66c409dea646c5cbbc77df92bff2f76e5785422d515563312e85a",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-047"
+  ]
+}

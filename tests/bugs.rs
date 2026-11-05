@@ -785,3 +785,109 @@ fn bug_add_and_cases_run_options_have_help_text() {
         assert!(options >= 4, "{help}");
     }
 }
+
+/// DRIVE-12: `chough bug merge <base> <ours> <theirs>`, Git's merge driver for bug
+/// records, merges two branches' edits of one bug; a real disagreement stays a conflict
+/// for a human, with ours unchanged.
+#[test]
+fn two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let added = json(&add_bug(&fixture, &[]));
+    let id = added["id"].as_str().unwrap().to_string();
+    let original = fixture.read(&format!(".chough/bugs/{id}.json"));
+    let base: Value = serde_json::from_str(&original).unwrap();
+    let at = base["updated_at_unix_seconds"].as_u64().unwrap();
+    let write = |name: &str, value: &Value| {
+        fixture.write(
+            &format!("merge/{name}.json"),
+            &(serde_json::to_string_pretty(value).unwrap() + "\n"),
+        );
+        fixture.root().join(format!("merge/{name}.json"))
+    };
+    let mut ours = base.clone();
+    ours["notes"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"at_unix_seconds": at + 10, "text": "Fixed on branch A", "observations": []}));
+    ours["status"] = json!("verified");
+    ours["updated_at_unix_seconds"] = json!(at + 10);
+    let mut theirs = base.clone();
+    theirs["notes"].as_array_mut().unwrap().push(json!({
+        "at_unix_seconds": at + 20,
+        "text": "Seen again on branch B",
+        "observations": ["OBS-seen-again-000000000000000000000001"],
+    }));
+    theirs["observations"] = json!(["OBS-seen-again-000000000000000000000001"]);
+    theirs["updated_at_unix_seconds"] = json!(at + 20);
+    let (b, o, t) = (
+        write("base", &base),
+        write("ours", &ours),
+        write("theirs", &theirs),
+    );
+    let output = fixture.run(&[
+        "bug",
+        "merge",
+        b.to_str().unwrap(),
+        o.to_str().unwrap(),
+        t.to_str().unwrap(),
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read("merge/ours.json");
+    let merged: Value = serde_json::from_str(&text).unwrap();
+    let notes: Vec<&str> = merged["notes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|note| note["text"].as_str().unwrap())
+        .collect();
+    assert_eq!(
+        &notes[notes.len() - 2..],
+        ["Fixed on branch A", "Seen again on branch B"]
+    );
+    assert_eq!(
+        merged["observations"],
+        json!(["OBS-seen-again-000000000000000000000001"])
+    );
+    assert_eq!(merged["status"], "verified");
+    assert_eq!(merged["updated_at_unix_seconds"], json!(at + 20));
+    // Written the way bug commands write a record: their field order, pretty, one newline.
+    let fields = |text: &str| -> Vec<String> {
+        text.lines()
+            .filter(|line| line.starts_with("  \"") && !line.starts_with("   "))
+            .map(|line| line.split('"').nth(1).unwrap().to_string())
+            .collect()
+    };
+    assert_eq!(fields(&text), fields(&original));
+    assert!(text.ends_with("}\n") && !text.ends_with("\n\n"));
+
+    // Two different status changes are a human's call.
+    let mut ours = base.clone();
+    ours["status"] = json!("investigating");
+    let mut theirs = base.clone();
+    theirs["status"] = json!("deferred");
+    let (b, o, t) = (
+        write("base", &base),
+        write("ours", &ours),
+        write("theirs", &theirs),
+    );
+    let before = fixture.read("merge/ours.json");
+    let output = fixture.run(&[
+        "bug",
+        "merge",
+        b.to_str().unwrap(),
+        o.to_str().unwrap(),
+        t.to_str().unwrap(),
+    ]);
+    assert!(!output.status.success(), "a status disagreement merged");
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("status"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(fixture.read("merge/ours.json"), before);
+}

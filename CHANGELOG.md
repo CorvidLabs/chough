@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Parallel pull requests no longer conflict in files Chough writes (REQ-cli-047,
+  DRIVE-12). Each change can add its cases in its own
+  `.chough/cases/<module>.<part>.cases.toml`. `chough library index --check` fails
+  naming stale generated knowledge, so the vault can union-merge and be rebuilt; this
+  repository's verify and ci lanes run it. `chough bug merge` is a Git merge driver for
+  bug records. It keeps both sides' notes and observations and leaves a real
+  disagreement, such as two different statuses, to a human.
 - The pinned SpecSync toolchain is now 6.2.0. Every SpecSync Action step in CI uses the
   v6.2.0 release commit with `version: '6.2.0'`, and the README install command,
   AGENTS.md, the archive scripts and the CI and integration docs name 6.2.0 (D-021).

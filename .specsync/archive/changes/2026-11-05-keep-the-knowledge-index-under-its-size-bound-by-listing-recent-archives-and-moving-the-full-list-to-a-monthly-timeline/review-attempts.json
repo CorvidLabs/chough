@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "d4cdacd1ea138999e795f354710d6344ba564ed2",
+      "contract_digest": "e8af6de9d6e3ea64803de1e1d2df126b78600c18213995e9865823f75f94d631",
+      "execution_digest": "98bd37331d96a7156cd3a97e7365dbd46db1eddba8366b8d8e30cccfbd9ba066",
+      "workspace_digest": "ccfc7674012922cda5a8ace177b24ba33002ef82da75306ed48a4e3e65696235",
+      "timestamp": 1793896316
+    }
+  ]
+}

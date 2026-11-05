@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12",
+  "implementation_commit": "fa6bab4853a5bfe5dab775ccf837cb86ce7a9c38",
+  "implementation_tree": "194ef9cc89833288d37bcc54f6b3c68a81c46535",
+  "contract_digest": "3bd3d949c4c05838fcc445cfe4a178e3e2a9eb30eb2046fb0c414f0921658cd6",
+  "workspace_digest": "b68ab536faf3091c3589227318e3d139fa6d929c50f4764551520a4829673825",
+  "closing_digest": "01d1ef5ab7d0576de9841c1eebce76aee4f5b0f9ac6d2c36a57dae693cda695a",
+  "review_digest": "bb42437c729305248c115025a52eaae538a1d33766f2149927d9bdfb9e36bba8",
+  "finalization_digest": "f717d85f6109b9a3c28f865558fa7af84436de02bd8bcccb3d3b52210a188c12",
+  "timestamp": 1793893501
+}

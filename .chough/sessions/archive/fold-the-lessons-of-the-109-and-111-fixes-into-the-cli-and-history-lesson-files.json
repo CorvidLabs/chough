@@ -1,0 +1,44 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-64805309cd2dbbb63a199473",
+    "head": "EVT-4901a26f3ad7fe1c68ab6b1b",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Fold the lessons of the #109 and #111 fixes into the cli and history lesson files",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files",
+  "references": {
+    "criteria": [
+      "KNOW-15",
+      "KNOW-24"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "PR #112 lessons change accepted by Leif (0xLeif), 2026-11-05: Yes, record and merge for #112, which he widened with the index fix (Widen #112 with the fix, 09:21 MST). Claude recorded the native review as 0xLeif on that decision."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [
+    "OBS-structural-b532801a6be2bb05fbc01858"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Check the sources, verify, and take this to accept beside the DRIVE-12 change"
+}

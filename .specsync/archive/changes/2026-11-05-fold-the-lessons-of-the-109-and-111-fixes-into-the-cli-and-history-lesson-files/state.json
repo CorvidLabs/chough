@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files",
+  "slug": "fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files",
+  "title": "Fold the lessons of the 109 and 111 fixes into the cli and history lesson files",
+  "description": "Fold the lessons of the 109 and 111 fixes into the cli and history lesson files",
+  "kind": "documentation",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "4143558d3f99af0be75ed53eeb6dd4e77b6ef395",
+  "created_at": 1793893285,
+  "updated_at": 1793896038,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "specs/cli/context.md",
+    "specs/history/context.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Lessons only, in the modules context.md files; no contract changes.",
+  "acceptance_criteria": [
+    "The lessons of the #109 and #111 fixes are in specs/cli/context.md and specs/history/context.md in the existing lesson format, each citing a source that resolves, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs",
+    "design",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif asked to learn from everything (2026-11-04) and wrote DELETE AND SUMMARIZE AND LEARN.. KNOWLEDGE AND COMPOUND (2026-11-05).",
+    "public_contract": "no"
+  }
+}

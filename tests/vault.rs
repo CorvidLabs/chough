@@ -444,3 +444,176 @@ fn the_vault_regenerates_identically() {
     fixture.ok(&["library", "index"]);
     assert_eq!(read(), first);
 }
+
+/// DRIVE-12: generated knowledge can merge with Git's union driver, because a rebuild
+/// check names any stale or missing generated file and writes nothing.
+#[test]
+fn index_check_names_stale_files_and_passes_after_a_rebuild() {
+    let fixture = vault();
+    fixture.ok(&["library", "index", "--check"]);
+
+    let index = fixture.read("knowledge/INDEX.md");
+    let merged = format!("{index}\n- a line a union merge kept\n");
+    fixture.write("knowledge/INDEX.md", &merged);
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(
+        error.contains("knowledge/INDEX.md") && error.contains("chough library index"),
+        "{error}"
+    );
+    assert_eq!(
+        fixture.read("knowledge/INDEX.md"),
+        merged,
+        "the check writes nothing"
+    );
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "index", "--check"]);
+
+    // A CRLF checkout of a current note is current.
+    let note = "knowledge/archives/a1.md";
+    let text = fixture.read(note);
+    fixture.write(note, &text.replace('\n', "\r\n"));
+    fixture.ok(&["library", "index", "--check"]);
+
+    // A missing generated note is named.
+    fs::remove_file(fixture.root().join(note)).unwrap();
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(error.contains(note), "{error}");
+}
+
+/// #112: the index listed every archived change and outgrew its 65,536-byte bound at 104
+/// archives here. It lists the newest, and a monthly timeline lists every one (KNOW-28).
+#[test]
+fn the_index_stays_bounded_and_a_monthly_timeline_lists_every_archive() {
+    let fixture = vault();
+    let october = 1_792_022_400; // 2026-10-15
+    let november = 1_793_836_800; // 2026-11-05
+    let mut ids = vec![];
+    for index in 0..300 {
+        let id = format!("{index:03}-{}", "a-long-archived-change-id-".repeat(4));
+        let at = if index < 150 { october } else { november } + index as u64 * 60;
+        let dir = format!(".specsync/archive/changes/2026-10-15-{id}");
+        fixture.write(
+            &format!("{dir}/finalization.json"),
+            &format!(
+                "{{\"schema_version\": 2, \"change_id\": \"{id}\", \"timestamp\": {at}, \"implementation_commit\": \"{}\"}}\n",
+                "1".repeat(40)
+            ),
+        );
+        fixture.write(
+            &format!("{dir}/state.json"),
+            &serde_json::to_string_pretty(
+                &json!({"id": id, "state": "archived", "affected_specs": ["cli"]}),
+            )
+            .unwrap(),
+        );
+        fixture.write(
+            &format!("{dir}/verification.json"),
+            &serde_json::to_string_pretty(&json!({
+                "commit": "2".repeat(40), "passed": true, "requirement_ids": ["REQ-cli-001"],
+                "acceptance_manifest": {"schema_version": 1, "entries": []},
+            }))
+            .unwrap(),
+        );
+        fixture.write(
+            &format!("{dir}/change.md"),
+            &format!("---\nid: {id}\nstate: archived\n---\n\n# Title of {id}\n"),
+        );
+        fixture.write(&format!("{dir}/lesson-bundle.md"), "# Lesson bundle\n");
+        ids.push(id);
+    }
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/INDEX.md");
+    assert!(index.len() <= 65_536, "INDEX.md is {} bytes", index.len());
+    assert_eq!(
+        ids.iter()
+            .filter(|id| index.contains(&format!("archives/{id}.md")))
+            .count(),
+        10,
+        "INDEX.md lists the 10 newest"
+    );
+    assert!(index.contains("](timeline.md)"), "{index}");
+    let timeline = fixture.read("knowledge/timeline.md");
+    assert!(timeline.starts_with("---\n"), "{timeline}");
+    for month in ["2026-11", "2026-10"] {
+        assert!(
+            timeline.contains(&format!("](timeline/{month}.md)")),
+            "{timeline}"
+        );
+    }
+    // A full month continues on further pages; every page is within the bound.
+    let mut names: Vec<String> = fs::read_dir(fixture.root().join("knowledge/timeline"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    names.sort();
+    assert!(names.len() > 2, "{names:?}");
+    let pages: Vec<String> = names
+        .iter()
+        .map(|name| fixture.read(&format!("knowledge/timeline/{name}")))
+        .collect();
+    for (name, page) in names.iter().zip(&pages) {
+        assert!(page.starts_with("---\n") && page.len() <= 65_536, "{name}");
+        let stem = name.trim_end_matches(".md");
+        assert!(
+            timeline.contains(&format!("](timeline/{stem}.md)")),
+            "{stem}: {timeline}"
+        );
+    }
+    for id in &ids {
+        let link = format!("../archives/{id}.md");
+        assert_eq!(
+            pages.iter().filter(|page| page.contains(&link)).count(),
+            1,
+            "{id}"
+        );
+    }
+    assert!(pages.iter().all(|page| page.contains("lesson-bundle.md")));
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// #112 review: only the notes `library index` generates, which `--check` compares,
+/// merge by union. An attachment, a snapshot, a brief or the README still conflicts,
+/// rather than merging into invalid content the check never sees.
+#[test]
+fn only_generated_knowledge_notes_merge_by_union() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let merge_attribute = |path: &str| {
+        let output = std::process::Command::new("git")
+            .args(["check-attr", "merge", "--", path])
+            .current_dir(root)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8_lossy(&output.stdout)
+            .trim()
+            .rsplit(": ")
+            .next()
+            .unwrap()
+            .to_string()
+    };
+    for path in [
+        "knowledge/INDEX.md",
+        "knowledge/rules.md",
+        "knowledge/timeline.md",
+        "knowledge/timeline/2026-11.md",
+        "knowledge/timeline/2026-11-p2.md",
+        "knowledge/archives/some-change.md",
+        "knowledge/modules/cli.md",
+        "knowledge/intent/drive.md",
+    ] {
+        assert_eq!(merge_attribute(path), "union", "{path}");
+    }
+    for path in [
+        "knowledge/attachments/some-change/evidence/OBS-x.json",
+        "knowledge/attachments/some-change/artifacts/x/screen.png",
+        "knowledge/snapshots/SNAP-x/notes.md",
+        "knowledge/briefs/older.md",
+        "knowledge/README.md",
+    ] {
+        assert_ne!(merge_attribute(path), "union", "{path}");
+    }
+}

@@ -53,3 +53,24 @@ about 2 seconds, with the trimmed observations as "not-run (pruned)". Source:
 refreshes the folder after every move into done. Commit it with the checkpoint, and
 treat an untracked knowledge/ after done as output to commit, never as a stray. Limits:
 the entries regenerate from their sources, so nothing was lost.
+
+2026-11-05, a new session after legacy adoption (verified): `session new` gives a session
+a cursor with no legacy anchor. That is right, because the legacy log is not the new
+session's past. But every event write compared that empty anchor with the log still on
+disk and refused, so in an adopted project every new session failed on its first stage
+move. REQ-history-006's merge criterion had only been tested without a legacy log.
+Source: #111's two-branch simulation, fixed in 1fe7cf9. Future use: test a feature in a
+project adopted from legacy, not only in a fresh one, and keep a guard separate from the
+history walk. Limits: projects that adopted a legacy log.
+
+2026-11-05, two open changes stale each other (verified): with two native changes open
+on one branch, each `change check --commit` made the other's verification stale, so the
+verify lane's audit step failed until they were finalized one at a time. An open human
+gate for one also blocked every stage move of the other in the same session. Source:
+#111. Future use: give each change its own session, and finish one before checking the
+next: check, review, finalize, then check the other. Limits: SpecSync 6.1.2.
+
+2026-11-05, `history show` is slow here (observation): on this repository `chough history
+show` ran for more than 10 minutes, calling `specsync change status` for one archive
+after another. Source: #111's adoption run, stopped by hand. Future use: don't call it
+in scripts or lanes until it is profiled (#32). Limits: one repository, 98 archives.

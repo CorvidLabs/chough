@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0",
+  "criteria": [
+    "DRIVE-12"
+  ],
+  "requirements": [
+    "REQ-cli-047"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test vault -- --exact only_generated_knowledge_notes_merge_by_union for TC-cli-union-only-generated-notes: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0.log": "2610e1c00930ed4120cdf8614876b1b9d15bef31487f45e7c497e33f77f8c18b"
+  },
+  "observed_at_unix_seconds": 1793897181,
+  "snapshot": {
+    "revision": "e6fab9305e6bfe081fef329847388198a4b9145a",
+    "dirty": false,
+    "fingerprint": "f0ba3b8dc4dbd4269fae785c15b631b490f176fb7d365964da0b7170cf384352",
+    "content": "f7ec4d9b275a9fb054e38c3cac6bddd58ebc7214cd930ceb4d50337c10659895"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-union-only-generated-notes",
+      "digest": "3b274ca14617899cfd4b64acda1fe559c66606ac8241102f10e1c49bc7a5d3ba"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "only_generated_knowledge_notes_merge_by_union"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

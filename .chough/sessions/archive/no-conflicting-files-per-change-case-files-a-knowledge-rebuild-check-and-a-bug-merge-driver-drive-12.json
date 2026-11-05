@@ -1,0 +1,46 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-f06e8dce4eaaf14572f03f1f",
+    "head": "EVT-e1698283866ebf4832e0874d",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12",
+  "references": {
+    "criteria": [
+      "DRIVE-12",
+      "DRIVE-3"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "PR #112 accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: for the no-conflicting-files feature and the lessons change he answered Yes, record and merge (record his review of both as 0xLeif, finalize them one at a time, merge #112 on green CI and corvid-agent approval). Claude recorded the native review of this change as 0xLeif on that decision."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [
+    "OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7",
+    "OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef",
+    "OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e",
+    "OBS-product-test-deeab5eb9295ffe50f291b9e"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+}

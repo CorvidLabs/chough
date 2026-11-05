@@ -287,6 +287,101 @@ pub(super) enum BugCommand {
     Show { id: String },
     /// Print a Markdown report candidate. It is never published by Chough.
     Report { id: String },
+    /// Git merge driver for `.chough/bugs/*.json` (`chough bug merge %O %A %B`): merge two
+    /// edits of one bug into `ours`, or exit nonzero leaving `ours` for a human.
+    Merge {
+        base: std::path::PathBuf,
+        ours: std::path::PathBuf,
+        theirs: std::path::PathBuf,
+    },
+}
+
+/// Fields whose entries both sides may add to: base's entries, then ours' additions, then
+/// theirs', without duplicates; an entry either side removed is removed.
+const LIST_FIELDS: [&str; 7] = [
+    "criteria",
+    "requirements",
+    "cases",
+    "steps",
+    "observations",
+    "related",
+    "notes",
+];
+
+fn merge_list(base: Option<&Value>, ours: Option<&Value>, theirs: Option<&Value>) -> Value {
+    let items = |value: Option<&Value>| -> Vec<Value> {
+        value.and_then(Value::as_array).cloned().unwrap_or_default()
+    };
+    let (base, ours, theirs) = (items(base), items(ours), items(theirs));
+    let mut merged: Vec<Value> = vec![];
+    for item in base.iter().chain(&ours).chain(&theirs) {
+        let removed = base.contains(item) && !(ours.contains(item) && theirs.contains(item));
+        if !removed && !merged.contains(item) {
+            merged.push(item.clone());
+        }
+    }
+    Value::Array(merged)
+}
+
+/// A three-way merge of one bug record (REQ-cli-047, DRIVE-12): a field only one side
+/// changed takes that change, list fields merge by [`merge_list`], the update time is the
+/// later one, and any other field both sides changed differently is a conflict.
+fn merge_bug(base: &Value, ours: &Value, theirs: &Value) -> Result<Value> {
+    let (Some(base), Some(ours), Some(theirs)) =
+        (base.as_object(), ours.as_object(), theirs.as_object())
+    else {
+        bail!("a bug record must be a JSON object");
+    };
+    let mut merged = ours.clone();
+    let mut conflicts = vec![];
+    let keys: BTreeSet<&String> = base
+        .keys()
+        .chain(ours.keys())
+        .chain(theirs.keys())
+        .collect();
+    for key in keys {
+        let (b, o, t) = (base.get(key), ours.get(key), theirs.get(key));
+        if o == t || b == t {
+            continue;
+        }
+        if b == o {
+            match t {
+                Some(value) => merged.insert(key.clone(), value.clone()),
+                None => merged.remove(key),
+            };
+        } else if key == "updated_at_unix_seconds" {
+            let later = o.and_then(Value::as_u64).max(t.and_then(Value::as_u64));
+            merged.insert(key.clone(), json!(later));
+        } else if LIST_FIELDS.contains(&key.as_str()) {
+            merged.insert(key.clone(), merge_list(b, o, t));
+        } else {
+            conflicts.push(key.clone());
+        }
+    }
+    ensure!(
+        conflicts.is_empty(),
+        "both sides changed {} differently; resolve this bug by hand",
+        conflicts.join(", ")
+    );
+    Ok(Value::Object(merged))
+}
+
+/// `chough bug merge`: write the merged record into `ours` the way bug commands write
+/// one, or fail leaving `ours` unchanged.
+fn merge_files(base: &Path, ours: &Path, theirs: &Path) -> Result<()> {
+    let read = |path: &Path| -> Result<Value> {
+        serde_json::from_str(&read_record(path)?)
+            .with_context(|| format!("{} is not a bug record", path.display()))
+    };
+    let merged = merge_bug(&read(base)?, &read(ours)?, &read(theirs)?)?;
+    let bug: Bug =
+        serde_json::from_value(merged).context("the merged bug is not a valid record")?;
+    validate(&bug)?;
+    let content = serde_json::to_string_pretty(&bug)? + "\n";
+    let staged = ours.with_extension("chough-merge.tmp");
+    std::fs::write(&staged, content)?;
+    std::fs::rename(&staged, ours)?;
+    Ok(())
 }
 
 pub(super) fn load_all(root: &Path) -> Result<Vec<Bug>> {
@@ -1015,6 +1110,7 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
                 "label_note": "pruned and unavailable observations never count as reproduced, passed or verifying",
             }))
         }
+        BugCommand::Merge { base, ours, theirs } => merge_files(&base, &ours, &theirs),
         BugCommand::Report { id } => {
             let bug = load(root, &id)?;
             print!("{}", report(root, &bug)?);

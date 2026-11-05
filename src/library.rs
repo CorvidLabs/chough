@@ -49,7 +49,12 @@ pub(super) enum LibraryCommand {
         reason: String,
     },
     /// Regenerate the deterministic INDEX.md and the archived-change entries.
-    Index,
+    Index {
+        /// Write nothing; fail naming each generated file that is missing or differs from
+        /// a rebuild (line endings ignored), so a merged vault is rebuilt before CI passes.
+        #[arg(long)]
+        check: bool,
+    },
     /// Preview (default) or apply the post-archive summary: proof only cold archived
     /// changes list, committed identically at HEAD, kept as a summary entry.
     Archive {
@@ -775,6 +780,20 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
         })
         .collect();
     let mut notes = crate::vault::module_notes(root, dir, &touches)?;
+    let timeline: Vec<crate::vault::TimelineEntry> = found
+        .iter()
+        .enumerate()
+        .map(|(index, archive)| crate::vault::TimelineEntry {
+            id: &archive.id,
+            title: &archive.title,
+            finalized: archive.timestamp,
+            hot: index < HOT_ARCHIVES,
+            bundle: archive
+                .lesson_bundle
+                .then(|| format!("{ARCHIVES}/{}/lesson-bundle.md", archive.dir)),
+        })
+        .collect();
+    notes.extend(crate::vault::timeline_notes(dir, &timeline));
     notes.extend(crate::vault::intent_notes(dir, &intent, &touches));
     notes.push(crate::vault::rules_note(root, dir)?);
     for (relative, content) in &notes {
@@ -791,6 +810,21 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
     );
     files.push((format!("{dir}/INDEX.md"), content));
     Ok(files)
+}
+
+/// Each generated file that is missing or differs from a rebuild, with CRLF read as LF so
+/// a Windows checkout of a current file is current (REQ-cli-047, DRIVE-12).
+fn stale_files(root: &Path, dir: &str) -> Result<Vec<String>> {
+    let mut stale = vec![];
+    for (relative, content) in build(root, dir)? {
+        let current = fs::read(local_path(root, &relative)?)
+            .ok()
+            .map(|bytes| String::from_utf8_lossy(&bytes).replace("\r\n", "\n"));
+        if current.as_deref() != Some(content.as_str()) {
+            stale.push(relative);
+        }
+    }
+    Ok(stale)
 }
 
 fn write_all(root: &Path, dir: &str, files: Vec<(String, String)>) -> Result<()> {
@@ -896,8 +930,9 @@ fn index(
         .into_iter()
         .map(|name| format!("{name} (active; `specsync change status {name}`)"))
         .collect();
-    let archived = found
+    let mut archived: Vec<String> = found
         .iter()
+        .take(crate::vault::RECENT)
         .enumerate()
         .map(|(index, archive)| {
             format!(
@@ -922,9 +957,16 @@ fn index(
             format!("{module}: [{path}](../{path}){detail}")
         })
         .collect();
-    let bundles = found
+    if found.len() > crate::vault::RECENT {
+        archived.push(format!(
+            "All {} archived changes, by month: [timeline.md](timeline.md)",
+            found.len()
+        ));
+    }
+    let mut bundles: Vec<String> = found
         .iter()
         .filter(|archive| archive.lesson_bundle)
+        .take(crate::vault::RECENT)
         .map(|archive| {
             format!(
                 "[{id}](../{ARCHIVES}/{dir}/lesson-bundle.md)",
@@ -933,6 +975,9 @@ fn index(
             )
         })
         .collect();
+    if found.iter().filter(|archive| archive.lesson_bundle).count() > crate::vault::RECENT {
+        bundles.push("Every lesson bundle is on its change's [timeline](timeline.md) entry".into());
+    }
     let mut earlier = vec![];
     if dir != "library" {
         let mut stack = vec!["library".to_string()];
@@ -1243,9 +1288,20 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
             regenerate(root, &dir)?;
             print_json(&value)
         }
-        LibraryCommand::Index => {
+        LibraryCommand::Index { check: false } => {
             regenerate(root, &dir)?;
             print_json(&json!({"schema_version": 1, "index": format!("{dir}/INDEX.md")}))
+        }
+        LibraryCommand::Index { check: true } => {
+            let stale = stale_files(root, &dir)?;
+            ensure!(
+                stale.is_empty(),
+                "the knowledge directory is not what its sources generate; rebuild it with `chough library index` and commit it: {}",
+                stale.join(", ")
+            );
+            print_json(
+                &json!({"schema_version": 1, "index": format!("{dir}/INDEX.md"), "current": true}),
+            )
         }
         LibraryCommand::Archive { apply } => {
             let authority = if apply {

@@ -1930,3 +1930,65 @@ fn an_out_of_scope_delta_file_does_not_resolve_a_requirement() {
     );
     assert!(!fixture.exists(".chough/evidence"));
 }
+
+/// DRIVE-12: each change can add its cases in a file of its own,
+/// `<module>.<part>.cases.toml`, so parallel branches never append to one file. Case IDs
+/// stay unique across files, and the module still names the file.
+#[test]
+fn cases_split_per_change_load_together_and_ids_stay_unique() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!(
+            "{HEADER}{}",
+            case("TC-cli-0001", "functional", "REQ-cli-001", "")
+        ),
+    );
+    fixture.write(
+        ".chough/cases/cli.no-conflicts.cases.toml",
+        &format!(
+            "{HEADER}{}",
+            case("TC-cli-0002", "functional", "REQ-cli-002", "")
+        ),
+    );
+    let listed = list(&fixture);
+    let file_of = |id: &str| {
+        listed
+            .iter()
+            .find(|case| case["id"] == id)
+            .unwrap_or_else(|| panic!("{id} not listed: {listed:?}"))["file"]
+            .clone()
+    };
+    assert_eq!(file_of("TC-cli-0001"), ".chough/cases/cli.cases.toml");
+    assert_eq!(
+        file_of("TC-cli-0002"),
+        ".chough/cases/cli.no-conflicts.cases.toml"
+    );
+
+    fixture.write(
+        ".chough/cases/cli.again.cases.toml",
+        &format!(
+            "{HEADER}{}",
+            case("TC-cli-0001", "functional", "REQ-cli-003", "")
+        ),
+    );
+    let error = fixture.fails(&["cases", "list"]);
+    assert!(error.contains("duplicate case ID TC-cli-0001"), "{error}");
+    std::fs::remove_file(fixture.root().join(".chough/cases/cli.again.cases.toml")).unwrap();
+
+    for name in [
+        "history.extra.cases.toml",
+        "cli..cases.toml",
+        "cli.a.b.cases.toml",
+    ] {
+        fixture.write(&format!(".chough/cases/{name}"), HEADER);
+        let error = fixture.fails(&["cases", "list"]);
+        assert!(
+            error.contains("module must equal the file stem"),
+            "{name}: {error}"
+        );
+        std::fs::remove_file(fixture.root().join(format!(".chough/cases/{name}"))).unwrap();
+    }
+    assert_eq!(list(&fixture).len(), 2);
+}

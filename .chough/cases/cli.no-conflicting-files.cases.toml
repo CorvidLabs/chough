@@ -1,0 +1,56 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-cases-split-per-change"
+title = "Cases split per change load together and IDs stay unique"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12"]
+requirements = ["REQ-cli-047"]
+paths = ["src/cases.rs", "tests/cases.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::cases_split_per_change_load_together_and_ids_stay_unique passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "cases_split_per_change_load_together_and_ids_stay_unique"
+
+[[case]]
+id = "TC-cli-knowledge-index-check"
+title = "The knowledge rebuild check names stale files and passes after a rebuild"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12"]
+requirements = ["REQ-cli-047"]
+paths = ["src/library.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::index_check_names_stale_files_and_passes_after_a_rebuild passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "index_check_names_stale_files_and_passes_after_a_rebuild"
+
+[[case]]
+id = "TC-cli-bug-merge-driver"
+title = "Two edits of one bug merge, and a real disagreement stays a conflict"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12"]
+requirements = ["REQ-cli-047"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict"
