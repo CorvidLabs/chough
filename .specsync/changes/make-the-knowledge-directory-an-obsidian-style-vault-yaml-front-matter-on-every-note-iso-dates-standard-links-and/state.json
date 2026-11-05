@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and",
+  "slug": "make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and",
+  "title": "Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched",
+  "description": "Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched",
+  "kind": "feature",
+  "state": "approved",
+  "base_commit": "8fbbbe71951f9145b91313c7cbde6524d709734a",
+  "created_at": 1793847640,
+  "updated_at": 1793847776,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "src/vault.rs",
+    "src/main.rs",
+    "src/skill.rs",
+    "tests/vault.rs",
+    "tests/evidence.rs",
+    "tests/next.rs",
+    "tests/optional.rs",
+    "tests/knowledge_default.rs",
+    "tests/librarian_trim.rs",
+    "hi/knowledge.md",
+    "INTENT.md",
+    "skills/chough-workflow/references/librarian.md",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Every generated knowledge note starts with YAML front matter (id, title, type, tags, and for an archived change status, ISO 8601 finalized date, modules, requirements, HI criteria traced by those requirements and commits). Archived-change notes link their modules and criteria. modules/<module>.md links the module spec, requirements, context and lesson count and the archived changes that touched it; intent/<family>.md links the HI file and, per criterion ID, the archived changes whose requirements trace it, without copying criterion text; rules.md links the rules, skills and decisions that exist. Every relative Markdown link in the vault resolves, regeneration is byte-identical, and no gate reads it. KNOW-14 to KNOW-19 are captured in hi. New tests fail first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif (0xLeif) 2026-11-04 chose Front matter + MD links and asked for the vault to compound everything (KNOW-14, KNOW-15). Points to sources instead of restating them (KNOW-3, KNOW-12); deterministic (KNOW-4); new code in a small module because src/library.rs is over 1,000 lines. The reduction choices (KNOW-16 to KNOW-19) are captured here and implemented in a later change.",
+    "public_contract": "yes"
+  }
+}

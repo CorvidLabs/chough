@@ -1,0 +1,13 @@
+## ADDED
+
+### REQUIREMENT REQ-cli-044
+
+Knowledge vault. Every note the helper generates in the knowledge directory SHALL start with YAML front matter giving at least `id`, `title`, `type` and `tags`, with titles and commit IDs as double-quoted strings and dates as ISO 8601 UTC. It SHALL link with standard relative Markdown links that resolve inside the repository, so the directory reads as an Obsidian vault and on GitHub alike. An archived-change note SHALL also give `status` (hot or cold), `finalized`, `modules` (the archive's affected specs), `requirements`, `criteria` (the HI criterion IDs that those requirements' `Trace:` lines name in the living requirements) and its base, implementation and verification commits, and SHALL link each module note and each criterion's intent note. `modules/<module>.md` SHALL link the module's spec, requirements, context and lesson source with the count of recorded lessons, and every archived change that touched the module, newest first. `intent/<file>.md`, for each HI file, SHALL link that file and list each criterion ID with the archived changes whose requirements trace it, without copying criterion text. `rules.md` SHALL link each project rule, skill, decision and policy file that exists: `AGENTS.md`, `CLAUDE.md`, `hi/AGENTS.md`, the installed and bundled workflow skill, `docs/DECISIONS.md`, each module's context and `.specsync/sdd.json`. The index SHALL link the module, intent and rules notes. Regeneration SHALL stay byte-identical for the same sources, every note SHALL stay within the 65,536-byte bound, no gate SHALL read the vault, and it SHALL point to sources instead of restating them. Trace: KNOW-14, KNOW-15, KNOW-3, KNOW-4, KNOW-12.
+
+Acceptance Criteria
+- Every Markdown note under `knowledge/` starts with front matter that gives `id`, `title`, `type` and `tags`.
+- An archived-change note gives `type: archived-change`, its `status`, `finalized` in ISO 8601, a quoted title, its `modules`, `requirements` and traced `criteria` as lists, and its quoted commits, and links its module and intent notes.
+- `modules/cli.md` links the cli spec, requirements and context, counts its lessons, and lists only the archived changes that touched cli; no lesson text is copied.
+- `intent/knowledge.md` gives `type: intent`, links `hi/knowledge.md`, and on each criterion ID's line links the archived changes that trace it; no criterion text is copied.
+- `rules.md` links the rule, skill, decision and policy files that exist and none that are missing, and the index links the rules, module and intent notes.
+- Every relative Markdown link in the vault resolves to an existing file, and regenerating twice gives identical bytes.

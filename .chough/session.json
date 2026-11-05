@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "Record the 2026-11-04 retention lessons in the history lesson source (KNOW-12)",
+  "objective": "Make the knowledge directory an Obsidian-style vault: front matter on every note, ISO dates, standard links, module, intent and rules notes (KNOW-14, KNOW-15)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "record-the-2026-11-04-retention-lessons-in-the-history-lesson-source",
+  "native_change": "make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -51,7 +51,9 @@
       "LIFE-13",
       "LIFE-14",
       "LIFE-15",
-      "DRIVE-10"
+      "DRIVE-10",
+      "KNOW-14",
+      "KNOW-15"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -326,7 +328,8 @@
     "PR #96 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "PR #99 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "2026-11-04 Leif (0xLeif) answered \"yes\" to: build and commit knowledge/ in Chough repo, make librarian on by default create it at init and refresh it when the trim runs at done, and fold the 2026-11-04 lessons into the cli and history lesson sources.",
-    "PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision."
+    "PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-04 Leif (0xLeif) chose \"Front matter + MD links\" for an Obsidian-style knowledge vault, asked that it compound everything (\"we need to learn, grow, rules, skills, and compound knowledge of all this project and all things.. spec-sync lessons, hi.. changes.. etc all things!!\"), chose to let old checkpoint refs, older newest-per-case runs and loose artifact folders be reduced, and chose \"Key items move\" to knowledge/attachments; captured as KNOW-14 to KNOW-19."
   ],
   "open_questions": [],
   "completed": [
@@ -836,5 +839,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #106 when hosted checks are green"
+  "next_action": "Implement src/vault.rs against the failing tests"
 }
