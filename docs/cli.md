@@ -13,7 +13,7 @@ their JSON.
 
 | Command | Behavior |
 |---|---|
-| `init` | `--objective`, `--intent-scope`, repeated `--module`, repeated `--host openai\|claude\|codex\|cursor\|gemini\|grok` (default openai; claude shares the openai `.agents/skills` copy, installed once). Creates a schema 2 checkpoint and the skill bundle; preserves existing files and never touches a legacy `.claude/skills` copy. |
+| `init` | `--objective`, `--intent-scope`, repeated `--module`, repeated `--host openai\|claude\|codex\|cursor\|gemini\|grok` (default openai; claude shares the openai `.agents/skills` copy, installed once). Creates a schema 2 checkpoint and the skill bundle; preserves existing files and never touches a legacy `.claude/skills` copy. With the librarian on (the default) it also creates the knowledge directory create-only and reports it as `library` with status `created`, `preserved` (an existing `INDEX.md`, left untouched), `skipped` (librarian off) or `refused` with its reason, writing no knowledge file and still succeeding (REQ-cli-043). |
 | `context [--json]` | Focused packet: instructions, intent, scoped HI export, module sources, recent transitions, valid transitions, preferences, open bugs. Markdown by default. |
 | `status [--environment NAME]` | The full view, always JSON (`--json` is accepted and changes nothing): checkpoint, the native gate for the next main stage in `checkpoint.gate` (`null` when that stage has no prerequisite), valid transitions, `next_valid_action`, native status, snapshot, observations with freshness, open and blocking bugs. |
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). Earlier builds printed the full status JSON here; scripts that read `next_valid_action` now read `.next_valid_action.action` from `next --json`, or use `status`. |
@@ -771,6 +771,15 @@ reported as `applied.librarian_trim` with status `trimmed` (and the summary), `s
 (librarian off, `chough pref set retention manual`, or a recorded `retention off`) or `refused` with its reason; it
 never undoes the move into done. It reads native status only for cold archives whose
 files it would remove, and runs only on that move, never inside `next` or `status`.
+
+After the trim, the same move regenerates the knowledge directory, creating
+`README.md` and `briefs/` if missing, whether or not anything was trimmed. So the change
+just archived and any proof just trimmed are summarized, even in a project that never
+ran `library init` (REQ-cli-043). It is reported as `applied.librarian_index` with
+status `refreshed` and the index path, `skipped` with the librarian off, or `refused`
+with its reason, and it never undoes the move. Commit the directory with the checkpoint.
+It is generated, so after a merge conflict inside it, regenerate with
+`chough library index`.
 
 - Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
   path an earlier archive already listed is counted but detailed only in that earlier

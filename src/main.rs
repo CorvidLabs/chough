@@ -301,9 +301,15 @@ fn init(
             preserved.push(name);
         }
     }
-    print_json(
-        &json!({"schema_version": 1, "created": created, "preserved": preserved, "hosts": hosts}),
-    )
+    // REQ-cli-043: with the librarian on, the knowledge directory exists from the start.
+    let library = library::create_at_init(root);
+    print_json(&json!({
+        "schema_version": 1,
+        "created": created,
+        "preserved": preserved,
+        "hosts": hosts,
+        "library": library,
+    }))
 }
 
 /// The one native status read of a report, made whenever SpecSync is configured.

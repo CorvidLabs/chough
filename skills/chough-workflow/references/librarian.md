@@ -6,6 +6,11 @@ the project root. Opt out when the human asks: `chough pref set librarian off --
 <name> --source …`. It is not a shared cross-project vault, not a ledger, and no gate
 reads it. `chough next` names its index.
 
+`chough init` creates the folder, and every `chough stage advance` into done refreshes
+it after the trim (`applied.librarian_index`), so each archived change has its entry.
+Commit it with the checkpoint. It is generated: on a merge conflict inside it, take
+either side and run `chough library index` to regenerate it.
+
 ## From any stage
 
 Enter it as a side stage and return to the caller:

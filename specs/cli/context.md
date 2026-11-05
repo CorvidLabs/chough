@@ -357,3 +357,65 @@ are not undone. Future use: decide from `records::native_json` or
 `records::read_native_text`, never from `native` or `read_record`, for any file Chough
 does not own; and when a bound refuses a native source, the fix is in Chough, never in
 the source.
+
+2026-11-04, archived status cost dominates the Archive check (verified): one `specsync
+change status <archived-id>` read costs 26 to 35 s inside SpecSync 6.1.2, with no Git
+subprocesses, and the hosted SpecSync Archive job made one per archive on every PR. It
+took about 7 minutes with 13 PR commits, 8 with 26 and 9m51s with 42, and was cancelled
+at its 10-minute limit with 91. Source: a profile of
+.github/scripts/check-specsync-archive.py on #97's branch (78 archives), the hosted runs
+on #101, #92, #77 and #93, and CorvidLabs/spec-sync#831. Future use: never put a
+per-archive native status read on a path that runs per PR or per command; #103's four
+shards only buy headroom. Limits: Linux aarch64 in Docker and ubuntu-latest; measure
+again on SpecSync 6.2.0.
+
+2026-11-04, squash merges and chained PRs (verified): with squash-only merges, a PR that
+merged an earlier PR's branch keeps that branch's commits after the earlier PR lands as
+one squash commit, so its range against main includes them. The Archive check walks
+every commit in that range: 91 on #93, against its own 26. Merging main normally then
+conflicts wherever both sides added the same lines. Source: #91, #93, #95 and #97, and
+the stacked #90, #94, #96 and #99. Future use: to land PRs in sequence, merge the
+earlier PR's final head into the next one; after the earlier one lands, record its
+squash commit with `git merge -s ours` only after checking that the squash tree equals
+that head's tree. Otherwise merge main after each landing. Limits: this repository's
+squash-only, linear-history settings.
+
+2026-11-04, a merge seam drops a shared closing brace (observation): when two branches
+appended tests to the end of the same Rust file, Git kept the closing `);` and `}` that
+both functions end with outside the conflict. Keeping both sides then left one function
+unclosed ("this file contains an unclosed delimiter"). Source: tests/sessions.rs while
+merging #94 into #96 and #96 into #99. Future use: after resolving a conflict where both
+sides appended code, read the seam and build before committing. Limits: seen with Git's
+default merge on Rust test files.
+
+2026-11-04, merging formerly stacked PRs (observation): for a PR that had been stacked
+on another and was retargeted to main, GitHub refused both the synchronous merge
+endpoint and `gh pr merge`, saying it "must be merged using the asynchronous merge REST
+API". The synchronous endpoint also returned HTTP 500 for a squash whose default message
+listed many commits. Source: the #91 and #99 merges. Future use: give an explicit squash
+title and message, and use `PUT .../pulls/<n>/merge-async` with
+`merge_action=direct_merge` for a formerly stacked PR. Limits: GitHub's behaviour on
+2026-11-04.
+
+2026-11-04, tests that replay every archive (verified):
+`the_guard_accepts_every_archived_approval_in_this_repository` assumed every archived
+change has a cli delta. #96, the first history-only change, passed before it was
+archived and failed hosted CI after. Source: CI on #96. Future use: derive each
+archive's expectation from its own approved scope; such a test fails only once a new
+kind of archive exists, so run the full suite after every finalize. Limits: none known.
+
+2026-11-04, a lifted bound survived in a test (verified): tests/spec_split.rs still
+capped every requirements companion at 65,536 bytes after Chough stopped bounding native
+files (REQ-cli-034, REQ-cli-042). #92 and #91 together made specs/cli/requirements.md
+66,330 bytes and hosted CI failed. Leif chose "Remove the size test" and said the size
+cap is only for the files inside the .chough folder. Source: CI on #91. Future use: when
+a bound is lifted from the product, search the tests and CI scripts for the same number.
+Limits: none known.
+
+2026-11-04, closeout lessons skipped (observation): of the changes archived on
+2026-11-04, only #101 recorded a lesson, although the closeout step in
+references/librarian.md asks for one inside the open native change. The agent's own
+closeout helper went straight from cases to review and finalize. Source: this section
+before this change. Future use: write the closeout lessons before `specsync change check
+<id> --commit`, in the order the librarian reference gives. Limits: one agent's runs on
+one day.

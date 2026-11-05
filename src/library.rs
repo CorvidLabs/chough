@@ -447,6 +447,74 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
     ))
 }
 
+/// Build or refresh the knowledge directory: `README.md` only when missing, `briefs/`,
+/// and the regenerated index and entries. Everything is built and bounded first, so a
+/// refusal leaves no half-built folder. Returns whether `README.md` was created.
+fn ensure_built(root: &Path, dir: &str) -> Result<bool> {
+    let files = build(root, dir)?;
+    let created_readme = write_new(root, &format!("{dir}/README.md"), README)?;
+    fs::create_dir_all(local_path(root, &format!("{dir}/briefs"))?)?;
+    write_all(root, dir, files)?;
+    Ok(created_readme)
+}
+
+/// `chough init` with the librarian on (REQ-cli-043, KNOW-1, KNOW-5): create the knowledge
+/// directory create-only. An existing index is `preserved` untouched; a directory that
+/// cannot be built is `refused` with nothing written, and init still succeeds.
+pub(super) fn create_at_init(root: &Path) -> serde_json::Value {
+    let refused =
+        |error: anyhow::Error| json!({"status": "refused", "reason": format!("{error:#}")});
+    match prefs::effective(root, "librarian") {
+        Ok((value, _)) if value != "on" => {
+            return json!({"status": "skipped", "reason": "the librarian is off"});
+        }
+        Err(error) => return refused(error),
+        Ok(_) => {}
+    }
+    let dir = match prefs::effective(root, "library-dir") {
+        Ok((dir, _)) => dir,
+        Err(error) => return refused(error),
+    };
+    let index = format!("{dir}/INDEX.md");
+    match local_path(root, &index) {
+        Ok(path) if path.exists() => {
+            return json!({"status": "preserved", "dir": dir, "index": index});
+        }
+        Err(error) => return refused(error),
+        Ok(_) => {}
+    }
+    let created = (|| -> Result<()> {
+        let files = build(root, &dir)?;
+        write_new(root, &format!("{dir}/README.md"), README)?;
+        fs::create_dir_all(local_path(root, &format!("{dir}/briefs"))?)?;
+        for (relative, content) in files {
+            write_new(root, &relative, &content)?;
+        }
+        Ok(())
+    })();
+    match created {
+        Ok(()) => json!({"status": "created", "dir": dir, "index": index}),
+        Err(error) => refused(error),
+    }
+}
+
+/// The move into done (REQ-cli-043): after the trim, regenerate the knowledge directory so
+/// the change just archived and any proof just trimmed are summarized. Never fails: the
+/// result is `refreshed`, `skipped` with the librarian off, or `refused` with its reason.
+pub(super) fn refresh_at_done(root: &Path) -> serde_json::Value {
+    match prefs::effective(root, "librarian") {
+        Ok((value, _)) if value != "on" => {
+            return json!({"status": "skipped", "reason": "the librarian is off"});
+        }
+        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
+        Ok(_) => {}
+    }
+    match enabled_dir(root).and_then(|dir| ensure_built(root, &dir).map(|_| dir)) {
+        Ok(dir) => json!({"status": "refreshed", "index": format!("{dir}/INDEX.md")}),
+        Err(error) => json!({"status": "refused", "reason": format!("{error:#}")}),
+    }
+}
+
 /// Regenerate every archived-change entry and the index.
 fn regenerate(root: &Path, dir: &str) -> Result<()> {
     write_all(root, dir, build(root, dir)?)
@@ -867,11 +935,7 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
     let dir = enabled_dir(root)?;
     match command {
         LibraryCommand::Init => {
-            // Build and bound everything first so a refusal leaves no half-built folder.
-            let files = build(root, &dir)?;
-            let created_readme = write_new(root, &format!("{dir}/README.md"), README)?;
-            fs::create_dir_all(local_path(root, &format!("{dir}/briefs"))?)?;
-            write_all(root, &dir, files)?;
+            let created_readme = ensure_built(root, &dir)?;
             print_json(&json!({
                 "schema_version": 1,
                 "library": dir,

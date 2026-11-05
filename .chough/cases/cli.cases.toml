@@ -3270,3 +3270,111 @@ expected = ["tests/verification.rs::the_warning_stays_within_the_next_bound pass
 adapter = "cargo-test"
 test_target = "verification"
 test = "the_warning_stays_within_the_next_bound"
+
+[[case]]
+id = "TC-cli-init-builds-knowledge"
+title = "init builds the knowledge directory with the librarian on"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-5"]
+requirements = ["REQ-cli-043"]
+paths = ["src/library.rs", "src/main.rs", "tests/knowledge_default.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/knowledge_default.rs::init_builds_the_knowledge_directory_with_the_librarian_on passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "knowledge_default"
+test = "init_builds_the_knowledge_directory_with_the_librarian_on"
+
+[[case]]
+id = "TC-cli-init-preserves-knowledge"
+title = "init preserves an existing knowledge directory byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-4"]
+requirements = ["REQ-cli-043"]
+paths = ["src/library.rs", "src/main.rs", "tests/knowledge_default.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/knowledge_default.rs::init_preserves_an_existing_knowledge_directory passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "knowledge_default"
+test = "init_preserves_an_existing_knowledge_directory"
+
+[[case]]
+id = "TC-cli-init-unbounded-knowledge-refused"
+title = "init still succeeds and writes no knowledge when the index cannot be bounded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-4"]
+requirements = ["REQ-cli-043"]
+paths = ["src/library.rs", "src/main.rs", "tests/knowledge_default.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/knowledge_default.rs::init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "knowledge_default"
+test = "init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded"
+
+[[case]]
+id = "TC-cli-done-refreshes-knowledge-after-trim"
+title = "done refreshes the knowledge entries after the trim, listing trimmed proof as pruned"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-13"]
+requirements = ["REQ-cli-043"]
+paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::entering_done_refreshes_the_knowledge_entries_after_the_trim passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "entering_done_refreshes_the_knowledge_entries_after_the_trim"
+
+[[case]]
+id = "TC-cli-done-refreshes-knowledge-untrimmed"
+title = "done refreshes the knowledge index when nothing is trimmed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-5"]
+requirements = ["REQ-cli-043"]
+paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::done_refreshes_the_knowledge_index_when_nothing_is_trimmed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "done_refreshes_the_knowledge_index_when_nothing_is_trimmed"
+
+[[case]]
+id = "TC-cli-librarian-off-no-knowledge-at-done"
+title = "a librarian-off project gets no knowledge directory at done"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-5"]
+requirements = ["REQ-cli-043"]
+paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/librarian_trim.rs::a_librarian_off_project_gets_no_knowledge_directory_at_done passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "librarian_trim"
+test = "a_librarian_off_project_gets_no_knowledge_directory_at_done"

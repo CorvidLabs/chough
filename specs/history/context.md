@@ -29,5 +29,27 @@ decisions about retention and history are in the cli context and docs/DECISIONS.
 
 ## Lessons
 
-No module lessons recorded yet; earlier retention and history lessons are in the
-Lessons section of specs/cli/context.md.
+Earlier retention and history lessons are in the Lessons section of
+specs/cli/context.md.
+
+2026-11-04, trimming at done is slow with many archives (verified): `stage advance` into
+done with the librarian on took about 10 minutes here (78 archives), because the trim
+re-reads native status for each cold archive whose files it removes (KNOW-10), and each
+read costs tens of seconds. Source: #97's closeout, where accept to done was recorded at
+23:51:07 and the closeout commit followed at 00:01:15, and the archived status timings
+in the cli lessons. Future use: expect the move into done to be slow until SpecSync
+offers a cheaper archived read (CorvidLabs/spec-sync#831), and add no further native
+reads to that move. Limits: one repository; the cost grows with the cold archives the
+trim touches. Related: #32.
+
+2026-11-04, trimmed proof without a committed knowledge folder (verified): nothing built
+knowledge/ except `library init` and `library index`. The trim at done wrote entries
+only when it removed something, and before it removed and ledgered the files. This
+repository's five trims left 85 ledger entries naming knowledge/archives/<change>.md
+files that were never committed, and the one folder written, on #97's branch, was
+deleted by the agent as a stray. `chough library index` regenerated all 79 entries in
+about 2 seconds, with the trimmed observations as "not-run (pruned)". Source:
+.chough/pruned.jsonl at main f7e5764 and a throwaway clone. Future use: REQ-cli-043
+refreshes the folder after every move into done. Commit it with the checkpoint, and
+treat an untracked knowledge/ after done as output to commit, never as a stray. Limits:
+the entries regenerate from their sources, so nothing was lost.
