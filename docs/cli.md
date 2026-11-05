@@ -872,17 +872,26 @@ It is generated, so after a merge conflict inside it, regenerate with
 `chough library index`.
 
 Before the trim, the same move drops the checkpoint's references to proof from earlier
-cycles, with the librarian on (REQ-cli-045, KNOW-16). It drops any `observations` ID
-whose record was observed before the newest reset, or that has no record, and keeps
-every reference from the current cycle. It is reported as
-`applied.checkpoint_references`:
-- `dropped`, with the dropped IDs;
+cycles, with the librarian on (REQ-cli-045, KNOW-16, KNOW-21):
+- **Observations:** it drops any `observations` ID whose record was observed before the
+  newest reset, or that has no record. It keeps every observation reference from the
+  current cycle. When no reset time can be read, it drops none.
+- **File and design references:** done closes the cycle, so it drops every `files` and
+  `design` reference, whether or not a reset time can be read.
+
+It is reported as `applied.checkpoint_references`:
+- `dropped`, with the dropped IDs as `dropped`, and the file and design references as
+  `dropped_files` and `dropped_design`;
 - `unchanged`;
-- `skipped`, when the librarian is off or no reset time can be read;
-- `refused`, with its reason.
+- `skipped`, when the librarian is off, or nothing is left to drop and no reset time can
+  be read;
+- `refused`, with its reason. An observation record that exists but cannot be read
+  keeps every reference.
 
 It never undoes the move into done. The archives, the ledger and the vault keep the
-dropped IDs.
+dropped IDs, and the native archive keeps the paths the change touched. An archived
+session is done, so retention ignores its file and design references, and never rewrites
+the archived session.
 
 The summary covers two kinds of observation set:
 - **Listed:** sets listed only by cold archives.

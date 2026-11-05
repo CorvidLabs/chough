@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The move into done now drops every file and design reference from the checkpoint, and
+  archived sessions' file and design references no longer protect old proof (KNOW-21,
+  REQ-cli-045). `applied.checkpoint_references` reports them as `dropped_files` and
+  `dropped_design`. Observation references keep the KNOW-16 rule. Cold loose folders
+  that only those references named are now trimmed, and the native archive and the
+  vault keep what the change touched.
+
 - The `SpecSync Archive` shards now split the PR history walk as well as archive
   authentication (#105, DRIVE-10). Shard K inventories every fourth PR revision from
   position K and refuses a change omitted from any of them, so a long pull request no
