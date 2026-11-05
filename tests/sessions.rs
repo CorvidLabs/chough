@@ -953,6 +953,8 @@ fn a_save_refused_because_the_session_vanished_leaves_no_event() {
     assert!(
         !fixture.exists(".chough/sessions/alpha.json"),
         "alpha.json was recreated"
+    );
+}
 
 /// Issue #83 (REQ-history-007, #94 review): in sessions mode `.chough/local/` holds only
 /// `.gitignore`, `checkpoint.lock` and `active-session`, and Git ignores all three.
