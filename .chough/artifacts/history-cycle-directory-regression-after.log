@@ -1,9 +1,0 @@
-   Compiling chough v0.1.0 (/Users/leif/Development/_CorvidLabs/_worktrees/chough-restate)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.55s
-     Running tests/history.rs (target/debug/deps/history-8d338b86ffd9a43a)
-
-running 1 test
-test real_git_post_prune_references_report_unavailable_until_exact_restoration ... ok
-
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 21 filtered out; finished in 5.03s
-

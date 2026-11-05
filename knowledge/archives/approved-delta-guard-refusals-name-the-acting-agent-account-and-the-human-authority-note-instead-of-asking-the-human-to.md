@@ -101,20 +101,20 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/pr50-root-qualification/qualification.json` | 0dec945cbfb933b3dc4b86f1755e0eaecd5163b37adddeb094eb1b236d7a9b73 | working tree |
 | `.chough/artifacts/pr50-root-qualification/source-composition.json` | 9e52aa1c80ae77560d55affb4012b2e4dd0a2b538131bd20c70543705ea387ed | working tree |
 | `.chough/artifacts/pr50-root-qualification/verify.log` | 492a5a5afbb7bb215ca14169a5f875df0bfe79a275eab4be21bf1ccf8d2da934 | working tree |
-| `.chough/artifacts/pr51-root-integration/applied-selection.json` | de7f8093243c0077c7806cd16bb9e535ed8aae1c2c83138061a6d5f165b496fb | working tree |
-| `.chough/artifacts/pr51-root-integration/derived/base.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | working tree |
-| `.chough/artifacts/pr51-root-integration/derived/ours-input.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | working tree |
-| `.chough/artifacts/pr51-root-integration/derived/ours-result.json` | e38351a562b24721f899e65d3ca6e61002899776df3c06d28801b8e532c84c95 | working tree |
-| `.chough/artifacts/pr51-root-integration/derived/stderr.log` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | working tree |
-| `.chough/artifacts/pr51-root-integration/derived/stdout.log` | 04f287bdaa95424202fb6ff3a766da5c5430381ae6f7de09b72cdea68b492314 | working tree |
-| `.chough/artifacts/pr51-root-integration/derived/theirs-selected.json` | 2d409c54ecd1a4ddbe846e2320b42cc8c9af903bdea765968a2dee31ef829ba1 | working tree |
-| `.chough/artifacts/pr51-root-integration/raw-inputs.json` | 33b54d9b60bef461b53b7df38e8f588ab2d7557475f0a8bbaebbc3c4b5e5ff0d | working tree |
-| `.chough/artifacts/pr51-root-integration/raw/accepted50-session.json` | 137d0e425152b8d95b00f4a821410fb0d9b031092bb5772e62c9b4405388f9ee | working tree |
-| `.chough/artifacts/pr51-root-integration/raw/accepted50-transitions.jsonl` | 77c559b278caed085b0521628f53e5ea27a29739a2c231d7b1c9a9f5406774c2 | working tree |
-| `.chough/artifacts/pr51-root-integration/raw/base747-session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | working tree |
-| `.chough/artifacts/pr51-root-integration/raw/base747-transitions.jsonl` | c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16 | working tree |
-| `.chough/artifacts/pr51-root-integration/raw/root51-session.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | working tree |
-| `.chough/artifacts/pr51-root-integration/raw/root51-transitions.jsonl` | f59a698df2f52f0d7a5f8787277ec8cbc12d96023f31e35989033c8d49dff9cf | working tree |
+| `.chough/artifacts/pr51-root-integration/applied-selection.json` | de7f8093243c0077c7806cd16bb9e535ed8aae1c2c83138061a6d5f165b496fb | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/derived/base.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/derived/ours-input.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/derived/ours-result.json` | e38351a562b24721f899e65d3ca6e61002899776df3c06d28801b8e532c84c95 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/derived/stderr.log` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/derived/stdout.log` | 04f287bdaa95424202fb6ff3a766da5c5430381ae6f7de09b72cdea68b492314 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/derived/theirs-selected.json` | 2d409c54ecd1a4ddbe846e2320b42cc8c9af903bdea765968a2dee31ef829ba1 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/raw-inputs.json` | 33b54d9b60bef461b53b7df38e8f588ab2d7557475f0a8bbaebbc3c4b5e5ff0d | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/raw/accepted50-session.json` | 137d0e425152b8d95b00f4a821410fb0d9b031092bb5772e62c9b4405388f9ee | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/raw/accepted50-transitions.jsonl` | 77c559b278caed085b0521628f53e5ea27a29739a2c231d7b1c9a9f5406774c2 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/raw/base747-session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/raw/base747-transitions.jsonl` | c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/raw/root51-session.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
+| `.chough/artifacts/pr51-root-integration/raw/root51-transitions.jsonl` | f59a698df2f52f0d7a5f8787277ec8cbc12d96023f31e35989033c8d49dff9cf | Git dfa671d9c140d9f9ce00f5219b921fa32b675637 |
 | `.chough/artifacts/pr51-root-qualification/applied-metadata-peer.json` | 6fe408dba547e7b143a9f4508dcf6cbc3afe36be204d915cd50ca66f6dbade26 | working tree |
 | `.chough/artifacts/pr51-root-qualification/final-case-1.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | working tree |
 | `.chough/artifacts/pr51-root-qualification/final-case-1.stdout` | 8a8f944a84c9d287f193be7b5aa78d99cc5c784e50ffe1f04ed5dfdf92758e29 | working tree |
@@ -159,7 +159,107 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- none
+- `.chough/artifacts/bug40-verify.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/bug43-verify.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/handoff-cold-start/real-repo-kimi-1/expected-facts.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-cycle-directory-history-suite.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-cycle-directory-regression-after.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-cycle-directory-regression-before.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/apply.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/commands.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/session.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/session.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/metadata.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/preview.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-idle-closure-after/source.diff`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/cases/cli.cases.toml`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/session.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/transitions.jsonl`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-CHANGELOG.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-cli.spec.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/case-merge-choices.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/checkpoint-merge-result.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/cases/cli.cases.toml`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/session.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/transitions.jsonl`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-CHANGELOG.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-cli.spec.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-merged.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/cases/cli.cases.toml`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/session.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/transitions.jsonl`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-CHANGELOG.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-cli.spec.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-owner-selected.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/base.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours-merged.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/preservation.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs-selected.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-after.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-before.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-peer-regressions/chough-peer-history-fixes-suite.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-after.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-before.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-peer-regressions/limitations.md`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-history-show.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-inventory.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-prune-preview.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-timing.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/baseline-inventory.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/baseline-preview.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-after-prune-inventory.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-apply.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-before-merge-inventory.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-checkpoint.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/commands.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/merge-result.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/metadata.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/summary.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-post-prune-reference-after/target-original-event.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/boundary-after-complete-capture.tar.gz`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/boundary-after.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/boundary-after.stderr`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/build.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-after-metadata.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-after.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before-command.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before-metadata.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before-source.patch`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-final.patch`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-fmt.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-history-suite.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-lint.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-test-update.py`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-test.patch`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-after-metadata.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-after.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before-command.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before-metadata.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before-source.patch`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-final.patch`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-fmt.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-history-suite.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-lint.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-test-update.py`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-test.patch`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/observation-ids.json`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/pre-verify-native-0.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- `.chough/artifacts/history-reference-boundary-final/pre-verify-native-1.log`: Git dfa671d9c140d9f9ce00f5219b921fa32b675637
+- 157 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 

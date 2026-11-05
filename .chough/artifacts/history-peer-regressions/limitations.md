@@ -1,1 +1,0 @@
-Focused red/green development logs supplement the independently captured clean-tip reproductions. The failed reproduction artifacts retain exact baseline source and binary identities; these development logs do not replace that qualification boundary.
