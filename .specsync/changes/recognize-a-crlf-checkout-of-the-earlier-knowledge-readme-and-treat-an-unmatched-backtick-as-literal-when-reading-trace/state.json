@@ -7,10 +7,11 @@
   "title": "Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107)",
   "description": "Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "6b2dfb557fe939b6b2d98e3fd50006d1dae4442e",
   "created_at": 1793852020,
-  "updated_at": 1793852074,
+  "updated_at": 1793852149,
   "affected_specs": [
     "cli"
   ],
