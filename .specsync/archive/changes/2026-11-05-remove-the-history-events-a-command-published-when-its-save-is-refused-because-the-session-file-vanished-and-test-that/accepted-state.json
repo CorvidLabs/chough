@@ -7,11 +7,11 @@
   "title": "Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)",
   "description": "Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "75a732d8243181c375ee3c4f2651408ff9b41ab2",
   "created_at": 1793811446,
-  "updated_at": 1793842275,
+  "updated_at": 1793842286,
   "affected_specs": [
     "history"
   ],

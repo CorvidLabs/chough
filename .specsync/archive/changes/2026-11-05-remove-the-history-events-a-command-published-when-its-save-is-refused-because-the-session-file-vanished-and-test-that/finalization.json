@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that",
+  "implementation_commit": "e45405958afabb0dc119c1138b38ddf7be58530e",
+  "implementation_tree": "dedb8bc820637c82550b9d6ef021a5ce4025a8e1",
+  "contract_digest": "51a73960587e363107e72aefba8a52ec55467ff6fb8bc1f59349d6d49f501214",
+  "workspace_digest": "214fff5d936aba20076019a74c368e35c3bf3714bb190347716fe37bb2155cd4",
+  "closing_digest": "f328e1199ca258687a0c57cdc6222d2ce65103bcc50035d48fec7df7d87f4e77",
+  "review_digest": "9f85352cffb6f30e9e6de81ba146eafb5264dae54e5f4e6a40c4dafaca6c6f28",
+  "finalization_digest": "220ee0f1229ca17e0f8391c30440e5664f815d8784a023abd18fb1dc25667e8f",
+  "timestamp": 1793842286
+}
