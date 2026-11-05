@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 88
+archived_changes: 89
 tags:
   - chough/index
 ---
@@ -43,13 +43,14 @@ Canonical prototypes:
 
 Active:
 
-- make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and (active; `specsync change status make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and](archives/make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and.md) Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched (hot)
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source (hot)
 - [build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim](archives/build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim.md) Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources (hot)
-- [expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes](archives/expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes.md) Expect each archive own modules in the approval guard test so a history-only archive passes (hot)
+- [expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes](archives/expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes.md) Expect each archive own modules in the approval guard test so a history-only archive passes (cold)
 - [lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention](archives/lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention.md) Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98) (cold)
 - [remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that](archives/remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that.md) Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82) (cold)
 - [keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy](archives/keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy.md) Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83) (cold)
@@ -148,6 +149,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and](../.specsync/archive/changes/2026-11-05-make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and/lesson-bundle.md)
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](../.specsync/archive/changes/2026-11-05-record-the-2026-11-04-retention-lessons-in-the-history-lesson-source/lesson-bundle.md)
 - [build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim](../.specsync/archive/changes/2026-11-05-build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim/lesson-bundle.md)
 - [expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes](../.specsync/archive/changes/2026-11-05-expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes/lesson-bundle.md)
@@ -249,18 +251,18 @@ Archived lesson bundles:
 
 ## Observations
 
-832 recorded; most recent:
+846 recorded; most recent:
 
-- OBS-tc-cli-librarian-off-no-knowledge-at-done-a0770facc80d2a1e222765bf ProductTest Passed in local-linux-aarch64 at 5e62036b2a88
-- OBS-tc-cli-done-refreshes-knowledge-untrimmed-9786e2750bc874bc3868f5c2 ProductTest Passed in local-linux-aarch64 at 5e62036b2a88
-- OBS-tc-cli-done-refreshes-knowledge-after-trim-1bbadd90c2ca76a8d85bb8d1 ProductTest Passed in local-linux-aarch64 at 5e62036b2a88
-- OBS-tc-cli-init-unbounded-knowledge-refused-db6fc909a3ede2188f94798c ProductTest Passed in local-linux-aarch64 at 5e62036b2a88
-- OBS-tc-cli-init-preserves-knowledge-57c64e82893a8531b6d6c07f ProductTest Passed in local-linux-aarch64 at 5e62036b2a88
-- OBS-tc-cli-init-builds-knowledge-4023ba8c510c42a473afc62b ProductTest Passed in local-linux-aarch64 at 5e62036b2a88
-- OBS-tc-cli-librarian-off-no-knowledge-at-done-0bb04ef01e904ce54277c22c ProductTest Passed in local-linux-aarch64 at aef4bb41221c
-- OBS-tc-cli-done-refreshes-knowledge-untrimmed-50cedd62da9c6f29313bebb0 ProductTest Passed in local-linux-aarch64 at aef4bb41221c
-- OBS-tc-cli-done-refreshes-knowledge-after-trim-090588c1f04585baf1ae892f ProductTest Passed in local-linux-aarch64 at aef4bb41221c
-- OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943 ProductTest Passed in local-linux-aarch64 at aef4bb41221c
+- OBS-tc-cli-vault-regenerates-identically-88331deea5050c18b2d830a2 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
+- OBS-tc-cli-vault-links-resolve-184e2ee0ff66a3dd1e4a662a ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
+- OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
+- OBS-tc-cli-vault-intent-notes-f8310b6c5f06c9010e10a153 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
+- OBS-tc-cli-vault-module-notes-07f158d65e620008195603c1 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
+- OBS-tc-cli-vault-archive-note-properties-83bbace1d2609853521adc32 ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
+- OBS-tc-cli-vault-front-matter-on-every-note-7d367ae40088b3228672012a ProductTest Passed in local-linux-aarch64 at 4b7e040b121d
+- OBS-tc-cli-vault-regenerates-identically-3e4c15ac6ecfd41dff19feef ProductTest Passed in local-linux-aarch64 at 6d931d875456
+- OBS-tc-cli-vault-links-resolve-41a77ccaf7e4b7d0404f7613 ProductTest Passed in local-linux-aarch64 at 6d931d875456
+- OBS-tc-cli-vault-rules-note-478766da1fcf97af1b19a762 ProductTest Passed in local-linux-aarch64 at 6d931d875456
 
 ## Briefs
 

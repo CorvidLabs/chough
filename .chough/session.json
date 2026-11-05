@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -329,7 +329,8 @@
     "PR #99 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "2026-11-04 Leif (0xLeif) answered \"yes\" to: build and commit knowledge/ in Chough repo, make librarian on by default create it at init and refresh it when the trim runs at done, and fold the 2026-11-04 lessons into the cli and history lesson sources.",
     "PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
-    "2026-11-04 Leif (0xLeif) chose \"Front matter + MD links\" for an Obsidian-style knowledge vault, asked that it compound everything (\"we need to learn, grow, rules, skills, and compound knowledge of all this project and all things.. spec-sync lessons, hi.. changes.. etc all things!!\"), chose to let old checkpoint refs, older newest-per-case runs and loose artifact folders be reduced, and chose \"Key items move\" to knowledge/attachments; captured as KNOW-14 to KNOW-19."
+    "2026-11-04 Leif (0xLeif) chose \"Front matter + MD links\" for an Obsidian-style knowledge vault, asked that it compound everything (\"we need to learn, grow, rules, skills, and compound knowledge of all this project and all things.. spec-sync lessons, hi.. changes.. etc all things!!\"), chose to let old checkpoint refs, older newest-per-case runs and loose artifact folders be reduced, and chose \"Key items move\" to knowledge/attachments; captured as KNOW-14 to KNOW-19.",
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif, archive it and merge #107 once CI is green, then start the reduction change (KNOW-16 to 19)?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -851,9 +852,7 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+  "next_action": "Merge PR #107 when hosted checks are green"
 }
