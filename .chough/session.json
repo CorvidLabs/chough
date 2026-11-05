@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
-  "objective": "List HI sub-criterion IDs in vault notes, read Trace lists whole, and correct the KNOW-14 wording (corvid-agent review of #107)",
+  "objective": "Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of #107)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "done",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid",
+  "native_change": "read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -860,5 +860,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #107 when hosted checks are green"
+  "next_action": "Fix against the failing test, verify and close out"
 }

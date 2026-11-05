@@ -266,6 +266,43 @@ fn sub_criterion_ids_are_listed_and_traced_in_whole_trace_lists() {
     );
 }
 
+/// Reviews of #107: a requirement that mentions `Trace:` inline is read from its real,
+/// last `Trace:` list, and HI files that declare their family quoted or as a YAML block
+/// list still link to their intent note.
+#[test]
+fn trace_lists_and_family_declarations_are_read_in_every_valid_form() {
+    let fixture = vault();
+    fixture.write(
+        "hi/ux.md",
+        "---\nhi: 1\nfamilies: [\"UX\"]\n---\n\n# UX\n\n## Criteria\n\n- **UX-1**  One.\n",
+    );
+    fixture.write(
+        "hi/send.md",
+        "---\nhi: 1\nfamilies:\n  - SEND\n---\n\n# Send\n\n## Criteria\n\n- **SEND-2**  Two.\n",
+    );
+    fixture.write(
+        "specs/cli/requirements.md",
+        "# Requirements\n\n### REQ-cli-001\n\nThe helper SHALL keep one checkpoint. Trace: KNOW-1, LIFE-2.\n\n### REQ-cli-002\n\nIt SHALL list the IDs that the `Trace:` lines name. Trace: UX-1, SEND-2.\n",
+    );
+    archive(&fixture, 2, "a3", &["cli"], &["REQ-cli-002"]);
+    fixture.ok(&["library", "index"]);
+    let a3 = fixture.read("knowledge/archives/a3.md");
+    assert!(
+        front_matter(&a3).contains("criteria:\n  - SEND-2\n  - UX-1"),
+        "{a3}"
+    );
+    assert!(a3.contains("[UX-1](../intent/ux.md)"), "{a3}");
+    assert!(a3.contains("[SEND-2](../intent/send.md)"), "{a3}");
+    for (note, family) in [("ux", "UX"), ("send", "SEND")] {
+        let text = fixture.read(&format!("knowledge/intent/{note}.md"));
+        assert!(
+            front_matter(&text).contains(&format!("families:\n  - {family}")),
+            "{text}"
+        );
+        assert!(text.contains("[a3](../archives/a3.md)"), "{text}");
+    }
+}
+
 #[test]
 fn the_rules_note_links_rules_skills_and_decisions_that_exist() {
     let fixture = vault();
