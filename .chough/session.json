@@ -771,7 +771,10 @@
     "OBS-tc-cli-checkpoint-lock-in-project-ignored-1ddc842c3ee553366e3ceb78",
     "OBS-tc-cli-adopt-race-writers-save-or-refuse-7d1291c36ffdf8c4cf60cb7b",
     "OBS-tc-history-no-sessions-local-holds-only-lock-f915ba8e80bb2294e9b22d21",
-    "OBS-tc-history-sessions-local-holds-pointer-and-lock-2aaa399277d671d5225a7ef1"
+    "OBS-tc-history-sessions-local-holds-pointer-and-lock-2aaa399277d671d5225a7ef1",
+    "OBS-tc-history-session-use-waits-for-stage-advance-4c890f364cc991fffefcc5ee",
+    "OBS-tc-history-vanished-session-leaves-no-event-5e23de5747a1561f81cd99a0",
+    "OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f"
   ],
   "bugs": [
     "BUG-0001",
