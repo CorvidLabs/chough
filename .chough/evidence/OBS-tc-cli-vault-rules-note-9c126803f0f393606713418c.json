@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c",
+  "criteria": [
+    "KNOW-15"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test vault -- --exact the_rules_note_links_rules_skills_and_decisions_that_exist for TC-cli-vault-rules-note: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c.log": "4b3faa7531853d485149befe4982cfa5c5b2fed864e8e182bbc90d97572e47a5"
+  },
+  "observed_at_unix_seconds": 1793848529,
+  "snapshot": {
+    "revision": "4b7e040b121daaaa8d0020586be758f2e2f9b57d",
+    "dirty": false,
+    "fingerprint": "7ab72f89ac2eb983d5779290123dff70e10564f629dc16eeb115a39feed1c828",
+    "content": "7c867cae572004264672e14fcbc5187b9eaf93745345bad841e97549e7685d66"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-rules-note",
+      "digest": "231e23ae7a26987bded0d01ad6f63e81785da54415d611e3b20bf2a8b2c33264"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "the_rules_note_links_rules_skills_and_decisions_that_exist"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

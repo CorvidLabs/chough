@@ -810,7 +810,14 @@
     "OBS-tc-cli-vault-intent-notes-95d2176a5c7c5126318c62d3",
     "OBS-tc-cli-vault-rules-note-478766da1fcf97af1b19a762",
     "OBS-tc-cli-vault-links-resolve-41a77ccaf7e4b7d0404f7613",
-    "OBS-tc-cli-vault-regenerates-identically-3e4c15ac6ecfd41dff19feef"
+    "OBS-tc-cli-vault-regenerates-identically-3e4c15ac6ecfd41dff19feef",
+    "OBS-tc-cli-vault-front-matter-on-every-note-7d367ae40088b3228672012a",
+    "OBS-tc-cli-vault-archive-note-properties-83bbace1d2609853521adc32",
+    "OBS-tc-cli-vault-module-notes-07f158d65e620008195603c1",
+    "OBS-tc-cli-vault-intent-notes-f8310b6c5f06c9010e10a153",
+    "OBS-tc-cli-vault-rules-note-9c126803f0f393606713418c",
+    "OBS-tc-cli-vault-links-resolve-184e2ee0ff66a3dd1e4a662a",
+    "OBS-tc-cli-vault-regenerates-identically-88331deea5050c18b2d830a2"
   ],
   "bugs": [
     "BUG-0001",
