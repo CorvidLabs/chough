@@ -3576,3 +3576,21 @@ expected = ["tests/vault.rs::an_untouched_earlier_readme_is_upgraded_and_an_edit
 adapter = "cargo-test"
 test_target = "vault"
 test = "an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept"
+
+[[case]]
+id = "TC-cli-vault-crlf-readme-unmatched-backtick"
+title = "A CRLF checkout of the earlier README is upgraded and an unmatched backtick keeps the Trace list"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14", "KNOW-15"]
+requirements = ["REQ-cli-044"]
+paths = ["src/library.rs", "src/vault.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list"

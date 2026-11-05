@@ -237,16 +237,19 @@ pub(super) fn traces(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 /// The text after the last `Trace:` on a line that is not inside backticks: prose may
 /// mention `` `Trace:` `` before or after the real list.
 fn trace_list(line: &str) -> Option<&str> {
-    let mut in_code = false;
-    let mut last = None;
-    for (index, c) in line.char_indices() {
-        if c == '`' {
-            in_code = !in_code;
-        } else if !in_code && line[index..].starts_with("Trace:") {
-            last = Some(index + "Trace:".len());
-        }
-    }
-    last.map(|start| &line[start..])
+    // Only paired backticks open a code span; an unmatched one is literal (CommonMark).
+    let ticks: Vec<usize> = line.match_indices('`').map(|(index, _)| index).collect();
+    let paired = ticks.len() - ticks.len() % 2;
+    let in_code = |index: usize| {
+        ticks[..paired]
+            .chunks(2)
+            .any(|pair| pair[0] < index && index < pair[1])
+    };
+    line.match_indices("Trace:")
+        .map(|(index, _)| index)
+        .filter(|index| !in_code(*index))
+        .last()
+        .map(|index| &line[index + "Trace:".len()..])
 }
 
 /// An HI criterion ID, including sub-criteria such as `UX-1.a` (DRIVE-1).
