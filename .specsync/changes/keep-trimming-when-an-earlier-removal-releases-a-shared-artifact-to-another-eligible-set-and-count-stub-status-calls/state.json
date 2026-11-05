@@ -7,10 +7,11 @@
   "title": "Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout)",
   "description": "Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "f40ac53b8de66ebfc07d51294c8f6c13e22f8ad3",
   "created_at": 1793854507,
-  "updated_at": 1793854560,
+  "updated_at": 1793854588,
   "affected_specs": [
     "cli"
   ],

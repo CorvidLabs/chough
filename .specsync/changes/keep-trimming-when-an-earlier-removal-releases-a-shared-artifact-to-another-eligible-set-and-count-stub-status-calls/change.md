@@ -1,6 +1,6 @@
 ---
 id: keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls
-state: approved
+state: implementing
 type: bug_fix
 base_commit: f40ac53b8de66ebfc07d51294c8f6c13e22f8ad3
 ---
