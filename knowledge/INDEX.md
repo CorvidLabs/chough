@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-490 recorded; most recent:
+491 recorded; most recent:
 
+- OBS-tc-cli-rollback-keeps-changed-vault-copies-ad4356ae97e0d1fc8a02a87b ProductTest Passed in local-linux-aarch64 at 7f113f4ec6a5
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7 ProductTest Passed in local-linux-aarch64 at 0caabbe46358
-- OBS-product-test-5d86bc7f549cf14c727d5614 ProductTest Passed in local-linux-aarch64 at 893824d45587
 
 ## Briefs
 
