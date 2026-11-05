@@ -1,0 +1,45 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793843136,
+      "digest": "d0f7b245a5f5641578b88cc71b4aa442d0775ec362de0e76052bde42f5059c1e",
+      "note": "Leif: Yes, record and merge for #90-#97 and #99 (2026-11-04); test-only fix for #96 CI",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes",
+        "title": "Expect each archive own modules in the approval guard test so a history-only archive passes",
+        "description": "Expect each archive own modules in the approval guard test so a history-only archive passes",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/stages.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Test-only: the guard test assumed every archived change touches cli; the history-only #96 archive reports unchanged: history. Product behavior is unchanged.",
+        "acceptance_criteria": [
+          "the_guard_accepts_every_archived_approval_in_this_repository passes with the history-only #96 archive; it still requires unchanged deltas naming only modules in each archive approved scope, or no semantic deltas; it fails before the change on this branch; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif (0xLeif) 2026-11-04: Yes, record and merge for PRs #90-#97 and #99. Hosted CI on #96 failed this test after #96 was archived; the assertion is made exact per archive, not loosened.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793843280,
+      "digest": "a8dbaeda45f8b46f4ccefe5383746d50788eab90439e3286838b28bbc2c8dcbc",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
