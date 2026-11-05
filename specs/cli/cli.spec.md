@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 41
+version: 42
 status: active
 files:
   - src/main.rs
@@ -11,6 +11,7 @@ files:
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
+  - src/native_check.rs
   - src/policy.rs
   - src/prefs.rs
   - src/records.rs
@@ -29,6 +30,7 @@ files:
   - tests/fixtures/workflow-at-825a380-lifecycle.md
   - tests/fixtures/workflow-at-edbc3c1-lifecycle.md
   - tests/next.rs
+  - tests/native_check.rs
   - tests/verification.rs
 
 db_tables: []
@@ -248,3 +250,4 @@ provider, runtime or hosted service.
 | 39 | 2026-11-04 | order-next-lesson-bundles-by-finalization-and-guide-a-fresh-cycle-to-a-new-native-change-issues-74-and-76: Order next lesson bundles by finalization and guide a fresh cycle to a new native change (issues 74 and 76) |
 | 40 | 2026-11-04 | read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an: Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100) |
 | 41 | 2026-11-04 | warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and: Warn when the native check runs none of the project commands, judged from the effective commands SpecSync reports, and point the test stage to recorded test evidence (issue 85) |
+| 42 | 2026-11-04 | show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86: Show the latest failed native check in next and say when it has not passed for this tree (issue 86) |

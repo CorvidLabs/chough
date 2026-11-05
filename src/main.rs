@@ -6,6 +6,7 @@ mod evidence;
 mod history;
 mod identity;
 mod library;
+mod native_check;
 mod policy;
 mod prefs;
 mod records;
@@ -748,6 +749,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "iteration": checkpoint.stage.iteration,
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
+        "native_check": native_check::view(root, change.as_deref(), summary)?,
         "native": native,
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         "next_valid_action": {
@@ -871,6 +873,7 @@ fn next_text(view: &Value) -> String {
             text(&native["approved_deltas"])
         ));
     }
+    lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
     lines.push(format!("Next: {}", text(&action["action"])));
     lines.push(format!("  Why: {}", text(&action["reason"])));

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Warn when the native check runs none of the project's commands, from the effective commands SpecSync reports, and point the test stage to recorded test evidence (issue #85, FLOW-15)",
+  "objective": "Remove the 65,536-byte cap on spec requirements files from tests/spec_split.rs: spec files have no size cap; Chough bounds cover only .chough (LIFE-15)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -12,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and",
+  "native_change": "remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -312,7 +312,9 @@
     "Agent corvid-agent: chose the retention and transition-history group because it shares no case with a requirement that stays in cli and owns src/history.rs, tests/history.rs and tests/evidence.rs; SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: parent agent instruction 2026-11-03 9:46 AM MT)",
     "Agent corvid-agent correction: the build->test transition at 2026-11-03 5:05 PM MST repeated the plan->build reason ('Plan approved natively: version 0.2.0 and dated change log only') because stage advance was run twice by mistake. The build edits (Cargo.toml, Cargo.lock, CHANGELOG.md) were made but not yet committed at that move; transitions are immutable, so this records the correction",
     "Agent claude applies Human authority: Leif (0xLeif), product owner, issue #100 (filed by 0xLeif, 'Proposed fix' items 1 to 4) and his 2026-11-04 instruction relayed by the parent agent, verbatim: 'Chough should only reduce and do all that for its own files in .chough and not the specs, not the human intent.' Captured as LIFE-15 in his words. Covered scope: full-size native reads for HI family validation and SpecSync finalization, archived change.md, SDD policy and approval-ledger reads; display markers; skill guidance; tests; docs; decision D-020; changelog and 0.2.1 version bump. Limits: no merge, tag, publish, release or human acceptance grade; Chough's own record bounds unchanged",
-    "PR #92 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision."
+    "PR #92 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
+    "PR #91 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-04 Leif (0xLeif) chose \"Remove the size test\" for the 65,536-byte cap on specs/<module>/requirements.md in tests/spec_split.rs, and said: \"The size cap is only there for the amount of files that you have inside of the .chough folder. It is not for anything\"."
   ],
   "open_questions": [],
   "completed": [
@@ -652,6 +654,17 @@
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
     "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-tc-cli-next-shows-failed-native-attempt-b827e14bce095297d27bbf98",
+    "OBS-tc-cli-next-says-native-check-not-passed-600ffabe452b6763ae7a0294",
+    "OBS-tc-cli-unreadable-native-attempts-unknown-1227807aec1843d01bb7e8b8",
+    "OBS-tc-cli-next-shows-failed-native-attempt-6bd5b3755edf4dc4091997fc",
+    "OBS-tc-cli-next-says-native-check-not-passed-40a734bd0dfe7429c34fe5ce",
+    "OBS-tc-cli-unreadable-native-attempts-unknown-65a82a5e4caa525911cebe87",
+    "OBS-tc-cli-verifying-tree-moved-not-passed-13ab547b1117f29618125ca2",
+    "OBS-tc-cli-next-shows-failed-native-attempt-5e444635131ec2e4b81da15c",
+    "OBS-tc-cli-next-says-native-check-not-passed-a993b10925c8375fc863d104",
+    "OBS-tc-cli-unreadable-native-attempts-unknown-228e142cd4cde86ed3da9c79",
+    "OBS-tc-cli-verifying-tree-moved-not-passed-ffdbd2d92b9bf4319e3d07d2",
     "OBS-tc-cli-only-specsync-native-commands-reported-4d926aca8f4dd992da154813",
     "OBS-tc-cli-unrun-configured-commands-counted-0c3631e5ab7a2f35bf5b855c",
     "OBS-tc-cli-no-warning-when-project-command-runs-85e565e6c5a6f3c4309e9bb5",
@@ -669,7 +682,13 @@
     "OBS-tc-cli-test-stage-points-to-test-evidence-9be14df0ae9141e4049a88ba",
     "OBS-tc-cli-verification-warning-changes-no-gate-db3f4125917b884186628c8c",
     "OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40",
-    "OBS-tc-cli-sdd-policy-over-record-bound-f414334149bb55fd3fa8ab5c"
+    "OBS-tc-cli-sdd-policy-over-record-bound-f414334149bb55fd3fa8ab5c",
+    "OBS-tc-cli-next-shows-failed-native-attempt-2bfb3072e6805f30967489bf",
+    "OBS-tc-cli-next-says-native-check-not-passed-800a20e123c7d89d21b6de20",
+    "OBS-tc-cli-unreadable-native-attempts-unknown-85dac7a79455d716372aa119",
+    "OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a",
+    "OBS-tc-history-split-keeps-requirement-wording-bf6a059a3c5e4b7ddac83e3d",
+    "OBS-tc-reporting-split-keeps-requirement-wording-61f40e1fbdff85fb82a4ca2c"
   ],
   "bugs": [
     "BUG-0001",
@@ -705,5 +724,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Merge PR #92 when hosted checks are green"
+  "next_action": "Merge PR #91 when hosted checks are green"
 }

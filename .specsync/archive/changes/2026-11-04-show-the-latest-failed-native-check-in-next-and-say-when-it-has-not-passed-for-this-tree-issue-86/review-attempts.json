@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "ac7047b8935cb51e05629174ba116d4783023406",
+      "contract_digest": "13c0ba9b264cd120ccd3371d7fd3146b4f54bded8b01e9c7aa1803f0f4aef763",
+      "execution_digest": "2145e86ccfc929c86b97f4d0d4decd0b92b14eec649af8d4884aec5f721302ca",
+      "workspace_digest": "946c7c6d4b5dad28a151b884dffe593b7cfa30c34a4eee1666e498563f42e0e4",
+      "timestamp": 1793834873
+    }
+  ]
+}
