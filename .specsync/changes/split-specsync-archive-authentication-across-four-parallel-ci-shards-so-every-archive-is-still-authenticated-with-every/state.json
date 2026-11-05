@@ -7,10 +7,11 @@
   "title": "Split SpecSync Archive authentication across four parallel CI shards so every archive is still authenticated with every check unchanged within the unchanged 10-minute job limit",
   "description": "Split SpecSync Archive authentication across four parallel CI shards so every archive is still authenticated with every check unchanged within the unchanged 10-minute job limit",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "166a8f52caa772fa6bb33361e195772f0005e2f4",
   "created_at": 1793839493,
-  "updated_at": 1793839553,
+  "updated_at": 1793839919,
   "affected_specs": [
     "cli"
   ],
