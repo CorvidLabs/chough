@@ -793,7 +793,13 @@
     "OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943",
     "OBS-tc-cli-done-refreshes-knowledge-after-trim-090588c1f04585baf1ae892f",
     "OBS-tc-cli-done-refreshes-knowledge-untrimmed-50cedd62da9c6f29313bebb0",
-    "OBS-tc-cli-librarian-off-no-knowledge-at-done-0bb04ef01e904ce54277c22c"
+    "OBS-tc-cli-librarian-off-no-knowledge-at-done-0bb04ef01e904ce54277c22c",
+    "OBS-tc-cli-init-builds-knowledge-4023ba8c510c42a473afc62b",
+    "OBS-tc-cli-init-preserves-knowledge-57c64e82893a8531b6d6c07f",
+    "OBS-tc-cli-init-unbounded-knowledge-refused-db6fc909a3ede2188f94798c",
+    "OBS-tc-cli-done-refreshes-knowledge-after-trim-1bbadd90c2ca76a8d85bb8d1",
+    "OBS-tc-cli-done-refreshes-knowledge-untrimmed-9786e2750bc874bc3868f5c2",
+    "OBS-tc-cli-librarian-off-no-knowledge-at-done-a0770facc80d2a1e222765bf"
   ],
   "bugs": [
     "BUG-0001",
