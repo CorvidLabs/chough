@@ -1,0 +1,40 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793897156,
+      "digest": "ff0dac40791a778961eadbc1647455f17be908ecc236ebed563e18c15ae77f56",
+      "note": "#112 review blockers; Leif: Yes, record and merge, Widen #112 with the fix (2026-11-05)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix",
+        "title": "Union-merge only the generated knowledge notes, and cover the vault code of the index fix",
+        "description": "Union-merge only the generated knowledge notes, and cover the vault code of the index fix",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".gitattributes",
+          "src/vault.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-047 (the union driver must cover only files library index --check compares) and coverage of src/vault.rs, which the index-bound fix changed outside its declared paths; no requirement text changes.",
+        "acceptance_criteria": [
+          "Only the knowledge notes library index generates and library index --check compares (INDEX.md, rules.md, timeline.md and the timeline, archives, modules and intent notes) merge with Git union; attachments, snapshots, briefs and README.md do not. src/vault.rs, changed by the index-bound fix, is covered. The new test fails first and fledge lanes run verify passes on Linux with the audit green."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "corvid-agent review of #112 at 71a3efd3; Leif: Yes, record and merge, and Widen #112 with the fix (2026-11-05 09:21 MST).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    }
+  ],
+  "reopenings": []
+}

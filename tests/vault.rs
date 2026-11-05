@@ -570,3 +570,50 @@ fn the_index_stays_bounded_and_a_monthly_timeline_lists_every_archive() {
     assert!(pages.iter().all(|page| page.contains("lesson-bundle.md")));
     fixture.ok(&["library", "index", "--check"]);
 }
+
+/// #112 review: only the notes `library index` generates, which `--check` compares,
+/// merge by union. An attachment, a snapshot, a brief or the README still conflicts,
+/// rather than merging into invalid content the check never sees.
+#[test]
+fn only_generated_knowledge_notes_merge_by_union() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let merge_attribute = |path: &str| {
+        let output = std::process::Command::new("git")
+            .args(["check-attr", "merge", "--", path])
+            .current_dir(root)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8_lossy(&output.stdout)
+            .trim()
+            .rsplit(": ")
+            .next()
+            .unwrap()
+            .to_string()
+    };
+    for path in [
+        "knowledge/INDEX.md",
+        "knowledge/rules.md",
+        "knowledge/timeline.md",
+        "knowledge/timeline/2026-11.md",
+        "knowledge/timeline/2026-11-p2.md",
+        "knowledge/archives/some-change.md",
+        "knowledge/modules/cli.md",
+        "knowledge/intent/drive.md",
+    ] {
+        assert_eq!(merge_attribute(path), "union", "{path}");
+    }
+    for path in [
+        "knowledge/attachments/some-change/evidence/OBS-x.json",
+        "knowledge/attachments/some-change/artifacts/x/screen.png",
+        "knowledge/snapshots/SNAP-x/notes.md",
+        "knowledge/briefs/older.md",
+        "knowledge/README.md",
+    ] {
+        assert_ne!(merge_attribute(path), "union", "{path}");
+    }
+}

@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-a984327cb5a95913f9cfa12f",
+    "head": "EVT-16f0910ec6396b629ff6340e",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Union-merge only generated knowledge notes; cover src/vault.rs (#112 review)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix",
+  "references": {
+    "criteria": [
+      "DRIVE-12"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Narrow the union driver to generated notes, verify, and bring the review gate to the orc"
+}
