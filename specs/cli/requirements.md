@@ -357,6 +357,16 @@ Acceptance Criteria
 - A malformed attempts file is reported as unknown, and `next` still makes one native status read.
 - A verifying change whose handoff readiness is not `safe` (the tree moved after the last check) is reported as not passed for this tree with SpecSync's reason; with readiness `safe` there is no note; with no readiness, freshness is reported as unknown.
 
+### REQ-cli-040
+
+Serialized checkpoint writers. Every command that reads the checkpoint to change it, in either mode (`.chough/session.json`, or the active session under `.chough/sessions/`), and `session new`, `session adopt`, `session use` and `inbox fold` SHALL hold one writer lock for the project from before that read until the command exits, so a concurrent writer applies its change to the latest checkpoint and no update is lost. The lock SHALL be the file `.chough/local/checkpoint.lock` inside the project, in a directory Git ignores, so every process working on the project uses the same lock whatever its temporary directory. A writer that cannot take the lock within 30 seconds SHALL refuse as `refused:checkpoint-busy`, naming the checkpoint file it would write, with nothing saved. A writer that read `.chough/session.json` and finds the project adopted into sessions mode before it saves SHALL refuse, naming the adoption, with nothing saved. Read-only commands SHALL take no lock. Trace: DRIVE-11, DRIVE-3.
+
+Acceptance Criteria
+- A writer started with a different `TMPDIR` waits while another process holds the project's lock, then saves its update.
+- With the lock held, a writer in sessions mode refuses as `refused:checkpoint-busy` naming `.chough/sessions/<key>.json`, with nothing saved.
+- Legacy writers racing `session adopt` each either save their decision in the one remaining checkpoint or refuse naming the adoption with nothing saved.
+- `.chough/local/checkpoint.lock` is ignored by Git.
+
 ### REQ-cli-041
 
 Trimming at done. When `chough stage advance` moves into done and its save succeeds, and the librarian is on (the default) and the `retention` preference is neither `manual` nor a recorded `off` (the unset default `off` does not stop it), the helper SHALL apply the post-archive summary of REQ-cli-033 with the recorded retention authority, or else with the librarian default as the standing preference (KNOW-13), keeping its rules: the ledger is written first, a removal that changes an affected archive's terminal evidence validity is restored and refused (KNOW-10), and nothing is removed while any native change is open. It SHALL report the result as `applied.librarian_trim` with status `trimmed`, `skipped` (librarian off, `retention manual` or a recorded `retention off`) or `refused` with its reason, and a refusal or failure SHALL NOT undo or refuse the move into done. `retention` SHALL accept `manual` beside `off` and `auto`. Trace: KNOW-13, KNOW-11, KNOW-7, KNOW-5.
@@ -376,4 +386,3 @@ Acceptance Criteria
 - `chough context` still cuts a section at 16 KiB and its aggregate at 128 KiB, and each cut or omission marker says it is for display only, sends the reader to the complete source and says never to shorten it.
 - The bundled and installed workflow skill state that Chough's size bounds cover only its `.chough/` records and displays, that HI intent or criteria, specs and SpecSync files are never edited to fit one, and that an oversized native source is a Chough bug to report; the bundle's previous SKILL.md and build reference read as known-outdated.
 - A structured record other than the checkpoint over 65,536 bytes and a checkpoint over 131,072 bytes are still refused.
-

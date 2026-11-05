@@ -156,16 +156,17 @@ shell-evaluated text.
 Commands that change `.chough/session.json` (`checkpoint`, `stage`, `consent`,
 `history`, `migrate`) take an exclusive checkpoint lock before they read it and hold it
 until they exit, so writers in parallel in one clone apply their updates one after
-another and none is lost. The lock is an empty file in the system temporary directory,
-`chough-checkpoint-<hash>.lock`, named for the SHA-256 of the project's canonical
-`.chough` path, so nothing is added to the project; processes that see different
-temporary directories (for example a different `TMPDIR`) do not share it. The operating
-system releases it when a command exits or is killed. A writer waits up to 30 seconds,
-then refuses as `refused:checkpoint-busy` with nothing saved; rerun it when the other
-command finishes. The lock file stays in the temporary directory after use, one per
-project; it is safe to delete whenever no Chough command is running for that project,
-and the next writer creates it again. `examples/feature-bug-loop.sh` removes its own
-project's lock on exit. `status`, `next`, `cases`, `evidence`, `timing` and the pause checks
+another and none is lost (DRIVE-11, REQ-cli-040). The lock is the empty file
+`.chough/local/checkpoint.lock` inside the project; `.chough/local/` holds a `.gitignore`
+of `*`, so it is never committed, and every process working on the project shares it
+whatever its temporary directory (`TMPDIR`), one lock per worktree (#83). The operating
+system releases it when a command exits or is killed, so a killed writer leaves no stale
+lock. A writer waits up to 30 seconds, then refuses as `refused:checkpoint-busy`, naming
+the checkpoint file it would write (`.chough/session.json` or, in sessions mode, the
+active session's file), with nothing saved; rerun it when the other command finishes.
+The lock file stays after use; it is safe to delete whenever no Chough command is running
+for the project, and the next writer creates it again. Chough releases before #83 locked
+in the system temporary directory instead and do not serialize with this one. `status`, `next`, `cases`, `evidence`, `timing` and the pause checks
 of `validate run` take no lock; `context` and the show forms of `stage`, `consent` and
 `history` take it while they run. Chough releases before this lock do not take it.
 
@@ -380,7 +381,9 @@ every command uses `.chough/session.json` exactly as before.
   An archived session's status is `archived`; an open one's is its stage status (#84).
 
 The active session is named by `.chough/local/active-session`. That directory holds a
-`.gitignore` of `*`, so the pointer stays local to each worktree. With no pointer the
+`.gitignore` of `*`, so the pointer stays local to each worktree. It also holds the
+checkpoint writer lock in every project, with or without sessions, and nothing else
+(REQ-history-007, #83). With no pointer the
 only open session is active. With no open session, several and no pointer, or a
 pointer to a missing or archived session, every command refuses with nothing written
 and names the command to run. `chough init` refuses in sessions mode.

@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The checkpoint writer lock now lives in the project, at `.chough/local/checkpoint.lock`
+  (Git-ignored), instead of the system temporary directory, so writers with different
+  `TMPDIR` values, or a temp cleaner, can no longer split it and lose updates (#83,
+  DRIVE-11, REQ-cli-040). A busy refusal names the file it would write, the active
+  session's in sessions mode. Chough releases before this still lock in the temporary
+  directory and do not serialize with this one.
+
 - `chough next` (text and JSON) now shows the checkpoint's open questions, at most 10
   with their total like blockers, and `chough status` reports all of them, so a
   question from `checkpoint --question` or a folded subagent inbox entry is no longer

@@ -451,6 +451,10 @@ fn fill_checkpoint_to_pretty_bytes(session: &mut Value, bytes: usize) {
 }
 
 fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str], bound: &str) {
+    // A writer has run before, so the project's lock (#83) already exists, as in any
+    // project; the comparison still covers every file, `.chough/local/` included.
+    fixture.write(".chough/local/.gitignore", "*\n");
+    fixture.write(".chough/local/checkpoint.lock", "");
     let before = managed_record_bytes(fixture.root());
     let output = fixture.run(args);
     assert!(!output.status.success(), "{args:?} unexpectedly succeeded");
@@ -1948,6 +1952,8 @@ fn checkpoint_writer_lock_holder_process() {
     };
     use std::io::Write;
     let root = PathBuf::from(std::env::var(LOCK_HOLDER_ROOT).unwrap());
+    // The lock lives in the project's `.chough/local/` (#83), as a writer creates it.
+    fs::create_dir_all(checkpoint_lock_path(&root).parent().unwrap()).unwrap();
     let lock = fs::OpenOptions::new()
         .read(true)
         .write(true)
@@ -2226,13 +2232,12 @@ fn read_only_commands_leave_session_temps_in_place() {
     }
 }
 
-/// The exercise removes its project's checkpoint lock file on exit, in every mode
-/// (review of #70): the setup's `checkpoint_lock` names the file real Chough creates
-/// for the project under the given TMPDIR, and the exit cleanup deletes it whether the
-/// run passed, failed or prepared a cold start.
+/// The exercise's checkpoint lock lives inside its project (#83, DRIVE-11): a Chough write
+/// creates `.chough/local/checkpoint.lock` there, and nothing named `chough-checkpoint-*`
+/// is left in the run's TMPDIR, whether the run passed, failed or prepared a cold start.
 #[cfg(unix)]
 #[test]
-fn exercise_removes_its_checkpoint_lock_on_exit() {
+fn exercise_keeps_its_checkpoint_lock_inside_the_project() {
     let script = fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
     )
@@ -2248,9 +2253,8 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
         let temp = TempDir::new().unwrap();
         let cwd = TempDir::new().unwrap();
         let chough = env!("CARGO_BIN_EXE_chough");
-        // The setup's own lock name, then a real Chough write that creates the lock.
         let body = format!(
-            "set -eu\n{setup}cd \"$work\"\n\"{chough}\" init --objective Probe --intent-scope LIFE --module cli >/dev/null\nmark_checkpoint_lock\n\"{chough}\" checkpoint --decision 'Probe the lock' >/dev/null\nprintf '%s\\n' \"$checkpoint_lock\"\n[ -f \"$checkpoint_lock\" ] || exit 9\nexit {status}\n"
+            "set -eu\n{setup}cd \"$work\"\n\"{chough}\" init --objective Probe --intent-scope LIFE --module cli >/dev/null\n\"{chough}\" checkpoint --decision 'Probe the lock' >/dev/null\nlock=\"$work/.chough/local/checkpoint.lock\"\nprintf '%s\\n' \"$lock\"\n[ -f \"$lock\" ] || exit 9\nexit {status}\n"
         );
         let out = Command::new("sh")
             .arg("-c")
@@ -2263,16 +2267,150 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
             .unwrap();
         assert_eq!(out.status.code(), Some(status), "{args:?} {out:?}");
         let named = String::from_utf8_lossy(&out.stdout).trim().to_string();
-        assert!(
-            named.contains("chough-checkpoint-") && named.ends_with(".lock"),
-            "{named}"
-        );
+        assert!(named.ends_with("/.chough/local/checkpoint.lock"), "{named}");
         let locks: Vec<String> = fs::read_dir(temp.path())
             .unwrap()
             .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
             .filter(|name| name.starts_with("chough-checkpoint-"))
             .collect();
         assert!(locks.is_empty(), "{args:?} exit {status} left {locks:?}");
+    }
+}
+
+/// Issue #83 (DRIVE-11): the writer lock lives in the project, so a writer started with
+/// another `TMPDIR` waits for a holder of the project's lock and then saves.
+#[cfg(unix)]
+#[test]
+fn writers_with_different_temp_directories_share_the_checkpoint_lock() {
+    use std::process::Stdio;
+    use std::time::Duration;
+    let fixture = Fixture::new();
+    fixture.init();
+    let lock_path = fixture.root().join(".chough/local/checkpoint.lock");
+    fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let other_tmp = tempfile::tempdir().unwrap();
+    let decision = "Written with another TMPDIR";
+    let mut writer = Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args(["checkpoint", "--decision", decision])
+        .env("TMPDIR", other_tmp.path())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    std::thread::sleep(Duration::from_secs(1));
+    assert!(
+        writer.try_wait().unwrap().is_none(),
+        "the writer with another TMPDIR did not wait for the project's lock"
+    );
+    drop(lock);
+    let output = writer.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let session: Value = serde_json::from_str(
+        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
+    )
+    .unwrap();
+    assert!(
+        session["decisions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entry| entry == decision),
+        "{session:#}"
+    );
+}
+
+/// Issue #83: the lock file is inside `.chough/local/`, which Git ignores.
+#[test]
+fn the_checkpoint_lock_lives_in_the_project_and_git_ignores_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["checkpoint", "--decision", "Take the lock"]);
+    assert!(
+        fixture
+            .root()
+            .join(".chough/local/checkpoint.lock")
+            .exists()
+    );
+    fixture.git(&["init", "-q"]);
+    fixture.commit_all("fixture");
+    fixture.git(&["check-ignore", "-q", ".chough/local/checkpoint.lock"]);
+    let tracked = Command::new("git")
+        .current_dir(fixture.root())
+        .args(["ls-files", ".chough/local"])
+        .output()
+        .unwrap();
+    assert!(
+        tracked.stdout.is_empty(),
+        "{}",
+        String::from_utf8_lossy(&tracked.stdout)
+    );
+}
+
+/// Issue #83 item d: legacy writers racing `session adopt` each either save their
+/// decision in the one remaining checkpoint or refuse with nothing saved. (#77's
+/// `legacy_writers_racing_adopt_end_in_one_mode` asserts only the single mode.)
+#[test]
+fn legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved() {
+    for trial in 0..10 {
+        let fixture = Fixture::new();
+        fixture.init();
+        let outputs: Vec<(String, Output)> = std::thread::scope(|scope| {
+            let fixture = &fixture;
+            let writers: Vec<_> = (0..4)
+                .map(|writer| {
+                    scope.spawn(move || {
+                        let decision = format!("writer {writer} of trial {trial}");
+                        let output = fixture.run(&["checkpoint", "--decision", &decision]);
+                        (decision, output)
+                    })
+                })
+                .collect();
+            let adopt = scope.spawn(move || fixture.run(&["session", "adopt", "alpha"]));
+            let outputs = writers
+                .into_iter()
+                .map(|writer| writer.join().unwrap())
+                .collect();
+            adopt.join().unwrap();
+            outputs
+        });
+        let file = if fixture.root().join(".chough/session.json").exists() {
+            ".chough/session.json"
+        } else {
+            ".chough/sessions/alpha.json"
+        };
+        let session: Value =
+            serde_json::from_str(&fs::read_to_string(fixture.root().join(file)).unwrap()).unwrap();
+        let decisions = session["decisions"].as_array().unwrap();
+        for (decision, output) in &outputs {
+            let present = decisions.iter().any(|entry| entry == decision.as_str());
+            if output.status.success() {
+                assert!(
+                    present,
+                    "trial {trial}: {decision} reported saved but is not in {file}"
+                );
+            } else {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                assert!(
+                    stderr.contains("was adopted") && stderr.contains("nothing was saved"),
+                    "trial {trial}: {stderr}"
+                );
+                assert!(!present, "trial {trial}: refused {decision} is in {file}");
+            }
+        }
     }
 }
 

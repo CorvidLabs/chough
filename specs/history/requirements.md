@@ -68,3 +68,11 @@ Acceptance Criteria
 - `session list` reports an archived session with status `archived`.
 - `inbox add --kind observation` with an ID that has no evidence record adds the entry, warns on stderr naming the ID, and `inbox list` marks it `recorded: false`; a recorded observation gets no warning and `recorded: true`.
 
+### REQ-history-007
+
+Local state directory. `.chough/local/` SHALL hold only Git-ignored local state of one worktree, with a `.gitignore` of `*`: the active-session pointer in sessions mode and the checkpoint writer lock (REQ-cli-040). A project without `.chough/sessions/` SHALL gain no tracked file and no session file from sessions support; its first checkpoint writer creates only `.chough/local/` with that `.gitignore` and the lock. Trace: DRIVE-3, DRIVE-11.
+
+Acceptance Criteria
+- In a project without sessions, `init` and `stage advance` create no `.chough/sessions/`, and `.chough/local/` holds only `.gitignore` and `checkpoint.lock`, both ignored by Git.
+- In sessions mode, `.chough/local/` holds only `.gitignore`, `checkpoint.lock` and `active-session`.
+
