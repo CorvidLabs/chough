@@ -1,0 +1,28 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-b532801a6be2bb05fbc01858",
+  "criteria": [
+    "KNOW-15"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "The nine folded lessons cite sources that resolve: commits 5998879, 05d8244, 76fb917, b4943f3, 1fe7cf9 and 6e0a835, hosted jobs 127268393117, 127268393092 and 127268393085, and issue #32.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1793893351,
+  "snapshot": {
+    "revision": "12b36fecc03a33db2dc857807aae801048b9b95e",
+    "dirty": false,
+    "fingerprint": "b6b3d984028a7936ad6d124ee5e43569147852ac3b21e2edcee71eb756354a5f",
+    "content": "84843b488fc259e336e3d3ad0124292dd0e3123ce05aac307d7a117f6d5ef92f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated"
+}

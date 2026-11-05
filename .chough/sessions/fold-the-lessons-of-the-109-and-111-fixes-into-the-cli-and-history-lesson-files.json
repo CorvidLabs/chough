@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-64805309cd2dbbb63a199473",
-    "head": "EVT-032d6569c80181e48c5236cb",
+    "head": "EVT-1a479ca01350a1c12250d814",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -31,10 +31,14 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-structural-b532801a6be2bb05fbc01858"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Check the sources, verify, and take this to accept beside the DRIVE-12 change"
 }

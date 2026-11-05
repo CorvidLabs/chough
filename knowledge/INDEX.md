@@ -43,6 +43,7 @@ Canonical prototypes:
 
 Active:
 
+- fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files (active; `specsync change status fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files`)
 - no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12 (active; `specsync change status no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12`)
 
 Archived changes (newest first; the newest 3 are hot):
@@ -277,8 +278,9 @@ Archived lesson bundles:
 
 ## Observations
 
-486 recorded; most recent:
+487 recorded; most recent:
 
+- OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
 - OBS-product-test-deeab5eb9295ffe50f291b9e ProductTest Passed in local-linux-aarch64 at 5793431b5f81
 - OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef ProductTest Passed in local-linux-aarch64 at 0caabbe46358
@@ -288,7 +290,6 @@ Archived lesson bundles:
 - OBS-tc-history-session-after-legacy-adoption-4b6f7eb1047f7f9fd028d20d ProductTest Passed in local-linux-aarch64 at 53e2a87c7df3
 - OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 - OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
-- OBS-tc-cli-vault-mixed-age-folder-stays-2efd9baf3b7e0a7b17ac0e49 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 
 ## Briefs
 
