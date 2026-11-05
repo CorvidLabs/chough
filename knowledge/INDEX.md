@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110 (active; `specsync change status keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-489 recorded; most recent:
+490 recorded; most recent:
 
+- OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
 - OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7 ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-product-test-5d86bc7f549cf14c727d5614 ProductTest Passed in local-linux-aarch64 at 893824d45587
-- OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c ProductTest Passed in local-linux-aarch64 at f131ebeee492
 
 ## Briefs
 
