@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-416c06bfe6c58a4b8f78f0f7",
-    "head": "EVT-d07566bc8a9070fd25196169",
+    "head": "EVT-f424fbba77a0204351d16b60",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Split the history walk with shard_revisions against the failing fixtures"
 }
