@@ -132,6 +132,40 @@ class ArchiveExecutorTests(unittest.TestCase):
         self.assertEqual(sorted(calls), sorted(ids))
         self.assertEqual(peak, 3)
 
+    def test_shards_partition_the_sorted_archives_exactly_once(self):
+        ids = {f"change-{number:02}" for number in range(11)}
+        for total in range(1, 6):
+            seen = []
+            for index in range(1, total + 1):
+                part = self.gate.shard_ids(ids, (index, total))
+                self.assertEqual(part, sorted(ids)[index - 1::total], (index, total))
+                seen += part
+            self.assertEqual(sorted(seen), sorted(ids), total)
+            self.assertEqual(len(seen), len(set(seen)), total)
+
+    def test_shard_must_be_k_of_n_within_the_bound(self):
+        for value, shard in [("1/1", (1, 1)), ("3/4", (3, 4)), ("8/8", (8, 8))]:
+            self.assertEqual(self.gate.parse_shard(value), shard)
+        for value in ["", "0/4", "5/4", "1/0", "a/b", "1/4/2", " 1/4", "-1/4", "1/9", "01/4"]:
+            with self.subTest(value=value), self.assertRaises(self.gate.GateError):
+                self.gate.parse_shard(value)
+
+    def test_a_shard_authenticates_only_its_own_archives(self):
+        ids = {f"change-{number}" for number in range(7)}
+        calls = []
+
+        def read(binary, root, action, change_id):
+            calls.append(change_id)
+            return self.response(change_id), 0
+
+        with mock.patch.object(self.gate, "native", side_effect=read):
+            self.gate.authenticate_archives("specsync", Path("."), ids, ids, (2, 3))
+        self.assertEqual(sorted(calls), sorted(ids)[1::3])
+        with mock.patch.object(self.gate, "native", side_effect=read), self.assertRaises(
+            self.gate.GateError
+        ):
+            self.gate.authenticate_archives("specsync", Path("."), ids | {"omitted"}, ids, (3, 3))
+
     def test_errors_are_reported_in_id_order_not_completion_order(self):
         release, beta_failed = threading.Event(), threading.Event()
         calls = []
@@ -342,11 +376,12 @@ class ArchiveFixtures(unittest.TestCase):
     def fixture(self, source):
         return self.copy(source, f"case-{self._testMethodName}-{len(list(self.directory.iterdir()))}")
 
-    def check(self, root, succeeds, *, base=None, env=None, contains=None):
+    def check(self, root, succeeds, *, base=None, env=None, contains=None, shard=None):
         before = native_hash(root)
         status = command(root, "git", "status", "--porcelain=v1", "--untracked-files=all")
         result = subprocess.run(
-            [sys.executable, str(GATE), "--root", str(root), "--base", base or self.base],
+            [sys.executable, str(GATE), "--root", str(root), "--base", base or self.base]
+            + (["--shard", shard] if shard else []),
             env=ENV if env is None else env, capture_output=True, text=True, timeout=180,
         )
         self.assertEqual(result.returncode == 0, succeeds, result.stdout + result.stderr)
@@ -472,6 +507,18 @@ class ArchiveFixtures(unittest.TestCase):
         shutil.rmtree(root / ".specsync/archive")
         commit(root, "synthetic archive incorrectly removed")
         self.check(root, False, contains="omitted instead of archived")
+
+    def test_shards_split_authentication_and_shard_one_walks_history(self):
+        self.check(self.archived, True, shard="1/2", contains="Shard 1/2: 1 of 1 archive(s) authenticated")
+        self.check(self.archived, True, shard="2/2", contains="Shard 2/2: 0 of 1 archive(s) authenticated")
+        for shard in ["1/2", "2/2"]:
+            with self.subTest(shard=shard):
+                self.check(self.draft, False, shard=shard, contains="unfinished")
+        root = self.fixture(self.archived)
+        shutil.rmtree(root / ".specsync/archive")
+        commit(root, "synthetic archive incorrectly removed")
+        self.check(root, False, shard="1/2", contains="omitted instead of archived")
+        self.check(self.clean, False, shard="3/2", contains="--shard")
 
     def test_bad_base_shallow_and_unsafe_inventory_fail(self):
         self.check(self.clean, False, base="0" * 40)
