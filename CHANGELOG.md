@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-05
+
+- A refused trim no longer deletes vault attachments another writer changed (#110,
+  REQ-cli-046, KNOW-10). Each vault copy is written and given its mode in a private
+  staging file, then hard-linked into place, so a failed copy removes only its staging
+  file. A rollback removes a copy only while it still holds the bytes and mode written,
+  and names any copy it kept.
 - Parallel pull requests no longer conflict in files Chough writes (REQ-cli-047,
   DRIVE-12). Each change can add its cases in its own
   `.chough/cases/<module>.<part>.cases.toml`. `chough library index --check` fails
@@ -489,6 +496,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.4.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.4.0
 [0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0
 [0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
 [0.1.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.1.0

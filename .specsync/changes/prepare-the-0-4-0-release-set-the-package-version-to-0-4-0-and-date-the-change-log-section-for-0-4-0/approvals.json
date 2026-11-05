@@ -1,0 +1,41 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793902693,
+      "digest": "7287b51b228e5452371a519087cec9d3c7b576468432c03b8160fb43af055905",
+      "note": "Leif: Chough 0.4.0 After #112, #114, #110 (2026-11-05 09:43 MST)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0",
+        "title": "Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0",
+        "description": "Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Release preparation only: package version and change log; no contract changes.",
+        "acceptance_criteria": [
+          "The package version is 0.4.0 in Cargo.toml and Cargo.lock, the change log has a dated 0.4.0 section including #110 and a v0.4.0 link, cargo package --list shows only the documented files, cargo publish --dry-run succeeds, and fledge lanes run verify passes on Linux. No tag, publish or GitHub release is made here."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif: Chough 0.4.0 is tagged and released After #112, #114, #110 (2026-11-05 09:43 MST, via the orc); the tag, publish and GitHub release need his separate approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}
