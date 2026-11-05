@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-14bc1c69d2ba6af85d888d1f",
+    "head": "EVT-498de828e2d410a9b78a3ff8",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Keep vault copies another writer changed when a refused trim rolls back (#110)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110",
+  "references": {
+    "criteria": [
+      "KNOW-10",
+      "KNOW-19"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Make the rollback claim, compare and keep changed copies against the failing test"
+}

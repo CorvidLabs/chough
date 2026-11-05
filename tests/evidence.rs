@@ -1901,3 +1901,62 @@ fn retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read() {
     );
     assert_eq!(tree(fixture.root()), before);
 }
+
+/// #110: a refused apply removes only the vault copies it made that are still as it wrote
+/// them. A copy another writer changed (bytes or mode) after the apply created it is kept
+/// as written, and the refusal says so; the original source is restored either way.
+#[cfg(unix)]
+#[test]
+fn a_refused_apply_keeps_vault_copies_another_writer_changed() {
+    use std::os::unix::fs::PermissionsExt;
+    let attachment = "knowledge/attachments/a2/evidence/manual.json";
+    for (hook, expect_kept) in [
+        (
+            format!("printf 'another writer updated this attachment\\n' > {attachment}"),
+            Some("another writer updated this attachment\n"),
+        ),
+        (format!("chmod 600 {attachment}"), None),
+        (String::new(), None),
+    ] {
+        let fixture = knowledge_fixture();
+        fixture.ok(&[
+            "consent",
+            "grant",
+            "retention",
+            "--source",
+            "Human: summarize old proof",
+        ]);
+        let source = fixture.read(".chough/evidence/manual.json");
+        fixture.write(".stub-break", ".chough/evidence/manual.json");
+        if !hook.is_empty() {
+            fixture.write(".stub-hook", &format!("{hook}\n"));
+            fixture.write(".stub-hook-after", "3\n");
+        }
+        let refused = fixture.fails(&["library", "archive", "--apply"]);
+        assert!(refused.contains("validity"), "{hook}: {refused}");
+        assert!(
+            !fixture.exists(".stub-hook"),
+            "{hook}: the hook did not run: {refused}"
+        );
+        assert_eq!(
+            fixture.read(".chough/evidence/manual.json"),
+            source,
+            "{hook}"
+        );
+        match (hook.as_str(), expect_kept) {
+            ("", _) => assert!(!fixture.exists(attachment), "an unchanged copy is removed"),
+            (_, Some(bytes)) => {
+                assert_eq!(fixture.read(attachment), bytes, "{refused}");
+                assert!(refused.contains(attachment), "{refused}");
+            }
+            (_, None) => {
+                let mode = fs::metadata(fixture.root().join(attachment))
+                    .unwrap_or_else(|_| panic!("a mode change was not kept: {refused}"))
+                    .permissions()
+                    .mode();
+                assert_eq!(mode & 0o777, 0o600);
+                assert!(refused.contains(attachment), "{refused}");
+            }
+        }
+    }
+}

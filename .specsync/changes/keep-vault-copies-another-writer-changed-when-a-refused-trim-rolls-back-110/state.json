@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110",
+  "slug": "keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110",
+  "title": "Keep vault copies another writer changed when a refused trim rolls back (110)",
+  "description": "Keep vault copies another writer changed when a refused trim rolls back (110)",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "99c02a57e1279237e6e2f80099d8bab1d6074dc4",
+  "created_at": 1793898246,
+  "updated_at": 1793898296,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/evidence.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-046 and KNOW-10: a restore must not delete another writer's bytes; no requirement text changes.",
+  "acceptance_criteria": [
+    "A refused trim apply removes only the vault copies it created that still hold the bytes and mode it wrote; a copy another writer changed is kept as written and named in the refusal; the source is restored either way. The new test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #110 (P1); Leif: release 0.4.0 after #112, #114 and #110 (2026-11-05 09:43 MST, via the orc).",
+    "public_contract": "no"
+  }
+}
