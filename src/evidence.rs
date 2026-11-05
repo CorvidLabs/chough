@@ -1977,6 +1977,18 @@ fn hold_path(relative: &str) -> String {
 /// [`HOLD_DIR`], so later writes to its path cannot be lost, then compared and deleted at
 /// once. Bytes that differ are put back without replacing anything and refused.
 fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
+    remove_verified_as(root, relative, expected, None)
+}
+
+/// [`remove_verified`], also requiring `permissions` when given: a vault copy a refused
+/// apply created is removed only while it still holds the bytes and mode it was written
+/// with, so a copy another writer changed is kept (#110).
+fn remove_verified_as(
+    root: &Path,
+    relative: &str,
+    expected: &[u8],
+    permissions: Option<&fs::Permissions>,
+) -> Result<()> {
     let path = local_path(root, relative)?;
     let holds = local_path(root, HOLD_DIR)?;
     fs::create_dir_all(&holds)?;
@@ -1988,7 +2000,10 @@ fn remove_verified(root: &Path, relative: &str, expected: &[u8]) -> Result<()> {
     );
     fs::rename(&path, &hold).with_context(|| format!("removing {relative}"))?;
     let actual = fs::read(&hold).with_context(|| format!("re-reading {relative}"));
-    if actual.as_deref().ok() == Some(expected) {
+    let same_mode = permissions.is_none_or(|expected| {
+        fs::symlink_metadata(&hold).is_ok_and(|metadata| metadata.permissions() == *expected)
+    });
+    if same_mode && actual.as_deref().ok() == Some(expected) {
         fs::remove_file(&hold).with_context(|| format!("removing {relative}"))?;
         let _ = fs::remove_dir(&holds);
         return Ok(());
@@ -2597,7 +2612,7 @@ pub(super) fn archive_summary(
             let head = head_revision(root);
             let at = now()?;
             let mut held: Vec<(String, Vec<u8>, fs::Permissions)> = vec![];
-            let mut copies: Vec<String> = vec![];
+            let mut copies: Vec<(String, Vec<u8>, fs::Permissions)> = vec![];
             let mut recorded: Vec<String> = vec![];
             let removal: Result<()> = (|| {
                 for (candidate, evidence, record_digest, bytes, moves) in &prepared {
@@ -2676,11 +2691,21 @@ pub(super) fn archive_summary(
                             {
                                 Ok(mut copy) => {
                                     use std::io::Write;
-                                    copies.push(target.clone());
-                                    copy.write_all(content)
-                                        .with_context(|| format!("moving {file} to {target}"))?;
-                                    fs::set_permissions(&path, permissions.clone())
-                                        .with_context(|| format!("moving {file} to {target}"))?;
+                                    // This apply created the copy, so one it could not
+                                    // finish writing is removed at once.
+                                    let written = copy.write_all(content).and_then(|()| {
+                                        fs::set_permissions(&path, permissions.clone())
+                                    });
+                                    if let Err(error) = written {
+                                        let _ = fs::remove_file(&path);
+                                        return Err(error)
+                                            .with_context(|| format!("moving {file} to {target}"));
+                                    }
+                                    copies.push((
+                                        target.clone(),
+                                        content.clone(),
+                                        permissions.clone(),
+                                    ));
                                 }
                                 Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
                                     let existing = fs::read(&path).with_context(|| {
@@ -2754,10 +2779,13 @@ pub(super) fn archive_summary(
                         }
                     }
                 }
-                // The vault copies of a refused apply are removed again.
-                for copy in &copies {
-                    if let Ok(path) = local_path(root, copy) {
-                        let _ = fs::remove_file(path);
+                // The vault copies of a refused apply are removed again, each only while it
+                // still holds the bytes and mode this apply wrote: a copy another writer
+                // changed meanwhile is kept as written (#110).
+                let mut changed_copies = vec![];
+                for (copy, content, permissions) in &copies {
+                    if remove_verified_as(root, copy, content, Some(permissions)).is_err() {
+                        changed_copies.push(copy.clone());
                     }
                 }
                 let failure = if kept.is_empty() {
@@ -2766,6 +2794,14 @@ pub(super) fn archive_summary(
                     format!(
                         "{failure}; not restored because a file was written there meanwhile, kept as written, removed bytes recoverable from Git HEAD: {}",
                         kept.join(", ")
+                    )
+                };
+                let failure = if changed_copies.is_empty() {
+                    failure
+                } else {
+                    format!(
+                        "{failure}; vault copies another writer changed after this apply created them were kept as written: {}",
+                        changed_copies.join(", ")
                     )
                 };
                 for id in &recorded {
