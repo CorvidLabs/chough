@@ -363,7 +363,8 @@ fn verify_anchor(root: &Path, cursor: &Cursor) -> Result<()> {
 /// `current` when an open or archived session's cursor recorded it as its legacy anchor,
 /// else None. Only a checkpoint within the session size bound is read.
 fn adopted_anchor(root: &Path, current: &Anchor) -> Result<Option<Anchor>> {
-    for dir in [crate::sessions::DIR, crate::sessions::ARCHIVE] {
+    let archive = format!("{}/archive", crate::sessions::DIR);
+    for dir in [crate::sessions::DIR, archive.as_str()] {
         let path = local_path(root, dir)?;
         let Ok(entries) = fs::read_dir(&path) else {
             continue;
