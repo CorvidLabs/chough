@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-121adf353cfbd87545e0a127",
-    "head": "EVT-80c33030d14d28844bb9a5ed",
+    "head": "EVT-be7fce3ca3f47584093216c9",
     "legacy": {
       "digest": "ab8cf9bf4b314c6b3374339164ef302cb1c129dab8dd6df2133276b73407fdf5",
       "bytes": 219674,
@@ -16,7 +16,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -484,7 +484,8 @@
     "OBS-tc-cli-vault-checkpoint-folder-reference-9d9b841a600378779290dd6e",
     "OBS-tc-cli-vault-mixed-age-folder-stays-2efd9baf3b7e0a7b17ac0e49",
     "OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81",
-    "OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008"
+    "OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008",
+    "OBS-tc-history-session-after-legacy-adoption-4b6f7eb1047f7f9fd028d20d"
   ],
   "bugs": [
     "BUG-0001",
@@ -518,7 +519,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Fix verify_anchor against the failing test, verify, then resume the adoption change"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
