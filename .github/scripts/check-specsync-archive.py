@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -17,6 +18,8 @@ VERSION = "specsync 6.1.2"
 MAX_OUTPUT = 8 * 1024 * 1024
 MIN_ARCHIVE_WORKERS = 2
 MAX_ARCHIVE_WORKERS = 8
+# Hosted CI splits archive authentication across parallel jobs (DRIVE-10).
+MAX_SHARDS = 8
 
 
 class GateError(Exception):
@@ -182,11 +185,29 @@ def archive_workers():
     return max(MIN_ARCHIVE_WORKERS, min(cpus, MAX_ARCHIVE_WORKERS))
 
 
-def authenticate_archives(binary, root, obligations, current_archives):
-    change_ids = sorted(obligations)
-    for change_id in change_ids:
+def parse_shard(value):
+    """`K/N` with 1 <= K <= N <= MAX_SHARDS, digits without leading zeros."""
+    match = re.fullmatch(r"([1-9][0-9]*)/([1-9][0-9]*)", value or "")
+    if not match:
+        raise GateError("--shard must be K/N, for example 1/4")
+    index, total = int(match[1]), int(match[2])
+    if index > total or total > MAX_SHARDS:
+        raise GateError(f"--shard must be K/N with 1 <= K <= N <= {MAX_SHARDS}")
+    return index, total
+
+
+def shard_ids(change_ids, shard):
+    """This shard's archives: positions K, K+N, ... of the sorted IDs, so N shards
+    together read every archive exactly once."""
+    index, total = shard
+    return sorted(change_ids)[index - 1::total]
+
+
+def authenticate_archives(binary, root, obligations, current_archives, shard=(1, 1)):
+    for change_id in sorted(obligations):
         if change_id not in current_archives:
             raise GateError(f"Native change {change_id} was omitted instead of archived")
+    change_ids = shard_ids(obligations, shard)
     # Only independent reads of the fixed current root overlap. The context
     # drains every submitted read, including on error, before the final fingerprint.
     with ThreadPoolExecutor(max_workers=archive_workers()) as executor:
@@ -199,7 +220,7 @@ def authenticate_archives(binary, root, obligations, current_archives):
             result.result()
 
 
-def inspect(root, base, binary):
+def inspect(root, base, binary, shard=(1, 1)):
     if git(root, "rev-parse", "--show-toplevel") != str(root):
         raise GateError("Run Archive at the repository root")
     if git(root, "rev-parse", "--is-shallow-repository") != "false":
@@ -250,20 +271,31 @@ def inspect(root, base, binary):
 
     current_archives = archives(root)
     obligations = set(current_archives)
+    # Shard 1 walks every PR revision; other shards only authenticate their slice of
+    # the current archives, which the walk's obligations must all be part of.
     revisions = [base] + git(root, "rev-list", "--reverse", f"{base}..HEAD").splitlines()
+    if shard[0] != 1:
+        revisions = []
     # One temporary clone retains object/ancestry evidence while leaving the
     # checked source and its lifecycle bytes untouched. Nothing is executed from
     # historical product source; only the pinned native readers inspect it.
-    with tempfile.TemporaryDirectory(prefix="chough-archive-inventory-") as temporary:
-        snapshot = Path(temporary) / "history"
-        git(root, "clone", "--quiet", "--shared", "--no-checkout", str(root), str(snapshot))
-        for revision in dict.fromkeys(revisions):
-            git(snapshot, "checkout", "--quiet", "--detach", "--force", revision)
-            obligations.update(roster(binary, snapshot, historical=True))
-            obligations.update(archives(snapshot))
+    if revisions:
+        with tempfile.TemporaryDirectory(prefix="chough-archive-inventory-") as temporary:
+            snapshot = Path(temporary) / "history"
+            git(root, "clone", "--quiet", "--shared", "--no-checkout", str(root), str(snapshot))
+            for revision in dict.fromkeys(revisions):
+                git(snapshot, "checkout", "--quiet", "--detach", "--force", revision)
+                obligations.update(roster(binary, snapshot, historical=True))
+                obligations.update(archives(snapshot))
 
-    authenticate_archives(binary, root, obligations, current_archives)
-    print(f"All native changes are archived; {len(obligations)} archive(s) authenticated by SpecSync.")
+    authenticate_archives(binary, root, obligations, current_archives, shard)
+    if shard == (1, 1):
+        print(f"All native changes are archived; {len(obligations)} archive(s) authenticated by SpecSync.")
+    else:
+        print(
+            f"Shard {shard[0]}/{shard[1]}: {len(shard_ids(obligations, shard))} of {len(obligations)} "
+            "archive(s) authenticated by SpecSync; the other shards authenticate the rest."
+        )
     print("Other checks and genuine human review remain required before merge.")
 
 
@@ -271,9 +303,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--base", required=True, help="Trusted PR base SHA or previous main SHA")
+    parser.add_argument("--shard", default="1/1", help="K/N: authenticate this shard's archives")
     args = parser.parse_args()
     root = args.root.resolve()
     try:
+        shard = parse_shard(args.shard)
         binary = shutil.which("specsync")
         if not binary:
             raise GateError("Required published SpecSync binary is unavailable")
@@ -282,7 +316,11 @@ def main():
         safe_native_tree(root)
         before = fingerprint(root)
         try:
-            inspect(root, args.base, binary)
+            # The default 1/1 run calls inspect exactly as before sharding existed.
+            if shard == (1, 1):
+                inspect(root, args.base, binary)
+            else:
+                inspect(root, args.base, binary, shard)
         finally:
             if fingerprint(root) != before:
                 raise GateError("Native inspection changed the source or lifecycle bytes")
