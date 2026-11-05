@@ -1,6 +1,6 @@
 ---
 id: read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 94ebefc04e6910f066800cc34698a6c2b3a101bd
 ---
