@@ -74,9 +74,15 @@ fn project(delay: &str) -> Fixture {
                 "1".repeat(40)
             ),
         );
-        let mut entries = vec![json!({"path": "specs/cli/cli.spec.md", "kind": "file", "payload_digest": ZERO})];
-        if *id == "a1" {
-            for run in ["r1", "r2", "r3", "r4"] {
+        let mut entries =
+            vec![json!({"path": "specs/cli/cli.spec.md", "kind": "file", "payload_digest": ZERO})];
+        let listed: &[&str] = match *id {
+            "a1" => &["r1", "r2", "r3", "r4"],
+            "a2" => &["s1", "s2"],
+            _ => &[],
+        };
+        {
+            for run in listed {
                 entries.push(json!({"path": format!(".chough/evidence/{run}.json"), "kind": "file", "payload_digest": ZERO}));
             }
         }
@@ -104,8 +110,13 @@ fn project(delay: &str) -> Fixture {
     obs(&fixture, "r2", 65, "TC-a", "passed");
     obs(&fixture, "r3", 63, "TC-a", "failed");
     obs(&fixture, "r4", 61, "TC-a", "passed");
-    // Unlisted proof: u1 in cold a2's cycle, u2 in hot a4's cycle, u3 after a5 (current).
+    // Runs of TC-s listed by cold a2: s2 is the newest, so s1 is superseded.
+    obs(&fixture, "s1", 53, "TC-s", "passed");
+    obs(&fixture, "s2", 52, "TC-s", "passed");
+    // Unlisted proof: u1 in cold a2's cycle, superseded by u1b in hot a3's cycle; u2 in
+    // hot a4's cycle; u3 after a5 (current work).
     obs(&fixture, "u1", 55, "TC-u1", "passed");
+    obs(&fixture, "u1b", 45, "TC-u1", "passed");
     obs(&fixture, "u2", 35, "TC-u2", "passed");
     obs(&fixture, "u3", 10, "TC-u3", "passed");
     fixture.commit("fixture");
@@ -120,7 +131,11 @@ fn set_checkpoint(fixture: &Fixture, observations: &[&str]) {
     session["stage"]["current"] = json!("accept");
     session["native_change"] = json!("a5");
     session["observations"] = json!(observations);
-    std::fs::write(&path, serde_json::to_string_pretty(&session).unwrap() + "\n").unwrap();
+    std::fs::write(
+        &path,
+        serde_json::to_string_pretty(&session).unwrap() + "\n",
+    )
+    .unwrap();
 }
 
 fn pruned(trim: &Value) -> Vec<String> {
@@ -159,8 +174,18 @@ fn unlisted_proof_is_attributed_to_its_change_by_cycle_time() {
     let trim = &moved["applied"]["librarian_trim"];
     assert!(pruned(trim).contains(&"u1".to_string()), "{trim:#}");
     assert!(!fixture.exists(".chough/evidence/u1.json"));
-    assert!(fixture.exists(".chough/evidence/u2.json"), "hot a4's cycle stays");
-    assert!(fixture.exists(".chough/evidence/u3.json"), "current work stays");
+    assert!(
+        fixture.exists(".chough/evidence/u1b.json"),
+        "the newest run stays"
+    );
+    assert!(
+        fixture.exists(".chough/evidence/u2.json"),
+        "hot a4's cycle stays"
+    );
+    assert!(
+        fixture.exists(".chough/evidence/u3.json"),
+        "current work stays"
+    );
     let ledger = fixture.read(".chough/pruned.jsonl");
     let entry: Value = ledger
         .lines()
@@ -203,12 +228,18 @@ fn native_validity_reads_run_in_parallel() {
     // no two reads would ever overlap.
     let fixture = project("1");
     let moved = fixture.ok(&["stage", "advance"]);
-    assert_eq!(moved["applied"]["librarian_trim"]["status"], "trimmed", "{moved:#}");
+    assert_eq!(
+        moved["applied"]["librarian_trim"]["status"], "trimmed",
+        "{moved:#}"
+    );
     let most = fixture
         .read(".stub-concurrency")
         .lines()
         .filter_map(|line| line.trim().parse::<u32>().ok())
         .max()
         .unwrap_or(0);
-    assert!(most >= 2, "validity reads ran one at a time (at most {most} at once)");
+    assert!(
+        most >= 2,
+        "validity reads ran one at a time (at most {most} at once)"
+    );
 }
