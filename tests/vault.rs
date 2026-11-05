@@ -323,12 +323,18 @@ fn inline_trace_mentions_crlf_and_comments_do_not_hide_criteria_or_families() {
     archive(&fixture, 2, "a3", &["cli"], &["REQ-cli-002"]);
     fixture.ok(&["library", "index"]);
     let a3 = fixture.read("knowledge/archives/a3.md");
-    assert!(front_matter(&a3).contains("criteria:\n  - SEND-2\n  - UX-1"), "{a3}");
+    assert!(
+        front_matter(&a3).contains("criteria:\n  - SEND-2\n  - UX-1"),
+        "{a3}"
+    );
     assert!(a3.contains("[UX-1](../intent/ux.md)"), "{a3}");
     assert!(a3.contains("[SEND-2](../intent/send.md)"), "{a3}");
     for (note, family) in [("ux", "UX"), ("send", "SEND")] {
         let text = fixture.read(&format!("knowledge/intent/{note}.md"));
-        assert!(front_matter(&text).contains(&format!("families:\n  - {family}\n")), "{text}");
+        assert!(
+            front_matter(&text).contains(&format!("families:\n  - {family}\n")),
+            "{text}"
+        );
     }
 }
 
