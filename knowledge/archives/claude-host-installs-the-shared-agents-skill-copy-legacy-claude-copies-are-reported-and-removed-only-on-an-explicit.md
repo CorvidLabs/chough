@@ -110,8 +110,208 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- none
+- `.chough/artifacts/bug40-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/bug43-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/handoff-cold-start/real-repo-kimi-1/expected-facts.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-cycle-directory-history-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-cycle-directory-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-cycle-directory-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/source.diff`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/case-merge-choices.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/checkpoint-merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-owner-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/base.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/preservation.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-peer-history-fixes-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/limitations.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-history-show.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-prune-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-timing.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/baseline-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/baseline-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-after-prune-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-before-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-checkpoint.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/summary.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/target-original-event.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/boundary-after-complete-capture.tar.gz`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/boundary-after.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/boundary-after.stderr`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/build.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-after-metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before-command.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before-metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before-source.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-final.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-fmt.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-history-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-lint.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-test-update.py`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/chough-reference-right-boundary-test.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-after-metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before-command.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before-metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before-source.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-final.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-fmt.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-history-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-lint.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-test-update.py`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-test.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/observation-ids.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/pre-verify-native-0.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-reference-boundary-final/pre-verify-native-1.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- 138 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 
-- none
+- [artifacts/cold-start-review.md](../attachments/claude-host-0be606ee/artifacts/cold-start-review.md)
+- [artifacts/cold-start-transcript.md](../attachments/claude-host-0be606ee/artifacts/cold-start-transcript.md)
+- [artifacts/handoff-cold-start/baseline-kimi-1/grading-sheet.md](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/baseline-kimi-1/grading-sheet.md)
+- [artifacts/handoff-cold-start/baseline-kimi-1/kimi-session.zip](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/baseline-kimi-1/kimi-session.zip)
+- [artifacts/handoff-cold-start/baseline-kimi-1/run-kimi-rune.sh](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/baseline-kimi-1/run-kimi-rune.sh)
+- [artifacts/handoff-cold-start/baseline-kimi-1/rune-screen.json](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/baseline-kimi-1/rune-screen.json)
+- [artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-diff.patch](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-diff.patch)
+- [artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-status.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/baseline-kimi-1/seeded-repo-status.txt)
+- [artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-screen.json](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-screen.json)
+- [artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-start.json](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/rune-start.json)
+- [artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/script-output.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/script-output.txt)
+- [artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/started.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/attempt-0-trust-dialog/started.txt)
+- [artifacts/handoff-cold-start/change-kimi-1/command-log.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/command-log.txt)
+- [artifacts/handoff-cold-start/change-kimi-1/grading-sheet.md](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/grading-sheet.md)
+- [artifacts/handoff-cold-start/change-kimi-1/kimi-session.zip](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/kimi-session.zip)
+- [artifacts/handoff-cold-start/change-kimi-1/run-kimi-rune.sh](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/run-kimi-rune.sh)
+- [artifacts/handoff-cold-start/change-kimi-1/rune-screen.json](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/rune-screen.json)
+- [artifacts/handoff-cold-start/change-kimi-1/rune-trust.json](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/rune-trust.json)
+- [artifacts/handoff-cold-start/change-kimi-1/seeded-repo-diff.patch](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/seeded-repo-diff.patch)
+- [artifacts/handoff-cold-start/change-kimi-1/seeded-repo-status.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/seeded-repo-status.txt)
+- [artifacts/handoff-cold-start/change-kimi-1/started.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/started.txt)
+- [artifacts/handoff-cold-start/change-kimi-1/transcript.md](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/change-kimi-1/transcript.md)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/command-log.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/command-log.txt)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/kimi-session.zip](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/kimi-session.zip)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/repo-status.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/repo-status.txt)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/run-kimi-rune.sh](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/run-kimi-rune.sh)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-screen.json](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-screen.json)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-trust.json](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/rune-trust.json)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/started.txt](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/started.txt)
+- [artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/transcript.md](../attachments/claude-host-0be606ee/artifacts/handoff-cold-start/real-repo-kimi-1/attempt-1-quota/transcript.md)
+- [artifacts/identity-takeover/approved-fixture-build.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/approved-fixture-build.log)
+- [artifacts/identity-takeover/approved-fixture-cases-receipt.json](../attachments/claude-host-0be606ee/artifacts/identity-takeover/approved-fixture-cases-receipt.json)
+- [artifacts/identity-takeover/approved-fixture-exercise.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/approved-fixture-exercise.log)
+- [artifacts/identity-takeover/approved-fixture-focused.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/approved-fixture-focused.log)
+- [artifacts/identity-takeover/approved-fixture-msrv-full.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/approved-fixture-msrv-full.log)
+- [artifacts/identity-takeover/initial-tests.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/initial-tests.log)
+- [artifacts/identity-takeover/msrv-tests-except-known-fixture.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/msrv-tests-except-known-fixture.log)
+- [artifacts/identity-takeover/rust-1-99-lint.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/rust-1-99-lint.log)
+- [artifacts/identity-takeover/rust-1-99-tests-except-known-fixture.log](../attachments/claude-host-0be606ee/artifacts/identity-takeover/rust-1-99-tests-except-known-fixture.log)
+- [artifacts/learning-integration/combined-skill-status.json](../attachments/claude-host-0be606ee/artifacts/learning-integration/combined-skill-status.json)
+- [artifacts/learning-integration/root-skill-review.txt](../attachments/claude-host-0be606ee/artifacts/learning-integration/root-skill-review.txt)
+- [artifacts/pr-50-clean-verify-380acff.log](../attachments/claude-host-0be606ee/artifacts/pr-50-clean-verify-380acff.log)
+- [artifacts/pr44-a788-ordering-review.md](../attachments/claude-host-0be606ee/artifacts/pr44-a788-ordering-review.md)
+- [artifacts/pr44-d839-ordering-review.md](../attachments/claude-host-0be606ee/artifacts/pr44-d839-ordering-review.md)
+- [artifacts/pr44-main-integration-ordering-review.md](../attachments/claude-host-0be606ee/artifacts/pr44-main-integration-ordering-review.md)
+- [artifacts/pr46-combined-qualification/ordering-review.json](../attachments/claude-host-0be606ee/artifacts/pr46-combined-qualification/ordering-review.json)
+- [artifacts/pr46-combined-qualification/ordering-skill-status.json](../attachments/claude-host-0be606ee/artifacts/pr46-combined-qualification/ordering-skill-status.json)
+- [artifacts/step7-documented-order-exercise.log](../attachments/claude-host-0be606ee/artifacts/step7-documented-order-exercise.log)
+- [artifacts/tc-cli-0113-recheck-25ced79.md](../attachments/claude-host-0be606ee/artifacts/tc-cli-0113-recheck-25ced79.md)
+- [artifacts/tc-cli-0113-recheck-b7483e0.md](../attachments/claude-host-0be606ee/artifacts/tc-cli-0113-recheck-b7483e0.md)
+- [artifacts/tc-cli-0113-reviewer-note.md](../attachments/claude-host-0be606ee/artifacts/tc-cli-0113-reviewer-note.md)
+- [artifacts/tc-cli-0114-toolchain-install-b7483e0.log](../attachments/claude-host-0be606ee/artifacts/tc-cli-0114-toolchain-install-b7483e0.log)
+- [artifacts/tc-cli-0114-toolchain-install-f8cf4e1.log](../attachments/claude-host-0be606ee/artifacts/tc-cli-0114-toolchain-install-f8cf4e1.log)
+- [artifacts/tc-cli-0114-toolchain-install.log](../attachments/claude-host-0be606ee/artifacts/tc-cli-0114-toolchain-install.log)
+- [artifacts/tc-cli-0132/reviewer-note-merged.md](../attachments/claude-host-0be606ee/artifacts/tc-cli-0132/reviewer-note-merged.md)
+- [artifacts/tc-cli-0132/reviewer-note.md](../attachments/claude-host-0be606ee/artifacts/tc-cli-0132/reviewer-note.md)
+- [artifacts/tc-cli-skill-handoff/tip-review.md](../attachments/claude-host-0be606ee/artifacts/tc-cli-skill-handoff/tip-review.md)
+- [artifacts/timing-closeout/author-handoff-before-closeout.txt](../attachments/claude-host-0be606ee/artifacts/timing-closeout/author-handoff-before-closeout.txt)
+- [artifacts/timing-closeout/measurements/callcounts.txt](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/callcounts.txt)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-next-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-next-1.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-next-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-next-2.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-prune-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-prune-1.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-prune-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-prune-2.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-status-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-status-1.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-status-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-status-2.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-timing-all-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-timing-all-1.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-timing-all-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-timing-all-2.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-timing-cur-test-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-timing-cur-test-1.shim)
+- [artifacts/timing-closeout/measurements/cap-b35acaf-timing-cur-test-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-b35acaf-timing-cur-test-2.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-next-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-next-1.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-next-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-next-2.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-prune-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-prune-1.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-prune-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-prune-2.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-status-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-status-1.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-status-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-status-2.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-timing-all-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-timing-all-1.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-timing-all-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-timing-all-2.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-timing-cur-test-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-timing-cur-test-1.shim)
+- [artifacts/timing-closeout/measurements/cap-d71bfe4-timing-cur-test-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/cap-d71bfe4-timing-cur-test-2.shim)
+- [artifacts/timing-closeout/measurements/final/callcounts.txt](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/callcounts.txt)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-next-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-next-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-next-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-next-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-prune-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-prune-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-prune-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-prune-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-status-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-status-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-status-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-status-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-all-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-all-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-all-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-all-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-cur-test-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-cur-test-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-cur-test-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-48cc9f6-timing-cur-test-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-next-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-next-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-next-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-next-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-prune-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-prune-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-prune-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-prune-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-status-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-status-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-status-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-status-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-all-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-all-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-all-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-all-2.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-cur-test-1.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-cur-test-1.shim)
+- [artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-cur-test-2.shim](../attachments/claude-host-0be606ee/artifacts/timing-closeout/measurements/final/cap-b35acaf-timing-cur-test-2.shim)
+- 49 more under attachments/claude-host-0be606ee/

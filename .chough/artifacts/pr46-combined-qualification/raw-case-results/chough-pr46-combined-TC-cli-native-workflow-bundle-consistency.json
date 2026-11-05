@@ -1,9 +1,0 @@
-{
-  "case": "TC-cli-native-workflow-bundle-consistency",
-  "observation": "OBS-tc-cli-native-workflow-bundle-consistency-a37ce1e29a9edd37891da0e1",
-  "outcome": "passed",
-  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
-  "retention": null,
-  "schema_version": 1,
-  "summary": "Ran cargo test --locked --test workflow_authority -- --exact native_writer_examples_and_installed_workflows_are_consistent for TC-cli-native-workflow-bundle-consistency: passed (exit 0, tests run 1)."
-}
