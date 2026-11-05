@@ -1,6 +1,6 @@
 ---
 id: union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 4ab0b8ad33a937a7945f7ac5b898d7b9145ca5f7
 ---
