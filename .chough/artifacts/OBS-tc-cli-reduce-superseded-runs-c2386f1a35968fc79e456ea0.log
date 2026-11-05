@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test superseded_runs_of_a_cold_change_are_trimmed_keeping_the_newest_and_the_newest_failure ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.27s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running tests/reduce.rs (target/debug/deps/reduce-6897a57339d76bf7)

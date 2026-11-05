@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259",
+  "criteria": [
+    "KNOW-17"
+  ],
+  "requirements": [
+    "REQ-cli-033"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact superseded_runs_of_a_cold_change_are_trimmed_keeping_the_newest_and_the_newest_failure for TC-cli-reduce-superseded-runs: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259.log": "0947f8a8ab3a4c00dbf2481ac98541df8beb54aa5bc562b971765d3a7ea5fbbb"
+  },
+  "observed_at_unix_seconds": 1793854596,
+  "snapshot": {
+    "revision": "aa73e7de3e53e31376d4524bf7a39fffefc71d94",
+    "dirty": false,
+    "fingerprint": "610364835c8845ede74aededb17a0849d466caecd0eac9fec30c713f3834ed3c",
+    "content": "64edfb0ba8f2fcde0530f336502fcbd94b39b0a38c2261131e4c18314e2e9447"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-reduce-superseded-runs",
+      "digest": "2bfe5523e0e88d12806cd783469dab05919816e267d49a2a215628d583286938"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "superseded_runs_of_a_cold_change_are_trimmed_keeping_the_newest_and_the_newest_failure"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

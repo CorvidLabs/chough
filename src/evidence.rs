@@ -1324,6 +1324,8 @@ struct Classification {
     sets: Vec<ObservationSet>,
     native: Native,
     total_bytes: u64,
+    /// The newest routine run of each case and environment (KNOW-17).
+    newest_run: BTreeSet<String>,
 }
 
 fn classify(root: &Path, at: u64) -> Result<Classification> {
@@ -1380,12 +1382,14 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
         }
     }
     let mut newest = BTreeSet::new();
+    let mut newest_run = BTreeSet::new();
     let mut last_failure = BTreeSet::new();
     for group in groups.values_mut() {
         group.sort_by(|left, right| {
             (right.observed_at_unix_seconds, &right.id)
                 .cmp(&(left.observed_at_unix_seconds, &left.id))
         });
+        newest_run.extend(group.first().map(|evidence| evidence.id.clone()));
         newest.extend(
             group
                 .iter()
@@ -1506,6 +1510,7 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
         sets,
         native,
         total_bytes,
+        newest_run,
     })
 }
 
@@ -1690,6 +1695,16 @@ pub(super) fn ledger_records(root: &Path) -> Result<BTreeMap<String, Value>> {
     Ok(records)
 }
 
+/// When an observation record was observed: None when it has no record, and an error
+/// when a record exists but cannot be read (review of #108), so callers never treat an
+/// unreadable record as a missing one.
+pub(super) fn observed_at(root: &Path, id: &str) -> Result<Option<u64>> {
+    if !is_present(root, id)? {
+        return Ok(None);
+    }
+    Ok(Some(load(root, id)?.observed_at_unix_seconds))
+}
+
 /// Outcome, environment and cases of a present observation, for knowledge entries.
 pub(super) fn observation_summary(root: &Path, id: &str) -> Option<(String, String, Vec<String>)> {
     if !is_present(root, id).ok()? {
@@ -1713,6 +1728,46 @@ pub(super) struct ListedArchive {
     pub(super) id: String,
     pub(super) hot: bool,
     pub(super) paths: BTreeSet<String>,
+    /// When the change was finalized, which ends its cycle (KNOW-20).
+    pub(super) finalized: u64,
+}
+
+/// The archived change whose cycle `observed_at` falls in: the first finalized at or
+/// after it (KNOW-20). None when it was observed after the newest archive (current work).
+fn owner_by_cycle(archives: &[ListedArchive], observed_at: u64) -> Option<&ListedArchive> {
+    archives
+        .iter()
+        .filter(|archive| archive.finalized >= observed_at)
+        .min_by(|left, right| (left.finalized, &left.id).cmp(&(right.finalized, &right.id)))
+}
+
+/// For each archived change, the present observation records no archive lists that were
+/// observed in its cycle (KNOW-20), so its knowledge entry can summarize them.
+pub(super) fn attributed_records(
+    root: &Path,
+    archives: &[ListedArchive],
+) -> Result<BTreeMap<String, Vec<String>>> {
+    let listed: BTreeSet<String> = archives
+        .iter()
+        .flat_map(|archive| archive.paths.iter().map(|path| file_key(path)))
+        .collect();
+    let mut found: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for evidence in load_all(root)? {
+        let record = file_key(&format!("{EVIDENCE_DIR}/{}.json", evidence.id));
+        if listed.contains(&record) {
+            continue;
+        }
+        if let Some(owner) = owner_by_cycle(archives, evidence.observed_at_unix_seconds) {
+            found
+                .entry(owner.id.clone())
+                .or_default()
+                .push(evidence.id.clone());
+        }
+    }
+    for ids in found.values_mut() {
+        ids.sort();
+    }
+    Ok(found)
 }
 
 const SUMMARY_REASON: &str = "archived-summary: routine automated proof listed only by cold archived changes (outside the newest 3), summarized in the knowledge directory and committed identically at HEAD; bytes stay recoverable from Git";
@@ -1728,7 +1783,12 @@ struct SummaryPlan {
 struct SummaryCandidate {
     id: String,
     files: Vec<String>,
+    /// The cold archives that list the set, or the one that owns it by cycle time.
     archives: Vec<String>,
+    /// The archives whose manifests list a file of the set; only their validity can change.
+    listed_by: Vec<String>,
+    /// Owned by cycle time rather than listed by a manifest (KNOW-20).
+    attributed: bool,
     bytes: u64,
 }
 
@@ -1938,22 +1998,34 @@ fn summary_protections(
             .filter(|(_, paths)| keys.iter().any(|key| paths.contains(key)))
             .map(|(archive, _)| *archive)
             .collect();
-        if listing.is_empty() {
-            continue;
-        }
+        // Proof no archive lists belongs to the change whose cycle it was observed in
+        // (KNOW-20); proof observed after the newest archive is current work.
+        let attributed = listing.is_empty();
+        let owners: Vec<&ListedArchive> = if attributed {
+            match owner_by_cycle(archives, evidence.observed_at_unix_seconds) {
+                Some(owner) => vec![owner],
+                None => continue,
+            }
+        } else {
+            listing.clone()
+        };
+        let superseded = !classification.newest_run.contains(&evidence.id);
         let mut reasons: Vec<String> = set
             .reasons
             .iter()
             .filter(|reason| *reason != "recent" && !reason.starts_with("native archive "))
+            // Only the newest run of a case and environment stays protected as newest
+            // (KNOW-17); the newest failure keeps its own protection.
+            .filter(|reason| !(superseded && *reason == "newest"))
             .cloned()
             .collect();
         reasons.extend(
-            listing
+            owners
                 .iter()
                 .filter(|archive| archive.hot)
                 .map(|archive| format!("hot archive {}", archive.id)),
         );
-        let cold: Vec<String> = listing
+        let cold: Vec<String> = owners
             .iter()
             .filter(|archive| !archive.hot)
             .map(|archive| archive.id.clone())
@@ -1964,7 +2036,9 @@ fn summary_protections(
             pending.push(SummaryCandidate {
                 id: evidence.id.clone(),
                 files,
+                listed_by: listing.iter().map(|archive| archive.id.clone()).collect(),
                 archives: cold,
+                attributed,
                 bytes: set.bytes,
             });
         } else {
@@ -1996,15 +2070,18 @@ fn still_unprotected(
         candidate.id
     );
     let (pending, protected, _) = summary_protections(root, archives, Some(native.clone()))?;
-    // The record is removed last, so it is still present here; artifacts this apply
-    // already removed drop out of the current set, which may list no file beyond the plan.
+    // The record is removed last, so it is still present here. Every planned file still
+    // present must still belong to this set alone; files this apply already removed drop
+    // out. The set may gain a file an earlier removal released from a shared artifact:
+    // only planned files are ever removed, so the gained one simply stays.
     if pending.iter().any(|current| {
         current.id == candidate.id
             && current.files.first() == candidate.files.first()
-            && current
+            && candidate
                 .files
                 .iter()
-                .all(|file| candidate.files.contains(file))
+                .filter(|file| local_path(root, file).is_ok_and(|path| path.exists()))
+                .all(|file| current.files.contains(file))
     }) {
         return Ok(());
     }
@@ -2033,23 +2110,57 @@ fn one_line_bounded(text: &str) -> String {
 /// Terminal evidence validity of each archive, as `specsync change status` reports it.
 /// Fails closed: an archive whose validity cannot be read is an error, never a value.
 fn validity(root: &Path, ids: &BTreeSet<String>) -> Result<BTreeMap<String, String>> {
+    // Each read costs tens of seconds inside SpecSync (spec-sync#831), so they run in
+    // parallel, at most 8 at once; errors are reported in ID order, not completion order.
+    let ids: Vec<&String> = ids.iter().collect();
+    let workers = std::thread::available_parallelism()
+        .map_or(2, std::num::NonZeroUsize::get)
+        .clamp(2, 8)
+        .min(ids.len().max(1));
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let mut results: Vec<(usize, Result<String>)> = std::thread::scope(|scope| {
+        let handles: Vec<_> = (0..workers)
+            .map(|_| {
+                scope.spawn(|| {
+                    let mut done = vec![];
+                    loop {
+                        let index = next.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                        let Some(id) = ids.get(index) else {
+                            break;
+                        };
+                        done.push((index, validity_of(root, id)));
+                    }
+                    done
+                })
+            })
+            .collect();
+        handles
+            .into_iter()
+            .flat_map(|handle| handle.join().unwrap_or_default())
+            .collect()
+    });
+    results.sort_by_key(|(index, _)| *index);
     let mut found = BTreeMap::new();
-    for id in ids {
-        let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
-        let Some(state) = response
-            .value
-            .as_ref()
-            .and_then(|value| value["summary"]["terminal_evidence"]["validity"].as_str())
-        else {
-            bail!(
-                "`specsync change status {id} --json` did not report terminal evidence validity ({}: {}); nothing was removed without a native validity check",
-                response.section.state,
-                one_line_bounded(&response.section.content)
-            );
-        };
-        found.insert(id.clone(), state.to_string());
+    for (index, state) in results {
+        found.insert(ids[index].clone(), state?);
     }
     Ok(found)
+}
+
+fn validity_of(root: &Path, id: &str) -> Result<String> {
+    let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
+    let Some(state) = response
+        .value
+        .as_ref()
+        .and_then(|value| value["summary"]["terminal_evidence"]["validity"].as_str())
+    else {
+        bail!(
+            "`specsync change status {id} --json` did not report terminal evidence validity ({}: {}); nothing was removed without a native validity check",
+            response.section.state,
+            one_line_bounded(&response.section.content)
+        );
+    };
+    Ok(state.to_string())
 }
 
 /// `chough library archive [--apply]`: preview the post-archive summary, or with an
@@ -2104,7 +2215,7 @@ pub(super) fn archive_summary(
         );
         let affected: BTreeSet<String> = eligible
             .iter()
-            .flat_map(|candidate| candidate.archives.iter().cloned())
+            .flat_map(|candidate| candidate.listed_by.iter().cloned())
             .collect();
         if !eligible.is_empty() {
             let before = validity(root, &affected)?;
@@ -2201,6 +2312,7 @@ pub(super) fn archive_summary(
                         "record_digest": record_digest,
                         "removed": candidate.files,
                         "archives": candidate.archives,
+                        "attributed": candidate.attributed.then_some("cycle time"),
                         "knowledge": entry_path(&candidate.archives[0]),
                         "reason": SUMMARY_REASON,
                         "policy": policy(Some(authority)),

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-reduce-unreadable-reference-kept-40cf09ab3b0cb8bf4e76efbf",
+  "criteria": [
+    "KNOW-16"
+  ],
+  "requirements": [
+    "REQ-cli-045"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact an_unreadable_record_keeps_its_reference_and_refuses_the_drop for TC-cli-reduce-unreadable-reference-kept: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-reduce-unreadable-reference-kept-40cf09ab3b0cb8bf4e76efbf.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-reduce-unreadable-reference-kept-40cf09ab3b0cb8bf4e76efbf.log": "3ac8508af5accdd1e167c3e65c4b3f219db019b1a86f8a185421c29df4c9e5e2"
+  },
+  "observed_at_unix_seconds": 1793855682,
+  "snapshot": {
+    "revision": "0ad86da8bd59dd5686fff870ada438caafefd521",
+    "dirty": false,
+    "fingerprint": "65bc9d2e21b1112d269df9f70fbdd650143bec4efa974e55fd4ebdf783b1b533",
+    "content": "73774f10a445db5f649555640ee71dac68af58287178b6d3012ac0f4344b9915"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-reduce-unreadable-reference-kept",
+      "digest": "d8bde17511e574ae25ed6211276c16dbab327f748a20148f138df4f36fcb5a2e"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "an_unreadable_record_keeps_its_reference_and_refuses_the_drop"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

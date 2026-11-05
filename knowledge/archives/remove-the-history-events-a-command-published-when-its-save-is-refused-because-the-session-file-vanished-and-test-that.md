@@ -48,8 +48,13 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+3 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-history-saved-event-survives-a-move-b109d491837ad7e208f0b60f | passed (by cycle time) | local-linux-aarch64 | TC-history-saved-event-survives-a-move |
+| OBS-tc-history-session-use-waits-for-stage-advance-4c890f364cc991fffefcc5ee | passed (by cycle time) | local-linux-aarch64 | TC-history-session-use-waits-for-stage-advance |
+| OBS-tc-history-vanished-session-leaves-no-event-5e23de5747a1561f81cd99a0 | passed (by cycle time) | local-linux-aarch64 | TC-history-vanished-session-leaves-no-event |
 
 ## Bugs
 

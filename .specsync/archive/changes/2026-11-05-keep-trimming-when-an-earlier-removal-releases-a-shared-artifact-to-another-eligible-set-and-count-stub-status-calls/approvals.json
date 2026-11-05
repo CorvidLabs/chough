@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793854560,
+      "digest": "77b4386d6ef69619ade85836f5ebc5412fddda75d09e7545c150b5022d2f7de0",
+      "note": "#108 closeout trim refused; Leif: Yes, record and merge for #108 (2026-11-04)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls",
+        "title": "Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout)",
+        "description": "Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/evidence.rs",
+          "tests/evidence.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-033: only planned files are removed and each is still the set alone; the test stub counts calls safely under parallel reads; no requirement text changes.",
+        "acceptance_criteria": [
+          "Two eligible observation sets sharing one artifact are both trimmed in one apply, their own artifacts removed and the shared one kept; the per-file re-check still refuses when a planned file becomes shared with a protected set or the set becomes protected; the knowledge fixture stub counts status calls under a lock so hook-timed safety tests are exact under parallel validity reads. The new test fails first, the trim on this repository then completes, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The #108 closeout trim on this repository was refused (protections changed during removal: its files changed) and restored 21 files; two hook-timed safety tests in tests/evidence.rs raced with parallel validity reads. Leif (0xLeif): Yes, record and merge for #108 (2026-11-04).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793854743,
+      "digest": "9efbb99f14c1c3430af4240548c7e3596f06bc421523898daced8fc0ea024e0a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

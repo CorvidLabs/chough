@@ -52,35 +52,57 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.log` | 12212db2bd83151ab28efc8748757991401776c5d5356b71e24af04eab24a0c3 | working tree |
+| `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.log` | 12212db2bd83151ab28efc8748757991401776c5d5356b71e24af04eab24a0c3 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-4ed5cdc73bfd915d9a8630ea.log` | 73e586cfff5186fc4a7b18994cc6a7c2fe395d42b29abc9038f5bfa4d586ead7 | working tree |
 | `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9.log` | 803715bc7de5b07ab0c25395f3cce30cec0b03e294c0bdbb8f96783fe640d80e | working tree |
 | `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544.log` | 4c8f6b91caec0c04160af40d6a4412601d55dc2b8fc82a12ee3fe1bd988a5e82 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.log` | ec787ab017cd487c2a7c8d82fb3f6297e42cc4ace680c737ffbb8a0c18a7f2db | working tree |
+| `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.log` | ec787ab017cd487c2a7c8d82fb3f6297e42cc4ace680c737ffbb8a0c18a7f2db | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.log` | bd4cce5335c294323b3670e4b17b438cace2f5548c1c2a8b92ebcb61c3622cbf | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
 | `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-db41ac5fca1248aa46335397.log` | c2b6ff0746d10a3cf364e7b637ff27b4d0abae9349795d25a62afff0dd51dde4 | working tree |
 | `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee.log` | db0bec1b2cd4d5b0d230f40d3c854e351d73ef169406d749dcc72bdf11575c1f | working tree |
-| `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.json` | 1b01edcd77d2a43f8a9ac431e05113e0740b35cd5983d55f3857ac4ff1c8dc1a | working tree |
+| `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.json` | 1b01edcd77d2a43f8a9ac431e05113e0740b35cd5983d55f3857ac4ff1c8dc1a | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-4ed5cdc73bfd915d9a8630ea.json` | d0f5f027ae3410213e7ca9708fd5dd8e80fff53b9482d3d8ffe015ec4a470760 | working tree |
 | `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9.json` | 06ba106a337d9469c095fc3c9595d7880c710b631a999892a2e235fb2bd32f45 | working tree |
 | `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544.json` | d6d43133142761d74fc76e2dd3feb3633b3837c926676427b5f6639f8463ed87 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.json` | f9940c9b0b0159c471ff3118569764db0cd6c7b1dcea97b6430dca79ef2b4692 | working tree |
+| `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.json` | f9940c9b0b0159c471ff3118569764db0cd6c7b1dcea97b6430dca79ef2b4692 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.json` | 7553d4deaf4971ee9416fa68099e31823439920bab51645d8b94703382aaa1ad | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
 | `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-db41ac5fca1248aa46335397.json` | 0dc6a58cc102cfe5346f3bb9ed82b92b723e8ba6cb6f50c5f3c1dc8240388c6b | working tree |
 | `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee.json` | 94ca8cfa9af3b57a890de170ab14fa0d5c75b79258ffbb7a566564db7d93cb5b | working tree |
 
 ## Observations
 
+20 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58 | passed | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
+| OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58 | passed (pruned) | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
 | OBS-tc-cli-claude-host-shares-agents-copy-4ed5cdc73bfd915d9a8630ea | failed | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
 | OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9 | passed | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
 | OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544 | not-run (pruned) | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
-| OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc | passed | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
+| OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc | passed (pruned) | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd | not-run (pruned) | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-db41ac5fca1248aa46335397 | passed | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee | failed | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
+| OBS-tc-cli-archive-summary-apply-017af1fee70a2b18d13ce95a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-73bd07d530eac90204447d25 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-80a2a6e3c6ec8bc4e18a7a26 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-eb8be0166a59ac65618579ef | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-fails-closed-d96abea42ebd8134f6a36f36 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
+| OBS-tc-cli-archive-summary-preview-1f2c89765aee431f36668db2 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-8f893d16e89c4e10f42fdec2 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-b9b8f9d5b85bc0d07e74d888 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-d0a76434022c89c7008e8d0a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-knowledge-archive-entries-5f87ff8883f726e6614de2db | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-794db939bed655f623b8a44b | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8 | failed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-e16e5b4bb89ce6ef2835c056 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
+| OBS-tc-cli-librarian-default-on-knowledge-12316a36b3c0df407410b76a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-2dcb29dd56d16f75384484c1 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834 | failed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-ab75b0dd66df0f5ca429d3fc | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
 
 ## Bugs
 

@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "d0da297eec980c7b10df314b61d753603615a77f",
+  "contract_digest": "02df3c6e048e3f92858c188f5871a63902cc7746c1660150c0df7a0c2c6d8cba",
+  "execution_digest": "dbf8a4680f1dd74a3ea4ed6c66606f1036117599e5d9c8d466ab68276c6e1d79",
+  "workspace_digest": "167a91ecbed3ff8f31c4811d70fd889db5cff17faa66b2100549262ba90231b4",
+  "timestamp": 1793853245
+}

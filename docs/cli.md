@@ -806,6 +806,33 @@ with its reason, and it never undoes the move. Commit the directory with the che
 It is generated, so after a merge conflict inside it, regenerate with
 `chough library index`.
 
+Before the trim, the same move drops the checkpoint's references to proof from earlier
+cycles, with the librarian on (REQ-cli-045, KNOW-16). It drops any `observations` ID
+whose record was observed before the newest reset, or that has no record, and keeps
+every reference from the current cycle. It is reported as
+`applied.checkpoint_references`:
+- `dropped`, with the dropped IDs;
+- `unchanged`;
+- `skipped`, when the librarian is off or no reset time can be read;
+- `refused`, with its reason.
+
+It never undoes the move into done. The archives, the ledger and the vault keep the
+dropped IDs.
+
+The summary covers two kinds of observation set:
+- **Listed:** sets listed only by cold archives.
+- **Attributed by cycle time** (KNOW-20): sets no archive lists, whose record was
+  observed in a cold archive's cycle, meaning the first archive finalized at or after
+  the observation. Such a set is ledgered with that archive (`"attributed": "cycle
+  time"`), and its knowledge entry lists it as "by cycle time".
+
+A set observed after the newest archive is current work and stays.
+
+Among the routine runs of one case and environment, only the newest run and the newest
+failure stay protected as newest (KNOW-17); older runs of a cold change are trimmed.
+Validity is checked only for archives whose manifests list a removed file. Those reads
+run in parallel, at most 8 at once, because each costs tens of seconds inside SpecSync.
+
 - Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
   path an earlier archive already listed is counted but detailed only in that earlier
   entry, and at most 100 rows are listed in full; the rest are counted and left to the

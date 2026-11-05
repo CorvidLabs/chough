@@ -49,8 +49,12 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-failed-native-exit-in-plain-words-f24ede425a3085620101f9d3 | passed (by cycle time) | local-linux-aarch64 | TC-cli-failed-native-exit-in-plain-words |
+| OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b | passed (by cycle time) | local-linux-aarch64 | TC-cli-native-killed-by-signal-says-so |
 
 ## Bugs
 

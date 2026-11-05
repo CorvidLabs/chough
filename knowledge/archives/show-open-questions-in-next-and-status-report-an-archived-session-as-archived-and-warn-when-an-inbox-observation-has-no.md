@@ -57,8 +57,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-folded-inbox-question-in-next-0674eb2c525a207ecd1f8fc7 | passed (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
+| OBS-tc-cli-next-shows-open-questions-4ae1ae4b89f8d37c870aacfa | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
+| OBS-tc-history-archived-session-listed-archived-745b95673d38746da24a9658 | passed (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
+| OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1 | passed (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
 
 ## Bugs
 

@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 93
+archived_changes: 96
 tags:
   - chough/index
 ---
@@ -47,9 +47,12 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
-- [recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace](archives/recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace.md) Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107) (hot)
-- [ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier](archives/ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier.md) Ignore Trace mentions in backticks, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of 107 at 5326ec4) (hot)
-- [read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes](archives/read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes.md) Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107) (hot)
+- [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](archives/keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108.md) Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108) (hot)
+- [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](archives/keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls.md) Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout) (hot)
+- [reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes](archives/reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes.md) Reduce old observation proof: drop closed-cycle checkpoint references at done, trim superseded runs of cold changes, attribute unlisted proof to its change by cycle time, and read archive validity in parallel (hot)
+- [recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace](archives/recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace.md) Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107) (cold)
+- [ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier](archives/ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier.md) Ignore Trace mentions in backticks, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of 107 at 5326ec4) (cold)
+- [read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes](archives/read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes.md) Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107) (cold)
 - [list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid](archives/list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid.md) List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107) (cold)
 - [make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and](archives/make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and.md) Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched (cold)
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source (cold)
@@ -153,6 +156,9 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](../.specsync/archive/changes/2026-11-05-keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108/lesson-bundle.md)
+- [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](../.specsync/archive/changes/2026-11-05-keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls/lesson-bundle.md)
+- [reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes](../.specsync/archive/changes/2026-11-05-reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes/lesson-bundle.md)
 - [recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace](../.specsync/archive/changes/2026-11-05-recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace/lesson-bundle.md)
 - [ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier](../.specsync/archive/changes/2026-11-05-ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier/lesson-bundle.md)
 - [read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes](../.specsync/archive/changes/2026-11-05-read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes/lesson-bundle.md)
@@ -259,18 +265,18 @@ Archived lesson bundles:
 
 ## Observations
 
-861 recorded; most recent:
+503 recorded; most recent:
 
+- OBS-tc-cli-reduce-done-drops-closed-cycle-refs-3ba31f9a64331388b32a94e0 ProductTest Passed in local-linux-aarch64 at 0ad86da8bd59
+- OBS-tc-cli-reduce-unreadable-reference-kept-40cf09ab3b0cb8bf4e76efbf ProductTest Passed in local-linux-aarch64 at 0ad86da8bd59
+- OBS-tc-cli-reduce-attributed-by-cycle-time-1198e495948f5f5742d9956c ProductTest Passed in local-linux-aarch64 at aa73e7de3e53
+- OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259 ProductTest Passed in local-linux-aarch64 at aa73e7de3e53
+- OBS-tc-cli-reduce-shared-artifact-released-532820cadd76b87255af1384 ProductTest Passed in local-linux-aarch64 at aa73e7de3e53
+- OBS-tc-cli-reduce-parallel-validity-3198c87d139cc220722c9d3f ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
+- OBS-tc-cli-reduce-done-drops-closed-cycle-refs-b5573d86f433ffa606e8fcdc ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
+- OBS-tc-cli-reduce-attributed-by-cycle-time-50dd467ac3aa60dc22e14c3a ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
+- OBS-tc-cli-reduce-superseded-runs-c2386f1a35968fc79e456ea0 ProductTest Passed in local-linux-aarch64 at 46c3c2dd3211
 - OBS-tc-cli-vault-inline-trace-crlf-comments-70ae88664f84301800f9b4ce ProductTest Passed in local-linux-aarch64 at ed70bb5d38bc
-- OBS-tc-cli-vault-readme-upgrade-85fa1399093164743e01658e ProductTest Passed in local-linux-aarch64 at ed70bb5d38bc
-- OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2 ProductTest Passed in local-linux-aarch64 at ed70bb5d38bc
-- OBS-tc-cli-vault-front-matter-on-every-note-f8fbe0db6dd11ac19c5a7d8e ProductTest Passed in local-linux-aarch64 at ff8e44967b2f
-- OBS-tc-cli-vault-trace-and-family-forms-73213166ceb28b3db7342d3b ProductTest Passed in local-linux-aarch64 at ff8e44967b2f
-- OBS-tc-cli-vault-readme-upgrade-c9d7d78ad861c6645c363c2c ProductTest Passed in local-linux-aarch64 at ff8e44967b2f
-- OBS-tc-cli-vault-inline-trace-crlf-comments-36e6427dcbc604a9dd82b1cc ProductTest Passed in local-linux-aarch64 at ff8e44967b2f
-- OBS-tc-cli-vault-intent-notes-0e6e8d167b5b83b31575b126 ProductTest Passed in local-linux-aarch64 at 15f5374b5d4d
-- OBS-tc-cli-vault-archive-note-properties-09d31a0bf88a0a12a889c4f8 ProductTest Passed in local-linux-aarch64 at 15f5374b5d4d
-- OBS-tc-cli-vault-sub-criterion-ids-cd88575df8e8a44ade413d51 ProductTest Passed in local-linux-aarch64 at 15f5374b5d4d
 
 ## Briefs
 

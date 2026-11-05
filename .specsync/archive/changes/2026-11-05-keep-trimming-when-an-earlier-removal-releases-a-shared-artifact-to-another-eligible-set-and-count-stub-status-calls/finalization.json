@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls",
+  "implementation_commit": "1807f7b03ebad5ddf44bb7a5009f5a9b7288f6fe",
+  "implementation_tree": "2ccea0207f246c0b1519cb6d202bbb9418cf2f95",
+  "contract_digest": "77b4386d6ef69619ade85836f5ebc5412fddda75d09e7545c150b5022d2f7de0",
+  "workspace_digest": "4f0f32d504f105d3107019a2df88ddaf36981ca8c49b1e39195196a05ca89bfd",
+  "closing_digest": "9efbb99f14c1c3430af4240548c7e3596f06bc421523898daced8fc0ea024e0a",
+  "review_digest": "7aae00f8467256037c03e3c9a3b0d64daadec6faf33cb1820da130241bd77c98",
+  "finalization_digest": "ea05dc8dbad6a7b85cecd6dadb3ab376b08a960018df6ee0f3f4ad955e421702",
+  "timestamp": 1793854743
+}

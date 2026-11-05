@@ -48,8 +48,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-1e1c9a84f30583853e117adf | passed (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-killed-leaves-no-partial-entry |
+| OBS-tc-history-inbox-add-never-stranded-by-archive-891e97c992b1d7ddebee43e9 | passed (by cycle time) | local-linux-aarch64 | TC-history-inbox-add-never-stranded-by-archive |
+| OBS-tc-history-retention-protects-inbox-observations-dda925f7c2a9bbe696e203f5 | passed (by cycle time) | local-linux-aarch64 | TC-history-retention-protects-inbox-observations |
+| OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7 | passed (by cycle time) | local-linux-aarch64 | TC-history-retention-refuses-unreadable-inbox-entry |
 
 ## Bugs
 

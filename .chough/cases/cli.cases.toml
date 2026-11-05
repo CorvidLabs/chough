@@ -3594,3 +3594,111 @@ expected = ["tests/vault.rs::crlf_earlier_readmes_upgrade_and_unmatched_backtick
 adapter = "cargo-test"
 test_target = "vault"
 test = "crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list"
+
+[[case]]
+id = "TC-cli-reduce-superseded-runs"
+title = "Superseded runs of a cold change are trimmed, keeping the newest run and the newest failure"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-17"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::superseded_runs_of_a_cold_change_are_trimmed_keeping_the_newest_and_the_newest_failure passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "superseded_runs_of_a_cold_change_are_trimmed_keeping_the_newest_and_the_newest_failure"
+
+[[case]]
+id = "TC-cli-reduce-attributed-by-cycle-time"
+title = "Unlisted proof is attributed to its change by cycle time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-20"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::unlisted_proof_is_attributed_to_its_change_by_cycle_time passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "unlisted_proof_is_attributed_to_its_change_by_cycle_time"
+
+[[case]]
+id = "TC-cli-reduce-done-drops-closed-cycle-refs"
+title = "Done drops checkpoint references from closed cycles"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-16"]
+requirements = ["REQ-cli-045"]
+paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::done_drops_checkpoint_references_from_closed_cycles passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "done_drops_checkpoint_references_from_closed_cycles"
+
+[[case]]
+id = "TC-cli-reduce-parallel-validity"
+title = "Native validity reads run in parallel"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "DRIVE-10"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::native_validity_reads_run_in_parallel passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "native_validity_reads_run_in_parallel"
+
+[[case]]
+id = "TC-cli-reduce-shared-artifact-released"
+title = "A shared artifact released by an earlier removal does not stop the trim"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "KNOW-17"]
+requirements = ["REQ-cli-033"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim"
+
+[[case]]
+id = "TC-cli-reduce-unreadable-reference-kept"
+title = "An unreadable record keeps its checkpoint reference and refuses the closed-cycle drop"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-16"]
+requirements = ["REQ-cli-045"]
+paths = ["src/evidence.rs", "src/stage.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::an_unreadable_record_keeps_its_reference_and_refuses_the_drop passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "an_unreadable_record_keeps_its_reference_and_refuses_the_drop"

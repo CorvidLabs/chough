@@ -899,6 +899,77 @@ fn latest_reset_at(
     Ok(newest(legacy_transitions(root)?.iter()))
 }
 
+/// When the current cycle began: its newest reset, or None when no reset time can be
+/// read (a first cycle, or a partial history walk).
+fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
+    let Some(cursor) = session.history_cursor.as_ref() else {
+        return latest_reset_at(root, None).ok().flatten();
+    };
+    let cycle = crate::history::selected(
+        root,
+        cursor,
+        crate::history::CYCLE_EVENTS,
+        crate::history::CYCLE_BYTES,
+        false,
+    );
+    if !cycle.partial.is_empty() {
+        return None;
+    }
+    if cycle.records.iter().any(|record| record["kind"] == "reset") {
+        latest_reset_at(root, Some(&cycle)).ok().flatten()
+    } else if cursor.legacy.is_some() {
+        latest_reset_at(root, None).ok().flatten()
+    } else {
+        None
+    }
+}
+
+/// REQ-cli-045 (KNOW-16): on the move into done, with the librarian on, drop the
+/// checkpoint's observation references whose record was observed before the current cycle
+/// began or has no record. Never fails: the result is `dropped`, `unchanged`, `skipped` or
+/// `refused`, so the move into done never depends on it.
+fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value {
+    match crate::prefs::effective(root, "librarian") {
+        Ok((value, _)) if value != "on" => {
+            return json!({"status": "skipped", "reason": "the librarian is off"});
+        }
+        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
+        Ok(_) => {}
+    }
+    let Some(start) = current_cycle_start(root, session) else {
+        return json!({"status": "skipped", "reason": "no reset time can be read, so no cycle is known to be closed"});
+    };
+    // Only a missing record may be dropped; an existing record that cannot be read keeps
+    // every reference and refuses the step (review of #108).
+    let mut kept = vec![];
+    let mut dropped = vec![];
+    let mut unreadable = vec![];
+    for id in &session.observations {
+        match crate::evidence::observed_at(root, id) {
+            Ok(Some(at)) if at >= start => kept.push(id.clone()),
+            Ok(_) => dropped.push(id.clone()),
+            Err(error) => unreadable.push(format!("{id}: {error:#}")),
+        }
+    }
+    if !unreadable.is_empty() {
+        return json!({"status": "refused", "reason": format!(
+            "a referenced observation record cannot be read, so no reference was dropped ({})",
+            unreadable.join("; ")
+        )});
+    }
+    if dropped.is_empty() {
+        return json!({"status": "unchanged"});
+    }
+    let before = std::mem::replace(&mut session.observations, kept);
+    match save_checkpoint(root, session) {
+        Ok(()) => json!({"status": "dropped", "dropped": dropped}),
+        Err(error) => {
+            session.observations = before;
+            json!({"status": "refused", "reason": format!("{error:#}")})
+        }
+    }
+}
+
 /// Whether the recorded archived change belongs to the cycle before the latest reset:
 /// the latest stage transition is that reset, or the change's recorded finalization is
 /// no later than it (REQ-cli-021). Without both times only the first test applies.
@@ -1954,6 +2025,9 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         .as_mut()
         .filter(|applied| applied["kind"] == "advance" && applied["to"] == "done")
     {
+        // REQ-cli-045 (KNOW-16): first drop the checkpoint's references from closed
+        // cycles, so they no longer protect proof the archives and vault now keep.
+        applied["checkpoint_references"] = drop_closed_cycle_references(root, &mut session);
         applied["librarian_trim"] = crate::library::trim_at_done(root);
         // REQ-cli-043: then refresh the knowledge directory, so the change just archived
         // and any proof just trimmed are summarized; never undoes the move either.

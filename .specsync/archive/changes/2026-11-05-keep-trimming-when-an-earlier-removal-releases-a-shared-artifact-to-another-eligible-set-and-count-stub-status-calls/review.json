@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "1807f7b03ebad5ddf44bb7a5009f5a9b7288f6fe",
+  "contract_digest": "77b4386d6ef69619ade85836f5ebc5412fddda75d09e7545c150b5022d2f7de0",
+  "execution_digest": "dd82df9eaa56b2d64f12ba46a5af9f2f8bdc6f19404f22b520a5e415b3741765",
+  "workspace_digest": "4f0f32d504f105d3107019a2df88ddaf36981ca8c49b1e39195196a05ca89bfd",
+  "timestamp": 1793854735
+}

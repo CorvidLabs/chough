@@ -66,8 +66,34 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+24 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-structural-0ceefdd961ed75d53f1b3742 | passed (by cycle time) | local-linux-x86_64 |  |
+| OBS-tc-history-0050-e2f7fb6260b9c1e33efff955 | passed (by cycle time) | local-linux-x86_64 | TC-history-0050 |
+| OBS-tc-history-0051-36287a1c1ee27b53f5e5ed6d | passed (by cycle time) | local-linux-x86_64 | TC-history-0051 |
+| OBS-tc-history-0052-bd3c30a79063f712ebd95029 | passed (by cycle time) | local-linux-x86_64 | TC-history-0052 |
+| OBS-tc-history-0053-71e93e0644e8e84f97cc1b78 | passed (by cycle time) | local-linux-x86_64 | TC-history-0053 |
+| OBS-tc-history-0054-0a9592d82f236672dabdc66b | passed (by cycle time) | local-linux-x86_64 | TC-history-0054 |
+| OBS-tc-history-0055-0e43d4d92a6297ec82483887 | passed (by cycle time) | local-linux-x86_64 | TC-history-0055 |
+| OBS-tc-history-0056-623a73042554793190b30319 | passed (by cycle time) | local-linux-x86_64 | TC-history-0056 |
+| OBS-tc-history-0057-463884b889a3d596088ef31c | passed (by cycle time) | local-linux-x86_64 | TC-history-0057 |
+| OBS-tc-history-0058-5adb9193e75e4e324d50242a | passed (by cycle time) | local-linux-x86_64 | TC-history-0058 |
+| OBS-tc-history-0059-33ca7861fd086aafe8accbdc | passed (by cycle time) | local-linux-x86_64 | TC-history-0059 |
+| OBS-tc-history-0060-8818e9c1fb9584e043ac918b | passed (by cycle time) | local-linux-x86_64 | TC-history-0060 |
+| OBS-tc-history-0061-fd81ee395bed72c29bb66f81 | passed (by cycle time) | local-linux-x86_64 | TC-history-0061 |
+| OBS-tc-history-adoption-5f46edf5bb130ceb1d18cf77 | passed (by cycle time) | local-linux-x86_64 | TC-history-adoption |
+| OBS-tc-history-bounds-ae97931ed563a3acf5f43242 | passed (by cycle time) | local-linux-x86_64 | TC-history-bounds |
+| OBS-tc-history-branches-370c2da82f293cefa88d392b | passed (by cycle time) | local-linux-x86_64 | TC-history-branches |
+| OBS-tc-history-closing-reset-age-995c6cddd6ed2e3251efe100 | passed (by cycle time) | local-linux-x86_64 | TC-history-closing-reset-age |
+| OBS-tc-history-frozen-reference-aliases-2ffc13b97e1efc9863bb3d4a | passed (by cycle time) | local-linux-x86_64 | TC-history-frozen-reference-aliases |
+| OBS-tc-history-legacy-timing-bounds-4e5aa1d11014be4a6fdc4a55 | passed (by cycle time) | local-linux-x86_64 | TC-history-legacy-timing-bounds |
+| OBS-tc-history-post-prune-reference-afa62c261a8ddb3016816d17 | passed (by cycle time) | local-linux-x86_64 | TC-history-post-prune-reference |
+| OBS-tc-history-retention-c450f7191a9e89e69c521e4a | passed (by cycle time) | local-linux-x86_64 | TC-history-retention |
+| OBS-tc-history-retention-revalidation-e66770734a192d4be574b9cf | passed (by cycle time) | local-linux-x86_64 | TC-history-retention-revalidation |
+| OBS-tc-history-split-keeps-requirement-wording-0f85c5fa642b0c61c2577206 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-history-split-keeps-requirement-wording |
+| OBS-tc-history-stale-receipt-age-1bde7d98d803fc1ffaa12992 | passed (by cycle time) | local-linux-x86_64 | TC-history-stale-receipt-age |
 
 ## Bugs
 

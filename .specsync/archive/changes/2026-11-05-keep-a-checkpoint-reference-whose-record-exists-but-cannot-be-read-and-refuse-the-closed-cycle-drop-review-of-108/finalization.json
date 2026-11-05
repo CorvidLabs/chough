@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108",
+  "implementation_commit": "c1eb3073d535efd95245b5e238f42c7d3e906542",
+  "implementation_tree": "e8264b6210e6b925471f3898e1ea9be583bbcb26",
+  "contract_digest": "8bcc1a3cfc0b3793d0883ca055721918a703d4c42820aab0ae65037eb559f4a9",
+  "workspace_digest": "29aec8c5708dece0502fbec874af576c90881644414b2a7f89615b898cb5b6ce",
+  "closing_digest": "71ff75cc2256eb369d2c471abbd07a3269ad0dd538c168c360a807f5c5083456",
+  "review_digest": "f31f36c0adcb33c012340e8262ddc5408c75c325b3eee57c00a6f511cf9239fe",
+  "finalization_digest": "1211cbd7cdea8fd3589fbefa1c88b2fb347b8d399d2f3113cc7cd0b302c5a519",
+  "timestamp": 1793855827
+}

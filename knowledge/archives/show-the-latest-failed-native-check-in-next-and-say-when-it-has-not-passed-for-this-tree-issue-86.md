@@ -48,8 +48,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-next-says-native-check-not-passed-800a20e123c7d89d21b6de20 | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-says-native-check-not-passed |
+| OBS-tc-cli-next-shows-failed-native-attempt-2bfb3072e6805f30967489bf | passed (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-failed-native-attempt |
+| OBS-tc-cli-unreadable-native-attempts-unknown-85dac7a79455d716372aa119 | passed (by cycle time) | local-linux-aarch64 | TC-cli-unreadable-native-attempts-unknown |
+| OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a | passed (by cycle time) | local-linux-aarch64 | TC-cli-verifying-tree-moved-not-passed |
 
 ## Bugs
 

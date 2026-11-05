@@ -48,8 +48,17 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+7 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-0129-0bc209ebe02e28147c38c889 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0129 |
+| OBS-tc-cli-build-reference-from-main-known-outdated-5c259df8a149219028f13f55 | passed (by cycle time) | local-linux-x86_64 | TC-cli-build-reference-from-main-known-outdated |
+| OBS-tc-cli-next-searches-large-context-md-49eee20858d94e50d47d2335 | passed (by cycle time) | local-linux-x86_64 | TC-cli-next-searches-large-context-md |
+| OBS-tc-cli-report-case-read-budget-8fdff3fd983cabd8b848f02e | passed (by cycle time) | local-linux-x86_64 | TC-cli-report-case-read-budget |
+| OBS-tc-cli-report-read-invalidation-bc5226af297cb414fed0d450 | passed (by cycle time) | local-linux-x86_64 | TC-cli-report-read-invalidation |
+| OBS-tc-cli-report-trace-parity-ccf65cb6f6d99bc20ef4eabd | passed (by cycle time) | local-linux-x86_64 | TC-cli-report-trace-parity |
+| OBS-tc-cli-spec-files-read-at-any-size-2ab7dbb8dd64250034113a11 | passed (by cycle time) | local-linux-x86_64 | TC-cli-spec-files-read-at-any-size |
 
 ## Bugs
 

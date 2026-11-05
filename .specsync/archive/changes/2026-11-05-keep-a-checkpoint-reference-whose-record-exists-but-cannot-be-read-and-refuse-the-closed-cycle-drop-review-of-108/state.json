@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108",
+  "slug": "keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108",
+  "title": "Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108)",
+  "description": "Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "784b1406d9e5b4b3a53176c3772aaeb003483412",
+  "created_at": 1793855553,
+  "updated_at": 1793855855,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "src/stage.rs",
+    "tests/reduce.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-045: only a missing record may be dropped; an unreadable one is kept and the step refused; no requirement text changes.",
+  "acceptance_criteria": [
+    "At done, a current-cycle checkpoint reference whose record exists but cannot be read is kept, the step reports refused naming it, no reference is dropped, and done is still recorded; a missing record is still dropped. The new test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "corvid-agent review 5780146055 and the 0xLeif review thread on #108 (src/stage.rs:946). Leif (0xLeif): Yes, record and merge for #108 (2026-11-04).",
+    "public_contract": "no"
+  }
+}

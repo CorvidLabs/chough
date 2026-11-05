@@ -50,8 +50,34 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+24 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-structural-5bb6149fb7cf310789e97f1c | passed (by cycle time) | local-linux-x86_64 |  |
+| OBS-tc-cli-0080-404ad4c01591b575bff4e2bd | passed (by cycle time) | local-linux-x86_64 | TC-cli-0080 |
+| OBS-tc-cli-0082-190881f21199a094696b9404 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0082 |
+| OBS-tc-cli-0088-fc3481e15e7788b2aa92436b | passed (by cycle time) | local-linux-x86_64 | TC-cli-0088 |
+| OBS-tc-cli-0089-749067ffe64419d779e08b2b | passed (by cycle time) | local-linux-x86_64 | TC-cli-0089 |
+| OBS-tc-cli-0100-3fd1c78b274fdd6d335b485c | passed (by cycle time) | local-linux-x86_64 | TC-cli-0100 |
+| OBS-tc-cli-0104-9339375446b179acbff9dc30 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0104 |
+| OBS-tc-history-split-keeps-requirement-wording-043ad231eceb8ee94590df6d | passed (by cycle time) | local-linux-x86_64 | TC-history-split-keeps-requirement-wording |
+| OBS-tc-reporting-0080-4eedc2214e84aa9a3e7596eb | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0080 |
+| OBS-tc-reporting-0081-ff9a1897fabab913dec2ca58 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0081 |
+| OBS-tc-reporting-0082-f551bed1532fbe34ce9cf53a | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0082 |
+| OBS-tc-reporting-0083-9b62d02fb71e29329b141400 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0083 |
+| OBS-tc-reporting-0084-d21bf42a55949d78e602246c | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0084 |
+| OBS-tc-reporting-0085-6c7def269a11478a022d7de4 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0085 |
+| OBS-tc-reporting-0086-488cc9d7231c60d8e7480956 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0086 |
+| OBS-tc-reporting-0087-b161989d1fb172095ebe159b | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0087 |
+| OBS-tc-reporting-0088-c2e64b1603f82d8d03488c2e | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0088 |
+| OBS-tc-reporting-0089-71050baef506f412282562d3 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0089 |
+| OBS-tc-reporting-0100-935b359ecb3e5dad08c4fc49 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0100 |
+| OBS-tc-reporting-0104-d292b989d75fe7db1d7295aa | passed (by cycle time) | local-linux-x86_64 | TC-reporting-0104 |
+| OBS-tc-reporting-case-read-budget-2da1d3a68d3521264969c859 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-case-read-budget |
+| OBS-tc-reporting-read-invalidation-902908817f705932210118ba | passed (by cycle time) | local-linux-x86_64 | TC-reporting-read-invalidation |
+| OBS-tc-reporting-split-keeps-requirement-wording-e97846a75cdd6b5d04d9c858 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-split-keeps-requirement-wording |
+| OBS-tc-reporting-trace-parity-2d50d8e165f2442ce94f7028 | passed (by cycle time) | local-linux-x86_64 | TC-reporting-trace-parity |
 
 ## Bugs
 

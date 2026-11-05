@@ -137,7 +137,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/tc-cli-0034-1793473300.log` | 11f247b29f0f6d88c7d035a2d55d1d1483aa010c471f6fa520b30bd87215389d | working tree |
 | `.chough/artifacts/tc-cli-0035-1793473303.log` | eb388c1dcdd14c8cb46a2dd559355d903bdac1f0abced84c38ca061d6c28aba9 | working tree |
 | `.chough/artifacts/tc-cli-0036-1793473304.log` | e0a75d5188aaf3f7667aafb7ab1200ebad97801c2ee6373b588b11bfb90c24e3 | working tree |
-| `.chough/artifacts/tc-cli-0037-1793473305.log` | 303fa1a404b919e1aaa12e184d69e871370f96a9775401917aa939535293647a | working tree |
+| `.chough/artifacts/tc-cli-0037-1793473305.log` | 303fa1a404b919e1aaa12e184d69e871370f96a9775401917aa939535293647a | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/tc-cli-0101-1793473306.log` | 4e8cb2d95bc7c9af800f369f8220cae7ad58fc8fecbf575000dd3103a60d49ac | working tree |
 | `.chough/artifacts/wording-review.md` | 34f615c43836fab9305fd3215cd581fb9bc52bdbfc540dd1b06abd263e355c82 | working tree |
 | `.chough/bugs/BUG-0001.json` | c2236d3bed0d7f5e676b5c46ef81fc9c0ecdc591b729488437de033613d79dbe | working tree |
@@ -180,7 +180,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/evidence/tc-cli-0034-1793473300.json` | 65bc48023a0342cbd63629232a8766a3d5d31af3f0b3ed7ced06ac4507bc3fe1 | working tree |
 | `.chough/evidence/tc-cli-0035-1793473303.json` | fac2d159fa16b97909222bbb1c3c693235ccbca4ca93dfcc09857356d3d2868c | working tree |
 | `.chough/evidence/tc-cli-0036-1793473304.json` | 00c23c0ddd77969dca9fe3c3caea8e631b5e03434fe9ced83212f23c7d287380 | working tree |
-| `.chough/evidence/tc-cli-0037-1793473305.json` | 27951a260cd2f9caf5efc09a2e6ed4b7c5a6c81b8fb83fab0246e02ab24dc33f | working tree |
+| `.chough/evidence/tc-cli-0037-1793473305.json` | 27951a260cd2f9caf5efc09a2e6ed4b7c5a6c81b8fb83fab0246e02ab24dc33f | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/evidence/tc-cli-0101-1793473306.json` | c850ecbbff47be42d81c5f7af7e64d66a93662ef53700877da4e1eb3e194b954 | working tree |
 | `.chough/evidence/tc-cli-0102-1793473383.json` | d07aa8918427f09a8f8387786b2bb98a15d080143a194e52b044f38ef3499ad1 | working tree |
 | `.chough/evidence/tc-cli-0103-1793473384.json` | a0e89e505931504cac991e9a9e0f904e306ba2ecb1126137c17afcd02ff161be | working tree |
@@ -228,7 +228,7 @@ verification records, the retention ledger and Git stay authoritative.
 | tc-cli-0034-1793473300 | passed | local-macos-arm64 | TC-cli-0034 |
 | tc-cli-0035-1793473303 | passed | local-macos-arm64 | TC-cli-0035 |
 | tc-cli-0036-1793473304 | passed | local-macos-arm64 | TC-cli-0036 |
-| tc-cli-0037-1793473305 | passed | local-macos-arm64 | TC-cli-0037 |
+| tc-cli-0037-1793473305 | passed (pruned) | local-macos-arm64 | TC-cli-0037 |
 | tc-cli-0101-1793473306 | passed | local-macos-arm64 | TC-cli-0101 |
 | tc-cli-0102-1793473383 | passed | codex-0.153.4-macos-arm64 | TC-cli-0102 |
 | tc-cli-0103-1793473384 | passed | repository-text | TC-cli-0103 |

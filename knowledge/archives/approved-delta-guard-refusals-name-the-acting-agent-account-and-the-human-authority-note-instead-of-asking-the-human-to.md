@@ -47,11 +47,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/OBS-tc-cli-checkpoint-byte-bound-is-131072-c8dacf9568169583826b2d30.log` | 8a77a1f5cbdbab806aa8541e8d8db98fe8d81ba913ebdb326ae24091cf569986 | working tree |
-| `.chough/artifacts/OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2.log` | d805e5ab0ecc2f3f60f3478b10be115c0950ac9fd89682464bd708676bfbe134 | working tree |
+| `.chough/artifacts/OBS-tc-cli-checkpoint-byte-bound-is-131072-c8dacf9568169583826b2d30.log` | 8a77a1f5cbdbab806aa8541e8d8db98fe8d81ba913ebdb326ae24091cf569986 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2.log` | d805e5ab0ecc2f3f60f3478b10be115c0950ac9fd89682464bd708676bfbe134 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a.log` | d65a03a35623a99b68b00f21d34cd11205e35a7d037725affca14fdb4f625961 | working tree |
 | `.chough/artifacts/OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0.log` | d52d4da8e173dedf7da02463c55048a130285bf322e256b3d4a14d1043658b47 | working tree |
-| `.chough/artifacts/OBS-tc-cli-observation-pointer-bound-is-400-faf381593527d3c0c4be37b1.log` | 7309ff6f0a6e496e19471a6730ef204b355d68d8d2ebf0c66033f4e18af0c6c9 | working tree |
+| `.chough/artifacts/OBS-tc-cli-observation-pointer-bound-is-400-faf381593527d3c0c4be37b1.log` | 7309ff6f0a6e496e19471a6730ef204b355d68d8d2ebf0c66033f4e18af0c6c9 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/OBS-tc-cli-report-case-read-budget-115b6dcd869d4b061b985d12.log` | f789a253dffda6bb4703f60f039f33c8cafea5a1a99a5bdac5738293a448a315 | working tree |
 | `.chough/artifacts/OBS-tc-cli-report-case-read-budget-2af9122b4596a360fdf87116.log` | 4b77fb766bd67f2f6e25d309a7b68c50201abf630b855dfd5cf69e06d8b53b56 | working tree |
 | `.chough/artifacts/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.log` | 834e7d66b7adc24c7fc2556c863257f9982445f92cafc33844ebffea10b78e0f | working tree |
