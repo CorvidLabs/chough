@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim",
+  "implementation_commit": "505097a71ad58905595c6f552201b7b710e3865a",
+  "implementation_tree": "d9d16bafb4cf20de7924924607306a90db4502d8",
+  "contract_digest": "711be4bed62580f16caaeeaeaddc5c73c6d4934ef7bf19c34580b983fc6a4f4b",
+  "workspace_digest": "81b2dab7d5ff83715fde504b3aaa7f02bb08778fdf9dc9c41200267980b49125",
+  "closing_digest": "0cfdba681e76c6606923f017bd678f86648a5611b4b51d10905a7fa368f07482",
+  "review_digest": "130a0f63951db23956c13a3eb7b74fb6b6d885c3444c9339e2c8ccc7cbb46a33",
+  "finalization_digest": "04e51ed9a9eeb7516536b04bd14f7edd71c3484cae10115303a024cf70abd879",
+  "timestamp": 1793846384
+}

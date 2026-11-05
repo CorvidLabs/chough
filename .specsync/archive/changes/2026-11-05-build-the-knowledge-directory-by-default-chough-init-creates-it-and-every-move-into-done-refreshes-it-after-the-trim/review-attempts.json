@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "505097a71ad58905595c6f552201b7b710e3865a",
+      "contract_digest": "711be4bed62580f16caaeeaeaddc5c73c6d4934ef7bf19c34580b983fc6a4f4b",
+      "execution_digest": "f75f221da1438434cc9196eec622dfe7172bad9c82aa85efb6ca63b893e26ac8",
+      "workspace_digest": "81b2dab7d5ff83715fde504b3aaa7f02bb08778fdf9dc9c41200267980b49125",
+      "timestamp": 1793846378
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 ---
 id: build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim
-state: implementing
+state: archived
 type: bug_fix
 base_commit: f7e576410539c2922330afd773b64fa5df4d9636
 ---

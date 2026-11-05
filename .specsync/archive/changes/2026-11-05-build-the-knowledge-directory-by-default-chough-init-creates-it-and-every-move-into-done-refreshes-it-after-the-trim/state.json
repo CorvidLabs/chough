@@ -7,11 +7,11 @@
   "title": "Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources",
   "description": "Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "f7e576410539c2922330afd773b64fa5df4d9636",
   "created_at": 1793845717,
-  "updated_at": 1793846181,
+  "updated_at": 1793846414,
   "affected_specs": [
     "cli"
   ],
