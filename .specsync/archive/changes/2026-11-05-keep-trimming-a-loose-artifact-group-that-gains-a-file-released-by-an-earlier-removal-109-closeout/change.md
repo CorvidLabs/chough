@@ -1,6 +1,6 @@
 ---
 id: keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 6009d42756364fd1c338b215ac8539c1b2a0d0b0
 ---
