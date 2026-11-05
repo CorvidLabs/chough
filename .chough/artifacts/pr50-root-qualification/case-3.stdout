@@ -1,9 +1,0 @@
-{
-  "case": "TC-cli-report-trace-parity",
-  "observation": "OBS-tc-cli-report-trace-parity-4330cee0bcfefa49971754aa",
-  "outcome": "passed",
-  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
-  "retention": null,
-  "schema_version": 1,
-  "summary": "Ran cargo test --locked --test next -- --exact report_traces_preserve_stdout_exit_results_and_managed_records for TC-cli-report-trace-parity: passed (exit 0, tests run 1)."
-}

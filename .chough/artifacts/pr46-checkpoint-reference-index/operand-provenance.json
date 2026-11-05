@@ -1,6 +1,0 @@
-{
-  "raw_parent_operands": "raw-parent-operands holds exact Git parent inputs. In particular theirs44.session.json is the original final44 checkpoint, not the owner-selected input.",
-  "derived_operands": "derived/base.json and derived/theirs.json are root-selected helper inputs with superseded active references removed; derived/theirs.json also aligns the complete incoming current-cycle group to base. derived/ours.json is the supported helper output selected by root. These derived inputs are not historical parent bytes.",
-  "reviewed_candidate_sha256": "e9786a91a451f0e251ed6835254fc6384abdf0f3542c7e122e11c7ec7099adac",
-  "scope": "Retire only superseded active pointers while retaining all underlying records/artifacts and direct checkpoint file protection. No product bound or cleanup behavior changes."
-}

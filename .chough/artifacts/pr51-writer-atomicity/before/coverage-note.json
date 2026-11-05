@@ -1,8 +1,0 @@
-{
-  "fledge_test_result": "3 failed,0 passed,30 filtered; no ignored tests",
-  "actual_red_variants": "The observation and ordinary byte cases fail on their first empty-head variant, before selected/legacy loops. Final-cursor test passes its no-event exact-bound and successful4event exact-bound controls, then fails its131073byte final-cursor case.",
-  "assertions_unchanged_between_red_and_future_green": true,
-  "repository_edits": "tests/cli.rs only; production files unchanged",
-  "formatter": "fledge run fmt passed after test-only layout normalization",
-  "prior_invalid_invocation": "/tmp/chough51-checkpoint-writer-before-16bkn5qf retained separately; no tests ran there, not product failure proof"
-}

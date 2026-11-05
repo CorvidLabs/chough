@@ -1,8 +1,0 @@
-{
-  "restored": true,
-  "files_sha256": {
-    "src/checkpoint.rs": "b7a0aebc142380a47e38dca540bac9e2d1f17d8efeaf697271a0b92da5abde32",
-    "src/history.rs": "e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8",
-    "tests/cli.rs": "76920e63ab71efe4a5a877b317fb426cac2a018409821064bf12303cbbb22a88"
-  }
-}

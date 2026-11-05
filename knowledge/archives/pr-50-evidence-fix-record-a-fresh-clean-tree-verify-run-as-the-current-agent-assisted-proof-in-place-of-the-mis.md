@@ -160,7 +160,7 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-test.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-reference-boundary-final/observation-ids.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-reference-boundary-final/pre-verify-native-0.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- 36 more are listed in .chough/pruned.jsonl
+- 40 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 
