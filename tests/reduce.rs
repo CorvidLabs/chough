@@ -550,3 +550,63 @@ fn a_loose_folder_that_gains_a_released_file_is_still_trimmed() {
         "an unplanned file stays"
     );
 }
+
+/// The other side of the case above: a planned loose file that an open bug names partway
+/// through the apply still refuses the trim, and everything planned is restored.
+#[test]
+fn a_loose_file_protected_during_the_apply_refuses_the_trim() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/x/a-first.log", "first\n");
+    fixture.write(".chough/artifacts/x/z-second.log", "second\n");
+    list_in_a1(
+        &fixture,
+        &[
+            ".chough/artifacts/x/a-first.log",
+            ".chough/artifacts/x/z-second.log",
+        ],
+    );
+    fixture.commit("a loose folder");
+    set_checkpoint(&fixture, &[]);
+    // An open bug naming z-second.log, held back until the apply has planned.
+    bug(
+        &fixture,
+        "BUG-0009",
+        "open",
+        ".chough/artifacts/x/z-second.log",
+    );
+    fixture.write(".stub-bug", &fixture.read(".chough/bugs/BUG-0009.json"));
+    std::fs::remove_file(fixture.root().join(".chough/bugs/BUG-0009.json")).unwrap();
+    // A Git stand-in that, on the first unfiltered stdin hash (the HEAD check of the bytes
+    // held for removal, after planning), files that bug: another agent's report.
+    let real_git = String::from_utf8(
+        std::process::Command::new("sh")
+            .args(["-c", "command -v git"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nif [ \"$1 $2 $3\" = \"hash-object --no-filters --stdin\" ] && [ -f .stub-bug ]; then\n  cp .stub-bug .chough/bugs/BUG-0009.json && rm .stub-bug\nfi\nexec '{}' \"$@\"\n",
+            real_git.trim()
+        ),
+    );
+    fixture.executable("bin/git");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert!(
+        !fixture.exists(".stub-bug"),
+        "the hook did not run: {trim:#}"
+    );
+    assert_eq!(trim["status"], "refused", "{trim:#}");
+    let reason = trim["reason"].as_str().unwrap_or_default();
+    assert!(
+        reason.contains("protections changed during removal") && reason.contains("artifact:x"),
+        "{trim:#}"
+    );
+    assert_eq!(fixture.read(".chough/artifacts/x/a-first.log"), "first\n");
+    assert_eq!(fixture.read(".chough/artifacts/x/z-second.log"), "second\n");
+    assert!(!fixture.exists(".chough/removing"));
+}

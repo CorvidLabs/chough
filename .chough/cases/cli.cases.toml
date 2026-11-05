@@ -3756,3 +3756,39 @@ expected = ["tests/reduce.rs::key_items_of_a_cold_change_move_into_the_vault pas
 adapter = "cargo-test"
 test_target = "reduce"
 test = "key_items_of_a_cold_change_move_into_the_vault"
+
+[[case]]
+id = "TC-cli-vault-loose-group-gains-released-file"
+title = "A loose artifact group that gains a file released by an earlier removal is still trimmed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "KNOW-18"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_loose_folder_that_gains_a_released_file_is_still_trimmed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_loose_folder_that_gains_a_released_file_is_still_trimmed"
+
+[[case]]
+id = "TC-cli-vault-loose-file-protected-mid-apply"
+title = "A planned loose file protected during the apply refuses the trim and restores it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-10", "KNOW-18"]
+requirements = ["REQ-cli-046"]
+paths = ["src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_loose_file_protected_during_the_apply_refuses_the_trim passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_loose_file_protected_during_the_apply_refuses_the_trim"

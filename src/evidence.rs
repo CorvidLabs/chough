@@ -2229,13 +2229,15 @@ fn still_unprotected(
         candidate.id
     );
     let (pending, protected, _) = summary_protections(root, archives, Some(native.clone()))?;
-    // The record is removed last, so it is still present here. Every planned file still
-    // present must still belong to this set alone; files this apply already removed drop
-    // out. The set may gain a file an earlier removal released from a shared artifact:
-    // only planned files are ever removed, so the gained one simply stays.
+    // The first planned file (an observation set's record) is removed last, so it is still
+    // present here. Every planned file still present must still belong to this set alone;
+    // files this apply already removed drop out. The set may gain a file an earlier removal
+    // released from a shared artifact: only planned files are ever removed, so the gained
+    // one simply stays. A loose group lists its files by path, so a gained file can sort
+    // before its planned first file (#109 closeout); only an observation set must keep it.
     if pending.iter().any(|current| {
         current.id == candidate.id
-            && current.files.first() == candidate.files.first()
+            && (candidate.loose || current.files.first() == candidate.files.first())
             && candidate
                 .files
                 .iter()
