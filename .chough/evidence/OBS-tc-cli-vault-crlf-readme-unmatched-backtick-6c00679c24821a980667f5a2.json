@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2",
+  "criteria": [
+    "KNOW-14",
+    "KNOW-15"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test vault -- --exact crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list for TC-cli-vault-crlf-readme-unmatched-backtick: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2.log": "fba941b3035776553913b228f3732ac45020b9762a99573ae3dd5c7c11ea131e"
+  },
+  "observed_at_unix_seconds": 1793852160,
+  "snapshot": {
+    "revision": "ed70bb5d38bc3f9d2b2799a9db89ec9d25d67a85",
+    "dirty": false,
+    "fingerprint": "d416c0987259fae73f353cacdaea327303bf152b168fab5e5c36c0a7052694e5",
+    "content": "65c4a9bb15b4edddd823dbc4a0de42afce82c3c8cfa0f71cbf21e1dfc11eca67"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-vault-crlf-readme-unmatched-backtick",
+      "digest": "6f81a22fd5ef649f6fe027e53394a0e6ebebe8a5e8bce7e8086aa910e3b56acb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
