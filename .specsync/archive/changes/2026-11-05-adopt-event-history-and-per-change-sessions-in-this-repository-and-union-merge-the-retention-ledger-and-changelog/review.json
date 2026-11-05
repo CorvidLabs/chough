@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "6c6608863cf4bdf4efad9eb7a24515935c970b48",
+  "contract_digest": "9282273bea0e64fd1ec212bbf489910c485572c4fb638622d688489bc574f0b1",
+  "execution_digest": "c40db3f43003ea4ffb54cd07d62aff66d8d3237384b9360ef41db84221affdac",
+  "workspace_digest": "8ddf1e753a3e967a62b3ea2b24643b4e07a2819fdefcbdecc8541889ef1185a9",
+  "timestamp": 1793891753
+}

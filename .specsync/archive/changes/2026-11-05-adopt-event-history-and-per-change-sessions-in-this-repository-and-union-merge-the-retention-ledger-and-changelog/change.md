@@ -1,6 +1,6 @@
 ---
 id: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
-state: implementing
+state: archived
 type: migration
 base_commit: b9b27c2191835b0185ad449f3cac95bc7be013dd
 ---
