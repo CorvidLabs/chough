@@ -96,10 +96,16 @@ jobs:
       - run: fledge lanes run verify
 
   archive:
-    name: SpecSync Archive
+    # Authentication of every archive is split across four parallel jobs, each with the
+    # unchanged 10-minute limit; shard 1 also walks every PR revision (DRIVE-10).
+    name: SpecSync Archive (${{ matrix.shard }}/4)
     needs: archive-gate
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -116,7 +122,7 @@ jobs:
       - name: Inspect native lifecycle closure without writing evidence
         env:
           ARCHIVE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: python3 .github/scripts/check-specsync-archive.py --base "$ARCHIVE_BASE_SHA"
+        run: python3 .github/scripts/check-specsync-archive.py --base "$ARCHIVE_BASE_SHA" --shard "${{ matrix.shard }}/4"
 
   ci-fixtures:
     name: CI gate fixtures

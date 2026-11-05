@@ -50,7 +50,8 @@
       "LIFE-12",
       "LIFE-13",
       "LIFE-14",
-      "LIFE-15"
+      "LIFE-15",
+      "DRIVE-10"
     ],
     "requirements": [
       "REQ-cli-007",
@@ -314,8 +315,10 @@
     "Agent claude applies Human authority: Leif (0xLeif), product owner, issue #100 (filed by 0xLeif, 'Proposed fix' items 1 to 4) and his 2026-11-04 instruction relayed by the parent agent, verbatim: 'Chough should only reduce and do all that for its own files in .chough and not the specs, not the human intent.' Captured as LIFE-15 in his words. Covered scope: full-size native reads for HI family validation and SpecSync finalization, archived change.md, SDD policy and approval-ledger reads; display markers; skill guidance; tests; docs; decision D-020; changelog and 0.2.1 version bump. Limits: no merge, tag, publish, release or human acceptance grade; Chough's own record bounds unchanged",
     "PR #92 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "PR #91 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
+    "2026-11-04 Leif (0xLeif) chose \"Remove the size test\" for the 65,536-byte cap on specs/<module>/requirements.md in tests/spec_split.rs, and said: \"The size cap is only there for the amount of files that you have inside of the .chough folder. It is not for anything\".",
     "PR #93 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
-    "2026-11-04 Leif (0xLeif) chose \"Remove the size test\" for the 65,536-byte cap on specs/<module>/requirements.md in tests/spec_split.rs, and said: \"The size cap is only there for the amount of files that you have inside of the .chough folder. It is not for anything\"."
+    "2026-11-04 Leif (0xLeif) chose \"Make the check faster\" for the hosted SpecSync Archive job (10-minute limit, timed out on #93), over raising the limit to 30 minutes or merging past the timeout.",
+    "PR #103 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record that review as 0xLeif, archive, and merge #103 once its CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -688,12 +691,12 @@
     "OBS-tc-cli-next-says-native-check-not-passed-800a20e123c7d89d21b6de20",
     "OBS-tc-cli-unreadable-native-attempts-unknown-85dac7a79455d716372aa119",
     "OBS-tc-cli-verifying-tree-moved-not-passed-8618250b0a40cb4826f7d24a",
+    "OBS-tc-history-split-keeps-requirement-wording-bf6a059a3c5e4b7ddac83e3d",
+    "OBS-tc-reporting-split-keeps-requirement-wording-61f40e1fbdff85fb82a4ca2c",
     "OBS-tc-cli-failed-native-exit-in-plain-words-06ae1b849145ad876228e84b",
     "OBS-tc-cli-native-killed-by-signal-says-so-b734a4db7e3e4908defda993",
     "OBS-tc-cli-failed-native-exit-in-plain-words-f24ede425a3085620101f9d3",
-    "OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b",
-    "OBS-tc-history-split-keeps-requirement-wording-bf6a059a3c5e4b7ddac83e3d",
-    "OBS-tc-reporting-split-keeps-requirement-wording-61f40e1fbdff85fb82a4ca2c"
+    "OBS-tc-cli-native-killed-by-signal-says-so-e266e08d78a63b3eaee56a8b"
   ],
   "bugs": [
     "BUG-0001",

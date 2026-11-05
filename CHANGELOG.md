@@ -10,6 +10,13 @@ All notable changes to Chough are recorded here. The format follows
   Rust's debug form `exit=Some(2)` or `exit=None`, in `status`, `next` and stage refusals
   (#87, REQ-cli-003).
 
+- CI: the hosted SpecSync Archive check runs as four parallel jobs,
+  `SpecSync Archive (1/4)` to `(4/4)`. Each authenticates a quarter of the native
+  archives and keeps the 10-minute limit, and shard 1 also walks every PR revision.
+  Every archive is still authenticated with every check unchanged (DRIVE-10). The
+  single job had reached 7 to 10 minutes and timed out on a 91-commit PR, because each
+  archive status read costs tens of seconds inside SpecSync.
+  `check-specsync-archive.py --shard K/N` defaults to 1/1, which behaves as before.
 - `chough next` now shows the native check: the latest attempt SpecSync recorded for the
   open change, with its time, commit and failing commands with exit codes, and, while
   the change is approved or implementing, that the check has not passed for this tree.
