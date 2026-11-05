@@ -7,11 +7,11 @@
   "title": "Mark the 0.4.0 release published in the roadmap with its install observation",
   "description": "Mark the 0.4.0 release published in the roadmap with its install observation",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "69950c7a9253230aeeee3bac0d0d6b580e291aad",
   "created_at": 1793905755,
-  "updated_at": 1793905812,
+  "updated_at": 1793914812,
   "affected_specs": [
     "cli"
   ],

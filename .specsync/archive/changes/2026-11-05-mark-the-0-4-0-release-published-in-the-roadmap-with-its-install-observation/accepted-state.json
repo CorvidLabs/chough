@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation",
+  "slug": "mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation",
+  "title": "Mark the 0.4.0 release published in the roadmap with its install observation",
+  "description": "Mark the 0.4.0 release published in the roadmap with its install observation",
+  "kind": "documentation",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "69950c7a9253230aeeee3bac0d0d6b580e291aad",
+  "created_at": 1793905755,
+  "updated_at": 1793914811,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "docs/ROADMAP.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Documentation of a completed release; no contract changes.",
+  "acceptance_criteria": [
+    "docs/ROADMAP.md has a 0.4.0 release row naming the v0.4.0 tag at 69950c7, release prep PR #116, crates.io chough 0.4.0, the GitHub release and the clean install result, and the clean install is recorded as an installation observation; fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif: Approve all steps for Chough 0.4.0 (2026-11-05 11:26 MST) and Yes, run them now, via the orc; step 6 is the ROADMAP docs PR, merge on green.",
+    "public_contract": "no"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "844f026681dfa9349d2115882763ab04c2111456",
+      "contract_digest": "be8756eeae9bbad0974ab91fdf6b68bf7ee5f744eb4e25c3550e33525f43d0f2",
+      "execution_digest": "029b420ce089fa7fcad8702e4ef4544b9d3b7a41a7d7e979c96c34477cff6fbc",
+      "workspace_digest": "4be32b3141a89a0b5e981cc964cf2b30203e144c74102b5479a37c9a77d8db90",
+      "timestamp": 1793914774
+    }
+  ]
+}
