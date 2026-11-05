@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 92
+archived_changes: 93
 tags:
   - chough/index
 ---
@@ -47,9 +47,10 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace](archives/recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace.md) Recognize a CRLF checkout of the earlier knowledge README and treat an unmatched backtick as literal when reading Trace lists (Windows CI and review of 107) (hot)
 - [ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier](archives/ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier.md) Ignore Trace mentions in backticks, read CRLF and commented HI family declarations, and upgrade an untouched earlier knowledge README (review of 107 at 5326ec4) (hot)
 - [read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes](archives/read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes.md) Read the last Trace list of a requirement line and accept quoted and block HI family declarations in vault notes (reviews of 107) (hot)
-- [list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid](archives/list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid.md) List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107) (hot)
+- [list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid](archives/list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid.md) List HI sub-criterion IDs in vault notes and read Trace lists whole, and correct the KNOW-14 property wording (corvid-agent review of 107) (cold)
 - [make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and](archives/make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and.md) Make the knowledge directory an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links, and module, intent and rules notes that connect each archived change to what it touched (cold)
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source (cold)
 - [build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim](archives/build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim.md) Build the knowledge directory by default: chough init creates it and every move into done refreshes it after the trim; fold the 2026-11-04 lessons into the module lesson sources (cold)
@@ -152,6 +153,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace](../.specsync/archive/changes/2026-11-05-recognize-a-crlf-checkout-of-the-earlier-knowledge-readme-and-treat-an-unmatched-backtick-as-literal-when-reading-trace/lesson-bundle.md)
 - [ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier](../.specsync/archive/changes/2026-11-05-ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier/lesson-bundle.md)
 - [read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes](../.specsync/archive/changes/2026-11-05-read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes/lesson-bundle.md)
 - [list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid](../.specsync/archive/changes/2026-11-05-list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid/lesson-bundle.md)
@@ -257,8 +259,11 @@ Archived lesson bundles:
 
 ## Observations
 
-858 recorded; most recent:
+861 recorded; most recent:
 
+- OBS-tc-cli-vault-inline-trace-crlf-comments-70ae88664f84301800f9b4ce ProductTest Passed in local-linux-aarch64 at ed70bb5d38bc
+- OBS-tc-cli-vault-readme-upgrade-85fa1399093164743e01658e ProductTest Passed in local-linux-aarch64 at ed70bb5d38bc
+- OBS-tc-cli-vault-crlf-readme-unmatched-backtick-6c00679c24821a980667f5a2 ProductTest Passed in local-linux-aarch64 at ed70bb5d38bc
 - OBS-tc-cli-vault-front-matter-on-every-note-f8fbe0db6dd11ac19c5a7d8e ProductTest Passed in local-linux-aarch64 at ff8e44967b2f
 - OBS-tc-cli-vault-trace-and-family-forms-73213166ceb28b3db7342d3b ProductTest Passed in local-linux-aarch64 at ff8e44967b2f
 - OBS-tc-cli-vault-readme-upgrade-c9d7d78ad861c6645c363c2c ProductTest Passed in local-linux-aarch64 at ff8e44967b2f
@@ -266,9 +271,6 @@ Archived lesson bundles:
 - OBS-tc-cli-vault-intent-notes-0e6e8d167b5b83b31575b126 ProductTest Passed in local-linux-aarch64 at 15f5374b5d4d
 - OBS-tc-cli-vault-archive-note-properties-09d31a0bf88a0a12a889c4f8 ProductTest Passed in local-linux-aarch64 at 15f5374b5d4d
 - OBS-tc-cli-vault-sub-criterion-ids-cd88575df8e8a44ade413d51 ProductTest Passed in local-linux-aarch64 at 15f5374b5d4d
-- OBS-tc-cli-vault-trace-and-family-forms-b7f23b9ad0491722c8b3df07 ProductTest Passed in local-linux-aarch64 at 15f5374b5d4d
-- OBS-tc-cli-vault-links-resolve-b9f6b0b9f29b9d26b3cbf33d ProductTest Passed in local-linux-aarch64 at 6821c795c70a
-- OBS-tc-cli-vault-intent-notes-6e82cb588007fbe32a8a2a8a ProductTest Passed in local-linux-aarch64 at 6821c795c70a
 
 ## Briefs
 

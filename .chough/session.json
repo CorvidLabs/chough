@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -334,7 +334,8 @@
     "2026-11-04 Leif (0xLeif) chose \"Fix the wording\" for KNOW-14 (only archived-change notes carry status, dates and commits) and confirmed KNOW-16 to KNOW-19 (\"Yes, build it\") after corvid-agent asked for an explicit confirmation.",
     "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107 and chose 'Fix the wording' for KNOW-14 after corvid-agent's review; this fix is part of #107. Claude recorded the native review as 0xLeif on that decision.",
     "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107; this fix for the reviews at 94ebefc is part of #107. Claude recorded the native review as 0xLeif on that decision.",
-    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107; this fix for the review at 5326ec4 is part of #107. Claude recorded the native review as 0xLeif on that decision."
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107; this fix for the review at 5326ec4 is part of #107. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #107; this fix for hosted Windows CI is part of #107. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -871,9 +872,7 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+  "next_action": "Merge PR #107 when hosted checks are green"
 }
