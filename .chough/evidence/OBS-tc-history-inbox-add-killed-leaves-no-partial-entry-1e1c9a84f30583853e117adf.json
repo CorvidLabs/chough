@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-1e1c9a84f30583853e117adf",
+  "criteria": [
+    "DRIVE-3"
+  ],
+  "requirements": [
+    "REQ-history-009"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact an_inbox_add_killed_while_writing_leaves_no_partial_entry for TC-history-inbox-add-killed-leaves-no-partial-entry: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-1e1c9a84f30583853e117adf.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-1e1c9a84f30583853e117adf.log": "1cfab9cd1fb14bf19a38321629ef3762886d4c5d5ef83da9e7d220671eafa082"
+  },
+  "observed_at_unix_seconds": 1793842587,
+  "snapshot": {
+    "revision": "157f77a6a8be11b9c2c7270e8d6511c39242659b",
+    "dirty": false,
+    "fingerprint": "30aa4f556ac08039043dfa28476235802d514cc249b9f3a7428c92fad3f2c77d",
+    "content": "50bdfc54522a2290afdb17ceb5ba66c9d91bfbcfc41e1e8a30c7f4a4d100b8fd"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-inbox-add-killed-leaves-no-partial-entry",
+      "digest": "0137261c6f7df7e63e6257c24c934f4c42719e2c9380b4379344bd18d097307a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "an_inbox_add_killed_while_writing_leaves_no_partial_entry"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-retention-protects-inbox-observations-109154d26ff8100c774a82e2",
+  "criteria": [
+    "DRIVE-3",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-history-009"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact retention_protects_observations_named_by_unfolded_inbox_entries for TC-history-retention-protects-inbox-observations: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-retention-protects-inbox-observations-109154d26ff8100c774a82e2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-retention-protects-inbox-observations-109154d26ff8100c774a82e2.log": "80ab95d3549fafe059c7d7cecd9766ab163301ca05017efe87454698795be628"
+  },
+  "observed_at_unix_seconds": 1793820456,
+  "snapshot": {
+    "revision": "149b8667cddb945503ff97d09552e14b0b719d63",
+    "dirty": false,
+    "fingerprint": "c6bce271aec791744f4499f8f72b5d07f1f1de16b634293425e98ea084fce2ad",
+    "content": "91d2d0a861dd25e8106eb810671b9aaa9a8da9cd29dffdebb0c223e4199143b9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-retention-protects-inbox-observations",
+      "digest": "ffc0490b8c2181472a53e23324417362d44028f23aef1279f04370576e040140"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "retention_protects_observations_named_by_unfolded_inbox_entries"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

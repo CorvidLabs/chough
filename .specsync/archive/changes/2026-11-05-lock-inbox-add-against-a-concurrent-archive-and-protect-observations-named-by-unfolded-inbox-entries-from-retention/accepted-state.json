@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention",
+  "slug": "lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention",
+  "title": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
+  "description": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "75a732d8243181c375ee3c4f2651408ff9b41ab2",
+  "created_at": 1793815828,
+  "updated_at": 1793842602,
+  "affected_specs": [
+    "history"
+  ],
+  "affected_paths": [
+    "src/sessions.rs",
+    "tests/sessions.rs",
+    "tests/evidence.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "While another process holds the lock and archives the session inbox add waits and then refuses with no open session and writes no entry. An old observation named only by an unfolded inbox entry is protected and survives evidence prune apply. Each new test fails on 75a732d and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Bounded fix for issue 98 under DRIVE-3 and LIFE-8 as Leif asked on 2026-11-04 (a PR stacked on 77); history-owned code only; inbox entries still never edit a session; the lock wait bound is unchanged",
+    "public_contract": "yes"
+  }
+}

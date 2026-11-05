@@ -1,6 +1,6 @@
 ---
 module: history
-version: 7
+version: 8
 status: active
 files:
   - src/history.rs
@@ -87,3 +87,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 5 | 2026-11-04 | show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no: Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84) |
 | 6 | 2026-11-04 | keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy: Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83) |
 | 7 | 2026-11-04 | remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that: Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82) |
+| 8 | 2026-11-04 | lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention: Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98) |

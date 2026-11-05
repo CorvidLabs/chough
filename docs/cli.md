@@ -416,7 +416,11 @@ chough inbox add --session <key> --from <name> --kind observation|decision|compl
 
 Each call creates `.chough/sessions/<key>.inbox/INB-<24 hex>.json` with
 `schema_version`, `id`, `session`, `from`, `kind`, `text` and
-`recorded_at_unix_seconds`, and never replaces a file. For an observation, the text is
+`recorded_at_unix_seconds`, and never replaces a file. It takes the checkpoint writer lock
+while it checks that the session is open and writes, so it never leaves an entry beside
+a session a concurrent switch archives (#98). The entry is written whole to an ignored
+temporary file and then linked into place, so an add stopped partway leaves no partial
+entry; the next checkpoint save removes the temporary file. For an observation, the text is
 its evidence ID (record the observation with `chough evidence add` first). An ID with
 no record in `.chough/evidence/` is still added, because a subagent may report before
 this tree has the record, but `inbox add` warns on stderr naming it, and `inbox list`
@@ -425,6 +429,10 @@ has no approval, review, consent, gate or stage field and a record with any othe
 field is refused, so a subagent cannot clear a gate or move a stage through it; stage
 gates still come from native SpecSync state. A session holds at most 200 unfolded
 entries.
+
+Evidence retention protects the observation IDs that unfolded `observation` entries
+name, as `inbox of session <key>`, so a fold never adds an observation retention removed
+(#98).
 
 `chough inbox list` shows the active session's unfolded entries. `chough inbox fold`
 adds them, in ID order, to the active session's observations, decisions, completed

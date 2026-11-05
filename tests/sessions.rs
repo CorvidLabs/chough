@@ -842,6 +842,144 @@ fn session_new_accepts_the_module_ids_init_accepts() {
     }
 }
 
+/// Issue #98 (REQ-history-009): an `inbox add` racing a switch that archives its done session never leaves its entry
+/// beside the archived session: either the switch sees the entry and keeps the session
+/// open, or the add sees the session archived and refuses. The test holds the
+/// checkpoint lock as `session use` does while it archives, then archives alpha itself.
+#[cfg(unix)]
+#[test]
+fn inbox_add_racing_an_archive_never_strands_its_entry() {
+    use std::process::{Command, Stdio};
+    use std::time::{Duration, Instant};
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    finish(&fixture, "alpha");
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(common::checkpoint_lock_path(fixture.root()).unwrap())
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let mut add = Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args([
+            "inbox",
+            "add",
+            "--session",
+            "alpha",
+            "--from",
+            "subagent-1",
+            "--kind",
+            "decision",
+            "--text",
+            "Late decision",
+        ])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    // An add that does not wait for the lock finishes well within this.
+    let started = Instant::now();
+    while started.elapsed() < Duration::from_secs(2) && add.try_wait().unwrap().is_none() {
+        std::thread::sleep(Duration::from_millis(25));
+    }
+    fs::create_dir_all(fixture.root().join(".chough/sessions/archive")).unwrap();
+    fs::rename(
+        fixture.root().join(".chough/sessions/alpha.json"),
+        fixture.root().join(".chough/sessions/archive/alpha.json"),
+    )
+    .unwrap();
+    drop(lock);
+    let output = add.wait_with_output().unwrap();
+    let stranded: Vec<_> = fs::read_dir(fixture.root().join(".chough/sessions/alpha.inbox"))
+        .map(|entries| {
+            entries
+                .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+                .filter(|name| name.ends_with(".json"))
+                .collect()
+        })
+        .unwrap_or_default();
+    assert!(
+        stranded.is_empty(),
+        "entry {stranded:?} stranded beside archived alpha"
+    );
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("no open session alpha"), "{stderr}");
+}
+
+/// #99 review (REQ-history-009): an entry is published whole, so an `inbox add` killed
+/// while writing its entry (here by the file-size limit, which stops it at its first
+/// write) leaves no partial entry. `inbox list`, `status`, `next` and `evidence prune`
+/// still work, the temp it left is ignored by Git, and the next checkpoint save removes it.
+#[cfg(unix)]
+#[test]
+fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
+    use std::os::unix::process::ExitStatusExt;
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let kept = add_entry(&fixture, "beta", "decision", "Before the killed add");
+    let killed = std::process::Command::new("sh")
+        .args(["-c", "ulimit -f 0; exec \"$@\"", "sh"])
+        .arg(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args([
+            "inbox",
+            "add",
+            "--session",
+            "beta",
+            "--from",
+            "subagent-1",
+            "--kind",
+            "decision",
+            "--text",
+            "Killed while writing",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        killed.status.signal().is_some(),
+        "the add was not stopped while writing: {killed:?}"
+    );
+    let entries = fixture.ok(&["inbox", "list"])["entries"].clone();
+    let ids: Vec<&str> = entries
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| entry["id"].as_str().unwrap())
+        .collect();
+    assert_eq!(ids, [kept.as_str()]);
+    fixture.ok(&["status"]);
+    fixture.ok(&["next", "--json"]);
+    fixture.ok(&["evidence", "prune"]);
+    let inbox = fixture.root().join(".chough/sessions/beta.inbox");
+    let temps: Vec<String> = fs::read_dir(&inbox)
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .filter(|name| name.ends_with(".tmp"))
+        .collect();
+    assert_eq!(temps.len(), 1, "{temps:?}");
+    fixture.commit("after the killed add");
+    let temp = format!(".chough/sessions/beta.inbox/{}", temps[0]);
+    let ignored = std::process::Command::new("git")
+        .args(["check-ignore", "-q", "--no-index", &temp])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(ignored.success(), "{temp} is not ignored by Git");
+    fixture.ok(&["checkpoint", "--decision", "after the killed add"]);
+    assert!(
+        !inbox.join(&temps[0]).exists(),
+        "{} was left behind",
+        temps[0]
+    );
+    assert_eq!(fixture.ok(&["inbox", "list"])["entries"], entries);
+}
+
 /// Session alpha at plan with an approved native change, whose stub `specsync` runs
 /// `before` first on each call; beta is a second open session. Returns alpha's cycle.
 #[cfg(unix)]

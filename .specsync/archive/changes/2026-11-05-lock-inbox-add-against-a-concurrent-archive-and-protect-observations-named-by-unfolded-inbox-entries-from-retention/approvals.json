@@ -1,0 +1,90 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793815857,
+      "digest": "8024c9564919782c642abcc65ca553bb8c50c365a5c276f045ea98d90b1f75e9",
+      "note": "Recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'), under his standing approval that morning for bounded Chough bug fixes and his answer 'Open a PR on #77' for these two findings (issue 98). Scope: issue 98 only. Limits: history module only, no release. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention",
+        "title": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
+        "description": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/sessions.rs",
+          "tests/evidence.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "While another process holds the lock and archives the session inbox add waits and then refuses with no open session and writes no entry. An old observation named only by an unfolded inbox entry is protected and survives evidence prune apply. Each new test fails on 75a732d and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded fix for issue 98 under DRIVE-3 and LIFE-8 as Leif asked on 2026-11-04 (a PR stacked on 77); history-owned code only; inbox entries still never edit a session; the lock wait bound is unchanged",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "e347ecdf1e1b71fb147acde1314d3b39e7d519d47aa15cffd33479cdeafc8e8a"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793820436,
+      "digest": "8024c9564919782c642abcc65ca553bb8c50c365a5c276f045ea98d90b1f75e9",
+      "note": "Re-approval recorded by Claude Code acting as 0xLeif at Leif's instruction on 2026-11-04 ('you sign as me'): REQ-history-009 now also requires inbox add to publish each entry whole, so an add stopped while writing leaves no partial entry, and gains acceptance criteria for that and for the unreadable-entry refusal, after the corvid-agent review on #99 found a partial entry stopped status, next and retention. Scope otherwise unchanged. This is the definition approval, not the native implementation review.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention",
+        "title": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
+        "description": "Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/sessions.rs",
+          "tests/evidence.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "While another process holds the lock and archives the session inbox add waits and then refuses with no open session and writes no entry. An old observation named only by an unfolded inbox entry is protected and survives evidence prune apply. Each new test fails on 75a732d and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Bounded fix for issue 98 under DRIVE-3 and LIFE-8 as Leif asked on 2026-11-04 (a PR stacked on 77); history-owned code only; inbox entries still never edit a session; the lock wait bound is unchanged",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "3a7ea992868e9af7764df61211f8bfa690681eaae4f446aa12e02e5ed32f6094"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793842602,
+      "digest": "59358b8b855d698ae5e102e39ef2d39b1e81e0a171894523d16759e9de34dcb1",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

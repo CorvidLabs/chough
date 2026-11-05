@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention",
+  "implementation_commit": "e23690432a2d72c9b1b8d4e479f85cf0d4837ab9",
+  "implementation_tree": "d81059606a5a765b3a9316fb901d1e4d4dca9552",
+  "contract_digest": "8024c9564919782c642abcc65ca553bb8c50c365a5c276f045ea98d90b1f75e9",
+  "workspace_digest": "7e0866a1931b706bea3a47738a1792467688b00544abf73310a8e36aec7b11ce",
+  "closing_digest": "59358b8b855d698ae5e102e39ef2d39b1e81e0a171894523d16759e9de34dcb1",
+  "review_digest": "0f9b95c30472ab153da315cb43017bf7342e6d405995a97e94014af8a48c7a65",
+  "finalization_digest": "2bbe37e7287e4f338d72d7c6cbb77de368a4b981954542980c48a25f5eb63c5b",
+  "timestamp": 1793842602
+}

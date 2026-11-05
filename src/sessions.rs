@@ -290,7 +290,9 @@ pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
 
 /// Every session checkpoint with how retention names it: the active checkpoint as
 /// `checkpoint`, other open sessions as `session <key>` and archived ones as
-/// `archived session <key>`. Any session that cannot be read is an error.
+/// `archived session <key>`, then, for each session with unfolded observation entries,
+/// those observations as `inbox of session <key>` (#98). Any session or entry that
+/// cannot be read is an error.
 pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
     if !enabled(root)? {
         return Ok(match checkpoint::read_session(root)? {
@@ -315,6 +317,27 @@ pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>>
             read_at(root, &archive_file(&key))?,
         ));
     }
+    // Observations an unfolded inbox entry reports are what the session will hold once
+    // it folds, so retention protects them now (#98, REQ-history-009).
+    for key in keys_in(root, DIR)?
+        .into_iter()
+        .chain(keys_in(root, ARCHIVE)?)
+    {
+        let reported: Vec<String> = pending(root, &key)?
+            .into_iter()
+            .filter(|(_, entry)| entry.kind == Kind::Observation.name())
+            .map(|(_, entry)| entry.text)
+            .collect();
+        if !reported.is_empty() {
+            let mut inbox = checkpoint::new_checkpoint(
+                format!("Unfolded inbox of session {key}"),
+                String::new(),
+                vec![],
+            );
+            inbox.observations = reported;
+            all.push((format!("inbox of session {key}"), inbox));
+        }
+    }
     Ok(all)
 }
 
@@ -327,45 +350,107 @@ fn lock_project(root: &Path) -> Result<()> {
     Ok(())
 }
 
-/// Git ignore rules for `.chough/sessions/`: the temps a session-file write uses
-/// before its rename.
+/// Git ignore rules for `.chough/sessions/` and the inbox directories in it: the temps
+/// a session-file write uses before its rename and an inbox add before its link.
 const IGNORE: &str = ".*.tmp\n";
 
-/// Remove `.chough/sessions/.<key>.json.<pid>.tmp` files left by writers killed before
-/// their rename (#77 review, gap ii), and make sure Git ignores that pattern. Called by
-/// `save_checkpoint` while it holds the checkpoint lock, under which every session-file
-/// writer renames, so a temp seen here was left by a killed writer. Only regular files
-/// with exactly that name directly in `.chough/sessions/` go.
+/// Whether `name` is `.<stem>.json.<pid>.tmp` for a valid session key or entry ID: the
+/// temp a session-file write or an inbox add uses before it publishes.
+fn is_write_temp(name: &str) -> bool {
+    name.strip_prefix('.')
+        .and_then(|rest| rest.strip_suffix(".tmp"))
+        .and_then(|rest| rest.rsplit_once(".json."))
+        .is_some_and(|(stem, pid)| {
+            valid_change_id(stem)
+                && !pid.is_empty()
+                && pid.bytes().all(|byte| byte.is_ascii_digit())
+        })
+}
+
+/// Remove `.<key>.json.<pid>.tmp` files left directly in `.chough/sessions/` by session
+/// writers killed before their rename (#77 review, gap ii), and `.<id>.json.<pid>.tmp`
+/// files left in an inbox directory by an `inbox add` killed before its link (#99
+/// review), and make sure Git ignores that pattern. Called by `save_checkpoint` while it
+/// holds the checkpoint lock, under which every session-file writer renames and every
+/// inbox add links, so a temp seen here was left by a killed writer. Only regular files
+/// with exactly that name go.
 pub(super) fn remove_orphaned_temps(root: &Path) -> Result<()> {
     if !enabled(root)? {
         return Ok(());
     }
     write_new(root, &format!("{DIR}/.gitignore"), IGNORE)?;
+    let mut dirs = vec![(
+        DIR.to_string(),
+        "a session write that was stopped before it saved; the session was not changed by it",
+    )];
     for entry in fs::read_dir(local_path(root, DIR)?)? {
         let entry = entry?;
-        let name = entry.file_name();
-        let Some(name) = name.to_str() else {
-            continue;
-        };
-        let orphan = name
-            .strip_prefix('.')
-            .and_then(|rest| rest.strip_suffix(".tmp"))
-            .and_then(|rest| rest.rsplit_once(".json."))
-            .is_some_and(|(key, pid)| {
-                valid_change_id(key)
-                    && !pid.is_empty()
-                    && pid.bytes().all(|byte| byte.is_ascii_digit())
-            });
-        if !orphan || !entry.file_type()?.is_file() {
-            continue;
+        if entry.file_type()?.is_dir()
+            && let Some(key) = entry
+                .file_name()
+                .to_str()
+                .and_then(|name| name.strip_suffix(".inbox"))
+            && valid_change_id(key)
+        {
+            dirs.push((
+                inbox_dir(key),
+                "an inbox add that was stopped before it published its entry; no entry was added by it",
+            ));
         }
-        let bytes = entry.metadata().map_or(0, |metadata| metadata.len());
-        fs::remove_file(entry.path()).with_context(|| format!("removing {DIR}/{name}"))?;
-        eprintln!(
-            "chough: removed {DIR}/{name} ({bytes} bytes), left by a session write that was stopped before it saved; the session was not changed by it"
-        );
+    }
+    for (dir, left_by) in dirs {
+        for entry in fs::read_dir(local_path(root, &dir)?)? {
+            let entry = entry?;
+            let name = entry.file_name();
+            let Some(name) = name.to_str() else {
+                continue;
+            };
+            if !is_write_temp(name) || !entry.file_type()?.is_file() {
+                continue;
+            }
+            let bytes = entry.metadata().map_or(0, |metadata| metadata.len());
+            fs::remove_file(entry.path()).with_context(|| format!("removing {dir}/{name}"))?;
+            eprintln!("chough: removed {dir}/{name} ({bytes} bytes), left by {left_by}");
+        }
     }
     Ok(())
+}
+
+/// Publish an inbox entry whole (#99 review): write it to `.<id>.json.<pid>.tmp` in the
+/// inbox directory, which Git ignores and no reader lists, then hard-link it to its
+/// name, which never replaces an existing file. An add stopped partway leaves at most
+/// that temp, never a partial `INB-*.json`, and the next checkpoint save removes it.
+/// Returns false when an entry of that name already exists.
+fn publish_entry(root: &Path, file: &str, content: &str) -> Result<bool> {
+    use std::io::Write as _;
+    ensure!(
+        content.len() as u64 <= INBOX_LIMIT,
+        "managed file exceeds {INBOX_LIMIT} bytes: {file}"
+    );
+    let path = local_path(root, file)?;
+    let parent = path.parent().context("inbox entry has no parent")?;
+    fs::create_dir_all(parent)?;
+    local_path(root, file)?;
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .context("inbox entry name must be UTF-8")?;
+    let temporary = parent.join(format!(".{name}.{}.tmp", std::process::id()));
+    let published = (|| -> std::io::Result<bool> {
+        let mut out = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&temporary)?;
+        out.write_all(content.as_bytes())?;
+        out.sync_all()?;
+        match fs::hard_link(&temporary, &path) {
+            Ok(()) => Ok(true),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => Ok(false),
+            Err(error) => Err(error),
+        }
+    })();
+    let _ = fs::remove_file(&temporary);
+    published.with_context(|| format!("writing {file}"))
 }
 
 fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
@@ -596,6 +681,10 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             text,
         } => {
             ensure_key(&session)?;
+            // A switch archives a done session under this lock only when it has no
+            // unfolded entries, so taking it here means the entry is either seen by that
+            // switch (the session stays open) or refused below; never stranded (#98).
+            lock_project(root)?;
             ensure!(
                 local_path(root, &session_file(&session))?.is_file(),
                 "no open session {session}"
@@ -618,7 +707,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             let file = format!("{}/{id}.json", inbox_dir(&session));
             let content = serde_json::to_string_pretty(&entry)? + "\n";
             ensure!(
-                write_new_bounded(root, &file, &content, INBOX_LIMIT)?,
+                publish_entry(root, &file, &content)?,
                 "inbox collision at {file}; no retry or overwrite"
             );
             if matches!(kind, Kind::Observation) && !crate::evidence::is_present(root, &entry.text)?

@@ -418,6 +418,78 @@ argv = ["cargo", "test", "--locked", "--test", "spec_split"]
 expect_output = ["test result: ok. 4 passed; 0 failed"]
 
 [[case]]
+id = "TC-history-inbox-add-never-stranded-by-archive"
+title = "inbox add racing an archive never strands its entry"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-history-009"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::inbox_add_racing_an_archive_never_strands_its_entry passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "inbox_add_racing_an_archive_never_strands_its_entry"
+
+[[case]]
+id = "TC-history-retention-protects-inbox-observations"
+title = "Retention protects observations named by unfolded inbox entries"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-8"]
+requirements = ["REQ-history-009"]
+paths = ["src/sessions.rs", "tests/evidence.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::retention_protects_observations_named_by_unfolded_inbox_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "retention_protects_observations_named_by_unfolded_inbox_entries"
+
+[[case]]
+id = "TC-history-inbox-add-killed-leaves-no-partial-entry"
+title = "An inbox add killed while writing leaves no partial entry"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-history-009"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_inbox_add_killed_while_writing_leaves_no_partial_entry passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_inbox_add_killed_while_writing_leaves_no_partial_entry"
+
+[[case]]
+id = "TC-history-retention-refuses-unreadable-inbox-entry"
+title = "Retention refuses while an unfolded inbox entry cannot be read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-8"]
+requirements = ["REQ-history-009"]
+paths = ["src/sessions.rs", "tests/evidence.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read"
+
+[[case]]
 id = "TC-history-session-use-waits-for-stage-advance"
 title = "session use waits for a running stage advance"
 status = "active"

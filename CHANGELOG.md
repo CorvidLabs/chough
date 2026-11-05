@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `inbox add` now takes the checkpoint writer lock, so a concurrent `session use` can no
+  longer archive the session between its check and its write and strand the entry, and
+  evidence retention protects observations named by unfolded inbox entries (#98,
+  REQ-history-009). Each entry is published whole, so an add stopped while writing leaves
+  no partial entry behind.
+
 - A command whose save is refused because its session file was archived, removed or
   adopted while it ran now also removes the history events it had written, so no orphan
   `EVT-` file is left (#82, REQ-history-008). A regression test shows `session use` waits
