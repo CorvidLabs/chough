@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793893346,
+      "digest": "0ea2fbc7f89ad993269da67a78003734f17f88fcfcb8be93aad906847bf363de",
+      "note": "Leif: learn from everything (2026-11-04); DELETE AND SUMMARIZE AND LEARN (2026-11-05)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files",
+        "title": "Fold the lessons of the 109 and 111 fixes into the cli and history lesson files",
+        "description": "Fold the lessons of the 109 and 111 fixes into the cli and history lesson files",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          "specs/cli/context.md",
+          "specs/history/context.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Lessons only, in the modules context.md files; no contract changes.",
+        "acceptance_criteria": [
+          "The lessons of the #109 and #111 fixes are in specs/cli/context.md and specs/history/context.md in the existing lesson format, each citing a source that resolves, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif asked to learn from everything (2026-11-04) and wrote DELETE AND SUMMARIZE AND LEARN.. KNOWLEDGE AND COMPOUND (2026-11-05).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793896013,
+      "digest": "d71fa9037d647ec3db314e2a60a0e9ce9acbe9b44a3d38389e69ed07d4079839",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

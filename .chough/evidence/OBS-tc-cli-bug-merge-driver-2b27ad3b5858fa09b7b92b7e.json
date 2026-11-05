@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e",
+  "criteria": [
+    "DRIVE-12"
+  ],
+  "requirements": [
+    "REQ-cli-047"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict for TC-cli-bug-merge-driver: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e.log": "4a62c3b98d2d78cc9bef0b331532469c500168e0e439c361b08e40cf16dbae56"
+  },
+  "observed_at_unix_seconds": 1793893221,
+  "snapshot": {
+    "revision": "0caabbe4635855bb13294261ac98d45155389c7e",
+    "dirty": false,
+    "fingerprint": "85cc3c5e7c687034c246ada6e742ed919e6543e428b91867d68042650b4d12fe",
+    "content": "6eef7e550d6c403f26297a7ee0f310bdf7cc86dba579ff3c733cd07c456b5f31"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-merge-driver",
+      "digest": "53256c7ee8264436d22d57af2584a3d5fb3be89e235d04d6c152c94028d34cd5"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

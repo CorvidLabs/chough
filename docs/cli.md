@@ -354,6 +354,70 @@ driver is configured, the explicit `chough checkpoint --merge <base> <ours> <the
 command is the fallback. One-owner live writes and the single canonical
 `.chough/session.json` remain unchanged, with no second checkpoint store.
 
+## Merging branches
+
+Two branches that each record Chough work merge without a hand-resolved conflict in any
+file Chough writes (REQ-cli-047, DRIVE-12):
+
+| Files | How they merge |
+|---|---|
+| `.chough/sessions/<key>.json` | One session per change ([Sessions](#sessions)); the checkpoint driver for two edits of one |
+| `.chough/history/` events, `.chough/evidence/`, case run artifacts | Immutable files with unique names |
+| `.chough/cases/<module>.<part>.cases.toml` | Each change adds its cases in a file of its own |
+| `.chough/pruned.jsonl`, `CHANGELOG.md` | Git's `union` driver: both sides' lines are kept |
+| `.chough/bugs/<id>.json` | `chough bug merge`, below |
+| `knowledge/` | Git's `union` driver, then `chough library index`; `library index --check` fails CI until it is rebuilt |
+
+A cases file is `<module>.cases.toml`, or `<module>.<part>.cases.toml`. Its `module`
+field names the module, and `<part>` uses letters, digits, `-` and `_`. Case IDs stay
+unique across all files. Add a change's cases in a file named after it, for example
+`cli.no-conflicting-files.cases.toml`.
+
+`chough bug merge <base> <ours> <theirs>` merges two edits of one bug into `ours`:
+- a field only one side changed takes that change;
+- the lists (`notes`, `observations`, `cases`, `criteria`, `requirements`, `steps`,
+  `related`) keep base's entries, then each side's additions, without duplicates, and
+  an entry either side removed is removed;
+- the update time is the later one.
+
+The result must be a valid bug record, and it is written as bug commands write one. A
+field both sides changed differently, such as `status`, is left for a human: `ours` is
+unchanged and the command exits nonzero.
+
+`chough library index --check` writes nothing. It fails, naming each generated knowledge
+file that is missing or differs from a rebuild, with CRLF read as LF, and it is a step of
+the verify and ci lanes here.
+
+Declare the drivers in `.gitattributes`:
+
+```gitattributes
+.chough/session.json merge=chough-session
+.chough/sessions/*.json merge=chough-session
+.chough/sessions/archive/*.json merge=chough-session
+.chough/bugs/*.json merge=chough-bug
+.chough/pruned.jsonl merge=union
+knowledge/INDEX.md merge=union
+knowledge/rules.md merge=union
+knowledge/timeline.md merge=union
+knowledge/timeline/*.md merge=union
+knowledge/archives/*.md merge=union
+knowledge/modules/*.md merge=union
+knowledge/intent/*.md merge=union
+```
+
+Only the generated notes, which `library index --check` compares, are union-merged.
+Attachments, snapshots, briefs and the README still conflict.
+
+Set up the two Chough drivers once per clone:
+
+```sh
+git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
+git config --local merge.chough-bug.driver "chough bug merge %O %A %B"
+```
+
+Without them, Git falls back to its normal text merge for those files. Spec change logs
+and `requirements.md` belong to SpecSync (CorvidLabs/spec-sync#862).
+
 ## Sessions
 
 A project can keep one checkpoint per objective or native change (REQ-cli-037,
@@ -761,9 +825,10 @@ Markdown links, so it reads the same in Obsidian and on GitHub:
 
 | Note | `type` | Links |
 |---|---|---|
-| `INDEX.md` | `index` | Living sources, the rules, module and intent notes, every archived change, lessons, open bugs |
+| `INDEX.md` | `index` | Living sources, the rules, module and intent notes, the 10 newest archived changes and lesson bundles with a link to the timeline, open bugs |
+| `timeline.md` | `timeline` | One page per month (`timeline/<YYYY-MM>.md`, continued on `-p2` and later pages so each stays under 65,536 bytes) listing every archived change with its date, status and lesson bundle |
 | `archives/<change>.md` | `archived-change` | Its archive, lesson bundle, module notes and the intent notes of the HI criteria its requirements trace |
-| `modules/<module>.md` | `module` | The module's spec, requirements, context and lessons (with a count), and every archived change that touched it |
+| `modules/<module>.md` | `module` | The module's spec, requirements, context and lessons (with a count), and the 10 newest archived changes that touched it, with a count of the rest |
 | `intent/<file>.md` | `intent` | The HI file, and per criterion ID the archived changes whose requirements trace it |
 | `rules.md` | `rules` | `AGENTS.md`, `CLAUDE.md`, `hi/AGENTS.md`, the workflow skill, `docs/DECISIONS.md`, each module's context and `.specsync/sdd.json`, when present |
 

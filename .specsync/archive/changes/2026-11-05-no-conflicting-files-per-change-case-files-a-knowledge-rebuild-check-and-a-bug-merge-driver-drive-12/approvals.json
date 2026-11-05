@@ -1,0 +1,58 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793892889,
+      "digest": "3bd3d949c4c05838fcc445cfe4a178e3e2a9eb30eb2046fb0c414f0921658cd6",
+      "note": "Leif: Adopt + new criterion, then Capture as written for DRIVE-12 (2026-11-05)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12",
+        "title": "No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)",
+        "description": "No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".gitattributes",
+          "AGENTS.md",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "fledge.toml",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/library.rs",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Parallel pull requests that each add their own case file, edit one bug and rebuild the vault merge without hand-resolved conflicts in files Chough writes: case files per change load together with IDs unique; library index --check fails naming stale or missing generated files and passes after library index (line endings ignored), and the verify and ci lanes run it; chough bug merge merges two edits of one bug and leaves a real disagreement as a conflict with ours unchanged. The new tests fail first, a parallel pull request simulation merges clean, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif (0xLeif) chose Adopt + new criterion and then confirmed the widened DRIVE-12 with Capture as written (2026-11-05): no hand-resolved conflict in any file Chough writes.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "66ba82cb2f3afdf84a743d435efd888042e1c41e4bafab7a4927e09c054ea2f2"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793893501,
+      "digest": "01d1ef5ab7d0576de9841c1eebce76aee4f5b0f9ac6d2c36a57dae693cda695a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

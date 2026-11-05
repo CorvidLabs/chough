@@ -213,6 +213,14 @@ fn read_bounded(path: &Path) -> Result<String> {
     Ok(content)
 }
 
+/// The `<part>` of a per-change cases file: letters, digits, `-` and `_`.
+fn valid_part(part: &str) -> bool {
+    !part.is_empty()
+        && part
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+}
+
 /// Parse every definition file structurally, without consulting native tools.
 pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
     let directory = local_path(root, CASES_DIR)?;
@@ -244,10 +252,16 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
             "{file}: unsupported profile {}; expected {PROFILE}",
             parsed.profile
         );
+        // `<module>.cases.toml`, or `<module>.<part>.cases.toml` for the cases one change
+        // adds, so parallel branches add files instead of appending to one (DRIVE-12).
         let stem = name.trim_end_matches(".cases.toml");
+        let part = stem
+            .strip_prefix(parsed.module.as_str())
+            .and_then(|rest| rest.strip_prefix('.'));
         ensure!(
-            parsed.module == stem && valid_module_name(stem),
-            "{file}: module must equal the file stem"
+            valid_module_name(&parsed.module)
+                && (parsed.module == stem || part.is_some_and(valid_part)),
+            "{file}: module must equal the file stem, or the stem must be `<module>.<part>` with a part of letters, digits, `-` and `_`"
         );
         for case in parsed.cases {
             ensure!(

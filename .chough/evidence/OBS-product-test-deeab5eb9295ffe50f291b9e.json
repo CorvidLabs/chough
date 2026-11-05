@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-deeab5eb9295ffe50f291b9e",
+  "criteria": [
+    "DRIVE-12"
+  ],
+  "requirements": [
+    "REQ-cli-047"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Two simulated parallel pull requests from this branch each start a session, add and run a case in their own cases file, note one shared bug, pause and resume, rebuild the vault, append a ledger line and add a CHANGELOG bullet. Without the Chough drivers configured, git merge-tree reports one conflict, the shared bug record. With them, git merge is clean: both bug notes, both case files and both sessions are kept, and library index --check reports the vault stale until chough library index rebuilds it.",
+  "artifacts": [
+    ".chough/artifacts/drive-12-no-conflicting-files/sim.sh",
+    ".chough/artifacts/drive-12-no-conflicting-files/parallel-merge.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/drive-12-no-conflicting-files/parallel-merge.txt": "29cc437995db6a46430ed8661462860dce0b164bf29de18f435b53139f0e6c7f",
+    ".chough/artifacts/drive-12-no-conflicting-files/sim.sh": "092d0062fd2a9f04e84ca1d87b0abbc17600af58d029dc3405b0b1d87ec1058f"
+  },
+  "observed_at_unix_seconds": 1793893225,
+  "snapshot": {
+    "revision": "5793431b5f8107b9a7a4269a90d862c913c9492d",
+    "dirty": false,
+    "fingerprint": "b7cf9613c9fb979961ad4a82dec23faec23def6b58b7064546074a1de358b54b",
+    "content": "6eef7e550d6c403f26297a7ee0f310bdf7cc86dba579ff3c733cd07c456b5f31"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Spec change logs and requirements.md still conflict until CorvidLabs/spec-sync#862."
+  ]
+}

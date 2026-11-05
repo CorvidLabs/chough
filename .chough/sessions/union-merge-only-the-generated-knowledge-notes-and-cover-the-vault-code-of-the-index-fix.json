@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-a984327cb5a95913f9cfa12f",
+    "head": "EVT-e547d9e7d3dd05475e32a33e",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Union-merge only generated knowledge notes; cover src/vault.rs (#112 review)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix",
+  "references": {
+    "criteria": [
+      "DRIVE-12"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "PR #112 union-scope fix: Leif (0xLeif) recorded his native review (Record pass) at 2d81d3d2 through the orc, 2026-11-05, under Yes, record and merge."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [
+    "OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+}

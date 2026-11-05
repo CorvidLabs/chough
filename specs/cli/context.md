@@ -469,3 +469,47 @@ records from 868 to 501. Dropping 385 closed-cycle checkpoint references (KNOW-1
 what made them eligible. Source: #108's closeout commit. Future use: expect the first
 trim of an old repository to take minutes, and later ones only seconds. Limits: one
 repository.
+
+2026-11-05, generated paths must check out on Windows (verified): #109's rerun trim
+wrote vault attachments up to 246 characters long under full archive IDs, and Product /
+windows-latest failed to check the branch out ("Filename too long"). Source: hosted job
+127268393117, fixed in 5998879. Future use: keep every path Chough writes into a tracked
+tree short. Name folders with a readable prefix and a digest, and refuse to write past
+220 characters. Limits: Windows checkouts without `core.longpaths`.
+
+2026-11-05, a move is create-only and keeps the mode (verified): the trim's vault copies
+used `fs::write`, which truncated an attachment that was already there and dropped the
+executable bit. Its restore used create-new without the mode, so two kimi scripts came
+back as 0644. Source: corvid-agent's review of #109 at 6e0a835 and a review thread, fixed
+in 5998879 and 05d8244. Future use: copy with create-new, set the source's permissions on
+the copy and on a restore, and treat as yours, and roll back, only what you created.
+Limits: permissions, not owners or times.
+
+2026-11-05, a folder reference names what is inside it (verified): a bug fixture or a
+checkpoint reference that named a folder protected nothing, because protections matched
+exact file keys only. An open bug lost its reproduction log to the trim. Source: a #109
+review thread, fixed in 05d8244. Future use: match a reference against each ancestor of
+a path, at `/` boundaries, on case-folded canonical keys, so `a/b` covers `a/b/c` but
+not `a/bc`. Limits: references that name paths.
+
+2026-11-05, judge a group's members one by one (verified): one cold-listed file made a
+whole loose folder cold, including a file first committed after the newest archive. A
+mid-apply re-check of the whole group refused the closeout trim, because an earlier
+removal had released a file into that folder; it restored 172 files. Source: a #109
+review thread and the refused closeout at 76fb917. Future use: decide ownership per
+file, keep a mixed folder whole, and re-check only the files planned for removal.
+Limits: loose artifact groups.
+
+2026-11-05, CI runners have no Git identity (verified): a test helper ran `git commit`
+with only dates set. It passed locally, where it borrowed the developer's identity, and
+failed on the MSRV and Fledge jobs with "empty ident name". Source: hosted jobs
+127268393092 and 127268393085, fixed in b4943f3. Future use: pass `-c user.name`,
+`-c user.email` and `-c commit.gpgsign=false` on every test Git call, and run the suite
+once with `GIT_CONFIG_GLOBAL=/dev/null`. Limits: test fixtures.
+
+2026-11-05, most merges conflicted (verified): replaying the last 89 merges with `git
+merge-tree` found 83 conflicted, most often on the one checkpoint (69) and the one
+transition log (60). Source: the replay for #111. Future use: give each parallel writer
+its own file (sessions, events, a cases file per change), union-merge append-only files,
+rebuild generated files and check them in CI, and give structured records a merge
+driver. Limits: SpecSync's own files (CorvidLabs/spec-sync#862).

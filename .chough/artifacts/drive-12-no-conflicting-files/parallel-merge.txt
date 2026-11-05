@@ -1,0 +1,9 @@
+a changed 12 files, 3 of them in knowledge/
+b changed 12 files, 3 of them in knowledge/
+merge-tree in a clone without the Chough drivers configured:
+  conflict: .chough/bugs/BUG-0001.json
+merge with the drivers: clean
+  bug notes kept: 2
+  case files: 2; cases check: ok
+  knowledge check before rebuild: stale
+  knowledge check after chough library index: current
