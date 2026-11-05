@@ -396,8 +396,17 @@ Declare the drivers in `.gitattributes`:
 .chough/sessions/archive/*.json merge=chough-session
 .chough/bugs/*.json merge=chough-bug
 .chough/pruned.jsonl merge=union
-knowledge/** merge=union
+knowledge/INDEX.md merge=union
+knowledge/rules.md merge=union
+knowledge/timeline.md merge=union
+knowledge/timeline/*.md merge=union
+knowledge/archives/*.md merge=union
+knowledge/modules/*.md merge=union
+knowledge/intent/*.md merge=union
 ```
+
+Only the generated notes, which `library index --check` compares, are union-merged.
+Attachments, snapshots, briefs and the README still conflict.
 
 Set up the two Chough drivers once per clone:
 

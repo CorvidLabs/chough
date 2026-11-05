@@ -13,7 +13,14 @@
 .chough/pruned.jsonl merge=union
 CHANGELOG.md merge=union
 
-# Bug records merge field by field; generated knowledge is union-merged and rebuilt
-# (`chough library index --check` in the verify lane), DRIVE-12.
+# Bug records merge field by field. The notes `chough library index` generates are
+# union-merged and rebuilt (`library index --check` in the verify lane), DRIVE-12;
+# attachments, snapshots, briefs and the README are not generated, so they still conflict.
 .chough/bugs/*.json merge=chough-bug
-knowledge/** merge=union
+knowledge/INDEX.md merge=union
+knowledge/rules.md merge=union
+knowledge/timeline.md merge=union
+knowledge/timeline/*.md merge=union
+knowledge/archives/*.md merge=union
+knowledge/modules/*.md merge=union
+knowledge/intent/*.md merge=union
