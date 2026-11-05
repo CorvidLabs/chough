@@ -1,7 +1,7 @@
 {
   "history_cursor": {
-    "cycle": "CYC-121adf353cfbd87545e0a127",
-    "head": "EVT-be57951655fd053f81088192",
+    "cycle": "CYC-56e051c383113168194f6037",
+    "head": "EVT-3e565f995ab2028a19b72573",
     "legacy": {
       "digest": "ab8cf9bf4b314c6b3374339164ef302cb1c129dab8dd6df2133276b73407fdf5",
       "bytes": 219674,
@@ -9,19 +9,19 @@
     }
   },
   "schema_version": 2,
-  "objective": "Let a session started after legacy history adoption write events (found adopting sessions here)",
+  "objective": "Adopt event history and per-change sessions in this repository and union-merge the ledger and changelog (DRIVE-12, DRIVE-3)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
     "reporting"
   ],
   "stage": {
-    "current": "accept",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
-  "native_change": "let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded",
+  "native_change": "adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -520,9 +520,7 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+  "next_action": "Take the adoption to accept, then ask Leif for both native implementation reviews (the session-after-adoption fix is at accept, verified); review and finalize the fix first, recheck the adoption, then review and finalize it"
 }
