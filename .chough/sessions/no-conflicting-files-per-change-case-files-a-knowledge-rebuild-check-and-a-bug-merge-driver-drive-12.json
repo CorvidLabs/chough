@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-f06e8dce4eaaf14572f03f1f",
-    "head": "EVT-19ff18102dd95f837d452652",
+    "head": "EVT-e1698283866ebf4832e0874d",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -27,7 +27,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "PR #112 accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: for the no-conflicting-files feature and the lessons change he answered Yes, record and merge (record his review of both as 0xLeif, finalize them one at a time, merge #112 on green CI and corvid-agent approval). Claude recorded the native review of this change as 0xLeif on that decision."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -38,9 +40,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }
