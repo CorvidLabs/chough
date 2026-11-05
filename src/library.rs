@@ -286,6 +286,8 @@ struct VaultContext {
     modules: Vec<String>,
     /// Present records no archive lists, by the archive whose cycle they fall in (KNOW-20).
     attributed: std::collections::BTreeMap<String, Vec<String>>,
+    /// The knowledge directory, for attachment links (KNOW-19).
+    dir: String,
 }
 
 /// The knowledge entry for one archived change: generated, deterministic, not a ledger.
@@ -498,7 +500,9 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
 ## Listed .chough files\n\n{files_note} Location is where the bytes are now.\n\n\
 | Path | Digest | Location |\n|---|---|---|\n{files}\n\
 ## Observations\n\n{attributed_note}| ID | Outcome | Environment | Cases |\n|---|---|---|---|\n{rows}\n\
-## Bugs\n\n{bugs}",
+## Bugs\n\n{bugs}\n\
+## Loose artifacts\n\n{loose}\n\
+## Attachments\n\n{attachments}",
         id = archive.id,
         title = one_line(&archive.title),
         status = if hot { "hot" } else { "cold" },
@@ -535,7 +539,81 @@ verification records, the retention ledger and Git stay authoritative.\n\n\
             )
         },
         bugs = list(&bugs),
+        loose = loose_rows(archive, vault, rows_limit),
+        attachments = attachment_rows(root, archive, vault, rows_limit),
     ))
+}
+
+/// The loose artifacts this archive owned that the summary trimmed or moved (KNOW-18),
+/// from the retention ledger, with where each file's bytes are now.
+fn loose_rows(archive: &Archive, vault: &VaultContext, rows_limit: usize) -> String {
+    let base = format!("{}/attachments/{}/", vault.dir, archive.id);
+    let mut rows = vec![];
+    for entry in vault.ledger.values() {
+        let owned = entry["kind"] == "loose-artifact"
+            && entry["archives"]
+                .as_array()
+                .is_some_and(|ids| ids.iter().any(|id| id == archive.id.as_str()));
+        if !owned {
+            continue;
+        }
+        let head = entry["head"].as_str().unwrap_or("unrecorded");
+        for file in entry["removed"].as_array().into_iter().flatten() {
+            let Some(file) = file.as_str() else {
+                continue;
+            };
+            let location = match entry["moved"][file].as_str() {
+                Some(target) => {
+                    let rest = target.strip_prefix(&base).unwrap_or(target);
+                    format!("moved to [{rest}](../attachments/{}/{rest})", archive.id)
+                }
+                None => format!("Git {head}"),
+            };
+            rows.push(format!("- `{file}`: {location}\n"));
+        }
+    }
+    let total = rows.len();
+    if total == 0 {
+        return "- none\n".into();
+    }
+    let mut text: String = rows.into_iter().take(rows_limit).collect();
+    if total > rows_limit {
+        text.push_str(&format!(
+            "- {} more are listed in .chough/pruned.jsonl\n",
+            total - rows_limit
+        ));
+    }
+    text
+}
+
+/// The key items this archive's proof left in the vault (KNOW-19), linked.
+fn attachment_rows(
+    root: &Path,
+    archive: &Archive,
+    vault: &VaultContext,
+    rows_limit: usize,
+) -> String {
+    let base = format!("{}/attachments/{}/", vault.dir, archive.id);
+    let files = crate::attachments::attachments_of(root, &vault.dir, &archive.id);
+    if files.is_empty() {
+        return "- none\n".into();
+    }
+    let mut text: String = files
+        .iter()
+        .take(rows_limit)
+        .map(|file| {
+            let rest = file.strip_prefix(&base).unwrap_or(file);
+            format!("- [{rest}](../attachments/{}/{rest})\n", archive.id)
+        })
+        .collect();
+    if files.len() > rows_limit {
+        text.push_str(&format!(
+            "- {} more under attachments/{}/\n",
+            files.len() - rows_limit,
+            archive.id
+        ));
+    }
+    text
 }
 
 /// Build or refresh the knowledge directory: `README.md` only when missing, `briefs/`,
@@ -662,6 +740,7 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
                 })
                 .collect::<Vec<_>>(),
         )?,
+        dir: dir.to_string(),
     };
     // Cumulative manifests repeat earlier proof; each entry details what it first listed.
     let mut seen = std::collections::BTreeSet::new();

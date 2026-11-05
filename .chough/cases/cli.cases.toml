@@ -3702,3 +3702,57 @@ expected = ["tests/reduce.rs::an_unreadable_record_keeps_its_reference_and_refus
 adapter = "cargo-test"
 test_target = "reduce"
 test = "an_unreadable_record_keeps_its_reference_and_refuses_the_drop"
+
+[[case]]
+id = "TC-cli-vault-loose-artifacts-trimmed"
+title = "Loose artifacts of a cold change are trimmed; current or bug-held ones stay"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-18", "KNOW-20"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay"
+
+[[case]]
+id = "TC-cli-vault-closed-bug-releases-fixture"
+title = "A closed bug releases its loose fixture"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-18"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::a_closed_bug_releases_its_loose_fixture passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_closed_bug_releases_its_loose_fixture"
+
+[[case]]
+id = "TC-cli-vault-key-items-move"
+title = "Key items of a cold change move into the vault"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-19"]
+requirements = ["REQ-cli-046"]
+paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::key_items_of_a_cold_change_move_into_the_vault passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "key_items_of_a_cold_change_move_into_the_vault"

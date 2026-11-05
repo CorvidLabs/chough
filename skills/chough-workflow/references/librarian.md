@@ -27,6 +27,11 @@ Old proof leaves `.chough/` as changes go cold (REQ-cli-033, REQ-cli-045):
   failure stay protected. Older runs of a cold change are summarized and trimmed.
 - Proof that no archive lists belongs to the change whose cycle it was observed in, and
   follows the same rules once that change is cold.
+- Loose artifacts that no record references, such as old pull request folders, follow
+  the same rules once their change is cold. An open bug keeps its fixture.
+- Key items move into the vault instead: manual and agent-assisted observations,
+  failed runs' logs, screenshots and failure-first logs go to
+  `knowledge/attachments/<change>/`, and the change's note links them.
 - Every removal is ledgered first in `.chough/pruned.jsonl`, and the bytes stay in Git.
 
 ## From any stage

@@ -8,7 +8,7 @@ use crate::records::{
     append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
     print_json, read_native_text, read_record, read_spec_file, record_names, valid_name, write_new,
 };
-use crate::records::{valid_module_name, valid_reference_id};
+use crate::records::{digest_bytes, valid_module_name, valid_reference_id};
 use crate::{bugs, prefs, validate};
 use anyhow::{Context, Result, bail, ensure};
 use clap::ValueEnum;
@@ -1789,7 +1789,70 @@ struct SummaryCandidate {
     listed_by: Vec<String>,
     /// Owned by cycle time rather than listed by a manifest (KNOW-20).
     attributed: bool,
+    /// A loose artifact group rather than an observation set (KNOW-18).
+    loose: bool,
+    /// A non-routine set whose only protection was being non-routine: it moves whole
+    /// into the vault (KNOW-19).
+    move_all: bool,
+    /// A failed run: its artifacts move into the vault (KNOW-19).
+    move_artifacts: bool,
     bytes: u64,
+}
+
+/// The files of a candidate that move into the vault instead of being removed, with
+/// their attachment paths (KNOW-19): a non-routine set whole, a failed run's artifacts,
+/// screenshots and failure-first logs.
+fn candidate_moves(candidate: &SummaryCandidate, knowledge_dir: &str) -> BTreeMap<String, String> {
+    candidate
+        .files
+        .iter()
+        .enumerate()
+        .filter(|(index, file)| {
+            candidate.move_all
+                || (candidate.move_artifacts && (candidate.loose || *index > 0))
+                || crate::attachments::is_key_item(file)
+        })
+        .map(|(_, file)| {
+            (
+                file.clone(),
+                crate::attachments::attachment(knowledge_dir, &candidate.archives[0], file),
+            )
+        })
+        .collect()
+}
+
+const LOOSE_REASON: &str = "archived-summary: loose artifacts no observation record references, owned by a cold archived change (outside the newest 3), summarized in the knowledge directory and committed identically at HEAD; key items move into its attachments; bytes stay recoverable from Git";
+
+/// The first commit time of every file under `.chough/artifacts/`, read once per project
+/// per process: an apply makes no commit, so it cannot change during one (KNOW-20).
+fn first_commits(root: &Path) -> BTreeMap<String, u64> {
+    use std::sync::{Mutex, OnceLock};
+    static CACHE: OnceLock<Mutex<BTreeMap<std::path::PathBuf, BTreeMap<String, u64>>>> =
+        OnceLock::new();
+    let cache = CACHE.get_or_init(|| Mutex::new(BTreeMap::new()));
+    let mut cache = cache
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    cache
+        .entry(root.to_path_buf())
+        .or_insert_with(|| {
+            git(
+                root,
+                &[
+                    "log",
+                    "--diff-filter=A",
+                    "--format=@%ct",
+                    "--name-only",
+                    "--",
+                    crate::attachments::ARTIFACTS_DIR,
+                ],
+            )
+            .map(|output| {
+                crate::attachments::parse_first_commits(&String::from_utf8_lossy(&output.stdout))
+            })
+            .unwrap_or_default()
+        })
+        .clone()
 }
 
 /// The blob each of `files` has in HEAD's tree; untracked files are absent.
@@ -2010,10 +2073,14 @@ fn summary_protections(
             listing.clone()
         };
         let superseded = !classification.newest_run.contains(&evidence.id);
+        // A non-routine set (manual, agent-assisted, a human observation) is a key item:
+        // when that is its only protection it moves into the vault (KNOW-19).
+        let key_item = non_routine(evidence);
         let mut reasons: Vec<String> = set
             .reasons
             .iter()
             .filter(|reason| *reason != "recent" && !reason.starts_with("native archive "))
+            .filter(|reason| Some(*reason) != key_item.as_ref())
             // Only the newest run of a case and environment stays protected as newest
             // (KNOW-17); the newest failure keeps its own protection.
             .filter(|reason| !(superseded && *reason == "newest"))
@@ -2039,12 +2106,104 @@ fn summary_protections(
                 listed_by: listing.iter().map(|archive| archive.id.clone()).collect(),
                 archives: cold,
                 attributed,
+                loose: false,
+                move_all: key_item.is_some(),
+                move_artifacts: evidence.outcome == Outcome::Failed,
                 bytes: set.bytes,
             });
         } else {
             protected.push(json!({
                 "id": evidence.id,
                 "cases": case_ids(evidence),
+                "archives": cold,
+                "reasons": reasons,
+            }));
+        }
+    }
+    // Loose artifacts no record references belong to the cold change that lists them or
+    // whose cycle their first commit falls in (KNOW-18, KNOW-20).
+    let referenced: BTreeSet<String> = classification
+        .sets
+        .iter()
+        .flat_map(|set| {
+            set.evidence
+                .artifacts
+                .iter()
+                .map(|artifact| file_key(artifact))
+        })
+        .collect();
+    let is_referenced = |file: &str| {
+        let key = file_key(file);
+        referenced.contains(&key)
+            || referenced
+                .iter()
+                .any(|folder| key.starts_with(&format!("{folder}/")))
+    };
+    let named = file_references(root)?;
+    let held: BTreeMap<String, String> = crate::attachments::open_bug_fixtures(root)?
+        .into_iter()
+        .map(|(bug, fixture)| (file_key(&fixture), format!("{bug} open")))
+        .collect();
+    let first = first_commits(root);
+    for group in crate::attachments::loose_groups(root, &is_referenced)? {
+        let keys: Vec<String> = group.files.iter().map(|file| file_key(file)).collect();
+        let mut reasons: Vec<String> = vec![];
+        for key in &keys {
+            for source in named.get(key).into_iter().flatten() {
+                if !source.starts_with("BUG-") && !reasons.contains(source) {
+                    reasons.push(source.clone());
+                }
+            }
+            if let Some(bug) = held.get(key)
+                && !reasons.contains(bug)
+            {
+                reasons.push(bug.clone());
+            }
+        }
+        let listing: Vec<&ListedArchive> = keyed
+            .iter()
+            .filter(|(_, paths)| keys.iter().any(|key| paths.contains(key)))
+            .map(|(archive, _)| *archive)
+            .collect();
+        let attributed = listing.is_empty();
+        let owners: Vec<&ListedArchive> = if attributed {
+            let Some(added) = group.files.iter().filter_map(|file| first.get(file)).min() else {
+                continue;
+            };
+            match owner_by_cycle(archives, *added) {
+                Some(owner) => vec![owner],
+                None => continue,
+            }
+        } else {
+            listing.clone()
+        };
+        reasons.extend(
+            owners
+                .iter()
+                .filter(|archive| archive.hot)
+                .map(|archive| format!("hot archive {}", archive.id)),
+        );
+        let cold: Vec<String> = owners
+            .iter()
+            .filter(|archive| !archive.hot)
+            .map(|archive| archive.id.clone())
+            .collect();
+        if reasons.is_empty() {
+            pending.push(SummaryCandidate {
+                id: group.id,
+                files: group.files,
+                listed_by: listing.iter().map(|archive| archive.id.clone()).collect(),
+                archives: cold,
+                attributed,
+                loose: true,
+                move_all: false,
+                move_artifacts: false,
+                bytes: group.bytes,
+            });
+        } else {
+            protected.push(json!({
+                "id": group.id,
+                "kind": "loose-artifact",
                 "archives": cold,
                 "reasons": reasons,
             }));
@@ -2186,7 +2345,9 @@ pub(super) fn archive_summary(
         .map(|candidate| {
             json!({
                 "id": candidate.id,
+                "kind": if candidate.loose { "loose-artifact" } else { "observation" },
                 "files": candidate.files,
+                "moves": candidate_moves(candidate, knowledge_dir),
                 "archives": candidate.archives,
                 "bytes": candidate.bytes,
                 "knowledge": entry_path(&candidate.archives[0]),
@@ -2263,13 +2424,18 @@ pub(super) fn archive_summary(
             // Read everything removal needs before the first ledger line is written.
             let mut prepared = vec![];
             for candidate in &eligible {
-                let evidence = load(root, &candidate.id)?;
+                let evidence = if candidate.loose {
+                    None
+                } else {
+                    Some(load(root, &candidate.id)?)
+                };
                 let record_digest = file_digest(root, &candidate.files[0])?;
                 let mut bytes = vec![];
                 for file in &candidate.files {
                     bytes.push((file.clone(), fs::read(local_path(root, file)?)?));
                 }
-                prepared.push((candidate, evidence, record_digest, bytes));
+                let moves = candidate_moves(candidate, knowledge_dir);
+                prepared.push((candidate, evidence, record_digest, bytes, moves));
             }
             // The native validity check runs external processes; a file may have changed
             // since the plan found it identical at HEAD. Check the exact bytes held for
@@ -2280,7 +2446,7 @@ pub(super) fn archive_summary(
                 .collect();
             let tracked = head_blobs(root, &files)?;
             let mut changed = vec![];
-            for (_, _, _, bytes) in &prepared {
+            for (_, _, _, bytes, _) in &prepared {
                 for (file, content) in bytes {
                     if tracked.get(file) != Some(&blob_of(root, content)?) {
                         changed.push(file.clone());
@@ -2296,10 +2462,12 @@ pub(super) fn archive_summary(
             let head = head_revision(root);
             let at = now()?;
             let mut held: Vec<(String, Vec<u8>)> = vec![];
+            let mut copies: Vec<String> = vec![];
             let mut recorded: Vec<String> = vec![];
             let removal: Result<()> = (|| {
-                for (candidate, evidence, record_digest, bytes) in &prepared {
-                    let entry = json!({
+                for (candidate, evidence, record_digest, bytes, moves) in &prepared {
+                    let entry = if let Some(evidence) = evidence {
+                        let mut entry = json!({
                         "schema_version": 1,
                         "id": candidate.id,
                         "cases": case_ids(evidence),
@@ -2318,7 +2486,33 @@ pub(super) fn archive_summary(
                         "policy": policy(Some(authority)),
                         "head": head,
                         "pruned_at_unix_seconds": at,
-                    });
+                        });
+                        if !moves.is_empty() {
+                            entry["moved"] = json!(moves);
+                        }
+                        entry
+                    } else {
+                        let mut digests = BTreeMap::new();
+                        for (file, content) in bytes {
+                            digests.insert(file.clone(), digest_bytes(content));
+                        }
+                        json!({
+                            "schema_version": 1,
+                            "kind": "loose-artifact",
+                            "id": candidate.id,
+                            "artifacts": digests,
+                            "record_digest": record_digest,
+                            "removed": candidate.files,
+                            "moved": moves,
+                            "archives": candidate.archives,
+                            "attributed": candidate.attributed.then_some("cycle time"),
+                            "knowledge": entry_path(&candidate.archives[0]),
+                            "reason": LOOSE_REASON,
+                            "policy": policy(Some(authority)),
+                            "head": head,
+                            "pruned_at_unix_seconds": at,
+                        })
+                    };
                     append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
                     recorded.push(candidate.id.clone());
                     // Artifacts first and the record last, so the set stays classifiable.
@@ -2327,6 +2521,16 @@ pub(super) fn archive_summary(
                         // updating the checkpoint, a bug link, an open change), so they are
                         // checked again right before every removal.
                         still_unprotected(root, archives, &native, candidate)?;
+                        // A key item is copied into the vault before its original goes.
+                        if let Some(target) = moves.get(file) {
+                            let path = local_path(root, target)?;
+                            if let Some(parent) = path.parent() {
+                                fs::create_dir_all(parent)?;
+                            }
+                            fs::write(&path, content)
+                                .with_context(|| format!("moving {file} to {target}"))?;
+                            copies.push(target.clone());
+                        }
                         remove_verified(root, file, content)?;
                         held.push((file.clone(), content.clone()));
                     }
@@ -2380,6 +2584,12 @@ pub(super) fn archive_summary(
                         Err(error) => {
                             return Err(error).with_context(|| format!("restoring {file}"));
                         }
+                    }
+                }
+                // The vault copies of a refused apply are removed again.
+                for copy in &copies {
+                    if let Ok(path) = local_path(root, copy) {
+                        let _ = fs::remove_file(path);
                     }
                 }
                 let failure = if kept.is_empty() {

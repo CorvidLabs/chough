@@ -1171,10 +1171,22 @@ fn archive_summary_previews_cold_archive_proof_and_keeps_protections() {
     assert_eq!(preview["applied"], false);
     assert_eq!(preview["hot"], json!(["a5", "a4", "a3"]));
     assert_eq!(preview["cold"], json!(["a2", "a1"]));
+    // The manual observation of cold a2 is a key item: it moves into the vault (KNOW-19).
     assert_eq!(
         ids(&preview["eligible"]),
-        set(["cold-a", "cold-b"]),
+        set(["cold-a", "cold-b", "manual"]),
         "{preview:#}"
+    );
+    let manual = preview["eligible"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| entry["id"] == "manual")
+        .unwrap();
+    assert_eq!(
+        manual["moves"][".chough/evidence/manual.json"],
+        "knowledge/attachments/a2/evidence/manual.json",
+        "{manual:#}"
     );
     let cold_a = preview["eligible"]
         .as_array()
@@ -1200,17 +1212,13 @@ fn archive_summary_previews_cold_archive_proof_and_keeps_protections() {
         "{:?}",
         reasons(&preview, "bugref")
     );
-    assert!(
-        reasons(&preview, "manual")
-            .iter()
-            .any(|reason| reason.contains("manual"))
-    );
+    // The manual observation is no longer protected: it moves (asserted above, KNOW-19).
     assert!(reasons(&preview, "n1").contains(&"newest".to_string()));
     assert_eq!(ids(&preview["uncommitted"]), set(["cold-c"]));
     // An observation no archive lists is left to `evidence prune`.
     assert!(!ids(&preview["protected"]).contains("plain"));
     assert!(!ids(&preview["eligible"]).contains("plain"));
-    assert_eq!(preview["totals"]["eligible"], 2);
+    assert_eq!(preview["totals"]["eligible"], 3);
     // An archive manifest that cannot be read fails closed instead of reading as empty.
     fixture.write(
         ".specsync/archive/changes/2026-05-01-a5/verification.json",
@@ -1266,15 +1274,16 @@ fn archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change(
     let applied = fixture.ok(&["library", "archive", "--apply"]);
     assert_eq!(
         applied["pruned"],
-        json!(["cold-a", "cold-b"]),
+        json!(["cold-a", "cold-b", "manual"]),
         "{applied:#}"
     );
     assert!(!fixture.exists(".chough/evidence/cold-a.json"));
     assert!(!fixture.exists(".chough/artifacts/cold-a.log"));
     assert!(!fixture.exists(".chough/evidence/cold-b.json"));
-    for kept in [
-        "shared", "hot-x", "bugref", "manual", "n1", "cold-c", "plain",
-    ] {
+    // The manual observation moved into the vault instead of being removed (KNOW-19).
+    assert!(!fixture.exists(".chough/evidence/manual.json"));
+    assert!(fixture.exists("knowledge/attachments/a2/evidence/manual.json"));
+    for kept in ["shared", "hot-x", "bugref", "n1", "cold-c", "plain"] {
         assert!(
             fixture.exists(&format!(".chough/evidence/{kept}.json")),
             "{kept}"
@@ -1506,7 +1515,7 @@ fn archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_par
     let preview = fixture.ok(&["library", "archive"]);
     assert_eq!(
         ids(&preview["eligible"]),
-        set(["cold-a", "cold-b"]),
+        set(["cold-a", "cold-b", "manual"]),
         "{preview:#}"
     );
 }
@@ -1567,7 +1576,11 @@ fn archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_au
         &record.replace('\n', "\r\n"),
     );
     let preview = fixture.ok(&["library", "archive"]);
-    assert_eq!(ids(&preview["eligible"]), set(["cold-a"]), "{preview:#}");
+    assert_eq!(
+        ids(&preview["eligible"]),
+        set(["cold-a", "manual"]),
+        "{preview:#}"
+    );
     assert!(
         preview["uncommitted"]
             .as_array()
@@ -1596,7 +1609,7 @@ fn archive_summary_apply_fails_closed_when_a_protection_appears_during_the_nativ
     fixture.write(".chough/session.json", &session);
     assert_eq!(
         ids(&fixture.ok(&["library", "archive"])["eligible"]),
-        set(["cold-a", "cold-b"])
+        set(["cold-a", "cold-b", "manual"])
     );
     // It starts referencing cold-a during the first validity call, after planning.
     fixture.write(".stub-hook", "cp .stub-session .chough/session.json\n");
@@ -1758,7 +1771,7 @@ fn a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply() {
     let applied = fixture.ok(&["library", "archive", "--apply"]);
     assert_eq!(
         applied["pruned"],
-        json!(["cold-a", "cold-b"]),
+        json!(["cold-a", "cold-b", "manual"]),
         "{applied:#}"
     );
     assert!(!fixture.exists(".chough/removing"));

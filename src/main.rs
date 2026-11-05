@@ -1,3 +1,4 @@
+mod attachments;
 mod bugs;
 mod cases;
 mod checkpoint;
