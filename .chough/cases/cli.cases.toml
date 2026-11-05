@@ -3540,3 +3540,39 @@ expected = ["tests/vault.rs::trace_lists_and_family_declarations_are_read_in_eve
 adapter = "cargo-test"
 test_target = "vault"
 test = "trace_lists_and_family_declarations_are_read_in_every_valid_form"
+
+[[case]]
+id = "TC-cli-vault-inline-trace-crlf-comments"
+title = "Backticked Trace mentions, CRLF and commented HI family declarations do not hide criteria or families"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-15", "KNOW-14"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "tests/vault.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::inline_trace_mentions_crlf_and_comments_do_not_hide_criteria_or_families passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "inline_trace_mentions_crlf_and_comments_do_not_hide_criteria_or_families"
+
+[[case]]
+id = "TC-cli-vault-readme-upgrade"
+title = "An untouched earlier knowledge README is upgraded and an edited one kept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14", "KNOW-4"]
+requirements = ["REQ-cli-044"]
+paths = ["src/library.rs", "tests/vault.rs", "tests/fixtures/knowledge-readme-at-8fbbbe7.md"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept"

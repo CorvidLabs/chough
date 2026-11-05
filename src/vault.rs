@@ -218,12 +218,10 @@ pub(super) fn traces(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
                 current = id.starts_with("REQ-").then(|| id.to_string());
                 continue;
             }
-            let (Some(requirement), Some(index)) = (current.as_ref(), line.rfind("Trace:")) else {
+            let (Some(requirement), Some(rest)) = (current.as_ref(), trace_list(line)) else {
                 continue;
             };
-            // The real list is the last `Trace:` on the line (the text may mention it inline)
-            // and runs to the end of its sentence; IDs such as `UX-1.a` contain dots.
-            let rest = &line[index + "Trace:".len()..];
+            // The list runs to the end of its sentence; IDs such as `UX-1.a` contain dots.
             let list = rest.split(". ").next().unwrap_or_default();
             let ids: &mut Vec<String> = found.entry(requirement.clone()).or_default();
             for id in list.split(',').map(|id| id.trim().trim_end_matches('.')) {
@@ -234,6 +232,21 @@ pub(super) fn traces(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
         }
     }
     Ok(found)
+}
+
+/// The text after the last `Trace:` on a line that is not inside backticks: prose may
+/// mention `` `Trace:` `` before or after the real list.
+fn trace_list(line: &str) -> Option<&str> {
+    let mut in_code = false;
+    let mut last = None;
+    for (index, c) in line.char_indices() {
+        if c == '`' {
+            in_code = !in_code;
+        } else if !in_code && line[index..].starts_with("Trace:") {
+            last = Some(index + "Trace:".len());
+        }
+    }
+    last.map(|start| &line[start..])
 }
 
 /// An HI criterion ID, including sub-criteria such as `UX-1.a` (DRIVE-1).
@@ -296,11 +309,21 @@ pub(super) fn intent_files(root: &Path) -> Result<Vec<IntentFile>> {
 /// The families an HI file declares in its front matter, in any form hi accepts: a flow
 /// list (`[UX]` or `["UX"]`) or a block list (`families:` then `  - UX`).
 fn families(text: &str) -> Vec<String> {
-    let header: Vec<&str> = text
-        .strip_prefix("---\n")
-        .and_then(|rest| rest.split("\n---").next())
-        .map(|block| block.lines().collect())
-        .unwrap_or_default();
+    // `lines` also ends a line at `\r\n`, so CRLF files read the same.
+    let mut lines = text.lines();
+    if lines.next().map(str::trim_end) != Some("---") {
+        return vec![];
+    }
+    let header: Vec<&str> = lines.take_while(|line| line.trim_end() != "---").collect();
+    // A YAML comment starts at ` #`; quoted family names never contain one.
+    let uncomment = |value: &str| {
+        value
+            .split(" #")
+            .next()
+            .unwrap_or_default()
+            .trim()
+            .to_string()
+    };
     let clean = |item: &str| {
         item.trim()
             .trim_matches(|c| c == '"' || c == '\'')
@@ -309,13 +332,12 @@ fn families(text: &str) -> Vec<String> {
     let Some(index) = header.iter().position(|line| line.starts_with("families:")) else {
         return vec![];
     };
-    let inline = header[index]["families:".len()..].trim();
+    let inline = uncomment(&header[index]["families:".len()..]);
     let found: Vec<String> = if inline.is_empty() {
         header[index + 1..]
             .iter()
             .take_while(|line| line.starts_with(' ') || line.starts_with('-'))
-            .filter_map(|line| line.trim().strip_prefix('-'))
-            .map(clean)
+            .filter_map(|line| uncomment(line).strip_prefix('-').map(clean))
             .collect()
     } else {
         inline
