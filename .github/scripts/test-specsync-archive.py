@@ -143,6 +143,19 @@ class ArchiveExecutorTests(unittest.TestCase):
             self.assertEqual(sorted(seen), sorted(ids), total)
             self.assertEqual(len(seen), len(set(seen)), total)
 
+    def test_shards_partition_the_pr_revisions_exactly_once_in_order(self):
+        # #105: the history walk is split like authentication, so no single shard
+        # inventories every revision. Repeated revisions are walked once.
+        revisions = [f"rev-{number:02}" for number in range(10)]
+        for total in range(1, 6):
+            seen = []
+            for index in range(1, total + 1):
+                part = self.gate.shard_revisions(revisions + revisions[:3], (index, total))
+                self.assertEqual(part, revisions[index - 1::total], (index, total))
+                seen += part
+            self.assertEqual(sorted(seen), revisions, total)
+            self.assertEqual(len(seen), len(set(seen)), total)
+
     def test_shard_must_be_k_of_n_within_the_bound(self):
         for value, shard in [("1/1", (1, 1)), ("3/4", (3, 4)), ("8/8", (8, 8))]:
             self.assertEqual(self.gate.parse_shard(value), shard)
@@ -508,17 +521,34 @@ class ArchiveFixtures(unittest.TestCase):
         commit(root, "synthetic archive incorrectly removed")
         self.check(root, False, contains="omitted instead of archived")
 
-    def test_shards_split_authentication_and_shard_one_walks_history(self):
-        self.check(self.archived, True, shard="1/2", contains="Shard 1/2: 1 of 1 archive(s) authenticated")
-        self.check(self.archived, True, shard="2/2", contains="Shard 2/2: 0 of 1 archive(s) authenticated")
+    def test_shards_split_authentication_and_the_history_walk(self):
+        total = len(command(self.archived, "git", "rev-list", f"{self.base}..HEAD").splitlines()) + 1
+        first, second = (total + 1) // 2, total // 2
+        self.check(self.archived, True, shard="1/2", contains=(
+            f"Shard 1/2: walked {first} of {total} PR revision(s); 1 of 1 archive(s) authenticated"))
+        self.check(self.archived, True, shard="2/2", contains=(
+            f"Shard 2/2: walked {second} of {total} PR revision(s); 0 of 1 archive(s) authenticated"))
         for shard in ["1/2", "2/2"]:
             with self.subTest(shard=shard):
                 self.check(self.draft, False, shard=shard, contains="unfinished")
         root = self.fixture(self.archived)
         shutil.rmtree(root / ".specsync/archive")
         commit(root, "synthetic archive incorrectly removed")
-        self.check(root, False, shard="1/2", contains="omitted instead of archived")
+        for shard in ["1/2", "2/2"]:
+            with self.subTest(shard=shard):
+                self.check(root, False, shard=shard, contains="omitted instead of archived")
         self.check(self.clean, False, shard="3/2", contains="--shard")
+
+    def test_the_shard_that_walks_a_revision_refuses_a_change_omitted_from_it(self):
+        # #105: revisions are base, introduced, removed. Shard 2/2 walks only the
+        # revision where the draft exists, so it alone must find the omission.
+        root = self.fixture(self.draft)
+        commit(root, "synthetic draft scope introduced")
+        shutil.rmtree(root / ".specsync/changes")
+        commit(root, "synthetic scope incorrectly removed")
+        self.check(root, False, contains="omitted instead of archived")
+        self.check(root, False, shard="2/2", contains="omitted instead of archived")
+        self.check(root, True, shard="1/2", contains="Shard 1/2: walked 2 of 3 PR revision(s)")
 
     def test_bad_base_shallow_and_unsafe_inventory_fail(self):
         self.check(self.clean, False, base="0" * 40)

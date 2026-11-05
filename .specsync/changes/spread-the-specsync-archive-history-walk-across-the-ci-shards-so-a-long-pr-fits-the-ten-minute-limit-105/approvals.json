@@ -1,0 +1,43 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793916807,
+      "digest": "05d17f9389e8293e27a8230fe624421ba3a15a679bb9a7a905cc6e3445cd1f66",
+      "note": "#105 P2 under DRIVE-10; Leif: #105 next after #114 (2026-11-05, via the orc)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105",
+        "title": "Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105)",
+        "description": "Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/scripts/check-specsync-archive.py",
+          ".github/scripts/test-specsync-archive.py",
+          ".github/workflows/ci.yml",
+          "CHANGELOG.md",
+          "docs/ci.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within DRIVE-10: the archive inspector keeps every check and the unchanged job limit; no requirement text changes.",
+        "acceptance_criteria": [
+          "Each SpecSync Archive shard walks only its share of the PR revisions (positions K, K+N, ... of the base and rev-list, repeats once), refuses any change in them that was omitted instead of archived, keeps every other check, and reports walked and total revisions with authenticated and total archives. The three new tests fail first, every existing fixture passes, the long #99 candidate is measured again per phase on Linux with 4 CPUs, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #105 (P2, DRIVE-10); Leif: order after #110 is #105 (after #114), then reduction (2026-11-05, via the orc); keep the ten-minute limit and every native check.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}

@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-416c06bfe6c58a4b8f78f0f7",
+    "head": "EVT-d07566bc8a9070fd25196169",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Spread the SpecSync Archive history walk across the four CI shards so a long PR fits the unchanged ten-minute limit (#105)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "build",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105",
+  "references": {
+    "criteria": [
+      "DRIVE-10"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Split the history walk with shard_revisions against the failing fixtures"
+}
