@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c",
+  "criteria": [
+    "DRIVE-3",
+    "DRIVE-12"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded for TC-history-session-after-legacy-adoption: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c.log": "1a6e8c102dc55831fe74e34ad14423edac4624fbe497eca04bdd739b8523f145"
+  },
+  "observed_at_unix_seconds": 1793890808,
+  "snapshot": {
+    "revision": "f131ebeee492cfd3f05dd9ee9f55edd6dc7b9373",
+    "dirty": false,
+    "fingerprint": "05bc5362ce65f133b77393bcc9b84daa09e42ca67aa905284a4d353d08ba95c8",
+    "content": "e490a771631d9420ae88cd84dcabd8bcf76e03565277b3f6d76d83625206ff5b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-session-after-legacy-adoption",
+      "digest": "db250829bea84cabffe50dec15e53751e16863f2d29e27ec0ce29b91f695ba91"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

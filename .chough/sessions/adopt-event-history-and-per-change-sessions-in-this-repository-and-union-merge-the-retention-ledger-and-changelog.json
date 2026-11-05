@@ -485,7 +485,8 @@
     "OBS-tc-cli-vault-mixed-age-folder-stays-2efd9baf3b7e0a7b17ac0e49",
     "OBS-tc-cli-vault-loose-group-gains-released-file-b60ba1bbdda800617b55cb81",
     "OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008",
-    "OBS-tc-history-session-after-legacy-adoption-4b6f7eb1047f7f9fd028d20d"
+    "OBS-tc-history-session-after-legacy-adoption-4b6f7eb1047f7f9fd028d20d",
+    "OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c"
   ],
   "bugs": [
     "BUG-0001",
