@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "17b7a1c3301b77a6883670d7d1871d3836c99f07",
+      "contract_digest": "80166470016d4e3fbb3dddd9a413e6cd7fe0e3fc4f17965692f96b87b4d3ee56",
+      "execution_digest": "5e01c14ddc24ace517a4f3e6355c5750dfa18fc0dd144b8f70cd3978307e6b48",
+      "workspace_digest": "ea7f685e82831fbb6a4a5fa203b390365368415136b00ed929d8e37be97a646f",
+      "timestamp": 1793857595
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 ---
 id: move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge
-state: implementing
+state: archived
 type: feature
 base_commit: 784b1406d9e5b4b3a53176c3772aaeb003483412
 ---

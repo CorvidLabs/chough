@@ -7,11 +7,11 @@
   "title": "Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)",
   "description": "Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "784b1406d9e5b4b3a53176c3772aaeb003483412",
   "created_at": 1793855384,
-  "updated_at": 1793857138,
+  "updated_at": 1793857624,
   "affected_specs": [
     "cli"
   ],
