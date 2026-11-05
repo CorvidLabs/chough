@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy",
+  "implementation_commit": "59519b6b661c72980f4f9bcc7fbb61723bff610a",
+  "implementation_tree": "7ce1b4f97d829d7945b2ecd9d78a6c5561d0ff01",
+  "contract_digest": "40f3ffa8cf85bc91db6164699400e6846a275a8f1d139a12b5be846679e4f460",
+  "workspace_digest": "6bf0e1a64273f401e8fcc933101dfda4f813d721cc8e009691a33ef6e7d4783e",
+  "closing_digest": "0166d4cbdb19e82882f6eba51520be934cbd01f1bfff591c869839961ab3f305",
+  "review_digest": "57cd0c2e4b5d19660bbb403ee3f16216bc86fbc40de370e00513f5ce76151410",
+  "finalization_digest": "3734f69ac6d371eb56371ed4a1cc93d8aca24df947179a19ea35ceedb9b3503b",
+  "timestamp": 1793841819
+}

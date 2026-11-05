@@ -734,8 +734,13 @@ fn native_manifests_protect_their_sets_and_a_failed_read_protects_everything() {
     assert_eq!(applied["pruned"], json!([]));
     let mut after = tree(fixture.root());
     after.remove(".chough/session.json");
+    // The consent grant is a checkpoint writer: it may create the project's lock (#83).
+    after.remove(".chough/local/.gitignore");
+    after.remove(".chough/local/checkpoint.lock");
     let mut before = before;
     before.remove(".chough/session.json");
+    before.remove(".chough/local/.gitignore");
+    before.remove(".chough/local/checkpoint.lock");
     assert_eq!(after, before);
 
     // Output that is not a manifest is a failed read too.

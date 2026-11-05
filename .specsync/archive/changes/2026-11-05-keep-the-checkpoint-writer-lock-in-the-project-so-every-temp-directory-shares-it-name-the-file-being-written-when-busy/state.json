@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy",
+  "slug": "keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy",
+  "title": "Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83)",
+  "description": "Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "d9269bec6ea0bc6c9e6c9f37bb9a6f6a05cd5024",
+  "created_at": 1793809253,
+  "updated_at": 1793841875,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "tests/cli.rs",
+    "tests/common/mod.rs",
+    "tests/sessions.rs",
+    "tests/evidence.rs",
+    "examples/feature-bug-loop.sh",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A writer with a different TMPDIR waits for the project lock and then saves. A busy refusal in sessions mode names the session file and saves nothing. Legacy writers racing session adopt either save in the remaining checkpoint or refuse naming the adoption with nothing saved. The lock lives in .chough/local which Git ignores and which in a project without sessions holds only the lock and its gitignore. Each new test fails where stated and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Bounded fix for issue 83 under DRIVE-11 as Leif chose on 2026-11-04 (.chough/local lock in every project, relaxing the 77 no-sessions test to no tracked or session file changes); stacked on 77 at 75a732d; the 30 second wait and which commands lock are unchanged; read-only commands take no lock",
+    "public_contract": "yes"
+  }
+}

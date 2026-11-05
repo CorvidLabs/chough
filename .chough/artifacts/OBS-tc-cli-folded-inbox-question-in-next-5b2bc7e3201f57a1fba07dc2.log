@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_folded_inbox_question_appears_in_next ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.62s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.03s
+     Running tests/sessions.rs (target/debug/deps/sessions-b31417905ee5f418)

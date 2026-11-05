@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "4c3b7ab9a9bfdfe5d07744b47a6f35fe0f7978b7",
+      "contract_digest": "23a954ab5c4aa1197eaadf807af15babddbaad6ff855c3f6f16418302e726e43",
+      "execution_digest": "5ffa83f561890d81a6dbaf407d3faa283093c8d41f276ee07806b22609f1b652",
+      "workspace_digest": "1fad7d21a4f7f29ed5a5ac87622681cd69f48799a60992a760b9276bfafe01eb",
+      "timestamp": 1793834061
+    }
+  ]
+}

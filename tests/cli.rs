@@ -451,6 +451,10 @@ fn fill_checkpoint_to_pretty_bytes(session: &mut Value, bytes: usize) {
 }
 
 fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str], bound: &str) {
+    // A writer has run before, so the project's lock (#83) already exists, as in any
+    // project; the comparison still covers every file, `.chough/local/` included.
+    fixture.write(".chough/local/.gitignore", "*\n");
+    fixture.write(".chough/local/checkpoint.lock", "");
     let before = managed_record_bytes(fixture.root());
     let output = fixture.run(args);
     assert!(!output.status.success(), "{args:?} unexpectedly succeeded");
@@ -679,6 +683,16 @@ fn aggregate_context_budget_is_explicit() {
             .iter()
             .any(|section| section["state"] == "omitted-budget")
     );
+    // The budget is a display bound: its markers send the reader to the source and
+    // never ask for a shorter one (LIFE-15).
+    for state in ["omitted-budget", "truncated-budget"] {
+        let section = sections
+            .iter()
+            .find(|section| section["state"] == state)
+            .unwrap();
+        let shown = section["content"].as_str().unwrap();
+        assert!(shown.contains("never shorten"), "{state}: {shown}");
+    }
     let source_bytes: usize = sections
         .iter()
         .map(|section| section["content"].as_str().unwrap().len())
@@ -1098,7 +1112,7 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     let (report, _) = next(None);
     assert_eq!(report["native_specsync"]["state"], "failed");
     let shown = report["native_specsync"]["content"].as_str().unwrap();
-    assert!(shown.starts_with("exit=Some(2)"), "{shown}");
+    assert!(shown.starts_with("exit 2\n"), "{shown}");
     assert!(shown.contains("[truncated at 16384 bytes"), "{shown}");
     assert!(shown.len() < 17_000, "{}", shown.len());
 }
@@ -1938,6 +1952,8 @@ fn checkpoint_writer_lock_holder_process() {
     };
     use std::io::Write;
     let root = PathBuf::from(std::env::var(LOCK_HOLDER_ROOT).unwrap());
+    // The lock lives in the project's `.chough/local/` (#83), as a writer creates it.
+    fs::create_dir_all(checkpoint_lock_path(&root).parent().unwrap()).unwrap();
     let lock = fs::OpenOptions::new()
         .read(true)
         .write(true)
@@ -2216,13 +2232,12 @@ fn read_only_commands_leave_session_temps_in_place() {
     }
 }
 
-/// The exercise removes its project's checkpoint lock file on exit, in every mode
-/// (review of #70): the setup's `checkpoint_lock` names the file real Chough creates
-/// for the project under the given TMPDIR, and the exit cleanup deletes it whether the
-/// run passed, failed or prepared a cold start.
+/// The exercise's checkpoint lock lives inside its project (#83, DRIVE-11): a Chough write
+/// creates `.chough/local/checkpoint.lock` there, and nothing named `chough-checkpoint-*`
+/// is left in the run's TMPDIR, whether the run passed, failed or prepared a cold start.
 #[cfg(unix)]
 #[test]
-fn exercise_removes_its_checkpoint_lock_on_exit() {
+fn exercise_keeps_its_checkpoint_lock_inside_the_project() {
     let script = fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
     )
@@ -2238,9 +2253,8 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
         let temp = TempDir::new().unwrap();
         let cwd = TempDir::new().unwrap();
         let chough = env!("CARGO_BIN_EXE_chough");
-        // The setup's own lock name, then a real Chough write that creates the lock.
         let body = format!(
-            "set -eu\n{setup}cd \"$work\"\n\"{chough}\" init --objective Probe --intent-scope LIFE --module cli >/dev/null\nmark_checkpoint_lock\n\"{chough}\" checkpoint --decision 'Probe the lock' >/dev/null\nprintf '%s\\n' \"$checkpoint_lock\"\n[ -f \"$checkpoint_lock\" ] || exit 9\nexit {status}\n"
+            "set -eu\n{setup}cd \"$work\"\n\"{chough}\" init --objective Probe --intent-scope LIFE --module cli >/dev/null\n\"{chough}\" checkpoint --decision 'Probe the lock' >/dev/null\nlock=\"$work/.chough/local/checkpoint.lock\"\nprintf '%s\\n' \"$lock\"\n[ -f \"$lock\" ] || exit 9\nexit {status}\n"
         );
         let out = Command::new("sh")
             .arg("-c")
@@ -2253,10 +2267,7 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
             .unwrap();
         assert_eq!(out.status.code(), Some(status), "{args:?} {out:?}");
         let named = String::from_utf8_lossy(&out.stdout).trim().to_string();
-        assert!(
-            named.contains("chough-checkpoint-") && named.ends_with(".lock"),
-            "{named}"
-        );
+        assert!(named.ends_with("/.chough/local/checkpoint.lock"), "{named}");
         let locks: Vec<String> = fs::read_dir(temp.path())
             .unwrap()
             .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
@@ -2264,4 +2275,360 @@ fn exercise_removes_its_checkpoint_lock_on_exit() {
             .collect();
         assert!(locks.is_empty(), "{args:?} exit {status} left {locks:?}");
     }
+}
+
+/// Issue #83 (DRIVE-11): the writer lock lives in the project, so a writer started with
+/// another `TMPDIR` waits for a holder of the project's lock and then saves.
+#[cfg(unix)]
+#[test]
+fn writers_with_different_temp_directories_share_the_checkpoint_lock() {
+    use std::process::Stdio;
+    use std::time::Duration;
+    let fixture = Fixture::new();
+    fixture.init();
+    let lock_path = fixture.root().join(".chough/local/checkpoint.lock");
+    fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let other_tmp = tempfile::tempdir().unwrap();
+    let decision = "Written with another TMPDIR";
+    let mut writer = Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(fixture.root())
+        .args(["checkpoint", "--decision", decision])
+        .env("TMPDIR", other_tmp.path())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    std::thread::sleep(Duration::from_secs(1));
+    assert!(
+        writer.try_wait().unwrap().is_none(),
+        "the writer with another TMPDIR did not wait for the project's lock"
+    );
+    drop(lock);
+    let output = writer.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let session: Value = serde_json::from_str(
+        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
+    )
+    .unwrap();
+    assert!(
+        session["decisions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entry| entry == decision),
+        "{session:#}"
+    );
+}
+
+/// Issue #83: the lock file is inside `.chough/local/`, which Git ignores.
+#[test]
+fn the_checkpoint_lock_lives_in_the_project_and_git_ignores_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["checkpoint", "--decision", "Take the lock"]);
+    assert!(
+        fixture
+            .root()
+            .join(".chough/local/checkpoint.lock")
+            .exists()
+    );
+    fixture.git(&["init", "-q"]);
+    fixture.commit_all("fixture");
+    fixture.git(&["check-ignore", "-q", ".chough/local/checkpoint.lock"]);
+    let tracked = Command::new("git")
+        .current_dir(fixture.root())
+        .args(["ls-files", ".chough/local"])
+        .output()
+        .unwrap();
+    assert!(
+        tracked.stdout.is_empty(),
+        "{}",
+        String::from_utf8_lossy(&tracked.stdout)
+    );
+}
+
+/// Issue #83 item d: legacy writers racing `session adopt` each either save their
+/// decision in the one remaining checkpoint or refuse with nothing saved. (#77's
+/// `legacy_writers_racing_adopt_end_in_one_mode` asserts only the single mode.)
+#[test]
+fn legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved() {
+    for trial in 0..10 {
+        let fixture = Fixture::new();
+        fixture.init();
+        let outputs: Vec<(String, Output)> = std::thread::scope(|scope| {
+            let fixture = &fixture;
+            let writers: Vec<_> = (0..4)
+                .map(|writer| {
+                    scope.spawn(move || {
+                        let decision = format!("writer {writer} of trial {trial}");
+                        let output = fixture.run(&["checkpoint", "--decision", &decision]);
+                        (decision, output)
+                    })
+                })
+                .collect();
+            let adopt = scope.spawn(move || fixture.run(&["session", "adopt", "alpha"]));
+            let outputs = writers
+                .into_iter()
+                .map(|writer| writer.join().unwrap())
+                .collect();
+            adopt.join().unwrap();
+            outputs
+        });
+        let file = if fixture.root().join(".chough/session.json").exists() {
+            ".chough/session.json"
+        } else {
+            ".chough/sessions/alpha.json"
+        };
+        let session: Value =
+            serde_json::from_str(&fs::read_to_string(fixture.root().join(file)).unwrap()).unwrap();
+        let decisions = session["decisions"].as_array().unwrap();
+        for (decision, output) in &outputs {
+            let present = decisions.iter().any(|entry| entry == decision.as_str());
+            if output.status.success() {
+                assert!(
+                    present,
+                    "trial {trial}: {decision} reported saved but is not in {file}"
+                );
+            } else {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                assert!(
+                    stderr.contains("was adopted") && stderr.contains("nothing was saved"),
+                    "trial {trial}: {stderr}"
+                );
+                assert!(!present, "trial {trial}: refused {decision} is in {file}");
+            }
+        }
+    }
+}
+
+/// Issue #100 (LIFE-15): a HI family export over Chough's 16 KiB display bound is parsed
+/// in full to validate criteria. Shortening the human's intent is never the remedy.
+#[test]
+fn criteria_validate_against_a_hi_family_export_over_16_kib() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    let intent = "The owner own words about this family, kept whole. ".repeat(800);
+    let criteria: Vec<Value> = (1..=40)
+        .map(|n| json!({"id": format!("LIFE-{n}"), "text": format!("Criterion {n}: {intent}")}))
+        .filter(|criterion| criterion["id"] != "LIFE-2")
+        .collect();
+    let export = json!({
+        "hi": 1,
+        "export": 1,
+        "files": [{"intent": intent, "criteria": criteria, "retired": [{"id": "LIFE-2"}]}]
+    })
+    .to_string();
+    assert!(export.len() > 16_384 * 4, "{}", export.len());
+    common::stand_in(&fixture.root().join("bin"), "hi", &export);
+    let add = |id: &str, criterion: &str| {
+        fixture.run(&[
+            "evidence",
+            "add",
+            id,
+            "--criterion",
+            criterion,
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "test-local",
+            "--summary",
+            "Observed against a large family",
+        ])
+    };
+    // The last criterion sits far past the first 16 KiB of the export.
+    let accepted = add("OBS-product-test-000000000000000000000100", "LIFE-40");
+    assert!(
+        accepted.status.success(),
+        "{}",
+        String::from_utf8_lossy(&accepted.stderr)
+    );
+    let refused = add("OBS-product-test-000000000000000000000101", "LIFE-2");
+    let stderr = String::from_utf8_lossy(&refused.stderr);
+    assert!(!refused.status.success());
+    assert!(
+        stderr.contains("unknown or retired criterion: LIFE-2"),
+        "{stderr}"
+    );
+    assert!(!stderr.contains("16384"), "{stderr}");
+    // `cases check` validates a case's criterion links through the same full export.
+    let case = |criterion: &str| {
+        format!(
+            "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Large family\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"{criterion}\"]\nrequirements = [\"REQ-cli-001\"]\npaths = [\"src/\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"git prints its version\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"git\", \"--version\"]\nexpect_output = [\"git version\"]\n"
+        )
+    };
+    fixture.write(".chough/cases/cli.cases.toml", &case("LIFE-40"));
+    fixture.ok(&["cases", "check"]);
+    fixture.write(".chough/cases/cli.cases.toml", &case("LIFE-2"));
+    let refused = fixture.run(&["cases", "check"]);
+    assert!(!refused.status.success());
+    assert!(
+        String::from_utf8_lossy(&refused.stderr).contains("unknown or retired criterion"),
+        "{}",
+        String::from_utf8_lossy(&refused.stderr)
+    );
+}
+
+impl Fixture {
+    /// An evidence fixture whose SpecSync stand-in reports `big-change` archived with no
+    /// acceptance entries, and the archive directory of that change.
+    fn big_archive(&self) -> &'static str {
+        self.evidence_fixture();
+        common::stand_in(
+            &self.root().join("bin"),
+            "specsync",
+            r#"{"summary":{"id":"big-change","state":"archived"},"acceptance_entries":[]}"#,
+        );
+        let archive = ".specsync/archive/changes/2026-11-04-big-change";
+        self.write(
+            &format!("{archive}/finalization.json"),
+            "{\"schema_version\": 2, \"change_id\": \"big-change\", \"timestamp\": 100}\n",
+        );
+        archive
+    }
+}
+
+/// Issue #100 (LIFE-15): SpecSync's own files are read within SpecSync's bound, never
+/// Chough's 65,536-byte record bound. Retention reads an archived `finalization.json`
+/// larger than that bound to find the latest native manifest.
+#[test]
+fn an_archived_finalization_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    let archive = fixture.big_archive();
+    let finalization = json!({
+        "schema_version": 2,
+        "change_id": "big-change",
+        "timestamp": 100,
+        "note": "x".repeat(70_000)
+    })
+    .to_string();
+    assert!(finalization.len() > 65_536);
+    fixture.write(&format!("{archive}/finalization.json"), &finalization);
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert_eq!(preview["native"]["state"], "observed", "{preview:#}");
+    assert!(
+        preview["native"]["detail"]
+            .as_str()
+            .is_some_and(|detail| !detail.contains("65536")),
+        "{preview:#}"
+    );
+}
+
+/// Issue #100 (LIFE-15): the librarian reads an archived `change.md` larger than the
+/// record bound for its title and criteria instead of silently dropping them.
+#[test]
+fn an_archived_change_md_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    let archive = fixture.big_archive();
+    fixture.write(
+        &format!("{archive}/verification.json"),
+        "{\"acceptance_manifest\":{\"entries\":[]}}\n",
+    );
+    fixture.write(
+        &format!("{archive}/change.md"),
+        &format!(
+            "---\nid: big-change\nstate: archived\n---\n\n# A large archived change\n\n## Acceptance Criteria\n\n- It is read whole\n\n## Notes\n\n{}\n",
+            "x".repeat(70_000)
+        ),
+    );
+    fixture.ok(&["library", "index"]);
+    let entry =
+        fs::read_to_string(fixture.root().join("knowledge/archives/big-change.md")).unwrap();
+    assert!(entry.contains("A large archived change"), "{entry}");
+    assert!(entry.contains("It is read whole"), "{entry}");
+}
+
+/// Issue #100 (LIFE-15): a `.specsync/sdd.json` policy larger than the record bound is
+/// SpecSync's to judge; a valid disabled policy is not refused as unreadable.
+#[test]
+fn an_sdd_policy_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    fixture.evidence_fixture();
+    fixture.write(
+        ".specsync/sdd.json",
+        &format!("{}{{\"enabled\": false}}\n", " ".repeat(70_000)),
+    );
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    let advanced = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        advanced["applied"]["gate"], "ungated:sdd-disabled",
+        "{advanced:#}"
+    );
+}
+
+/// Display bounds stay, and their marker sends the reader to the complete source rather
+/// than suggesting the source should shrink (LIFE-15).
+#[test]
+fn display_truncation_points_to_the_complete_source() {
+    let fixture = Fixture::new();
+    fixture.write("INTENT.md", &"Intent kept whole. ".repeat(2_000));
+    fixture.native_fixtures();
+    fixture.init();
+    let context = fixture.ok(&["context", "--json"]);
+    let intent = context["sections"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|section| section["source"] == "INTENT.md")
+        .unwrap();
+    let shown = intent["content"].as_str().unwrap();
+    assert!(
+        shown.contains("[truncated at 16384 bytes for display only"),
+        "{shown}"
+    );
+    assert!(shown.contains("read the complete source"), "{shown}");
+    assert!(shown.contains("never shorten the source"), "{shown}");
+}
+
+/// Issue #100 (LIFE-15): the workflow skill says that Chough's bounds never justify
+/// editing HI, specs or SpecSync files, and that an oversized native source is a Chough
+/// bug to report. The installed copy carries the same words.
+#[test]
+fn the_skill_says_chough_bounds_never_justify_editing_native_sources() {
+    let bundle = Path::new(env!("CARGO_MANIFEST_DIR")).join("skills/chough-workflow");
+    let skill = fs::read_to_string(bundle.join("SKILL.md")).unwrap();
+    let build = fs::read_to_string(bundle.join("references/build.md")).unwrap();
+    for (name, text) in [("SKILL.md", &skill), ("build.md", &build)] {
+        let flat = text.split_whitespace().collect::<Vec<_>>().join(" ");
+        assert!(
+            flat.contains("HI intent or criteria, specs") && flat.contains("SpecSync"),
+            "{name}"
+        );
+        assert!(flat.contains("report a Chough bug"), "{name}");
+    }
+    let flat = skill.split_whitespace().collect::<Vec<_>>().join(" ");
+    assert!(
+        flat.contains("Chough's size bounds cover only its `.chough/` records and displays"),
+        "{skill}"
+    );
+    let fixture = Fixture::new();
+    fixture.init();
+    assert_eq!(
+        fs::read_to_string(
+            fixture
+                .root()
+                .join(".agents/skills/chough-workflow/SKILL.md")
+        )
+        .unwrap(),
+        skill
+    );
 }

@@ -410,12 +410,12 @@ requirements = ["REQ-history-001", "REQ-history-002", "REQ-history-003", "REQ-hi
 paths = ["specs/cli/requirements.md", "specs/history/requirements.md", "tests/spec_split.rs"]
 environments = ["local-linux-x86_64", "local-macos-arm64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
-expected = ["tests/spec_split.rs passes: each moved body has its 7bd1b62 SHA-256 under its new ID, every REQ-cli-001 to 032 is in cli or mapped, and both companions fit 65536 bytes"]
+expected = ["tests/spec_split.rs passes: each moved body has its 7bd1b62 SHA-256 under its new ID, every REQ-cli-001 to 032 is in cli or mapped"]
 
 [case.bind]
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "spec_split"]
-expect_output = ["test result: ok. 5 passed; 0 failed"]
+expect_output = ["test result: ok. 4 passed; 0 failed"]
 
 [[case]]
 id = "TC-history-session-use-waits-for-stage-advance"
@@ -470,3 +470,75 @@ expected = ["both src/sessions.rs saved-event unit tests pass"]
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--bin", "chough", "saved_event"]
 expect_output = ["test result: ok. 2 passed; 0 failed"]
+
+[[case]]
+id = "TC-history-no-sessions-local-holds-only-lock"
+title = "A project without sessions gains only the Git-ignored lock in .chough/local"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-11"]
+requirements = ["REQ-history-007"]
+paths = ["src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_project_without_sessions_is_unchanged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_project_without_sessions_is_unchanged"
+
+[[case]]
+id = "TC-history-sessions-local-holds-pointer-and-lock"
+title = "In sessions mode .chough/local holds only the pointer and the lock"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-11"]
+requirements = ["REQ-history-007"]
+paths = ["src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::in_sessions_mode_local_holds_only_the_pointer_and_the_lock passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "in_sessions_mode_local_holds_only_the_pointer_and_the_lock"
+
+[[case]]
+id = "TC-history-archived-session-listed-archived"
+title = "session list reports an archived session as archived"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_list_reports_an_archived_session_as_archived passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_list_reports_an_archived_session_as_archived"
+
+[[case]]
+id = "TC-history-unrecorded-inbox-observation-warns"
+title = "An unrecorded inbox observation is added with a warning"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-7"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_unrecorded_inbox_observation_is_added_with_a_warning passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_unrecorded_inbox_observation_is_added_with_a_warning"

@@ -133,8 +133,9 @@ pub(super) fn with_pinned_clock<T>(seconds: u64, run: impl FnOnce() -> T) -> T {
     result
 }
 
-/// Runs `run` with `native()` answering `program` with `stdout` on this thread instead of
-/// spawning it, so unit tests do not depend on a host install. Test builds only.
+/// Runs `run` with `native()` and `native_json()` answering `program` with `stdout` on
+/// this thread instead of spawning it, so unit tests do not depend on a host install.
+/// Test builds only.
 #[cfg(test)]
 pub(super) fn with_native_stdout<T>(program: &str, stdout: &str, run: impl FnOnce() -> T) -> T {
     NATIVE_STDOUT.with(|slot| slot.borrow_mut().push((program.into(), stdout.into())));
@@ -481,6 +482,21 @@ pub(super) fn read_bounded_record(path: &Path, limit: u64) -> Result<String> {
 /// (MAX_CHANGE_ARTIFACT_BYTES); native approval ledgers outgrow the 64 KiB record bound.
 pub(super) const NATIVE_RECORD_LIMIT: u64 = 4 * 1_048_576;
 
+/// Read a native SpecSync file, such as an archived `finalization.json` or `change.md` or
+/// `.specsync/sdd.json`, as text within SpecSync's own 4 MiB change-artifact bound,
+/// never Chough's 64 KiB record bound: native files are not Chough records, and a Chough
+/// bound must never decide a gate or push anyone to shorten them (LIFE-15).
+pub(super) fn read_native_text(path: &Path) -> Result<String> {
+    let bytes = read_native_record(path, NATIVE_RECORD_LIMIT)?.with_context(|| {
+        format!(
+            "native file exceeds SpecSync's {NATIVE_RECORD_LIMIT}-byte artifact bound: {}",
+            path.display()
+        )
+    })?;
+    String::from_utf8(bytes)
+        .with_context(|| format!("native file is not UTF-8: {}", path.display()))
+}
+
 /// Read a native record file read-only within `limit` bytes; `Ok(None)` when it is
 /// larger. A missing file is an `io::ErrorKind::NotFound` error.
 pub(super) fn read_native_record(path: &Path, limit: u64) -> io::Result<Option<Vec<u8>>> {
@@ -493,11 +509,15 @@ pub(super) fn bounded(value: &[u8]) -> String {
     bounded_capture(value, value.len() as u64)
 }
 
+/// The marker after a display section cut at 16 KiB. The cut is Chough's display bound
+/// only: the source is complete, and nothing should shorten it to fit (LIFE-15).
+pub(super) const DISPLAY_TRUNCATED: &str = "\n[truncated at 16384 bytes for display only; read the complete source when relevant, and never shorten the source to fit a Chough display bound]";
+
 /// Display a retained prefix of a stream that wrote `total` bytes, within 16 KiB.
 fn bounded_capture(retained: &[u8], total: u64) -> String {
     let mut result = String::from_utf8_lossy(&retained[..retained.len().min(LIMIT)]).into_owned();
     if total > LIMIT as u64 {
-        result.push_str("\n[truncated at 16384 bytes; read the source when relevant]");
+        result.push_str(DISPLAY_TRUNCATED);
     }
     result
 }
@@ -558,6 +578,8 @@ pub(super) struct Limits {
 pub(super) struct Captured {
     /// The exit code; None when the command timed out or ended by a signal.
     pub(super) exit_code: Option<i32>,
+    /// On Unix, the signal that ended the command; None when it exited or timed out.
+    pub(super) signal: Option<i32>,
     pub(super) timed_out: bool,
     pub(super) stdout: Vec<u8>,
     pub(super) stdout_total: u64,
@@ -643,15 +665,100 @@ fn take(shared: &Mutex<Retained>) -> (Vec<u8>, u64, bool) {
     )
 }
 
-/// Stop the command and its descendants by signalling the process group it leads.
-/// Returns true when the group was signalled.
+/// Whether this process made itself a child subreaper (Linux; the binary does at
+/// startup). A stop then also collects Chough's own children: orphans of a stopped
+/// tree are re-parented here instead of to init (#81).
+#[cfg(target_os = "linux")]
+static SUBREAPER: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Make this process the subreaper of what it starts, so a descendant whose parent exits
+/// (a double fork) is re-parented to Chough and a stop can still find it (Linux; called
+/// once by the binary, never by unit tests, which share one process).
+pub(super) fn become_subreaper() {
+    #[cfg(target_os = "linux")]
+    {
+        // SAFETY: prctl(2) with PR_SET_CHILD_SUBREAPER takes plain integers.
+        if unsafe { libc::prctl(libc::PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0) } == 0 {
+            SUBREAPER.store(true, std::sync::atomic::Ordering::SeqCst);
+        }
+    }
+}
+
+/// Every process below `roots` by parent links in `/proc` (Linux), roots included. This
+/// finds descendants that left the process group with `setsid` (#81, FLOW-14).
+#[cfg(target_os = "linux")]
+fn descendants(roots: &[u32]) -> Vec<i32> {
+    let mut links: Vec<(i32, i32)> = vec![];
+    for entry in fs::read_dir("/proc").into_iter().flatten().flatten() {
+        let Some(pid) = entry
+            .file_name()
+            .to_str()
+            .and_then(|name| name.parse::<i32>().ok())
+        else {
+            continue;
+        };
+        let Ok(stat) = fs::read_to_string(entry.path().join("stat")) else {
+            continue;
+        };
+        // The command name is in parentheses and may hold spaces; the state and the
+        // parent ID follow the last ')'.
+        let Some(rest) = stat.rfind(')').map(|end| &stat[end + 1..]) else {
+            continue;
+        };
+        if let Some(parent) = rest
+            .split_whitespace()
+            .nth(1)
+            .and_then(|field| field.parse::<i32>().ok())
+        {
+            links.push((pid, parent));
+        }
+    }
+    let mut found: Vec<i32> = roots
+        .iter()
+        .filter_map(|root| i32::try_from(*root).ok())
+        .collect();
+    let mut next = 0;
+    while next < found.len() {
+        let parent = found[next];
+        for (pid, of) in &links {
+            if *of == parent && !found.contains(pid) {
+                found.push(*pid);
+            }
+        }
+        next += 1;
+    }
+    found
+}
+
+/// Stop the command and its descendants: signal the process group it leads and, on
+/// Linux, every process below it by parent links, including ones that left the group
+/// and, when Chough is their subreaper, orphans of the tree. Returns true when the
+/// group was signalled.
 #[cfg(unix)]
 fn stop_tree(child: &mut Child) -> bool {
+    #[cfg(target_os = "linux")]
+    let tree = {
+        let mut roots = vec![child.id()];
+        if SUBREAPER.load(std::sync::atomic::Ordering::SeqCst) {
+            roots.push(std::process::id());
+        }
+        descendants(&roots)
+    };
     let stopped = i32::try_from(child.id()).is_ok_and(|group| {
         // SAFETY: kill(2) takes plain integers and has no memory-safety preconditions.
         // The negative ID names the process group the child leads (process_group(0)).
         unsafe { libc::kill(-group, libc::SIGKILL) == 0 }
     });
+    #[cfg(target_os = "linux")]
+    {
+        let own = i32::try_from(std::process::id()).unwrap_or(-1);
+        for pid in tree.into_iter().filter(|pid| *pid != own && *pid > 1) {
+            // SAFETY: as above; a process that already ended makes kill(2) fail harmlessly.
+            unsafe {
+                libc::kill(pid, libc::SIGKILL);
+            }
+        }
+    }
     // std never signals a child it has already reaped.
     let _ = child.kill();
     stopped
@@ -826,6 +933,11 @@ fn run_watched(
             None
         } else {
             status.and_then(|status| status.code())
+        },
+        signal: if timed_out {
+            None
+        } else {
+            status.and_then(terminating_signal)
         },
         timed_out,
         stdout,
@@ -1116,6 +1228,11 @@ pub(super) fn run_owned(command: &mut Command, write: Option<&[u8]>) -> io::Resu
         }
         if exited_at.is_some_and(|at| at.elapsed() >= EXIT_GRACE) {
             stop_tree(&mut child);
+            // Say so (#81): the stopped process would otherwise go unnoticed.
+            eprintln!(
+                "chough: stopped a process that kept Git's output open {} s after Git exited",
+                EXIT_GRACE.as_secs()
+            );
             break;
         }
         if open == 0 {
@@ -1179,10 +1296,31 @@ fn native_deadline(value: Option<&OsStr>) -> Result<Duration, String> {
         })
 }
 
+/// The signal that ended a command, on Unix.
+#[cfg(unix)]
+fn terminating_signal(status: std::process::ExitStatus) -> Option<i32> {
+    std::os::unix::process::ExitStatusExt::signal(&status)
+}
+
+#[cfg(not(unix))]
+fn terminating_signal(_: std::process::ExitStatus) -> Option<i32> {
+    None
+}
+
+/// How a command ended, in plain words (REQ-cli-003, #87).
+fn ended(output: &Captured) -> String {
+    match (output.exit_code, output.signal) {
+        (Some(code), _) => format!("exit {code}"),
+        (None, Some(signal)) => format!("killed by signal {signal}"),
+        (None, None) if output.timed_out => "timed out".into(),
+        (None, None) => "no exit status".into(),
+    }
+}
+
 fn failure(output: &Captured) -> String {
     format!(
-        "exit={:?}\n{}\n{}",
-        output.exit_code,
+        "{}\n{}\n{}",
+        ended(output),
         bounded_capture(&output.stdout, output.stdout_total),
         bounded_capture(&output.stderr, output.stderr_total)
     )
@@ -1315,6 +1453,25 @@ pub(super) fn native_json_within(
     arguments: &[&str],
     cap: Option<Duration>,
 ) -> NativeJson {
+    #[cfg(test)]
+    if let Some(stdout) = NATIVE_STDOUT.with(|slot| {
+        slot.borrow()
+            .iter()
+            .rev()
+            .find(|(name, _)| name == program)
+            .map(|(_, stdout)| stdout.clone())
+    }) {
+        return NativeJson {
+            section: Section {
+                source: format!("{} {}", program, arguments.join(" ")),
+                state: "observed".into(),
+                content: bounded(stdout.as_bytes()),
+            },
+            value: serde_json::from_str::<Value>(&stdout)
+                .ok()
+                .filter(|value| value.is_object() || value.is_array()),
+        };
+    }
     let started = Instant::now();
     let response = native_json_read(root, program, arguments, cap);
     trace_native(&response.section, started);
@@ -1392,19 +1549,56 @@ fn native_json_read(
     }
 }
 
-/// The current Git HEAD when one exists; recorded with transitions as context only.
+/// The current Git HEAD when one exists; recorded with transitions as context only. A
+/// failure other than no repository or a HEAD with no commit is said on stderr (#81).
 pub(super) fn head_revision(root: &Path) -> Option<String> {
-    let output = run_owned(
+    // Git's messages are matched below, so ask for them untranslated.
+    let output = match run_owned(
         Command::new("git")
             .args(["rev-parse", "HEAD"])
+            .env("LC_ALL", "C")
+            .env("LANGUAGE", "C")
             .current_dir(root),
         None,
-    )
-    .ok()?;
-    output
-        .status
-        .success()
-        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_string())
+    ) {
+        Ok(output) => output,
+        Err(error) => {
+            eprintln!(
+                "chough: could not read the Git revision ({error}); the record is saved without one"
+            );
+            return None;
+        }
+    };
+    if output.status.success() {
+        return Some(String::from_utf8_lossy(&output.stdout).trim().to_string());
+    }
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let expected = stderr.contains("not a git repository")
+        || stderr.contains("unknown revision")
+        || stderr.contains("ambiguous argument 'HEAD'");
+    if !expected {
+        let reason = stderr
+            .lines()
+            .find(|line| !line.trim().is_empty())
+            .map_or_else(|| "no message".to_string(), |line| cut(line.trim(), 200));
+        let code = output
+            .status
+            .code()
+            .map_or_else(|| "no exit code".to_string(), |code| format!("exit {code}"));
+        eprintln!(
+            "chough: could not read the Git revision ({code}: {reason}); the record is saved without one"
+        );
+    }
+    None
+}
+
+/// At most `limit` bytes of `text`, cut on a character boundary.
+fn cut(text: &str, limit: usize) -> String {
+    let mut end = text.len().min(limit);
+    while !text.is_char_boundary(end) {
+        end -= 1;
+    }
+    text[..end].to_string()
 }
 
 /// List JSON record names in a managed directory in a deterministic order.

@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 1 test
+test entering_done_trims_cold_archived_proof_by_default ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.15s
+
+
+--- stderr ---
+   Compiling chough v0.3.0 (/work/src)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.10s
+     Running tests/librarian_trim.rs (target/debug/deps/librarian_trim-fbee04e0f7c51c9a)

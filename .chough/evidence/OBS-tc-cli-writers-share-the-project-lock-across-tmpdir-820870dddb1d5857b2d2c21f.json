@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f",
+  "criteria": [
+    "DRIVE-11"
+  ],
+  "requirements": [
+    "REQ-cli-040"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test cli -- --exact writers_with_different_temp_directories_share_the_checkpoint_lock for TC-cli-writers-share-the-project-lock-across-tmpdir: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-writers-share-the-project-lock-across-tmpdir-820870dddb1d5857b2d2c21f.log": "e3ed48e659b1e09bae8c9df50ec34c58d5d0a42fa10c5d74314b15e1b1aaead7"
+  },
+  "observed_at_unix_seconds": 1793809456,
+  "snapshot": {
+    "revision": "2bbbd5d6421de06a24d3bcc14e446a8d489410d4",
+    "dirty": true,
+    "fingerprint": "991aacb4271a619d1cc8b80f5e336aeda3be1611f5d632c914dbf82836cdeed9",
+    "content": "99b28e02772a151b36352ed3907dcfa30304a5bd914ddc6acac6f834e06ee13f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-writers-share-the-project-lock-across-tmpdir",
+      "digest": "afd61167cfd05b601a07c41c6200dcf6ebb0426cfbff737ebbc825d5bfcfdac8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "writers_with_different_temp_directories_share_the_checkpoint_lock"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

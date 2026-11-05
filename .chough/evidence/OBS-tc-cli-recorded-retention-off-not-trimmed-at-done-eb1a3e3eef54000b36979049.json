@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049",
+  "criteria": [
+    "KNOW-13",
+    "KNOW-11"
+  ],
+  "requirements": [
+    "REQ-cli-041"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test librarian_trim -- --exact a_recorded_retention_off_is_not_trimmed_at_done for TC-cli-recorded-retention-off-not-trimmed-at-done: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049.log": "bec31a254de6bed1cfd390cf1a21edae8248abfa0bf170ed02fffcb94d2769c8"
+  },
+  "observed_at_unix_seconds": 1793836186,
+  "snapshot": {
+    "revision": "3d76cfb5a4d1b77f0eadf2de802803f4f0731271",
+    "dirty": false,
+    "fingerprint": "53f6fb1fdb028308500c004d5de4110ed8cf85f499bb878c7302ae705329a3f5",
+    "content": "66d1d154923304905d8fdba21240b80b7bd2204bded16276b6e99fbb9ee7dccc"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-recorded-retention-off-not-trimmed-at-done",
+      "digest": "7540581b245f454cb1b6cfb210efcc815e6ac8fd623a3966d47b3411d5b863db"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "librarian_trim",
+    "--",
+    "--exact",
+    "a_recorded_retention_off_is_not_trimmed_at_done"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
