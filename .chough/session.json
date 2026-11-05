@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -345,7 +345,8 @@
     "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real trim on this repository) and merge #108 after #107 once CI is green, he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
     "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #108; this fix for the closeout trim is part of #108. Claude recorded the native review as 0xLeif on that decision.",
     "2026-11-04 Leif (0xLeif): make sure all artifacts and evidence are deleted and transitioned over to the knowledge vault, sessions are unique with no merge conflicts, and we learn from everything; I think we should do it.",
-    "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #108; this fix for its review is part of #108. Claude recorded the native review as 0xLeif on that decision."
+    "PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #108; this fix for its review is part of #108. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #109 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real move into the vault on this repository) and merge #109 after #108 once CI is green, he answered Yes, record and merge. Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -500,9 +501,7 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
+  "next_action": "Merge PR #109 when hosted checks are green"
 }

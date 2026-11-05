@@ -69,3 +69,11 @@ verification records, the retention ledger and Git stay authoritative.
 ## Bugs
 
 - none
+
+## Loose artifacts
+
+- none
+
+## Attachments
+
+- none

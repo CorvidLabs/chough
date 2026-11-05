@@ -99,3 +99,11 @@ verification records, the retention ledger and Git stay authoritative.
 - BUG-0006 verified (references bug-0006-repro-1, bug-0006-fixed-1)
 - BUG-0007 verified (references bug-0007-repro-1, bug-0007-fixed-1)
 - BUG-0008 verified (references bug-0008-repro-1, bug-0008-fixed-1)
+
+## Loose artifacts
+
+- none
+
+## Attachments
+
+- none
