@@ -10,7 +10,7 @@ decides lifecycle gates.
 Before changing behavior, read [INTENT.md](INTENT.md), the relevant `hi/` criteria,
 [docs/FRD.md](docs/FRD.md) and the affected contract and companions under `specs/`.
 Use Fledge first: `fledge run fmt`, `fledge run test`, `fledge run lint`, `fledge
-lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.1.2.
+lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.2.0.
 One command installs all three; see "Install the toolchain" in [README.md](README.md).
 
 Each pull request records its work in its own session, so parallel branches never write

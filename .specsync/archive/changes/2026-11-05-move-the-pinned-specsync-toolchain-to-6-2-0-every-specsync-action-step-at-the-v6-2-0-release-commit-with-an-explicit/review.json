@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "22f2e49b4616434c473d3de019f9c51d7538f342",
+  "contract_digest": "31228d5232b4c4ce9704949ee5c6f7f6598fbd60eb831341935f48007aece6ea",
+  "execution_digest": "1c78fb83a6df6e744aeab2def4808830c3e7da22cd5e327b76734047979b2019",
+  "workspace_digest": "d88850fc07d8185a70beafe739daadf8aa31811a595eb8fee89bbc35cca4b770",
+  "timestamp": 1793896349
+}

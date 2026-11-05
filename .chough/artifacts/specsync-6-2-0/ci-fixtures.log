@@ -1,0 +1,28 @@
+test_a_shard_authenticates_only_its_own_archives (__main__.ArchiveExecutorTests.test_a_shard_authenticates_only_its_own_archives) ... ok
+test_archive_workers_follow_the_cpu_count_between_two_and_eight (__main__.ArchiveExecutorTests.test_archive_workers_follow_the_cpu_count_between_two_and_eight) ... ok
+test_errors_are_reported_in_id_order_not_completion_order (__main__.ArchiveExecutorTests.test_errors_are_reported_in_id_order_not_completion_order) ... ok
+test_failure_drains_running_and_queued_reads_before_final_fingerprint (__main__.ArchiveExecutorTests.test_failure_drains_running_and_queued_reads_before_final_fingerprint) ... ok
+test_invalid_archive_results_block (__main__.ArchiveExecutorTests.test_invalid_archive_results_block) ... ok
+test_missing_archive_blocks_before_native_reads (__main__.ArchiveExecutorTests.test_missing_archive_blocks_before_native_reads) ... ok
+test_native_errors_timeouts_and_output_bound_block (__main__.ArchiveExecutorTests.test_native_errors_timeouts_and_output_bound_block) ... ok
+test_one_worker_per_cpu_overlaps_and_reads_every_id_once (__main__.ArchiveExecutorTests.test_one_worker_per_cpu_overlaps_and_reads_every_id_once) ... ok
+test_shard_must_be_k_of_n_within_the_bound (__main__.ArchiveExecutorTests.test_shard_must_be_k_of_n_within_the_bound) ... ok
+test_shards_partition_the_sorted_archives_exactly_once (__main__.ArchiveExecutorTests.test_shards_partition_the_sorted_archives_exactly_once) ... ok
+test_archived_label_without_native_terminal_evidence_fails (__main__.ArchiveFixtures.test_archived_label_without_native_terminal_evidence_fails) ... ok
+test_archived_sibling_cannot_hide_draft (__main__.ArchiveFixtures.test_archived_sibling_cannot_hide_draft) ... ok
+test_bad_base_shallow_and_unsafe_inventory_fail (__main__.ArchiveFixtures.test_bad_base_shallow_and_unsafe_inventory_fail) ... ok
+test_corrupt_archive_history_and_missing_evidence_fail (__main__.ArchiveFixtures.test_corrupt_archive_history_and_missing_evidence_fail) ... ok
+test_disabled_policy_cannot_hide_a_draft (__main__.ArchiveFixtures.test_disabled_policy_cannot_hide_a_draft) ... ok
+test_every_active_stage_and_scope_only_draft_fails (__main__.ArchiveFixtures.test_every_active_stage_and_scope_only_draft_fails) ... ok
+test_malformed_missing_and_incomplete_package_fail (__main__.ArchiveFixtures.test_malformed_missing_and_incomplete_package_fail) ... ok
+test_malformed_missing_and_wrong_type_policy_fail (__main__.ArchiveFixtures.test_malformed_missing_and_wrong_type_policy_fail) ... ok
+test_missing_wrong_version_and_broken_native_protocol_fail (__main__.ArchiveFixtures.test_missing_wrong_version_and_broken_native_protocol_fail) ... ok
+test_no_active_and_authenticated_archive_pass (__main__.ArchiveFixtures.test_no_active_and_authenticated_archive_pass) ... ok
+test_real_current_verification_becomes_stale (__main__.ArchiveFixtures.test_real_current_verification_becomes_stale) ... ok
+test_removed_new_draft_and_removed_archive_cannot_disappear (__main__.ArchiveFixtures.test_removed_new_draft_and_removed_archive_cannot_disappear) ... ok
+test_shards_split_authentication_and_shard_one_walks_history (__main__.ArchiveFixtures.test_shards_split_authentication_and_shard_one_walks_history) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 144.970s
+
+OK

@@ -14,7 +14,7 @@ import sys
 import tempfile
 import tomllib
 
-VERSION = "specsync 6.1.2"
+VERSION = "specsync 6.2.0"
 MAX_OUTPUT = 8 * 1024 * 1024
 MIN_ARCHIVE_WORKERS = 2
 MAX_ARCHIVE_WORKERS = 8
