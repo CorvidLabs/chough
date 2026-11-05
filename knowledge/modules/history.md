@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 2
-archived_changes: 10
+archived_changes: 12
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,10 @@ this note only links them.
 
 ## Archived changes that touched history
 
-10 archived changes, newest first.
+12 archived changes, newest first.
 
+- [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](../archives/adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog.md) Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog
+- [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](../archives/let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded.md) Let a session started after legacy history adoption write events while the adopted legacy log stays guarded
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](../archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source
 - [lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention](../archives/lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention.md) Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)
 - [remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that](../archives/remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that.md) Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)

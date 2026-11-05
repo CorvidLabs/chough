@@ -184,7 +184,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/evidence/tc-cli-0101-1793473306.json` | c850ecbbff47be42d81c5f7af7e64d66a93662ef53700877da4e1eb3e194b954 | working tree |
 | `.chough/evidence/tc-cli-0102-1793473383.json` | d07aa8918427f09a8f8387786b2bb98a15d080143a194e52b044f38ef3499ad1 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/evidence/tc-cli-0103-1793473384.json` | a0e89e505931504cac991e9a9e0f904e306ba2ecb1126137c17afcd02ff161be | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
-| `.chough/session.json` | 1da20687f8f655b98ebac927e750cbd310df8f80b5a801fafbcaa370b8c26ca7 | working tree (changed since archive) |
+| `.chough/session.json` | 1da20687f8f655b98ebac927e750cbd310df8f80b5a801fafbcaa370b8c26ca7 | Git de9fe45c9ccebfe688829c16a775a099d135892e |
 | `.chough/session.v1.json` | 0f9c14355e318584ad9110d44057ba949016837f4756f4e32c8b5f79f635bf6a | working tree |
 | `.chough/transitions.jsonl` | 9dc41fe77ccc694001ebac2a578337c3e5019e4cebfb424be9a6fe4c353cce2d | working tree (changed since archive) |
 
