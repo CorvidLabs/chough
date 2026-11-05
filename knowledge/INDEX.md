@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 105
+archived_changes: 106
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](archives/move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit.md) Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement (hot)
 - [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](archives/keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline.md) Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline (hot)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files (hot)
-- [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](archives/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.md) No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12) (hot)
+- [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](archives/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.md) No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12) (cold)
 - [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](archives/adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog.md) Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog (cold)
 - [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](archives/let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded.md) Let a session started after legacy history adoption write events while the adopted legacy log stays guarded (cold)
 - [never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file](archives/never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file.md) Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s) (cold)
 - [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](archives/keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files.md) Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files (cold)
 - [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](archives/keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout.md) Keep trimming a loose artifact group that gains a file released by an earlier removal (109 closeout) (cold)
 - [move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge](archives/move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge.md) Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19) (cold)
-- [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](archives/keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108.md) Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108) (cold)
-- All 105 archived changes, by month: [timeline.md](timeline.md)
+- All 106 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](../.specsync/archive/changes/2026-11-05-move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit/lesson-bundle.md)
 - [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](../.specsync/archive/changes/2026-11-05-keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline/lesson-bundle.md)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../.specsync/archive/changes/2026-11-05-fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files/lesson-bundle.md)
 - [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](../.specsync/archive/changes/2026-11-05-no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files](../.specsync/archive/changes/2026-11-05-keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files/lesson-bundle.md)
 - [keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout](../.specsync/archive/changes/2026-11-05-keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout/lesson-bundle.md)
 - [move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge](../.specsync/archive/changes/2026-11-05-move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge/lesson-bundle.md)
-- [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](../.specsync/archive/changes/2026-11-05-keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -95,10 +95,11 @@ Archived lesson bundles:
 
 ## Observations
 
-488 recorded; most recent:
+489 recorded; most recent:
 
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
+- OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
 - OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
 - OBS-product-test-deeab5eb9295ffe50f291b9e ProductTest Passed in local-linux-aarch64 at 5793431b5f81
 - OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e ProductTest Passed in local-linux-aarch64 at 0caabbe46358
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7 ProductTest Passed in local-linux-aarch64 at 0caabbe46358
 - OBS-product-test-5d86bc7f549cf14c727d5614 ProductTest Passed in local-linux-aarch64 at 893824d45587
 - OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c ProductTest Passed in local-linux-aarch64 at f131ebeee492
-- OBS-tc-cli-vault-loose-file-protected-mid-apply-07088b6e1a46979a82ff5008 ProductTest Passed in local-linux-aarch64 at 3e1ee4bacc11
 
 ## Briefs
 

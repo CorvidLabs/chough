@@ -47,10 +47,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-product-test-efc8d08578411f2174668043 | passed (by cycle time) | local |  |
 | OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 | passed (by cycle time) | local-linux-aarch64 | TC-cli-knowledge-index-bounded-timeline |
 
 ## Bugs

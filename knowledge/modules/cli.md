@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 55
-archived_changes: 88
+archived_changes: 89
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-88 archived changes, newest first.
+89 archived changes, newest first.
 
+- [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](../archives/move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit.md) Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement
 - [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](../archives/keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline.md) Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files
 - [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](../archives/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.md) No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12)
@@ -42,5 +43,4 @@ this note only links them.
 - [move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge](../archives/move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge.md) Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19)
 - [keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108](../archives/keep-a-checkpoint-reference-whose-record-exists-but-cannot-be-read-and-refuse-the-closed-cycle-drop-review-of-108.md) Keep a checkpoint reference whose record exists but cannot be read, and refuse the closed-cycle drop (review of 108)
 - [keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls](../archives/keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls.md) Keep trimming when an earlier removal releases a shared artifact to another eligible set, and count stub status calls under a lock now that validity reads run in parallel (108 closeout)
-- [reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes](../archives/reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes.md) Reduce old observation proof: drop closed-cycle checkpoint references at done, trim superseded runs of cold changes, attribute unlisted proof to its change by cycle time, and read archive validity in parallel
-- 78 more on the [timeline](../timeline.md)
+- 79 more on the [timeline](../timeline.md)
