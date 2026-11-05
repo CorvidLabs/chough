@@ -1,6 +1,6 @@
 ---
 id: ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 5326ec48b4ae856543e4d8cabd7c06b29daef0e5
 ---
