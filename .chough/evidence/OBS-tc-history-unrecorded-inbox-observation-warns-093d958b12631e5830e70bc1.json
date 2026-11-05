@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1",
+  "criteria": [
+    "DRIVE-3",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact an_unrecorded_inbox_observation_is_added_with_a_warning for TC-history-unrecorded-inbox-observation-warns: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1.log": "3e505cbd30dc99fc4ccc42e1a0a45feb42c2fc557be42be63be047a55d1eeb6c"
+  },
+  "observed_at_unix_seconds": 1793841254,
+  "snapshot": {
+    "revision": "a22e8b551717ce2ed3a5c3f00aa1e20a362b2f73",
+    "dirty": false,
+    "fingerprint": "06ea655ffaca4e2d4fa440da7c22ab9f6292dd31f81751fe956c0c878533488e",
+    "content": "6f883f0d767a167ef27fe89f4d14bc72ac9ddaf979f0fc7077728fe615f161d8"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-unrecorded-inbox-observation-warns",
+      "digest": "f8a1e3f6f7baa5f78ed3b67aaa309b839e07579ee3792c0e2e802bfb1eab95dc"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "an_unrecorded_inbox_observation_is_added_with_a_warning"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

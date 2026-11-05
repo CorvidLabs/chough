@@ -2696,6 +2696,42 @@ test_target = "next"
 test = "next_searches_a_context_md_larger_than_4_mib"
 
 [[case]]
+id = "TC-cli-next-shows-open-questions"
+title = "next and status show open questions"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::open_questions_appear_in_next_and_status passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "open_questions_appear_in_next_and_status"
+
+[[case]]
+id = "TC-cli-folded-inbox-question-in-next"
+title = "A folded inbox question appears in next"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "DRIVE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_folded_inbox_question_appears_in_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_folded_inbox_question_appears_in_next"
+
+[[case]]
 id = "TC-cli-done-trims-cold-proof-by-default"
 title = "Entering done trims cold archived proof with the librarian on"
 status = "active"

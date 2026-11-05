@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no",
+  "implementation_commit": "f0b2668f22393708dec498fe92514ba78b8c198e",
+  "implementation_tree": "fa1e0f78b5459e3c558bd1a8cffa17505bf16af3",
+  "contract_digest": "d5317fbc76fdea75b8c6af361f29b65eaa8808307e70feeba2012dc1570a2eb2",
+  "workspace_digest": "ba8d0e473b067cd995bf629c7fa86585196585f4fe9449fc4072f5e24678bc21",
+  "closing_digest": "e131b6e407681f6c9543c5338cda7eed98f9489eeb1e764a7b121e3a0f47607b",
+  "review_digest": "ba7c2e1040b50f0b99004a913fc4d3ed85913946ce7b89cfae892e3156d89cbc",
+  "finalization_digest": "d11968b6e81520b4e536b1de3b3ba6558b35c971562a9e0803ec7d92c9fc1667",
+  "timestamp": 1793841276
+}

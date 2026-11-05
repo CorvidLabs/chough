@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 46
+version: 47
 status: active
 files:
   - src/main.rs
@@ -257,3 +257,4 @@ provider, runtime or hosted service.
 | 44 | 2026-11-04 | stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git: Stop descendants that left the process group on Linux and report Git failures and grace kills of Chough own Git commands (issue 81) |
 | 45 | 2026-11-04 | trim-old-proof-automatically-when-a-change-reaches-done-with-the-librarian-on-and-let-retention-manual-opt-out-issue-88: Trim old proof automatically when a change reaches done with the librarian on, and let retention manual opt out (issue 88) |
 | 46 | 2026-11-04 | keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer: Keep one session per objective or native change under .chough/sessions with append-only transitions, an active pointer, automatic archiving and an append-only subagent inbox (DRIVE-3) |
+| 47 | 2026-11-04 | show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no: Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84) |

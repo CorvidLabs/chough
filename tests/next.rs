@@ -1772,3 +1772,47 @@ fn report_read_context_preserves_missing_retired_and_duplicate_case_outcomes() {
     fixture.write(path, &original);
     assert_eq!(report_freshness(&fixture, "local"), "current-observation");
 }
+
+/// Open questions are part of resuming (LIFE-3): `next` shows them bounded like
+/// blockers, `status` reports every one, and resolving one removes it (#84).
+#[cfg(unix)]
+#[test]
+fn open_questions_appear_in_next_and_status() {
+    let fixture = approved_at_plan("question-change");
+    let questions: Vec<String> = (1..=12)
+        .map(|n| format!("Should SAVE{n} stack with SAVE10?"))
+        .collect();
+    let mut args = vec!["checkpoint"];
+    for question in &questions {
+        args.extend(["--question", question.as_str()]);
+    }
+    fixture.ok(&args);
+
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["open_questions"]["total"], 12, "{next:#}");
+    let items = next["open_questions"]["items"].as_array().unwrap();
+    assert_eq!(items.len(), 10, "{next:#}");
+    assert_eq!(items[0], questions[0].as_str());
+    let shown = text(&fixture, &["next"]);
+    assert!(shown.contains("Open questions: 12 open"), "{shown}");
+    assert!(shown.contains(&format!("  - {}", questions[0])), "{shown}");
+    assert!(shown.contains("2 more; chough status"), "{shown}");
+    let status = fixture.ok(&["status"]);
+    assert_eq!(
+        status["checkpoint"]["open_questions"],
+        Value::from(questions.clone()),
+        "{status:#}"
+    );
+
+    fixture.ok(&["checkpoint", "--resolve-question", &questions[0]]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["open_questions"]["total"], 11);
+    assert_ne!(next["open_questions"]["items"][0], questions[0].as_str());
+    let status = fixture.ok(&["status"]);
+    assert!(
+        !status["checkpoint"]["open_questions"]
+            .as_array()
+            .unwrap()
+            .contains(&Value::from(questions[0].as_str()))
+    );
+}

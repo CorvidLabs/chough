@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "objective": "Split the cli spec: REQ-cli-020, REQ-cli-024 and REQ-cli-028 move to a new reporting module as REQ-reporting-001 to 003 with wording unchanged, so specs/cli/requirements.md fits the 65536-byte bound",
+  "objective": "Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue #84)",
   "intent_scope": "LIFE",
   "modules": [
     "cli",
@@ -12,7 +12,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": "split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new",
+  "native_change": "show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no",
   "references": {
     "criteria": [
       "FLOW-1",
@@ -320,7 +320,8 @@
     "PR #95 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "PR #97 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.",
     "2026-11-04 Leif (0xLeif) chose \"Make the check faster\" for the hosted SpecSync Archive job (10-minute limit, timed out on #93), over raising the limit to 30 minutes or merging past the timeout.",
-    "PR #103 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record that review as 0xLeif, archive, and merge #103 once its CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision."
+    "PR #103 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record that review as 0xLeif, archive, and merge #103 once its CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.",
+    "PR #90 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision."
   ],
   "open_questions": [],
   "completed": [
@@ -660,6 +661,21 @@
     "OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef",
     "OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423",
     "OBS-structural-0ceefdd961ed75d53f1b3742",
+    "OBS-tc-cli-folded-inbox-question-in-next-6ba7f2bb72784ad17f373066",
+    "OBS-tc-cli-next-shows-open-questions-e0e2d02ccd995729ce44ce74",
+    "OBS-tc-history-archived-session-listed-archived-4c905b8471e89e3ef4e171f2",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-9ace138ec6bef9b0b5d73bba",
+    "OBS-tc-cli-next-shows-open-questions-cef41dadbb83e8a6924b9567",
+    "OBS-tc-history-archived-session-listed-archived-4e686867790d809618fa88a3",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-3998957716bafb08a9ea4fd8",
+    "OBS-tc-cli-next-shows-open-questions-dd8010a4477ee0d3a4d928d4",
+    "OBS-tc-cli-folded-inbox-question-in-next-df085ce68897ec65347b04ff",
+    "OBS-tc-history-archived-session-listed-archived-0b7bf375ca63dc707c766b52",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-d2820cefe3e32277d797126e",
+    "OBS-tc-cli-next-shows-open-questions-3c08a49ba503200a398cda5e",
+    "OBS-tc-cli-folded-inbox-question-in-next-5b2bc7e3201f57a1fba07dc2",
+    "OBS-tc-history-archived-session-listed-archived-8236c0dede0fa96f94dad2bc",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-acf794d9b07dbfb1fa6deac7",
     "OBS-tc-cli-stop-reaches-setsid-descendant-2cac6dbe30ea3b5f350bb68b",
     "OBS-tc-cli-stop-reaches-orphaned-descendant-9fbc5d0b7bd58ff99051180f",
     "OBS-tc-cli-git-grace-kill-reported-e8e1bdca1af016ac9a8354fa",
@@ -727,7 +743,11 @@
     "OBS-tc-cli-done-trims-cold-proof-by-default-4c5fc87d107ee513fe4e9d62",
     "OBS-tc-cli-retention-manual-opts-out-at-done-989840dd1b48e3eb9ac57fd0",
     "OBS-tc-cli-open-change-keeps-proof-at-done-b72b5200b873c85e09d7871f",
-    "OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049"
+    "OBS-tc-cli-recorded-retention-off-not-trimmed-at-done-eb1a3e3eef54000b36979049",
+    "OBS-tc-cli-next-shows-open-questions-4ae1ae4b89f8d37c870aacfa",
+    "OBS-tc-cli-folded-inbox-question-in-next-0674eb2c525a207ecd1f8fc7",
+    "OBS-tc-history-archived-session-listed-archived-745b95673d38746da24a9658",
+    "OBS-tc-history-unrecorded-inbox-observation-warns-093d958b12631e5830e70bc1"
   ],
   "bugs": [
     "BUG-0001",
@@ -763,5 +783,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "New cycle from done after reset: Native change let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406 archived after Chough bot review 5770708343 (agent review); recording test, accept and done. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+  "next_action": "Merge PR #90 when hosted checks are green"
 }
