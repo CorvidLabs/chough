@@ -7,7 +7,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -787,7 +787,13 @@
     "OBS-tc-history-inbox-add-never-stranded-by-archive-891e97c992b1d7ddebee43e9",
     "OBS-tc-history-retention-protects-inbox-observations-dda925f7c2a9bbe696e203f5",
     "OBS-tc-history-inbox-add-killed-leaves-no-partial-entry-1e1c9a84f30583853e117adf",
-    "OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7"
+    "OBS-tc-history-retention-refuses-unreadable-inbox-entry-a575a63be20560e9783464a7",
+    "OBS-tc-cli-init-builds-knowledge-57e70bd460a47ca89bafbf93",
+    "OBS-tc-cli-init-preserves-knowledge-a13f8931a11963cb39ade869",
+    "OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943",
+    "OBS-tc-cli-done-refreshes-knowledge-after-trim-090588c1f04585baf1ae892f",
+    "OBS-tc-cli-done-refreshes-knowledge-untrimmed-50cedd62da9c6f29313bebb0",
+    "OBS-tc-cli-librarian-off-no-knowledge-at-done-0bb04ef01e904ce54277c22c"
   ],
   "bugs": [
     "BUG-0001",
@@ -821,7 +827,9 @@
     "BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
-  "next_action": "Implement against the failing tests"
+  "next_action": "corvid-agent reviews the PR; Leif records the native implementation review, then finalize and archive"
 }

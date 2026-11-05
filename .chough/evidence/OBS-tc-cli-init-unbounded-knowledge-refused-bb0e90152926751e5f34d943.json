@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943",
+  "criteria": [
+    "KNOW-1",
+    "KNOW-4"
+  ],
+  "requirements": [
+    "REQ-cli-043"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test knowledge_default -- --exact init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded for TC-cli-init-unbounded-knowledge-refused: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-init-unbounded-knowledge-refused-bb0e90152926751e5f34d943.log": "7f7a90d317921a66b7d7efd6907a7d43d7acdb40db5bbd3ef50bbf3198889287"
+  },
+  "observed_at_unix_seconds": 1793845969,
+  "snapshot": {
+    "revision": "aef4bb41221c5c3c36f4ac1ba418eea13d9a2a0c",
+    "dirty": false,
+    "fingerprint": "5ce78fac803624cf0e502e149d812f615e02c222e1a272f37da908aa1ddd196a",
+    "content": "0c9698b0b97d3d5d5ff625c56cca85e74d4ad2aadc65ab802e59e58f11f6648e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-init-unbounded-knowledge-refused",
+      "digest": "73c897b80fccae91f954f3d474455d744deaa08ae25944d9e99fb6a6e9a95390"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "knowledge_default",
+    "--",
+    "--exact",
+    "init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
