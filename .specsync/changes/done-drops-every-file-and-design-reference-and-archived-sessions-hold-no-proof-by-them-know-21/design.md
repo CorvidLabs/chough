@@ -12,7 +12,7 @@ artifact: design
    - A missing reset time skips only the observation part.
    - An unreadable record still refuses the whole step, so nothing is dropped.
    - A failed save restores all three lists.
-2. **Ignore archived sessions in retention.** `file_references` in src/evidence.rs skips checkpoints labeled `archived session <key>`, using a shared label constant in src/sessions.rs. Archived session files are never rewritten.
+2. **Ignore archived sessions in retention.** `file_references` in src/evidence.rs skips checkpoints labeled `archived session <key>`, matching the label `crate::sessions::every_checkpoint` gives an archived session. Archived session files are never rewritten.
 
 ## Risks
 

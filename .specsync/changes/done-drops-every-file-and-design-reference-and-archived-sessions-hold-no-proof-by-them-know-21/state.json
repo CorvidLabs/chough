@@ -17,7 +17,6 @@
   "affected_paths": [
     "src/stage.rs",
     "src/evidence.rs",
-    "src/sessions.rs",
     "tests/reduce.rs",
     "docs/cli.md",
     "CHANGELOG.md"
