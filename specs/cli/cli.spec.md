@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 53
+version: 54
 status: active
 files:
   - src/main.rs
@@ -269,3 +269,4 @@ provider, runtime or hosted service.
 | 51 | 2026-11-05 | reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes: Reduce old observation proof: drop closed-cycle checkpoint references at done, trim superseded runs of cold changes, attribute unlisted proof to its change by cycle time, and read archive validity in parallel |
 | 52 | 2026-11-05 | move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge: Move old proof into the knowledge vault: trim loose artifacts of cold changes and move key items into knowledge attachments (KNOW-18, KNOW-19) |
 | 53 | 2026-11-05 | keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files: Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files |
+| 54 | 2026-11-05 | never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file: Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s) |
