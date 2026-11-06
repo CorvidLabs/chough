@@ -16,6 +16,11 @@ All notable changes to Chough are recorded here. The format follows
   walkthrough and the skill's closeout now run `chough change new`, `check` and `ship`,
   with review still `specsync change review`. The relay check `checkpoint --close-gate`
   runs is shared, with its refusals unchanged.
+- The Linux test images are rebuilt from the repository with one command (#177,
+  DRIVE-22). `fledge run linux-image` builds `chough-linux:1` to `:3` from
+  `tools/linux/`, taking the specsync, fledge and human-intent versions from the CI
+  workflow's pins. `fledge run linux-verify` runs the verify lane on the current
+  commit inside `chough-linux:3`, and refuses with exit 3 when a tool is not pinned.
 - `chough change new`, `answer`, `check` and `status` run SpecSync's own change steps
   (#171, DRIVE-20, REQ-cli-057), so an agent can drive a change through `chough` for
   them. `check` runs `specsync change check <id> --commit`, and the other three add

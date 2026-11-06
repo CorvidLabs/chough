@@ -14,6 +14,8 @@ cases = "cargo run --quiet --locked -- cases check"
 knowledge = "cargo run --quiet --locked -- library index --check"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
 ci-archive-fixtures = "python3 .github/scripts/test-specsync-archive.py"
+linux-image = "sh tools/linux/image.sh"
+linux-verify = "sh tools/linux/verify.sh"
 [lanes.ci]
 description = "Run full CI pipeline"
 steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]

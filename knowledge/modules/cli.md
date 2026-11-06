@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 125
+archived_changes: 126
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-125 archived changes, newest first.
+126 archived changes, newest first.
 
+- [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md) Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22)
 - [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](../archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)
 - [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](../archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18)
@@ -42,5 +43,4 @@ this note only links them.
 - [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148)
 - [bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153](../archives/bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153.md) Bug classification, deduplication and report mappings, and their recovery branches (153)
-- [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](../archives/assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma.md) Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02)
-- 115 more on the [timeline](../timeline.md)
+- 116 more on the [timeline](../timeline.md)
