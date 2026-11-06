@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d79739757f7b517bd5f40bd9",
-    "head": "EVT-cf10eeb9b8cdee79887e4000",
+    "head": "EVT-140a8741e890159d8b4c68b8",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,10 +30,14 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then modify REQ-cli-013"
 }

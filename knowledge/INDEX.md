@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8 (active; `specsync change status one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-367 recorded; most recent:
+368 recorded; most recent:
 
+- OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592 ProductTest Passed in local-linux-aarch64 at 43c10cbef323
 - OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 - OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 - OBS-tc-cli-ledger-keeps-newest-and-moves-the-rest-5d279876a8ea8bfd6438b66f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 - OBS-tc-cli-done-drops-file-and-design-refs-7fd113db7423ebb35826babb ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 - OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 InstallationObservation Passed in macos-arm64-cargo-1.95.0 at 2082dddff420
-- OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
 
 ## Briefs
 
