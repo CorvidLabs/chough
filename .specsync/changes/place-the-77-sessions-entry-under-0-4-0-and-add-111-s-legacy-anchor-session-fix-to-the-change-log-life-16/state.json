@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16",
+  "slug": "place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16",
+  "title": "Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16)",
+  "description": "Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16)",
+  "kind": "documentation",
+  "state": "draft",
+  "base_commit": "b535b92fb0e7cf5679449c18860e136bb27397e6",
+  "created_at": 1793972647,
+  "updated_at": 1793972698,
+  "affected_specs": [],
+  "affected_paths": [
+    "CHANGELOG.md",
+    "tests/changelog.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Change-log corrections for LIFE-16: #77 and #111 first shipped in v0.4.0, the #77 entry sits under 0.3.0 and #111 has none; no requirement text changes.",
+  "acceptance_criteria": [
+    "In CHANGELOG.md the #77 sessions entry ('Sessions per objective or native change') sits under [0.4.0], not [0.3.0], with its text unchanged except that it now names #77; [0.4.0] gains one entry for #111's fix, so a session started with chough session new after a project adopted its legacy history writes events instead of refusing with 'legacy history anchor changed'; no other entry in a released section changes. The new tests in tests/changelog.rs fail first on main, and fledge lanes run verify passes."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

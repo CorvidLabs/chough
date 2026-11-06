@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-919815bdba99506d9e6c962e",
+    "head": "EVT-4316657280cbea2f9089d311",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16)",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16",
+  "references": {
+    "criteria": [
+      "LIFE-16"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "decided: one docs-only PR that moves the #77 sessions entry to [0.4.0] and adds #111's entry, because #77 and #111 first shipped in v0.4.0 (tags); Leif chose 'Yes, one small PR' and captured LIFE-16 with 'Capture as written' (orc relay, hc t18, 2026-11-06)"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope decision of place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16"
+  ],
+  "run_consents": [],
+  "next_action": "Send 'ready for approval' to orc t18; then commit the failing tests/changelog.rs"
+}
