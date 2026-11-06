@@ -1,0 +1,31 @@
+--- stdout ---
+
+running 1 test
+test change_new_answer_check_and_status_run_specsync_with_exact_arguments ... FAILED
+
+failures:
+
+---- change_new_answer_check_and_status_run_specsync_with_exact_arguments stdout ----
+
+thread 'change_new_answer_check_and_status_run_specsync_with_exact_arguments' (351037340) panicked at tests/change.rs:155:9:
+["change", "new", "Free shipping at the threshold", "--kind", "feature", "--spec", "shipping", "--spec", "cart", "--path", "src/shipping.rs", "--path", "tests/"]: error: unrecognized subcommand 'change'
+
+  tip: some similar subcommands exist: 'stage', 'cases'
+
+Usage: chough [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    change_new_answer_check_and_status_run_specsync_with_exact_arguments
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.53s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests/change.rs (target/debug/deps/change-c1495f4ded81b8f7)
+error: test failed, to rerun pass `--test change`

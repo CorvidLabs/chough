@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-439 recorded; most recent:
+445 recorded; most recent:
 
+- OBS-tc-cli-change-sigterm-stops-specsync-23c702afc42f60c07e8e858c ProductTest Failed in local-macos-arm64 at 7037d082e874
+- OBS-tc-cli-change-missing-specsync-recovery-ff484030e43f2bd6eb79c222 ProductTest Failed in local-macos-arm64 at 7037d082e874
+- OBS-tc-cli-change-check-outlives-read-bound-75468b34885c4ec6fab83f7a ProductTest Failed in local-macos-arm64 at 7037d082e874
+- OBS-tc-cli-change-steps-write-nothing-2bbdc4de3ce2ea8a4a5a72ca ProductTest Failed in local-macos-arm64 at 7037d082e874
+- OBS-tc-cli-change-steps-pass-through-8b387a2f06ba2494c9c37cd5 ProductTest Failed in local-macos-arm64 at 7037d082e874
+- OBS-tc-cli-change-steps-exact-arguments-d8842b8ef670bdc102e6227d ProductTest Failed in local-macos-arm64 at 7037d082e874
 - OBS-tc-history-doctor-fixes-session-debt-6b69ccc429d60b2cd04bd601 ProductTest Passed in local-linux-aarch64 at 298c8a775180
 - OBS-tc-cli-doctor-report-changes-nothing-8a051b3416c4c0d132e1c972 ProductTest Passed in local-linux-aarch64 at 298c8a775180
 - OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
 - OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
-- OBS-tc-history-session-close-with-reason-d61f0bc09ce6a873e1613697 ProductTest Passed in local-linux-aarch64 at fe653b315f36
-- OBS-tc-history-switch-archives-sessions-left-open-561b78cfe5b4189dd0026fee ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
-- OBS-tc-history-session-archives-itself-at-done-0d438868f7c194b8c847d1e8 ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
-- OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
-- OBS-tc-history-changelog-111-under-0-4-0-51c2b5238ff8ac90bf33995d ProductTest Passed in local-macos-arm64 at 2a5e6008d349
-- OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0 ProductTest Passed in local-macos-arm64 at 2a5e6008d349
 
 ## Briefs
 

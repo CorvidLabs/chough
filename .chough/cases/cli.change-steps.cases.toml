@@ -1,0 +1,110 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-change-steps-exact-arguments"
+title = "Each chough change step runs SpecSync with exactly its arguments in the project root"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test change_new_answer_check_and_status_run_specsync_with_exact_arguments passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "change_new_answer_check_and_status_run_specsync_with_exact_arguments"
+
+[[case]]
+id = "TC-cli-change-steps-pass-through"
+title = "SpecSync's stdout, stderr and exit code pass through chough change byte for byte"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test specsync_output_and_exit_code_pass_through_byte_for_byte passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "specsync_output_and_exit_code_pass_through_byte_for_byte"
+
+[[case]]
+id = "TC-cli-change-steps-write-nothing"
+title = "No chough change step writes under .chough/"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test no_change_command_writes_under_dot_chough passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "no_change_command_writes_under_dot_chough"
+
+[[case]]
+id = "TC-cli-change-check-outlives-read-bound"
+title = "chough change check outlives the native read bound while status refuses past it with a working retry"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test check_outlives_the_native_bound_while_status_refuses_past_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "check_outlives_the_native_bound_while_status_refuses_past_it"
+
+[[case]]
+id = "TC-cli-change-missing-specsync-recovery"
+title = "A missing specsync refuses naming the install command and the step to rerun, which then succeeds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test a_missing_specsync_refuses_naming_install_and_the_step_to_rerun passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "a_missing_specsync_refuses_naming_install_and_the_step_to_rerun"
+
+[[case]]
+id = "TC-cli-change-sigterm-stops-specsync"
+title = "SIGTERM to chough change check stops the SpecSync process it started"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-14"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test sigterm_to_change_check_stops_specsync passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "sigterm_to_change_check_stops_specsync"
