@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143",
+  "implementation_commit": "252714f3cc740ef6336502d0c13dae091faf9685",
+  "implementation_tree": "36d0e3d3ffef258486c7291d2cb6b1fcad6ab46e",
+  "contract_digest": "fd5d5355119883fd923d9ad067e22440df079f97161f042999335c883d8c7768",
+  "workspace_digest": "3d5ca11a1d5c5a53d9f649d1fd21eabe8eae33bf233c68ee6759623da51e2b11",
+  "closing_digest": "4a5063e3bb271a7f00dfcbeaf0f3a47d3e7113274d4afe03f97ba6bf95a8293a",
+  "review_digest": "a1035c7dd408deb48600a2a594e321ea8c237ed8b0b02fcc4889222d9c390dec",
+  "finalization_digest": "3a61699f35aad70b6f6cc5511d202eee5419a639ac0991ab2da2323d00288910",
+  "timestamp": 1793979317
+}
