@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 108
+archived_changes: 109
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-108 archived changes, newest first.
+109 archived changes, newest first.
 
+- [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](../archives/install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132.md) Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
 - [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](../archives/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.md) Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10)
@@ -42,5 +43,4 @@ this note only links them.
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](../archives/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.md) Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5)
 - [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](../archives/write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127.md) Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127)
 - [union-merge-the-generated-bug-notes-128](../archives/union-merge-the-generated-bug-notes-128.md) Union-merge the generated bug notes (128)
-- [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](../archives/rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their.md) Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)
-- 98 more on the [timeline](../timeline.md)
+- 99 more on the [timeline](../timeline.md)
