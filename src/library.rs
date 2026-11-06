@@ -1314,7 +1314,7 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
             } else {
                 None
             };
-            print_json(&archive_value(root, &dir, authority.as_deref())?)
+            print_json(&archive_value(root, &dir, authority.as_deref(), None)?)
         }
     }
 }
@@ -1327,7 +1327,9 @@ const LIBRARIAN_DEFAULT: &str = "standing preference: librarian on by default (K
 /// `manual` nor a recorded `off`, apply the post-archive summary with the recorded retention authority or
 /// else the librarian default. Never fails: the result is `trimmed`, `skipped` or
 /// `refused` with its reason, so the move into done never depends on it.
-pub(super) fn trim_at_done(root: &Path) -> serde_json::Value {
+/// `prior` is the gate's `specsync change status` reply for the change just archived,
+/// which the summary reuses for that change's own manifest (REQ-cli-052).
+pub(super) fn trim_at_done(root: &Path, prior: evidence::Prior<'_>) -> serde_json::Value {
     let refused = |reason: String| json!({"status": "refused", "reason": reason});
     let librarian = match prefs::effective(root, "librarian") {
         Ok((value, _)) => value,
@@ -1353,7 +1355,8 @@ pub(super) fn trim_at_done(root: &Path) -> serde_json::Value {
     }
     let authority = evidence::retention_authority(root, "trimming at done")
         .unwrap_or_else(|_| LIBRARIAN_DEFAULT.to_string());
-    let summary = enabled_dir(root).and_then(|dir| archive_value(root, &dir, Some(&authority)));
+    let summary =
+        enabled_dir(root).and_then(|dir| archive_value(root, &dir, Some(&authority), prior));
     match summary {
         Ok(summary) => json!({"status": "trimmed", "authority": authority, "summary": summary}),
         Err(error) => {
@@ -1364,7 +1367,12 @@ pub(super) fn trim_at_done(root: &Path) -> serde_json::Value {
 
 /// `chough library archive`: the post-archive summary, previewed or, with `authority`,
 /// applied (REQ-cli-033).
-fn archive_value(root: &Path, dir: &str, authority: Option<&str>) -> Result<serde_json::Value> {
+fn archive_value(
+    root: &Path,
+    dir: &str,
+    authority: Option<&str>,
+    prior: evidence::Prior<'_>,
+) -> Result<serde_json::Value> {
     let found = archives(root)?;
     let unreadable: Vec<String> = found
         .iter()
@@ -1391,7 +1399,7 @@ fn archive_value(root: &Path, dir: &str, authority: Option<&str>) -> Result<serd
         })
         .collect();
     let write = |root: &Path| regenerate(root, dir);
-    evidence::archive_summary(root, &listed, dir, authority, &write)
+    evidence::archive_summary(root, &listed, dir, authority, &write, prior)
 }
 
 /// The knowledge pointer for start and resume views: the librarian state and the index.

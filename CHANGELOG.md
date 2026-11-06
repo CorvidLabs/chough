@@ -6,6 +6,19 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough stage advance --to <stage>` moves through each main stage up to `<stage>` on
+  one `specsync change status` read. Every step is checked first, as a plain advance
+  would check it, and a refused step refuses the whole batch with nothing recorded
+  (REQ-cli-052, DRIVE-9). The move into done, plain or batched, now reads native status
+  once: the librarian trim takes the change's own manifest from the gate's read instead
+  of reading it again (DRIVE-2). Other changes' manifests and the validity probes around
+  a removal stay live, and nothing is cached past the command. This is the part of
+  PR #69 that main still needed; its archive cache goes to #32.
+- Chough supports macOS and Linux, and Windows through WSL 2 with Ubuntu (FLOW-17).
+  Hosted CI no longer runs the native Windows product job; the Ubuntu jobs cover WSL 2
+  as Linux, and the docs say what they do not cover (WSL 1, a checkout on `/mnt/c`,
+  Git for Windows). Native Windows is not supported, matching SpecSync from 6.0.
+  Requirements are unchanged, and the CRLF-safe tests still run on Linux and macOS.
 - Relayed decisions at human gates (#123, audit D7, FLOW-16, REQ-cli-050,
   REQ-history-010). When a human decides a gate, the agent records it on their behalf
   with `chough checkpoint --close-gate "<gate>" --decided-by --words --where

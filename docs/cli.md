@@ -19,7 +19,7 @@ their JSON.
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). Earlier builds printed the full status JSON here; scripts that read `next_valid_action` now read `.next_valid_action.action` from `next --json`, or use `status`. |
 | `migrate [--stage S]` | Converts a schema 1 session after saving its bytes to `.chough/session.v1.json`; refuses if that backup exists. |
 | `checkpoint` | Show, update or merge: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--remove-completed` (removes one exact completed entry before any `--completed` additions, so a mistaken entry is corrected in one call; an entry that is not present is refused), `--blocker`, `--clear-blockers`, `--awaiting-human`, `--clear-awaiting-human`, `--close-gate` with `--decided-by`, `--words`, `--where` and `--recorded-by` (see [Relayed decisions at gates](#relayed-decisions-at-gates)), `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`, `--merge <base> <ours> <theirs>`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` transition, and `--clear-awaiting-human` appends one `gate-closed` transition per gate it clears (closed before opened when both are given), after the checkpoint is saved; `--clear-awaiting-human` withdraws gates and records no decision. With SpecSync configured, `--native-change <id>` first runs `specsync change status <id> --json` and refuses as `refused:native-change-unknown`, saving nothing from the call, unless that read succeeds with JSON (a missing change, a failed or timed-out read, or non-JSON output refuses), and as `refused:native-change-mismatch` when the reply's `summary.id` or `change.id` names a different change; a JSON reply that names no change ID, such as `[]` or `{}`, also refuses as `refused:native-change-unknown`; without a SpecSync configuration only the ID format is checked. That read happens on every `--native-change` call: under a second for an open change, and seconds longer for an archived one, since SpecSync re-reads its acceptance records. |
-| `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return\|backfill` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While the checkpoint has an open awaiting-human gate, `advance` and `skip` (release → done included) are refused as `refused:awaiting-human` before any native read, naming up to 3 gates; record the decision, then `chough checkpoint --clear-awaiting-human`. There is no bypass; `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are unaffected. `backfill` records an advance that already happened; see [Backfilled moves](#backfilled-moves). |
+| `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return\|backfill` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While the checkpoint has an open awaiting-human gate, `advance` and `skip` (release → done included) are refused as `refused:awaiting-human` before any native read, naming up to 3 gates; record the decision, then `chough checkpoint --clear-awaiting-human`. There is no bypass; `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are unaffected. `backfill` records an advance that already happened; see [Backfilled moves](#backfilled-moves). `advance --to <stage>` moves through each main stage up to `<stage>` on one native read; see [Batched advance](#batched-advance). |
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` allocate an OBS ID when `--observation-id` is omitted and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID allocates the new OBS form; an explicit ID must use that form for a new write. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
@@ -58,6 +58,32 @@ subagent without Chough (REQ-cli-036). `--at` is the original time, as
   moves" section in text) with both times, the commit and the quote, marks each segment
   a backfilled move starts or ends `"backfilled": true`, reports `backfilled` stage time
   per stage, and leaves a stage with backfilled time out of estimate samples.
+
+## Batched advance
+
+`chough stage advance --to <stage> [--note <text>]` moves forward through each main stage
+from the current one up to `<stage>`, as consecutive advances (REQ-cli-052, DRIVE-9).
+
+- `<stage>` is design, plan, build, test, accept or done, after the current stage. A
+  target that is not ahead, a side or optional stage, or an unknown name is refused, and
+  so is every case a plain `advance` refuses: a stage that is not active, a side stage,
+  an open awaiting-human gate.
+- Every step is checked before anything is recorded, as a plain `advance` would check it:
+  the destination's native prerequisite and, on leaving test, open blocking bugs and an
+  unlinked failure. All steps share one `specsync change status` read, made only when a
+  step has a native prerequisite; intent to plan reads nothing.
+- A refused step refuses the whole command, naming the step (`advance test -> accept
+  refused (refused:blocking-bugs): ...; nothing was recorded`). No transition is
+  recorded and the checkpoint is byte-identical.
+- Otherwise it records one `advance` transition per step, each with its gate label and
+  the note, and reports them in `applied.steps`. `applied.from` is the starting stage,
+  `applied.to` the target and `applied.gate` the last step's label. In event history, if a
+  step cannot be written, the events the batch already wrote are removed and nothing is
+  saved.
+- `--to done` runs the same steps at done as a plain advance into done (see
+  [Post-archive summary](#post-archive-summary)), on the same one read.
+
+`stage advance` without `--to` is unchanged.
 
 ## Transition history
 
@@ -589,12 +615,11 @@ while reading and keeps draining beyond it, counting every byte.
 
 At the deadline, or when output stays open more than 2 s after the command exits
 (cut short at the deadline, but at least 200 ms after the exit), Chough stops the
-command and its descendants: on Unix the process group the command leads, on Windows
-its process tree with `taskkill /T /F`. It then waits at most 1 s for the output to
-close and abandons any reader still blocked, so the run returns on time and its
-capture is reported incomplete. On Windows, `taskkill` cannot find descendants whose
-parent has already exited; such a run returns on time with an incomplete capture,
-and those descendants may keep running.
+command and its descendants: on Unix the process group the command leads. It then
+waits at most 1 s for the output to close and abandons any reader still blocked, so
+the run returns on time and its capture is reported incomplete. Native Windows is not
+supported (FLOW-17); the code that stops a process tree there with `taskkill /T /F`
+remains but is no longer built or tested.
 
 Stopping Chough stops what it started (FLOW-14). On Unix, when Chough gets SIGINT
 (Ctrl-C), SIGTERM (a plain `kill`) or SIGHUP while a case binding, a native read or
@@ -616,7 +641,7 @@ before the save begins records nothing (no observation, artifact or checkpoint
 change), and a stop once it has begun lets the artifact and the observation both be
 written first, so a run is never half recorded. A signal Chough inherited as ignored
 (for example under `nohup`) or as blocked keeps that disposition. A hard `kill -9`
-cannot be caught, so a command may outlive it; Windows behavior is unchanged.
+cannot be caught, so a command may outlive it.
 
 A case artifact keeps both streams within 1 MiB in total and ends with a note for
 each stream that did not fit: `[truncated: stdout wrote N bytes; M discarded]`. Case
@@ -928,8 +953,12 @@ as the standing preference KNOW-11 names, and keeps every rule below (ledger fir
 validity restore, nothing removed while a native change is open). The result is
 reported as `applied.librarian_trim` with status `trimmed` (and the summary), `skipped`
 (librarian off, `chough pref set retention manual`, or a recorded `retention off`) or `refused` with its reason; it
-never undoes the move into done. It reads native status only for cold archives whose
-files it would remove, and runs only on that move, never inside `next` or `status`.
+never undoes the move into done. It takes the change's own acceptance manifest from the
+reply the move's gate already read (REQ-cli-052, DRIVE-2), so the move into done makes
+one `specsync change status` read when no other native change is open or archived
+later and nothing is removed. Another change's manifest and the validity probes around
+a removal are read live, and the reused reply serves only that command. It runs only on
+that move, never inside `next` or `status`.
 
 After the trim, the same move regenerates the knowledge directory, creating
 `README.md` and `briefs/` if missing, whether or not anything was trimmed. So the change

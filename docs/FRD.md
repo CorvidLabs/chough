@@ -142,6 +142,7 @@ Additional native requirements:
 | REQ-cli-044 | The knowledge directory is an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links that resolve, and module, intent and rules notes linking each archived change to the modules and HI criteria it touched, without copying source text | KNOW-14, KNOW-15, KNOW-3, KNOW-4, KNOW-12 | tests/vault.rs |
 | REQ-cli-045 | With the librarian on, the move into done drops checkpoint observation references from closed cycles and every file and design reference before the trim, reported as `applied.checkpoint_references`, never undoing the move; archived sessions' file and design references protect nothing | KNOW-16, KNOW-21, KNOW-13 | tests/reduce.rs |
 | REQ-cli-047 | Parallel pull requests merge without hand-resolved conflicts in files Chough writes: per-change case files, `library index --check` for the union-merged vault, and the `chough bug merge` driver | DRIVE-12, DRIVE-3 | tests/cases.rs, tests/vault.rs, tests/bugs.rs |
+| REQ-cli-052 | `stage advance --to <stage>` moves through each main stage up to the target on one native read, checking every step first and recording nothing when one is refused; the move into done takes the change's own manifest from the gate's read, so it reads native status once | DRIVE-9, DRIVE-2, FLOW-2, LIFE-3 | tests/advance_to.rs |
 | REQ-cli-049 | At done the retention ledger keeps its newest 100 entries and moves older summarized ones, with their restores, into `knowledge/attachments/<archive>/pruned.jsonl`, shards first; every ledger reader reads the shards, counting an interrupted rotation's leftover once; shards union-merge | KNOW-23, KNOW-13, DRIVE-12 | tests/reduce.rs, tests/vault.rs |
 | REQ-cli-050 | `chough checkpoint --close-gate` records a human's decision at one gate on their behalf: who decided, their words, where and the recording agent, as a relayed claim, not authenticated; it closes only that gate, writes no SpecSync record and satisfies no native gate; each refusal saves nothing and names its recovery. REQ-cli-030's refusal and waiting action name it | FLOW-16, FLOW-10, FLOW-13, FLOW-3 | tests/relay.rs, tests/stages.rs |
 | REQ-history-010 | A `gate-closed` transition may carry `relayed_by` with exactly `decided_by`, `words`, `where` and `recorded_by`; it is omitted when absent and refused as an invalid payload when incomplete, over-long, extended or on another kind | FLOW-16, FLOW-13 | tests/relay.rs |
@@ -273,3 +274,32 @@ native commands. Missing authority still
 requires a real decision, and native checks and separate implementation acceptance
 and delivery authority remain intact. Safe skill upgrades preserve edited copies.
 Trace: FLOW-1, FLOW-2, FLOW-5, FLOW-13, LIFE-1, LIFE-6, LIFE-7.
+
+## Supported platforms (FLOW-17)
+
+Status: derived by the agent from FLOW-17 for the intent decision; not human wording.
+
+Purpose: Chough, like SpecSync from 6.0, runs on macOS and Linux. Windows users run it
+through WSL 2 with Ubuntu, so no pull request waits on a native Windows job.
+
+| Requirement | Summary | HI criteria | Native requirement |
+|---|---|---|---|
+| FR-platform-1 | Hosted CI tests and builds on Ubuntu and macOS only; MSRV, the verify lane with the feature-and-bug exercise, and the archive jobs stay on Ubuntu; no job runs on Windows | FLOW-17 | None: CI and documentation, no helper behavior |
+| FR-platform-2 | README, docs/ci.md and docs/integrations.md say macOS and Linux, Windows through WSL 2 with Ubuntu, and say exactly what the Ubuntu jobs cover for WSL and what they do not | FLOW-17 | None |
+| FR-platform-3 | No requirement or criterion promises native Windows behavior, and no Linux or macOS guarantee weakens | FLOW-17 | REQ-cli-046 and every other requirement unchanged |
+
+- In: the CI matrix, the platform statements and limitations, the testing companion's
+  Windows CI lines, and a package test that keeps CI and these statements in agreement.
+- Out: removing the Windows-specific code paths in `src/` and `tests/` (they remain,
+  untested); a CI job inside WSL on a Windows runner; Raven Desktop, which keeps Windows.
+- Assumption: Ubuntu on WSL 2 is a Linux system with the same target and userland as
+  the hosted Ubuntu jobs. WSL 1, a checkout on a Windows drive (`/mnt/c`) and
+  Windows-side Git are not covered, and are documented as not covered.
+- Assumption: REQ-cli-046's short attachment folders and 220-character limit stay,
+  because they keep a repository's tracked tree checkable out by any Git client,
+  including one on Windows that does not run Chough.
+- Dependencies: SpecSync publishes no Windows binary as of 6.0, and its README points
+  Windows users to WSL.
+
+Verification: `tests/package.rs::supported_platforms_are_macos_and_linux_with_windows_through_wsl`
+and hosted CI. CRLF-normalizing tests stay and run on Linux and macOS.

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 62
+version: 63
 status: active
 files:
   - src/main.rs
@@ -280,3 +280,4 @@ provider, runtime or hosted service.
 | 60 | 2026-11-06 | keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29: Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) |
 | 61 | 2026-11-06 | native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10: Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10) |
 | 62 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |
+| 63 | 2026-11-06 | advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into: Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) |

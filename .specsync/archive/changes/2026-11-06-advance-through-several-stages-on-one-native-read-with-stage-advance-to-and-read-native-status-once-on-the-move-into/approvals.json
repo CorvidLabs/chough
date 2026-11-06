@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793941920,
+      "digest": "09dc280de95b454f8e75622863f71b905ce1f367b57b94266e8db42d736ec299",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into",
+        "title": "Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2)",
+        "description": "Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/evidence.rs",
+          "src/library.rs",
+          "src/stage.rs",
+          "tests/advance_to.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Under a per-change session, 'chough stage advance --to accept' from plan on an approved change runs specsync change status once, records three advance events with their gate labels in applied.steps and ends at accept, and a single-checkpoint project appends the same three transitions. From intent, '--to plan' makes no native read. A refused step (blocking bug, draft state, a target not ahead, a side or unknown target, an open human gate) refuses the whole batch with at most one read, nothing recorded and the session file and history byte-identical. On an archived change with an acceptance manifest and the librarian on, 'stage advance' from accept to done and '--to done' from test each run specsync change status exactly once and report librarian_trim; before this change, accept to done ran it twice. A plain 'stage advance' is unchanged. The new-behavior tests fail against main first and pass after, and fledge lanes run verify passes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-9 and DRIVE-2 (hi/drive.md, Leif's t811u words); Leif via the orc t18: 'Split' for PR #69 (2026-11-05 21:51 MST) and Q2 'Yes', the librarian at done reuses the gate's read (21:52 MST); the persistent archive cache is #32's (REQ-cli-053); every native read stays live and is shared only within one command; REQ-cli-052 taken per the orc's ID registry.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "4b08c88bcfb7927cc05881b1e1b5ed5c828d577a87bec8bf3d1dece6a0d0883f"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793946641,
+      "digest": "7d9b1f93b38913d3086523990cc85f0366c224cbdb5b94e4a2d244984e4a385a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
