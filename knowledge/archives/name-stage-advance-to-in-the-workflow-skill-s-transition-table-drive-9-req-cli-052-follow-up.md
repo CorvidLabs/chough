@@ -45,10 +45,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+3 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 | passed (by cycle time) | local-linux-aarch64 | TC-cli-empty-change-dir-not-open |
 | OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-names-advance-to |
 | OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 | failed (by cycle time) | local-macos-arm64 | TC-cli-skill-names-advance-to |
 
