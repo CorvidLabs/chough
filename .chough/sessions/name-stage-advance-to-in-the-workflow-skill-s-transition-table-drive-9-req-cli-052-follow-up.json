@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-b510afe825f059bf479282f0",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Name stage advance --to in the workflow skill's transition table (DRIVE-9; REQ-cli-052 follow-up from #147)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up",
+  "references": {
+    "criteria": [
+      "DRIVE-9"
+    ],
+    "requirements": [
+      "REQ-cli-052"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "decided: add 'stage advance --to' to the chough-workflow skill's transition table as its own small change and PR, because the orc assigned follow-up (2) after #147 merged (t18 relay, 2026-11-05 late evening MST); the pgrep flake is #144's"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Complete the definition and send 'ready for approval' to orc t18"
+}
