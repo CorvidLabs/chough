@@ -1686,3 +1686,45 @@ fn delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not() {
         );
     }
 }
+
+/// #132: a script a test installs must run even while an old write handle to its path
+/// is still open, as a child forked by another test thread holds one until it execs
+/// (ETXTBSY, "Text file busy"). Both the `stand_in` helper and `Fixture::executable`
+/// must give the script a fresh file.
+#[cfg(unix)]
+#[test]
+fn a_script_installed_while_an_old_write_handle_is_open_still_runs() {
+    let fixture = Fixture::new();
+    let bin = fixture.root().join("bin");
+    std::fs::create_dir_all(&bin).unwrap();
+    for (name, install) in [
+        (
+            "via-stand-in",
+            Box::new(|path: &std::path::Path| {
+                common::stand_in(path.parent().unwrap(), "via-stand-in", "ran");
+            }) as Box<dyn Fn(&std::path::Path)>,
+        ),
+        (
+            "via-executable",
+            Box::new(|_: &std::path::Path| {
+                fixture.write("bin/via-executable", "#!/bin/sh\nprintf 'ran\\n'\n");
+                fixture.executable("bin/via-executable");
+            }),
+        ),
+    ] {
+        let path = bin.join(name);
+        // The leaked handle: open for writing, never closed while the script runs.
+        let leaked = std::fs::OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(&path)
+            .unwrap();
+        install(&path);
+        let output = std::process::Command::new(&path)
+            .output()
+            .unwrap_or_else(|error| panic!("{name}: {error}"));
+        assert_eq!(String::from_utf8_lossy(&output.stdout), "ran\n", "{name}");
+        drop(leaked);
+    }
+}
