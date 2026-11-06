@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Chough supports macOS and Linux, and Windows through WSL 2 with Ubuntu (FLOW-17).
+  Hosted CI no longer runs the native Windows product job; the Ubuntu jobs cover WSL 2
+  as Linux, and the docs say what they do not cover (WSL 1, a checkout on `/mnt/c`,
+  Git for Windows). Native Windows is not supported, matching SpecSync from 6.0.
+  Requirements are unchanged, and the CRLF-safe tests still run on Linux and macOS.
 - Relayed decisions at human gates (#123, audit D7, FLOW-16, REQ-cli-050,
   REQ-history-010). When a human decides a gate, the agent records it on their behalf
   with `chough checkpoint --close-gate "<gate>" --decided-by --words --where
