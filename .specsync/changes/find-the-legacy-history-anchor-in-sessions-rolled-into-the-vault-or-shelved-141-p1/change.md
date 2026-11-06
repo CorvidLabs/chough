@@ -1,6 +1,6 @@
 ---
 id: find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1
-state: draft
+state: approved
 type: bug_fix
 base_commit: 260ecc949ea01214f4bec43b30ea4226ce8fae59
 ---

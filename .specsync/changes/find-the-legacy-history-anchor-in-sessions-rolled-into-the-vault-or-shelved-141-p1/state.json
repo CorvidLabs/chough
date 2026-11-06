@@ -7,10 +7,10 @@
   "title": "Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)",
   "description": "Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "260ecc949ea01214f4bec43b30ea4226ce8fae59",
   "created_at": 1793940908,
-  "updated_at": 1793940943,
+  "updated_at": 1793941109,
   "affected_specs": [
     "history"
   ],
