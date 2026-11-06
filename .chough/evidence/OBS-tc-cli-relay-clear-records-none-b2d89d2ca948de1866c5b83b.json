@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b",
+  "criteria": [
+    "FLOW-16",
+    "FLOW-3"
+  ],
+  "requirements": [
+    "REQ-cli-050",
+    "REQ-cli-030"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test relay -- --exact clearing_records_no_relay_and_a_relayed_close_lets_advance_apply for TC-cli-relay-clear-records-none: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b.log": "546c796b66fe282b47029214c422eb2ac96ef3a90c4690ad16dc6a92b46f57ee"
+  },
+  "observed_at_unix_seconds": 1793938213,
+  "snapshot": {
+    "revision": "98aa658d861bcb8b5b07e66e293f9a4188b822bc",
+    "dirty": false,
+    "fingerprint": "4e84a997668f8a8bc551436efda2fdd7ce1c257ef6e1f855281ee831ade62ef7",
+    "content": "2619f90e6b83ecd5e1b5cd58fc4f44da86d0b66d16fd199b166623465c419d6f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-relay-clear-records-none",
+      "digest": "927630dcb4375ed779c8a20859e55edd7f0f158b4990ccfde68e61093b37c734"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "relay",
+    "--",
+    "--exact",
+    "clearing_records_no_relay_and_a_relayed_close_lets_advance_apply"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

@@ -1,6 +1,6 @@
 ---
 module: history
-version: 10
+version: 11
 status: active
 files:
   - src/history.rs
@@ -90,3 +90,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 8 | 2026-11-04 | lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention: Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98) |
 | 9 | 2026-11-06 | size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each: Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) |
 | 10 | 2026-11-06 | keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29: Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) |
+| 11 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |

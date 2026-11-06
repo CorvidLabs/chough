@@ -140,7 +140,10 @@ the records above; it writes nothing and keeps no timing store. The one record a
 for it is a pair of transition kinds: `chough checkpoint` appends `gate-opened` when an
 awaiting-human gate opens and `gate-closed` when it is cleared, in the call that
 already writes the checkpoint, so waiting time survives `--clear-awaiting-human`. They
-record when, never who decided or what, and they start or end no stage segment.
+record when, and they start or end no stage segment. A gate closed with `--close-gate`
+also carries `relayed_by`: a relayed claim of who decided, their words, where and the
+recording agent (REQ-cli-050), which timing does not report and Chough does not
+authenticate.
 Native times are read from `specsync change status` and, read-only, the gate and
 timestamp fields of a change's native record files; validity comes only from status,
 and nothing native is copied into Chough's records. Every duration is labelled elapsed
