@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16 (active; `specsync change status place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-403 recorded; most recent:
+407 recorded; most recent:
 
+- OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c ProductTest Passed in local-macos-arm64 at 54f7a782597a
+- OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4 ProductTest Passed in local-macos-arm64 at 54f7a782597a
+- OBS-tc-history-changelog-111-under-0-4-0-536c8c5dc891b6196d875a5d ProductTest Failed in local-macos-arm64 at 77b8e0f28b2a
+- OBS-tc-history-changelog-sessions-under-0-4-0-087a6e10606d28ec81c8e28c ProductTest Failed in local-macos-arm64 at 77b8e0f28b2a
 - OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-one-read-in-a-session-cee97305e88e3d1d60719b91 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 
 ## Briefs
 

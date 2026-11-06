@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-919815bdba99506d9e6c962e",
-    "head": "EVT-c9ef38cdd83144f8182491cd",
+    "head": "EVT-8e0defb6ec49582dc6966ddc",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -31,11 +31,18 @@
     "Leif, through the orc (t18), which recorded the approval as 0xLeif at 548cab2d decided \"Scope decision of place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16\": \"im telling you to approve and continue all of these... approve as me (Leif in the orc tab, relayed by the orc: approval for the CHANGELOG change (548cab2d) recorded as 0xLeif; build it, PR, then 'ready for review'; it merges after #150)\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated"
   ],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
+  "completed": [
+    "Implemented at 54f7a782; both changelog cases pass after failing at 77b8e0f2"
+  ],
+  "observations": [
+    "OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c",
+    "OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16"
+  ],
   "run_consents": [],
   "next_action": "Send 'ready for approval' to orc t18; then commit the failing tests/changelog.rs"
 }
