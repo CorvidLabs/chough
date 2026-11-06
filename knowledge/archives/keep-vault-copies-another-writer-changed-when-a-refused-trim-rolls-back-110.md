@@ -49,7 +49,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 | passed (by cycle time) | local-linux-aarch64 | TC-cli-rollback-keeps-changed-vault-copies |
+| OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-rollback-keeps-changed-vault-copies |
 
 ## Bugs
 

@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d0e2adf21534172a2437b917",
-    "head": "EVT-bfc441ed5b15430f1ae95b90",
+    "head": "EVT-aa13eddc842db1c9ea40e31c",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "history"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,15 +26,15 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "PR #142 (#141 P1) accepted by Leif (0xLeif), 2026-11-05 22:10 MST through the orc: Record and merge; his native review (pass) recorded at 14f6b289."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then extend adopted_anchor"
 }
