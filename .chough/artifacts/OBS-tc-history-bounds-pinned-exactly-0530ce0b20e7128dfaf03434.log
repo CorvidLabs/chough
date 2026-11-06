@@ -1,0 +1,17 @@
+--- stdout ---
+
+running 3 tests
+test recent_traversal_stops_at_exactly_512_kib ... ok
+test a_cycle_of_exactly_16_mib_is_full_and_one_byte_more_is_over_its_bound ... ok
+test a_receipt_of_exactly_1_mib_is_read_and_one_byte_more_is_refused ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.71s
+
+
+--- stderr ---
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling tempfile v3.27.0
+   Compiling chough v0.4.0 (/work/src)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.46s
+     Running tests/history.rs (target/debug/deps/history-f68577977d5c0a98)

@@ -7,4 +7,4 @@ artifact: tasks
 
 - [x] Add end-to-end tests that pin each of the five bounds at exactly its value and one past it.
 - [x] Rerun the mutation check: all 11 mutations must be caught.
-- [ ] Run verify on Linux.
+- [x] Run verify on Linux.
