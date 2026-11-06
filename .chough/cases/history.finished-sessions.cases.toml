@@ -1,0 +1,40 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-finished-session-archived-without-native-read"
+title = "A session whose native change is archived on HEAD is finished, and session new and use archive it unchanged, with no native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two finished-session tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "a_session_whose_native_change_is_archived_is_finished_without_a_native_read", "session_use_archives_a_finalized_session_unless_its_inbox_has_entries"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-history-session-close-with-reason"
+title = "chough session close archives abandoned work with its reason, without a native read, and refuses with nothing changed when it should"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two session close tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "session_close_archives_abandoned_work_with_its_reason", "session_close_refuses_a_session_with_unfolded_inbox_entries"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600

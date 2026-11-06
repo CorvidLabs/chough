@@ -47,6 +47,7 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (hot)
 - [a-session-archives-itself-at-its-own-move-into-done-155](archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155) (hot)
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (hot)
 - [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](archives/place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16.md) Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16) (hot)
@@ -71,6 +72,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../.specsync/archive/changes/2026-11-06-a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16/lesson-bundle.md)
 - [a-session-archives-itself-at-its-own-move-into-done-155](../.specsync/archive/changes/2026-11-06-a-session-archives-itself-at-its-own-move-into-done-155/lesson-bundle.md)
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../.specsync/archive/changes/2026-11-06-keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143/lesson-bundle.md)
 - [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](../.specsync/archive/changes/2026-11-06-place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16/lesson-bundle.md)
@@ -100,7 +102,11 @@ Archived lesson bundles:
 ## Observations
 
 443 recorded; most recent:
+435 recorded; most recent:
 
+- OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
+- OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
+- OBS-tc-history-session-close-with-reason-d61f0bc09ce6a873e1613697 ProductTest Passed in local-linux-aarch64 at fe653b315f36
 - OBS-tc-history-switch-archives-sessions-left-open-561b78cfe5b4189dd0026fee ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
 - OBS-tc-history-session-archives-itself-at-done-0d438868f7c194b8c847d1e8 ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
 - OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
@@ -111,6 +117,9 @@ Archived lesson bundles:
 - OBS-tc-history-changelog-111-under-0-4-0-536c8c5dc891b6196d875a5d ProductTest Failed in local-macos-arm64 at 77b8e0f28b2a
 - OBS-tc-history-changelog-sessions-under-0-4-0-087a6e10606d28ec81c8e28c ProductTest Failed in local-macos-arm64 at 77b8e0f28b2a
 - OBS-tc-history-inbox-bounds-pinned-exactly-a3d8c4fb1a993f500fd75027 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
+- OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
+- OBS-product-test-dff775cc31b7e3161bf2186d ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-report-shows-every-field-548b2ac9b3d7b795e9aefe63 ProductTest Passed in local-macos-arm64 at 4edae0554e42
 
 ## Briefs
 

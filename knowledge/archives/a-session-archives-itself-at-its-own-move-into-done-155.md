@@ -14,6 +14,7 @@ criteria:
   - DRIVE-12
   - DRIVE-13
   - DRIVE-14
+  - DRIVE-16
   - DRIVE-3
   - KNOW-13
   - KNOW-23
@@ -38,7 +39,7 @@ verification records, the retention ledger and Git stay authoritative.
 - Status: hot (hot = the 3 most recently finalized archived changes)
 - Finalized: 2026-11-06T16:00:26Z
 - Modules: [history](../modules/history.md), [cli](../modules/cli.md)
-- Criteria: [DRIVE-12](../intent/drive.md), [DRIVE-13](../intent/drive.md), [DRIVE-14](../intent/drive.md), [DRIVE-3](../intent/drive.md), [KNOW-13](../intent/knowledge.md), [KNOW-23](../intent/knowledge.md), [LIFE-3](../intent/life.md), [LIFE-7](../intent/life.md), [LIFE-8](../intent/life.md)
+- Criteria: [DRIVE-12](../intent/drive.md), [DRIVE-13](../intent/drive.md), [DRIVE-14](../intent/drive.md), [DRIVE-16](../intent/drive.md), [DRIVE-3](../intent/drive.md), [KNOW-13](../intent/knowledge.md), [KNOW-23](../intent/knowledge.md), [LIFE-3](../intent/life.md), [LIFE-7](../intent/life.md), [LIFE-8](../intent/life.md)
 - Base commit: b09682e0cbb62f08e9bc1ab52f335311a3da4b8e
 - Implementation commit: 50c1759ba7fec0301dfac6a0f9b3323d79749c53
 - Verification commit: 50c1759ba7fec0301dfac6a0f9b3323d79749c53

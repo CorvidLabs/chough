@@ -1,6 +1,6 @@
 ---
 module: history
-version: 12
+version: 13
 status: active
 files:
   - src/history.rs
@@ -93,3 +93,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 11 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |
 | 12 | 2026-11-06 | keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143: Keep the archived session that holds the legacy history anchor out of the roll-up (143) |
 | 13 | 2026-11-06 | a-session-archives-itself-at-its-own-move-into-done-155: A session archives itself at its own move into done (155) |
+| 13 | 2026-11-06 | a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16: A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) |

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16",
+  "implementation_commit": "ede9c096e9194c484970f002510c2e0022465a9e",
+  "implementation_tree": "f56e406980fff084f2972551b73f2869de8eed8e",
+  "contract_digest": "da5743242d431d6e10faedcce3a4d2a130da3b9a44f265f695ea83c646a41444",
+  "workspace_digest": "48b7148908eed50f52ea045b6fb3fec5ef32370a6b7e272a807a4a37f20636f5",
+  "closing_digest": "e9496173933e1b00d25e1602400550b0141ba7e6b22292e9e0aa06410a217b79",
+  "review_digest": "c90bb73b41872268f1cd3541aa2726658c22a347b8f6a606de9fcfc23fa5c92d",
+  "finalization_digest": "d1fc35713d89a65f1d75597afb75791cf4d8c74a263275f9d4a0c26556dcee72",
+  "timestamp": 1793991828
+}

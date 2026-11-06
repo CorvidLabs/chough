@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "ede9c096e9194c484970f002510c2e0022465a9e",
+      "contract_digest": "da5743242d431d6e10faedcce3a4d2a130da3b9a44f265f695ea83c646a41444",
+      "execution_digest": "b86e495bc6112e9870bcf4475baaa7f4812192cf6edc035ae9425079590ba3d3",
+      "workspace_digest": "48b7148908eed50f52ea045b6fb3fec5ef32370a6b7e272a807a4a37f20636f5",
+      "timestamp": 1793991783
+    }
+  ]
+}

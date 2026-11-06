@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A session whose native change is archived on HEAD is finished even short of done
+  (#163, DRIVE-16), for example after a move into done timed out once SpecSync had
+  finalized the change. `session new` and `session use` archive it, and with no
+  active pointer it no longer makes other worktrees refuse with "several open
+  sessions". `chough session close <key> --reason <text>` closes abandoned work with
+  the reason recorded. Neither reads native state.
 - Bug links name their way out, and a mistaken duplicate can be reopened (#153, audit
   Bugs row, REQ-cli-054). `chough bug update <id> --status open` on a bug marked
   duplicate used to fail with "duplicate_of is only set for duplicate bugs"; changing a

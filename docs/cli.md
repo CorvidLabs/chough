@@ -507,12 +507,23 @@ every command uses `.chough/session.json` exactly as before.
   first). Adopt on the main line before branches diverge: a branch that still edits
   `.chough/session.json` conflicts once with the removal.
 - `chough session use <key>` makes an open session active. `session new` and `session
-  use` move every other open session whose stage is `done` to
-  `.chough/sessions/archive/<key>.json` with its bytes unchanged and report the keys
-  under `archived`. A done session with unfolded inbox entries stays open, so its
-  entries are not stranded; it is reported under `kept_open` with its
+  use` move every other finished session to `.chough/sessions/archive/<key>.json`
+  with its bytes unchanged and report the keys under `archived`. A session is
+  finished at stage `done`, or at any stage once its native change is archived on
+  HEAD, as an archive's `finalization.json` records; telling needs no native read
+  (#163, DRIVE-16). That covers a move into done that timed out after SpecSync
+  finalized the change. A finished session with unfolded inbox entries stays open, so
+  its entries are not stranded; it is reported under `kept_open` with its
   `inbox_unfolded` count. Make it active and run `chough inbox fold`, and the next
-  switch archives it.
+  switch archives it. With no active pointer, finished sessions do not count toward
+  several open sessions: the only unfinished one is active.
+- `chough session close <key> --reason <text>` closes an open session for abandoned
+  work, without a native read (#163, DRIVE-16). It adds the decision `Closed without
+  done: <reason>`, writes the session to `.chough/sessions/archive/<key>.json` (never
+  replacing a file), removes the open file and clears the active pointer when it
+  named that session. A blank reason, an archived or missing session, and a session
+  with unfolded inbox entries refuse with nothing changed; fold the entries first
+  with `chough session use <key>` and `chough inbox fold`.
 - At a successful move into done, the active session archives itself, last among the
   done steps and in its own change, and the active pointer is cleared (#155,
   REQ-history-006, DRIVE-13). It is reported as `applied.session_archive`: `archived`

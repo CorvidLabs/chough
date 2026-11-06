@@ -58,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.json](../attachments/find-the-legacy-496ccb51/sessions/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.json)
