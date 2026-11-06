@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9de79fd14b80b488780800e1",
-    "head": "EVT-c58d68266e066ae54dc268ec",
+    "head": "EVT-3310d743928a475b7308bd76",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -31,10 +31,15 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e",
+    "OBS-tc-cli-session-notes-union-90a6e1a6772009154dcfdce5"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve the scope, then implement the roll-up"
 }

@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29 (active; `specsync change status keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,10 @@ Archived lesson bundles:
 
 ## Observations
 
-372 recorded; most recent:
+374 recorded; most recent:
 
+- OBS-tc-cli-session-notes-union-90a6e1a6772009154dcfdce5 ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
+- OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
 - OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
 - OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
 - OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
@@ -105,8 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 - OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 - OBS-tc-cli-ledger-keeps-newest-and-moves-the-rest-5d279876a8ea8bfd6438b66f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
-- OBS-tc-cli-open-bug-keeps-links-89538a43c3a4b93c529e6b4b ProductTest Passed in local-linux-aarch64 at a5246bd81940
-- OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
 
 ## Briefs
 
