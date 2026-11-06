@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a",
+  "criteria": [
+    "DRIVE-15",
+    "DRIVE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-053"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test native -- --exact a_timed_out_prime_writes_nothing_kills_children_and_retries_cold for TC-cli-archive-cache-timeout: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a.log": "a7bbbc405dbcd3c2d7004a98c1d127a4875d1fde9a15cef79007aed84422316c"
+  },
+  "observed_at_unix_seconds": 1794007120,
+  "snapshot": {
+    "revision": "cfa2d10422259d677e9e6f28ae49e7380628de78",
+    "dirty": false,
+    "fingerprint": "a08a0833968f79ea8f807c05dc4bd84fc4b37f90896a500f7b1a22fb7c031bb2",
+    "content": "d9381ff305c9a69260e3adee50f95ee7a92fbc834d6f621a6ef70e9d66e0cc5f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-archive-cache-timeout",
+      "digest": "733e65ee61a0af0a69b1b62d5ab1f08e27ad6dfafdf92ec647d4d5234d28af59"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "native",
+    "--",
+    "--exact",
+    "a_timed_out_prime_writes_nothing_kills_children_and_retries_cold"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

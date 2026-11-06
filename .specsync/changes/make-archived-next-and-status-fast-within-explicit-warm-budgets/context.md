@@ -5,7 +5,7 @@ artifact: context
 
 # Context
 
-Issue #32 / plan C8 reports 3-6 s `next` and `status` on Chough's own repository. DRIVE-2 already asks for archived changes to use committed files or a digest-keyed cache, at most one native status read per command, and a `next` response within a few seconds. This package proposes the missing numeric budget and a narrow implementation; it is not yet human-approved.
+Issue #32 / plan C8 reports 3-6 s `next` and `status` on Chough's own repository. DRIVE-2 already asks for archived changes to use committed files or a digest-keyed cache, at most one native status read per command, and a `next` response within a few seconds. Leif approved the numeric budget and narrow implementation, then re-approved the addition of exactly `specs/cli/cli.spec.md` and `specs/cli/testing.md` to `affected_paths`; REQ-cli-053 is materialized.
 
 Profiling at `e99dc7961323e5c4e2aff1a2cf13333b0c47037e` on macOS arm64 with SpecSync 6.2.0 and 121 archives found:
 
@@ -25,3 +25,9 @@ The ID registry audit covered origin/main `260ecc949ea01214f4bec43b30ea4226ce8fa
 The checkpoint-cap owner retains `src/checkpoint.rs`, `src/sessions.rs`, `tests/cli.rs`, `tests/sessions.rs`, and session/capacity records. PR #133 also touches `src/evidence.rs`, `tests/next.rs`, `tests/common/mod.rs`, `docs/cli.md`, and `hi/drive.md`; merge main after it lands and preserve those edits. No rebase or force push is permitted.
 
 Rejected: parsing archive files and deciding terminal validity in Chough, because that creates a second native authority. Rejected: weakening a gate, dropping an invalidation input, increasing a timeout, or caching active native state to meet the number. Cold archived status and active-change native latency are measured but are not given a new latency promise in this change.
+
+## Closeout lessons
+
+- Observation, source OBS-tc-cli-archived-report-reuse-20f0b488f31ec8fa7fbbff14: at `cfa2d104` on the 147-archive macOS arm64 repository, ten warm release runs per command after one authenticated prime gave next p95/max 0.66/0.66 s and status 0.67/0.67 s. Representative snapshot hashes were 247-258 ms and separate wrapper runs made zero warm SpecSync calls. This is limited to that host and input tree; Raven and CI Fledge 1.8.0 were not measured. Future changes to report, snapshot or native-input code must retain the full identity guards and rerun the real budget rather than infer it from unit tests.
+- Verified, sources BUG-archived-reports-lack-bounded-authenticated-reuse-0536fdd42da0bab4c25202cf and BUG-specsync-symlink-cache-key-uses-unresolved-path-9205c0afb5fb77ec63d04630: preserved failing-first receipts preceded the cache and resolved-path corrections, and all five focused cases passed afterward. Cache identity must use the resolved SpecSync executable path and bytes, not the PATH symlink spelling.
+- Observation, source `.chough/artifacts/issue-32-next-status-latency/verify-integrated.log`: after a native send-back with `canonical_applied: false`, audit refused already-approved paths until `specsync change check` materialized the delta. A later lane also became stale when its own new log under `.chough/` changed the verification digest. Future closeout should materialize first, keep required post-materialization steps as plain task text, run the lane without writing into the verified tree, and refresh native verification after all Chough writes.

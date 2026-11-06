@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-496 recorded; most recent:
+505 recorded; most recent:
 
+- OBS-structural-d609d7d731efad7e2db11df1 Structural Passed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-archived-report-reuse-20f0b488f31ec8fa7fbbff14 ProductTest Passed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-snapshot-worker-identity-5eaeb6789f2e89031c77c344 ProductTest Passed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a ProductTest Passed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-archive-cache-invalidation-c6967565fd883fbf3ec5a0c3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-archived-report-reuse-59382721b25cc6f8e1ab97ce ProductTest Passed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7 ProductTest Failed in local-macos-arm64 at cfa2d1042225
+- OBS-tc-cli-archived-report-reuse-caa35ad0d8067f0b20169c34 ProductTest Failed in local-macos-arm64 at cfa2d1042225
 - OBS-tc-cli-change-invalid-bound-recovery-c177387564b8d1ef87a3ca52 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-sigterm-stops-specsync-954f09784932db762fbad2dc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-missing-specsync-recovery-e03af699a3453d46b2aafeb2 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-check-outlives-read-bound-6b6f8c12c429f4d6ced6dbbc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-steps-write-nothing-faff94c566bb9f21d3f4658b ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-steps-pass-through-ff1601248ad19f8e292363ca ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-steps-exact-arguments-b45af62e9645ac2b19daaf8a ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-product-test-af55b3e0d282e728bde7629e ProductTest Passed in local-linux-aarch64 at 3daef9eb3c1c
-- OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-closeout-closes-review-gate-8dadafef9ca3a33ff272628b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
 
 ## Briefs
 

@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bfa7e93bcea3966ef7705d22",
-    "head": "EVT-ddda3a0bad07d7c50a917387",
+    "head": "EVT-186a4b60dcd8cced87b3d196",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -23,7 +23,13 @@
     "requirements": [
       "REQ-cli-053"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-archived-report-reuse",
+      "TC-cli-archive-cache-invalidation",
+      "TC-cli-archive-cache-timeout",
+      "TC-cli-snapshot-worker-identity",
+      "TC-cli-specsync-symlink-reuse"
+    ],
     "design": [],
     "files": [
       "src/native.rs",
@@ -44,12 +50,29 @@
   "open_questions": [],
   "completed": [
     "Profiled no-active, active and archived native status plus fresh debug/release next/status on the 121-archive repository; measurements and limits are in .chough/artifacts/issue-32-next-status-latency/PROFILE.md.",
-    "Failing tests first: 1f94916d9a1c7b0c017b528838b9137e973cfa85. Implemented the read-only cache and exact snapshot workers at c1d4223b43c818027c377e90b04c97828548f889, then merged #141/main at ce9e140f0d86e0342531c45dd6e92af66c9a7e52."
+    "Failing tests first: 1f94916d9a1c7b0c017b528838b9137e973cfa85. Implemented the read-only cache and exact snapshot workers at c1d4223b43c818027c377e90b04c97828548f889, then merged #141/main at ce9e140f0d86e0342531c45dd6e92af66c9a7e52.",
+    "All five focused cases passed on cfa2d104; both preserved failure receipts are linked to verified local bugs. Full Fledge verify passed 10/10 before the latest main merge.",
+    "Final integrated release benchmark passed at cfa2d104 on 147 archives: next p95/max 0.66/0.66 s, status 0.67/0.67 s, with zero warm SpecSync calls."
   ],
-  "observations": [],
-  "bugs": [],
+  "observations": [
+    "OBS-tc-cli-archived-report-reuse-caa35ad0d8067f0b20169c34",
+    "OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7",
+    "OBS-tc-cli-archived-report-reuse-59382721b25cc6f8e1ab97ce",
+    "OBS-tc-cli-archive-cache-invalidation-c6967565fd883fbf3ec5a0c3",
+    "OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a",
+    "OBS-tc-cli-snapshot-worker-identity-5eaeb6789f2e89031c77c344",
+    "OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3",
+    "OBS-tc-cli-archived-report-reuse-20f0b488f31ec8fa7fbbff14",
+    "OBS-structural-d609d7d731efad7e2db11df1"
+  ],
+  "bugs": [
+    "BUG-archived-reports-lack-bounded-authenticated-reuse-0536fdd42da0bab4c25202cf",
+    "BUG-specsync-symlink-cache-key-uses-unresolved-path-9205c0afb5fb77ec63d04630"
+  ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of make-archived-next-and-status-fast-within-explicit-warm-budgets"
+  ],
   "run_consents": [],
-  "next_action": "Complete the Fledge verification lane, native materialization and focused case evidence"
+  "next_action": "Human implementation review of the PR; native review and finalize follow only the relayed decision"
 }
