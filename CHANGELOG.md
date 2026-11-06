@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Archived `next` and `status` reports can reuse SpecSync's authenticated verdict for
+  identical archive/native/Git inputs instead of repeating the slow native read
+  (REQ-cli-053, DRIVE-15, #32). The read state is `cached`; only those reports reuse it,
+  and stage moves, timing, retention and verification stay live. Shallow/replaced/
+  grafted/alternate history, active changes and every mismatch go live. A timed-out
+  prime writes no entry and keeps the existing deadline and descendant kill. The two
+  exact snapshot digest passes now run concurrently without changing freshness.
+
 - REQ-cli-013 no longer gives the librarian an `off` default. It defers to REQ-cli-015,
   so the requirements state one librarian default, `on`, which is what the runtime
   reports (#124, audit D8). Behavior is unchanged.

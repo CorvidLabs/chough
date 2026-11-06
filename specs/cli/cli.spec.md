@@ -11,6 +11,7 @@ files:
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
+  - src/native.rs
   - src/native_check.rs
   - src/policy.rs
   - src/prefs.rs
@@ -27,6 +28,7 @@ files:
   - tests/package.rs
   - tests/stages.rs
   - tests/common/mod.rs
+  - tests/native.rs
   - tests/workflow_authority.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md

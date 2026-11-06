@@ -1,0 +1,35 @@
+▶️ Running task: test
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-perf32)
+warning: function `default_history` is never used
+   --> src/native.rs:406:4
+    |
+406 | fn default_history(root: &Path) -> Option<bool> {
+    |    ^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `chough` (bin "chough") generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.52s
+     Running tests/native.rs (target/debug/deps/native-1ef32f46c050f248)
+
+running 1 test
+test every_cache_identity_mismatch_or_untrusted_entry_goes_live ... FAILED
+
+failures:
+
+---- every_cache_identity_mismatch_or_untrusted_entry_goes_live stdout ----
+
+thread 'every_cache_identity_mismatch_or_untrusted_entry_goes_live' (159928346) panicked at tests/native.rs:88:5:
+assertion `left == right` failed: shallow boundary: no live read
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    every_cache_identity_mismatch_or_untrusted_entry_goes_live
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 11.98s
+
+error: test failed, to rerun pass `--test native`
+error: Task 'test' failed with exit code 101

@@ -13,6 +13,7 @@ const MARKER: &str = "chough_archive_authentication";
 
 #[cfg(unix)]
 const NATIVE_STUB: &str = r#"#!/bin/sh
+if [ "$1" = --version ]; then printf 'specsync 6.2.0\n'; exit 0; fi
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
 if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f .stub-sleep ]; then
@@ -161,7 +162,7 @@ fn every_cache_identity_mismatch_or_untrusted_entry_goes_live() {
     fixture.write(".git/shallow", &format!("{revision}\n"));
     expect_live(&fixture, "shallow boundary");
     remove(&fixture, ".git/shallow");
-    expect_live(&fixture, "removed shallow boundary");
+    expect_cached(&fixture, "removed shallow boundary");
 
     fixture.write(
         &format!(".git/refs/replace/{revision}"),
@@ -169,12 +170,12 @@ fn every_cache_identity_mismatch_or_untrusted_entry_goes_live() {
     );
     expect_live(&fixture, "replace ref");
     remove(&fixture, format!(".git/refs/replace/{revision}"));
-    expect_live(&fixture, "removed replace ref");
+    expect_cached(&fixture, "removed replace ref");
 
     fixture.write(".git/info/grafts", &format!("{revision}\n"));
     expect_live(&fixture, "grafts");
     remove(&fixture, ".git/info/grafts");
-    expect_live(&fixture, "removed grafts");
+    expect_cached(&fixture, "removed grafts");
 
     let objects = fixture.root().join("other-objects");
     fs::create_dir(&objects).unwrap();
@@ -184,7 +185,7 @@ fn every_cache_identity_mismatch_or_untrusted_entry_goes_live() {
     );
     expect_live(&fixture, "alternates");
     remove(&fixture, ".git/objects/info/alternates");
-    expect_live(&fixture, "removed alternates");
+    expect_cached(&fixture, "removed alternates");
 
     fixture.git(&["checkout", "-q", "--orphan", "rewritten"]);
     fixture.commit("rewritten history");
@@ -269,7 +270,7 @@ fn a_live_reply_cannot_supply_the_cached_proof_marker() {
     fixture.write(
         "bin/specsync",
         &format!(
-            "#!/bin/sh\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf '%s\\n' '{{\"summary\":{{\"id\":\"old-change\",\"state\":\"archived\",\"next_action\":\"none\",\"correction_valid\":true,\"approval_valid\":true,\"terminal_evidence\":{{\"validity\":\"authenticated-history\"}}}},\"change\":{{\"id\":\"old-change\",\"state\":\"archived\"}},\"acceptance_entries\":[],\"{MARKER}\":{forged}}}'\n"
+            "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.2.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf '%s\\n' '{{\"summary\":{{\"id\":\"old-change\",\"state\":\"archived\",\"next_action\":\"none\",\"correction_valid\":true,\"approval_valid\":true,\"terminal_evidence\":{{\"validity\":\"authenticated-history\"}}}},\"change\":{{\"id\":\"old-change\",\"state\":\"archived\"}},\"acceptance_entries\":[],\"{MARKER}\":{forged}}}'\n"
         ),
     );
     fixture.executable("bin/specsync");
@@ -352,4 +353,38 @@ fn snapshot_identities_and_change_front_matter_rules_stay_exact() {
     );
     assert!(changed["snapshot"]["dirty"].as_bool().unwrap());
     assert_eq!(changed["snapshot"]["revision"], json!(head(&fixture)));
+}
+
+#[cfg(unix)]
+#[test]
+fn failed_malformed_and_oversized_inputs_never_become_authenticated() {
+    for mode in ["failed", "invalid-output"] {
+        let fixture = archived();
+        if mode == "failed" {
+            fixture.write(".stub-fail", "");
+        } else {
+            fixture.write(
+                "bin/specsync",
+                "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.2.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf 'not json\\n'\n",
+            );
+            fixture.executable("bin/specsync");
+        }
+        for _ in 0..2 {
+            let next = fixture.ok(&["next", "--json"]);
+            assert_eq!(fixture.native_calls(), 1, "{mode}: not read live");
+            assert_eq!(next["native"]["read"], json!(mode), "{next:#}");
+            assert_eq!(cache_entries(&fixture), 0, "{mode}: recorded");
+        }
+    }
+
+    let fixture = archived();
+    prime(&fixture);
+    let entry = fs::read_dir(cache_dir(&fixture))
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap()
+        .path();
+    fs::write(&entry, vec![b'x'; 8 * 1024 * 1024 + 1]).unwrap();
+    expect_live(&fixture, "oversized entry");
 }

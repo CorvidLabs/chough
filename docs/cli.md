@@ -556,25 +556,63 @@ were stopped`), descendants that held output after exit (`... and were stopped` 
 `... and could not be stopped`) and `output capture incomplete`. A run whose capture
 is incomplete is never `passed`.
 
-Native section states are `observed`; `failed` for a non-zero exit or output that
-stayed open and could not be read completely; `unavailable` when the command cannot
-start or `CHOUGH_NATIVE_TIMEOUT_SECONDS` is not a whole number from 1 to 3600 (the
-command is then not run); `timed-out`; and, for JSON status, `oversized` and
-`invalid-output`. A `failed` section's content starts with how the command ended, in
-plain words: `exit <code>`, `killed by signal <number>`, `timed out` or `no exit
-status`, then its bounded output (#87). Each state other than `observed` leaves
-lifecycle state unknown,
-and gated transitions refuse it as `refused:native-unknown`. Without a SpecSync
+Native section states are `observed`; `cached` for a reused archived report as described
+below; `failed` for a non-zero exit or output that stayed open and could not be read
+completely; `unavailable` when the command cannot start or
+`CHOUGH_NATIVE_TIMEOUT_SECONDS` is not a whole number from 1 to 3600 (the command is
+then not run); `timed-out`; and, for JSON status, `oversized` and `invalid-output`. A
+`failed` section's content starts with how the command ended, in plain words: `exit
+<code>`, `killed by signal <number>`, `timed out` or `no exit status`, then its bounded
+output (#87). Each state other than `observed` or `cached` leaves lifecycle state
+unknown, and gated transitions refuse it as `refused:native-unknown`. Without a SpecSync
 configuration, status reports `not-configured` and transitions are not natively gated.
 With SpecSync configured and SDD enabled but no native change recorded, gated
 transitions run no status command and refuse as `refused:no-native-change`, while
 `status` and `next` still show the unscoped `specsync change status --json`. Record
 the change with `chough checkpoint --native-change <id>`.
 
+### Authenticated archived report reuse
+
+For a checkpoint whose native change is archived, `next` and `status` can reuse a
+previous `specsync change status <id> --json` response only when SpecSync reported the
+same archived change with `authenticated-history`. The report's native read state is
+`cached`. Chough does not parse an archive and decide validity itself, and active-change
+responses are never cached.
+
+Entries live at `<git common dir>/chough/archive-auth/<sha256 of change id>.json`,
+outside tracked inputs and Chough's session/history records. This is trusted local state
+like the rest of `.git`, not human approval or a second lifecycle ledger. Delete that
+directory to force live reads; doing so never changes native state.
+
+Reuse requires the same archive bytes and Git tree/carrying history, resolved SpecSync
+binary bytes and recorded version, native policy/configuration/baselines, and a default
+full-history setup. Any shallow boundary, replace ref, graft or alternate-object
+configuration disables reuse and priming. Missing, malformed, oversized, symlinked,
+mismatched or unproven entries fall back to one bounded live status read. A live response
+cannot supply the cached marker. Cache identity is checked again after a slow live read
+before anything is recorded.
+
+Only `next` and `status` use an entry. Stage transitions, timing, retention, native
+verification and every other lifecycle operation always call SpecSync live, even after a
+warm report, with the same gate predicates, deadlines and output bounds.
+
+Only a completed authenticated response primes an entry. A timed-out prime writes no
+entry, keeps the existing 120-second deadline and descendant kill, and produces no warm
+result: the next invocation retries a bounded cold read. Under sufficient load, cold
+SpecSync status can exceed that deadline repeatedly; this change does not hide or extend
+it. The approved warm budget is measured only after a successful prime: on the
+121-archive macOS arm64 Chough repository, ten release runs of each command must have
+p95 at or below 2000 ms and every run at or below 3000 ms (DRIVE-15).
+
+Snapshot hashing keeps its exact legacy and content digest streams but computes the two
+independent ordered passes concurrently. There is no persistent evidence-fingerprint
+cache or metadata-only freshness shortcut.
+
 ## The next view
 
 `chough next` is what a resuming agent reads first; `chough status` is the full view.
-It makes one `specsync change status` read, evaluates the gate for the next main
+It makes at most one `specsync change status` read, or reuses an authenticated archived
+response as above, and evaluates the gate for the next main
 stage on that response, and shows:
 
 | JSON field | Content |
@@ -1168,9 +1206,10 @@ completed cycle.
 
 ### Timing native reads
 
-These rules (REQ-reporting-002, was REQ-cli-024) apply only to `chough timing`. Stage moves, `chough next`
-and `chough status` keep their one authoritative native read with the per-read
-deadline above, and gates still refuse every unknown native state.
+These rules (REQ-reporting-002, was REQ-cli-024) apply only to `chough timing`. Stage
+moves always make their live native read with the per-read deadline above, and gates
+still refuse every unknown native state. `next` and `status` can instead reuse an
+authenticated archived response only as described above; timing never uses that entry.
 
 - **One read per change.** Each distinct change ID is passed to `specsync change
   status` at most once per report. The response is reused wherever the report shows
@@ -1203,9 +1242,10 @@ deadline above, and gates still refuse every unknown native state.
   1024 bytes. Without it, stdout and stderr are unchanged; a trace never changes the
   report, a record or the exit code.
 
-These rules do not make `next` or `status` faster: their one read of an archived
-change still takes as long as SpecSync takes, which measured about 50 s on this
-repository in one sample (see [issue #32](https://github.com/CorvidLabs/chough/issues/32)).
+Timing's request-local deduplication does not reuse the archived-report entry. A cold or
+invalid archived report still takes as long as SpecSync takes; only a completed
+authenticated response can make later `next` or `status` reports cached (see
+[issue #32](https://github.com/CorvidLabs/chough/issues/32)).
 
 Gate records also take slots in the recent-transition windows of `chough context`
 (20) and `stage show` (10), so those windows can show fewer stage moves than before.
@@ -1237,5 +1277,6 @@ Profile old/new freshly built binaries against identical frozen inputs. Record t
 revision, source patch if dirty, binary hash, build profile, input sizes, flags and
 native outcomes. A first process does not imply a purged OS cache. A native timeout
 is incomplete qualification even when the reporting command exits zero; a sum of
-zero completed native calls is not zero native work. Local read reuse does not fix
-or bypass expensive native authentication.
+zero completed native calls is not zero native work. Request-local case reuse alone
+does not fix expensive native authentication, and authenticated archived reuse never
+proves that a later live gate or native check passed.
