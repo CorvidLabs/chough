@@ -1,6 +1,6 @@
 ---
 id: name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18
-state: approved
+state: implementing
 type: documentation
 base_commit: 69caa0e721d0a150652fd50b7104fcb6f4e444a7
 ---
