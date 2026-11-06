@@ -1086,6 +1086,7 @@ fn an_archived_session_file_reference_protects_nothing() {
         json!([".chough/artifacts/old-pr/notes.log"]),
         "the archived session itself is not rewritten"
     );
+}
 
 /// Runs of TC-b in a2's cold cycle: f1 failed, p1 passed after it, x1 another pass; the
 /// unlinked f2 (a later failure) and n1 (the newest run) keep KNOW-17's protections off
