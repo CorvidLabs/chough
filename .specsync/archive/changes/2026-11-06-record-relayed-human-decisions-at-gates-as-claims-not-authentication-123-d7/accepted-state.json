@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7",
+  "slug": "record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7",
+  "title": "Record relayed human decisions at gates as claims, not authentication (123, D7)",
+  "description": "Record relayed human decisions at gates as claims, not authentication (123, D7)",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
+  "created_at": 1793935209,
+  "updated_at": 1793940457,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    ".agents/skills/chough-workflow",
+    "skills/chough-workflow",
+    "src/checkpoint.rs",
+    "src/stage.rs",
+    "src/history.rs",
+    "src/main.rs",
+    "src/skill.rs",
+    "tests/relay.rs",
+    "tests/stages.rs",
+    "tests/history.rs",
+    "tests/package.rs",
+    "tests/workflow_authority.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "docs/architecture.md",
+    "docs/walkthrough.md",
+    "README.md",
+    "CHANGELOG.md",
+    "hi/flow.md",
+    "INTENT.md",
+    ".chough/cases/cli.relayed-decisions.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough checkpoint --close-gate with --decided-by, --words, --where and --recorded-by closes only the named open gate, appends one gate-closed event carrying relayed_by with exactly those four values, and adds one decision marked a relayed claim, not authenticated, which chough next shows from a fresh process; every other gate stays open and still holds advance and skip.",
+    "A missing or blank relay value, relay values without --close-gate, a gate text that is not open, and a decision over 4096 bytes each refuse with the checkpoint and history unchanged, and a test runs the recovery each refusal names and sees it succeed.",
+    "A relayed decision leaves every SpecSync file byte-identical and never satisfies a native gate: with a draft change, advance to build stays refused after its scope gate is closed with a relay; --clear-awaiting-human still withdraws every gate with no relay and no decision.",
+    "Transitions without relayed_by keep their exact bytes; a relayed gate-closed record reads back with the same four values from history events and from the legacy log; a relayed_by with a missing, blank, over-long or unknown key, or on any other kind, is refused as an invalid payload.",
+    "The awaiting-human refusal and waiting action name --close-gate; README, the skill and its installed copy, docs/cli.md, docs/FRD.md and the cli spec's helper invariant describe approvals and reviews as recorded claims bound to their content, not authenticated identity. The new tests fail first, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "FLOW-16 and the relayed_by shape approved by Leif (\"Approve shape + FLOW-16\", 2026-11-05 20:18 MST, Herdr orc tab, relayed by orc t18); --clear-awaiting-human kept (option A); FLOW-10 unchanged; no authentication or signing (spec-sync#633); every existing refusal, bound and test kept; REQ-history-005 pattern for the optional field.",
+    "public_contract": "yes"
+  }
+}

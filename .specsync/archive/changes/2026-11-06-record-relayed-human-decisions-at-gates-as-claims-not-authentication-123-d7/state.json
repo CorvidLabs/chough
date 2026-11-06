@@ -7,11 +7,11 @@
   "title": "Record relayed human decisions at gates as claims, not authentication (123, D7)",
   "description": "Record relayed human decisions at gates as claims, not authentication (123, D7)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
   "created_at": 1793935209,
-  "updated_at": 1793938914,
+  "updated_at": 1793940480,
   "affected_specs": [
     "cli",
     "history"
