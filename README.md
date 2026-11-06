@@ -135,6 +135,7 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `checkpoint`, `migrate` | Keep the checkpoint, record relayed gate decisions and merge parallel edits; migrate schema 1 explicitly |
 | `session new/adopt/use/list/close/shelve`, `inbox add/list/fold` | One checkpoint per change or objective; subagents report through a create-only inbox |
 | `doctor` | Find, and with `--fix` repair, the Chough debt that stops a fresh worktree from entering Chough; no flag or `--dry-run` only reports |
+| `change new/answer/check/status` | Run SpecSync's change new, answer, check (with `--commit`) and status steps, passing their output, refusals and exit code through unchanged |
 | `stage …` | Show, advance (one stage or `--to` several), skip, iterate, back, reset, pause, resume, enter and return, and backfill a move that already happened |
 | `history show/adopt/prune` | Inspect, adopt and prune the immutable transition history |
 | `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
