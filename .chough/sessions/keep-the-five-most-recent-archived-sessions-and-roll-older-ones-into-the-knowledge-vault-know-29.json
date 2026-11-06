@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9de79fd14b80b488780800e1",
-    "head": "EVT-3310d743928a475b7308bd76",
+    "head": "EVT-216afb5cd3476f6dc368316c",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -28,7 +28,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "PR #135 (KNOW-29) accepted by Leif (0xLeif), 2026-11-05 21:01 MST through the orc: Record and merge; his native review (pass) recorded at 3be6c5e4."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -37,9 +39,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif to approve the scope, then implement the roll-up"
 }

@@ -61,4 +61,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.json](../attachments/union-merge-bbc77533/sessions/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.json)

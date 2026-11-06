@@ -58,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/union-merge-the-generated-bug-notes-128.json](../attachments/union-merge-the-38ae144e/sessions/union-merge-the-generated-bug-notes-128.json)

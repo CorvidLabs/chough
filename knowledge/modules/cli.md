@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 105
+archived_changes: 106
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-105 archived changes, newest first.
+106 archived changes, newest first.
 
+- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)
 - [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](../archives/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.md) Read requirements with CRLF line endings in the librarian-default test (131 Windows)
 - [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](../archives/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.md) One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8)
@@ -42,5 +43,4 @@ this note only links them.
 - [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](../archives/rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their.md) Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](../archives/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.md) Restore the test closing brace lost when merging main into KNOW-22 (121)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](../archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)
-- [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](../archives/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.md) Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21)
-- 95 more on the [timeline](../timeline.md)
+- 96 more on the [timeline](../timeline.md)
