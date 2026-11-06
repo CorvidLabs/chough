@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-closeout-closes-review-gate-0b30553d30e616c34b4082dc",
+  "criteria": [
+    "FLOW-18",
+    "FLOW-16"
+  ],
+  "requirements": [
+    "REQ-cli-050"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact closeout_guidance_closes_the_review_gate_with_the_relayed_decision for TC-cli-closeout-closes-review-gate: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-closeout-closes-review-gate-0b30553d30e616c34b4082dc.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-closeout-closes-review-gate-0b30553d30e616c34b4082dc.log": "65550c387c4d3807d5a75711048732de85f6732a0af7519c4e9b412fc26ada91"
+  },
+  "observed_at_unix_seconds": 1793996772,
+  "snapshot": {
+    "revision": "e017ebe5fee73e81e8aa092ba362f9cb1b893017",
+    "dirty": true,
+    "fingerprint": "135c0f54a0bb3904838d265a244649fee29a6c29395f9ec082e01439a0d21921",
+    "content": "b7cfc908710c9ece287eaa7bd7cd98eec515e247cfb5f4bc9fc0abb1b2fe76b5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-closeout-closes-review-gate",
+      "digest": "97a61423dadaa094eab715faeb0f1087bd99c7afb7ab96732e4cedf39aa01313"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "closeout_guidance_closes_the_review_gate_with_the_relayed_decision"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

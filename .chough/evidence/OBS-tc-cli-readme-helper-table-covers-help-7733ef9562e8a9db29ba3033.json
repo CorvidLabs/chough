@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-readme-helper-table-covers-help-7733ef9562e8a9db29ba3033",
+  "criteria": [
+    "FLOW-18",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact readme_helper_table_names_every_command_the_helper_lists for TC-cli-readme-helper-table-covers-help: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-readme-helper-table-covers-help-7733ef9562e8a9db29ba3033.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-readme-helper-table-covers-help-7733ef9562e8a9db29ba3033.log": "88f94b568003554b8de575687a322cc5a7967c7612c16c5f783d7e661fdcd530"
+  },
+  "observed_at_unix_seconds": 1793995997,
+  "snapshot": {
+    "revision": "15cdaef2c48f5ce02f9fd5caaa6fdf5dc246f8d4",
+    "dirty": true,
+    "fingerprint": "1f61e1719104e62cc5a7126012f5bdcc9e191d21e0927399ad819181e0f395de",
+    "content": "73253d5af58765136022d15e928e585c2cba71e74e844e4b188c55cac2e649f1"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-readme-helper-table-covers-help",
+      "digest": "ceb5661bfa42aba6427816c6570519bcee4122e58423ab49691845f07f6726e0"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "readme_helper_table_names_every_command_the_helper_lists"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

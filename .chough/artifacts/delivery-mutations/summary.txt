@@ -1,4 +1,0 @@
-copy-localization-never-selected: new test FAILED (caught); old test passed (gap shown)
-live-health-kind-not-accepted: new test FAILED (caught); old test passed (gap shown)
-deployment-counted-routine: new test FAILED (caught); old test passed (gap shown)
-dry-run-counted-non-routine: new test FAILED (caught); old test passed (gap shown)

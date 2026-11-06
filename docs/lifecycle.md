@@ -11,11 +11,10 @@ status` take precedence over any cached sequence.
 ```mermaid
 flowchart TB
     intent["intent: HI criteria, FRD, one intent decision"] --> design["design: only for visual changes"]
-    intent -. "skip design with a reason" .-> plan
-    design --> plan["plan: native change, one scope approval"]
+    design -->|"advance, or skip with a reason when nothing is visual"| plan["plan: native change, one scope approval"]
     plan -->|"gate: native definition approved"| build["build: approved tasks"]
     build -->|"gate: native approval valid or archived"| test["test: focused cases, three tracks"]
-    test -->|"gate: no open blocking bug; native approval valid or archived"| accept["accept: evidence for human review"]
+    test -->|"gate: no open blocking bug or unlinked failure; native approval valid or archived"| accept["accept: evidence for human review"]
     accept -->|"gate: native change archived, terminal evidence authenticates"| done["done"]
     done -. "only on request or standing setting" .-> release["release: optional, real commands"]
     release -->|"same archive gate"| done
@@ -68,7 +67,7 @@ flowchart TB
     build --> tests
     human -->|"approved"| review["specsync change review"]
     review -->|"no commit in between"| ship["specsync change ship or finalize (same PR)"]
-    ship --> archive["Clear the gate, stage advance; commit"]
+    ship --> archive["Review gate: --close-gate, then stage advance; commit"]
     archive --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
     merge -. "only if authorized" .-> release["Optional release with real commands"]
@@ -85,7 +84,9 @@ The order before the review is: when the delta adds or modifies requirements, ru
 gate with `chough checkpoint --awaiting-human`; commit the source together with
 `.chough/`; `specsync change check <id> --commit`; present the work. After the human
 decision come `specsync change review`, then `ship` or `finalize`, and only then
-clearing the gate and `chough stage advance`. Between the check and finalize, nothing
+closing the review gate with the human's relayed decision (`chough checkpoint
+--close-gate "<gate>" --decided-by ... --words ... --where ... --recorded-by ...`) and
+`chough stage advance`. Between the check and finalize, nothing
 writes to `.chough/` and nothing is committed. The closeout is archive-first: the
 hosted Archive gate refuses while a native change is open, so only after finalize and
 the done move do you commit, then push and observe hosted CI at the archived tip
@@ -95,10 +96,12 @@ and do not wait on it.
 This order is an interim measure. Chough's observations stay current across
 commits of its own records and SpecSync's bookkeeping, because freshness compares
 content and leaves those records out. SpecSync's verification digest, however, covers
-every non-ignored file, including `.chough/`, and has no exclusion setting; until
-SpecSync offers an opt-in verification exclusion (the proposed upstream
-`verification_ignored_paths`), any Chough write in that window forces another
-`change check`.
+every non-ignored file, including `.chough/`. SpecSync 6.1.2 and later ship an opt-in
+exclusion, `verification_ignored_paths` in `.specsync/sdd.json`, but this repository
+has not adopted it: its entries are directory prefixes, so covering
+`.chough/session.json` would also hide `.chough/cases/`, whose case definitions must
+stay verified. Unless a project lists only directories that are safe to leave out,
+any Chough write in that window forces another `change check`.
 
 `specsync change check <id> --commit` materializes the approved delta and records
 targeted structural verification; it does not run product tests and refuses while

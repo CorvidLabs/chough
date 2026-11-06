@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d",
+  "title": "README, docs, workflow skill and diagrams drift from what main does",
+  "symptom": "Docs, the workflow skill and two diagrams describe behavior main no longer has: a skip edge from intent to plan, a test to accept gate without the unlinked failure, 'Optional librarian', 'clear the gate', SpecSync 6.1 and 6.1.2 as current, a README helper table without history, session, inbox, bug merge and skill remove-legacy, a cli.md .gitattributes block missing four lines, and the 615b587b skill files reading as current",
+  "trigger": "cargo test --locked --test docs at 7039f68b (base 615b587b plus the FLOW-18 checks)",
+  "expected": "tests/docs.rs passes: every page, the skill and the diagrams match the helper, fledge.toml, .gitattributes and the CI pins (FLOW-18)",
+  "actual": "8 of 10 checks in tests/docs.rs fail; the flag and link checks pass",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [],
+  "cases": [
+    "TC-cli-stage-diagram-matches-the-helper",
+    "TC-cli-inline-diagrams-match-sources",
+    "TC-cli-readme-helper-table-covers-help",
+    "TC-cli-readme-verify-list-matches-fledge",
+    "TC-cli-documented-merge-drivers-match",
+    "TC-cli-docs-name-pinned-versions",
+    "TC-cli-closeout-closes-review-gate",
+    "TC-cli-skill-615b587b-known-outdated"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "7039f68b5d4a84f4506a53e8d720e7ac24c5d316",
+  "steps": [
+    "cargo test --locked --test docs"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9",
+    "OBS-tc-cli-docs-name-pinned-versions-2909e52082ea849ecbdd5980",
+    "OBS-tc-cli-documented-merge-drivers-match-a6a7136235f460d66b8cd4c5",
+    "OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488",
+    "OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c",
+    "OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb",
+    "OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a",
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72",
+    "OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325",
+    "OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b",
+    "OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a",
+    "OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad",
+    "OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931",
+    "OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc",
+    "OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20",
+    "OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd",
+    "OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3",
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681",
+    "OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43",
+    "OBS-tc-cli-closeout-closes-review-gate-2b35e8a8e6a4584f4d27d6fd"
+  ],
+  "impact": "An agent or person following the docs or skill resumes from the wrong files, clears instead of closes the review gate, or uses a stale SpecSync version",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "ch-docs-accuracy audit, ../ch-docs-findings.md",
+  "notes": [
+    {
+      "at_unix_seconds": 1793982542,
+      "text": "status: open -> verified. Fixed by de02abd0: tests/docs.rs passes 10 of 10 at the materialized change; all ten FLOW-18 cases passed on local-macos-arm64 after the failures of 7039f68b",
+      "observations": [
+        "OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325",
+        "OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b",
+        "OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a",
+        "OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad",
+        "OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931",
+        "OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc",
+        "OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20",
+        "OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd",
+        "OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3",
+        "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793983424,
+      "text": "status: verified -> open. Reopened: the strengthened closeout check (3cf076e0) finds \"clear gate\" in the skill's lifecycle reference and its .agents copy",
+      "observations": [
+        "OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793983448,
+      "text": "status: open -> verified. Fixed: the lifecycle reference's change shape says close gate (--close-gate); the closeout check passes",
+      "observations": [
+        "OBS-tc-cli-closeout-closes-review-gate-2b35e8a8e6a4584f4d27d6fd"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793980107,
+  "updated_at_unix_seconds": 1793983448
+}

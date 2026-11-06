@@ -64,7 +64,7 @@ hi --version; specsync --version; fledge --version
 ```
 
 Use the same SpecSync version for every lifecycle writer and CI (this repository uses
-6.1.2). In the project:
+6.2.0). In the project:
 
 ```sh
 chough init --objective "Free shipping from fifty dollars" \
@@ -155,11 +155,14 @@ Before presenting, the agent records the gate (`chough checkpoint --awaiting-hum
 together with `.chough/`, runs `specsync change check free-shipping-at-the-threshold
 --commit` and presents the work. Your implementation review is the decision; only
 after it does the agent run `specsync change review` and then `ship` or `finalize` on
-the same pull request, writing nothing to `.chough/` in between, and only then clears
-the gate, runs `chough stage advance` and commits. It then finalizes before it pushes
-and observes CI, because the hosted Archive gate refuses while the change is open. See [the closeout
-order](lifecycle.md#acceptance-and-native-closeout). Release is a separate, optional
-request.
+the same pull request, writing nothing to `.chough/` in between. Only then does it
+close the review gate with your decision as a relayed claim (`chough checkpoint
+--close-gate "Implementation review of free-shipping-at-the-threshold" --decided-by
+"<you>" --words "<your words>" --where "<where and when>" --recorded-by
+"<agent-account>"`), run `chough stage advance` and commit. Pushing and observing CI
+come last, because the hosted Archive gate refuses while the change is open. See [the
+closeout order](lifecycle.md#acceptance-and-native-closeout). Release is a separate,
+optional request.
 
 ## Resume cold
 
