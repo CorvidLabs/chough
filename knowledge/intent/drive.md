@@ -17,6 +17,8 @@ criteria:
   - DRIVE-10
   - DRIVE-11
   - DRIVE-12
+  - DRIVE-13
+  - DRIVE-14
 tags:
   - chough/intent
 ---
@@ -41,3 +43,5 @@ archived changes whose requirements trace it.
 - **DRIVE-10**: none yet
 - **DRIVE-11**: [keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy](../archives/keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy.md)
 - **DRIVE-12**: [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](../archives/rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their.md), [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](../archives/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.md)
+- **DRIVE-13**: none yet
+- **DRIVE-14**: none yet

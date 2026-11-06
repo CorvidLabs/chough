@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "e89be5d75f6e31d49592687cbb8e2980de0bca07",
+      "contract_digest": "59015952f337aadfb12021d6eee49768ededdd891c31fc7a7d573ad438fe33c6",
+      "execution_digest": "32b651a51aa0f6c100f869bbc059118e152431234fccc2a0958fc64c29398b52",
+      "workspace_digest": "962246b15ba775ff309fe8a0e9e3d1cf44b4918c565ac684cd332cf304cd615f",
+      "timestamp": 1793933398
+    }
+  ]
+}

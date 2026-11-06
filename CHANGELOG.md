@@ -21,6 +21,9 @@ All notable changes to Chough are recorded here. The format follows
   breaks `session list`, `session new`, `session use` or another session's `next`;
   `session list` reports it and names `shelve` (REQ-history-006).
 
+- REQ-cli-013 no longer gives the librarian an `off` default. It defers to REQ-cli-015,
+  so the requirements state one librarian default, `on`, which is what the runtime
+  reports (#124, audit D8). Behavior is unchanged.
 - The workflow skill and docs now teach an archive-first closeout (#122, audit D5).
   The order is: verify locally, the human's implementation review, the native review,
   finalize and the done move, and only then push and observe CI. The hosted Archive
