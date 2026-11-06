@@ -1206,3 +1206,119 @@ fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
         assert_eq!(f.ok(&["history", "prune"])["complete"], true);
     }
 }
+
+/// CH-19 (REQ-history-003): recent traversal stops at exactly 512 KiB. Events of 8,192
+/// bytes reach 524,288 bytes after 64 events, before the 128-event bound, so routine
+/// reads take exactly 64; a bound one byte larger would read a 65th.
+#[test]
+fn recent_traversal_stops_at_exactly_512_kib() {
+    let f = Fixture::new();
+    init(&f);
+    chain(&f, 100, Some(8_192));
+    let status = f.ok(&["status"]);
+    assert_eq!(
+        status["transition_history"]["events_read"], 64,
+        "{status:#}"
+    );
+    assert_eq!(
+        status["transition_history"]["bytes_read"], 524_288,
+        "{status:#}"
+    );
+
+    // Events are read newest first, so the 64th read is index 36 of 100. One byte more
+    // there does not fit the 8,192 bytes left of 512 KiB: the read stops at 63 events,
+    // where a bound one byte larger would read it.
+    let f = Fixture::new();
+    init(&f);
+    chain(&f, 100, Some(8_192));
+    let cycle = f.session()["history_cursor"]["cycle"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let path = format!(".chough/history/cycles/{cycle}/EVT-{:024x}.json", 36);
+    let text = f.read(&path);
+    f.write(&path, &format!("{text} "));
+    let status = f.ok(&["status"]);
+    assert_eq!(
+        status["transition_history"]["events_read"], 63,
+        "{status:#}"
+    );
+    assert_eq!(
+        status["transition_history"]["bytes_read"], 516_096,
+        "{status:#}"
+    );
+}
+
+/// CH-19 (REQ-history-003): a cycle of exactly 16 MiB is read whole and is full (the
+/// next event does not fit: "capacity reached"); one byte more is past the 16 MiB read
+/// budget, so the cycle reads as partial and appending refuses ("partial history"). The
+/// checkpoint is unchanged either way.
+#[test]
+fn a_cycle_of_exactly_16_mib_is_full_and_one_byte_more_is_over_its_bound() {
+    for (extra, expected) in [(0usize, "capacity reached"), (1, "partial history")] {
+        let f = Fixture::new();
+        init(&f);
+        // 257 events, each within the 65,536-byte event bound: 255 of 65,536, one of
+        // 64,537 and one of 999 + extra bytes, 16,777,216 + extra in all.
+        chain(&f, 257, None);
+        let session = f.session();
+        let cycle = session["history_cursor"]["cycle"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        for index in 0..257usize {
+            let size = match index {
+                0..=254 => 65_536,
+                255 => 64_537,
+                _ => 999 + extra,
+            };
+            let path = format!(".chough/history/cycles/{cycle}/EVT-{index:024x}.json");
+            let text = f.read(&path);
+            assert!(text.len() <= size, "{index}");
+            f.write(&path, &format!("{text}{}", " ".repeat(size - text.len())));
+        }
+        let before = f.read(".chough/session.json");
+        let refused = f.fails(&["stage", "iterate", "--note", "one more"]);
+        assert!(refused.contains(expected), "{extra}: {refused}");
+        assert_eq!(f.read(".chough/session.json"), before, "{extra}");
+    }
+}
+
+/// CH-19 (REQ-history-003): a retention receipt of exactly 1 MiB is read and an
+/// interrupted plan resumes; one byte more is refused and nothing is removed.
+#[test]
+fn a_receipt_of_exactly_1_mib_is_read_and_one_byte_more_is_refused() {
+    for (size, resumes) in [(1_048_576usize, true), (1_048_577, false)] {
+        let f = closed_cycles();
+        let preview = f.ok(&["history", "prune"]);
+        let plan = preview["eligible"][0].clone();
+        let (receipt, paths) = simulated_receipt(&f, &plan);
+        let text = f.read(&receipt);
+        assert!(text.len() < size);
+        f.write(
+            &receipt,
+            &format!("{text}{}", " ".repeat(size - text.len())),
+        );
+        std::fs::remove_file(f.root().join(&paths[0])).unwrap();
+        f.ok(&[
+            "consent",
+            "grant",
+            "retention",
+            "--source",
+            "fixture authorization",
+        ]);
+        let output = f.run(&["history", "prune", "--apply"]);
+        assert_eq!(
+            output.status.success(),
+            resumes,
+            "{size}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        if !resumes {
+            assert!(
+                paths[1..].iter().all(|path| f.exists(path)),
+                "{size}: nothing else removed"
+            );
+        }
+    }
+}
