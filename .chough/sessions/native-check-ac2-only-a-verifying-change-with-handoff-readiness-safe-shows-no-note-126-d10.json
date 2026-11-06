@@ -41,7 +41,10 @@
     "Change package drafted and the wording test req_cli_039_criteria_clear_the_note_only_for_safe_verifying_readiness fails first on AC2's clause 'when verifying, it does not.'",
     "REQ-cli-039 AC2 materialized (cli version 58); CHANGELOG line added; cases defined in .chough/cases/cli.native-check-safe-verifying.cases.toml"
   ],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-native-check-safe-verifying-8b455b7140c543c7009cea93",
+    "OBS-tc-cli-native-check-not-passed-note-4df482e80586149e4a0c3dbc"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
