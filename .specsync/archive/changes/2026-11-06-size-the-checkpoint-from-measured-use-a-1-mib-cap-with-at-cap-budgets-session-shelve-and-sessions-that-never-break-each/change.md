@@ -1,6 +1,6 @@
 ---
 id: size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each
-state: implementing
+state: archived
 type: feature
 base_commit: ec830cfb001cc5f71f4f83809ca3294d685f42a4
 ---
