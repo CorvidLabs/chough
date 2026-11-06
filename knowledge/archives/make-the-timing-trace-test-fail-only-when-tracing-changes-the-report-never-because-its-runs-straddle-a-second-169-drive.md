@@ -50,7 +50,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-12 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+13 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -66,10 +66,6 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-readme-verify-list-matches-fledge-ada79377544057e2b4ebfa6b | passed (by cycle time) | local-macos-arm64 | TC-cli-readme-verify-list-matches-fledge |
 | OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-615b587b-known-outdated |
 | OBS-tc-cli-stage-diagram-matches-the-helper-3de53f0de2795e49e67ec6f6 | passed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
-| ID | Outcome | Environment | Cases |
-|---|---|---|---|
 | OBS-tc-cli-subdirectory-project-records-evidence-08e49ae695965281b908aec4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-subdirectory-project-records-evidence |
 
 ## Bugs
