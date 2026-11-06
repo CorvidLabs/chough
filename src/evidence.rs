@@ -2646,16 +2646,26 @@ fn one_line_bounded(text: &str) -> String {
         .collect()
 }
 
+/// Most archive validity reads that run at once (REQ-cli-033).
+const VALIDITY_READERS: usize = 8;
+
+/// Reader threads for `archives` validity reads on a host that reports `available`
+/// parallelism: at least 2 and at most [`VALIDITY_READERS`], and never more than there
+/// are archives (REQ-cli-033, audit CH-M11).
+fn validity_readers(available: usize, archives: usize) -> usize {
+    available.clamp(2, VALIDITY_READERS).min(archives.max(1))
+}
+
 /// Terminal evidence validity of each archive, as `specsync change status` reports it.
 /// Fails closed: an archive whose validity cannot be read is an error, never a value.
 fn validity(root: &Path, ids: &BTreeSet<String>) -> Result<BTreeMap<String, String>> {
     // Each read costs tens of seconds inside SpecSync (spec-sync#831), so they run in
     // parallel, at most 8 at once; errors are reported in ID order, not completion order.
     let ids: Vec<&String> = ids.iter().collect();
-    let workers = std::thread::available_parallelism()
-        .map_or(2, std::num::NonZeroUsize::get)
-        .clamp(2, 8)
-        .min(ids.len().max(1));
+    let workers = validity_readers(
+        std::thread::available_parallelism().map_or(2, std::num::NonZeroUsize::get),
+        ids.len(),
+    );
     let next = std::sync::atomic::AtomicUsize::new(0);
     let mut results: Vec<(usize, Result<String>)> = std::thread::scope(|scope| {
         let handles: Vec<_> = (0..workers)
@@ -3288,6 +3298,20 @@ fn rotate_ledger(root: &Path) -> Result<Value> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// CH-M11 (audit): at most 8 validity reads run at once whatever parallelism the host
+    /// reports, so a raised ceiling fails here on every host, not only on one with more
+    /// than eight cores (REQ-cli-033).
+    #[test]
+    fn at_most_eight_validity_readers_on_any_host() {
+        assert_eq!(validity_readers(128, 20), 8);
+        assert_eq!(validity_readers(9, 9), 8);
+        assert_eq!(validity_readers(8, 12), 8);
+        assert_eq!(validity_readers(4, 12), 4);
+        assert_eq!(validity_readers(1, 20), 2);
+        assert_eq!(validity_readers(20, 3), 3);
+        assert_eq!(validity_readers(4, 0), 1);
+    }
 
     #[test]
     fn a_hold_never_sits_in_the_removed_file_directory() {
