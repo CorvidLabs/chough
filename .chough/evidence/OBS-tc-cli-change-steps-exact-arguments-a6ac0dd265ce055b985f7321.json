@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-steps-exact-arguments-a6ac0dd265ce055b985f7321",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact change_new_answer_check_and_status_run_specsync_with_exact_arguments for TC-cli-change-steps-exact-arguments: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-steps-exact-arguments-a6ac0dd265ce055b985f7321.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-steps-exact-arguments-a6ac0dd265ce055b985f7321.log": "5176aa808e0cc911041f34245eeef76ce567e25960930b69422c6efd1dfad9ba"
+  },
+  "observed_at_unix_seconds": 1793998680,
+  "snapshot": {
+    "revision": "ffeaaadc531f330d37354bf9caaed1a0013ca220",
+    "dirty": false,
+    "fingerprint": "1d1b3b005ad3dcbd048cad36cbd7f9b5b3120b45ec78496afd1c5568e82eb14b",
+    "content": "8aa26160a64f8a1b97298058585f86fe21bac1acc42056c8fd20dc9912e9dfc9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-steps-exact-arguments",
+      "digest": "f959b23707d56c3f3f6ed3008b5627da007549e8e47d6bc4bf271ea536170218"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "change_new_answer_check_and_status_run_specsync_with_exact_arguments"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

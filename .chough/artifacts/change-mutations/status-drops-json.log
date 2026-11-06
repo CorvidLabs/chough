@@ -1,0 +1,54 @@
+
+running 7 tests
+test change_new_answer_check_and_status_run_specsync_with_exact_arguments ... FAILED
+test sigterm_to_change_check_stops_specsync ... ok
+test specsync_output_and_exit_code_pass_through_byte_for_byte ... ok
+test an_invalid_native_bound_refuses_status_naming_a_valid_retry ... FAILED
+test no_change_command_writes_under_dot_chough ... FAILED
+test a_missing_specsync_refuses_naming_install_and_the_step_to_rerun ... FAILED
+test check_outlives_the_native_bound_while_status_refuses_past_it ... ok
+
+failures:
+
+---- change_new_answer_check_and_status_run_specsync_with_exact_arguments stdout ----
+
+thread 'change_new_answer_check_and_status_run_specsync_with_exact_arguments' (356262363) panicked at tests/change.rs:160:9:
+assertion `left == right` failed: ["change", "status", "free-shipping"]
+  left: ["change", "status", "free-shipping"]
+ right: ["change", "status", "free-shipping", "--json"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- an_invalid_native_bound_refuses_status_naming_a_valid_retry stdout ----
+
+thread 'an_invalid_native_bound_refuses_status_naming_a_valid_retry' (356262362) panicked at tests/change.rs:384:5:
+assertion `left == right` failed
+  left: ["change", "status", "free-shipping"]
+ right: ["change", "status", "free-shipping", "--json"]
+
+---- no_change_command_writes_under_dot_chough stdout ----
+
+thread 'no_change_command_writes_under_dot_chough' (356262365) panicked at tests/change.rs:207:13:
+assertion `left == right` failed: ["change", "status", "free-shipping"] did not run SpecSync
+  left: ["change", "status", "free-shipping"]
+ right: ["change", "status", "free-shipping", "--json"]
+
+---- a_missing_specsync_refuses_naming_install_and_the_step_to_rerun stdout ----
+
+thread 'a_missing_specsync_refuses_naming_install_and_the_step_to_rerun' (356262361) panicked at tests/change.rs:299:9:
+assertion `left == right` failed
+  left: ["change", "status", "free-shipping"]
+ right: ["change", "status", "free-shipping", "--json"]
+
+
+failures:
+    a_missing_specsync_refuses_naming_install_and_the_step_to_rerun
+    an_invalid_native_bound_refuses_status_naming_a_valid_retry
+    change_new_answer_check_and_status_run_specsync_with_exact_arguments
+    no_change_command_writes_under_dot_chough
+
+test result: FAILED. 3 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.06s
+
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456-drive)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.81s
+     Running tests/change.rs (target/debug/deps/change-c1495f4ded81b8f7)
+error: test failed, to rerun pass `--test change`

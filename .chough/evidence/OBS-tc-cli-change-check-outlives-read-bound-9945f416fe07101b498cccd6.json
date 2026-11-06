@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-check-outlives-read-bound-9945f416fe07101b498cccd6",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact check_outlives_the_native_bound_while_status_refuses_past_it for TC-cli-change-check-outlives-read-bound: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-check-outlives-read-bound-9945f416fe07101b498cccd6.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-check-outlives-read-bound-9945f416fe07101b498cccd6.log": "b9ee7ed81dabea2909603a748f0d2e0c8cf1bb73c12aa9ab0a0294632436c32e"
+  },
+  "observed_at_unix_seconds": 1793998697,
+  "snapshot": {
+    "revision": "ffeaaadc531f330d37354bf9caaed1a0013ca220",
+    "dirty": false,
+    "fingerprint": "1d1b3b005ad3dcbd048cad36cbd7f9b5b3120b45ec78496afd1c5568e82eb14b",
+    "content": "8aa26160a64f8a1b97298058585f86fe21bac1acc42056c8fd20dc9912e9dfc9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-check-outlives-read-bound",
+      "digest": "296698649cb010501b20d7db01ff6f05c35c791d36776a7677a3d8f74ccffd39"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "check_outlives_the_native_bound_while_status_refuses_past_it"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 5
+}

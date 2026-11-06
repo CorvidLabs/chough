@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-88bbe2aab8066fa7be63937f",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "#171 mutation round on ffeaaadc: 8 targeted mutations of src/change.rs (drop --commit; drop --json from status; swap the stdout and stderr copies; exit 0 instead of SpecSync's code; apply the read bound to check; leave status unbounded; drop the working directory; let an invalid bound default), each applied by run_mutations.py and restored; each made at least one tests/change.rs test fail on an assertion with no compile error; src was clean afterwards",
+  "artifacts": [
+    ".chough/artifacts/change-mutations/bound-applies-to-check.log",
+    ".chough/artifacts/change-mutations/drop-commit.log",
+    ".chough/artifacts/change-mutations/exit-zero.log",
+    ".chough/artifacts/change-mutations/invalid-bound-defaults.log",
+    ".chough/artifacts/change-mutations/no-working-directory.log",
+    ".chough/artifacts/change-mutations/run_mutations.py",
+    ".chough/artifacts/change-mutations/status-drops-json.log",
+    ".chough/artifacts/change-mutations/status-unbounded.log",
+    ".chough/artifacts/change-mutations/summary.txt",
+    ".chough/artifacts/change-mutations/swap-streams.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/change-mutations/bound-applies-to-check.log": "34406d4cd3429672c3d62955b4af02c55da4922db75a4b76906ef587a026e764",
+    ".chough/artifacts/change-mutations/drop-commit.log": "641bba5bf02e871b58982e83deb23a16ae525e3fa96cab9b143df1d4e4f52e00",
+    ".chough/artifacts/change-mutations/exit-zero.log": "7f355d9d39ea29edde7847e092fb5f118bd4d45c47438cc2592f2c9197bd0afc",
+    ".chough/artifacts/change-mutations/invalid-bound-defaults.log": "f7774c80500e71aa1eea70471b1abcac3372d27e8e13f714ebc29b451b248c93",
+    ".chough/artifacts/change-mutations/no-working-directory.log": "4b1e31899e89729e4d276f353ea0e56ac72febc631f15f052b337e70a05b6d86",
+    ".chough/artifacts/change-mutations/run_mutations.py": "4fa383cc446e153081916119b98779d4897546fc5a7de9f05f6e1cea541d7fad",
+    ".chough/artifacts/change-mutations/status-drops-json.log": "311fa822579dbf8b62cc46bcd5c4836eb0fa3ceb161cb8027ba8abd2fab06276",
+    ".chough/artifacts/change-mutations/status-unbounded.log": "98442e79be0a20629cf0674e59ceda24979e5ba662ed47f54927bf824ddb028c",
+    ".chough/artifacts/change-mutations/summary.txt": "49c5ac79b3f6740ce14cceb0d06e2c80d653a966c6766f9bc06a20fe030be613",
+    ".chough/artifacts/change-mutations/swap-streams.log": "0d77b62169aa8ebb354e03d75d78e94c380cde6133edd8fc445d12cc5bedeb8d"
+  },
+  "observed_at_unix_seconds": 1793998874,
+  "snapshot": {
+    "revision": "ffeaaadc531f330d37354bf9caaed1a0013ca220",
+    "dirty": true,
+    "fingerprint": "9b796b951a38d95320ed1a4f1ffbb3b5ea11f87dba9319e7332b537eb8aa7bd2",
+    "content": "a6471fcf8ebb1d9e16cfba9bf95178fe94481c8ea3ba3bd20661a56726657f70"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "mutations were applied by exact string replacement, not by a mutation tool",
+    "the SIGTERM test is shown real by its recorded failure before the implementation and by the working-directory mutant, not by a mutant of its own"
+  ]
+}

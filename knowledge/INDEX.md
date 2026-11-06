@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-445 recorded; most recent:
+454 recorded; most recent:
 
+- OBS-product-test-88bbe2aab8066fa7be63937f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-invalid-bound-recovery-70d66a01bb48f6d3e5686e69 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-sigterm-stops-specsync-1faa4a8c6c1fd6a4b1dadf28 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-missing-specsync-recovery-2b565184bee9a0e9e5a929c0 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-check-outlives-read-bound-9945f416fe07101b498cccd6 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-steps-write-nothing-eca6338eb5cb73067e391c7f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-steps-pass-through-e7c98b22680b15f295f2125f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-steps-exact-arguments-a6ac0dd265ce055b985f7321 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
+- OBS-tc-cli-change-invalid-bound-recovery-a9891ba2772692301e30692a ProductTest Failed in local-macos-arm64 at f4f2106ed5e5
 - OBS-tc-cli-change-sigterm-stops-specsync-23c702afc42f60c07e8e858c ProductTest Failed in local-macos-arm64 at 7037d082e874
-- OBS-tc-cli-change-missing-specsync-recovery-ff484030e43f2bd6eb79c222 ProductTest Failed in local-macos-arm64 at 7037d082e874
-- OBS-tc-cli-change-check-outlives-read-bound-75468b34885c4ec6fab83f7a ProductTest Failed in local-macos-arm64 at 7037d082e874
-- OBS-tc-cli-change-steps-write-nothing-2bbdc4de3ce2ea8a4a5a72ca ProductTest Failed in local-macos-arm64 at 7037d082e874
-- OBS-tc-cli-change-steps-pass-through-8b387a2f06ba2494c9c37cd5 ProductTest Failed in local-macos-arm64 at 7037d082e874
-- OBS-tc-cli-change-steps-exact-arguments-d8842b8ef670bdc102e6227d ProductTest Failed in local-macos-arm64 at 7037d082e874
-- OBS-tc-history-doctor-fixes-session-debt-6b69ccc429d60b2cd04bd601 ProductTest Passed in local-linux-aarch64 at 298c8a775180
-- OBS-tc-cli-doctor-report-changes-nothing-8a051b3416c4c0d132e1c972 ProductTest Passed in local-linux-aarch64 at 298c8a775180
-- OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
-- OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
 
 ## Briefs
 
