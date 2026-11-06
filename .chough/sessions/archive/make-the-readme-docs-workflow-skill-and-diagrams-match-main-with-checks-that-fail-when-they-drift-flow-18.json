@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-5c67e8fb8aaeaca193dc036d",
-    "head": "EVT-16c778f492d2e3e589e1f98c",
+    "head": "EVT-4f0b08df756c8ba3c0df2797",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -50,7 +50,8 @@
     "Leif (0xLeif) decided \"Scope approval of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"Approve\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native definition approval as 0xLeif at c8a74aff); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated",
     "decided: commit the rebuilt knowledge index after the passing runs because CI's library index --check needs it, and report those observations as historical by #136 rather than loop reruns",
     "Leif (0xLeif) decided \"Implementation review of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"pass\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native scoped review as 0xLeif, verdict pass at 24cb2231 on PR #164); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated",
-    "Leif (0xLeif) decided to reopen FLOW-18 for the README helper row: \"Reopen + one-word fix\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the SpecSync reopen as 0xLeif, 'reopened for fresh verification'); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
+    "Leif (0xLeif) decided to reopen FLOW-18 for the README helper row: \"Reopen + one-word fix\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the SpecSync reopen as 0xLeif, 'reopened for fresh verification'); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Implementation review of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"pass\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; re-review of the FLOW-18 reopen diff (README close and doctor rows, cli.md session row); orc recorded the native scoped review as 0xLeif, verdict pass at ae62fafe on PR #164); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -100,9 +101,7 @@
     "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "After Leif's re-review (recorded by orc): ship, close the review gate with his relayed words, stage advance, commit, audit --strict and pre-push, push, CI, merge pinned"
 }

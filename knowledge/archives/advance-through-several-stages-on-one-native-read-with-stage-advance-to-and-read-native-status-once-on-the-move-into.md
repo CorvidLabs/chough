@@ -54,7 +54,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-product-test-914b2391e3fbf93b4a7a8d94 | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-914b2391e3fbf93b4a7a8d94 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 | passed (by cycle time) | local-macos-arm64 | TC-cli-advance-into-done-one-read |
 | OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b | failed (by cycle time) | local-macos-arm64 | TC-cli-advance-into-done-one-read |
 | OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e | passed (by cycle time) | local-macos-arm64 | TC-cli-advance-to-no-prerequisite |
