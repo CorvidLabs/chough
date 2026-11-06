@@ -1151,3 +1151,27 @@ fn legacy_claude_copy_is_reported_and_removed_only_explicitly() {
     );
     assert!(fixture.exists(".agents/skills/chough-workflow/SKILL.md"));
 }
+
+/// D8 (#124): the requirements give the librarian one default, the one the runtime
+/// reports (`on`, asserted above). Any requirement sentence that names the librarian, a
+/// default and `off` must say it is on by default ("on by default" or "the librarian is
+/// on (the default)").
+#[test]
+fn the_requirements_give_the_librarian_one_default_and_it_is_on() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("specs/cli/requirements.md");
+    let text = std::fs::read_to_string(path).unwrap().replace('\n', " ");
+    let contradicting: Vec<&str> = text
+        .split(". ")
+        .filter(|sentence| {
+            let lower = sentence.to_lowercase();
+            lower.contains("librarian")
+                && lower.contains("default")
+                && lower
+                    .split(|c: char| !c.is_alphanumeric())
+                    .any(|word| word == "off")
+                && !lower.contains("on by default")
+                && !lower.contains("librarian is on (the default)")
+        })
+        .collect();
+    assert!(contradicting.is_empty(), "{contradicting:#?}");
+}

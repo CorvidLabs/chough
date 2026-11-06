@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-d79739757f7b517bd5f40bd9",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "One librarian default in the requirements (#124, audit D8)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8",
+  "references": {
+    "criteria": [
+      "FLOW-12",
+      "FLOW-9"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then modify REQ-cli-013"
+}

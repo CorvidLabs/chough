@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8",
+  "slug": "one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8",
+  "title": "One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8)",
+  "description": "One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8)",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "8e0ab4392279cbbb1a4db08044305c450ae641b7",
+  "created_at": 1793932765,
+  "updated_at": 1793932797,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/optional.rs",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "REQ-cli-013 no longer gives the librarian an off default and defers to REQ-cli-015 (on); no requirement sentence names the librarian, a default and off without saying it is on by default; chough pref show still reports librarian on with origin default; the runtime is unchanged. The new test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #124 (audit D8); Leif 95% plan C2: runtime default stays on, contract repair only (2026-11-05 via the orc).",
+    "public_contract": "no"
+  }
+}
