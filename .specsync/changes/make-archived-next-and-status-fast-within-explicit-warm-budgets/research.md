@@ -20,6 +20,8 @@ See `.chough/artifacts/issue-32-next-status-latency/PROFILE.md` for binary ident
 
 PR #69 stored SpecSync's `authenticated-history` result outside the worktree, keyed by archive/native inputs. Its review demonstrated a stale hit after changing the shallow boundary, and its scope included stage transitions and timing. This change must not port those behaviors unchanged. A read-only report cache keeps lifecycle mutation on SpecSync's live answer; complete history inputs and fail-live mismatch behavior are required.
 
+ch-pr69's read-only scratch-clone measurements at SpecSync 6.2.0 / main 73a7da56 found warm archived native reads of 11.4-11.5 s on Raven and cold reads of 130.7-131.8 s under load average 42-117. Two Chough `next` runs hit the 120 s timeout and did not warm SpecSync's cache. The cache's anti-spoof strip, self-contained archive checks and binary/archive key are useful prior art, but a port must use per-change sessions/event history, add the missing history/version/policy guards, leave stage mutations live, and prove timeout/no-entry/no-descendant behavior. Absolute times across machines are not compared; the interleaved A/B rows support removing native wait while retaining snapshot optimization.
+
 ## Alternatives
 
 - Parse `state.json`, `finalization.json` and related archive records directly: rejected because Chough would reimplement native authentication and could disagree with SpecSync.

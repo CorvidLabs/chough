@@ -50,4 +50,15 @@ With no active native change, Chough itself made exactly four Git calls: two `re
 4. There was no isolated cold-cache run and no controlled before/after archived end-to-end release run yet. The after implementation must measure ten warm archived `next` and `status` runs on the same input tree and retain the native cold read separately.
 5. Existing PR #69 is prior art for an authenticated archive cache, but it is conflicting and its review identified missing Git-history inputs. It also allows cached stage transitions, which this proposal excludes.
 
+## Independent ch-pr69 measurements
+
+ch-pr69 supplied read-only scratch-clone measurements from release Chough main 73a7da56 and a scratch merge of PR #69, using SpecSync 6.2.0. Load average was 42-117, so only their interleaved A/B comparisons are meaningful, not absolute equivalence with the runs above.
+
+- Raven cold archived SpecSync reads took 130.7-131.8 s; warm reads took 11.4-11.5 s.
+- Two main `next` runs through Chough timed out at 120 s without SpecSync writing its read cache, so the next runs started cold again.
+- Raven `next` was 12.4-24.1 s on main versus 3.0-5.3 s with #69's warm cache; `status` was 12.9-38.7 s versus 2.7-6.5 s. The remaining cached time was primarily snapshot hashing and Git enumeration/status.
+- PR #69's native cache and six tests are useful prior art, but the port must use per-change sessions/event history and add the missing version, policy and Git-history guards.
+
+This evidence narrows the warm claim: it starts only after a completed authenticated priming read. A timed-out prime writes no Chough cache entry, leaves no native descendants and produces no warm-budget claim. The existing 120 s timeout is unchanged.
+
 Raw phase traces are under `runs/`. Large command outputs and PATH-wrapper call logs were diagnostic scratch and are not retained in the definition commit.

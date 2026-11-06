@@ -26,7 +26,7 @@ Implement a strictly invalidated, read-only cache of SpecSync-authenticated arch
 4. Implement `src/native.rs` and the report-only call seam. Keep live failure/timeout behavior and native output parsing unchanged.
 5. Add exact fingerprint known-answer and freshness regressions, then implement scoped snapshot workers. Confirm identical legacy/content digests and errors remain visible.
 6. Run focused tests and mutation checks, then the complete Fledge verification lane. Add per-change Chough case definitions after the scoped native check materializes REQ-cli-053.
-7. Build release Chough and record ten warm archived `next` and `status` runs after one priming run on the same 121-archive inputs. Record every run, p95, maximum, native call counts, phase traces and limitations. Repeat if the budget fails; do not relax it.
+7. Build release Chough and record ten warm archived `next` and `status` runs after one successful priming run on the same 121-archive inputs. Record every run, p95, maximum, native call counts, phase traces and limitations. If priming times out, record no cache write and no warm-budget claim; never leave native descendants running or extend the timeout to obtain a prime. Repeat if the budget fails; do not relax it.
 8. Merge origin/main again before review/merge, rebuild the knowledge index if needed, and leave a clean pinned head for human review.
 
 ## Risks
