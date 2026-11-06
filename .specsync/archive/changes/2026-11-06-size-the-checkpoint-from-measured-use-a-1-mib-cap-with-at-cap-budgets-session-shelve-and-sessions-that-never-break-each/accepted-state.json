@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each",
+  "slug": "size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each",
+  "title": "Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)",
+  "description": "Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
+  "created_at": 1793934880,
+  "updated_at": 1793936053,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "src/sessions.rs",
+    "src/evidence.rs",
+    "src/main.rs",
+    "src/history.rs",
+    "tests/cli.rs",
+    "tests/next.rs",
+    "tests/sessions.rs",
+    "tests/stages.rs",
+    "tests/common/mod.rs",
+    "docs/cli.md",
+    "docs/architecture.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": "DRIVE-14 (Leif: 1 MiB from the sizing study, Add shelve, 2026-11-05): REQ-cli-032 cap and budgets, REQ-cli-021 stress shape (C3, #125), REQ-history-006 shelve and per-session robustness.",
+  "acceptance_criteria": [
+    "Every checkpoint is bounded at 1,048,576 bytes; at the cap next, status and context answer within 2 s in the debug test build (250 ms release) with the focused view within 16,384 bytes; one byte over is refused naming the cap and chough session shelve; chough session shelve <key> and --legacy move the oversized checkpoint byte for byte into .chough/sessions/shelved/ so session new and next work; one unreadable session never breaks list, new, use or another session next; retention reads shelved sessions; REQ-cli-021 AC1 holds 40 gates, 40 blockers and 50 decisions of 4 KiB within the cap. The new tests fail first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "DRIVE-14, DRIVE-13 (captured 2026-11-05 in Leif words, relayed by orc); Leif chose 1 MiB (20:08 MST) and Add shelve (20:12 MST); 16 KiB focused view unchanged; KNOW-29 separate.",
+    "public_contract": "yes"
+  }
+}

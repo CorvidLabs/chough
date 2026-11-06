@@ -7,6 +7,10 @@ use std::path::Path;
 use std::process::{Command, Output};
 use tempfile::TempDir;
 
+/// The checkpoint byte cap of REQ-cli-032 (DRIVE-14: 1 MiB, from the 2026-11-05 sizing study).
+#[allow(dead_code)]
+pub(super) const CHECKPOINT_CAP: usize = 1_048_576;
+
 pub(super) struct Fixture(TempDir);
 
 /// Remove this fixture's checkpoint lock file from the system temporary directory when

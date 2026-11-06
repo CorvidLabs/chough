@@ -1155,3 +1155,101 @@ fn a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guard
         "{refused}"
     );
 }
+
+/// Fills a session file past the 1 MiB checkpoint cap (DRIVE-14).
+fn oversize(fixture: &Fixture, relative: &str) -> String {
+    let mut session = json(fixture, relative);
+    for list in ["decisions", "completed", "open_questions"] {
+        session[list] = serde_json::json!(
+            (0..100)
+                .map(|index| format!("{list} {index} {}", "x".repeat(4_000)))
+                .collect::<Vec<_>>()
+        );
+    }
+    let text = serde_json::to_string(&session).unwrap();
+    assert!(text.len() > common::CHECKPOINT_CAP, "{}", text.len());
+    fixture.write(relative, &text);
+    text
+}
+
+/// DRIVE-14: one oversized or unreadable session does not break the others. `session
+/// list` reports it per session and names `chough session shelve <key>`; `next` on the
+/// active session and `session new` still work.
+#[test]
+fn one_oversized_or_unreadable_session_does_not_break_the_others() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    fixture.ok(&["session", "use", "beta"]);
+    oversize(&fixture, ".chough/sessions/alpha.json");
+    let list = fixture.ok(&["session", "list"]);
+    let alpha = list["sessions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|session| session["key"] == "alpha")
+        .cloned()
+        .unwrap_or_else(|| panic!("{list:#}"));
+    assert!(
+        alpha.to_string().contains("chough session shelve alpha"),
+        "{alpha:#}"
+    );
+    fixture.ok(&["next", "--json"]);
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    fixture.write(".chough/sessions/beta.json", "{ not json\n");
+    let list = fixture.ok(&["session", "list"]);
+    assert!(
+        list.to_string().contains("chough session shelve beta"),
+        "{list:#}"
+    );
+    fixture.ok(&["next", "--json"]);
+}
+
+/// DRIVE-14: an oversized session is shelved unparsed, with the reason recorded, and
+/// `session new` works again; its bytes are unchanged in `.chough/sessions/shelved/`.
+#[test]
+fn shelving_an_oversized_session_lets_work_continue() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    fixture.ok(&["session", "use", "alpha"]);
+    let bytes = oversize(&fixture, ".chough/sessions/alpha.json");
+    let refused = fixture.fails(&["next"]);
+    assert!(refused.contains("1048576"), "{refused}");
+    assert!(refused.contains("chough session shelve alpha"), "{refused}");
+    let shelved = fixture.ok(&["session", "shelve", "alpha"]);
+    assert_eq!(
+        fixture.read(".chough/sessions/shelved/alpha.json"),
+        bytes,
+        "{shelved:#}"
+    );
+    assert!(!fixture.exists(".chough/sessions/alpha.json"));
+    assert!(shelved.to_string().contains("1048576"), "{shelved:#}");
+    fixture.ok(&[
+        "session",
+        "new",
+        "alpha-2",
+        "--objective",
+        "Ship alpha again",
+    ]);
+    fixture.ok(&["next", "--json"]);
+    let list = fixture.ok(&["session", "list"]);
+    assert!(!list.to_string().contains("\"alpha\""), "{list:#}");
+}
+
+/// DRIVE-14: an oversized legacy checkpoint is shelved with `--legacy`, and a session
+/// can then start.
+#[test]
+fn shelving_an_oversized_legacy_checkpoint_lets_a_session_start() {
+    let fixture = Fixture::new();
+    fixture.ok(&["init", "--objective", "Legacy objective"]);
+    let bytes = oversize(&fixture, ".chough/session.json");
+    let refused = fixture.fails(&["next"]);
+    assert!(
+        refused.contains("chough session shelve --legacy"),
+        "{refused}"
+    );
+    fixture.ok(&["session", "shelve", "--legacy"]);
+    assert_eq!(fixture.read(".chough/sessions/shelved/legacy.json"), bytes);
+    assert!(!fixture.exists(".chough/session.json"));
+    fixture.ok(&["session", "new", "fresh", "--objective", "Next change"]);
+    fixture.ok(&["next", "--json"]);
+}

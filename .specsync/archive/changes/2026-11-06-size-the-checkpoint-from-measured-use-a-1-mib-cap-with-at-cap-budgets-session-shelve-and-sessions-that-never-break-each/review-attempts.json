@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "bb8154ca295f7c6ba78039df24cd53c0956bbb93",
+      "contract_digest": "413e03a6f1b539094e0b40499bdf2d711c4e06afc1d69b34c1c987682d92cab2",
+      "execution_digest": "4e4278846b3467f91b344c1ca0208729987ac4255c08860db8675b0b2805a28b",
+      "workspace_digest": "46dc8c58cefe525305019777191b4424f092d7206baf45e51d0e51ef38e51191",
+      "timestamp": 1793936012
+    }
+  ]
+}
