@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A test now holds REQ-cli-033's ceiling of 8 archive validity reads at once on any
+  host (#137, audit CH-M11). The reader count is a pure function, `validity_readers`,
+  with no behavior change. A unit test checks a host that reports 128 cores, and a
+  12-archive test sees no more than 8 reads overlap. Raising the ceiling to 128 fails
+  both; the earlier overlap test passed it. REQ-cli-033 gains the matching criterion.
+
 - The checkpoint cap is now 1 MiB (1,048,576 bytes), up from 128 KiB, chosen from
   measured use (DRIVE-14, REQ-cli-032):
   - It is at least 10 times the largest per-change session and 4 times the largest
