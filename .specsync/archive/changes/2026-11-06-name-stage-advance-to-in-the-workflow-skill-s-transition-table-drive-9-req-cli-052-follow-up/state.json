@@ -7,11 +7,11 @@
   "title": "Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up)",
   "description": "Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up)",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "01f1d023072da58e11feffd7408c98b9e341c3a9",
   "created_at": 1793947192,
-  "updated_at": 1793947981,
+  "updated_at": 1793974065,
   "affected_specs": [
     "cli"
   ],
