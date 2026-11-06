@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into (active; `specsync change status advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into`)
 
 Archived changes (newest first; the newest 3 are hot):
 
