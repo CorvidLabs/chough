@@ -91,8 +91,9 @@ covers the crate-internal identity boundary without creating a public Rust API.
 
 1. Initialization and skill installation never overwrite an existing user file;
    updates replace only files byte-identical to a known earlier bundle.
-2. The helper never creates, records or authenticates human scope approval,
-   implementation review, release or deployment.
+2. The helper never creates native scope approval, implementation review, release or
+   deployment records, and never authenticates anyone. A relayed decision it keeps
+   (REQ-cli-050) is a recorded claim of who decided, and never satisfies a native gate.
 3. HI owns criterion IDs; SpecSync owns its lifecycle, approvals, reviews and
    archives. The checkpoint references native records and never duplicates their state.
 4. Observations record revision, working content, environment and, for cases, the

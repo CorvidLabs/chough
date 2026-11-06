@@ -6,6 +6,21 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Relayed decisions at human gates (#123, audit D7, FLOW-16, REQ-cli-050,
+  REQ-history-010). When a human decides a gate, the agent records it on their behalf
+  with `chough checkpoint --close-gate "<gate>" --decided-by --words --where
+  --recorded-by`. This closes only that gate, puts `relayed_by` on its `gate-closed`
+  record and adds one handoff decision marked "a relayed claim, not authenticated".
+  It writes no SpecSync record and satisfies no native gate. Missing values, values
+  without a gate, a gate that is not open and an over-long decision each refuse with
+  nothing saved and name their recovery. `--clear-awaiting-human` still withdraws gates
+  and records no decision.
+  - The awaiting-human refusal and waiting action name `--close-gate`.
+  - README, the skill, the docs and the cli spec now say that approvals and reviews
+    are recorded claims bound to their content, not authenticated identity.
+  - Installed copies of the changed skill files update.
+  - A binary without this change refuses a history event that carries `relayed_by`.
+
 - The workflow skill and docs now teach an archive-first closeout (#122, audit D5).
   The order is: verify locally, the human's implementation review, the native review,
   finalize and the done move, and only then push and observe CI. The hosted Archive

@@ -129,7 +129,8 @@ fn a_relayed_decision_closes_only_its_gate_and_keeps_the_four_values() {
         .collect();
     assert_eq!(relayed.len(), 1, "{relayed:?}");
     assert_eq!(relayed[0]["transition"]["kind"], "gate-closed");
-    assert_eq!(relayed[0]["transition"]["gate"], "Intent approval");
+    // Gate records keep the gate text in `reason`, as every gate record does.
+    assert_eq!(relayed[0]["transition"]["reason"], "Intent approval");
     assert_eq!(relayed[0]["transition"]["relayed_by"], expected);
     let shown = fixture.ok(&["stage", "show"]);
     let last = shown["recent_transitions"]
