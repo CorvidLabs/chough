@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 118
+archived_changes: 119
 tags:
   - chough/module
   - module/cli
@@ -31,10 +31,11 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-118 archived changes, newest first.
+119 archived changes, newest first.
 
 - [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148)
+- [bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153](../archives/bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153.md) Bug classification, deduplication and report mappings, and their recovery branches (153)
 - [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](../archives/assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma.md) Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144)
 - [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](../archives/name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up.md) Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up)
@@ -42,5 +43,4 @@ this note only links them.
 - [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](../archives/assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11.md) Assert the eight-reader ceiling for archive validity reads on any host (CH-M11)
 - [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](../archives/install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132.md) Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132)
 - [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](../archives/advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into.md) Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2)
-- [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](../archives/support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17.md) Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17)
-- 108 more on the [timeline](../timeline.md)
+- 109 more on the [timeline](../timeline.md)

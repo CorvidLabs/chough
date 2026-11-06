@@ -6,6 +6,15 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Bug links name their way out, and a mistaken duplicate can be reopened (#153, audit
+  Bugs row, REQ-cli-054). `chough bug update <id> --status open` on a bug marked
+  duplicate used to fail with "duplicate_of is only set for duplicate bugs"; changing a
+  duplicate's status now clears `duplicate_of` and notes it. A bug can no longer relate
+  to itself. Self or unknown links, and unknown bugs, are refused naming
+  `chough bug list --all`, and `verified` without linked proof names
+  `chough bug update <id> --observation <id>`. New tests also hold every
+  classification, scope and status, the blocking rule, the search scores and the
+  report's fields. REQ-cli-054 states these mappings.
 - Tests now hold positive track selection and every delivery-observation kind (#152,
   audit MA-01, MA-02). Requesting `--track copy-localization` selects its linked case
   while design-QA stays omitted, and both tracks select all three. Publication,

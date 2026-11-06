@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "BUG-a-mistaken-duplicate-cannot-be-reopened-a-bug-can-relate-to-itself-and-2823f5504985675b64530948",
+  "title": "A mistaken duplicate cannot be reopened, a bug can relate to itself, and link refusals name no recovery",
+  "symptom": "chough bug update <id> --status open on a duplicate bug fails with 'duplicate_of is only set for duplicate bugs'; --related <its own id> is accepted; the self-duplicate and unknown-bug refusals name no command to recover with",
+  "trigger": "mark a bug duplicate by mistake and try to reopen it; link a bug to itself with --related; name an unknown bug",
+  "expected": "reopening clears duplicate_of and notes it; a self-related link is refused; each refusal names chough bug list --all (and verified without a linked failure names chough bug update <id> --observation <id>)",
+  "actual": "the reopen is refused, the self link is recorded, and the refusals say only what is wrong",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [],
+  "cases": [
+    "TC-cli-bug-self-or-unknown-links-refused-with-recovery",
+    "TC-cli-bug-mistaken-duplicate-reopened"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "fd52ed635432bb049b171c9f4dc03ffff39d79f9",
+  "steps": [
+    "chough bug update <id> --duplicate-of <other>, then chough bug update <id> --status open",
+    "chough bug update <id> --related <id>"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-7bb4a5f534267588823b6c95",
+    "OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb",
+    "OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355",
+    "OBS-tc-cli-bug-mistaken-duplicate-reopened-5b25cda941f9982b4a833f00"
+  ],
+  "impact": "a bug marked duplicate by mistake stays a duplicate for good; a bug's related list can name itself; an agent refused here is not told how to recover",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [
+    "BUG-0019"
+  ],
+  "source": "#153, found writing the audit Bugs row's tests",
+  "notes": [
+    {
+      "at_unix_seconds": 1793971826,
+      "text": "BUG-0019 (verified) made validation errors name their fix; these link refusals were not covered",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1793972059,
+      "text": "status: open -> verified. Fixed in 4edae055: both failing-first cases pass after the fix",
+      "observations": [
+        "OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355",
+        "OBS-tc-cli-bug-mistaken-duplicate-reopened-5b25cda941f9982b4a833f00"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793971812,
+  "updated_at_unix_seconds": 1793972059
+}

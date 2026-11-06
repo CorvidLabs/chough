@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test only_an_open_blocking_bug_blocks_leaving_test ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 5.08s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)
