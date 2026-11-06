@@ -1173,7 +1173,8 @@ fn the_requirements_give_the_librarian_one_default_and_it_is_on() {
 /// Requirement sentences that name the librarian, a default and `off` without saying it
 /// is on by default.
 fn librarian_default_contradictions(text: &str) -> Vec<String> {
-    text.replace('\n', " ")
+    text.replace("\r\n", "\n")
+        .replace('\n', " ")
         .split(". ")
         .filter(|sentence| {
             let lower = sentence.to_lowercase();
