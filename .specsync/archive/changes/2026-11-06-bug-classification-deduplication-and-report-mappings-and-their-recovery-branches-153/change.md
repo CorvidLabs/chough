@@ -1,6 +1,6 @@
 ---
 id: bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 615b587b33a1ef3a569f9557e2782a6be3df2f0f
 ---
