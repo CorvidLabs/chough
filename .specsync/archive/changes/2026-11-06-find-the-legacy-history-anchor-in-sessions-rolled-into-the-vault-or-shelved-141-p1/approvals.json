@@ -1,0 +1,48 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793941109,
+      "digest": "b3b164239946d8c76c2e65468a7b993ad88f5d19ce0fdaf03931a6239aa523fb",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1",
+        "title": "Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)",
+        "description": "Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "src/history.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Issue #141 P1 regression from KNOW-29 (#135): adopted_anchor scanned only open and archived sessions; the adopting session rolled into the vault and every other session refused writes. No requirement text changes.",
+        "acceptance_criteria": [
+          "A session without its own legacy anchor keeps writing gate and stage events when the session holding the anchor has been rolled into the vault or shelved, finding the anchor there with the same exact match; a changed legacy log is still refused. The new test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #141 P1 (found by ch-d7 on main 260ecc94); orc: drop to this first; REQ-history-002 anchor guard unchanged.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793941827,
+      "digest": "04d3e16bdc9c8ba5da600ce8a51f98bd8cfd8b2df9b0e2adc87ba2139b3c68e5",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

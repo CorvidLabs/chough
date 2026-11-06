@@ -50,7 +50,7 @@ verification records, the retention ledger and Git stay authoritative.
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-dry-run-2d42138c5939105291d8aed7 | passed (by cycle time) | local-linux-aarch64 |  |
-| OBS-structural-ce74f6d127b1f262c869b327 | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-structural-ce74f6d127b1f262c869b327 | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 
 ## Bugs
 
