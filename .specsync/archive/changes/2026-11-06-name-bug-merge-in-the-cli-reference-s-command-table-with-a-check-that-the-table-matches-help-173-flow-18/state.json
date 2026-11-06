@@ -7,11 +7,11 @@
   "title": "Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)",
   "description": "Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "69caa0e721d0a150652fd50b7104fcb6f4e444a7",
   "created_at": 1793998563,
-  "updated_at": 1793999745,
+  "updated_at": 1794001751,
   "affected_specs": [
     "cli"
   ],

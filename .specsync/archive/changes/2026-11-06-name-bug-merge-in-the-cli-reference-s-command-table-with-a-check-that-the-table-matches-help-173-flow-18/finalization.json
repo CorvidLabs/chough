@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18",
+  "implementation_commit": "77579661fb0d876418dc9b7b4468b10efb6f8546",
+  "implementation_tree": "7180e4ae721cc3b70a12cc81be52f1a84cbe60b3",
+  "contract_digest": "b95ff553ccde27ff7e308a8a42031fbd849a85414c9c5a2e9692a856ea5e0cdd",
+  "workspace_digest": "ba69155c1f79d9f8aa25b78f459d2885f6f046b2765e0879fb035a086662b87d",
+  "closing_digest": "604d12707fbdc67bf265dbb9a828995ec3bc54bc773db1af270f8bbc14d3d783",
+  "review_digest": "aa1eae6cd00741d7471e797e4811fd3a84609da5df67e755de223cb1b4b01d57",
+  "finalization_digest": "9d943109a225c8168b499fd16811f04c777ec67d8ef7f464cebc0792f55ad83e",
+  "timestamp": 1794001744
+}
