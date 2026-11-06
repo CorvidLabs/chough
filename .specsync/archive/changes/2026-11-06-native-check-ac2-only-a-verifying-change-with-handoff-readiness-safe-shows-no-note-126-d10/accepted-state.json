@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10",
+  "slug": "native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10",
+  "title": "Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10)",
+  "description": "Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
+  "created_at": 1793934936,
+  "updated_at": 1793937681,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/native_check.rs",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "REQ-cli-039 AC2 says a verifying change shows no note only with handoff readiness safe, and any other or missing readiness keeps a note, matching its body and last criterion; every REQ-cli-039 criterion clause that names the verifying state names its readiness; next text and JSON give approved and implementing changes the same exact not-passed note naming specsync change check <id>; the runtime is unchanged. The new wording test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #126 (audit D10); Leif's 95% plan C4 (2026-11-05, via the orc): a wording clarification only; keep the unsafe-readiness note and do not weaken gates. Lesson 2026-11-05 (specs/cli/context.md): normalize CRLF before parsing repository text in a test and check a CRLF copy.",
+    "public_contract": "no"
+  }
+}
