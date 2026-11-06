@@ -7,11 +7,11 @@
   "title": "Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17)",
   "description": "Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17)",
   "kind": "operations",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
   "created_at": 1793936876,
-  "updated_at": 1793939459,
+  "updated_at": 1793941837,
   "affected_specs": [
     "cli"
   ],

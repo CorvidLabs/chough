@@ -1,6 +1,6 @@
 ---
 id: support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17
-state: implementing
+state: archived
 type: operations
 base_commit: ec830cfb001cc5f71f4f83809ca3294d685f42a4
 ---
