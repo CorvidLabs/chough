@@ -18,6 +18,8 @@ artifact: design
 - **Exit code:** the command exits 1 if any finding is still `found` or `skipped`.
 - **No native read:** findings come from `.chough/` files and `.specsync/archive/changes/*/finalization.json`, through `library::finalized_at`.
 
+- **Shared code, not copies.** `history::adopt` and `checkpoint::withdraw_gates` are extracted from `history adopt --apply` and `checkpoint --clear-awaiting-human`. Those commands keep their exact output and behavior. The doctor calls the same functions, so the gate-closed events and the history cursor are written one way.
+
 ## Risks
 
 - **Ordering:** adopting the legacy checkpoint makes it the active session, so its pointer is valid. If its change is archived, step 4 archives it and removes the pointer in the same run.

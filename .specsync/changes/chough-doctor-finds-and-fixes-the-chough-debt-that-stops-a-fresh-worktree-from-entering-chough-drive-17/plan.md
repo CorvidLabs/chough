@@ -19,7 +19,7 @@ Add `chough doctor` (REQ-cli-055) with five findings (REQ-history-012): legacy c
 
 1. Capture DRIVE-17 in hi/drive.md. Write five failing tests in tests/doctor.rs and run them on Linux.
 2. Get scope approval through the orc.
-3. Add src/doctor.rs and the `Doctor` command in src/main.rs. In src/sessions.rs, expose `finished`, the archive move, `close` and adoption as functions.
+3. Add src/doctor.rs and the `Doctor` command in src/main.rs. In src/sessions.rs, expose `finished`, the archive move, `close` and adoption as functions. Extract `history adopt` (src/history.rs) and `--clear-awaiting-human` (src/checkpoint.rs) into functions that the existing commands and the doctor share, with no behavior change.
 4. Add src/doctor.rs and tests/doctor.rs to cli.spec.md. Update docs/cli.md, the skill's checkpoint reference (both copies) and CHANGELOG.md.
 5. After #166 lands, merge main, add the cases, run `fledge lanes run verify` on Linux, then the native check last, and open the pull request.
 

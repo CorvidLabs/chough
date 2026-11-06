@@ -48,5 +48,18 @@
       "approved_delta_bases": {}
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17",
+      "actor": "0xLeif",
+      "reason": "add src/history.rs and src/checkpoint.rs to affected paths so the doctor reuses history adopt and --clear-awaiting-human instead of duplicating them",
+      "timestamp": 1793994548,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": false
+    }
+  ]
 }

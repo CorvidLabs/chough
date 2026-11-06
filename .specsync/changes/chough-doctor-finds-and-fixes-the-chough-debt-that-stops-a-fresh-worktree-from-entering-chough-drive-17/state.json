@@ -7,10 +7,10 @@
   "title": "Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)",
   "description": "chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)",
   "kind": "feature",
-  "state": "approved",
+  "state": "draft",
   "base_commit": "1030252cb5ca2e2b45b736833013f8cd5dbabab0",
   "created_at": 1793994241,
-  "updated_at": 1793994462,
+  "updated_at": 1793994548,
   "affected_specs": [
     "cli",
     "history"
@@ -19,6 +19,8 @@
     "src/main.rs",
     "src/doctor.rs",
     "src/sessions.rs",
+    "src/checkpoint.rs",
+    "src/history.rs",
     "tests/doctor.rs",
     "specs/cli/cli.spec.md",
     "hi/drive.md",
