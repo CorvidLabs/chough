@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A session archives itself at its own move into done and clears the active pointer
+  (#155, REQ-history-006, DRIVE-13), so a done session merged to main is already
+  archived and no other worktree's `session new` moves it into an unrelated change. It
+  stays open while its inbox has unfolded entries or release is authorized.
+
 - A test now holds REQ-cli-033's ceiling of 8 archive validity reads at once on any
   host (#137, audit CH-M11). The reader count is a pure function, `validity_readers`,
   with no behavior change. A unit test checks a host that reports 128 cores, and a

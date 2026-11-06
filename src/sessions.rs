@@ -733,6 +733,56 @@ const KEEP_ARCHIVED: usize = 5;
 /// their native change's finalization and then key, and move older ones byte for byte
 /// into `<library-dir>/attachments/<folder>/sessions/<key>.json`. Never fails: the result
 /// is `rolled`, `unchanged`, `skipped` or `refused`.
+/// At a successful move into done, the active session archives itself in its own
+/// change and the active pointer is cleared, so a later `session new` elsewhere has
+/// nothing of this change to move (REQ-history-006, DRIVE-13, #155). It runs last among
+/// the done steps; this command's checkpoint is then read from the archive. A session
+/// with unfolded inbox entries stays open, as on a switch. Never undoes the move.
+/// When release is authorized at the move into done, the session stays open for it and
+/// archives itself at the move from release into done.
+pub(super) fn archive_at_done(root: &Path, session: &Checkpoint, from: &str) -> serde_json::Value {
+    archive_self(root, session, from)
+        .unwrap_or_else(|error| json!({"status": "refused", "reason": format!("{error:#}")}))
+}
+
+fn archive_self(root: &Path, session: &Checkpoint, from: &str) -> Result<serde_json::Value> {
+    if !enabled(root)? {
+        return Ok(
+            json!({"status": "skipped", "reason": "no sessions; the single checkpoint stays"}),
+        );
+    }
+    if from != "release" && crate::prefs::authorized(root, session, "release")?.is_some() {
+        return Ok(
+            json!({"status": "kept_open", "reason": "release is authorized; the session archives itself at the move from release into done"}),
+        );
+    }
+    let relative = checkpoint_path(root)?;
+    let Some(key) = relative
+        .strip_prefix(&format!("{DIR}/"))
+        .and_then(|rest| rest.strip_suffix(".json"))
+        .filter(|key| !key.contains('/'))
+        .map(str::to_string)
+    else {
+        return Ok(
+            json!({"status": "skipped", "reason": format!("{relative} is not an open session")}),
+        );
+    };
+    let count = unfolded(root, &key)?;
+    if count > 0 {
+        return Ok(json!({"status": "kept_open", "key": key, "inbox_unfolded": count}));
+    }
+    let target = local_path(root, &archive_file(&key))?;
+    ensure!(!target.exists(), "{} already exists", archive_file(&key));
+    fs::create_dir_all(local_path(root, ARCHIVE)?)?;
+    fs::rename(local_path(root, &relative)?, &target)?;
+    if pointer(root).ok().flatten().as_deref() == Some(key.as_str()) {
+        fs::remove_file(local_path(root, POINTER)?)?;
+    }
+    // The rest of this command reads its checkpoint where it now is.
+    pin(root, &archive_file(&key));
+    Ok(json!({"status": "archived", "key": key}))
+}
+
 pub(super) fn roll_up_at_done(root: &Path) -> serde_json::Value {
     match crate::prefs::effective(root, "librarian") {
         Ok((value, _)) if value != "on" => {
