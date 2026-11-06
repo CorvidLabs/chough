@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-8cfe8a91a2ed4d8394b3543c",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Pin every history and inbox bound at exactly its value (#154, CH-19)",
+  "intent_scope": "LIFE",
+  "modules": [
+    "history"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19",
+  "references": {
+    "criteria": [
+      "LIFE-11"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then verify and open the PR"
+}
