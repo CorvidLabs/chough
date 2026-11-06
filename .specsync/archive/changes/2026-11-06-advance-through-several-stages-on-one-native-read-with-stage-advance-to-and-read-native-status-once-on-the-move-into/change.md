@@ -1,6 +1,6 @@
 ---
 id: advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into
-state: implementing
+state: archived
 type: feature
 base_commit: 260ecc949ea01214f4bec43b30ea4226ce8fae59
 ---

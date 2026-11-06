@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into",
+  "implementation_commit": "516dcfc2ce72ab70f1138914d2d182ebb1560227",
+  "implementation_tree": "39cd232e2afef746af5bbae9ee88ec729fb34b0c",
+  "contract_digest": "09dc280de95b454f8e75622863f71b905ce1f367b57b94266e8db42d736ec299",
+  "workspace_digest": "b1df4c05d38444d421e02b7a656d837614b5d985b72425c4718c478035f6a377",
+  "closing_digest": "7d9b1f93b38913d3086523990cc85f0366c224cbdb5b94e4a2d244984e4a385a",
+  "review_digest": "c173133efee4993449c3c4c7fd6843f350cd6053ab28cfad23d120dd75f1c925",
+  "finalization_digest": "fb3c6857aaadd9ac6dfbbac56dc2458c6211731a789d829b031d6c1f91b70057",
+  "timestamp": 1793946642
+}
