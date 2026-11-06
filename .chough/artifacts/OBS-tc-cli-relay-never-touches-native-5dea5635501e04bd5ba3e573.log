@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_relayed_decision_never_touches_native_state_or_its_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 2.45s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/relay.rs (target/debug/deps/relay-2d86c07a5cbfabb5)

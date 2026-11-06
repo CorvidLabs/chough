@@ -2,7 +2,8 @@
 
 Acceptance is where the human decides whether the implementation is what they
 wanted. Agent review, a passing command, scope approval or an actor label never
-stands in for that decision.
+stands in for that decision. A native review is a recorded claim bound to the
+reviewed content, not proof of who reviewed.
 
 ## Prepare the review
 
@@ -53,10 +54,18 @@ specsync change review <id> --reviewer "<agent-account>"
 specsync change ship <id>        # or: specsync change finalize <id>
 ```
 
-Do not commit between review and finalize. Only then clear the gate with `chough
-checkpoint --clear-awaiting-human` and run `chough stage advance`, which moves accept
-to done; it is refused until native state is `archived`. Record the actual acceptance
-source in the checkpoint after archival, preserving the verification window above.
+Do not commit between review and finalize. Only then close the gate with the actual
+acceptance source, recorded after archival so the verification window above holds:
+
+```sh
+chough checkpoint --close-gate "Implementation review of <id>" --decided-by "<who>" \
+  --words "<their exact words>" --where "<where and when, and who relayed it>" \
+  --recorded-by "<agent-account>"
+```
+
+It keeps who decided, their words, where and the recording agent as a relayed claim,
+not authenticated. Then run `chough stage advance`, which moves accept to done; it is
+refused until native state is `archived`.
 With the librarian on, the move into done
 also refreshes the knowledge directory; commit it with the checkpoint. Then push the
 archive commit, the checkpoint and the knowledge directory on the same pull request,

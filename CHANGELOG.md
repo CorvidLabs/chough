@@ -11,6 +11,20 @@ All notable changes to Chough are recorded here. The format follows
   with no behavior change. A unit test checks a host that reports 128 cores, and a
   12-archive test sees no more than 8 reads overlap. Raising the ceiling to 128 fails
   both; the earlier overlap test passed it. REQ-cli-033 gains the matching criterion.
+- Relayed decisions at human gates (#123, audit D7, FLOW-16, REQ-cli-050,
+  REQ-history-010). When a human decides a gate, the agent records it on their behalf
+  with `chough checkpoint --close-gate "<gate>" --decided-by --words --where
+  --recorded-by`. This closes only that gate, puts `relayed_by` on its `gate-closed`
+  record and adds one handoff decision marked "a relayed claim, not authenticated".
+  It writes no SpecSync record and satisfies no native gate. Missing values, values
+  without a gate, a gate that is not open and an over-long decision each refuse with
+  nothing saved and name their recovery. `--clear-awaiting-human` still withdraws gates
+  and records no decision.
+  - The awaiting-human refusal and waiting action name `--close-gate`.
+  - README, the skill, the docs and the cli spec now say that approvals and reviews
+    are recorded claims bound to their content, not authenticated identity.
+  - Installed copies of the changed skill files update.
+  - A binary without this change refuses a history event that carries `relayed_by`.
 - History writes no longer refuse once the session that adopted the legacy history is
   rolled into the vault (KNOW-29) or shelved (#141). The legacy anchor is now also
   found in `.chough/sessions/shelved/` and in the vault's

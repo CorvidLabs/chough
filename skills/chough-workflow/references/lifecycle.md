@@ -90,7 +90,9 @@ specsync change ship <id>
 ```
 
 Use the project agent account for the native record and retain the actual human
-acceptance source separately; the actor label does not supply that acceptance. The
+acceptance source separately, with `chough checkpoint --close-gate`; the actor label
+does not supply that acceptance, and the native review is a recorded claim bound to
+the reviewed content, not proof of who reviewed. The
 reviewer may be the scope approver. Do not commit between review and ship or
 finalize. Archive on the same pull request, then push and observe required CI at the
 actual tip, and merge only when every change on that pull request is archived. A push
