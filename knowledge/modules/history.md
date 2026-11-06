@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 5
-archived_changes: 18
+archived_changes: 19
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched history
 
-18 archived changes, newest first.
+19 archived changes, newest first.
 
+- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19)
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
@@ -42,5 +43,4 @@ this note only links them.
 - [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](../archives/adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog.md) Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog
 - [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](../archives/let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded.md) Let a session started after legacy history adoption write events while the adopted legacy log stays guarded
 - [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](../archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source
-- [lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention](../archives/lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention.md) Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)
-- 8 more on the [timeline](../timeline.md)
+- 9 more on the [timeline](../timeline.md)

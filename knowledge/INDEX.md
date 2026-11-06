@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 133
+archived_changes: 134
 tags:
   - chough/index
 ---
@@ -43,21 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143 (active; `specsync change status keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (hot)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (hot)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148) (hot)
-- [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (hot)
+- [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (cold)
 - [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](archives/assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11.md) Assert the eight-reader ceiling for archive validity reads on any host (CH-M11) (cold)
 - [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](archives/install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132.md) Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132) (cold)
 - [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](archives/advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into.md) Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) (cold)
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1) (cold)
 - [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](archives/support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17.md) Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17) (cold)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7) (cold)
-- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) (cold)
-- All 133 archived changes, by month: [timeline.md](timeline.md)
+- All 134 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../.specsync/archive/changes/2026-11-06-keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143/lesson-bundle.md)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../.specsync/archive/changes/2026-11-06-pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19/lesson-bundle.md)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../.specsync/archive/changes/2026-11-06-an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148/lesson-bundle.md)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../.specsync/archive/changes/2026-11-06-stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../.specsync/archive/changes/2026-11-06-find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1/lesson-bundle.md)
 - [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](../.specsync/archive/changes/2026-11-06-support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17/lesson-bundle.md)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../.specsync/archive/changes/2026-11-06-record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7/lesson-bundle.md)
-- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../.specsync/archive/changes/2026-11-06-keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
