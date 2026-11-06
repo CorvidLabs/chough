@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-0ce13675bb6b5447df5288ee",
-    "head": "EVT-99723e8e66ef191394097cff",
+    "head": "EVT-3ad9ab34ca5c6f73d6e1ed6a",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "design",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
