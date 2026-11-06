@@ -7,10 +7,10 @@
   "title": "Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)",
   "description": "Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "9991d09cb153ac409a43c5071ad5371ddd53fe49",
   "created_at": 1793923170,
-  "updated_at": 1793923218,
+  "updated_at": 1793923289,
   "affected_specs": [
     "cli"
   ],

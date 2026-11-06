@@ -1,6 +1,6 @@
 ---
 id: closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22
-state: draft
+state: approved
 type: feature
 base_commit: 9991d09cb153ac409a43c5071ad5371ddd53fe49
 ---
