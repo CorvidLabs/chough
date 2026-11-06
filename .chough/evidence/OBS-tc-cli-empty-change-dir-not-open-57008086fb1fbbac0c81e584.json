@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584",
+  "criteria": [
+    "KNOW-1"
+  ],
+  "requirements": [
+    "REQ-cli-043"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change for TC-cli-empty-change-dir-not-open: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584.log": "e6b4711b5a3e26b2635a0a14a63f28e8d9b81b76a52c2f1fc4bcb3d9649f87b2"
+  },
+  "observed_at_unix_seconds": 1793971234,
+  "snapshot": {
+    "revision": "c8b4c8daf5d37c68864368e2b535c710500dc18c",
+    "dirty": false,
+    "fingerprint": "f359ebdd40687c54049258a7896e24d9b0d37a13191ecbf855c0d9c7f3213714",
+    "content": "7367dd6fd28db94948ed404320069c967b648f28a3b8dde8f18119f823c61c9e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-empty-change-dir-not-open",
+      "digest": "c778d32397bac0d8944cad3f34670c3290a4189e4b11c13eeb69aea13ad5d934"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

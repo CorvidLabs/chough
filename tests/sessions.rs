@@ -1308,3 +1308,57 @@ fn sessions_still_write_after_the_anchor_holder_rolls_into_the_vault_or_is_shelv
         );
     }
 }
+
+/// CH-19 (REQ-history-009): an inbox entry file of exactly 16,384 bytes is read; one byte
+/// more is refused naming the bound.
+#[test]
+fn an_inbox_entry_of_exactly_16_kib_is_read_and_one_byte_more_is_refused() {
+    for (size, readable) in [(16_384usize, true), (16_385, false)] {
+        let fixture = Fixture::new();
+        sessions(&fixture);
+        let id = add_entry(&fixture, "alpha", "decision", "a note from a subagent");
+        let path = format!(".chough/sessions/alpha.inbox/{id}.json");
+        let text = fixture.read(&path);
+        assert!(text.len() < size);
+        fixture.write(&path, &format!("{text}{}", " ".repeat(size - text.len())));
+        fixture.ok(&["session", "use", "alpha"]);
+        let output = fixture.run(&["inbox", "list"]);
+        assert_eq!(
+            output.status.success(),
+            readable,
+            "{size}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        if !readable {
+            assert!(
+                String::from_utf8_lossy(&output.stderr).contains("16384"),
+                "{size}"
+            );
+        }
+    }
+}
+
+/// CH-19 (REQ-history-009): an inbox holds 200 unfolded entries; the 201st is refused,
+/// naming the bound and the fold that recovers.
+#[test]
+fn an_inbox_holds_200_unfolded_entries_and_refuses_the_201st() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    for index in 0..200 {
+        add_entry(&fixture, "alpha", "decision", &format!("note {index}"));
+    }
+    let refused = fixture.fails(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "decision",
+        "--text",
+        "one more",
+    ]);
+    assert!(refused.contains("200 unfolded entries"), "{refused}");
+    assert!(refused.contains("fold"), "{refused}");
+}

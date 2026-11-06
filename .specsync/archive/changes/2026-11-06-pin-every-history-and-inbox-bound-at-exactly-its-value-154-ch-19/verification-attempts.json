@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1793973150,
+      "commit": "99dfa04270b7a2f3d75257c7e046b99a252fc03b",
+      "contract_digest": "677758586b1150288ced09ae02286290a70aa508f85cf2ce223bc2fae4e6451c",
+      "execution_digest": "f3637e12874eb3ff7cf3761bf5e1b4729eb840c018bf3ad4a6217a7ac81ad7f0",
+      "workspace_digest": "c48affd76f8a596ca7da0c9d1706ca35af28e965e205794281780603efded8c1",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec history",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793973257,
+      "commit": "49fab5089b2ecc70ea7faebf7b7bbfee787c2877",
+      "contract_digest": "677758586b1150288ced09ae02286290a70aa508f85cf2ce223bc2fae4e6451c",
+      "execution_digest": "f3637e12874eb3ff7cf3761bf5e1b4729eb840c018bf3ad4a6217a7ac81ad7f0",
+      "workspace_digest": "c48affd76f8a596ca7da0c9d1706ca35af28e965e205794281780603efded8c1",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec history",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793973257,
+      "commit": "b49e9681fdc36fb550e57f835068d5c777dff26c",
+      "contract_digest": "677758586b1150288ced09ae02286290a70aa508f85cf2ce223bc2fae4e6451c",
+      "execution_digest": "f3637e12874eb3ff7cf3761bf5e1b4729eb840c018bf3ad4a6217a7ac81ad7f0",
+      "workspace_digest": "c48affd76f8a596ca7da0c9d1706ca35af28e965e205794281780603efded8c1",
+      "acceptance_input_digest": "ecec6ab9dcba489be46036a56332567abe7550bbe75b5a5d1c1f8e136002b028",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "specs/history/context.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "375e99dc75d9ba36443b9432b29fd5508944fd9c5e702d2612f3b4da59ecfefe",
+            "entry_digest": "8de920d2cc713c67eb56daaf635e350d7f27eee6d58fb472e5ac017508924f0e",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/history.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2150916903bce1332acc11d8c05c3cfe76b8214f6dda8b01b54b3d8b799f6af4",
+            "entry_digest": "f4bf085bdd5cf38adda6f62e161fa369eac40104f3a8910e1a58e1a37c9cfbcf",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7718b46677bde2efbe4100523626659586be2fa887b9c4bfa03aeba64c41d929",
+            "entry_digest": "293b334ba5ef6b7dbab7294b05a3df0c6fe61b8f1058f54a54bcbf885ee322fb",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/tasks.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "41aad80a94e9d05a23d84110df7715c8e1c64f6ec7ef2d722ff7fb4f5d313fce",
+            "entry_digest": "87fc1481fa94ca7470b7d65139992638f9b6f6bc84d2173429aee6f3f57a3ee4",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4c87442d2d72cc423b3f6ac645afc5fabafa8e68db1d45cc7a4f3ae5bef779cc",
+            "entry_digest": "8197ec190393f037de9473f6256dfc3d504b88087c53c0734bcd0ef1daea16a3",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "tests/history.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "702fa01c244c7ecd6bbd3dc5d3c918cce46536a8b87001f4cf2563609de37035",
+            "entry_digest": "de597e8ac9753a2ea62cc07e2b9e479a540f9ce3c840ddb48bee1e9e66398786",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/sessions.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5b243321c479e526a769a9576ca0efb873be2d6a315d7b9cf1cb9ef492ea74c4",
+            "entry_digest": "957f173d613c960db015430a2a4627c6bf81d3096c5e9610b74aa2aa3da84832",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec history",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}
