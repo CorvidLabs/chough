@@ -1,6 +1,6 @@
 ---
 id: rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their
-state: implementing
+state: archived
 type: feature
 base_commit: 4c68cca7275b3ab8f49af94cc925bf547842757a
 ---
