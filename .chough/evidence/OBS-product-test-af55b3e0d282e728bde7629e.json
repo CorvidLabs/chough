@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-af55b3e0d282e728bde7629e",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "fledge lanes run verify passed all 10 steps on Linux aarch64 (chough-linux:3, cargo 1.95.0, specsync 6.2.0, hi 0.8.0, fledge 1.8.0) at 3daef9eb, from a bundle of claude/feat/chough-change-steps; it includes cargo test --locked with the seven tests/change.rs tests, specsync check --strict --require-coverage 100, change audit, cases check and library index --check",
+  "artifacts": [
+    ".chough/artifacts/change-linux-verify/verify-3daef9eb.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/change-linux-verify/verify-3daef9eb.log": "38930c932a08033a07b0022e19adb1b2ff08c3eb0c64fc3b259d9faca57a8bc6"
+  },
+  "observed_at_unix_seconds": 1793999593,
+  "snapshot": {
+    "revision": "3daef9eb3c1c5a6e519b95a59bc2bdcd9b844ccb",
+    "dirty": false,
+    "fingerprint": "8a8688a829bb4fe46ccbf82819cda320e77415bf2da4d3aaea9dbf915ad1f71a",
+    "content": "181fe0b6ca99a7f8fbeea4c0f4971989eb6db4f83a5dcacbb926346522d66461"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "run in Docker on macOS (linuxkit kernel), not on a Linux host",
+    "the first run at 2392b3e6 failed at step 5 (spec: src/change.rs unlisted); 878e98ce listed the change files, and this run is after that fix"
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793998080,
+      "digest": "a440cb0f092da7ca8a3da4366397ffc7e41f004d2ca88347a87483085f204f38",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20",
+        "title": "Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)",
+        "description": "Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/SKILL.md",
+          ".agents/skills/chough-workflow/references/accept.md",
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          ".agents/skills/chough-workflow/references/lifecycle.md",
+          ".agents/skills/chough-workflow/references/plan.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          ".agents/skills/chough-workflow/templates/brief.md",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "docs/lifecycle.md",
+          "hi/drive.md",
+          "hi/flow.md",
+          "skills/chough-workflow/SKILL.md",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "skills/chough-workflow/references/lifecycle.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/stages.md",
+          "skills/chough-workflow/templates/brief.md",
+          "src/change.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/change.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-057 (new): chough change new, answer, check and status run the matching SpecSync step (check with --commit, the others with --json) in the --root directory, pass SpecSync's stdout, stderr and exit code through byte for byte, and write nothing under .chough/. Status keeps the native read bound and, past it, refuses naming a retry that a test runs; check is never stopped by that bound; SIGTERM stops the SpecSync child; a missing specsync refuses naming cargo install --locked specsync@6.2.0 and the step to rerun, which a test runs. Six tests in tests/change.rs fail first because chough change does not exist, and each mutant in testing.md fails one of them. The skill (both copies) and docs name chough change for these four steps. fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #171, slice 1 of Chough drives SpecSync. DRIVE-20 (new, captured from Leif's 'Capture + approve slice 1', relayed by the orc 2026-11-06), with his 'A: amend, behind a summary' for FLOW-16 and the Drive intent; slice order and this definition approved by Leif as drafted. DRIVE-2 (one native status read per command), DRIVE-4 (native order unchanged), FLOW-14 (stopping Chough stops its children), FLOW-10 and FLOW-16 as amended (this slice records no gate). IDs agreed with t27: REQ-cli-056 and DRIVE-18/19 are theirs, REQ-cli-057 is this change's; no src/evidence.rs change. Rule: a refusal names a recovery command and a test runs it. Lesson 2026-11-05: merge main before review and rebuild the vault.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "46a0744301e4c44835f727daac017b54dc9c45f761481fe352b2c7ef3708fff8"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794001536,
+      "digest": "51c3df283cbfeb54a83212bb135e75aa563c33fff2f669576deb1cc16aeafd7c",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20",
+        "title": "Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)",
+        "description": "Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/SKILL.md",
+          ".agents/skills/chough-workflow/references/accept.md",
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          ".agents/skills/chough-workflow/references/lifecycle.md",
+          ".agents/skills/chough-workflow/references/plan.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          ".agents/skills/chough-workflow/templates/brief.md",
+          "CHANGELOG.md",
+          "README.md",
+          "docs/cli.md",
+          "docs/lifecycle.md",
+          "hi/drive.md",
+          "hi/flow.md",
+          "skills/chough-workflow/SKILL.md",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "skills/chough-workflow/references/lifecycle.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/stages.md",
+          "skills/chough-workflow/templates/brief.md",
+          "src/change.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/change.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-057 (new): chough change new, answer, check and status run the matching SpecSync step (check with --commit, the others with --json) in the --root directory, pass SpecSync's stdout, stderr and exit code through byte for byte, and write nothing under .chough/. Status keeps the native read bound and, past it, refuses naming a retry that a test runs; check is never stopped by that bound; SIGTERM stops the SpecSync child; a missing specsync refuses naming cargo install --locked specsync@6.2.0 and the step to rerun, which a test runs. Six tests in tests/change.rs fail first because chough change does not exist, and each mutant in testing.md fails one of them. The skill (both copies) and docs name chough change for these four steps. fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #171, slice 1 of Chough drives SpecSync. DRIVE-20 (new, captured from Leif's 'Capture + approve slice 1', relayed by the orc 2026-11-06), with his 'A: amend, behind a summary' for FLOW-16 and the Drive intent; slice order and this definition approved by Leif as drafted. DRIVE-2 (one native status read per command), DRIVE-4 (native order unchanged), FLOW-14 (stopping Chough stops its children), FLOW-10 and FLOW-16 as amended (this slice records no gate). IDs agreed with t27: REQ-cli-056 and DRIVE-18/19 are theirs, REQ-cli-057 is this change's; no src/evidence.rs change. Rule: a refusal names a recovery command and a test runs it. Lesson 2026-11-05: merge main before review and rebuild the vault.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "46a0744301e4c44835f727daac017b54dc9c45f761481fe352b2c7ef3708fff8"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794006209,
+      "digest": "08a6ea6d5be806fa25cdb30f6e98bdb7b90a895f51321afe7642508c1d955e2c",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20",
+      "actor": "0xLeif",
+      "reason": "add README.md to affected paths: #164's docs check requires a README helper-table row for chough change",
+      "timestamp": 1793999883,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "cli",
+          "operation": "added",
+          "target": "requirement",
+          "key": "REQ-cli-057",
+          "content": "SpecSync change steps through Chough. `chough change new <description> [--kind <kind>] [--spec <spec>]... [--path <path>]...` SHALL run `specsync change new <description>` with the same options and `--json`. `chough change answer <id> <question> <answer>` SHALL run `specsync change answer <id> <question> <answer> --json`. `chough change check <id>` SHALL run `specsync change check <id> --commit`. `chough change status [<id>]` SHALL run `specsync change status [<id>] --json`. Each SHALL run in the project root given by `--root`, with the `specsync` that Chough's native reads use. Each SHALL pass SpecSync's standard output, standard error and exit code through unchanged, and SHALL write nothing under `.chough/`. `status` is a read and SHALL keep the native read bound (120 s unless `CHOUGH_NATIVE_TIMEOUT_SECONDS` sets it); past the bound it SHALL refuse with nothing recorded and name the retry with a longer bound. `new`, `answer` and `check` write, and SHALL never be stopped by that bound. Stopping Chough with SIGINT, SIGTERM or SIGHUP SHALL stop the SpecSync process it started (FLOW-14). When `specsync` cannot be started, each SHALL refuse with exit 1 and nothing run, naming the install command from the README's toolchain section and the same step run again.\n\nAcceptance Criteria\n- Each of `chough change new`, `answer`, `check` and `status` runs SpecSync with exactly the arguments above, in the `--root` directory, and its standard output, standard error and exit code match SpecSync's byte for byte, including a SpecSync refusal's.\n- No `chough change` command changes any file under `.chough/`.\n- `chough change check` completes after the native read bound has passed, while `chough change status` past the bound refuses with nothing recorded, and the retry it names succeeds.\n- When `specsync` cannot be started, each command refuses with exit 1, naming the install command and the step to run again; with SpecSync installed, that step succeeds.\n- A SIGTERM to `chough change check` stops the SpecSync process it started."
+        }
+      ],
+      "applied_modules": [
+        "cli"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-missing-specsync-recovery-ff484030e43f2bd6eb79c222",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact a_missing_specsync_refuses_naming_install_and_the_step_to_rerun for TC-cli-change-missing-specsync-recovery: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-missing-specsync-recovery-ff484030e43f2bd6eb79c222.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-missing-specsync-recovery-ff484030e43f2bd6eb79c222.log": "d97971355bc8ef97df20274e317926fd94d308c61706efe6ae65b5df3db2759a"
+  },
+  "observed_at_unix_seconds": 1793998286,
+  "snapshot": {
+    "revision": "7037d082e874e091ab4ab0ba27007a494e9728e2",
+    "dirty": false,
+    "fingerprint": "b5bbf4ed1b5d592d8d67a0404a5ef0ad2980685ddeb8a92b295d87e00467d92d",
+    "content": "a15213acfdc158c84ee931227eb568c4192550235d74b9f5c3e106b46bd023b7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-missing-specsync-recovery",
+      "digest": "f1b1782e6916e9411d2dd5d63a59b8bbe89ee3d5b4ce2fe31c7d8f57209a99ee"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "a_missing_specsync_refuses_naming_install_and_the_step_to_rerun"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

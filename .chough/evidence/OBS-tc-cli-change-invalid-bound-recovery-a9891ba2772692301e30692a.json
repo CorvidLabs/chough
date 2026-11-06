@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-invalid-bound-recovery-a9891ba2772692301e30692a",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact an_invalid_native_bound_refuses_status_naming_a_valid_retry for TC-cli-change-invalid-bound-recovery: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-invalid-bound-recovery-a9891ba2772692301e30692a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-invalid-bound-recovery-a9891ba2772692301e30692a.log": "54d900270627e7d19193fd41c977e6dcdc1972ed674b5bf6ac6564264cdcf0cb"
+  },
+  "observed_at_unix_seconds": 1793998415,
+  "snapshot": {
+    "revision": "f4f2106ed5e5a0d650d87b16f7cc96ba89e2b73a",
+    "dirty": false,
+    "fingerprint": "d1b289a682bafb9c65ffc40f0ebca8f0385d07319e0d797ce46bec99307a0893",
+    "content": "0e3cd8c3e50c611b27191192d7cd806d212c312a979a3e67c19da8120aac246e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-invalid-bound-recovery",
+      "digest": "32dd330aff94f0cd408e2369b692090d9f3359a58d4c85d5c7ae3f83d564c1a8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "an_invalid_native_bound_refuses_status_naming_a_valid_retry"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

@@ -37,6 +37,7 @@ their JSON.
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
 | `session new\|adopt\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--adopt-as KEY]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
+| `change new\|answer\|check\|status` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged. See [SpecSync change steps](#specsync-change-steps). |
 
 ## Backfilled moves
 
@@ -661,6 +662,36 @@ saves, it checks every entry the way `inbox add` does (a valid `from`, text that
 blank and within 4096 bytes, an evidence ID for an observation) and that no
 `folded/` target exists; any failure refuses with the session and the inbox unchanged.
 A rerun after an interrupted fold adds nothing twice.
+
+## SpecSync change steps
+
+`chough change` runs four SpecSync agent steps for you, so an agent can drive a change
+through `chough` alone (REQ-cli-057, DRIVE-20):
+
+| Command | Runs |
+|---|---|
+| `chough change new <description> [--kind K] [--spec S]... [--path P]...` | `specsync change new <description> [--kind K] [--spec S]... [--path P]... --json` |
+| `chough change answer <id> <question> <answer>` | `specsync change answer <id> <question> <answer> --json` |
+| `chough change check <id>` | `specsync change check <id> --commit` |
+| `chough change status [<id>]` | `specsync change status [<id>] --json` |
+
+Each runs in the `--root` directory with the `specsync` on `PATH`, the one Chough's
+native reads use. SpecSync's standard output, standard error and exit code pass through
+byte for byte, including its refusals and the recovery commands they name. Chough adds
+nothing and writes nothing under `.chough/`.
+
+- `status` is a read and keeps the native read bound (120 s;
+  `CHOUGH_NATIVE_TIMEOUT_SECONDS` sets 1 to 3600). Past the bound, SpecSync is stopped,
+  nothing is recorded, and the refusal names the same command with a longer bound. An
+  invalid bound is refused before SpecSync runs, naming the command with the default.
+- `new`, `answer` and `check` write, so the read bound never stops them. A hung write
+  waits until you stop Chough. Stopping Chough with SIGINT, SIGTERM or SIGHUP stops
+  SpecSync and its descendants (FLOW-14).
+- When `specsync` cannot be started, the step refuses with exit 1 and runs nothing,
+  naming `cargo install --locked specsync@6.2.0` and the step to run again.
+
+Approve, review, ship and finalize, and the plain `specsync change check <id>` that
+materializes a delta without committing, are still run with `specsync` directly.
 
 ## Execution bounds
 

@@ -5,9 +5,9 @@ instructions, existing architecture and the native lessons first; `specsync chan
 new` prints the lessons of the modules you declare.
 
 1. Create the change with installed help as the authority, for example
-   `specsync change new "<one outcome>" --spec <module> --path <path> --json`.
+   `chough change new "<one outcome>" --spec <module> --path <path>`.
    Declare every path you expect to touch: scope freezes at approval.
-2. Answer the deterministic interview with `specsync change answer <id> <question>
+2. Answer the deterministic interview with `chough change answer <id> <question>
    "<answer>"`.
 3. Complete the selected artifacts: requirements, research, design, plan (approach,
    out of scope, steps, risks, constraints consulted), tasks, testing, docs, and a

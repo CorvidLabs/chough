@@ -62,4 +62,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.json](../attachments/keep-the-983a682c/sessions/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.json)
