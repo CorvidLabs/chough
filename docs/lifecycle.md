@@ -62,15 +62,15 @@ records, and a failing case stays failed even when others pass. See
 flowchart TB
     tests["Focused cases pass; blocking bugs closed"] --> gate["Record the awaiting-human gate; commit source with .chough/"]
     gate --> check["Native scoped check, committed"]
-    check --> push["Push branch; hosted CI at the real tip"]
-    push --> present["Present evidence, open bugs and limits"]
+    check --> present["Present evidence, open bugs and limits"]
     present --> human{"Human implementation review"}
     human -->|"changes requested"| build["Back to build"]
     build --> tests
     human -->|"approved"| review["specsync change review"]
     review -->|"no commit in between"| ship["specsync change ship or finalize (same PR)"]
-    ship --> archive["Push archive commit; CI"]
-    archive --> merge["Merge through the normal process"]
+    ship --> archive["Clear the gate, stage advance; commit"]
+    archive --> push["Push; hosted CI at the archived tip"]
+    push --> merge["Merge through the normal process"]
     merge -. "only if authorized" .-> release["Optional release with real commands"]
 ```
 
@@ -83,10 +83,14 @@ checkpoint records that change.
 The order before the review is: when the delta adds or modifies requirements, run
 `specsync change check <id>` first to materialize them; `chough cases run`; record the
 gate with `chough checkpoint --awaiting-human`; commit the source together with
-`.chough/`; `specsync change check <id> --commit`; push and observe hosted CI; present
-the work. After the human decision come `specsync change review`, then `ship` or
-`finalize`, and only then clearing the gate and `chough stage advance`. Between the
-check and finalize, nothing writes to `.chough/` and nothing is committed.
+`.chough/`; `specsync change check <id> --commit`; present the work. After the human
+decision come `specsync change review`, then `ship` or `finalize`, and only then
+clearing the gate and `chough stage advance`. Between the check and finalize, nothing
+writes to `.chough/` and nothing is committed. The closeout is archive-first: the
+hosted Archive gate refuses while a native change is open, so only after finalize and
+the done move do you commit, then push and observe hosted CI at the archived tip
+(#122). A push before the review only shows the work early: expect the Archive gate red
+and do not wait on it.
 
 This order is an interim measure. Chough's observations stay current across
 commits of its own records and SpecSync's bookkeeping, because freshness compares

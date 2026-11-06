@@ -9,6 +9,13 @@ All notable changes to Chough are recorded here. The format follows
 - REQ-cli-013 no longer gives the librarian an `off` default. It defers to REQ-cli-015,
   so the requirements state one librarian default, `on`, which is what the runtime
   reports (#124, audit D8). Behavior is unchanged.
+- The workflow skill and docs now teach an archive-first closeout (#122, audit D5).
+  The order is: verify locally, the human's implementation review, the native review,
+  finalize and the done move, and only then push and observe CI. The hosted Archive
+  gate refuses while a change is open. The no-commit rule between check and finalize
+  is unchanged. Installed 0.4.0 copies of the lifecycle and accept references update.
+  The feature-and-bug exercise now runs this closeout against the real archive
+  inspector, with a simulated reviewer.
 
 - The retention ledger stays small (KNOW-23, REQ-cli-049). At done,
   `.chough/pruned.jsonl` keeps its newest 100 entries. Older entries that an archive's

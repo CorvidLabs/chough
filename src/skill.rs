@@ -43,6 +43,15 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Release 0.4.0; superseded by the archive-first closeout (#122, D5).
+    (
+        "references/lifecycle.md",
+        "1c9ef93185390ee98aa4b4f2f9fbf2c442a003ad22097d0e74e4676b42404909",
+    ),
+    (
+        "references/accept.md",
+        "3da19999ee4830a1fe1e0af63b13efc934f90d05678bbf70c3d79f39103c1150",
+    ),
     // Main 9a8b9b1 checkpoint guidance, before immutable history adoption.
     (
         "references/checkpoint.md",
