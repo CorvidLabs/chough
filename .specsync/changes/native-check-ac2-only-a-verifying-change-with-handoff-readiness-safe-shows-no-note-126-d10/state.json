@@ -7,10 +7,10 @@
   "title": "Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10)",
   "description": "Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
   "created_at": 1793934936,
-  "updated_at": 1793935067,
+  "updated_at": 1793935579,
   "affected_specs": [
     "cli"
   ],

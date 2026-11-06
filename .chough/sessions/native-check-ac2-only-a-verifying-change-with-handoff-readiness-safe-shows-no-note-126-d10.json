@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-02b212b8cc82c9533605a8fb",
-    "head": "EVT-51a05cc061f0c036bc6c31fb",
+    "head": "EVT-d574cbf5eacaee64a54ffebb",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "intent",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -30,7 +30,8 @@
     "files": []
   },
   "decisions": [
-    "Agent's reading, not a human decision: #126 and plan C4 ask only for AC2 wording; the REQ-cli-039 body, the other criteria and the runtime stay as they are."
+    "Agent's reading, not a human decision: #126 and plan C4 ask only for AC2 wording; the REQ-cli-039 body, the other criteria and the runtime stay as they are.",
+    "Leif (0xLeif), 2026-11-05 20:26 MST, through the orc (t18): 'Approve' for the C4 definition; the orc recorded the native approval on 11083b7f."
   ],
   "open_questions": [],
   "completed": [
@@ -39,9 +40,7 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Scope decision of native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for Leif's scope decision through the orc; after it is recorded, modify REQ-cli-039 AC2 by materializing the delta with specsync change check"
+  "next_action": "Materialize the REQ-cli-039 AC2 delta with specsync change check, add the CHANGELOG line and a case, run verify on Linux"
 }
