@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 4.67s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)

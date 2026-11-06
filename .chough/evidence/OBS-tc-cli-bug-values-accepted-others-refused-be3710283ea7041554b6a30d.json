@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-values-accepted-others-refused-be3710283ea7041554b6a30d",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-054"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact every_classification_scope_and_status_is_accepted_and_others_are_refused for TC-cli-bug-values-accepted-others-refused: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-values-accepted-others-refused-be3710283ea7041554b6a30d.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-values-accepted-others-refused-be3710283ea7041554b6a30d.log": "5467be78180ff31bacd2bf592c4c4038c760cc11135a10880f690261ce2a8669"
+  },
+  "observed_at_unix_seconds": 1793972019,
+  "snapshot": {
+    "revision": "4edae0554e42cc3c4ead3424431388c251c557e3",
+    "dirty": false,
+    "fingerprint": "cfe3c72ce35afbcd99830a083f7b85ea7850065391d767dab4f55b4e751125e5",
+    "content": "d5b087fb4d8a7069f0af53f6bd3c649da8801d2b4a71c683fab6d9d72f5cce05"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-values-accepted-others-refused",
+      "digest": "eae08a0db8a09adb178230fa46c9ee0451cdd862306dc57f9730fe9cb0b70755"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "every_classification_scope_and_status_is_accepted_and_others_are_refused"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

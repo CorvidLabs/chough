@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153 (active; `specsync change status bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-403 recorded; most recent:
+412 recorded; most recent:
 
+- OBS-product-test-dff775cc31b7e3161bf2186d ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-report-shows-every-field-548b2ac9b3d7b795e9aefe63 ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-mistaken-duplicate-reopened-5b25cda941f9982b4a833f00 ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355 ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-search-scores-and-refuses-likely-duplicates-6289660cafeab00be8740628 ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-only-open-blocking-blocks-adcc669269da23a9ea1d46e2 ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-values-accepted-others-refused-be3710283ea7041554b6a30d ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb ProductTest Failed in local-macos-arm64 at fd52ed635432
+- OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-7bb4a5f534267588823b6c95 ProductTest Failed in local-macos-arm64 at fd52ed635432
 - OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-one-read-in-a-session-cee97305e88e3d1d60719b91 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 
 ## Briefs
 

@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-7b6b9be67e10c0cb39c582e6",
-    "head": "EVT-0e26d34e6f17332e8c206215",
+    "head": "EVT-c731cfd271ceee9093ccc5c9",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -34,7 +34,14 @@
       "TC-cli-bug-report-shows-every-field"
     ],
     "design": [],
-    "files": []
+    "files": [
+      "src/bugs.rs",
+      "tests/bugs.rs",
+      "specs/cli/requirements.md",
+      "docs/cli.md",
+      "docs/FRD.md",
+      ".chough/cases/cli.bug-mappings.cases.toml"
+    ]
   },
   "decisions": [
     "Assignment from the orc (t18), deciding overnight for Leif (2026-11-06): the audit's Bugs row, with its own issue (#153), a worktree from origin/main, failing tests first, a mutation check, 'ready for approval' queued for Leif; REQ-cli-054 from the registry.",
@@ -45,17 +52,27 @@
   "open_questions": [],
   "completed": [
     "Change package drafted with REQ-cli-054; six tests, of which links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery and a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery fail first on the defects; a prototype of the fix (reverted, kept as a patch) passes all 19 bug tests; 5 of 5 mapping mutations caught while the existing tests let them pass",
-    "Six cases defined; the two failing-first cases recorded failing on fd52ed63 and linked to BUG-a-mistaken-duplicate-cannot-be-reopened-a-bug-can-relate-to-itself-and-2823f5504985675b64530948"
+    "Six cases defined; the two failing-first cases recorded failing on fd52ed63 and linked to BUG-a-mistaken-duplicate-cannot-be-reopened-a-bug-can-relate-to-itself-and-2823f5504985675b64530948",
+    "Fix applied (4edae055); all six cases pass on macOS; the bug is verified (reproduced, then passed); mutation round 5 of 5 caught (OBS-product-test-dff775cc31b7e3161bf2186d)"
   ],
   "observations": [
     "OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-7bb4a5f534267588823b6c95",
-    "OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb"
+    "OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb",
+    "OBS-product-test-dff775cc31b7e3161bf2186d",
+    "OBS-tc-cli-bug-mistaken-duplicate-reopened-5b25cda941f9982b4a833f00",
+    "OBS-tc-cli-bug-only-open-blocking-blocks-adcc669269da23a9ea1d46e2",
+    "OBS-tc-cli-bug-report-shows-every-field-548b2ac9b3d7b795e9aefe63",
+    "OBS-tc-cli-bug-search-scores-and-refuses-likely-duplicates-6289660cafeab00be8740628",
+    "OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355",
+    "OBS-tc-cli-bug-values-accepted-others-refused-be3710283ea7041554b6a30d"
   ],
   "bugs": [
     "BUG-a-mistaken-duplicate-cannot-be-reopened-a-bug-can-relate-to-itself-and-2823f5504985675b64530948"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153"
+  ],
   "run_consents": [],
-  "next_action": "Apply the src/bugs.rs fix, add the docs/cli.md, FRD and CHANGELOG lines, run all six cases, link the passes and verify the bug"
+  "next_action": "Wait for Leif's GitHub review through the orc; the orc records the native review, then this agent ships, finalizes, moves to done, pushes and merges on green plus corvid-agent"
 }
