@@ -48,5 +48,21 @@
       "approved_delta_bases": {}
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+      "actor": "0xLeif",
+      "reason": "Add the companion paths specs/cli/cli.spec.md and specs/cli/testing.md to affected_paths; they already carry the approved REQ-cli-053. No behavior change. (Leif approved, 2026-11-06 morning.)",
+      "timestamp": 1793970927,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": false,
+      "applied_modules": [
+        "cli"
+      ]
+    }
+  ]
 }

@@ -7,10 +7,10 @@
   "title": "Make archived next and status fast within explicit warm budgets",
   "description": "Make archived next and status fast within explicit warm budgets",
   "kind": "feature",
-  "state": "approved",
+  "state": "draft",
   "base_commit": "e99dc7961323e5c4e2aff1a2cf13333b0c47037e",
   "created_at": 1793936770,
-  "updated_at": 1793941222,
+  "updated_at": 1793970927,
   "affected_specs": [
     "cli"
   ],
@@ -26,7 +26,9 @@
     "docs/cli.md",
     "docs/FRD.md",
     "hi/drive.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "specs/cli/cli.spec.md",
+    "specs/cli/testing.md"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
