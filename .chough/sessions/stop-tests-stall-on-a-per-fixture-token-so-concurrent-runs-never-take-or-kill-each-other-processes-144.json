@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-7f5421ab10da2997e42f32b2",
-    "head": "EVT-7b36d29e0312bb9e94776b68",
+    "head": "EVT-f0ef51bfb547975972cf4af6",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then stall on per-fixture tokens"
 }
