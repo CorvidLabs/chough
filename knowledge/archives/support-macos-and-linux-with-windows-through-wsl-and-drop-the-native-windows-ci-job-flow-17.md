@@ -45,8 +45,13 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
+3 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-product-test-56d46b6484dae509ee8e848c | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-tc-cli-at-most-eight-validity-reads-5b7afc441c01deea7818e53b | passed (by cycle time) | local-macos-arm64 | TC-cli-at-most-eight-validity-reads |
+| OBS-tc-cli-validity-readers-on-any-host-1fccb1a5923652ade8e26238 | passed (by cycle time) | local-macos-arm64 | TC-cli-validity-readers-on-any-host |
 
 ## Bugs
 
