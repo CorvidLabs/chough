@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- union-merge-the-generated-bug-notes-128 (active; `specsync change status union-merge-the-generated-bug-notes-128`)
 
 Archived changes (newest first; the newest 3 are hot):
 
