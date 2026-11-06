@@ -7,5 +7,5 @@ artifact: tasks
 
 - [x] Capture DRIVE-19 in hi/drive.md.
 - [x] Make the test fail every time under a forced second straddle (`.stub-delay-<id>`), on Linux.
-- [ ] Replace the retry loop with the exact clock-shift comparison, plus its strictness checks.
-- [ ] Add a CHANGELOG line, and run verify on Linux.
+- [x] Replace the retry loop with the exact clock-shift comparison, plus its strictness checks.
+- [x] Add a CHANGELOG line, and run verify on Linux.
