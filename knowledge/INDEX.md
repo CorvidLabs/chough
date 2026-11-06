@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up (active; `specsync change status name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -98,8 +98,10 @@ Archived lesson bundles:
 
 ## Observations
 
-401 recorded; most recent:
+403 recorded; most recent:
 
+- OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 ProductTest Passed in local-macos-arm64 at 769fba2e29ce
+- OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 ProductTest Failed in local-macos-arm64 at 4da25aa93cb2
 - OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
@@ -108,8 +110,6 @@ Archived lesson bundles:
 - OBS-tc-cli-advance-to-one-read-in-a-session-cee97305e88e3d1d60719b91 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 
 ## Briefs
 

@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-b510afe825f059bf479282f0",
-    "head": "EVT-1e5fe2c46c9617eff46c4cb7",
+    "head": "EVT-914553ba5b615a98e14b39d6",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -36,14 +36,18 @@
   ],
   "open_questions": [],
   "completed": [
-    "Failing first at 4da25aa9: TC-cli-skill-names-advance-to failed (the 01f1d023 copy reads current, not known-outdated)"
+    "Failing first at 4da25aa9: TC-cli-skill-names-advance-to failed (the 01f1d023 copy reads current, not known-outdated)",
+    "Implemented at 769fba2e; TC-cli-skill-names-advance-to passes"
   ],
   "observations": [
-    "OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5"
+    "OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5",
+    "OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3"
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up"
+  ],
   "run_consents": [],
   "next_action": "Complete the definition and send 'ready for approval' to orc t18"
 }
