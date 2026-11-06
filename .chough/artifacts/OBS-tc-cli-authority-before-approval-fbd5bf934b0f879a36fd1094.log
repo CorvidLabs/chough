@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test the_skill_records_authority_before_approval_and_labels_never_decide ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.01s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running tests/workflow_authority.rs (target/debug/deps/workflow_authority-44f1c357a6528064)

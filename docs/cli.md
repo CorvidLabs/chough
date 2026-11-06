@@ -1345,7 +1345,12 @@ independent wall time. Existing native state/time and timing phase lines remain.
 
 Profile old/new freshly built binaries against identical frozen inputs. Record the
 revision, source patch if dirty, binary hash, build profile, input sizes, flags and
-native outcomes. A first process does not imply a purged OS cache. A native timeout
+native outcomes. `sh examples/measure-report.sh OLD NEW ROOT [RUNS]` does this for
+`next`. It runs both binaries against one root and prints that root with its
+revision and dirty state, each binary's SHA-256 and version, and each run as first
+process or repeated. Native wait (completed native reads in the trace) is reported
+apart from local time. Any native read that did not complete makes the native side
+incomplete, with no native comparison, and no line combines local and native time. A first process does not imply a purged OS cache. A native timeout
 is incomplete qualification even when the reporting command exits zero; a sum of
 zero completed native calls is not zero native work. Local read reuse does not fix
 or bypass expensive native authentication.

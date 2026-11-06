@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The nine acceptance criteria the audit found with no assertion now have tests (#138).
+  REQ-cli-002 (lesson labels, no lesson store), REQ-cli-007 (one checkpoint store, no
+  APS), REQ-cli-012 (the bug-ID upgrade note), REQ-cli-029 (recorded authority, labels
+  never decide, a skipped cold start is never a pass), REQ-cli-031 (the walkthrough
+  opening), REQ-cli-045 (librarian off, no reset time) and REQ-reporting-003. For the
+  last, `sh examples/measure-report.sh OLD NEW ROOT [RUNS]` pairs two binaries on one
+  root and keeps native wait apart from local time. Each new assertion was shown to fail
+  under a targeted mutation. Behavior is unchanged.
 - A session archives itself at its own move into done and clears the active pointer
   (#155, REQ-history-006, DRIVE-13), so a done session merged to main is already
   archived and no other worktree's `session new` moves it into an unrelated change. It

@@ -677,3 +677,144 @@ fn closeout_guidance_pushes_for_ci_only_after_finalize() {
         }
     }
 }
+
+/// The text of a repository file with every run of whitespace (line ends included, so CRLF
+/// and LF alike) collapsed to one space.
+fn flat_text(path: &str) -> String {
+    fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(path))
+        .unwrap()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// REQ-cli-029, second criterion (#138, audit assertion review): the shipped skill records
+/// an applicable human authority with its source, scope and limits before a native scope
+/// approval, asks for the missing decision when authority is absent or exceeded, and never
+/// lets an agent label, a bot review or a passing check stand for a human decision. Both
+/// the canonical skill and its installed copy say so.
+#[test]
+fn the_skill_records_authority_before_approval_and_labels_never_decide() {
+    for skill in ["skills/chough-workflow", ".agents/skills/chough-workflow"] {
+        let plan = flat_text(&format!("{skill}/references/plan.md"));
+        let recorded = plan
+            .find("record its source, scope and limits in the checkpoint and native context")
+            .unwrap_or_else(|| panic!("{skill} plan.md does not record the authority"));
+        let approve = plan
+            .find("specsync change approve <id> --actor")
+            .unwrap_or_else(|| panic!("{skill} plan.md has no approve example"));
+        assert!(
+            recorded < approve,
+            "{skill} plan.md approves before recording the authority"
+        );
+        for needed in [
+            "When a consequential decision or authority is actually missing, ask one concise question",
+            "An actor label alone never supplies human authority",
+            "neither Chough nor SpecSync authenticates who decided",
+        ] {
+            assert!(plan.contains(needed), "{skill} plan.md lacks {needed:?}");
+        }
+        let lifecycle = flat_text(&format!("{skill}/references/lifecycle.md"));
+        for needed in [
+            "Record the source, covered scope and limits in the checkpoint decisions and native context",
+            "If the proposed work exceeds that authority, ask the consequential scope question.",
+            "an agent label, a bot review or a passing check does not create human approval",
+        ] {
+            assert!(
+                lifecycle.contains(needed),
+                "{skill} lifecycle.md lacks {needed:?}"
+            );
+        }
+        let main = flat_text(&format!("{skill}/SKILL.md"));
+        assert!(
+            main.contains(
+                "Continuation, bot reviews and actor labels are not human decisions; approvals are claims."
+            ),
+            "{skill} SKILL.md"
+        );
+    }
+}
+
+/// REQ-cli-029, second criterion (#138): records that claim an approval are not one. With
+/// the native change a draft, a checkpoint decision citing a bot review and passing checks,
+/// and an inbox decision claiming the human approved, leave the move into build refused on
+/// the native gate, and Chough never runs a native approve or review.
+#[cfg(unix)]
+#[test]
+fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "work"]);
+    fixture.ok(&["checkpoint", "--native-change", "draft-change"]);
+    fixture.write(".stub-count", "");
+    fixture.ok(&[
+        "checkpoint",
+        "--decision",
+        "decided: approved because corvid-agent approved the PR and every check passed",
+    ]);
+    fixture.ok(&[
+        "inbox",
+        "add",
+        "--session",
+        "work",
+        "--from",
+        "reviewer-bot",
+        "--kind",
+        "decision",
+        "--text",
+        "The human approved the scope",
+    ]);
+    fixture.ok(&["inbox", "fold"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "no visuals change"]);
+    let refusal = fixture.fails(&["stage", "advance"]);
+    assert!(refusal.contains("draft"), "{refusal}");
+    let session: Value = serde_json::from_str(&fixture.read(".chough/sessions/work.json")).unwrap();
+    assert_eq!(session["stage"]["current"], "plan", "{session:#}");
+    let calls = fs::read_to_string(fixture.root().join(".stub-calls")).unwrap_or_default();
+    assert!(
+        calls.lines().all(|line| line.starts_with("change status ")),
+        "Chough ran a native writer: {calls}"
+    );
+}
+
+/// REQ-cli-029, last criterion (#138; Leif's choice A): qualification keeps source and
+/// package verification apart from a fresh-agent cold start. The roadmap rows for the
+/// handoff work (#35, #36) and for driving native tools (#44) claim delivery, and no
+/// passing cold-start result.
+#[test]
+fn the_roadmap_claims_no_passing_cold_start_for_delivered_work() {
+    let raw =
+        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/ROADMAP.md")).unwrap();
+    // A Windows checkout has CRLF line endings (#131), so check both forms.
+    for text in [
+        raw.replace("\r\n", "\n"),
+        raw.replace("\r\n", "\n").replace('\n', "\r\n"),
+    ] {
+        let text = text.replace("\r\n", "\n");
+        for (row, delivered, cold_start) in [
+            (
+                "| Fresh-agent handoff |",
+                "Implementation delivered and accepted in PRs #35 and #36",
+                "No passing cold-start result is claimed",
+            ),
+            (
+                "| Chough drives native tools |",
+                "Delivered in merged PR #44",
+                "No fresh-agent cold-start result is claimed",
+            ),
+        ] {
+            let line = text
+                .lines()
+                .find(|line| line.starts_with(row))
+                .unwrap_or_else(|| panic!("ROADMAP has no row {row}"));
+            assert!(
+                line.contains(delivered) && line.contains(cold_start),
+                "{line}"
+            );
+        }
+    }
+}
