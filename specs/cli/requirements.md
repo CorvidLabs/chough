@@ -177,6 +177,7 @@ Optional release routing. The helper SHALL advance from accept to done and never
 Acceptance Criteria
 - Advancing from accept never enters release, and entering release without authorization is refused.
 - A dry-run observation is reported as a dry run, not as deployment or live health.
+- Publication, installation, deployment and live-health observations are each accepted and reported with their own kind, and each is key-item proof: retention protects it with its kind as the reason and moves it into the vault when its archive turns cold. A dry run's kind is never a protection, and a superseded dry run is trimmed with no vault copy.
 
 ### REQ-cli-015
 

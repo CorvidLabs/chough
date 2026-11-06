@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 64
+version: 65
 status: active
 files:
   - src/main.rs
@@ -282,3 +282,4 @@ provider, runtime or hosted service.
 | 62 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |
 | 63 | 2026-11-06 | advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into: Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) |
 | 64 | 2026-11-06 | assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11: Assert the eight-reader ceiling for archive validity reads on any host (CH-M11) |
+| 65 | 2026-11-06 | assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma: Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02) |

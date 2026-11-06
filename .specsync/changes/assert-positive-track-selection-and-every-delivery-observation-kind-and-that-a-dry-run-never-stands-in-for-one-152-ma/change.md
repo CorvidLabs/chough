@@ -1,6 +1,6 @@
 ---
 id: assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 64aa77e01d2763395d8af7566e62743ede37cc32
 ---
