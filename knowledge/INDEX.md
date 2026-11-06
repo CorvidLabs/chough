@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16 (active; `specsync change status a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,8 +99,11 @@ Archived lesson bundles:
 
 ## Observations
 
-411 recorded; most recent:
+414 recorded; most recent:
 
+- OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
+- OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
+- OBS-tc-history-session-close-with-reason-d61f0bc09ce6a873e1613697 ProductTest Passed in local-linux-aarch64 at fe653b315f36
 - OBS-tc-history-switch-archives-sessions-left-open-561b78cfe5b4189dd0026fee ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
 - OBS-tc-history-session-archives-itself-at-done-0d438868f7c194b8c847d1e8 ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
 - OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
@@ -108,9 +111,6 @@ Archived lesson bundles:
 - OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
 - OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 ProductTest Passed in local-linux-aarch64 at c8b4c8daf5d3
 - OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 ProductTest Passed in local-macos-arm64 at 769fba2e29ce
-- OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 ProductTest Failed in local-macos-arm64 at 4da25aa93cb2
-- OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 
 ## Briefs
 
