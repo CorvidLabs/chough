@@ -14,6 +14,12 @@ All notable changes to Chough are recorded here. The format follows
   The feature-and-bug exercise now runs this closeout against the real archive
   inspector, with a simulated reviewer.
 
+- The retention ledger stays small (KNOW-23, REQ-cli-049). At done,
+  `.chough/pruned.jsonl` keeps its newest 100 entries. Older entries that an archive's
+  note summarizes move, with their restores, into
+  `knowledge/attachments/<archive>/pruned.jsonl`. Every ledger reader reads those shards
+  too, so labels, bug views and notes are unchanged. The step is reported as
+  `applied.ledger_rotation`.
 - Generated bug notes (`knowledge/bugs/*.md`) now union-merge and are rebuilt like the
   other generated knowledge notes, so parallel branches no longer conflict on them
   (#128, REQ-cli-047, DRIVE-12).

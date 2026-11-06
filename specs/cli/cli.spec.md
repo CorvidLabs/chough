@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 56
+version: 57
 status: active
 files:
   - src/main.rs
@@ -273,3 +273,4 @@ provider, runtime or hosted service.
 | 55 | 2026-11-05 | no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12: No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12) |
 | 56 | 2026-11-05 | done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21: Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21) |
 | 57 | 2026-11-06 | closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22: Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22) |
+| 57 | 2026-11-06 | rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their: Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23) |

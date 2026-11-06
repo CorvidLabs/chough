@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de",
+  "criteria": [
+    "KNOW-23"
+  ],
+  "requirements": [
+    "REQ-cli-049"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact an_interrupted_rotation_leftover_is_read_once for TC-cli-rotation-leftover-read-once: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de.log": "67e40bbf3a857ca78ed98eedbf02a28d26f1a6d7ebd4e8e7450deba39839a931"
+  },
+  "observed_at_unix_seconds": 1793929276,
+  "snapshot": {
+    "revision": "3b55b5d0381f2063f46f4739a6fda0b068c99d40",
+    "dirty": false,
+    "fingerprint": "914e7e7fb9e663352d58c50b74dc20a1b4b12dbfc682d6f7a83fd3e622e32bf6",
+    "content": "22990fa72080f363cc9b746fc377814d591f7489dcd055b1f2f6352bb6cafe75"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-rotation-leftover-read-once",
+      "digest": "dd8dda2e3f452cf9539e4d592eef608a31b89975946c518865d73104b2048dbb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "an_interrupted_rotation_leftover_is_read_once"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

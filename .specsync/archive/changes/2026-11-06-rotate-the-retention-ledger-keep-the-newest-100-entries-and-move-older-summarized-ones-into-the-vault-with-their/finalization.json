@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their",
+  "implementation_commit": "5837c9b4954b82341447380f605289193978b13a",
+  "implementation_tree": "49ef11bb7b637464fdffe013b4a5b8c6e24ba27d",
+  "contract_digest": "9b47cfc951432088eea4ada6547dc57df4751b65b92ecb46fb8348657470b963",
+  "workspace_digest": "f7ac02bc541b9e81a71db4dc722aad143271df1ab313eb400dffc2b395984628",
+  "closing_digest": "8743ce4fb0d1ef29efcf1669252e3c87662928531dfbb3fbf2c79f20d57aeea7",
+  "review_digest": "6cf8bd2f1517b38d3f034736017297e178b69bfc8873e62cb2dce564d919d47f",
+  "finalization_digest": "333cb03c2bf795c22f3eb824eba6a04412de62faa68e2eb4eb39717b1f4c0a08",
+  "timestamp": 1793929590
+}

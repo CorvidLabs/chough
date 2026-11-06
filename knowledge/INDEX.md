@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 117
+archived_changes: 119
 tags:
   - chough/index
 ---
@@ -48,16 +48,16 @@ Active:
 Archived changes (newest first; the newest 3 are hot):
 
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](archives/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.md) Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5) (hot)
+- [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](archives/write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127.md) Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127) (hot)
 - [union-merge-the-generated-bug-notes-128](archives/union-merge-the-generated-bug-notes-128.md) Union-merge the generated bug notes (128) (hot)
-- [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](archives/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.md) Restore the test closing brace lost when merging main into KNOW-22 (121) (hot)
+- [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](archives/rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their.md) Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23) (cold)
+- [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](archives/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.md) Restore the test closing brace lost when merging main into KNOW-22 (121) (cold)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22) (cold)
 - [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](archives/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.md) Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21) (cold)
 - [spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105](archives/spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105.md) Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105) (cold)
 - [mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.4.0 release published in the roadmap with its install observation (cold)
 - [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](archives/prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0.md) Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0 (cold)
-- [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review) (cold)
-- [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110) (cold)
-- All 117 archived changes, by month: [timeline.md](timeline.md)
+- All 119 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -72,15 +72,15 @@ Module lesson sources:
 Archived lesson bundles:
 
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](../.specsync/archive/changes/2026-11-06-teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5/lesson-bundle.md)
+- [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](../.specsync/archive/changes/2026-11-06-write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127/lesson-bundle.md)
 - [union-merge-the-generated-bug-notes-128](../.specsync/archive/changes/2026-11-06-union-merge-the-generated-bug-notes-128/lesson-bundle.md)
+- [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](../.specsync/archive/changes/2026-11-06-rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their/lesson-bundle.md)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](../.specsync/archive/changes/2026-11-06-restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121/lesson-bundle.md)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](../.specsync/archive/changes/2026-11-06-closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22/lesson-bundle.md)
 - [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](../.specsync/archive/changes/2026-11-05-done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21/lesson-bundle.md)
 - [spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105](../.specsync/archive/changes/2026-11-05-spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105/lesson-bundle.md)
 - [mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-05-mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md)
 - [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](../.specsync/archive/changes/2026-11-05-prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0/lesson-bundle.md)
-- [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](../.specsync/archive/changes/2026-11-05-stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review/lesson-bundle.md)
-- [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](../.specsync/archive/changes/2026-11-05-keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -95,18 +95,18 @@ Archived lesson bundles:
 
 ## Observations
 
-365 recorded; most recent:
+368 recorded; most recent:
 
 - OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
+- OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
+- OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
+- OBS-tc-cli-ledger-keeps-newest-and-moves-the-rest-5d279876a8ea8bfd6438b66f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 - OBS-tc-cli-open-bug-keeps-links-89538a43c3a4b93c529e6b4b ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-key-items-move-to-vault-ed7a30c1fb6534c91d7288de ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 - OBS-tc-cli-done-drops-file-and-design-refs-7fd113db7423ebb35826babb ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 - OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 InstallationObservation Passed in macos-arm64-cargo-1.95.0 at 2082dddff420
-- OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
-- OBS-structural-ce74f6d127b1f262c869b327 Structural Passed in local-linux-aarch64 at 5959fe239d85
-- OBS-tc-cli-failed-copy-keeps-other-writer-ac77298375f085b47ae7a1d3 ProductTest Passed in local-linux-aarch64 at 8a87a1d468be
 
 ## Briefs
 
