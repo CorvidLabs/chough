@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough stage advance --to <stage>` moves through each main stage up to `<stage>` on
+  one `specsync change status` read. Every step is checked first, as a plain advance
+  would check it, and a refused step refuses the whole batch with nothing recorded
+  (REQ-cli-052, DRIVE-9). The move into done, plain or batched, now reads native status
+  once: the librarian trim takes the change's own manifest from the gate's read instead
+  of reading it again (DRIVE-2). Other changes' manifests and the validity probes around
+  a removal stay live, and nothing is cached past the command. This is the part of
+  PR #69 that main still needed; its archive cache goes to #32.
 - History writes no longer refuse once the session that adopted the legacy history is
   rolled into the vault (KNOW-29) or shelved (#141). The legacy anchor is now also
   found in `.chough/sessions/shelved/` and in the vault's

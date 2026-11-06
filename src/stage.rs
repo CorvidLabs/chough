@@ -63,6 +63,10 @@ pub(super) enum StageCommand {
     Advance {
         #[arg(long)]
         note: Option<String>,
+        /// Move through each main stage up to this one on one native read; every step is
+        /// checked before any transition is recorded (REQ-cli-052).
+        #[arg(long)]
+        to: Option<String>,
     },
     /// Record another iteration within the current stage.
     Iterate {
@@ -1677,13 +1681,132 @@ fn backfill_evidence(root: &Path, at: &str, commit: &str, quote: &str) -> Result
     ))
 }
 
+/// Check one forward step from `route.0` to `route.1` as `stage advance` checks it: on
+/// leaving test, open blocking bugs and an unlinked failure, then the destination's
+/// native gate. `read` holds the native state once read, so a batch of steps shares one
+/// read (REQ-cli-052). Returns the gate label to record, if the destination has a gate.
+fn forward_step(
+    root: &Path,
+    session: &Checkpoint,
+    kind: &str,
+    route: (&str, &str),
+    read: &mut Option<NativeState>,
+) -> Result<Option<String>> {
+    let (from, to) = route;
+    if from == "test" && to == "accept" {
+        let blocking = bugs::open_blocking(root)?;
+        ensure!(
+            blocking.is_empty(),
+            "{kind} refused (refused:blocking-bugs): open acceptance-blocking bugs {}; go back to build, fix and retest",
+            blocking.join(", ")
+        );
+        if let Some(refusal) = unlinked_failure(root, session)? {
+            bail!("{kind} refused (refused:unlinked-failure): {refusal}");
+        }
+    }
+    if prerequisite(to).is_none() {
+        return Ok(None);
+    }
+    let state = match read {
+        Some(state) => state.clone(),
+        None => read
+            .insert(native_state(root, session.native_change.as_deref())?)
+            .clone(),
+    };
+    let Some(gate) = gate_for_state(root, session, to, state) else {
+        return Ok(None);
+    };
+    ensure!(
+        gate.allowed,
+        "{} refused ({}): {}",
+        kind,
+        gate.label,
+        gate.detail
+    );
+    Ok(Some(gate.label))
+}
+
+/// The response of a native read a forward move made, for the move into done to reuse
+/// for this change's own manifest (REQ-cli-052). It never outlives the command.
+pub(super) fn read_value(read: &Option<NativeState>) -> Option<&Value> {
+    match read {
+        Some(NativeState::State(_, value)) => Some(value),
+        _ => None,
+    }
+}
+
+/// `stage advance --to <target>`: every main stage up to `target` on one native read.
+/// Every step is checked before the first transition is recorded, so a refused step
+/// records nothing (REQ-cli-052). Returns the applied move and the native read it made.
+fn advance_to(
+    root: &Path,
+    session: &mut Checkpoint,
+    target: &str,
+    note: Option<&str>,
+) -> Result<(Value, Option<NativeState>)> {
+    ensure_active(session)?;
+    ensure_main(session, "advance")?;
+    ensure_no_open_human_gate(session, "advance")?;
+    let from = session.stage.current.clone();
+    let start = position(&from).ok_or_else(|| {
+        anyhow::anyhow!(
+            "{from} is not on the advance path; `stage advance --to` moves through main stages only, so use `chough stage advance`"
+        )
+    })?;
+    let end = position(target).ok_or_else(|| {
+        anyhow::anyhow!(
+            "{target} is not a main stage on the advance path; `--to` takes design, plan, build, test, accept or done"
+        )
+    })?;
+    ensure!(
+        end > start,
+        "{target} is not ahead of {from}; `stage advance --to` only moves forward (use `chough stage back` or `chough stage reset` to go back)"
+    );
+    let mut read = None;
+    let mut steps = Vec::new();
+    for index in start..end {
+        let route = (ORDER[index], ORDER[index + 1]);
+        let kind = format!("advance {} -> {}", route.0, route.1);
+        let label = forward_step(root, session, &kind, route, &mut read)
+            .map_err(|error| anyhow::anyhow!("{error:#}; nothing was recorded"))?;
+        steps.push((route, label));
+    }
+    let mut applied_steps = Vec::new();
+    for ((step_from, step_to), label) in &steps {
+        if let Err(error) = log_transition(
+            root,
+            session,
+            "advance",
+            (step_from, step_to),
+            note,
+            label.as_deref(),
+            vec![],
+        ) {
+            // Leave no part of the batch behind (REQ-history-008): the events this
+            // command published are removed, and nothing is saved.
+            let removed = crate::history::discard_published(root);
+            bail!(
+                "advance {step_from} -> {step_to} could not be recorded: {error:#}; nothing was saved and the {removed} history event(s) this batch wrote were removed"
+            );
+        }
+        applied_steps.push(json!({"from": step_from, "to": step_to, "gate": label}));
+    }
+    session.stage.current = target.to_string();
+    session.stage.iteration = 1;
+    let gate = steps.last().and_then(|(_, label)| label.clone());
+    Ok((
+        json!({"kind": "advance", "from": from, "to": target, "gate": gate, "steps": applied_steps}),
+        read,
+    ))
+}
+
 fn move_forward(
     root: &Path,
     session: &mut Checkpoint,
     kind: &str,
     reason: Option<&str>,
     backfill: Option<(u64, Backfill)>,
-) -> Result<Value> {
+) -> Result<(Value, Option<NativeState>)> {
     ensure_active(session)?;
     ensure_main(session, kind)?;
     ensure_no_open_human_gate(session, kind)?;
@@ -1703,28 +1826,8 @@ fn move_forward(
             ),
         }
     };
-    let mut gate_label = None;
-    if from == "test" && to == "accept" {
-        let blocking = bugs::open_blocking(root)?;
-        ensure!(
-            blocking.is_empty(),
-            "{kind} refused (refused:blocking-bugs): open acceptance-blocking bugs {}; go back to build, fix and retest",
-            blocking.join(", ")
-        );
-        if let Some(refusal) = unlinked_failure(root, session)? {
-            bail!("{kind} refused (refused:unlinked-failure): {refusal}");
-        }
-    }
-    if let Some(gate) = destination_gate(root, session, &to)? {
-        ensure!(
-            gate.allowed,
-            "{} refused ({}): {}",
-            kind,
-            gate.label,
-            gate.detail
-        );
-        gate_label = Some(gate.label);
-    }
+    let mut read = None;
+    let gate_label = forward_step(root, session, kind, (&from, &to), &mut read)?;
     let evidence = backfill.as_ref().map(|(at, backfill)| {
         json!({
             "at_unix_seconds": at,
@@ -1750,7 +1853,7 @@ fn move_forward(
     if let Some(evidence) = evidence {
         applied["backfill"] = evidence;
     }
-    Ok(applied)
+    Ok((applied, read))
 }
 
 fn move_back(
@@ -1849,29 +1952,24 @@ fn move_back(
 
 pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     let mut session = read_checkpoint(root)?;
+    // The native read a forward move made, kept for the move into done (REQ-cli-052).
+    let mut read = None;
     let mut applied = match command {
         StageCommand::Show => None,
-        StageCommand::Advance { note } => {
+        StageCommand::Advance { note, to } => {
             if let Some(note) = &note {
                 ensure_text("note", note)?;
             }
-            Some(move_forward(
-                root,
-                &mut session,
-                "advance",
-                note.as_deref(),
-                None,
-            )?)
+            let (applied, made) = match to {
+                Some(target) => advance_to(root, &mut session, &target, note.as_deref())?,
+                None => move_forward(root, &mut session, "advance", note.as_deref(), None)?,
+            };
+            read = made;
+            Some(applied)
         }
         StageCommand::Skip { reason } => {
             ensure_text("reason", &reason)?;
-            Some(move_forward(
-                root,
-                &mut session,
-                "skip",
-                Some(&reason),
-                None,
-            )?)
+            Some(move_forward(root, &mut session, "skip", Some(&reason), None)?.0)
         }
         StageCommand::Iterate { note } => {
             ensure_text("note", &note)?;
@@ -1899,13 +1997,15 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 ensure_text("note", note)?;
             }
             let backfill = backfill_evidence(root, &at, &commit, &quote)?;
-            Some(move_forward(
+            let (applied, made) = move_forward(
                 root,
                 &mut session,
                 "advance",
                 note.as_deref(),
                 Some(backfill),
-            )?)
+            )?;
+            read = made;
+            Some(applied)
         }
         StageCommand::Back { to, reason } => {
             Some(move_back(root, &mut session, "back", &to, &reason)?)
@@ -2059,7 +2159,11 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         // REQ-cli-045 (KNOW-16, KNOW-21): first drop the checkpoint's references from
         // closed cycles, so they no longer protect proof the archives and vault now keep.
         applied["checkpoint_references"] = drop_closed_cycle_references(root, &mut session);
-        applied["librarian_trim"] = crate::library::trim_at_done(root);
+        // REQ-cli-052 (DRIVE-2): the trim takes this change's manifest from the gate's
+        // read instead of reading it again; every other read stays live.
+        let change = session.native_change.clone();
+        let prior = change.as_deref().zip(read_value(&read));
+        applied["librarian_trim"] = crate::library::trim_at_done(root, prior);
         // REQ-history-011 (KNOW-29): keep the five most recent archived sessions and roll
         // older ones into the vault, before the refresh writes their notes.
         applied["session_rollup"] = crate::sessions::roll_up_at_done(root);

@@ -28,31 +28,27 @@ fn current(fixture: &Fixture) -> String {
         .to_string()
 }
 
-/// The transitions in the active session's history cycle, oldest first by time and ID.
+/// The events of the active session's history cycle, oldest first, following the parent
+/// links back from the cursor's head; every file in the cycle must be on that chain.
 fn events(fixture: &Fixture) -> Vec<Value> {
-    let cycle = session(fixture)["history_cursor"]["cycle"]
-        .as_str()
-        .unwrap()
-        .to_string();
+    let cursor = session(fixture)["history_cursor"].clone();
+    let cycle = cursor["cycle"].as_str().unwrap().to_string();
     let dir = fixture
         .root()
         .join(format!(".chough/history/cycles/{cycle}"));
-    let mut found: Vec<Value> = match fs::read_dir(dir) {
-        Ok(entries) => entries
-            .map(|entry| {
-                serde_json::from_str::<Value>(&fs::read_to_string(entry.unwrap().path()).unwrap())
-                    .unwrap()
-            })
-            .collect(),
-        Err(_) => vec![],
-    };
-    found.sort_by_key(|event| {
-        (
-            event["transition"]["at_unix_seconds"].as_u64(),
-            event["id"].as_str().map(str::to_string),
-        )
-    });
-    found
+    let files = fs::read_dir(&dir).map_or(0, |entries| entries.count());
+    let mut chain = vec![];
+    let mut next = cursor["head"].as_str().map(str::to_string);
+    while let Some(id) = next {
+        let event: Value =
+            serde_json::from_str(&fs::read_to_string(dir.join(format!("{id}.json"))).unwrap())
+                .unwrap();
+        next = event["parent"].as_str().map(str::to_string);
+        chain.push(event);
+    }
+    chain.reverse();
+    assert_eq!(chain.len(), files, "an event in {cycle} is off the chain");
+    chain
 }
 
 /// Every file under `.chough/` with its bytes, so a refusal can be shown to write nothing.
@@ -72,11 +68,7 @@ fn records(fixture: &Fixture) -> BTreeMap<String, Vec<u8>> {
         }
     }
     let mut out = BTreeMap::new();
-    walk(
-        &fixture.root().join(".chough"),
-        fixture.root(),
-        &mut out,
-    );
+    walk(&fixture.root().join(".chough"), fixture.root(), &mut out);
     out
 }
 
