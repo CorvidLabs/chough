@@ -453,12 +453,18 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
         "---\nid: a5\nstate: archived\n---\n\n# Title of a5\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- a5 works\n",
     );
     fixture.ok(&["session", "new", SHIP_KEY, "--objective", "Ship a5"]);
-    if native {
-        fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
-    }
+    fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
     fixture.ok(&["stage", "reset", "--to", stage, "--reason", "Ready to ship"]);
     for gate in gates {
         fixture.ok(&["checkpoint", "--awaiting-human", gate]);
+    }
+    if !native {
+        // A session that lost its native change record; reaching accept needs one, so
+        // the record is cleared after the reset.
+        let path = format!(".chough/sessions/{SHIP_KEY}.json");
+        let mut session: serde_json::Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+        session["native_change"] = serde_json::Value::Null;
+        fixture.write(&path, &session.to_string());
     }
     fixture.commit("fixture");
     fixture
