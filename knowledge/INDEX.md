@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121 (active; `specsync change status restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121`)
 
 Archived changes (newest first; the newest 3 are hot):
 
