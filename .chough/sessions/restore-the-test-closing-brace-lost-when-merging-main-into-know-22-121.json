@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-6c0ac94de20b03bbed282833",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Restore the closing brace lost when merging main into the KNOW-22 branch (#121)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121",
+  "references": {
+    "criteria": [
+      "KNOW-22"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Leif approves the definition and reviews the merge repair"
+}
