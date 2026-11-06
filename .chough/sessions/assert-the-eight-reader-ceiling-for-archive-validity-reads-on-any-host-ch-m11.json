@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d80d2b5d49a05800d76753f4",
-    "head": "EVT-bf800bb441564b82cf06ba80",
+    "head": "EVT-a2c6c6d9561eed068e3ee1aa",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -33,7 +33,8 @@
   },
   "decisions": [
     "Agent's reading, not a human decision: an end-to-end test alone cannot kill the mutant on hosts reporting 8 or fewer cores, so the plan adds a pure validity_readers function with a unit test; the ceiling stays 8 and the floor 2.",
-    "Leif (0xLeif), 2026-11-05 21:23 MST, through the orc (t18): approves C5 (his 21:22 'Hold' was a misclick, the orc said); the orc recorded the native approval on 87d4e76e. GitHub issue #137 filed at his request."
+    "Leif (0xLeif), 2026-11-05 21:23 MST, through the orc (t18): approves C5 (his 21:22 'Hold' was a misclick, the orc said); the orc recorded the native approval on 87d4e76e. GitHub issue #137 filed at his request.",
+    "decided: stage moves resumed after chough#141's fix (#142, 90e5de6f) merged into this branch; build -> test -> accept. Commit a7bfba06's message said these moves and the review gate happened; the KNOW-29 regression refused them then, and they happen here."
   ],
   "open_questions": [],
   "completed": [
@@ -47,7 +48,9 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11"
+  ],
   "run_consents": [],
-  "next_action": "Add validity_readers with its unit test, materialize the REQ-cli-033 criterion, run the mutation check on both tests, then verify on Linux"
+  "next_action": "Wait for Leif's implementation review through the orc; the orc records the native review, then this agent ships, finalizes, moves to done, pushes and merges on green plus corvid-agent"
 }

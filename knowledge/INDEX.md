@@ -44,6 +44,7 @@ Canonical prototypes:
 Active:
 
 - assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11 (active; `specsync change status assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11`)
+- give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138 (active; `specsync change status give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -96,8 +97,7 @@ Archived lesson bundles:
 
 ## Observations
 
-379 recorded; most recent:
-370 recorded; most recent:
+373 recorded; most recent:
 
 - OBS-product-test-56d46b6484dae509ee8e848c ProductTest Passed in local-macos-arm64 at 3a87c7c9ffad
 - OBS-tc-cli-at-most-eight-validity-reads-5b7afc441c01deea7818e53b ProductTest Passed in local-macos-arm64 at 3a87c7c9ffad
