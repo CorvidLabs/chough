@@ -12,6 +12,9 @@ All notable changes to Chough are recorded here. The format follows
   `knowledge/attachments/<archive>/pruned.jsonl`. Every ledger reader reads those shards
   too, so labels, bug views and notes are unchanged. The step is reported as
   `applied.ledger_rotation`.
+- Generated bug notes (`knowledge/bugs/*.md`) now union-merge and are rebuilt like the
+  other generated knowledge notes, so parallel branches no longer conflict on them
+  (#128, REQ-cli-047, DRIVE-12).
 
 - Closed bugs release proof (KNOW-22, REQ-cli-048). In the librarian trim, a verified,
   duplicate or wont-fix bug no longer protects the observations it links. Its key items

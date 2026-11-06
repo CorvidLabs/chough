@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 55
-archived_changes: 100
+archived_changes: 101
 tags:
   - chough/module
   - module/cli
@@ -31,9 +31,10 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-100 archived changes, newest first.
+101 archived changes, newest first.
 
 - [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](../archives/write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127.md) Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127)
+- [union-merge-the-generated-bug-notes-128](../archives/union-merge-the-generated-bug-notes-128.md) Union-merge the generated bug notes (128)
 - [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](../archives/rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their.md) Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](../archives/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.md) Restore the test closing brace lost when merging main into KNOW-22 (121)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](../archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)
@@ -42,5 +43,4 @@ this note only links them.
 - [mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation](../archives/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.4.0 release published in the roadmap with its install observation
 - [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](../archives/prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0.md) Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0
 - [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](../archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)
-- [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](../archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110)
-- 90 more on the [timeline](../timeline.md)
+- 91 more on the [timeline](../timeline.md)

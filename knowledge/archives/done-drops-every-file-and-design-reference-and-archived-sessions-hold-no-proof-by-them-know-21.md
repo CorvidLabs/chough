@@ -63,8 +63,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- `.chough/artifacts/archive-history-shards-105/after-shard-revisions-4cpu.txt`: Git 54e9ce1f75d59de368b639993f5631a094ac117f
-- `.chough/artifacts/archive-history-shards-105/before-main-a688800e-4cpu.txt`: Git 54e9ce1f75d59de368b639993f5631a094ac117f
+- `.chough/artifacts/archive-history-shards-105/after-shard-revisions-4cpu.txt`: Git f01f1ee06f384a0317f1bbe8385c6f044f9b4307
+- `.chough/artifacts/archive-history-shards-105/before-main-a688800e-4cpu.txt`: Git f01f1ee06f384a0317f1bbe8385c6f044f9b4307
 
 ## Attachments
 

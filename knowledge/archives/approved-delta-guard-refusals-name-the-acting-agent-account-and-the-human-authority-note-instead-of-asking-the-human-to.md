@@ -144,9 +144,9 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/pr51-writer-atomicity/before/inputs/src/checkpoint.rs` | f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
 | `.chough/artifacts/pr51-writer-atomicity/before/inputs/src/history.rs` | e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
 | `.chough/artifacts/pr51-writer-atomicity/before/inputs/tests/cli.rs` | 66aa50bcd0b26f69045cc069ef036266b1501a7bb4f5ccf9bb49b2986dcb39bb | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-writer-atomicity/before/red.log` | e7315c898503f3aa83c85e9234d1a26f6ce0f3134aa4b18f6962191a07276a3f | Git 54e9ce1f75d59de368b639993f5631a094ac117f |
-| `.chough/artifacts/pr51-writer-atomicity/before/regression.patch` | c9140ef7c2d0ae1e5c96d088419046f45bb8060e6e04daa36e3b6be12fd9ab03 | Git 54e9ce1f75d59de368b639993f5631a094ac117f |
-| `.chough/artifacts/pr51-writer-atomicity/before/result.json` | 3627b6aaa30ba0338d8656d1432bcd56ad39808303c5412a187a674b6d84f660 | Git 54e9ce1f75d59de368b639993f5631a094ac117f |
+| `.chough/artifacts/pr51-writer-atomicity/before/red.log` | e7315c898503f3aa83c85e9234d1a26f6ce0f3134aa4b18f6962191a07276a3f | Git f01f1ee06f384a0317f1bbe8385c6f044f9b4307 |
+| `.chough/artifacts/pr51-writer-atomicity/before/regression.patch` | c9140ef7c2d0ae1e5c96d088419046f45bb8060e6e04daa36e3b6be12fd9ab03 | Git f01f1ee06f384a0317f1bbe8385c6f044f9b4307 |
+| `.chough/artifacts/pr51-writer-atomicity/before/result.json` | 3627b6aaa30ba0338d8656d1432bcd56ad39808303c5412a187a674b6d84f660 | Git f01f1ee06f384a0317f1bbe8385c6f044f9b4307 |
 
 ## Observations
 

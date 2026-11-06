@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "union-merge-the-generated-bug-notes-128",
+  "slug": "union-merge-the-generated-bug-notes-128",
+  "title": "Union-merge the generated bug notes (128)",
+  "description": "Union-merge the generated bug notes (128)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "4c68cca7275b3ab8f49af94cc925bf547842757a",
+  "created_at": 1793929514,
+  "updated_at": 1793930261,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".gitattributes",
+    "tests/vault.rs",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-047 and DRIVE-12: the bug notes KNOW-22 generates were left out of the union-merge rules; no requirement text changes.",
+  "acceptance_criteria": [
+    "git check-attr reports merge=union for knowledge/bugs/<id>.md while attachments, snapshots, briefs and the README stay non-union; the test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #128; REQ-cli-047 and DRIVE-12; Leif: Yes, small separate fix after KNOW-23 (2026-11-05, via the orc).",
+    "public_contract": "no"
+  }
+}
