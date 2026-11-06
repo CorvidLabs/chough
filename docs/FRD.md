@@ -303,3 +303,32 @@ through WSL 2 with Ubuntu, so no pull request waits on a native Windows job.
 
 Verification: `tests/package.rs::supported_platforms_are_macos_and_linux_with_windows_through_wsl`
 and hosted CI. CRLF-normalizing tests stay and run on Linux and macOS.
+
+## Documentation that matches main (FLOW-18)
+
+Status: derived by the agent from FLOW-18 for the intent decision; not human wording.
+
+Purpose: an agent or person who follows the README, the docs, the workflow skill or a
+diagram gets what current main does, and drift is caught by a check rather than by the
+next reader.
+
+| Requirement | Summary | HI criteria | Native requirement |
+|---|---|---|---|
+| FR-docs-1 | The stage diagrams draw only stages the helper has and only moves it makes: a skip edge leaves the stage it skips, a back edge goes to an earlier main stage, and a gate label names each refusal of that move | FLOW-18, FLOW-2 | None: documentation and its checks, no helper behavior |
+| FR-docs-2 | Every Mermaid block in a page is the same as its `docs/diagrams/*.mmd` source, and each committed SVG is rendered from that source | FLOW-18 | None |
+| FR-docs-3 | The README helper table names every command and subcommand `chough --help` lists, and its verify-lane list names every step of `fledge.toml`'s verify lane | FLOW-18, LIFE-4 | None |
+| FR-docs-4 | Every `chough` command and flag the docs and skill name exists in that command's `--help`, every relative link and anchor resolves, and the `.gitattributes` lines the CLI reference tells a project to declare are the ones this repository declares | FLOW-18, DRIVE-12 | None |
+| FR-docs-5 | No page states a current SpecSync, Fledge or HI version other than the pinned one; dated records of earlier runs and decisions keep the versions they used | FLOW-18 | REQ-cli-019 unchanged (it pins README, AGENTS.md and CI) |
+| FR-docs-6 | The workflow skill and docs describe sessions, event history, relayed gate decisions and the librarian default as main implements them, and installed copies of the earlier skill files update as known-outdated | FLOW-18, FLOW-13, FLOW-16, KNOW-5 | REQ-cli-019 unchanged (skill status recognizes earlier copies) |
+
+- In: README, docs/, the workflow skill and its `.agents` copy, the four diagrams and
+  their SVGs, the FLOW-18 checks in `tests/docs.rs`, and the earlier skill files'
+  digests in `src/skill.rs`.
+- Out: helper behavior and requirement text; `CHANGELOG.md` entries other than this
+  change's own; lines that open pull requests change (#158's `bug` row in
+  `docs/cli.md`, #69's lines, #150's measurement paragraph, #151's stages reference).
+- Assumption: dated observations, decisions and roadmap rows are history; they keep
+  the versions and facts of when they were written.
+
+Verification: `tests/docs.rs`, which fails on the base for FR-docs-1, -2, -3, -4 and -5
+and the earlier skill copies, and `fledge lanes run verify`.

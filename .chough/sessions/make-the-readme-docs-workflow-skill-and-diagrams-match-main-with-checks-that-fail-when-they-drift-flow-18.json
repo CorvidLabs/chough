@@ -1,0 +1,48 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-5c67e8fb8aaeaca193dc036d",
+    "head": "EVT-632dae81f9254c1cc792aa03",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18",
+  "references": {
+    "criteria": [
+      "FLOW-18",
+      "FLOW-13",
+      "FLOW-16",
+      "FLOW-2"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Leif (0xLeif) decided \"Intent approval of FLOW-18 (docs accuracy)\": \"FLOW-18, one PR\" (orc tab, 2026-11-06 morning MST, relayed by orc (hc t18) to ch-docs-accuracy: capture FLOW-18 exactly as proposed; skill fixes and their KNOWN_PREVIOUS rows in this same docs PR, appended at the end clear of #151; failing checks first; leave cli.md:25 to #158; do not touch #69's lines); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated",
+    "decided: one PR holds the docs, skill and diagram fixes with their KNOWN_PREVIOUS rows because Leif chose \"FLOW-18, one PR\"",
+    "rejected: splitting the workflow skill fixes into another pull request because Leif chose one PR",
+    "rejected: capturing the criterion as LIFE-17 because it would edit the same INTENT.md count line as #160 (LIFE-16)",
+    "decided: KNOWN_PREVIOUS rows go at the end of the list because #151 inserts at its top",
+    "decided: docs/cli.md:25 (bug row, bug merge) is left to #158 and #69's lines are not touched because those pull requests change them"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Write the failing FLOW-18 checks in tests/docs.rs, run them on the base, then send ready for approval"
+}

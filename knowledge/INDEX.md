@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18 (active; `specsync change status make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18`)
 
 Archived changes (newest first; the newest 3 are hot):
 

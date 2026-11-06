@@ -22,6 +22,7 @@ criteria:
   - FLOW-15
   - FLOW-16
   - FLOW-17
+  - FLOW-18
 tags:
   - chough/intent
 ---
@@ -51,3 +52,4 @@ archived changes whose requirements trace it.
 - **FLOW-15**: [warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and](../archives/warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and.md)
 - **FLOW-16**: [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md), [human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38](../archives/human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38.md)
 - **FLOW-17**: none yet
+- **FLOW-18**: none yet
