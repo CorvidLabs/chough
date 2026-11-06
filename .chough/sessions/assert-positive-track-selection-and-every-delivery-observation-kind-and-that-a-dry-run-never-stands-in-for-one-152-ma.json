@@ -1,0 +1,44 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-9cf3807fc22ec809e733f9ce",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (#152, audit MA-01, MA-02)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma",
+  "references": {
+    "criteria": [
+      "FLOW-6",
+      "FLOW-11",
+      "LIFE-7"
+    ],
+    "requirements": [
+      "REQ-cli-010",
+      "REQ-cli-014",
+      "REQ-cli-017"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+}
