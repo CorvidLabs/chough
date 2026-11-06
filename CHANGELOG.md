@@ -16,6 +16,14 @@ All notable changes to Chough are recorded here. The format follows
   run again. The workflow skill and docs now name `chough change` for these steps. This
   is slice 1 of "Chough drives SpecSync"; DRIVE-21, FLOW-19 and FLOW-20 are captured
   for later slices, and FLOW-16 and the Drive intent carry "amended by FLOW-19" notes.
+- A project in a subdirectory of its Git repository can run cases and record evidence
+  there (#170, DRIVE-18). The evidence snapshot then covers only the project's files,
+  with the repository's `HEAD`. Before, every such command refused with "--root must be
+  the Git repository root for evidence", and that advice did not work there. Nothing
+  changes for a project at the repository root.
+- The timing trace test no longer fails when its two runs straddle a second (#169,
+  DRIVE-19). It runs each report once and requires them to be equal except for the
+  exact clock shift between the runs, instead of retrying for a byte-equal pair.
 - The README, docs, workflow skill and diagrams say what main does again, and
   `tests/docs.rs` fails when they drift (FLOW-18). It checks the stage diagram
   against the helper's stages and moves, every inline Mermaid block against its

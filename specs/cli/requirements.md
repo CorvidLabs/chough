@@ -558,6 +558,15 @@ Acceptance Criteria
 - `--fix` without `--reason` applies the fixes that are not decisions and reports each decision fix as `skipped`, naming `--reason`; a project with no debt reports no findings and exits 0.
 - No doctor run calls SpecSync.
 
+### REQ-cli-056
+
+Projects in a subdirectory. When the project root is inside a Git repository but is not its top level, the evidence snapshot SHALL cover the project's own files, under the project root, and SHALL take the repository's HEAD as its revision. The snapshot is the one `cases run`, `cases record`, `evidence add`, `validate run`, `status` and `next` record or compare. A working-tree change outside the project SHALL NOT make the snapshot dirty or change its fingerprints. The same project SHALL have the same content fingerprint at the top level and in a subdirectory, and at the top level the snapshot SHALL be unchanged. A command run there SHALL NOT refuse with advice to use the repository root. Trace: DRIVE-18.
+
+Acceptance Criteria
+- In a project in `app/` of its repository, `cases run` and `evidence add` succeed and record the repository's HEAD, and `status` reports a known snapshot.
+- An edit outside the project leaves the snapshot clean with unchanged fingerprints; an edit inside it makes the snapshot dirty and changes its content fingerprint.
+- The same project has the same content fingerprint at the repository root and in a subdirectory.
+
 ### REQ-cli-057
 
 SpecSync change steps through Chough. `chough change new <description> [--kind <kind>] [--spec <spec>]... [--path <path>]...` SHALL run `specsync change new <description>` with the same options and `--json`. `chough change answer <id> <question> <answer>` SHALL run `specsync change answer <id> <question> <answer> --json`. `chough change check <id>` SHALL run `specsync change check <id> --commit`. `chough change status [<id>]` SHALL run `specsync change status [<id>] --json`. Each SHALL run in the project root given by `--root`, with the `specsync` that Chough's native reads use. Each SHALL pass SpecSync's standard output, standard error and exit code through unchanged, and SHALL write nothing under `.chough/`. `status` is a read and SHALL keep the native read bound (120 s unless `CHOUGH_NATIVE_TIMEOUT_SECONDS` sets it); past the bound it SHALL refuse with nothing recorded and name the retry with a longer bound. `new`, `answer` and `check` write, and SHALL never be stopped by that bound. Stopping Chough with SIGINT, SIGTERM or SIGHUP SHALL stop the SpecSync process it started (FLOW-14). When `specsync` cannot be started, each SHALL refuse with exit 1 and nothing run, naming the install command from the README's toolchain section and the same step run again.
