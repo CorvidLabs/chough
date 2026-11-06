@@ -27,3 +27,9 @@ artifact: testing
 ## Lanes
 
 `fledge lanes run verify` passes on Linux.
+
+## Requirement evidence
+
+| Requirement | Evidence |
+|---|---|
+| REQ-cli-048 | tests/reduce.rs `a_closed_bug_moves_its_key_items_into_the_vault_and_releases_the_rest`, `a_closed_bug_releases_its_loose_fixture`, `an_open_bug_keeps_every_linked_observation`; tests/evidence.rs `every_protection_reason_is_named` (evidence prune keeps a verified bug's link) |
