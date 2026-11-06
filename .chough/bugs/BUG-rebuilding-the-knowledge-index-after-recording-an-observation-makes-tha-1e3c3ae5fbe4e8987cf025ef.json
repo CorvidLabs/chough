@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "id": "BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef",
+  "title": "Rebuilding the knowledge index after recording an observation makes that observation stale",
+  "symptom": "A case observation recorded current becomes historical (stale-revision-or-inputs) once knowledge/INDEX.md is rebuilt to list it, which the verify lane's library index --check requires",
+  "trigger": "chough cases run <case> (or evidence add), then chough library index, with the librarian on (the default)",
+  "expected": "Recording another observation does not self-invalidate the content identity (REQ-cli-004 AC2): the generated knowledge index that lists observations does not make them stale",
+  "actual": "knowledge/INDEX.md lists the most recent observations and is inside the working content identity, so the rebuild that lists a new observation changes the identity and every observation recorded before it reads historical; at a PR head that passes library index --check, no observation recorded on that branch is current",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64",
+  "revision": "01aebd6c729499767aff4a140266b46ad003a294",
+  "steps": [
+    "Record TC-cli-native-check-safe-verifying with chough cases run on 01aebd6c: status reads it current (environment-unchecked)",
+    "Run chough library index: knowledge/INDEX.md gains the observation's line",
+    "Run chough status: the observation reads historical, freshness stale-revision-or-inputs; restoring INDEX.md makes it current again"
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Branch observations read historical at the reviewed head (seen on C4, #126, at 01aebd6c); reviewers must rerun or discount them",
+  "classification": "product-defect",
+  "scope": "out-of-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "ch-c456 agent, C4 (#126) closeout, 2026-11-05",
+  "notes": [
+    {
+      "at_unix_seconds": 1793936459,
+      "text": "Added despite similar reports: BUG-0015 (#10) was committing .chough records, fixed by excluding .chough/ from the content identity; this one is the generated knowledge/ directory (KNOW-1, default on since #106), which lists observations and is still inside the identity",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1793936459,
+  "updated_at_unix_seconds": 1793936459
+}
