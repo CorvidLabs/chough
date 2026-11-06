@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-7f5421ab10da2997e42f32b2",
-    "head": "EVT-f0ef51bfb547975972cf4af6",
+    "head": "EVT-a8f3b859cf476093c2497686",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,15 +26,15 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "Leif (0xLeif) decided \"Native implementation review of this change by Leif (FLOW-10)\": \"im telling you to approve and continue all of these... approve as me\" (Herdr orc tab, relayed by the orc (t18), 2026-11-06); recorded by claude (claude-chough-144); a relayed claim, not authenticated"
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then stall on per-fixture tokens"
 }

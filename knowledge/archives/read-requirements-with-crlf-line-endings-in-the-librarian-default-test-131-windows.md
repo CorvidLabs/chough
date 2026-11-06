@@ -58,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.json](../attachments/read-e3020b1c/sessions/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.json)
