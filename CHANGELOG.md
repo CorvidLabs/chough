@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough doctor` finds and fixes the Chough debt that stops a fresh worktree from
+  entering Chough (DRIVE-17): finished sessions left open, a legacy
+  `.chough/session.json` to adopt, a stale active pointer, and awaiting-human gates on
+  sessions whose native change is archived. With no flag or `--dry-run` it only
+  reports. `--fix` applies the safe fixes. Withdrawing a gate and closing unfinished
+  work (`--close <key>`) are decisions that also need `--reason`; without it they are
+  reported as skipped. It makes no native read and records no human decision.
 - A session whose native change is archived on HEAD is finished even short of done
   (#163, DRIVE-16), for example after a move into done timed out once SpecSync had
   finalized the change. `session new` and `session use` archive it, and with no

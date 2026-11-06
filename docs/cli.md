@@ -32,6 +32,7 @@ their JSON.
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
 | `session new\|adopt\|use\|list`, `inbox add\|list\|fold` | Sessions per objective or native change, and the create-only subagent inbox. See [Sessions](#sessions). |
+| `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--adopt-as KEY]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
 
 ## Backfilled moves
 
@@ -587,6 +588,32 @@ it for the session files too:
 .chough/sessions/*.json merge=chough-session
 .chough/sessions/archive/*.json merge=chough-session
 ```
+
+### Doctor
+
+`chough doctor` finds the Chough debt that stops a fresh worktree from entering Chough
+and fixes it with Chough's own steps (REQ-cli-055, REQ-history-012, DRIVE-17). It
+prints JSON: `mode` (`report`, `dry-run` or `fix`) and `findings`. Each finding has a
+`kind`, a `target`, the `fix` command, whether the fix is a `decision`, and a `status`
+of `found`, `fixed` or `skipped` (a skipped finding also has a `reason`). It makes no
+native read, and never records a human decision, approval, review or consent.
+
+| Kind | What it finds | Fix |
+|---|---|---|
+| `legacy_checkpoint` | `.chough/session.json` exists | Adopt history if it has no cursor, then `session adopt` under its native change ID or `--adopt-as <key>`; with neither key it is skipped |
+| `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
+| `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, then archive the session |
+| `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it byte for byte; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
+| `unfinished_session` | An open, unfinished session named with `--close <key>` | A decision: `session close <key> --reason` |
+
+- **No flag or `--dry-run`:** reports every finding as `found` and changes nothing.
+- **`--fix`:** applies the fixes in the order of the table. It applies a decision fix
+  only with `--reason <text>`, and otherwise reports it as `skipped`.
+- **Exit code:** 0 when nothing is left `found` or `skipped`, 1 otherwise, so CI can
+  run `chough doctor` as a check.
+
+Run it when a fresh worktree refuses to enter Chough (for example "several open
+sessions"), or after merging main.
 
 ### Subagent inbox
 
