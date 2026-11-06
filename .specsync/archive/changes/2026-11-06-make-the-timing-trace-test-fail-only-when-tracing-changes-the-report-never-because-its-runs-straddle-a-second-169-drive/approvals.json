@@ -118,6 +118,13 @@
       "approved_delta_bases": {
         "reporting: REQUIREMENT REQ-reporting-002": "32650e56acca261bdbb851195bc7f001047790047b0c566fcfde367a458eab98"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793999717,
+      "digest": "ac97d8dee8a47f9e452e4db15e3bdfd52bbee3b2e92852f03735106d12d3e77c",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
