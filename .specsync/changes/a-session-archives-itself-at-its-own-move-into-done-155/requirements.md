@@ -14,3 +14,5 @@ REQ-history-006 (MODIFIED, in `deltas/history.md`) gains the done step:
 - Afterwards `next` and `status` refuse, naming `chough session new <key>`.
 
 Three acceptance criteria are added. DRIVE-13 joins the trace. Every other sentence and criterion is unchanged.
+
+REQ-cli-049 (MODIFIED, in `deltas/cli.md`): one sentence and one acceptance criterion. In sessions mode the ledger rotation runs before the active session archives itself, the last done step. No other cli text changes.

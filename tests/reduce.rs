@@ -1688,6 +1688,11 @@ fn the_move_into_done_archives_the_session_and_clears_the_pointer() {
     let archive = &moved["applied"]["session_archive"];
     assert_eq!(archive["status"], "archived", "{moved:#}");
     assert_eq!(archive["key"], "legacy", "{moved:#}");
+    // REQ-cli-049: the ledger rotation ran in the same move, before the archive.
+    assert!(
+        moved["applied"]["ledger_rotation"]["status"].is_string(),
+        "{moved:#}"
+    );
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
     assert!(!fixture.exists(".chough/sessions/legacy.json"));
     let archived: Value =
