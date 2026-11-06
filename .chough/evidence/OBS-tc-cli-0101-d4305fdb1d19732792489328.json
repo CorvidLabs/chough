@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-0101-d4305fdb1d19732792489328",
+  "criteria": [
+    "FLOW-2",
+    "FLOW-6",
+    "FLOW-7",
+    "FLOW-8"
+  ],
+  "requirements": [
+    "REQ-cli-008",
+    "REQ-cli-010",
+    "REQ-cli-011",
+    "REQ-cli-012"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "ci-linux",
+  "summary": "Ran fledge run exercise for TC-cli-0101: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-0101-d4305fdb1d19732792489328.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-0101-d4305fdb1d19732792489328.log": "c7740d521c8605d0c2dd88c10ea5fe307ece2a3835b3af9f41014b0540a69feb"
+  },
+  "observed_at_unix_seconds": 1793932096,
+  "snapshot": {
+    "revision": "4b1f4866ef9e58fa287a45c9900a37eba704c376",
+    "dirty": false,
+    "fingerprint": "ae5908bae164372d8b9090b6b8eac3697ca7cb59d722e364c8ce8996798ba3d7",
+    "content": "cdcc23988fc433492429349e351151775e7b363119bc33c7134a83c58edc6a40"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-0101",
+      "digest": "1e7f2b1b7f7233a259067382e7643decc69e0385d2d7a6383c5a6958fc42eb9f"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "fledge",
+    "run",
+    "exercise"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 27
+}

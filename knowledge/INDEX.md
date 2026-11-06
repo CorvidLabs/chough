@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5 (active; `specsync change status teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-364 recorded; most recent:
+365 recorded; most recent:
 
+- OBS-tc-cli-0101-d4305fdb1d19732792489328 ProductTest Passed in ci-linux at 4b1f4866ef9e
 - OBS-tc-cli-open-bug-keeps-links-89538a43c3a4b93c529e6b4b ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-key-items-move-to-vault-ed7a30c1fb6534c91d7288de ProductTest Passed in local-linux-aarch64 at a5246bd81940
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-structural-ce74f6d127b1f262c869b327 Structural Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-tc-cli-failed-copy-keeps-other-writer-ac77298375f085b47ae7a1d3 ProductTest Passed in local-linux-aarch64 at 8a87a1d468be
-- OBS-tc-cli-rollback-keeps-changed-vault-copies-ad4356ae97e0d1fc8a02a87b ProductTest Passed in local-linux-aarch64 at 7f113f4ec6a5
 
 ## Briefs
 

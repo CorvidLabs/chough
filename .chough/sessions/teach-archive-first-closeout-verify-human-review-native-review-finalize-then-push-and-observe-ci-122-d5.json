@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-65c231d73aa7e50fdfd340a9",
-    "head": "EVT-893757847d56b25ae1a21eac",
+    "head": "EVT-775211d67207d5f6e5771fe9",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then fix the closeout order"
 }
