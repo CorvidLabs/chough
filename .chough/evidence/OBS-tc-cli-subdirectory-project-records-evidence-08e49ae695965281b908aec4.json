@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-subdirectory-project-records-evidence-08e49ae695965281b908aec4",
+  "criteria": [
+    "DRIVE-18"
+  ],
+  "requirements": [
+    "REQ-cli-056"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test subdirectory for TC-cli-subdirectory-project-records-evidence: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-subdirectory-project-records-evidence-08e49ae695965281b908aec4.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-subdirectory-project-records-evidence-08e49ae695965281b908aec4.log": "8d3bcde25d2c3cb51cbb8cfb401840813370670bab508fc9e6a38e9afee4caa9"
+  },
+  "observed_at_unix_seconds": 1793998771,
+  "snapshot": {
+    "revision": "667c99299cef309f4776e157a846ec9866f835bd",
+    "dirty": false,
+    "fingerprint": "33aed5a61ea658774c86f08ad32177209c4a3742c5f0f655bb329a096026eea7",
+    "content": "357eef8f8c1bcbd3e7e00377acf24e07f54bb158d4d6a852103455f2d3a4d603"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-subdirectory-project-records-evidence",
+      "digest": "daefc4e5e5681ce74cdbda90d584b65f49e9e71063ae1bdf4b0cbd3b058e5504"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "subdirectory"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

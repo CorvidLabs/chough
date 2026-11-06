@@ -2,7 +2,11 @@
 
 Run `chough --help` and each subcommand's `--help` for the installed executable. All
 commands accept global `--root PATH` (default: the current directory). Recording
-evidence or running cases requires the Git repository root and an existing commit.
+evidence or running cases needs a Git repository with an existing commit. The project
+may be the repository root or a subdirectory of it. In a subdirectory the evidence
+snapshot covers only the project's files, with the repository's `HEAD` as its
+revision, and changes elsewhere in the repository do not affect it (REQ-cli-056,
+DRIVE-18).
 Output is JSON unless stated otherwise. Exit codes: 0 on success; 1 when Chough
 refuses or fails, with `Error: ...` on stderr; 2 for an unknown command or invalid
 flag; 3 when `cases run` or `cases record` recorded an outcome other than `passed`.

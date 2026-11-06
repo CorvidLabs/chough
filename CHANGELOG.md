@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A project in a subdirectory of its Git repository can run cases and record evidence
+  there (#170, DRIVE-18). The evidence snapshot then covers only the project's files,
+  with the repository's `HEAD`. Before, every such command refused with "--root must be
+  the Git repository root for evidence", and that advice did not work there. Nothing
+  changes for a project at the repository root.
 - The timing trace test no longer fails when its two runs straddle a second (#169,
   DRIVE-19). It runs each report once and requires them to be equal except for the
   exact clock shift between the runs, instead of retrying for a byte-equal pair.
