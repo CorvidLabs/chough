@@ -61,4 +61,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.json](../attachments/teach-archive-63adda0e/sessions/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.json)

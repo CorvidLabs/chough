@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 5
-archived_changes: 15
+archived_changes: 16
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched history
 
-15 archived changes, newest first.
+16 archived changes, newest first.
 
+- [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files
@@ -42,5 +43,4 @@ this note only links them.
 - [lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention](../archives/lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention.md) Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)
 - [remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that](../archives/remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that.md) Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)
 - [keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy](../archives/keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy.md) Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83)
-- [show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no](../archives/show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no.md) Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84)
-- 5 more on the [timeline](../timeline.md)
+- 6 more on the [timeline](../timeline.md)
