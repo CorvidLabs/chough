@@ -7,11 +7,11 @@
   "title": "Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22)",
   "description": "Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "dd5bbb764169d8e38f1de65a8cb5a5b70eb6483d",
   "created_at": 1794005923,
-  "updated_at": 1794006957,
+  "updated_at": 1794007887,
   "affected_specs": [
     "cli"
   ],
