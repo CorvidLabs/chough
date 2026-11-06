@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-7b6b9be67e10c0cb39c582e6",
-    "head": "EVT-c85ef47eb12e9a8b7caa9e4b",
+    "head": "EVT-0e26d34e6f17332e8c206215",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "intent",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -31,7 +31,9 @@
   },
   "decisions": [
     "Assignment from the orc (t18), deciding overnight for Leif (2026-11-06): the audit's Bugs row, with its own issue (#153), a worktree from origin/main, failing tests first, a mutation check, 'ready for approval' queued for Leif; REQ-cli-054 from the registry.",
-    "Agent's recommendation, not a human decision: fix the two defects and the missing recovery hints in this change (small src/bugs.rs change), because the row's recovery branches cannot be exercised otherwise; the alternative is tests for the mappings only, with the defects filed apart."
+    "Agent's recommendation, not a human decision: fix the two defects and the missing recovery hints in this change (small src/bugs.rs change), because the row's recovery branches cannot be exercised otherwise; the alternative is tests for the mappings only, with the defects filed apart.",
+    "Leif (0xLeif) decided \"Scope decision of bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153\": \"Ok yes I approve all\" (orc tab, 2026-11-06 06:1x MST, in reply to the orc's morning brief, which put the A/B choice; relayed by the orc (hc terminal t18) as option A, with the src/bugs.rs fix; the orc recorded the native approval as 0xLeif at 1f822bc4); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated",
+    "decided: option A, fix the two defects and the missing recovery hints in this change (small src/bugs.rs change); option B (tests for the mappings only, with the defects filed apart) rejected. Leif (0xLeif) through the orc, 2026-11-06 06:1x MST, 'Ok yes I approve all'"
   ],
   "open_questions": [],
   "completed": [
@@ -40,9 +42,7 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Scope decision of bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif's scope decision through the orc; then record the failing-first cases and link a local bug, apply the fix, record the passes and verify the bug, materialize REQ-cli-054, docs, CHANGELOG, verify on Linux, PR"
 }

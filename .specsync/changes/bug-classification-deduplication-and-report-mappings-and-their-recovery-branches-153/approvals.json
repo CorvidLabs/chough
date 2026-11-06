@@ -1,4 +1,45 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793970830,
+      "digest": "02fa74e39396d2a8e91d4da46db7a24d481aede00d60d80aefe784e8a54e9f44",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153",
+        "title": "Bug classification, deduplication and report mappings, and their recovery branches (153)",
+        "description": "Bug classification, deduplication and report mappings, and their recovery branches (153)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "tests/bugs.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-054 (new) states the bug value, deduplication and report mappings and their recovery branches; six tests in tests/bugs.rs assert its six criteria. Two fail first on defects found at 64aa77e0: a mistaken duplicate cannot be reopened, and a bug can relate to itself, with refusals naming no recovery. A small src/bugs.rs change fixes them: reopening clears duplicate_of, self-related links are refused, and refusals name chough bug list --all or chough bug update <id> --observation <id>. The four mapping tests each fail under a targeted mutation that the existing tests let pass. Every refusal's recovery command is run by a test. fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #153 (audit REPORT.md Bugs row and the Chough: bugs 90% rating); the orc's overnight assignment for Leif (2026-11-06): own issue, a worktree from origin/main, failing tests first, a mutation check, approval queued for Leif; REQ-cli-054 from the Chough ID registry. Rule: a refusal names a command that recovers and a test runs it. Lesson 2026-11-05: merge main before review and rebuild the vault.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "e0251a84dcd7f6067f886fc586b7beedbf92c70ba2829b2fa9fcb8e282f87052"
+      },
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
