@@ -7,10 +7,10 @@
   "title": "Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18)",
   "description": "Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18)",
   "kind": "documentation",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "615b587b33a1ef3a569f9557e2782a6be3df2f0f",
   "created_at": 1793979038,
-  "updated_at": 1793979574,
+  "updated_at": 1793980341,
   "affected_specs": [
     "cli"
   ],

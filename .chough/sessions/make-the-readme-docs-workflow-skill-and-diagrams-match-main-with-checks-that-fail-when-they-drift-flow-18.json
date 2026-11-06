@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-5c67e8fb8aaeaca193dc036d",
-    "head": "EVT-34458c2a7d9130eaf42a1eba",
+    "head": "EVT-d942ca4271a702e649196576",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -46,7 +46,8 @@
     "rejected: splitting the workflow skill fixes into another pull request because Leif chose one PR",
     "rejected: capturing the criterion as LIFE-17 because it would edit the same INTENT.md count line as #160 (LIFE-16)",
     "decided: KNOWN_PREVIOUS rows go at the end of the list because #151 inserts at its top",
-    "decided: docs/cli.md:25 (bug row, bug merge) is left to #158 and #69's lines are not touched because those pull requests change them"
+    "decided: docs/cli.md:25 (bug row, bug merge) is left to #158 and #69's lines are not touched because those pull requests change them",
+    "Leif (0xLeif) decided \"Scope approval of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"Approve\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native definition approval as 0xLeif at c8a74aff); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -68,9 +69,7 @@
     "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Scope approval of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for orc's relayed scope approval; then specsync change approve as the agent, close the gate, advance to build and fix the docs"
+  "next_action": "Fix the docs, skill and diagrams until tests/docs.rs passes; re-render diagrams; then verify, audit --strict, push and PR"
 }
