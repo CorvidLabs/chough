@@ -21,7 +21,7 @@ Add a `chough change` command with four subcommands, each a thin runner over the
 
 1. Add the REQ-cli-057 tests in `tests/change.rs` with a stub `specsync` that records its argv and working directory. They fail first: `chough change` does not exist.
 2. Add `src/change.rs` and register `change` in `src/main.rs`.
-3. Move the skill (both copies), `docs/cli.md`, `docs/lifecycle.md` and the CHANGELOG to `chough change` for these four steps, and update `src/skill.rs` and `tests/package.rs` if the skill digests require it.
+3. Move the skill (both copies), `docs/cli.md`, `docs/lifecycle.md` and the CHANGELOG to `chough change` for these four steps, add a `change` row to the README's helper table (required by #164's docs check), and update `src/skill.rs` and `tests/package.rs` if the skill digests require it.
 4. Materialize the delta, record the cases, run a mutation round, and run `fledge lanes run verify` on Linux.
 
 ## Risks

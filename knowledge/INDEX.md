@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-455 recorded; most recent:
+507 recorded; most recent:
 
 - OBS-product-test-af55b3e0d282e728bde7629e ProductTest Passed in local-linux-aarch64 at 3daef9eb3c1c
 - OBS-product-test-88bbe2aab8066fa7be63937f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
@@ -111,18 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-change-steps-pass-through-e7c98b22680b15f295f2125f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
 - OBS-tc-cli-change-steps-exact-arguments-a6ac0dd265ce055b985f7321 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
 - OBS-tc-cli-change-invalid-bound-recovery-a9891ba2772692301e30692a ProductTest Failed in local-macos-arm64 at f4f2106ed5e5
-491 recorded; most recent:
-
-- OBS-tc-cli-skill-615b587b-known-outdated-49aa9e0f9901a7d1a489d2e7 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-closeout-closes-review-gate-0b30553d30e616c34b4082dc ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-docs-name-pinned-versions-82c95068c1ab83a81ac881e0 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-documented-merge-drivers-match-799b64909e4d4b139e710a4b ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-doc-links-resolve-ad602daeca1c877b087a9777 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-documented-flags-exist-9a15747f75aa121071802423 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-readme-verify-list-matches-fledge-a773a2519b5e2897358dd0c6 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-inline-diagrams-match-sources-d4664eceddd1a4585482940b ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-stage-diagram-matches-the-helper-076aedef472d1f833fe184f1 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-readme-helper-table-covers-help-e3ced10f0b4c241f3494efeb ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 
 ## Briefs
 

@@ -12,6 +12,7 @@ Issue #171, slice 1 of "Chough drives SpecSync". Leif's interview answer 1 ("Als
 - Leif, relayed by the orc (t18), 2026-11-06: "A: amend, behind a summary" and "Capture + approve slice 1". DRIVE-20, DRIVE-21, FLOW-19 and FLOW-20 are captured as drafted, with "amended by FLOW-19" notes on FLOW-16 and the Drive intent. The slice order is approved, and this slice's definition is approved as drafted in the plan.
 - Slice order: (1) this one; (2) `chough change ship`; (3) direct lifecycle writes flagged (DRIVE-21); (4) gate summaries and one-reply lists; (5) native gate records with `relayed_by`, which needs spec-sync #900 released; (6) project setup, if Leif wants it.
 - IDs agreed with t27, who drives #169/#170: they take DRIVE-18, DRIVE-19 and REQ-cli-056; this change takes DRIVE-20, DRIVE-21, FLOW-19, FLOW-20 and REQ-cli-057. They touch `src/evidence.rs`; this change does not.
+- Redefined on 2026-11-06 after #164 (FLOW-18) merged into main: its `tests/docs.rs` requires a README helper-table row for every command, so `README.md` is added to the affected paths. Leif chose option A (README.md only; the `docs/walkthrough.md` lines that still show `specsync change new` and `check --commit` move in slice 2), relayed by the orc, who recorded the send-back as 0xLeif. Scope, requirement and tests are otherwise unchanged.
 - Ruled out for this slice:
   - Approve, review, ship and finalize.
   - History records of Chough-run steps (slice 3).
