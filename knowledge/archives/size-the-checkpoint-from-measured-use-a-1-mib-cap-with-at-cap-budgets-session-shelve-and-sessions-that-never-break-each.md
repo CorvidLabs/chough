@@ -65,16 +65,15 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-5 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+6 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336 | passed (by cycle time) | local-linux-aarch64 | TC-cli-checkpoint-at-the-cap |
 | OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-full-stress-shape |
-| OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923 | failed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 | OBS-tc-cli-native-check-not-passed-note-4df482e80586149e4a0c3dbc | passed (by cycle time) | local-macos-arm64 | TC-cli-native-check-not-passed-note |
 | OBS-tc-cli-native-check-safe-verifying-8b455b7140c543c7009cea93 | passed (by cycle time) | local-macos-arm64 | TC-cli-native-check-safe-verifying |
+| OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923 | failed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 | OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f | passed (by cycle time) | local-linux-aarch64 | TC-history-shelve-and-robust-sessions |
 
 ## Bugs
