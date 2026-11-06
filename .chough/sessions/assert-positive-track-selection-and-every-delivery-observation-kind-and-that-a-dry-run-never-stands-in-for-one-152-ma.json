@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9cf3807fc22ec809e733f9ce",
-    "head": "EVT-dffe922ce434210365df13d9",
+    "head": "EVT-76e6202498000f6a84bd3996",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -34,17 +34,13 @@
       "TC-cli-delivery-kinds-kept-dry-run-not"
     ],
     "design": [],
-    "files": [
-      "tests/cases.rs",
-      "tests/reduce.rs",
-      "specs/cli/requirements.md",
-      ".chough/cases/cli.delivery-kinds.cases.toml"
-    ]
+    "files": []
   },
   "decisions": [
     "Assignment from the orc (t18), deciding overnight for Leif (2026-11-06): the Cases/evidence item, as tests and contract only, with its own issue (#152), a worktree from origin/main, failing tests first, a mutation check, and 'ready for approval' queued for Leif.",
     "decided: a dry run 'never satisfies a delivery kind' is asserted where Chough distinguishes them, in reporting and in retention (delivery kinds are non-routine key items, kept in the vault; a dry run is routine), because Chough has no other delivery aggregate",
-    "Leif (0xLeif) decided \"Scope decision of assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma\": \"Ok yes I approve all\" (orc tab, 2026-11-06 06:1x MST, in reply to the orc's morning brief; relayed by the orc (hc terminal t18), who recorded the native approval as 0xLeif at d6964571); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
+    "Leif (0xLeif) decided \"Scope decision of assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma\": \"Ok yes I approve all\" (orc tab, 2026-11-06 06:1x MST, in reply to the orc's morning brief; relayed by the orc (hc terminal t18), who recorded the native approval as 0xLeif at d6964571); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Implementation review of assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma\": \"im telling you to approve and continue all of these... approve as me\" (orc tab, 2026-11-06 about 07:0x MST; relayed by the orc (hc terminal t18), who recorded the native review as 0xLeif at 05c19c33); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -59,9 +55,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif's implementation review through the orc; the orc records the native review, then this agent ships, finalizes, moves to done, pushes and merges on green plus corvid-agent"
 }
