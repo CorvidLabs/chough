@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-delivery-kinds-kept-dry-run-not-25ccbfe16f35370862c2803c",
+  "criteria": [
+    "FLOW-11",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-014"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not for TC-cli-delivery-kinds-kept-dry-run-not: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-delivery-kinds-kept-dry-run-not-25ccbfe16f35370862c2803c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-delivery-kinds-kept-dry-run-not-25ccbfe16f35370862c2803c.log": "f44d1882125fa5e657a263c19b0f4b07cd57a51066fe74c8362f15999c47ec7e"
+  },
+  "observed_at_unix_seconds": 1793971256,
+  "snapshot": {
+    "revision": "6f1117b6b1400f8f34cd44c56c4d844f3c8e376b",
+    "dirty": false,
+    "fingerprint": "8aa3b1885f3da6ea2734b513b7355c42cc785d89e1aeafcae7d63297664fd1e6",
+    "content": "8fd0afdcf7dae9b551dc2ed3625de1a28d8b1db85b4c099e5d1bd25bad2425ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-delivery-kinds-kept-dry-run-not",
+      "digest": "f75fe061aa795f379c4f0a6aefcc1d7dd2f81cceacab5b27d81200420734b1eb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 10
+}

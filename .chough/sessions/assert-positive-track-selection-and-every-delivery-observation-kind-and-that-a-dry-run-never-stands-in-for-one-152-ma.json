@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9cf3807fc22ec809e733f9ce",
-    "head": "EVT-862bd649411a139eb1ba04e7",
+    "head": "EVT-dffe922ce434210365df13d9",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -28,9 +28,18 @@
       "REQ-cli-014",
       "REQ-cli-017"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-copy-localization-track-selected",
+      "TC-cli-every-delivery-kind-recorded-as-itself",
+      "TC-cli-delivery-kinds-kept-dry-run-not"
+    ],
     "design": [],
-    "files": []
+    "files": [
+      "tests/cases.rs",
+      "tests/reduce.rs",
+      "specs/cli/requirements.md",
+      ".chough/cases/cli.delivery-kinds.cases.toml"
+    ]
   },
   "decisions": [
     "Assignment from the orc (t18), deciding overnight for Leif (2026-11-06): the Cases/evidence item, as tests and contract only, with its own issue (#152), a worktree from origin/main, failing tests first, a mutation check, and 'ready for approval' queued for Leif.",
@@ -39,12 +48,20 @@
   ],
   "open_questions": [],
   "completed": [
-    "Change package drafted; three new tests pass on main and each fails under a targeted mutation that the existing tests let pass (4 of 4 caught; logs in the ch-c456 scratchpad delivery-mutations/)"
+    "Change package drafted; three new tests pass on main and each fails under a targeted mutation that the existing tests let pass (4 of 4 caught; logs in the ch-c456 scratchpad delivery-mutations/)",
+    "REQ-cli-014 criterion materialized and CHANGELOG line added (6f1117b6); three cases pass on macOS; mutation round rerun on the merged tree, 4 of 4 caught (OBS-product-test-68612a5deaeb975d4cdb0c1a)"
   ],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-copy-localization-track-selected-b765be97292d359b7bc5d20e",
+    "OBS-tc-cli-every-delivery-kind-recorded-as-itself-05fa50eaf8cfb50e528c0317",
+    "OBS-tc-cli-delivery-kinds-kept-dry-run-not-25ccbfe16f35370862c2803c",
+    "OBS-product-test-68612a5deaeb975d4cdb0c1a"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma"
+  ],
   "run_consents": [],
-  "next_action": "Wait for Leif's scope decision through the orc; then materialize the REQ-cli-014 criterion, add the CHANGELOG line and the cases, record the mutation evidence, and verify on Linux"
+  "next_action": "Wait for Leif's implementation review through the orc; the orc records the native review, then this agent ships, finalizes, moves to done, pushes and merges on green plus corvid-agent"
 }
