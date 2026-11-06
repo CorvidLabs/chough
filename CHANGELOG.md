@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A project in a subdirectory of its Git repository can run cases and record evidence
+  there (#170, DRIVE-18). The evidence snapshot then covers only the project's files,
+  with the repository's `HEAD`. Before, every such command refused with "--root must be
+  the Git repository root for evidence", and that advice did not work there. Nothing
+  changes for a project at the repository root.
 - `chough doctor` finds and fixes the Chough debt that stops a fresh worktree from
   entering Chough (DRIVE-17): finished sessions left open, a legacy
   `.chough/session.json` to adopt, a stale active pointer, and awaiting-human gates on

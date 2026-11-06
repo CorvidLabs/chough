@@ -29,6 +29,7 @@ files:
   - tests/stages.rs
   - tests/common/mod.rs
   - tests/workflow_authority.rs
+  - tests/subdirectory.rs
   - tests/doctor.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
