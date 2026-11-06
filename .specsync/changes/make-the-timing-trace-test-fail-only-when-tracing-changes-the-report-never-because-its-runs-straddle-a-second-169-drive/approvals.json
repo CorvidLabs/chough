@@ -1,4 +1,41 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793997263,
+      "digest": "4688f499b8b4b7a286957616d2f930bc7cd1e1a189ea98900caf2b3882e454c4",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+        "title": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "description": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "reporting"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "hi/drive.md",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Test-only: the timing trace test compared two reports that end ongoing segments at their own now. No product behavior or contract changes.",
+        "acceptance_criteria": [
+          "DRIVE-19 (Leif, relayed by orc 2026-11-06, 'Capture both'; chough#169): timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit fails only when tracing changes the report. It runs the plain and traced timing --json once each, with no retry, and requires them to be equal except that every time and span running to now is later by exactly the gap between the two runs' generated_at. With a native stub that makes each run take over a second, today's test fails every time and the fixed test passes. A mutated field or a wrong shift makes the comparison fail. No other test, gate, bound or timeout changes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-19 (new, spec-sync CI-7 wording); issue #30: no runtime clock switch may forge times, so the fix stays in the test; never weaken a test: byte equality is replaced by an exact clock-shift equality that is checked on every run.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
