@@ -3,8 +3,8 @@
 The current agent interprets requests and follows the workflow skill. The Rust helper
 does only deterministic work: keep the checkpoint, route stages within native gates,
 validate and run test definitions, bind observations, keep local bugs, separate
-preferences from consent, snapshot and index the optional library, and install the
-skill per host. Each existing tool keeps its own records.
+preferences from consent, snapshot and index the librarian's knowledge directory (on
+by default), and install the skill per host. Each existing tool keeps its own records.
 
 ![Record ownership](diagrams/ownership.svg)
 
@@ -34,10 +34,14 @@ flowchart TB
 | `.specsync/changes/`, `.specsync/archive/` | SpecSync: change packages, approval, verification, review, archive |
 | `design/prototype/` with `COMPANION.md` | The canonical prototype and its rationale and mappings |
 | `fledge.toml` | Fledge tasks and lanes |
-| `.chough/session.json` | Chough: the single writable checkpoint (schema 2) |
+| `.chough/session.json` | Chough: the writable checkpoint (schema 2) of a project without `.chough/sessions/` |
+| `.chough/sessions/<key>.json` | Chough, in sessions mode: one checkpoint per objective or native change; only the active one is written |
+| `.chough/sessions/archive/`, `.chough/sessions/shelved/` | Finished sessions, kept byte for byte; an oversized or unreadable session set aside with `session shelve` |
+| `.chough/sessions/<key>.inbox/` | Create-only subagent reports, folded into the session by its owner |
+| `.chough/local/` | Local to each worktree and ignored by Git: the active-session pointer and the checkpoint writer lock |
 | `.chough/session.v1.json` | The original schema 1 bytes kept by `chough migrate` |
-| `.chough/transitions.jsonl` | Preserved legacy stage history, including `gate-opened` and `gate-closed` records written when an awaiting-human gate opens or is cleared; `chough timing` derives durations from it and stores none |
-| `.chough/history/cycles/<cycle>/<event>.json` | Immutable transition events; the existing checkpoint cursor selects the current lineage |
+| `.chough/transitions.jsonl` | Preserved legacy stage history, including `gate-opened` and `gate-closed` records written when an awaiting-human gate opens or closes; frozen behind a digest anchor once history is adopted |
+| `.chough/history/cycles/<cycle>/<event>.json` | Immutable transition events, gate records included; the checkpoint cursor selects the current lineage, and `chough timing` derives durations from them and stores none |
 | `.chough/history/pruned/<cycle>.json` | Immutable planned-removal receipt; missing receipted content is pruned or interrupted, never timing proof |
 | `.chough/preferences.json` | Standing project preferences, each with its source |
 | `.chough/cases/<module>.cases.toml` | Test definitions (`chough-testing/1`) with curated `TC-<module>-<title-slug>` IDs for new cases and exact legacy numeric IDs retained |
@@ -53,14 +57,14 @@ flowchart TB
 
 | Kind | Paths | Normally |
 |---|---|---|
-| Current working records: what an agent resumes from | `.chough/session.json`, `preferences.json`, `cases/`, `bugs/`, `validation/`; `.specsync/changes/<id>/` | Committed when the team shares the work |
-| Historical evidence: append-only history and scoped observations, current only while their inputs match | `.chough/transitions.jsonl`, `evidence/`, `artifacts/`, `pruned.jsonl` | Committed or kept local by collaboration and confidentiality needs; routine runs are prunable (below) |
+| Current working records: what an agent resumes from | `.chough/session.json` or `.chough/sessions/`, `preferences.json`, `cases/`, `bugs/`, `validation/`; `.specsync/changes/<id>/` | Committed when the team shares the work |
+| Historical evidence: append-only history and scoped observations, current only while their inputs match | `.chough/history/`, `.chough/transitions.jsonl`, `evidence/`, `artifacts/`, `pruned.jsonl` | Committed or kept local by collaboration and confidentiality needs; routine runs are prunable (below) |
 | Chough's own self-test records: its backlog and run history for building Chough | this repository's root `.chough/` | Committed here; never packaged or installed by `chough init` |
 | Examples: rehearsal samples and their case definitions | `examples/<sample>/` | Committed; exercises run in disposable copies whose output is not kept |
 | Frozen native archives: SpecSync's record of a closed change, authenticated from Git history | `.specsync/archive/changes/<date>-<id>/` | Committed once; never edited or pruned |
 | Canonical skill: the bundle the binary embeds; edit it here | `skills/chough-workflow/` | Committed and packaged |
 | Installed host copies written by `init` and `skill update` (byte-identical to the canonical bundle in this repository) | `<host>/skills/chough-workflow/`, here only the shared `.agents/`; an older `.claude/` copy is reported as legacy and removed only by `skill remove-legacy` | Committed in the project that uses them |
-| Ignored build output and local caches | `/target`, `.fledge/cache/`, and under `.specsync/`: `hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
+| Ignored build output and local state | `/target`, `.fledge/cache/`, `.chough/local/`, and under `.specsync/`: `hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
 | CI output | GitHub Actions run logs | Kept by the hosted run; no CI artifact is uploaded |
 
 **Identity allocation.** A small crate-internal boundary normalizes ASCII slugs and
@@ -92,7 +96,8 @@ newest failure for its case and environment; when it is a validation run's failu
 or first or last pass; or when it is younger than 14 days. If native manifests
 cannot be read, everything they could protect stays protected. `--apply` needs a run
 consent `retention` or the standing preference `retention auto` (default `off`);
-with `auto`, `cases run` and `validate run` apply the same rules after recording.
+with `auto`, `cases run`, `validate run` and `validate resume` apply the same rules
+after recording.
 Each removed set appends a line to `.chough/pruned.jsonl`. Only working-tree files are
 removed; Git history, native archives and ignore rules are untouched. A referenced
 observation is labelled `current`, `historical` (present but stale), `pruned` (absent
@@ -109,10 +114,14 @@ reads `stale-artifact`, never passed. Git LFS is not recommended, because SpecSy
 
 ## Checkpoint authority
 
-There is exactly one writable checkpoint. Hand edits are allowed and validated on
-every read (`deny_unknown_fields`, bounded size, closed stage names, project-relative
-paths). Commands replace it atomically. With several agents, one agent owns the
-checkpoint and the others report back; there is no distributed lock. APS was
+There is exactly one writable checkpoint at a time: `.chough/session.json`, or in
+sessions mode the active session. Hand edits are allowed and validated on every read
+(`deny_unknown_fields`, bounded size, closed stage names, project-relative paths).
+Commands replace it atomically, and writers in one worktree take the checkpoint lock
+`.chough/local/checkpoint.lock`, so parallel writers there apply in turn (DRIVE-11).
+With several agents, each pull request records its work in its own session, one agent
+owns each session, and subagents report with `chough inbox add`; there is no lock
+across clones. APS was
 evaluated as a backend and deferred (D-010). The checkpoint stores decision summaries
 and references, never reasoning transcripts, and it never stores native lifecycle
 state: it stores the change ID and reads status when a gate matters.
@@ -124,9 +133,8 @@ exact-string collections, but treats the current cycle as one indivisible value.
 divergent current-cycle conflict remains unresolved rather than manufacturing a
 combined objective, stage, consent or human gate. Success atomically replaces only
 ours; every refusal preserves all three inputs and writes no Chough record. This is
-not a lock or a change to one-owner live writes. `.chough/session.json` remains the
-sole canonical checkpoint, with no second store, runtime, service or copied SpecSync
-state. Because SpecSync
+not a lock or a change to one-owner live writes. The checkpoint remains the only
+canonical one, with no second store, runtime, service or copied SpecSync state. Because SpecSync
 6.1.1 status does not report an edited approved delta (BUG-0002), the gate into build,
 test and accept also reads the native approval ledger
 (`.specsync/changes/<id>/approvals.json`) and the change's deltas read-only, within

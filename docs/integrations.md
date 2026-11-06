@@ -48,6 +48,7 @@ reads CRLF checkouts, and those tests run on Linux and macOS.
 | Codex CLI 0.153.4 | `.agents/skills/chough-workflow/` (openai mapping) | A fresh session followed the `AGENTS.md` router to the installed skill and completed a cold start; native discovery of that directory was not tested separately |
 | Kimi Code CLI 0.41.0 | `.agents/skills/chough-workflow/` (openai mapping) | One macOS arm64 run on 2026-11-01 auto-discovered and loaded the skill and attempted a cold resume. It could not safely resume the archived work because of BUG-0024's stale archived-action defect; no fresh post-fix Kimi run was performed |
 | Google Antigravity | `.agents/skills/chough-workflow/` (openai mapping, the default; a shared skills directory) | One run on 2026-11-01 reported listing the skill from this directory; the report is narrative, written by the agent itself in closed PR #20 with no event log or transcript, and not independently verified (see [the cold-start record](exercises/cold-start.md)) |
+| `--host codex` | `.codex/skills/chough-workflow/` | Mapping from the CorvidLabs skills installer; the Codex CLI run above used the openai mapping, so no run has exercised this directory |
 | `--host gemini` | `.gemini/skills/chough-workflow/` | Mapping from the CorvidLabs skills installer; no run has exercised it |
 | Cursor, Grok | `.cursor/skills`, `.grok/skills` | Mapping from the CorvidLabs skills installer; not exercised |
 | Any host | Give the agent `skills/chough-workflow/SKILL.md` | The skill reads as plain Markdown |
@@ -85,7 +86,7 @@ whether an installed copy is current, edited or outdated.
 | [SpecSync](https://github.com/CorvidLabs/spec-sync) 6.2.0 | Requirements, contracts, changes, approval, verification, review, archive, lessons | Reads `change status --json` `summary.state`, `approval_valid`, `correction_valid`, `terminal_evidence.validity` and `change.affected_specs` for gates, and the approval ledger and deltas read-only to confirm approved deltas are unchanged; never runs approve, check, review or finalize |
 | [Fledge](https://github.com/CorvidLabs/fledge) 1.8.0 | Tasks, lanes, work and release mechanics | Case binding `fledge-task`; Chough's own lanes |
 | [CorvidLabs skills](https://github.com/CorvidLabs/skills) | Product-authoritative skills and the host directory mapping | Linked, not copied |
-| [Design system](https://github.com/CorvidLabs/design-system) | Tokens and assets | The visual sample pins `tokens.css` at c698ed4; Figma is optional |
+| Design system (`CorvidLabs/design-system`, a private repository) | Tokens and assets | The visual sample pins `tokens.css` at c698ed4; Figma is optional |
 
 ## Qualified, deferred or unavailable adapters
 

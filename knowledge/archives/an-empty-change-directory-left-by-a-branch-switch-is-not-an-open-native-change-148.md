@@ -66,4 +66,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.json](../attachments/an-empty-change-ecfcf689/sessions/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.json)
