@@ -7,10 +7,10 @@
   "title": "Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144)",
   "description": "Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "c675c72e023fbdf4a80f762b8ef3f70330b4a83c",
   "created_at": 1793945703,
-  "updated_at": 1793945731,
+  "updated_at": 1793946871,
   "affected_specs": [
     "cli"
   ],
