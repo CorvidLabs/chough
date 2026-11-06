@@ -21,6 +21,7 @@ criteria:
   - FLOW-14
   - FLOW-15
   - FLOW-16
+  - FLOW-17
 tags:
   - chough/intent
 ---
@@ -49,3 +50,4 @@ archived changes whose requirements trace it.
 - **FLOW-14**: [stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git](../archives/stop-descendants-that-left-the-process-group-on-linux-and-report-git-failures-and-grace-kills-of-chough-own-git.md), [stop-what-chough-started-when-chough-is-stopped-issue-75](../archives/stop-what-chough-started-when-chough-is-stopped-issue-75.md), [use-slug-identities-for-all-new-chough-records](../archives/use-slug-identities-for-all-new-chough-records.md), [bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors](../archives/bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors.md), [bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting](../archives/bound-external-commands-in-time-and-memory-and-honor-validation-stop-requests-after-waiting.md), [evolve-chough-into-a-resumable-stage-workflow](../archives/evolve-chough-into-a-resumable-stage-workflow.md)
 - **FLOW-15**: [warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and](../archives/warn-when-the-native-check-runs-none-of-the-project-commands-judged-from-the-effective-commands-specsync-reports-and.md)
 - **FLOW-16**: [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md), [human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38](../archives/human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38.md)
+- **FLOW-17**: none yet

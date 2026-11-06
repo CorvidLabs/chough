@@ -274,3 +274,32 @@ native commands. Missing authority still
 requires a real decision, and native checks and separate implementation acceptance
 and delivery authority remain intact. Safe skill upgrades preserve edited copies.
 Trace: FLOW-1, FLOW-2, FLOW-5, FLOW-13, LIFE-1, LIFE-6, LIFE-7.
+
+## Supported platforms (FLOW-17)
+
+Status: derived by the agent from FLOW-17 for the intent decision; not human wording.
+
+Purpose: Chough, like SpecSync from 6.0, runs on macOS and Linux. Windows users run it
+through WSL 2 with Ubuntu, so no pull request waits on a native Windows job.
+
+| Requirement | Summary | HI criteria | Native requirement |
+|---|---|---|---|
+| FR-platform-1 | Hosted CI tests and builds on Ubuntu and macOS only; MSRV, the verify lane with the feature-and-bug exercise, and the archive jobs stay on Ubuntu; no job runs on Windows | FLOW-17 | None: CI and documentation, no helper behavior |
+| FR-platform-2 | README, docs/ci.md and docs/integrations.md say macOS and Linux, Windows through WSL 2 with Ubuntu, and say exactly what the Ubuntu jobs cover for WSL and what they do not | FLOW-17 | None |
+| FR-platform-3 | No requirement or criterion promises native Windows behavior, and no Linux or macOS guarantee weakens | FLOW-17 | REQ-cli-046 and every other requirement unchanged |
+
+- In: the CI matrix, the platform statements and limitations, the testing companion's
+  Windows CI lines, and a package test that keeps CI and these statements in agreement.
+- Out: removing the Windows-specific code paths in `src/` and `tests/` (they remain,
+  untested); a CI job inside WSL on a Windows runner; Raven Desktop, which keeps Windows.
+- Assumption: Ubuntu on WSL 2 is a Linux system with the same target and userland as
+  the hosted Ubuntu jobs. WSL 1, a checkout on a Windows drive (`/mnt/c`) and
+  Windows-side Git are not covered, and are documented as not covered.
+- Assumption: REQ-cli-046's short attachment folders and 220-character limit stay,
+  because they keep a repository's tracked tree checkable out by any Git client,
+  including one on Windows that does not run Chough.
+- Dependencies: SpecSync publishes no Windows binary as of 6.0, and its README points
+  Windows users to WSL.
+
+Verification: `tests/package.rs::supported_platforms_are_macos_and_linux_with_windows_through_wsl`
+and hosted CI. CRLF-normalizing tests stay and run on Linux and macOS.

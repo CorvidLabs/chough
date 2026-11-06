@@ -61,7 +61,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-13 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+15 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -75,6 +75,8 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-relay-refusals-recover-87dcfa66ee55b5c03ff00854 | passed (by cycle time) | local | TC-cli-relay-refusals-recover |
 | OBS-tc-cli-relay-refusals-recover-b8da2ecf35c89b0c399b1e15 | passed (by cycle time) | local-linux-aarch64 | TC-cli-relay-refusals-recover |
 | OBS-tc-cli-relay-refusals-recover-c53afc18239889e07f9ac065 | passed (by cycle time) | local | TC-cli-relay-refusals-recover |
+| OBS-tc-cli-supported-platforms-740fae9392dd55ffb48cb418 | passed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
+| OBS-tc-cli-supported-platforms-e99a5e875c28321368248744 | passed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 | OBS-tc-history-relay-invalid-payloads-736bae7a3a483a4d9a691e67 | passed (by cycle time) | local-linux-aarch64 | TC-history-relay-invalid-payloads |
 | OBS-tc-history-relay-invalid-payloads-a9fe4eaaf31e180bffc750aa | passed (by cycle time) | local | TC-history-relay-invalid-payloads |
 | OBS-tc-history-relay-invalid-payloads-d9941deec425b224a5e3cd5e | passed (by cycle time) | local | TC-history-relay-invalid-payloads |
