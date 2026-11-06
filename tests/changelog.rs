@@ -26,11 +26,11 @@ fn entries(section: &str) -> Vec<String> {
     for line in section.lines() {
         if let Some(rest) = line.strip_prefix("- ") {
             entries.push(rest.to_owned());
-        } else if line.starts_with("  ") {
-            if let Some(entry) = entries.last_mut() {
-                entry.push(' ');
-                entry.push_str(line.trim_start());
-            }
+        } else if line.starts_with("  ")
+            && let Some(entry) = entries.last_mut()
+        {
+            entry.push(' ');
+            entry.push_str(line.trim_start());
         }
     }
     entries
