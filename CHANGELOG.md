@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The timing trace test no longer fails when its two runs straddle a second (#169,
+  DRIVE-19). It runs each report once and requires them to be equal except for the
+  exact clock shift between the runs, instead of retrying for a byte-equal pair.
 - The README, docs, workflow skill and diagrams say what main does again, and
   `tests/docs.rs` fails when they drift (FLOW-18). It checks the stage diagram
   against the helper's stages and moves, every inline Mermaid block against its
