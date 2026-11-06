@@ -513,6 +513,15 @@ every command uses `.chough/session.json` exactly as before.
   entries are not stranded; it is reported under `kept_open` with its
   `inbox_unfolded` count. Make it active and run `chough inbox fold`, and the next
   switch archives it.
+- At a successful move into done, the active session archives itself, last among the
+  done steps and in its own change, and the active pointer is cleared (#155,
+  REQ-history-006, DRIVE-13). It is reported as `applied.session_archive`: `archived`
+  with the key; `kept_open` while the inbox has unfolded entries or release is
+  authorized (release is entered from done, so ask for it before done; the move from
+  release into done archives it); or `skipped` without sessions. Afterwards `next`
+  and `status` refuse, naming `chough session new <key>`. A done session merged to
+  main is already archived, so no other worktree moves it; `session new` and `use`
+  still archive done sessions left open by older versions.
 - `chough session list` reports each open and archived session's key, objective,
   native change, stage, status, whether it is active and its `inbox_unfolded` count.
   An archived session's status is `archived`; an open one's is its stage status (#84).

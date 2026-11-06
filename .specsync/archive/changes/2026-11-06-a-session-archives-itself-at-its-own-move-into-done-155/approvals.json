@@ -1,0 +1,60 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793979154,
+      "digest": "7eaec3be1e8df8f5ca73632c49f34f06b9d3967d53b6e65d004457851ecb7a19",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-session-archives-itself-at-its-own-move-into-done-155",
+        "title": "A session archives itself at its own move into done (155)",
+        "description": "A session archives itself at its own move into done (155)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "src/sessions.rs",
+          "src/stage.rs",
+          "tests/reduce.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Issue #155 option D (Leif, relayed by orc 2026-11-06), under DRIVE-13 and DRIVE-3, in REQ-history-006: the move into done archives the active session itself in its own change and clears the active pointer (applied.session_archive archived); a session with unfolded inbox entries stays open (kept_open); a session with release authorized at done stays open for the release and archives itself at the move from release into done; without sessions it reports skipped; next then refuses naming chough session new <key>, and a following session new archives nothing. The one-time sweep moves the done sessions open on main into the archive in this change. The new tests fail first; the switch tests in tests/sessions.rs model a done session left open by an older version, with no assertion change, docs and the skill say so, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-13 ('each closes at done and is archived') and DRIVE-3 ('automatic archiving of a finished session'); issue #155 option D chosen by Leif; REQ-history-006's kept-open rule for unfolded inbox entries; REQ-history-011, REQ-cli-041/043/049 order unchanged; checkpoint_path's vanished-session refusal kept for other commands.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "18c2b97c46f37b5b4f148a62ff2cb778f7e1f315f802f79a3c9a283e08d62027",
+        "history": "3cea8c435d5f555004e5353463a493fb5cf61eef2c5b141da55ec84b7045a40c"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-049": "a3f5a5ca2ce2edb51f75138aa6a0b13f42da75534790c6636a333d9f9a448f34",
+        "history: REQUIREMENT REQ-history-006": "1c806a29bee35dae200abd5fe9db90463a8e745f479ab6735f7c9007c2639558"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793980826,
+      "digest": "2c4f2728cc230c4a556e31d6b312c139d9272bb757440c5244854da2966e3e87",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "a-session-archives-itself-at-its-own-move-into-done-155",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "50c1759ba7fec0301dfac6a0f9b3323d79749c53",
+  "contract_digest": "7eaec3be1e8df8f5ca73632c49f34f06b9d3967d53b6e65d004457851ecb7a19",
+  "execution_digest": "97503020adb21115f86e9030f38c00d027c54fda61e43055cb08d82388ab089e",
+  "workspace_digest": "d9a7bac26bfc3a3a05ddb7bdc7901e8da6ed819ea5dc58dc2d6b11a24ac22ceb",
+  "timestamp": 1793980179
+}

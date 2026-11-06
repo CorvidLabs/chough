@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A session archives itself at its own move into done and clears the active pointer
+  (#155, REQ-history-006, DRIVE-13), so a done session merged to main is already
+  archived and no other worktree's `session new` moves it into an unrelated change. It
+  stays open while its inbox has unfolded entries or release is authorized.
 - The KNOW-29 roll-up never rolls the archived session that holds the legacy history
   anchor (#143, KNOW-29 amended by Leif). It stays in `.chough/sessions/archive/` in
   addition to the five, so the anchor never depends on the knowledge directory.
