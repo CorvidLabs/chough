@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10",
+  "implementation_commit": "1da231f473049cd3780f7673713511b8ac915ee7",
+  "implementation_tree": "ba22140b82753a8832eda37539aa466b8bbbaf98",
+  "contract_digest": "294db610d4078da844dc7c3cbc9123f68c0d65ddc8c3132bb8c3f485948b57ff",
+  "workspace_digest": "7129b8e08e1b4687ede76ecfa14734657af5c1fe27d5cb2c305f3ee7e44d8852",
+  "closing_digest": "a31a20d2da9b0498ede38533ee429c49117faa46f078af35cdd86f7f7501f403",
+  "review_digest": "b643707a5269057f9ee30ad159567d4163d6317e3c246c1a5823eb11af1087a4",
+  "finalization_digest": "c9fdbb15f8c3873a9e643f7bd5355660ca67fee31b1a60fca8545b3a13241421",
+  "timestamp": 1793937681
+}

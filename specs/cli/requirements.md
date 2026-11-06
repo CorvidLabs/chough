@@ -358,7 +358,7 @@ Native check result in next. When the recorded native change has a workspace und
 
 Acceptance Criteria
 - After a failed attempt, `next` text and JSON show its time, commit, failing commands and exit codes; a later passing attempt replaces it.
-- With the change approved or implementing, `next` says the native check has not passed for this tree, that SpecSync keeps no reason for refusals, and names `specsync change check <id>`; when verifying, it does not.
+- With the change approved or implementing, `next` says the native check has not passed for this tree, that SpecSync keeps no reason for refusals, and names `specsync change check <id>`; when verifying, it shows no note only with handoff readiness `safe`, and any other or missing readiness keeps a note, as the last criterion states.
 - A malformed attempts file is reported as unknown, and `next` still makes one native status read.
 - A verifying change whose handoff readiness is not `safe` (the tree moved after the last check) is reported as not passed for this tree with SpecSync's reason; with readiness `safe` there is no note; with no readiness, freshness is reported as unknown.
 

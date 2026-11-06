@@ -54,14 +54,12 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-relay-closes-one-gate-with-four-values-4aeb84d60f1ea766aefdb776 | passed (by cycle time) | local | TC-cli-relay-closes-one-gate-with-four-values |
 | OBS-tc-cli-relay-closes-one-gate-with-four-values-591766803ac5a151a11fae6a | passed (by cycle time) | local | TC-cli-relay-closes-one-gate-with-four-values |
-| OBS-tc-cli-session-notes-union-90a6e1a6772009154dcfdce5 | passed (by cycle time) | local-linux-aarch64 | TC-cli-session-notes-union |
-| OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e | passed (by cycle time) | local-linux-aarch64 | TC-history-keep-five-archived-sessions |
 
 ## Bugs
 
