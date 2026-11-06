@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 69
+version: 70
 status: active
 files:
   - src/main.rs
@@ -289,3 +289,4 @@ provider, runtime or hosted service.
 | 67 | 2026-11-06 | bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153: Bug classification, deduplication and report mappings, and their recovery branches (153) |
 | 68 | 2026-11-06 | a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16: A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) |
 | 69 | 2026-11-06 | chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17: Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) |
+| 70 | 2026-11-06 | run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20: Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) |
