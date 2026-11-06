@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793926844,
+      "digest": "36ec9de3a426ba3dcc64c1cc50256fa311f7ef7d653d22237e7f14a9c3c15ef3",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121",
+        "title": "Restore the test closing brace lost when merging main into KNOW-22 (121)",
+        "description": "Restore the test closing brace lost when merging main into KNOW-22 (121)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Merge repair only: both branches appended tests to tests/reduce.rs after a shared closing brace and the merge kept one; no behavior or requirement changes.",
+        "acceptance_criteria": [
+          "tests/reduce.rs compiles again with every test from main and KNOW-22, differing from main only by the KNOW-22 tests and the one doc comment KNOW-22 rewrote; the full suite and fledge lanes run verify pass on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "#121 merge of main after #120; Leif: Record and merge for #121, merge main in without force push and re-review if it changes the reviewed change (2026-11-05 17:07 MST, via the orc).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793927183,
+      "digest": "d8784195f19772b479170cb9c376a6b42a155c64838d8a0d0beb3ddc01686f63",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

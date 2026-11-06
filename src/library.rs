@@ -796,6 +796,7 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
     notes.extend(crate::vault::timeline_notes(dir, &timeline));
     notes.extend(crate::vault::intent_notes(dir, &intent, &touches));
     notes.push(crate::vault::rules_note(root, dir)?);
+    notes.extend(crate::vault::bug_notes(root, dir)?);
     for (relative, content) in &notes {
         ensure!(
             content.len() <= ENTRY_LIMIT,

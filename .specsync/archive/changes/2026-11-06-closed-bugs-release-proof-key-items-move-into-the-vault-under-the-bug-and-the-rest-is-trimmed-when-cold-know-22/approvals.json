@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793923289,
+      "digest": "9ce7611a8de8e35b2e1575a7767361d6d50b7a9a8e85a98040a1e737a8532bc5",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22",
+        "title": "Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)",
+        "description": "Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/evidence.rs",
+          "src/library.rs",
+          "src/vault.rs",
+          "tests/evidence.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": "KNOW-22 (Leif chose Approve as proposed, 2026-11-05 16:34 MST): a new requirement for how the librarian trim treats observations and fixtures of verified, duplicate and wont-fix bugs.",
+        "acceptance_criteria": [
+          "In the librarian trim a verified, duplicate or wont-fix bug no longer protects its linked observations; its earliest linked failure with artifacts, for a verified bug its first linked pass after it, and its fixture under .chough move into knowledge/attachments/<bug folder>/ when they would otherwise be trimmed; other linked observations are trimmed and ledgered when cold; library index writes bugs/<id>.md linking what moved; open bugs and evidence prune keep every link. The new tests fail first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-22; Leif chose Approve as proposed (2026-11-05 16:34 MST, via the orc); REQ-cli-046 move rules (never overwrite, keep modes, ledger, restore) and evidence prune protections unchanged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "6d9f3e97237f88bb711fe5b4af53cbe5e297e149d9a2c019f4979579199c4d8f"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793923656,
+      "digest": "49edfc9103c5c2a9fd10915f31c35e37b15309b244883dd2eed061953632dbde",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

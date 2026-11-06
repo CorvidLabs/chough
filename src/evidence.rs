@@ -1065,6 +1065,64 @@ fn references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     Ok(map)
 }
 
+/// Whether a protection reason is a closed bug's link: `<bug-id> <status>` with status
+/// verified, duplicate or wont-fix.
+fn closed_bug_reason(reason: &str) -> bool {
+    reason.starts_with("BUG-")
+        && reason
+            .split_whitespace()
+            .nth(1)
+            .is_some_and(bugs::is_closed_status)
+}
+
+/// The key items of closed bugs (KNOW-22), each with the bug whose vault folder it moves
+/// into: by observation ID, the earliest linked failed observation and, for a verified
+/// bug, the first linked passed observation after it; by [`file_key`], a fixture under
+/// `.chough/`. A linked record that is gone (already trimmed) or unreadable is not a key
+/// item; an observation two bugs name goes with the bug first by ID.
+fn closed_bug_key_items(
+    root: &Path,
+) -> Result<(BTreeMap<String, String>, BTreeMap<String, String>)> {
+    let mut observations = BTreeMap::new();
+    let mut fixtures = BTreeMap::new();
+    for closed in bugs::closed_links(root)? {
+        let bug = closed.id;
+        let records: Vec<Evidence> = closed
+            .linked
+            .iter()
+            .filter_map(|id| load(root, id).ok())
+            .collect();
+        let earliest = |outcome: Outcome, after: Option<u64>| {
+            records
+                .iter()
+                .filter(|evidence| evidence.outcome == outcome)
+                .filter(|evidence| after.is_none_or(|at| evidence.observed_at_unix_seconds > at))
+                .min_by(|left, right| {
+                    (left.observed_at_unix_seconds, &left.id)
+                        .cmp(&(right.observed_at_unix_seconds, &right.id))
+                })
+        };
+        if let Some(failure) = earliest(Outcome::Failed, None) {
+            observations
+                .entry(failure.id.clone())
+                .or_insert_with(|| bug.clone());
+            if closed.status == "verified"
+                && let Some(fix) = earliest(Outcome::Passed, Some(failure.observed_at_unix_seconds))
+            {
+                observations
+                    .entry(fix.id.clone())
+                    .or_insert_with(|| bug.clone());
+            }
+        }
+        if let Some(path) = closed.fixture.filter(|path| path.starts_with(".chough/")) {
+            fixtures
+                .entry(file_key(&path))
+                .or_insert_with(|| bug.clone());
+        }
+    }
+    Ok((observations, fixtures))
+}
+
 impl Reads<'_> {
     /// Referenced labels share the same case index as this request's observations.
     pub(super) fn reference_labels(
@@ -1820,6 +1878,9 @@ struct SummaryCandidate {
     move_all: bool,
     /// A failed run: its artifacts move into the vault (KNOW-19).
     move_artifacts: bool,
+    /// Files that are key items of a closed bug, with that bug: they move into the
+    /// bug's vault folder instead of an archive's (KNOW-22).
+    bug_files: BTreeMap<String, String>,
     bytes: u64,
 }
 
@@ -1833,13 +1894,18 @@ fn candidate_moves(candidate: &SummaryCandidate, knowledge_dir: &str) -> BTreeMa
         .enumerate()
         .filter(|(index, file)| {
             candidate.move_all
+                || candidate.bug_files.contains_key(*file)
                 || (candidate.move_artifacts && (candidate.loose || *index > 0))
                 || crate::attachments::is_key_item(file)
         })
         .map(|(_, file)| {
+            let folder = candidate
+                .bug_files
+                .get(file)
+                .unwrap_or(&candidate.archives[0]);
             (
                 file.clone(),
-                crate::attachments::attachment(knowledge_dir, &candidate.archives[0], file),
+                crate::attachments::attachment(knowledge_dir, folder, file),
             )
         })
         .collect()
@@ -2222,6 +2288,7 @@ fn summary_protections(
             )
         })
         .collect();
+    let (bug_observations, bug_fixtures) = closed_bug_key_items(root)?;
     let mut pending = vec![];
     let mut protected = vec![];
     for set in &classification.sets {
@@ -2253,6 +2320,10 @@ fn summary_protections(
             .reasons
             .iter()
             .filter(|reason| *reason != "recent" && !reason.starts_with("native archive "))
+            // A closed bug holds none of its observations here: its key items move into
+            // the vault under the bug, and the rest follows the cold rule (KNOW-22).
+            // `evidence prune`, which moves nothing, still keeps them.
+            .filter(|reason| !closed_bug_reason(reason))
             .filter(|reason| Some(*reason) != key_item.as_ref())
             // Only the newest run of a case and environment stays protected as newest
             // (KNOW-17); the newest failure keeps its own protection.
@@ -2273,6 +2344,16 @@ fn summary_protections(
         if reasons.is_empty() {
             let mut files = vec![record_path];
             files.extend(set.removable.iter().cloned());
+            // A closed bug's key item moves whole, with its artifacts, under the bug.
+            let bug_files: BTreeMap<String, String> = bug_observations
+                .get(&evidence.id)
+                .map(|bug| {
+                    files
+                        .iter()
+                        .map(|file| (file.clone(), bug.clone()))
+                        .collect()
+                })
+                .unwrap_or_default();
             pending.push(SummaryCandidate {
                 id: evidence.id.clone(),
                 files,
@@ -2282,6 +2363,7 @@ fn summary_protections(
                 loose: false,
                 move_all: key_item.is_some(),
                 move_artifacts: evidence.outcome == Outcome::Failed,
+                bug_files,
                 bytes: set.bytes,
             });
         } else {
@@ -2407,6 +2489,16 @@ fn summary_protections(
             .map(|archive| archive.id.clone())
             .collect();
         if reasons.is_empty() {
+            // A closed bug's fixture is a key item: it moves under the bug (KNOW-22).
+            let bug_files: BTreeMap<String, String> = group
+                .files
+                .iter()
+                .filter_map(|file| {
+                    naming(&bug_fixtures, &file_key(file))
+                        .next()
+                        .map(|bug| (file.clone(), bug.clone()))
+                })
+                .collect();
             pending.push(SummaryCandidate {
                 id: group.id,
                 files: group.files,
@@ -2416,6 +2508,7 @@ fn summary_protections(
                 loose: true,
                 move_all: false,
                 move_artifacts: false,
+                bug_files,
                 bytes: group.bytes,
             });
         } else {

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121",
+  "implementation_commit": "aa73bcfe1943c9ff3d5862123dcc1994c63e335a",
+  "implementation_tree": "d2e10790d7684ef9e8efc4c897ad2c602afd32ce",
+  "contract_digest": "36ec9de3a426ba3dcc64c1cc50256fa311f7ef7d653d22237e7f14a9c3c15ef3",
+  "workspace_digest": "e4a0c52ee2dd37f46c58e6389128c906cf36c5e9e18927c90401e0a73dfeac72",
+  "closing_digest": "d8784195f19772b479170cb9c376a6b42a155c64838d8a0d0beb3ddc01686f63",
+  "review_digest": "7184773104653c63e410aadb4123c9846e7d598cce7105cd54aac621d3a5f516",
+  "finalization_digest": "e44d02662ffd4b10635e6ea0c0a617dcedc0587999a2723515cdfa3836868f82",
+  "timestamp": 1793927183
+}

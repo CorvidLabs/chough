@@ -944,6 +944,23 @@ protected; one that appears during the apply refuses it. The ledger maps each mo
 (`moved`), and a restore deletes only the copies that apply created. The preview lists each candidate's `moves`. An archive's note gains
 "Loose artifacts" and "Attachments" sections with links.
 
+Closed bugs release proof (REQ-cli-048, KNOW-22). In the summary and trim, a bug that is
+verified, duplicate or wont-fix no longer protects the observations it links. Its key
+items move under the bug instead, to `knowledge/attachments/<folder of the bug ID>/`:
+- the earliest linked failed observation, by observed time, with its artifacts;
+- for a verified bug, the first linked passed observation after that failure, with its
+  artifacts;
+- its fixture, when it is under `.chough/`.
+
+A key item moves only when it would otherwise be trimmed, so a hot or otherwise
+protected item stays until it is cold. Every other observation the bug links is
+summarized, ledgered and trimmed by the normal cold rule. Moves follow the rules above.
+The bug record keeps its status and IDs, and an open bug still protects everything it
+links. `chough evidence prune`, which moves nothing into the vault, still treats every
+bug's links as protection. `chough library index` writes `knowledge/bugs/<id>.md` for
+each closed bug with files in its attachments folder, linking the bug record and each
+attachment.
+
 - Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
   path an earlier archive already listed is counted but detailed only in that earlier
   entry, and at most 100 rows are listed in full; the rest are counted and left to the

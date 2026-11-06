@@ -409,7 +409,8 @@ fn loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_sta
     );
 }
 
-/// KNOW-18: a fixture named by a closed bug is no longer held.
+/// KNOW-18, KNOW-22: a fixture named by a closed bug is no longer held in `.chough/`; it
+/// is a key item, so it moves into the vault under the bug.
 #[test]
 fn a_closed_bug_releases_its_loose_fixture() {
     let fixture = project("0");
@@ -429,6 +430,10 @@ fn a_closed_bug_releases_its_loose_fixture() {
         "{moved:#}"
     );
     assert!(!fixture.exists(".chough/artifacts/bug-repro.log"));
+    assert_eq!(
+        fixture.read("knowledge/attachments/BUG-0001/artifacts/bug-repro.log"),
+        "repro\n"
+    );
 }
 
 /// KNOW-19: key items move into the vault: a manual observation with its screenshot, and
@@ -1081,4 +1086,129 @@ fn an_archived_session_file_reference_protects_nothing() {
         json!([".chough/artifacts/old-pr/notes.log"]),
         "the archived session itself is not rewritten"
     );
+}
+
+/// Runs of TC-b in a2's cold cycle: f1 failed, p1 passed after it, x1 another pass; the
+/// unlinked f2 (a later failure) and n1 (the newest run) keep KNOW-17's protections off
+/// the linked runs. f1 keeps its failure log. The bug links x1 first, so "earliest" is
+/// read from observation times, not link order.
+fn bug_with_runs(fixture: &Fixture, id: &str, status: &str) {
+    obs(fixture, "f1", 58, "TC-b", "failed");
+    obs(fixture, "p1", 57, "TC-b", "passed");
+    obs(fixture, "x1", 56, "TC-b", "passed");
+    obs(fixture, "f2", 55, "TC-b", "failed");
+    obs(fixture, "n1", 54, "TC-b", "passed");
+    let path = ".chough/evidence/f1.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["artifacts"] = json!([".chough/artifacts/f1.log"]);
+    record["artifact_fingerprints"] = json!({".chough/artifacts/f1.log": ZERO});
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.write(".chough/artifacts/f1.log", "failure first\n");
+    bug(fixture, id, status, "a description, not a path");
+    let path = format!(".chough/bugs/{id}.json");
+    let mut record: Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+    record["observations"] = json!(["x1", "f1", "p1"]);
+    fixture.write(
+        &path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.commit("a bug with linked runs");
+    set_checkpoint(fixture, &[]);
+}
+
+/// KNOW-22: a closed bug stops holding its observations. Its key items, the earliest
+/// linked failure with its artifacts and, for a verified bug, the first linked pass after
+/// it, move into the vault under the bug; the rest is summarized and trimmed by the
+/// normal cold rule. The bug record keeps its status and IDs.
+#[test]
+fn a_closed_bug_moves_its_key_items_into_the_vault_and_releases_the_rest() {
+    for (status, fixing_run) in [
+        ("verified", true),
+        ("duplicate", false),
+        ("wont-fix", false),
+    ] {
+        let fixture = project("0");
+        bug_with_runs(&fixture, "BUG-0002", status);
+        let bug_before = fixture.read(".chough/bugs/BUG-0002.json");
+        let moved = fixture.ok(&["stage", "advance"]);
+        let trim = &moved["applied"]["librarian_trim"];
+        assert_eq!(trim["status"], "trimmed", "{status}: {trim:#}");
+        let vault = "knowledge/attachments/BUG-0002";
+        assert!(
+            fixture.exists(&format!("{vault}/evidence/f1.json")),
+            "{status}: {trim:#}"
+        );
+        assert!(
+            fixture.exists(&format!("{vault}/artifacts/f1.log")),
+            "{status}: {trim:#}"
+        );
+        assert!(
+            !fixture.exists(".chough/evidence/f1.json"),
+            "{status}: {trim:#}"
+        );
+        assert_eq!(
+            fixture.exists(&format!("{vault}/evidence/p1.json")),
+            fixing_run,
+            "{status}: the fixing run moves only for a verified bug: {trim:#}"
+        );
+        assert!(
+            !fixture.exists(".chough/evidence/p1.json"),
+            "{status}: {trim:#}"
+        );
+        assert!(
+            !fixture.exists(".chough/evidence/x1.json"),
+            "{status}: {trim:#}"
+        );
+        assert!(
+            !fixture.exists(&format!("{vault}/evidence/x1.json")),
+            "{status}: {trim:#}"
+        );
+        for kept in ["f2", "n1"] {
+            assert!(
+                fixture.exists(&format!(".chough/evidence/{kept}.json")),
+                "{status}: {trim:#}"
+            );
+        }
+        assert_eq!(
+            fixture.read(".chough/bugs/BUG-0002.json"),
+            bug_before,
+            "{status}"
+        );
+        let note = fixture.read("knowledge/bugs/BUG-0002.md");
+        assert!(note.contains("id: \"BUG-0002\""), "{status}: {note}");
+        assert!(
+            note.contains("../attachments/BUG-0002/evidence/f1.json"),
+            "{status}: {note}"
+        );
+        assert_eq!(
+            note.contains("../attachments/BUG-0002/evidence/p1.json"),
+            fixing_run,
+            "{status}: {note}"
+        );
+        let ledger = fixture.read(".chough/pruned.jsonl");
+        assert!(
+            ledger.contains("knowledge/attachments/BUG-0002/evidence/f1.json"),
+            "{ledger}"
+        );
+        assert!(ledger.contains("\"x1\""), "x1 is ledgered: {ledger}");
+    }
+}
+
+/// KNOW-22: an open bug keeps every observation it links.
+#[test]
+fn an_open_bug_keeps_every_linked_observation() {
+    let fixture = project("0");
+    bug_with_runs(&fixture, "BUG-0002", "open");
+    let moved = fixture.ok(&["stage", "advance"]);
+    for kept in ["f1", "p1", "x1"] {
+        assert!(
+            fixture.exists(&format!(".chough/evidence/{kept}.json")),
+            "{kept}: {:#}",
+            moved["applied"]["librarian_trim"]
+        );
+    }
+    assert!(!fixture.exists("knowledge/attachments/BUG-0002"));
 }

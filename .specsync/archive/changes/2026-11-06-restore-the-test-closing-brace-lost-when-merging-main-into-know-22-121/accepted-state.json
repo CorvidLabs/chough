@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121",
+  "slug": "restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121",
+  "title": "Restore the test closing brace lost when merging main into KNOW-22 (121)",
+  "description": "Restore the test closing brace lost when merging main into KNOW-22 (121)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "b3868b844923348903cf67e40dfe6347fb1fb6a1",
+  "created_at": 1793924315,
+  "updated_at": 1793927183,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/reduce.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Merge repair only: both branches appended tests to tests/reduce.rs after a shared closing brace and the merge kept one; no behavior or requirement changes.",
+  "acceptance_criteria": [
+    "tests/reduce.rs compiles again with every test from main and KNOW-22, differing from main only by the KNOW-22 tests and the one doc comment KNOW-22 rewrote; the full suite and fledge lanes run verify pass on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "#121 merge of main after #120; Leif: Record and merge for #121, merge main in without force push and re-review if it changes the reviewed change (2026-11-05 17:07 MST, via the orc).",
+    "public_contract": "no"
+  }
+}

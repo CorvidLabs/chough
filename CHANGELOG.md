@@ -6,6 +6,15 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Closed bugs release proof (KNOW-22, REQ-cli-048). In the librarian trim, a verified,
+  duplicate or wont-fix bug no longer protects the observations it links. Its key items
+  move into `knowledge/attachments/<bug>/` when they would otherwise be trimmed:
+  - the earliest linked failure, with its artifacts;
+  - for a verified bug, the first pass after it;
+  - its fixture under `.chough/`.
+
+  The other linked runs are trimmed when cold. `knowledge/bugs/<id>.md` links what
+  moved. Open bugs, and `chough evidence prune`, keep every link.
 - The move into done now drops every file and design reference from the checkpoint, and
   archived sessions' file and design references no longer protect old proof (KNOW-21,
   REQ-cli-045). `applied.checkpoint_references` reports them as `dropped_files` and

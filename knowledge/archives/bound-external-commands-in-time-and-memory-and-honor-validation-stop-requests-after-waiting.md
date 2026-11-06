@@ -54,12 +54,12 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/bug-0009-fixed-reproduction.log` | 78646e12853179a3a7a1cd9e76200e059ab9d4f357f803cec55c6e4ba6925b8f | working tree |
-| `.chough/artifacts/bug-0009-reproduction.log` | 5dbdd9fcb9286ce4068d0456359fb12d8aa305305c4bfcb9238ca68ebcba8b51 | working tree |
-| `.chough/artifacts/bug-0010-fixed-reproduction.log` | 1187579ed785432571ba470bb9f377b7ee5c797a7a65e5563bd3720e9eb1481a | working tree |
-| `.chough/artifacts/bug-0010-reproduction.log` | 9f72d9499cd0b33377ea2c865df69428f2810a6d4639372628f7ea73074099b6 | working tree |
-| `.chough/artifacts/bug-0011-fixed-reproduction.log` | c4a423a0f576e3c07a446bb874a2c0356ac0f66672119c95b588148e31c65f08 | working tree |
-| `.chough/artifacts/bug-0011-reproduction.log` | ed741d417559e25e79a0c81a4eb9e13d0b5508a85cc69ed2c2b95c453b798c98 | working tree |
+| `.chough/artifacts/bug-0009-fixed-reproduction.log` | 78646e12853179a3a7a1cd9e76200e059ab9d4f357f803cec55c6e4ba6925b8f | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/bug-0009-reproduction.log` | 5dbdd9fcb9286ce4068d0456359fb12d8aa305305c4bfcb9238ca68ebcba8b51 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/bug-0010-fixed-reproduction.log` | 1187579ed785432571ba470bb9f377b7ee5c797a7a65e5563bd3720e9eb1481a | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/bug-0010-reproduction.log` | 9f72d9499cd0b33377ea2c865df69428f2810a6d4639372628f7ea73074099b6 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/bug-0011-fixed-reproduction.log` | c4a423a0f576e3c07a446bb874a2c0356ac0f66672119c95b588148e31c65f08 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/bug-0011-reproduction.log` | ed741d417559e25e79a0c81a4eb9e13d0b5508a85cc69ed2c2b95c453b798c98 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
 | `.chough/artifacts/tc-cli-0045-1793482731.log` | 4d1da9964419da7e70c02a77beceb38eac6649dc54cc3e5c0b61f624fc0ba33c | working tree |
 | `.chough/artifacts/tc-cli-0046-1793482734.log` | 7ae6c314e4f450368e8b2c474ccbb627849e7324fa23e7a5c00b18afa2cd402a | working tree |
 | `.chough/artifacts/tc-cli-0047-1793482738.log` | 8800e37f75848d891930d8b6fc6c2f2713a0eddd32db5de7d4f2f41ca4c2c350 | working tree |
@@ -68,12 +68,12 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/bugs/BUG-0009.json` | 56de4eb98a1a5090a814d0c03f3fb62bed8c739bc2e61b878170fec7e4d06c3c | working tree |
 | `.chough/bugs/BUG-0010.json` | 1947c82c2f99ddcd33b73713cce41bc6688751373d7267d77976e5f3dbcf97f1 | working tree |
 | `.chough/bugs/BUG-0011.json` | 6dc928fc937e28e24c68b7d752ecdc268a4fd316d8845606707010deaa7896ae | working tree |
-| `.chough/evidence/bug-0009-fixed-1.json` | ad88c916a4d215e3c6e8eb0278891205be3385385bb11716b2f9f102cfd17b04 | working tree |
-| `.chough/evidence/bug-0009-repro-1.json` | 9292cf2ef0ca153fe85910ac744805c8386f7b401c8a84ab622215a06a22950c | working tree |
-| `.chough/evidence/bug-0010-fixed-1.json` | 2264ac754a8a086f745c4ec84b8f84a80d85f16107f21e256d381356d9bd343a | working tree |
-| `.chough/evidence/bug-0010-repro-1.json` | 0a32b18c5912bf8ae5e17a9fca8bba84c14dca4f5e67d36d396615873cff976f | working tree |
-| `.chough/evidence/bug-0011-fixed-1.json` | e580bf3d61449a6f9187bab0b494711925df3bd4610d74bb0367cc4b5d4e7d79 | working tree |
-| `.chough/evidence/bug-0011-repro-1.json` | cf31648c29528846f73e0556de678cdc1eecb86033ce76246c26e9c8a34c2c7a | working tree |
+| `.chough/evidence/bug-0009-fixed-1.json` | ad88c916a4d215e3c6e8eb0278891205be3385385bb11716b2f9f102cfd17b04 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/evidence/bug-0009-repro-1.json` | 9292cf2ef0ca153fe85910ac744805c8386f7b401c8a84ab622215a06a22950c | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/evidence/bug-0010-fixed-1.json` | 2264ac754a8a086f745c4ec84b8f84a80d85f16107f21e256d381356d9bd343a | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/evidence/bug-0010-repro-1.json` | 0a32b18c5912bf8ae5e17a9fca8bba84c14dca4f5e67d36d396615873cff976f | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/evidence/bug-0011-fixed-1.json` | e580bf3d61449a6f9187bab0b494711925df3bd4610d74bb0367cc4b5d4e7d79 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/evidence/bug-0011-repro-1.json` | cf31648c29528846f73e0556de678cdc1eecb86033ce76246c26e9c8a34c2c7a | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
 | `.chough/evidence/tc-cli-0045-1793482731.json` | 06134a29c69b82d355627a102b3789541c5989a7697c26c4ca7e88be22c115e2 | working tree |
 | `.chough/evidence/tc-cli-0046-1793482734.json` | 7bb65af4f503713519dea149b1f3f5a2d1ba43aae4bf01be5e54d40d540ae159 | working tree |
 | `.chough/evidence/tc-cli-0047-1793482738.json` | 12451c658acf4e4fe71fc70e7542a64736d1c130220acf2f8eba599079a93fb6 | working tree |
@@ -84,12 +84,12 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| bug-0009-fixed-1 | passed | local-macos-arm64 | TC-cli-0048 |
-| bug-0009-repro-1 | failed | local-macos-arm64 |  |
-| bug-0010-fixed-1 | passed | local-macos-arm64 | TC-cli-0045, TC-cli-0046, TC-cli-0047 |
-| bug-0010-repro-1 | failed | local-macos-arm64 |  |
-| bug-0011-fixed-1 | passed | local-macos-arm64 | TC-cli-0049 |
-| bug-0011-repro-1 | failed | local-macos-arm64 |  |
+| bug-0009-fixed-1 | passed (pruned) | local-macos-arm64 | TC-cli-0048 |
+| bug-0009-repro-1 | failed (pruned) | local-macos-arm64 |  |
+| bug-0010-fixed-1 | passed (pruned) | local-macos-arm64 | TC-cli-0045, TC-cli-0046, TC-cli-0047 |
+| bug-0010-repro-1 | failed (pruned) | local-macos-arm64 |  |
+| bug-0011-fixed-1 | passed (pruned) | local-macos-arm64 | TC-cli-0049 |
+| bug-0011-repro-1 | failed (pruned) | local-macos-arm64 |  |
 | tc-cli-0045-1793482731 | passed | local-macos-arm64 | TC-cli-0045 |
 | tc-cli-0046-1793482734 | passed | local-macos-arm64 | TC-cli-0046 |
 | tc-cli-0047-1793482738 | passed | local-macos-arm64 | TC-cli-0047 |
