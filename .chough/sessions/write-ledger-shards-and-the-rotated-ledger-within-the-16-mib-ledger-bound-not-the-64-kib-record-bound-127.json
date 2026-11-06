@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-356741cab6919b96ca3b61b6",
-    "head": "EVT-1810347953df0836d5300dae",
+    "head": "EVT-cf9c0a1131a3aa55bae467bb",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,15 +26,15 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "#127 size-cap fix accepted by Leif (0xLeif), 2026-11-05 through the orc: Approve (18:56 MST) and review (pass) recorded at a1d9b5ff."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then write with the ledger bound"
 }
