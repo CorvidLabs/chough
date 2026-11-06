@@ -604,6 +604,8 @@ fn only_generated_knowledge_notes_merge_by_union() {
         "knowledge/archives/some-change.md",
         "knowledge/modules/cli.md",
         "knowledge/intent/drive.md",
+        // KNOW-23: a ledger shard is append-only like the ledger it came from.
+        "knowledge/attachments/some-change/pruned.jsonl",
     ] {
         assert_eq!(merge_attribute(path), "union", "{path}");
     }

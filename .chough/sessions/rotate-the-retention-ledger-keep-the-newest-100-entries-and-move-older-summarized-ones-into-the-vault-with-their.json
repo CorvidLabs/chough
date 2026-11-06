@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-06dc519dabe57406a3d5395f",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Rotate the retention ledger: keep the newest 100 entries, move older summarized ones into the vault with their archive (KNOW-23)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their",
+  "references": {
+    "criteria": [
+      "KNOW-23"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve the definition and N, then implement against the failing tests"
+}

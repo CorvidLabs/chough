@@ -1212,3 +1212,129 @@ fn an_open_bug_keeps_every_linked_observation() {
     }
     assert!(!fixture.exists("knowledge/attachments/BUG-0002"));
 }
+
+/// A ledger line for a removed routine run of `archive`, pruned `age_minutes` ago.
+fn ledger_line(id: &str, archive: &str, age_minutes: u64) -> String {
+    json!({
+        "schema_version": 1, "id": id, "kind": "product-test", "archives": [archive],
+        "outcome": "passed", "environment": "local", "cases": ["TC-old"],
+        "observed_at_unix_seconds": now() - 90 * DAY,
+        "pruned_at_unix_seconds": now() - 30 * DAY - age_minutes * 60,
+        "policy": "chough-retention/1", "reason": "fixture", "removed": [],
+        "artifacts": {}, "record_digest": ZERO, "revision": "0".repeat(40), "head": "0".repeat(40),
+        "knowledge": format!("knowledge/archives/{archive}.md"),
+    })
+    .to_string()
+}
+
+/// 105 old entries of cold a1, oldest first, with a restore of the oldest right after it
+/// and an old entry of an archive without a note; then the done move.
+fn rotated(fixture: &Fixture) -> Value {
+    let mut lines = vec![];
+    for index in 0..105u64 {
+        let id = format!("old-{index:03}");
+        lines.push(ledger_line(&id, "a1", 1_000 - index));
+        if index == 0 {
+            lines.push(
+                json!({"schema_version": 1, "event": "restored", "id": "old-000",
+                       "reason": "fixture restore", "restored_at_unix_seconds": now() - 29 * DAY})
+                .to_string(),
+            );
+        }
+    }
+    lines.insert(0, ledger_line("no-note", "zz-no-note", 2_000));
+    fixture.write(".chough/pruned.jsonl", &(lines.join("\n") + "\n"));
+    fixture.commit("an old ledger");
+    set_checkpoint(fixture, &[]);
+    fixture.ok(&["stage", "advance"])
+}
+
+fn ledger_ids(text: &str) -> Vec<(String, bool)> {
+    text.lines()
+        .filter(|line| !line.trim().is_empty())
+        .map(|line| {
+            let entry: Value = serde_json::from_str(line).unwrap();
+            (
+                entry["id"].as_str().unwrap().to_string(),
+                entry["event"] == "restored",
+            )
+        })
+        .collect()
+}
+
+/// KNOW-23: at done the ledger keeps its newest 100 entries; older entries whose archives
+/// all have a knowledge note move into the vault with their first archive, a restore with
+/// its entry, and nothing is lost or duplicated. An entry whose archive has no note stays.
+#[test]
+fn done_keeps_the_newest_ledger_entries_and_moves_the_rest_into_the_vault() {
+    let fixture = project("0");
+    let moved = rotated(&fixture);
+    let rotation = &moved["applied"]["ledger_rotation"];
+    assert_eq!(rotation["status"], "rotated", "{moved:#}");
+    let hot = ledger_ids(&fixture.read(".chough/pruned.jsonl"));
+    let shard = ledger_ids(&fixture.read("knowledge/attachments/a1/pruned.jsonl"));
+    let hot_entries: Vec<&String> = hot
+        .iter()
+        .filter(|(_, restored)| !restored)
+        .map(|(id, _)| id)
+        .collect();
+    assert!(hot_entries.contains(&&"no-note".to_string()), "{hot:?}");
+    assert_eq!(
+        hot_entries.len(),
+        101,
+        "the newest 100 plus the entry without a note: {hot:?}"
+    );
+    assert!(shard.contains(&("old-000".to_string(), false)), "{shard:?}");
+    assert!(
+        shard.contains(&("old-000".to_string(), true)),
+        "a restore moves with its entry: {shard:?}"
+    );
+    assert!(!hot.iter().any(|(id, _)| id == "old-000"), "{hot:?}");
+    assert!(
+        shard.iter().all(|(id, _)| !hot_entries.contains(&id)),
+        "no entry is in both"
+    );
+    let mut all: Vec<String> = hot
+        .iter()
+        .chain(&shard)
+        .map(|(id, restored)| format!("{id}{restored}"))
+        .collect();
+    let total = all.len();
+    all.sort();
+    all.dedup();
+    assert_eq!(all.len(), total, "no line is duplicated");
+    assert!(all.len() >= 107, "nothing lost: {}", all.len());
+    assert_eq!(
+        rotation["moved"].as_u64().unwrap() as usize,
+        shard.iter().filter(|(_, r)| !r).count()
+    );
+}
+
+/// KNOW-23: readers see moved entries: a moved ID referenced by an open bug is still
+/// labeled pruned, its archive note still lists it, and the vault check passes.
+#[test]
+fn moved_ledger_entries_are_still_read() {
+    let fixture = project("0");
+    bug(&fixture, "BUG-0009", "open", "a description, not a path");
+    let path = ".chough/bugs/BUG-0009.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["observations"] = json!(["old-001"]);
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    let moved = rotated(&fixture);
+    assert_eq!(
+        moved["applied"]["ledger_rotation"]["status"], "rotated",
+        "{moved:#}"
+    );
+    assert!(
+        fixture
+            .read("knowledge/attachments/a1/pruned.jsonl")
+            .contains("\"old-001\"")
+    );
+    let shown = fixture.ok(&["bug", "show", "BUG-0009"]);
+    assert!(shown.to_string().contains("\"pruned\""), "{shown:#}");
+    assert!(fixture.read("knowledge/archives/a1.md").contains("old-001"));
+    fixture.ok(&["library", "index", "--check"]);
+}

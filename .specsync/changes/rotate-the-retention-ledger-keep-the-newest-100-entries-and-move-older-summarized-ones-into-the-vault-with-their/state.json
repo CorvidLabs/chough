@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their",
+  "slug": "rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their",
+  "title": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
+  "description": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "4c68cca7275b3ab8f49af94cc925bf547842757a",
+  "created_at": 1793928412,
+  "updated_at": 1793928465,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "src/library.rs",
+    "src/stage.rs",
+    "src/attachments.rs",
+    "tests/reduce.rs",
+    "tests/vault.rs",
+    ".gitattributes",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": "KNOW-23 (Leif: Keep newest N, not 14 days, the rest as proposed, 2026-11-05 18:24 MST): a new requirement for ledger rotation at done and for every ledger reader to read the vault shards.",
+  "acceptance_criteria": [
+    "At done the retention ledger keeps its newest 100 entries plus entries without an archive or note; older entries move with their restores into knowledge/attachments/<first archive folder>/pruned.jsonl, shards first, nothing lost or duplicated, reported as applied.ledger_rotation; every ledger reader reads shards then the hot ledger ignoring duplicate lines, so labels, bug views and notes are unchanged; shards union-merge and are not listed as attachments. The new tests fail first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "KNOW-23; Leif: Keep newest N, not 14 days, the rest as proposed (2026-11-05 18:24 MST, via the orc); N approved in this scope; 16 MiB ledger bound kept; REQ-cli-041/043/046 unchanged.",
+    "public_contract": "yes"
+  }
+}
