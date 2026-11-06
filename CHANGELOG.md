@@ -14,6 +14,11 @@ All notable changes to Chough are recorded here. The format follows
   last, `sh examples/measure-report.sh OLD NEW ROOT [RUNS]` pairs two binaries on one
   root and keeps native wait apart from local time. Each new assertion was shown to fail
   under a targeted mutation. Behavior is unchanged.
+- History writes no longer refuse once the session that adopted the legacy history is
+  rolled into the vault (KNOW-29) or shelved (#141). The legacy anchor is now also
+  found in `.chough/sessions/shelved/` and in the vault's
+  `<library-dir>/attachments/*/sessions/`, with the same exact match, and a changed
+  legacy log is still refused.
 
 - REQ-cli-039 AC2 now says that a `verifying` change shows no native-check note only
   with handoff readiness `safe`; any other or missing readiness keeps a note, as the

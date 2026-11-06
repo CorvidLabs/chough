@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1",
+  "implementation_commit": "14f6b289df3fd6f4723f94caf8fda65067b47942",
+  "implementation_tree": "d0d05a58db0d652b4413c3c7219bc050fb9f9d3b",
+  "contract_digest": "b3b164239946d8c76c2e65468a7b993ad88f5d19ce0fdaf03931a6239aa523fb",
+  "workspace_digest": "bbeaf90a9bcbf0b5e7b148614ae693195e9ec5c7836477b7ee2c4a57c098e9bd",
+  "closing_digest": "04d3e16bdc9c8ba5da600ce8a51f98bd8cfd8b2df9b0e2adc87ba2139b3c68e5",
+  "review_digest": "17592fe40d311064c51ce5308377a7d87f77497334d3ffc971af758835817e24",
+  "finalization_digest": "bfc8670a6b93172e54d6ab0a31c4d5f80dca84b68894679cdd6d0f483b832a55",
+  "timestamp": 1793941827
+}
