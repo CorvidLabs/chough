@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-subdirectory-project-records-evidence"
+title = "A project in a subdirectory of its Git repository runs cases and records evidence against its own files, with the same snapshot as at the root"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-18"]
+requirements = ["REQ-cli-056"]
+paths = ["src/evidence.rs", "tests/subdirectory.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the three subdirectory tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "subdirectory"]
+expect_output = ["test result: ok. 3 passed"]
+timeout_seconds = 600

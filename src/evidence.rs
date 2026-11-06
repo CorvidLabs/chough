@@ -301,10 +301,21 @@ fn hash_input(
 
 pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     let phase = Instant::now();
-    let actual_root = git(root, &["rev-parse", "--show-toplevel"])?;
+    // A project may live in a subdirectory of its repository (REQ-cli-056, DRIVE-18):
+    // the snapshot then covers the files under it. At the top level the prefix is empty
+    // and every byte is as before.
+    let top = git(root, &["rev-parse", "--show-toplevel"])?;
+    let prefix = String::from_utf8(git(root, &["rev-parse", "--show-prefix"])?.stdout)?
+        .trim_end_matches(['\n', '\r'])
+        .to_string();
     ensure!(
-        Path::new(std::str::from_utf8(&actual_root.stdout)?.trim()).canonicalize()? == root,
-        "--root must be the Git repository root for evidence"
+        Path::new(std::str::from_utf8(&top.stdout)?.trim())
+            .canonicalize()?
+            .join(&prefix)
+            .canonicalize()?
+            == root,
+        "{} is not where Git places this project; run chough from the project directory",
+        root.display()
     );
     let revision = String::from_utf8(git(root, &["rev-parse", "HEAD"])?.stdout)?
         .trim()
@@ -366,9 +377,18 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     }
     crate::records::trace_phase("snapshot.hash", phase);
     let phase = Instant::now();
-    let dirty_output = git(root, &["status", "--porcelain", "--untracked-files=all"])?;
+    let dirty_output = if prefix.is_empty() {
+        git(root, &["status", "--porcelain", "--untracked-files=all"])?
+    } else {
+        git(
+            root,
+            &["status", "--porcelain", "--untracked-files=all", "--", "."],
+        )?
+    };
+    // Porcelain paths are relative to the repository root; strip the project's prefix.
     let dirty = String::from_utf8(dirty_output.stdout)?.lines().any(|line| {
         line.get(3..)
+            .and_then(|name| name.strip_prefix(prefix.as_str()))
             .is_some_and(|name| fingerprint_key(name) != Key::Skip)
     });
     crate::records::trace_phase("snapshot.git-status", phase);

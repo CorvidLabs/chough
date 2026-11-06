@@ -1,0 +1,13 @@
+--- stdout ---
+
+running 3 tests
+test a_subdirectory_snapshot_covers_only_the_project ... ok
+test a_project_in_a_subdirectory_records_evidence ... ok
+test a_project_has_the_same_snapshot_at_the_root_and_in_a_subdirectory ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/subdirectory.rs (target/debug/deps/subdirectory-b705d07787102fa3)
