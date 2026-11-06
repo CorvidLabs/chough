@@ -1,4 +1,50 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793931892,
+      "digest": "c6768f5f3828b00cb31f0bc45716b1a570ac22cb9c8aae6b7de70ccda9c4e695",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5",
+        "title": "Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5)",
+        "description": "Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/accept.md",
+          ".agents/skills/chough-workflow/references/lifecycle.md",
+          "CHANGELOG.md",
+          "docs/diagrams/lifecycle.mmd",
+          "docs/diagrams/lifecycle.svg",
+          "docs/lifecycle.md",
+          "docs/walkthrough.md",
+          "examples/feature-bug-loop.sh",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/lifecycle.md",
+          "src/skill.rs",
+          "tests/workflow_authority.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Audit finding D5 (#122): the workflow guidance told agents to push and wait for CI before the human review and finalize, which the archive-first CI gate refuses; documentation and guidance fix, no requirement text changes.",
+        "acceptance_criteria": [
+          "Every place that teaches the closeout (bundled and installed lifecycle and accept references, docs/lifecycle.md, the walkthrough and the diagram) puts pushing and observing CI after local verification, the human implementation review, the native review and finalize, keeping the no-intervening-commit rule; installed 0.4.0 copies update; the exercise runs the corrected closeout against the archive-first inspector, which refuses the open change and passes once archived. The new test fails first, and fledge lanes run verify and the exercise pass on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #122 (audit D5, counterpart spec-sync#881); Leif: C1 first after KNOW-23 (2026-11-05 18:22 MST, via the orc); FLOW-10 and the no-intervening-commit rule unchanged.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
