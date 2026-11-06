@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 58
+version: 59
 status: active
 files:
   - src/main.rs
@@ -275,3 +275,4 @@ provider, runtime or hosted service.
 | 57 | 2026-11-06 | closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22: Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22) |
 | 57 | 2026-11-06 | rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their: Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23) |
 | 58 | 2026-11-06 | one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8: One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8) |
+| 59 | 2026-11-06 | size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each: Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) |
