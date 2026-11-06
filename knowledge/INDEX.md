@@ -99,8 +99,10 @@ Archived lesson bundles:
 
 ## Observations
 
-407 recorded; most recent:
+409 recorded; most recent:
 
+- OBS-tc-history-changelog-111-under-0-4-0-51c2b5238ff8ac90bf33995d ProductTest Passed in local-macos-arm64 at 2a5e6008d349
+- OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0 ProductTest Passed in local-macos-arm64 at 2a5e6008d349
 - OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c ProductTest Passed in local-macos-arm64 at 54f7a782597a
 - OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4 ProductTest Passed in local-macos-arm64 at 54f7a782597a
 - OBS-tc-history-changelog-111-under-0-4-0-536c8c5dc891b6196d875a5d ProductTest Failed in local-macos-arm64 at 77b8e0f28b2a
@@ -109,8 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-one-read-in-a-session-cee97305e88e3d1d60719b91 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 
 ## Briefs
 

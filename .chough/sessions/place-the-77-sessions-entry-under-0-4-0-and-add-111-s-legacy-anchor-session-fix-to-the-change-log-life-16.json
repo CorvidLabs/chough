@@ -32,11 +32,14 @@
   ],
   "open_questions": [],
   "completed": [
-    "Implemented at 54f7a782; both changelog cases pass after failing at 77b8e0f2"
+    "Implemented at 54f7a782; both changelog cases pass after failing at 77b8e0f2",
+    "Both changelog cases pass again after the clippy fix at 2a5e6008"
   ],
   "observations": [
     "OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c",
-    "OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4"
+    "OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4",
+    "OBS-tc-history-changelog-111-under-0-4-0-51c2b5238ff8ac90bf33995d",
+    "OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0"
   ],
   "bugs": [],
   "blockers": [],
