@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- REQ-cli-039 AC2 now says that a `verifying` change shows no native-check note only
+  with handoff readiness `safe`; any other or missing readiness keeps a note, as the
+  requirement's body and last criterion already said (#126, audit D10). Behavior is
+  unchanged.
+
 - The workflow skill and docs now teach an archive-first closeout (#122, audit D5).
   The order is: verify locally, the human's implementation review, the native review,
   finalize and the done move, and only then push and observe CI. The hosted Archive

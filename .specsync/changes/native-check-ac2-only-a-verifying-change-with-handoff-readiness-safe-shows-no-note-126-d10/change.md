@@ -1,6 +1,6 @@
 ---
 id: native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10
-state: approved
+state: implementing
 type: bug_fix
 base_commit: ec830cfb001cc5f71f4f83809ca3294d685f42a4
 ---
