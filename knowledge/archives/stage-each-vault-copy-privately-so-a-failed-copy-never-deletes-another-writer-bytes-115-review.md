@@ -62,4 +62,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.json](../attachments/stage-each-37b32cfc/sessions/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.json)

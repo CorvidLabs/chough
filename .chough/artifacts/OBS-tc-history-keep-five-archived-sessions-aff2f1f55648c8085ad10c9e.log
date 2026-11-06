@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 2 tests
+test with_the_librarian_off_archived_sessions_stay ... ok
+test done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 29 filtered out; finished in 2.83s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.38s
+     Running tests/reduce.rs (target/debug/deps/reduce-e0c89cc73a7e78b0)

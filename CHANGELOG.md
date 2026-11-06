@@ -10,6 +10,11 @@ All notable changes to Chough are recorded here. The format follows
   with handoff readiness `safe`; any other or missing readiness keeps a note, as the
   requirement's body and last criterion already said (#126, audit D10). Behavior is
   unchanged.
+- Only the five most recent archived sessions stay in `.chough/sessions/archive/`
+  (KNOW-29, REQ-history-011). At each move into done, older ones move byte for byte into
+  `knowledge/attachments/<key>/sessions/<key>.json`, and each gets a generated summary
+  note at `knowledge/sessions/<key>.md` (REQ-cli-051). Nothing leaves Git history.
+
 - The checkpoint cap is now 1 MiB (1,048,576 bytes), up from 128 KiB, chosen from
   measured use (DRIVE-14, REQ-cli-032):
   - It is at least 10 times the largest per-change session and 4 times the largest

@@ -606,6 +606,8 @@ fn only_generated_knowledge_notes_merge_by_union() {
         "knowledge/intent/drive.md",
         // #128: the bug notes KNOW-22 generates are rebuilt like the rest.
         "knowledge/bugs/BUG-0001.md",
+        // KNOW-29: the session notes are generated like the rest.
+        "knowledge/sessions/s0.md",
         // KNOW-23: a ledger shard is append-only like the ledger it came from.
         "knowledge/attachments/some-change/pruned.jsonl",
     ] {
