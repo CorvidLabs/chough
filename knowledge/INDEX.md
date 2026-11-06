@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 140
+archived_changes: 141
 tags:
   - chough/index
 ---
@@ -50,15 +50,14 @@ Archived changes (newest first; the newest 3 are hot):
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (hot)
 - [a-session-archives-itself-at-its-own-move-into-done-155](archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155) (hot)
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (hot)
-- [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](archives/place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16.md) Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16) (hot)
+- [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](archives/place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16.md) Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16) (cold)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (cold)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148) (cold)
 - [bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153](archives/bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153.md) Bug classification, deduplication and report mappings, and their recovery branches (153) (cold)
 - [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](archives/assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma.md) Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02) (cold)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (cold)
 - [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](archives/name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up.md) Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up) (cold)
-- [give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138](archives/give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138.md) Give real assertions to the nine criteria the audit found with no selected assertion (138) (cold)
-- All 140 archived changes, by month: [timeline.md](timeline.md)
+- All 141 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -82,7 +81,6 @@ Archived lesson bundles:
 - [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](../.specsync/archive/changes/2026-11-06-assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma/lesson-bundle.md)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../.specsync/archive/changes/2026-11-06-stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144/lesson-bundle.md)
 - [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](../.specsync/archive/changes/2026-11-06-name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up/lesson-bundle.md)
-- [give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138](../.specsync/archive/changes/2026-11-06-give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -101,8 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-443 recorded; most recent:
-435 recorded; most recent:
+441 recorded; most recent:
 
 - OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
 - OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
@@ -114,12 +111,6 @@ Archived lesson bundles:
 - OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0 ProductTest Passed in local-macos-arm64 at 2a5e6008d349
 - OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c ProductTest Passed in local-macos-arm64 at 54f7a782597a
 - OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4 ProductTest Passed in local-macos-arm64 at 54f7a782597a
-- OBS-tc-history-changelog-111-under-0-4-0-536c8c5dc891b6196d875a5d ProductTest Failed in local-macos-arm64 at 77b8e0f28b2a
-- OBS-tc-history-changelog-sessions-under-0-4-0-087a6e10606d28ec81c8e28c ProductTest Failed in local-macos-arm64 at 77b8e0f28b2a
-- OBS-tc-history-inbox-bounds-pinned-exactly-a3d8c4fb1a993f500fd75027 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
-- OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
-- OBS-product-test-dff775cc31b7e3161bf2186d ProductTest Passed in local-macos-arm64 at 4edae0554e42
-- OBS-tc-cli-bug-report-shows-every-field-548b2ac9b3d7b795e9aefe63 ProductTest Passed in local-macos-arm64 at 4edae0554e42
 
 ## Briefs
 
