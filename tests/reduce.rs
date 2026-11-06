@@ -1626,3 +1626,36 @@ fn with_the_librarian_off_archived_sessions_stay() {
         );
     }
 }
+
+/// #143 (proposed, option A): the session that holds the legacy history anchor is never
+/// rolled into the vault, so the anchor never depends on the knowledge directory. Here
+/// only s0, which would roll first, holds the anchor; it stays in the archive beyond the
+/// five, and s6 still rolls.
+#[test]
+fn the_roll_up_keeps_the_session_that_holds_the_legacy_anchor() {
+    let fixture = project("0");
+    seven_archived_sessions(&fixture);
+    for key in ["s1", "s2", "s3", "s4", "s5", "s6"] {
+        let path = format!(".chough/sessions/archive/{key}.json");
+        let mut session: Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+        session["history_cursor"]["legacy"] = Value::Null;
+        fixture.write(
+            &path,
+            &(serde_json::to_string_pretty(&session).unwrap() + "\n"),
+        );
+    }
+    fixture.commit("only s0 holds the legacy anchor");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let rollup = &moved["applied"]["session_rollup"];
+    assert_eq!(rollup["moved"], json!(["s6"]), "{rollup:#}");
+    assert!(
+        fixture.exists(".chough/sessions/archive/s0.json"),
+        "{rollup:#}"
+    );
+    for key in ["s1", "s2", "s3", "s4", "s5"] {
+        assert!(
+            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
+            "{key}"
+        );
+    }
+}
