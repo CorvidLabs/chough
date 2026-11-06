@@ -1,0 +1,49 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-1b54bc711067f522ca82323e",
+    "head": "EVT-1b8bd766f8ed99041d0a8183",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18",
+  "references": {
+    "criteria": [
+      "FLOW-18"
+    ],
+    "requirements": [
+      "REQ-cli-019"
+    ],
+    "cases": [
+      "TC-cli-cli-command-table-matches-help"
+    ],
+    "design": [],
+    "files": [
+      "docs/cli.md",
+      "tests/docs.rs"
+    ]
+  },
+  "decisions": [
+    "decided: the #173 check is a separate test in tests/docs.rs because docs/cli.md's command table writes subcommands with escaped pipes and bracketed options, unlike the README's helper table"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope approval of name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18"
+  ],
+  "run_consents": [],
+  "next_action": "Failing check committed; send 'ready for approval name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18 at <commit>' to orc and wait for Leif's relayed scope approval"
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "id": "BUG-cli-reference-command-table-omits-bug-merge-173-cfae88809770918250b18b65",
+  "title": "CLI reference command table omits bug merge (#173)",
+  "symptom": "tests/docs.rs cli_reference_command_table_matches_the_helpers_help fails on main at 69caa0e7: 'docs/cli.md Commands: `bug` rows do not name merge'",
+  "trigger": "Checking docs/cli.md's Commands table against chough --help; #158 rewrote the bug row without merge",
+  "expected": "The bug row names every bug subcommand chough bug --help lists, including merge",
+  "actual": "docs/cli.md:25 lists bug add|update|list|search|show|report",
+  "criteria": [],
+  "requirements": [],
+  "cases": [
+    "TC-cli-cli-command-table-matches-help"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "69caa0e721d0a150652fd50b7104fcb6f4e444a7",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [],
+  "created_at_unix_seconds": 1793998815,
+  "updated_at_unix_seconds": 1793998815
+}

@@ -786,6 +786,128 @@ fn cli_reference_declares_the_merge_drivers_this_repository_declares() {
     );
 }
 
+/// The command cells of docs/cli.md's Commands table, with the table's `\|` read as `|`.
+fn cli_reference_command_cells(reference: &str) -> Vec<String> {
+    let section = reference
+        .split("\n## Commands\n")
+        .nth(1)
+        .expect("docs/cli.md has a Commands section");
+    let section = section.split("\n## ").next().unwrap();
+    section
+        .lines()
+        .filter(|line| line.starts_with("| `"))
+        .map(|line| {
+            let line = line.replace("\\|", "\u{0}");
+            line.split('|').nth(1).unwrap().replace('\u{0}', "|")
+        })
+        .collect()
+}
+
+/// What follows a command in a Commands table code, split at each `|` outside brackets,
+/// so `show|adopt [--apply]` is two alternatives and `[--cycle current|all]` stays one.
+fn command_alternatives(rest: &str) -> Vec<String> {
+    let mut parts = vec![String::new()];
+    let mut depth = 0usize;
+    for character in rest.chars() {
+        match character {
+            '[' => depth += 1,
+            ']' => depth = depth.saturating_sub(1),
+            '|' if depth == 0 => {
+                parts.push(String::new());
+                continue;
+            }
+            _ => {}
+        }
+        parts.last_mut().unwrap().push(character);
+    }
+    parts
+}
+
+/// FR-docs-4 (#173): docs/cli.md's Commands table matches `chough --help`. Every
+/// command has a row, the rows name every subcommand of each command, and every
+/// subcommand and flag a row names exists for that command.
+#[test]
+fn cli_reference_command_table_matches_the_helpers_help() {
+    let reference = read("docs/cli.md");
+    let cells = cli_reference_command_cells(&reference);
+    assert!(
+        cells.len() > 15,
+        "only {} Commands rows found; the scan is broken",
+        cells.len()
+    );
+    let tree = help_tree();
+    let global = ["--help", "--root", "--version"];
+    let mut named: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    let mut problems = vec![];
+    for cell in &cells {
+        for code in cell.split('`').skip(1).step_by(2) {
+            let (command, rest) = code.split_once(' ').unwrap_or((code, ""));
+            if !tree.contains_key(&vec![command.to_string()]) {
+                problems.push(format!(
+                    "docs/cli.md Commands: `{command}` is not a chough command"
+                ));
+                continue;
+            }
+            let listed = named.entry(command.to_string()).or_default();
+            for alternative in command_alternatives(rest) {
+                let mut path = vec![command.to_string()];
+                let first = alternative.split_whitespace().next().unwrap_or_default();
+                if !first.is_empty()
+                    && first
+                        .chars()
+                        .all(|character| character.is_ascii_lowercase() || character == '-')
+                {
+                    listed.insert(first.to_string());
+                    path.push(first.to_string());
+                    if !tree.contains_key(&path) {
+                        problems.push(format!(
+                            "docs/cli.md Commands: `{command}` has no subcommand {first}"
+                        ));
+                        continue;
+                    }
+                }
+                for word in alternative
+                    .split(|character: char| character.is_whitespace() || character == '|')
+                {
+                    let Some(flag) = word.trim_start_matches('[').strip_prefix("--") else {
+                        continue;
+                    };
+                    let flag: String = flag
+                        .chars()
+                        .take_while(|character| {
+                            character.is_ascii_alphanumeric() || *character == '-'
+                        })
+                        .collect();
+                    if flag.is_empty() {
+                        continue;
+                    }
+                    let flag = format!("--{flag}");
+                    if !tree[&path].options.contains(&flag) && !global.contains(&flag.as_str()) {
+                        problems.push(format!(
+                            "docs/cli.md Commands: `{}` has no {flag}",
+                            path.join(" ")
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    for command in &tree[&vec![]].subcommands {
+        let Some(listed) = named.get(command) else {
+            problems.push(format!("docs/cli.md Commands: no row names `{command}`"));
+            continue;
+        };
+        for subcommand in &tree[&vec![command.clone()]].subcommands {
+            if !listed.contains(subcommand) {
+                problems.push(format!(
+                    "docs/cli.md Commands: `{command}` rows do not name {subcommand}"
+                ));
+            }
+        }
+    }
+    assert!(problems.is_empty(), "{}", problems.join("\n"));
+}
+
 /// The `X.Y` or `X.Y.Z` version tokens in a clause, without a leading `v` (`v1.8.0`
 /// reads as `1.8.0`).
 fn versions(clause: &str) -> Vec<String> {
