@@ -49,11 +49,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 | passed (by cycle time) | local-linux-aarch64 | TC-history-roll-up-keeps-the-anchor-holder |
 
 ## Bugs
 

@@ -20,6 +20,7 @@ criteria:
   - LIFE-13
   - LIFE-14
   - LIFE-15
+  - LIFE-16
 tags:
   - chough/intent
 ---
@@ -47,3 +48,4 @@ archived changes whose requirements trace it.
 - **LIFE-13**: [claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit](../archives/claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit.md), [prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill](../archives/prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill.md), [evolve-chough-into-a-resumable-stage-workflow](../archives/evolve-chough-into-a-resumable-stage-workflow.md)
 - **LIFE-14**: [claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit](../archives/claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit.md), [prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill](../archives/prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill.md), [evolve-chough-into-a-resumable-stage-workflow](../archives/evolve-chough-into-a-resumable-stage-workflow.md)
 - **LIFE-15**: [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md), [read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an](../archives/read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an.md)
+- **LIFE-16**: none yet

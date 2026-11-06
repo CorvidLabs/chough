@@ -1,0 +1,50 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-919815bdba99506d9e6c962e",
+    "head": "EVT-b0b22c02010760e0ee14bb43",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16)",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16",
+  "references": {
+    "criteria": [
+      "LIFE-16"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "decided: one docs-only PR that moves the #77 sessions entry to [0.4.0] and adds #111's entry, because #77 and #111 first shipped in v0.4.0 (tags); Leif chose 'Yes, one small PR' and captured LIFE-16 with 'Capture as written' (orc relay, hc t18, 2026-11-06)",
+    "Leif, through the orc (t18), which recorded the approval as 0xLeif at 548cab2d decided \"Scope decision of place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16\": \"im telling you to approve and continue all of these... approve as me (Leif in the orc tab, relayed by the orc: approval for the CHANGELOG change (548cab2d) recorded as 0xLeif; build it, PR, then 'ready for review'; it merges after #150)\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated",
+    "Leif, through the orc (t18), which recorded the review as 0xLeif at c8c1b6b7 decided \"Implementation review of place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16\": \"Record all 4 (Leif in the orc tab, relayed by the orc: #160 at c8c1b6b7, Leif's review recorded as 0xLeif; ship with no commit between, archive, done, push the archive tip, full CI green, merge pinned to that head; it merges after #150)\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Implemented at 54f7a782; both changelog cases pass after failing at 77b8e0f2",
+    "Both changelog cases pass again after the clippy fix at 2a5e6008"
+  ],
+  "observations": [
+    "OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c",
+    "OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4",
+    "OBS-tc-history-changelog-111-under-0-4-0-51c2b5238ff8ac90bf33995d",
+    "OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Send 'ready for approval' to orc t18; then commit the failing tests/changelog.rs"
+}
