@@ -789,6 +789,11 @@ pub(super) struct CheckpointArgs {
             "clear_blockers",
             "awaiting_human",
             "clear_awaiting_human",
+            "close_gate",
+            "decided_by",
+            "words",
+            "place",
+            "recorded_by",
             "criteria",
             "requirements",
             "cases",
@@ -826,8 +831,30 @@ pub(super) struct CheckpointArgs {
     /// A real gate still waiting for a human decision.
     #[arg(long = "awaiting-human")]
     awaiting_human: Vec<String>,
+    /// Withdraw every open gate; records no human decision.
     #[arg(long)]
     clear_awaiting_human: bool,
+    /// Close one open gate by its exact text with the human's decision, recorded on
+    /// their behalf; needs --decided-by, --words, --where and --recorded-by
+    /// (REQ-cli-050). A relayed claim, not authenticated.
+    #[arg(
+        long,
+        allow_hyphen_values = true,
+        conflicts_with_all = ["clear_awaiting_human", "awaiting_human"]
+    )]
+    close_gate: Option<String>,
+    /// Who is said to have decided the gate named by --close-gate.
+    #[arg(long, allow_hyphen_values = true)]
+    decided_by: Option<String>,
+    /// Their words, verbatim.
+    #[arg(long, allow_hyphen_values = true)]
+    words: Option<String>,
+    /// Where and when they said it, including who relayed it.
+    #[arg(long = "where", allow_hyphen_values = true)]
+    place: Option<String>,
+    /// The agent recording the decision.
+    #[arg(long, allow_hyphen_values = true)]
+    recorded_by: Option<String>,
     #[arg(long = "criterion")]
     criteria: Vec<String>,
     #[arg(long = "requirement")]
@@ -895,11 +922,80 @@ fn ensure_native_change_known(root: &Path, change: &str) -> Result<()> {
     Ok(())
 }
 
+/// What every relayed decision says of itself (REQ-cli-050).
+pub(super) const RELAY_PROVENANCE: &str = "a relayed claim, not authenticated: it records who is said to have decided, not proof that they did";
+
+/// The gate, relay and decision `--close-gate` records, checked before anything is
+/// read from SpecSync or written (REQ-cli-050). Every refusal saves nothing.
+fn relayed_decision(
+    session: &Checkpoint,
+    args: &CheckpointArgs,
+) -> Result<Option<(String, stage::RelayedBy, String)>> {
+    let values = [
+        ("--decided-by", &args.decided_by),
+        ("--words", &args.words),
+        ("--where", &args.place),
+        ("--recorded-by", &args.recorded_by),
+    ];
+    let Some(gate) = &args.close_gate else {
+        let given: Vec<&str> = values
+            .iter()
+            .filter(|(_, value)| value.is_some())
+            .map(|(flag, _)| *flag)
+            .collect();
+        if !given.is_empty() {
+            bail!(
+                "refused:relay-without-gate: {} describe a human's decision at a gate, so they need --close-gate with that gate's exact text; nothing was saved.\nRun `chough next` to list the open gates, then `{}` with one of them.",
+                given.join(", "),
+                stage::CLOSE_GATE_COMMAND
+            );
+        }
+        return Ok(None);
+    };
+    let missing: Vec<&str> = values
+        .iter()
+        .filter(|(_, value)| value.as_ref().is_none_or(|value| value.trim().is_empty()))
+        .map(|(flag, _)| *flag)
+        .collect();
+    if !missing.is_empty() {
+        bail!(
+            "refused:relay-incomplete: closing gate \"{gate}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+            missing.join(", "),
+            if missing.len() == 1 { "is" } else { "are" }
+        );
+    }
+    if !session.awaiting_human.contains(gate) {
+        bail!(
+            "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.\nRun `chough next` to list the open gates, then close one by its exact text."
+        );
+    }
+    let text = |value: &Option<String>| value.clone().unwrap_or_default();
+    let relay = stage::RelayedBy {
+        decided_by: text(&args.decided_by),
+        words: text(&args.words),
+        place: text(&args.place),
+        recorded_by: text(&args.recorded_by),
+    };
+    let decision = format!(
+        "{} decided \"{gate}\": \"{}\" ({}); recorded by {}; a relayed claim, not authenticated",
+        relay.decided_by, relay.words, relay.place, relay.recorded_by
+    );
+    if decision.len() > stage::RELAY_TEXT_LIMIT {
+        bail!(
+            "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
+            decision.len(),
+            stage::RELAY_TEXT_LIMIT
+        );
+    }
+    Ok(Some((gate.clone(), relay, decision)))
+}
+
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
     if let Some(operands) = args.merge {
         return merge_checkpoints(&operands);
     }
     let mut session = read_checkpoint(root)?;
+    let relayed = relayed_decision(&session, &args)?;
     let mut changed = false;
     if let Some(objective) = args.objective {
         ensure_text("objective", &objective)?;
@@ -931,8 +1027,19 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     let cleared = if args.clear_awaiting_human {
         changed = true;
         std::mem::take(&mut session.awaiting_human)
+    } else if let Some((gate, _, decision)) = &relayed {
+        changed = true;
+        session.awaiting_human.retain(|open| open != gate);
+        push_unique(&mut session.decisions, vec![decision.clone()]);
+        vec![gate.clone()]
     } else {
         vec![]
+    };
+    let relay_for = |gate: &String| {
+        relayed
+            .as_ref()
+            .filter(|(closed, _, _)| closed == gate)
+            .map(|(_, relay, _)| relay.clone())
     };
     let open_before_additions = session.awaiting_human.clone();
     for resolved in &args.resolved {
@@ -1004,23 +1111,59 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         serialize_checkpoint(&candidate)?;
         if session.history_cursor.is_some() {
             for gate in &cleared {
-                stage::log_gate(root, &mut session, stage::GATE_CLOSED, &current_stage, gate)?;
+                stage::log_gate(
+                    root,
+                    &mut session,
+                    stage::GATE_CLOSED,
+                    &current_stage,
+                    gate,
+                    relay_for(gate),
+                )?;
             }
             for gate in &opened {
-                stage::log_gate(root, &mut session, stage::GATE_OPENED, &current_stage, gate)?;
+                stage::log_gate(
+                    root,
+                    &mut session,
+                    stage::GATE_OPENED,
+                    &current_stage,
+                    gate,
+                    None,
+                )?;
             }
             save_checkpoint(root, &session)?;
         } else {
             save_checkpoint(root, &session)?;
             for gate in &cleared {
-                stage::log_gate(root, &mut session, stage::GATE_CLOSED, &current_stage, gate)?;
+                stage::log_gate(
+                    root,
+                    &mut session,
+                    stage::GATE_CLOSED,
+                    &current_stage,
+                    gate,
+                    relay_for(gate),
+                )?;
             }
             for gate in &opened {
-                stage::log_gate(root, &mut session, stage::GATE_OPENED, &current_stage, gate)?;
+                stage::log_gate(
+                    root,
+                    &mut session,
+                    stage::GATE_OPENED,
+                    &current_stage,
+                    gate,
+                    None,
+                )?;
             }
         }
     }
-    print_json(&json!({"schema_version": 1, "saved": changed, "checkpoint": session}))
+    let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
+    if let Some((gate, relay, _)) = &relayed {
+        output["relayed_decision"] = json!({
+            "gate": gate,
+            "relayed_by": relay,
+            "provenance": RELAY_PROVENANCE,
+        });
+    }
+    print_json(&output)
 }
 
 #[cfg(test)]

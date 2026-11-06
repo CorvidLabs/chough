@@ -138,6 +138,53 @@ pub(super) struct Backfill {
     pub(super) quote: String,
 }
 
+/// A human decision an agent recorded on someone's behalf (REQ-history-010): who is
+/// said to have decided, their words verbatim, where and when they said it, and the
+/// agent that recorded it. A relayed claim, not authenticated.
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct RelayedBy {
+    pub(super) decided_by: String,
+    pub(super) words: String,
+    #[serde(rename = "where")]
+    pub(super) place: String,
+    pub(super) recorded_by: String,
+}
+
+/// The bound of each relay value, the checkpoint text bound.
+pub(super) const RELAY_TEXT_LIMIT: usize = 4_096;
+
+impl RelayedBy {
+    /// The four values with their flag names, in order.
+    pub(super) fn fields(&self) -> [(&'static str, &str); 4] {
+        [
+            ("decided_by", &self.decided_by),
+            ("words", &self.words),
+            ("where", &self.place),
+            ("recorded_by", &self.recorded_by),
+        ]
+    }
+}
+
+/// Refuse a transition whose relay is not a valid gate-closed relay (REQ-history-010).
+pub(super) fn validate_relay(transition: &Transition) -> Result<()> {
+    let Some(relay) = &transition.relayed_by else {
+        return Ok(());
+    };
+    ensure!(
+        transition.kind == GATE_CLOSED,
+        "invalid transition payload: relayed_by is only allowed on gate-closed, not {}",
+        transition.kind
+    );
+    for (key, value) in relay.fields() {
+        ensure!(
+            !value.trim().is_empty() && value.len() <= RELAY_TEXT_LIMIT,
+            "invalid transition payload: relayed_by.{key} must be non-blank and at most {RELAY_TEXT_LIMIT} bytes"
+        );
+    }
+    Ok(())
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Transition {
@@ -157,6 +204,9 @@ pub(super) struct Transition {
     /// Present only on a backfilled move, so other records keep their bytes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) backfill: Option<Backfill>,
+    /// Present only on a gate-closed record of a relayed decision (REQ-history-010).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) relayed_by: Option<RelayedBy>,
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -1107,7 +1157,7 @@ pub(super) fn assess(
     } else if !session.awaiting_human.is_empty() {
         Action {
             action: format!(
-                "Waiting for a human decision: {}. Do not record it on their behalf; continue only independent work within scope. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
+                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
                 session.awaiting_human.join("; ")
             ),
             reason: "Only a person can close these gates.".into(),
@@ -1308,7 +1358,9 @@ fn log_transition(
     gate: Option<&str>,
     refresh: Vec<String>,
 ) -> Result<()> {
-    log_transition_at(root, session, kind, route, reason, gate, refresh, None)
+    log_transition_at(
+        root, session, kind, route, reason, gate, refresh, None, None,
+    )
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1321,6 +1373,7 @@ fn log_transition_at(
     gate: Option<&str>,
     refresh: Vec<String>,
     backfill: Option<(u64, Backfill)>,
+    relayed_by: Option<RelayedBy>,
 ) -> Result<()> {
     let (from, to) = route;
     let (at, backfill) = match backfill {
@@ -1338,7 +1391,9 @@ fn log_transition_at(
         revision: head_revision(root),
         refresh,
         backfill,
+        relayed_by,
     };
+    validate_relay(&transition)?;
     if session.history_cursor.is_some() {
         crate::history::append(root, session, transition)
     } else {
@@ -1363,12 +1418,13 @@ pub(super) fn log_gate(
     kind: &str,
     stage: &str,
     gate: &str,
+    relayed_by: Option<RelayedBy>,
 ) -> Result<()> {
     ensure!(
         kind == GATE_OPENED || kind == GATE_CLOSED,
         "not a gate record kind: {kind}"
     );
-    log_transition(
+    log_transition_at(
         root,
         session,
         kind,
@@ -1376,6 +1432,8 @@ pub(super) fn log_gate(
         Some(gate),
         None,
         vec![],
+        None,
+        relayed_by,
     )
 }
 
@@ -1394,6 +1452,8 @@ pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value
     let mut values = vec![];
     for line in lines {
         let transition: Transition = serde_json::from_str(&line)
+            .map_err(|error| anyhow::anyhow!("invalid transition record: {error}"))?;
+        validate_relay(&transition)
             .map_err(|error| anyhow::anyhow!("invalid transition record: {error}"))?;
         values.push(serde_json::to_value(transition)?);
     }
@@ -1470,7 +1530,7 @@ fn report(root: &Path, session: &Checkpoint, applied: Option<Value>) -> Result<(
         "stages": STAGES.iter().map(|(name, kind)| json!({"name": name, "kind": kind})).collect::<Vec<_>>(),
         "recent_transitions": transitions,
         "transitions_partial": partial,
-        "authority": "Native SpecSync status decides lifecycle gates; Chough never records human approval or review.",
+        "authority": "Native SpecSync status decides lifecycle gates; Chough never writes native approval or review, and a relayed decision it keeps is a claim, not authenticated.",
     }))
 }
 
@@ -1491,6 +1551,9 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
     Ok(())
 }
 
+/// How to record a human's decision on a gate on their behalf (REQ-cli-050).
+pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+
 /// An open human gate holds advance and skip (REQ-cli-030); no reason bypasses it.
 fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
     let gates = &session.awaiting_human;
@@ -1502,7 +1565,7 @@ fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
         rest => format!(" (and {rest} more)"),
     };
     bail!(
-        "{kind} refused (refused:awaiting-human): waiting for a human decision: {}{more}; record the decision, then clear it with `chough checkpoint --clear-awaiting-human` (re-pass gates still waiting with --awaiting-human)",
+        "{kind} refused (refused:awaiting-human): waiting for a human decision: {}{more}; record the human's decision on a gate with `{CLOSE_GATE_COMMAND}`, or withdraw gates no human decision closes with `chough checkpoint --clear-awaiting-human` (re-pass gates still waiting with --awaiting-human)",
         gates
             .iter()
             .take(3)
@@ -1846,6 +1909,7 @@ fn move_forward(
         gate_label.as_deref(),
         vec![],
         backfill,
+        None,
     )?;
     session.stage.current = to.clone();
     session.stage.iteration = 1;

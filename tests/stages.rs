@@ -457,7 +457,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     for command in ["next", "status"] {
         assert_action(
             command,
-            "Waiting for a human decision: Human scope decision. Do not record it on their behalf; continue only independent work within scope. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
+            "Waiting for a human decision: Human scope decision. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
             &session_bytes,
         );
     }
@@ -2499,6 +2499,7 @@ fn open_human_gates_refuse_advance_and_skip() {
             for expected in [
                 "refused:awaiting-human",
                 gate,
+                "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"",
                 "chough checkpoint --clear-awaiting-human",
             ] {
                 assert!(error.contains(expected), "{route:?}: {expected}: {error}");
@@ -2568,7 +2569,8 @@ fn open_human_gates_refuse_advance_and_skip() {
 }
 
 /// With a gate open, other moves still work, and next and status give the same
-/// waiting action, which says advance and skip are refused until it is cleared.
+/// waiting action, which names `--close-gate` and says advance and skip are refused
+/// until it is cleared.
 #[test]
 fn open_human_gates_leave_other_moves_and_agree_in_next() {
     let fixture = Fixture::new();
@@ -2586,6 +2588,10 @@ fn open_human_gates_leave_other_moves_and_agree_in_next() {
         action.contains(
             "`chough stage advance` and `chough stage skip` are refused until it is cleared"
         ),
+        "{action}"
+    );
+    assert!(
+        action.contains("`chough checkpoint --close-gate \"<gate>\""),
         "{action}"
     );
     assert_eq!(

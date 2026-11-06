@@ -10,6 +10,7 @@ requirements:
   - REQ-cli-030
 criteria:
   - FLOW-13
+  - FLOW-16
   - FLOW-2
   - FLOW-3
   - FLOW-5
@@ -30,7 +31,7 @@ verification records, the retention ledger and Git stay authoritative.
 - Status: cold (hot = the 3 most recently finalized archived changes)
 - Finalized: 2026-11-02T16:44:53Z
 - Modules: [cli](../modules/cli.md)
-- Criteria: [FLOW-13](../intent/flow.md), [FLOW-2](../intent/flow.md), [FLOW-3](../intent/flow.md), [FLOW-5](../intent/flow.md)
+- Criteria: [FLOW-13](../intent/flow.md), [FLOW-16](../intent/flow.md), [FLOW-2](../intent/flow.md), [FLOW-3](../intent/flow.md), [FLOW-5](../intent/flow.md)
 - Base commit: 825a3805530456005e361dfa6d96d93eee52cd09
 - Implementation commit: d8c6e1e48b31ee4a1047bc2db495af7a762ed535
 - Verification commit: d8c6e1e48b31ee4a1047bc2db495af7a762ed535

@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 125
+archived_changes: 126
 tags:
   - chough/index
 ---
@@ -48,16 +48,16 @@ Active:
 Archived changes (newest first; the newest 3 are hot):
 
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1) (hot)
+- [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7) (hot)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) (hot)
-- [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](archives/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.md) Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10) (hot)
+- [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](archives/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.md) Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10) (cold)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) (cold)
 - [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](archives/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.md) Read requirements with CRLF line endings in the librarian-default test (131 Windows) (cold)
 - [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](archives/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.md) One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8) (cold)
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](archives/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.md) Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5) (cold)
 - [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](archives/write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127.md) Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127) (cold)
 - [union-merge-the-generated-bug-notes-128](archives/union-merge-the-generated-bug-notes-128.md) Union-merge the generated bug notes (128) (cold)
-- [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](archives/rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their.md) Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23) (cold)
-- All 125 archived changes, by month: [timeline.md](timeline.md)
+- All 126 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -72,6 +72,7 @@ Module lesson sources:
 Archived lesson bundles:
 
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../.specsync/archive/changes/2026-11-06-find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1/lesson-bundle.md)
+- [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../.specsync/archive/changes/2026-11-06-record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7/lesson-bundle.md)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../.specsync/archive/changes/2026-11-06-keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29/lesson-bundle.md)
 - [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](../.specsync/archive/changes/2026-11-06-native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10/lesson-bundle.md)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../.specsync/archive/changes/2026-11-06-size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](../.specsync/archive/changes/2026-11-06-teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5/lesson-bundle.md)
 - [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](../.specsync/archive/changes/2026-11-06-write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127/lesson-bundle.md)
 - [union-merge-the-generated-bug-notes-128](../.specsync/archive/changes/2026-11-06-union-merge-the-generated-bug-notes-128/lesson-bundle.md)
-- [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](../.specsync/archive/changes/2026-11-06-rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -91,23 +91,25 @@ Archived lesson bundles:
 - BUG-0020 Approved-delta guard matches the latest approval, not the digest-matching one, for older workflow versions (open, out-of-scope, unverified)
 - BUG-0022 Initial host tools do not match CI versions (open, out-of-scope, reproduced)
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
+- BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
+- BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
 
 ## Observations
 
-370 recorded; most recent:
+391 recorded; most recent:
 
-- OBS-tc-cli-session-notes-union-90a6e1a6772009154dcfdce5 ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
-- OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
-- OBS-tc-cli-native-check-not-passed-note-4df482e80586149e4a0c3dbc ProductTest Passed in local-macos-arm64 at e4e8371f9e8e
-- OBS-tc-cli-native-check-safe-verifying-8b455b7140c543c7009cea93 ProductTest Passed in local-macos-arm64 at e4e8371f9e8e
-- OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592 ProductTest Passed in local-linux-aarch64 at 43c10cbef323
-- OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
-- OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
+- OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-cli-advance-to-single-checkpoint-4df68202eaeb04f8397846dc ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-cli-advance-to-one-read-in-a-session-fd54de11353f4dea531e3a92 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-history-relay-invalid-payloads-736bae7a3a483a4d9a691e67 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-cli-relay-never-touches-native-d782698f8446ac9d148f1bd4 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-cli-relay-refusals-recover-b8da2ecf35c89b0c399b1e15 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
 
 ## Briefs
 
