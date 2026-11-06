@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-validity-readers-on-any-host-1fccb1a5923652ade8e26238",
+  "criteria": [
+    "KNOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-033"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::at_most_eight_validity_readers_on_any_host for TC-cli-validity-readers-on-any-host: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-validity-readers-on-any-host-1fccb1a5923652ade8e26238.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-validity-readers-on-any-host-1fccb1a5923652ade8e26238.log": "d0039ff83a236e2781f5cc5687587f832663b4cf477ebfe031918b83eecbb15d"
+  },
+  "observed_at_unix_seconds": 1793940640,
+  "snapshot": {
+    "revision": "3a87c7c9ffade09ac48da294b54257c27719e245",
+    "dirty": false,
+    "fingerprint": "24fbcb9f347a0b634bb850a85cf5999afb7d5eecd116db117270ba960d476779",
+    "content": "17c3002ba5085b9bfec8eb07f833866a2c39b24f813e8818554d051deb46f210"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-validity-readers-on-any-host",
+      "digest": "dc7366dff35fb72879adcb5374d44206e715e25abf793cf99a7681c61ba85e1e"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--bin",
+    "chough",
+    "--",
+    "--exact",
+    "evidence::tests::at_most_eight_validity_readers_on_any_host"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

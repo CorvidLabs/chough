@@ -24,7 +24,10 @@
     "requirements": [
       "REQ-cli-033"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-validity-readers-on-any-host",
+      "TC-cli-at-most-eight-validity-reads"
+    ],
     "design": [],
     "files": []
   },
@@ -34,9 +37,14 @@
   ],
   "open_questions": [],
   "completed": [
-    "Change package drafted; at_most_eight_validity_reads_run_at_once fails against the CH-M11 mutant (.clamp(2, 128): 12 reads at once on this 20-core Mac) and passes restored; native_validity_reads_run_in_parallel passes both ways"
+    "Change package drafted; at_most_eight_validity_reads_run_at_once fails against the CH-M11 mutant (.clamp(2, 128): 12 reads at once on this 20-core Mac) and passes restored; native_validity_reads_run_in_parallel passes both ways",
+    "validity_readers with its unit test; REQ-cli-033 criterion materialized (cli version 62 after merging main); both cases pass on macOS; mutation check recorded as OBS-product-test-56d46b6484dae509ee8e848c"
   ],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-validity-readers-on-any-host-1fccb1a5923652ade8e26238",
+    "OBS-tc-cli-at-most-eight-validity-reads-5b7afc441c01deea7818e53b",
+    "OBS-product-test-56d46b6484dae509ee8e848c"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],

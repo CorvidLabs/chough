@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-56d46b6484dae509ee8e848c",
+  "criteria": [
+    "KNOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-033"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "CH-M11 mutation check on 17ec078b (#137): with VALIDITY_READERS raised from 8 to 128 (uncommitted), the unit test at_most_eight_validity_readers_on_any_host failed (left 20, right 8) and at_most_eight_validity_reads_run_at_once failed (12 validity reads ran at once), while the old native_validity_reads_run_in_parallel still passed; restored, all three pass",
+  "artifacts": [
+    ".chough/artifacts/ch-m11-mutation/mutant-validity-readers-128.log",
+    ".chough/artifacts/ch-m11-mutation/restored.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/ch-m11-mutation/mutant-validity-readers-128.log": "ed7d9bc9b8dff79daf480b12b9f836307cb24871a67fd6e1328dc80f3c496f3b",
+    ".chough/artifacts/ch-m11-mutation/restored.log": "f02e7b71663d1bf13731244369e6426da5ed32b5bd0aa0c065496d61792894b9"
+  },
+  "observed_at_unix_seconds": 1793940676,
+  "snapshot": {
+    "revision": "3a87c7c9ffade09ac48da294b54257c27719e245",
+    "dirty": false,
+    "fingerprint": "24fbcb9f347a0b634bb850a85cf5999afb7d5eecd116db117270ba960d476779",
+    "content": "17c3002ba5085b9bfec8eb07f833866a2c39b24f813e8818554d051deb46f210"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "the mutation was applied by hand to the working copy, not by a mutation tool",
+    "the integration test fails the mutant only on hosts reporting more than 8 cores (this Mac reports 20); the unit test fails it on any host"
+  ]
+}

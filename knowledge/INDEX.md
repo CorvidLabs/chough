@@ -96,8 +96,11 @@ Archived lesson bundles:
 
 ## Observations
 
-376 recorded; most recent:
+379 recorded; most recent:
 
+- OBS-product-test-56d46b6484dae509ee8e848c ProductTest Passed in local-macos-arm64 at 3a87c7c9ffad
+- OBS-tc-cli-at-most-eight-validity-reads-5b7afc441c01deea7818e53b ProductTest Passed in local-macos-arm64 at 3a87c7c9ffad
+- OBS-tc-cli-validity-readers-on-any-host-1fccb1a5923652ade8e26238 ProductTest Passed in local-macos-arm64 at 3a87c7c9ffad
 - OBS-tc-cli-session-notes-union-90a6e1a6772009154dcfdce5 ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
 - OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
 - OBS-tc-cli-native-check-not-passed-note-4df482e80586149e4a0c3dbc ProductTest Passed in local-macos-arm64 at e4e8371f9e8e
@@ -105,9 +108,6 @@ Archived lesson bundles:
 - OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
 - OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
 - OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592 ProductTest Passed in local-linux-aarch64 at 43c10cbef323
-- OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
-- OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 
 ## Briefs
 
