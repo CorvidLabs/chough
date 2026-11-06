@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- REQ-cli-013 no longer gives the librarian an `off` default. It defers to REQ-cli-015,
+  so the requirements state one librarian default, `on`, which is what the runtime
+  reports (#124, audit D8). Behavior is unchanged.
+
 - The retention ledger stays small (KNOW-23, REQ-cli-049). At done,
   `.chough/pruned.jsonl` keeps its newest 100 entries. Older entries that an archive's
   note summarizes move, with their restores, into
