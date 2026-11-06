@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21",
+  "implementation_commit": "a5625b8cb991b81fdf4a3be91a771d07d7517635",
+  "implementation_tree": "9fd8bf0fd3c2115d4771c982b14ae5b95f2cdd92",
+  "contract_digest": "4f792586ae3f37b6204bcbbe760bb230b42e574cb0308a6bec9148dac8aec71c",
+  "workspace_digest": "40f0da749262cf0f137d77c12f1c2c1c4572b145c96a4fd8d0a17816f99437a7",
+  "closing_digest": "536e1bbd78eaa3ff6d7d12462a3cac57cad6dce1eb78328327e2959385ba5f7d",
+  "review_digest": "fa9fab52c1e0ed7203f4f6d88aea8dc1d5bd1226c59727191b70c6556877c945",
+  "finalization_digest": "96a4c4557809a7ab39d586e5f1f17033a15ca97501d47b5fa71369885d68d820",
+  "timestamp": 1793922702
+}

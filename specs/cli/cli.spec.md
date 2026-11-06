@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 55
+version: 56
 status: active
 files:
   - src/main.rs
@@ -271,3 +271,4 @@ provider, runtime or hosted service.
 | 53 | 2026-11-05 | keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files: Keep vault attachment paths within Windows limits and keep file modes when the trim moves or restores files |
 | 54 | 2026-11-05 | never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file: Never overwrite an attachment, let folder references protect their files, and keep a loose folder with any current file (109 review P1s) |
 | 55 | 2026-11-05 | no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12: No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12) |
+| 56 | 2026-11-05 | done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21: Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21) |

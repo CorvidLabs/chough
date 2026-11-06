@@ -1002,8 +1002,14 @@ impl Reads<'_> {
     }
 }
 
+/// How [`crate::sessions::every_checkpoint`] labels an archived session:
+/// `archived session <key>`.
+const ARCHIVED_SESSION: &str = "archived session ";
+
 /// Files named directly, keyed by [`file_key`], with what names them: bug fixtures of
-/// any status and the checkpoint's design and file references.
+/// any status and the design and file references of every checkpoint that is not an
+/// archived session. An archived session is done, and done closed its cycle, so its
+/// references hold no proof (REQ-cli-045, KNOW-21).
 fn file_references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     let mut map: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut add = |path: &str, source: String| {
@@ -1013,6 +1019,9 @@ fn file_references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
         }
     };
     for (label, checkpoint) in crate::sessions::every_checkpoint(root)? {
+        if label.starts_with(ARCHIVED_SESSION) {
+            continue;
+        }
         for path in checkpoint
             .references
             .design

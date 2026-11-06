@@ -122,31 +122,31 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/pr46-actual44-main-import/ours.transitions.jsonl` | a7bb7fbae144c371194aeb7c349c6afdc1846844354f2a3040be3800f7346c92 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/artifacts/pr46-actual44-main-import/refs.json` | b03fc6b6297cc793dfb022169aa2d4638755b9fc4246e23a18743178e2fee6be | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/artifacts/pr46-actual44-main-import/whole-tree-identity.json` | a804a1176de04fdfc4ce134cb0301246d80087ffccd526f62dd38d1ab912bdae | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
-| `.chough/artifacts/pr46-archive-executor-performance/capture-index.json` | 3776b52a988e3700409220ce6f609fbcd09a32212fa2998987a176288c81cc20 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/fledge-first-five-and-audit-prerequisite.log` | 56984725cf208f4fcf9c31c1f4d0b62ad59b5a4a5c0f6989436a37a2c9af1d4d | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/fledge-remaining-four.json` | 4fec83113c44adcc784cbf2f13875cf704b0f1c896c64cb9ecc7f8c281610584 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/fledge-remaining-four.log` | d3524ba616aa1080b7b70a83b352bd1d1b55dd9192b4a06796039cb9295f5e89 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/hosted-first-timeout.log` | 13bd9e79ebf47f03ac85cf0a5bdd6e5d0f115edfe0f48a788988cd8a9e850881 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/hosted-second-timeout.log` | b720cc7e57157c6dbe249b1147228000c4967981d065d50269ec93929b842c62 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/implementation-task-ordering-before.md` | 9ec5d7bd2848ce75ce33af0f2ceac5c3c96b1787216bf05284d9c950418f72b8 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/local-stage-read.json` | 17a2e48e072917daf1468c35c73751b90f8d662d1912b8a191b916ae7ce5384d | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/native-check-before-audit.log` | f9ec11e46c7eb34de65ac8536fe9395f59ecfbb8df4bca7b0762103c255749c7 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/observation-indexing-note.md` | 9efb4a7977506f2b1815b75ab00c22d7b4129e2321e6906fed4bf284f15541be | working tree |
+| `.chough/artifacts/pr46-archive-executor-performance/capture-index.json` | 3776b52a988e3700409220ce6f609fbcd09a32212fa2998987a176288c81cc20 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/fledge-first-five-and-audit-prerequisite.log` | 56984725cf208f4fcf9c31c1f4d0b62ad59b5a4a5c0f6989436a37a2c9af1d4d | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/fledge-remaining-four.json` | 4fec83113c44adcc784cbf2f13875cf704b0f1c896c64cb9ecc7f8c281610584 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/fledge-remaining-four.log` | d3524ba616aa1080b7b70a83b352bd1d1b55dd9192b4a06796039cb9295f5e89 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/hosted-first-timeout.log` | 13bd9e79ebf47f03ac85cf0a5bdd6e5d0f115edfe0f48a788988cd8a9e850881 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/hosted-second-timeout.log` | b720cc7e57157c6dbe249b1147228000c4967981d065d50269ec93929b842c62 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/implementation-task-ordering-before.md` | 9ec5d7bd2848ce75ce33af0f2ceac5c3c96b1787216bf05284d9c950418f72b8 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/local-stage-read.json` | 17a2e48e072917daf1468c35c73751b90f8d662d1912b8a191b916ae7ce5384d | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/native-check-before-audit.log` | f9ec11e46c7eb34de65ac8536fe9395f59ecfbb8df4bca7b0762103c255749c7 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/observation-indexing-note.md` | 9efb4a7977506f2b1815b75ab00c22d7b4129e2321e6906fed4bf284f15541be | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr46-archive-executor-performance/original-full-18-fixtures.log` | 5b1fc52e949db4d39b0021e7741ff3cf071c3a5c5f08639f168071fe5eff37da | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/pr46-archive-executor-performance/original-six-units.log` | e1e691ce67d27747460ec2f3f542da152fe8fb6963245d943b572ca5abd42409 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/peer-initial-output-bound-mutation.log` | ea75f8eec0cb35ee67216a803bf7048c124433ada6ade8c69cece8b322bafa39 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/peer-output-bound-mutation-after.log` | f5c77885c99d9d4405019f79d6bcb39c7066456de589592051cbbe7d965fe25d | working tree |
+| `.chough/artifacts/pr46-archive-executor-performance/original-six-units.log` | e1e691ce67d27747460ec2f3f542da152fe8fb6963245d943b572ca5abd42409 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/peer-initial-output-bound-mutation.log` | ea75f8eec0cb35ee67216a803bf7048c124433ada6ade8c69cece8b322bafa39 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/peer-output-bound-mutation-after.log` | f5c77885c99d9d4405019f79d6bcb39c7066456de589592051cbbe7d965fe25d | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr46-archive-executor-performance/peer-review-final.json` | 547e2632684edff7fd48e89be3ec12f78469ff7c3b89d7877bf1e5d5b8301155 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/pr46-archive-executor-performance/peer-six-units-final.log` | ce7b99a900a0affae46c4e28d066fd640b0723061a7b666e7510d90cd797c9c8 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/performance-source-analysis.json` | 52a53b2a6c488cf94799ebeea507e26bac7211e5b772d31126c6a891486d6dac | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/prior-local-command-timeout.json` | db6a1d520708bcc751978dfe23c3ebc28580a84e20a2b6e60f8fac4bfac8a53d | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/prior-local-command-timeout.log` | 19df10abf062873816fd168b94ddb5f1799fbdff497e56d60996b46f16af7480 | working tree |
-| `.chough/artifacts/pr46-archive-executor-performance/prior-proof-preservation.json` | 7f3b08a8c9f5eb40a620a4a5b1db591c3ad39817ef958468a14c61be91c888a8 | working tree |
+| `.chough/artifacts/pr46-archive-executor-performance/peer-six-units-final.log` | ce7b99a900a0affae46c4e28d066fd640b0723061a7b666e7510d90cd797c9c8 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/performance-source-analysis.json` | 52a53b2a6c488cf94799ebeea507e26bac7211e5b772d31126c6a891486d6dac | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/prior-local-command-timeout.json` | db6a1d520708bcc751978dfe23c3ebc28580a84e20a2b6e60f8fac4bfac8a53d | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/prior-local-command-timeout.log` | 19df10abf062873816fd168b94ddb5f1799fbdff497e56d60996b46f16af7480 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-archive-executor-performance/prior-proof-preservation.json` | 7f3b08a8c9f5eb40a620a4a5b1db591c3ad39817ef958468a14c61be91c888a8 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr46-archive-executor-performance/qualification.json` | 55f2c281cab097bccf48988a37df4f1ee49dce1d8ead7b4700828477e82bdb66 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/pr46-archive-executor-performance/six-units-output-bound-fixed.log` | cdf3a1e1c3338cc6d7cac63176f2b66945ef4425e68aeef37167274987effcd1 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/pr46-archive-executor-performance/verification-ordering.md` | b7091dbbd48b7754b0df31c895b18fbd28621a0e7fc65d3984c8c98663542352 | working tree |
-| `.chough/artifacts/pr46-checkpoint-reference-index/derived/base.json` | 010521c30be8073f6e7488b7d92637d291d213d91c43ef9edac22703d39b587f | working tree |
-| `.chough/artifacts/pr46-checkpoint-reference-index/derived/ours.json` | e9786a91a451f0e251ed6835254fc6384abdf0f3542c7e122e11c7ec7099adac | working tree |
+| `.chough/artifacts/pr46-archive-executor-performance/verification-ordering.md` | b7091dbbd48b7754b0df31c895b18fbd28621a0e7fc65d3984c8c98663542352 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-checkpoint-reference-index/derived/base.json` | 010521c30be8073f6e7488b7d92637d291d213d91c43ef9edac22703d39b587f | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr46-checkpoint-reference-index/derived/ours.json` | e9786a91a451f0e251ed6835254fc6384abdf0f3542c7e122e11c7ec7099adac | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 
 ## Observations
 
@@ -259,7 +259,7 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-reference-boundary-final/completed-chough-reference-right-boundary-test.patch`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-reference-boundary-final/observation-ids.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-reference-boundary-final/pre-verify-native-0.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- 126 more are listed in .chough/pruned.jsonl
+- 170 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 

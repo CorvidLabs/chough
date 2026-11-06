@@ -907,6 +907,8 @@ fn an_open_bug_folder_fixture_protects_its_files() {
 
 /// #109 review P1: a checkpoint reference to a folder keeps the loose files and the
 /// observation sets inside it, and a sibling folder sharing its prefix is not covered.
+/// Since KNOW-21 the move into done drops the checkpoint's file references first, so
+/// the reference is exercised by a trim before done (`library archive --apply`).
 #[test]
 fn a_checkpoint_folder_reference_protects_loose_files_and_observation_sets() {
     let fixture = project("0");
@@ -932,9 +934,14 @@ fn a_checkpoint_folder_reference_protects_loose_files_and_observation_sets() {
     fixture.commit("a checkpoint-named folder");
     fixture.ok(&["checkpoint", "--file", ".chough/artifacts/kept"]);
     set_checkpoint(&fixture, &[]);
-    let moved = fixture.ok(&["stage", "advance"]);
-    let trim = &moved["applied"]["librarian_trim"];
-    assert_eq!(trim["status"], "trimmed", "{trim:#}");
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    let trim = &fixture.ok(&["library", "archive", "--apply"]);
     assert!(
         fixture.exists(".chough/artifacts/kept/loose.log"),
         "{trim:#}"
@@ -974,5 +981,104 @@ fn a_loose_folder_with_a_current_file_stays_whole() {
             .to_string()
             .contains("current.log"),
         "{trim:#}"
+    );
+}
+
+/// Sets the legacy checkpoint's file and design references.
+fn set_references(fixture: &Fixture, files: &[&str], design: &[&str]) {
+    let path = fixture.root().join(".chough/session.json");
+    let mut session: Value =
+        serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+    session["references"]["files"] = json!(files);
+    session["references"]["design"] = json!(design);
+    std::fs::write(
+        &path,
+        serde_json::to_string_pretty(&session).unwrap() + "\n",
+    )
+    .unwrap();
+}
+
+/// KNOW-21: when a change reaches done its cycle closes, so done drops every file and
+/// design reference from the checkpoint. A cold loose folder a reference held is then
+/// trimmed. No reset is recorded here, so the observation part has no cycle start, but
+/// the file and design part does not need one.
+#[test]
+fn done_drops_every_file_and_design_reference() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/old-pr/notes.log", "old\n");
+    commit_aged(&fixture, "an old pull request folder", 55);
+    fixture.write("src/main.rs", "fn main() {}\n");
+    fixture.write("docs/design.md", "# Design\n");
+    fixture.commit("sources");
+    set_checkpoint(&fixture, &["u3"]);
+    set_references(
+        &fixture,
+        &[".chough/artifacts/old-pr/notes.log", "src/main.rs"],
+        &["docs/design.md"],
+    );
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    let references = &moved["applied"]["checkpoint_references"];
+    assert_eq!(references["status"], "dropped", "{moved:#}");
+    assert_eq!(
+        references["dropped_files"],
+        json!([".chough/artifacts/old-pr/notes.log", "src/main.rs"]),
+        "{moved:#}"
+    );
+    assert_eq!(
+        references["dropped_design"],
+        json!(["docs/design.md"]),
+        "{moved:#}"
+    );
+    let session = fixture.session();
+    assert_eq!(session["references"]["files"], json!([]), "{session:#}");
+    assert_eq!(session["references"]["design"], json!([]), "{session:#}");
+    assert_eq!(
+        session["observations"],
+        json!(["u3"]),
+        "observations keep their own rule"
+    );
+    assert!(
+        !fixture.exists(".chough/artifacts/old-pr/notes.log"),
+        "{:#}",
+        moved["applied"]["librarian_trim"]
+    );
+}
+
+/// KNOW-21: an archived session is done, so retention ignores its file and design
+/// references; a cold loose folder only it names is trimmed.
+#[test]
+fn an_archived_session_file_reference_protects_nothing() {
+    let fixture = project("0");
+    fixture.write(".chough/artifacts/old-pr/notes.log", "old\n");
+    commit_aged(&fixture, "an old pull request folder", 55);
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    let mut archived: Value =
+        serde_json::from_str(&fixture.read(".chough/sessions/legacy.json")).unwrap();
+    archived["stage"]["current"] = json!("done");
+    archived["native_change"] = json!("a2");
+    archived["observations"] = json!([]);
+    archived["references"]["files"] = json!([".chough/artifacts/old-pr/notes.log"]);
+    archived["references"]["design"] = json!([".chough/artifacts/old-pr"]);
+    fixture.write(
+        ".chough/sessions/archive/old.json",
+        &(serde_json::to_string_pretty(&archived).unwrap() + "\n"),
+    );
+    fixture.commit("an archived session naming the old folder");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{moved:#}");
+    assert!(
+        !fixture.exists(".chough/artifacts/old-pr/notes.log"),
+        "{trim:#}"
+    );
+    assert_eq!(
+        json!(
+            serde_json::from_str::<Value>(&fixture.read(".chough/sessions/archive/old.json"))
+                .unwrap()["references"]["files"]
+        ),
+        json!([".chough/artifacts/old-pr/notes.log"]),
+        "the archived session itself is not rewritten"
     );
 }

@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 112
+archived_changes: 113
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](archives/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.md) Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21) (hot)
 - [spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105](archives/spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105.md) Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105) (hot)
 - [mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.4.0 release published in the roadmap with its install observation (hot)
-- [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](archives/prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0.md) Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0 (hot)
+- [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](archives/prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0.md) Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0 (cold)
 - [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review) (cold)
 - [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110) (cold)
 - [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](archives/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.md) Union-merge only the generated knowledge notes, and cover the vault code of the index fix (cold)
 - [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](archives/move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit.md) Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement (cold)
 - [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](archives/keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline.md) Keep the knowledge index under its size bound by listing recent archives and moving the full list to a monthly timeline (cold)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files (cold)
-- [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](archives/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.md) No conflicting files: per-change case files, a knowledge rebuild check and a bug merge driver (DRIVE-12) (cold)
-- All 112 archived changes, by month: [timeline.md](timeline.md)
+- All 113 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](../.specsync/archive/changes/2026-11-05-done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21/lesson-bundle.md)
 - [spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105](../.specsync/archive/changes/2026-11-05-spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105/lesson-bundle.md)
 - [mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-05-mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md)
 - [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](../.specsync/archive/changes/2026-11-05-prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](../.specsync/archive/changes/2026-11-05-move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit/lesson-bundle.md)
 - [keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline](../.specsync/archive/changes/2026-11-05-keep-the-knowledge-index-under-its-size-bound-by-listing-recent-archives-and-moving-the-full-list-to-a-monthly-timeline/lesson-bundle.md)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../.specsync/archive/changes/2026-11-05-fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files/lesson-bundle.md)
-- [no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12](../.specsync/archive/changes/2026-11-05-no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -95,8 +95,10 @@ Archived lesson bundles:
 
 ## Observations
 
-495 recorded; most recent:
+466 recorded; most recent:
 
+- OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
+- OBS-tc-cli-done-drops-file-and-design-refs-7fd113db7423ebb35826babb ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 - OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 InstallationObservation Passed in macos-arm64-cargo-1.95.0 at 2082dddff420
 - OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-structural-ce74f6d127b1f262c869b327 Structural Passed in local-linux-aarch64 at 5959fe239d85
@@ -105,8 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
 - OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
-- OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
-- OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
 
 ## Briefs
 
