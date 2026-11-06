@@ -1,4 +1,69 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793936002,
+      "digest": "92502958763a2134c98784c9cb30a3390b455d5c6fc0d75c6a53e0f456a8b87f",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7",
+        "title": "Record relayed human decisions at gates as claims, not authentication (123, D7)",
+        "description": "Record relayed human decisions at gates as claims, not authentication (123, D7)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow",
+          ".chough/cases/cli.relayed-decisions.cases.toml",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "README.md",
+          "docs/FRD.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "docs/walkthrough.md",
+          "hi/flow.md",
+          "skills/chough-workflow",
+          "src/checkpoint.rs",
+          "src/history.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "tests/history.rs",
+          "tests/package.rs",
+          "tests/relay.rs",
+          "tests/stages.rs",
+          "tests/workflow_authority.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A missing or blank relay value, relay values without --close-gate, a gate text that is not open, and a decision over 4096 bytes each refuse with the checkpoint and history unchanged, and a test runs the recovery each refusal names and sees it succeed.",
+          "A relayed decision leaves every SpecSync file byte-identical and never satisfies a native gate: with a draft change, advance to build stays refused after its scope gate is closed with a relay; --clear-awaiting-human still withdraws every gate with no relay and no decision.",
+          "The awaiting-human refusal and waiting action name --close-gate; README, the skill and its installed copy, docs/cli.md, docs/FRD.md and the cli spec's helper invariant describe approvals and reviews as recorded claims bound to their content, not authenticated identity. The new tests fail first, and fledge lanes run verify passes on Linux.",
+          "Transitions without relayed_by keep their exact bytes; a relayed gate-closed record reads back with the same four values from history events and from the legacy log; a relayed_by with a missing, blank, over-long or unknown key, or on any other kind, is refused as an invalid payload.",
+          "chough checkpoint --close-gate with --decided-by, --words, --where and --recorded-by closes only the named open gate, appends one gate-closed event carrying relayed_by with exactly those four values, and adds one decision marked a relayed claim, not authenticated, which chough next shows from a fresh process; every other gate stays open and still holds advance and skip."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "FLOW-16 and the relayed_by shape approved by Leif (\"Approve shape + FLOW-16\", 2026-11-05 20:18 MST, Herdr orc tab, relayed by orc t18); --clear-awaiting-human kept (option A); FLOW-10 unchanged; no authentication or signing (spec-sync#633); every existing refusal, bound and test kept; REQ-history-005 pattern for the optional field.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2c940fd03f8a31354c615d1451b3d0a5cd7f1982b312285ad7caeff977444dd3",
+        "history": "5f257335554b6c80bae3d611d2494d56cc76c5509d03751b2144dd43d7dc3f8c"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-030": "b3db2ae460516544917ee41da3266399e83437bfb959211d64a9f92a0d33a88d"
+      }
+    }
+  ],
   "reopenings": []
 }

@@ -1,6 +1,6 @@
 ---
 id: record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7
-state: draft
+state: approved
 type: feature
 base_commit: ec830cfb001cc5f71f4f83809ca3294d685f42a4
 ---
