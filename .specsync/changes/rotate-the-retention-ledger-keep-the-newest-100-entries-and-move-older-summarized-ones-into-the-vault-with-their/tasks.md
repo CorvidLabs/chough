@@ -5,9 +5,9 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Commit the failing tests.
-- [ ] Add the union ledger reader, and use it in every reader.
-- [ ] Rotate at done and report `applied.ledger_rotation`.
-- [ ] Keep shards out of the attachment lists, and add the `.gitattributes` union line.
-- [ ] Update docs/cli.md, docs/FRD.md, the CHANGELOG and `.chough/cases/cli.ledger-rotation.cases.toml`.
-- [ ] Run verify on Linux.
+- [x] Commit the failing tests.
+- [x] Add the union ledger reader, and use it in every reader.
+- [x] Rotate at done and report `applied.ledger_rotation`.
+- [x] Keep shards out of the attachment lists, and add the `.gitattributes` union line.
+- [x] Update docs/cli.md, docs/FRD.md, the CHANGELOG and `.chough/cases/cli.ledger-rotation.cases.toml`.
+- [x] Run verify on Linux.
