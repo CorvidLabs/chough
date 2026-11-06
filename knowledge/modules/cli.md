@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 55
-archived_changes: 98
+archived_changes: 99
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-98 archived changes, newest first.
+99 archived changes, newest first.
 
+- [union-merge-the-generated-bug-notes-128](../archives/union-merge-the-generated-bug-notes-128.md) Union-merge the generated bug notes (128)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](../archives/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.md) Restore the test closing brace lost when merging main into KNOW-22 (121)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](../archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)
 - [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](../archives/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.md) Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21)
@@ -42,5 +43,4 @@ this note only links them.
 - [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](../archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review)
 - [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](../archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110)
 - [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](../archives/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.md) Union-merge only the generated knowledge notes, and cover the vault code of the index fix
-- [move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit](../archives/move-the-pinned-specsync-toolchain-to-6-2-0-every-specsync-action-step-at-the-v6-2-0-release-commit-with-an-explicit.md) Move the pinned SpecSync toolchain to 6.2.0: every SpecSync Action step at the v6.2.0 release commit with an explicit version 6.2.0, and every pin in README, AGENTS, CI scripts and docs kept in agreement
-- 88 more on the [timeline](../timeline.md)
+- 89 more on the [timeline](../timeline.md)

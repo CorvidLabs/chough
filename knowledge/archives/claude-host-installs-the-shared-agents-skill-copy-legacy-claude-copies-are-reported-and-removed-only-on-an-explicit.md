@@ -210,7 +210,7 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json)
 - `.chough/artifacts/history-post-prune-reference-before/commands.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json)
 - `.chough/artifacts/history-post-prune-reference-before/merge-result.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json)
-- 271 more are listed in .chough/pruned.jsonl
+- 242 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 
