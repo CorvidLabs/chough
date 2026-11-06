@@ -7,10 +7,11 @@
   "title": "A session archives itself at its own move into done (155)",
   "description": "A session archives itself at its own move into done (155)",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "b09682e0cbb62f08e9bc1ab52f335311a3da4b8e",
   "created_at": 1793976131,
-  "updated_at": 1793979154,
+  "updated_at": 1793979553,
   "affected_specs": [
     "history",
     "cli"
