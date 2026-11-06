@@ -93,9 +93,8 @@ fn a_project_in_a_subdirectory_records_evidence() {
         &["cases", "run", "TC-cli-0001", "--environment", "local"],
     );
     assert_eq!(run["outcome"], "passed", "{run:#}");
-    let id = run["observation"]["id"]
+    let id = run["observation"]
         .as_str()
-        .or_else(|| run["id"].as_str())
         .unwrap_or_else(|| panic!("{run:#}"))
         .to_string();
     let record: Value =
@@ -116,6 +115,8 @@ fn a_project_in_a_subdirectory_records_evidence() {
             "LIFE-1",
             "--requirement",
             "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
             "--kind",
             "product-test",
             "--outcome",
