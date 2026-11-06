@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "a-session-archives-itself-at-its-own-move-into-done-155",
+  "implementation_commit": "50c1759ba7fec0301dfac6a0f9b3323d79749c53",
+  "implementation_tree": "a3cdc7c36b13438bf216e52d1a4051e3c03a6683",
+  "contract_digest": "7eaec3be1e8df8f5ca73632c49f34f06b9d3967d53b6e65d004457851ecb7a19",
+  "workspace_digest": "d9a7bac26bfc3a3a05ddb7bdc7901e8da6ed819ea5dc58dc2d6b11a24ac22ceb",
+  "closing_digest": "2c4f2728cc230c4a556e31d6b312c139d9272bb757440c5244854da2966e3e87",
+  "review_digest": "eb178053161fe737532f61398b6a5be51b1eb897d692d0c4e517504fe4126400",
+  "finalization_digest": "71416598cb35b5ebbba262372e50a19d24760f5cc29ff5808582b33bed566976",
+  "timestamp": 1793980826
+}

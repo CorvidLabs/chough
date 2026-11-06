@@ -1553,6 +1553,8 @@ fn seven_archived_sessions(fixture: &Fixture) -> Vec<(String, String)> {
         session["objective"] = json!(format!("Archived objective {key}"));
         session["native_change"] = json!(change);
         session["observations"] = json!([]);
+        // One session holds the legacy anchor: the adopting one, still open (#143).
+        session["history_cursor"]["legacy"] = Value::Null;
         let text = serde_json::to_string_pretty(&session).unwrap() + "\n";
         let path = format!(".chough/sessions/archive/{key}.json");
         fixture.write(&path, &text);
@@ -1729,4 +1731,149 @@ fn a_script_installed_while_an_old_write_handle_is_open_still_runs() {
         assert_eq!(String::from_utf8_lossy(&output.stdout), "ran\n", "{name}");
         drop(leaked);
     }
+}
+
+/// Adopts the legacy checkpoint as session `legacy`, the active session at accept.
+fn adopted_session(fixture: &Fixture) {
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    fixture.commit("adopted session");
+}
+
+/// #155 (REQ-history-006, DRIVE-13, DRIVE-3): the move into done archives the session
+/// itself, in its own change, and clears the active pointer, so no later `session new`
+/// in another worktree moves it.
+#[test]
+fn the_move_into_done_archives_the_session_and_clears_the_pointer() {
+    let fixture = project("0");
+    adopted_session(&fixture);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
+    let archive = &moved["applied"]["session_archive"];
+    assert_eq!(archive["status"], "archived", "{moved:#}");
+    assert_eq!(archive["key"], "legacy", "{moved:#}");
+    // REQ-cli-049: the ledger rotation ran in the same move, before the archive.
+    assert!(
+        moved["applied"]["ledger_rotation"]["status"].is_string(),
+        "{moved:#}"
+    );
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    assert!(!fixture.exists(".chough/sessions/legacy.json"));
+    let archived: Value =
+        serde_json::from_str(&fixture.read(".chough/sessions/archive/legacy.json")).unwrap();
+    assert_eq!(archived["stage"]["current"], "done", "{archived:#}");
+    assert!(!fixture.exists(".chough/local/active-session"));
+    let next = fixture.fails(&["next"]);
+    assert!(next.contains("no open session"), "{next}");
+    assert!(next.contains("chough session new <key>"), "{next}");
+    let started = fixture.ok(&["session", "new", "beta", "--objective", "Next work"]);
+    assert_eq!(started["archived"], json!([]), "{started:#}");
+    let list = fixture.ok(&["session", "list"]);
+    assert!(list.to_string().contains("\"archived\""), "{list:#}");
+}
+
+/// #155: a session with unfolded inbox entries stays open at done, as on a switch.
+#[test]
+fn the_move_into_done_keeps_a_session_with_unfolded_inbox_entries_open() {
+    let fixture = project("0");
+    adopted_session(&fixture);
+    fixture.ok(&[
+        "inbox",
+        "add",
+        "--session",
+        "legacy",
+        "--from",
+        "worker",
+        "--kind",
+        "decision",
+        "--text",
+        "Fold me first",
+    ]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let archive = &moved["applied"]["session_archive"];
+    assert_eq!(archive["status"], "kept_open", "{moved:#}");
+    assert_eq!(archive["inbox_unfolded"], 1, "{moved:#}");
+    assert!(fixture.exists(".chough/sessions/legacy.json"));
+    assert!(!fixture.exists(".chough/sessions/archive/legacy.json"));
+    assert_eq!(fixture.read(".chough/local/active-session"), "legacy\n");
+    fixture.ok(&["next", "--json"]);
+}
+
+/// #155: a project still on the single legacy checkpoint has no session to archive.
+#[test]
+fn the_move_into_done_skips_the_archive_without_sessions() {
+    let fixture = project("0");
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["session_archive"]["status"], "skipped",
+        "{moved:#}"
+    );
+    assert!(fixture.exists(".chough/session.json"));
+}
+
+/// #155: when release is authorized at the move into done, the session stays open for
+/// it, and archives itself at the move from release into done.
+#[test]
+fn a_session_with_release_authorized_archives_itself_after_release() {
+    let fixture = project("0");
+    adopted_session(&fixture);
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "Human: release it",
+    ]);
+    let done = fixture.ok(&["stage", "advance"]);
+    let archive = &done["applied"]["session_archive"];
+    assert_eq!(archive["status"], "kept_open", "{done:#}");
+    assert!(fixture.exists(".chough/sessions/legacy.json"));
+    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    let released = fixture.ok(&["stage", "advance"]);
+    assert_eq!(released["applied"]["to"], "done", "{released:#}");
+    assert_eq!(
+        released["applied"]["session_archive"]["status"], "archived",
+        "{released:#}"
+    );
+    assert!(!fixture.exists(".chough/sessions/legacy.json"));
+    assert!(fixture.exists(".chough/sessions/archive/legacy.json"));
+    assert!(!fixture.exists(".chough/local/active-session"));
+}
+
+/// #143 (REQ-history-011): the archived session that holds the legacy history anchor is
+/// never rolled into the vault and does not count toward the five, so the anchor never
+/// depends on the knowledge directory. Here s0, which would roll first, holds the
+/// anchor; it stays, and s6 still rolls.
+#[test]
+fn the_roll_up_keeps_the_session_that_holds_the_legacy_anchor() {
+    let fixture = project("0");
+    // A legacy log, so adoption records a real legacy anchor in the adopting session.
+    fixture.write(".chough/transitions.jsonl", "");
+    seven_archived_sessions(&fixture);
+    let adopting: Value =
+        serde_json::from_str(&fixture.read(".chough/sessions/legacy.json")).unwrap();
+    let anchor = adopting["history_cursor"]["legacy"].clone();
+    assert!(anchor.is_object(), "{adopting:#}");
+    let path = ".chough/sessions/archive/s0.json";
+    let mut holder: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    holder["history_cursor"]["legacy"] = anchor;
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&holder).unwrap() + "\n"),
+    );
+    fixture.commit("s0 holds the legacy anchor");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let rollup = &moved["applied"]["session_rollup"];
+    assert_eq!(rollup["status"], "rolled", "{moved:#}");
+    assert_eq!(rollup["moved"], json!(["s6"]), "{rollup:#}");
+    for key in ["s0", "s1", "s2", "s3", "s4", "s5"] {
+        assert!(
+            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
+            "{key}"
+        );
+    }
+    assert!(
+        !fixture.exists("knowledge/attachments/s0/sessions/s0.json"),
+        "{rollup:#}"
+    );
 }

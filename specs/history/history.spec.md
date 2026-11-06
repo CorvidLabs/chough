@@ -1,6 +1,6 @@
 ---
 module: history
-version: 11
+version: 12
 status: active
 files:
   - src/history.rs
@@ -91,3 +91,5 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 9 | 2026-11-06 | size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each: Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) |
 | 10 | 2026-11-06 | keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29: Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) |
 | 11 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |
+| 12 | 2026-11-06 | keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143: Keep the archived session that holds the legacy history anchor out of the roll-up (143) |
+| 13 | 2026-11-06 | a-session-archives-itself-at-its-own-move-into-done-155: A session archives itself at its own move into done (155) |
