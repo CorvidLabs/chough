@@ -24,3 +24,4 @@ knowledge/timeline/*.md merge=union
 knowledge/archives/*.md merge=union
 knowledge/modules/*.md merge=union
 knowledge/intent/*.md merge=union
+knowledge/bugs/*.md merge=union
