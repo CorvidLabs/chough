@@ -2236,6 +2236,10 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         applied["librarian_index"] = crate::library::refresh_at_done(root);
         // REQ-cli-049 (KNOW-23): last, rotate the retention ledger into the vault.
         applied["ledger_rotation"] = crate::evidence::rotate_at_done(root);
+        // REQ-history-006 (DRIVE-13, #155): last, the session archives itself in its own
+        // change and the active pointer is cleared; never undoes the move either.
+        let from = applied["from"].as_str().unwrap_or_default().to_string();
+        applied["session_archive"] = crate::sessions::archive_at_done(root, &session, &from);
     }
     report(root, &session, applied)
 }

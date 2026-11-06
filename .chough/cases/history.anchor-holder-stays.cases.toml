@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-roll-up-keeps-the-anchor-holder"
+title = "The roll-up never rolls the archived session that holds the legacy anchor"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-29"]
+requirements = ["REQ-history-011"]
+paths = ["src/sessions.rs", "tests/reduce.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the reduce test the_roll_up_keeps_the_session_that_holds_the_legacy_anchor passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "the_roll_up_keeps_the_session_that_holds_the_legacy_anchor"

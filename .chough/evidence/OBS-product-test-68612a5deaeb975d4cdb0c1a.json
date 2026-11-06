@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-68612a5deaeb975d4cdb0c1a",
+  "criteria": [
+    "FLOW-6",
+    "FLOW-11",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-010",
+    "REQ-cli-014",
+    "REQ-cli-017"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "#152 mutation round on 6f1117b6: 4 targeted mutations (copy-localization never selected; live-health kind not accepted; deployment counted routine; dry run counted non-routine), each applied to the working copy and restored with git checkout; each made its new test fail on its intended assertion, while the existing test named for it in testing.md still passed; the tree was clean afterwards",
+  "artifacts": [
+    ".chough/artifacts/delivery-mutations/copy-localization-never-selected.log",
+    ".chough/artifacts/delivery-mutations/deployment-counted-routine.log",
+    ".chough/artifacts/delivery-mutations/dry-run-counted-non-routine.log",
+    ".chough/artifacts/delivery-mutations/live-health-kind-not-accepted.log",
+    ".chough/artifacts/delivery-mutations/run_mutations.py",
+    ".chough/artifacts/delivery-mutations/summary.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/delivery-mutations/copy-localization-never-selected.log": "84be4b72e70a0ff03b37bcbfec9e06260a83f16201668d004936f20d28bb5294",
+    ".chough/artifacts/delivery-mutations/deployment-counted-routine.log": "957310399ac366bcfa408098463eb8a194ac1d2e3a507d648ab1aa50d82132e3",
+    ".chough/artifacts/delivery-mutations/dry-run-counted-non-routine.log": "f0c764f67b3fafcfb6efcb9f5e7660130abffefdadf9a6b043636a8a981a2f70",
+    ".chough/artifacts/delivery-mutations/live-health-kind-not-accepted.log": "c3ea0b6b38a5a7ebb3ea842e3e9e60a81ec76b49613dd8365bdcdc001d9c1eab",
+    ".chough/artifacts/delivery-mutations/run_mutations.py": "645a907b97d9befaa6cd795d499a992e69784b4ceae0d515fbe868985a31f2d4",
+    ".chough/artifacts/delivery-mutations/summary.txt": "6a8fb92b0f4cf8d04d7354c637b83d0c5289d525369f7bdc3e2587fa5b900fe2"
+  },
+  "observed_at_unix_seconds": 1793971281,
+  "snapshot": {
+    "revision": "6f1117b6b1400f8f34cd44c56c4d844f3c8e376b",
+    "dirty": false,
+    "fingerprint": "8aa3b1885f3da6ea2734b513b7355c42cc785d89e1aeafcae7d63297664fd1e6",
+    "content": "8fd0afdcf7dae9b551dc2ed3625de1a28d8b1db85b4c099e5d1bd25bad2425ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "mutations were applied by run_mutations.py by exact string replacement, not by a mutation tool",
+    "the installation-observation and publication-observation kinds have no mutation of their own; the same tests assert them"
+  ]
+}

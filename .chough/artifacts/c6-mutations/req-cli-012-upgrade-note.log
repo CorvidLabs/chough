@@ -1,0 +1,45 @@
+== mutation req-cli-012-upgrade-note in docs/cli.md
+diff --git a/docs/cli.md b/docs/cli.md
+index a87b9440..4a0e2713 100644
+--- a/docs/cli.md
++++ b/docs/cli.md
+@@ -295,7 +295,7 @@ Exact legacy `BUG-NNNN` IDs and new-form IDs are both accepted for loading, list
+ search, show, report, updates and evidence references. `duplicate_of` and `related`
+ links resolve either form in both directions. Every legacy record remains schema 1 at
+ its existing path without migration, renumbering or rewriting old observations and
+-archives. Older Chough versions that accept only `BUG-NNNN` must be upgraded before
++archives. Older Chough versions that accept only `BUG-NNNN` keep working before
+ reading, referencing or updating repositories containing new-form IDs; downgrading is
+ not a migration path.
+ 
+
+== cargo test --locked --test bugs -- --exact the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids
+exit 101
+--- stdout ---
+
+running 1 test
+test the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids ... FAILED
+
+failures:
+
+---- the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids stdout ----
+
+thread 'the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids' (155906584) panicked at tests/bugs.rs:916:5:
+assertion `left == right` failed: docs/cli.md has no single upgrade note for new-form bug IDs
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.01s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.88s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)
+error: test failed, to rerun pass `--test bugs`
+

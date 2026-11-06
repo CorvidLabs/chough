@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148",
+  "implementation_commit": "fcf014e842776c77ff67c31a5257c38bd3d012ab",
+  "implementation_tree": "0648d1c5e1f8f5f27bce66f5fd522194fa049b0a",
+  "contract_digest": "6d3b0d14d6e85a503a46be312f6a738e592f5c02bb458134f58ec6079f381427",
+  "workspace_digest": "b19e659a90a0e955ba98bedfa091e6bb1dee295c506230093eb7091e95587636",
+  "closing_digest": "cd9c06998b668f50da6a37ec17dfaed24bb3e8ad10e61c63ac1fd38b37eb03cb",
+  "review_digest": "b03b56216b78865035575cb8f9dfa6d76104407ed370e95f458a46a20cbd0a00",
+  "finalization_digest": "0f678c18584abf3b020fc8a6dd69db59494197394123094fbbb622f7fec5a924",
+  "timestamp": 1793975050
+}

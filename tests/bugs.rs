@@ -892,6 +892,34 @@ fn two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict() {
     assert_eq!(fixture.read("merge/ours.json"), before);
 }
 
+/// REQ-cli-012, last criterion (#138, audit assertion review): the CLI documentation tells
+/// users of older Chough versions, which accept only `BUG-NNNN`, to upgrade before they use
+/// a repository with new-form bug IDs.
+#[test]
+fn the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md");
+    // Collapsing whitespace reads CRLF and LF checkouts alike (#131).
+    let text = std::fs::read_to_string(path)
+        .unwrap()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let upgrade: Vec<&str> = text
+        .split(". ")
+        .filter(|sentence| {
+            sentence.contains("Older Chough versions")
+                && sentence.contains("`BUG-NNNN`")
+                && sentence.contains("must be upgraded")
+                && sentence.contains("new-form IDs")
+        })
+        .collect();
+    assert_eq!(
+        upgrade.len(),
+        1,
+        "docs/cli.md has no single upgrade note for new-form bug IDs"
+    );
+}
+
 /// The stored record of bug `id`.
 fn bug_record(fixture: &Fixture, id: &str) -> Value {
     serde_json::from_str(&fixture.read(&format!(".chough/bugs/{id}.json"))).unwrap()

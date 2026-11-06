@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793946871,
+      "digest": "a56f647864a498faaa58369b09754b13ea8e555245ced171fad6a11fdc796f24",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144",
+        "title": "Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144)",
+        "description": "Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/stop.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Issue #144: stop tests matched their stalled child machine-wide by sleep 6xx; test isolation only, no requirement text changes.",
+        "acceptance_criteria": [
+          "Every stop test stalls on a unique per-fixture token and matches and reaps only it, so a concurrent run of the same test (simulated by sleep 641/642/643 decoys) is neither taken for a survivor nor killed; every existing stop assertion holds; the decoy test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #144 (found by ch-pr69); orc: fix after #132; identity() from the #95 review; no weakening.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793974086,
+      "digest": "e260796b263a673edd1a3039f4795afe6455e747ee86cf99376d5d0eec617d51",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

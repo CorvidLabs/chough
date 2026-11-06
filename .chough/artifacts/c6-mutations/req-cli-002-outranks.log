@@ -1,0 +1,45 @@
+== mutation req-cli-002-outranks in skills/chough-workflow/references/accept.md
+diff --git a/skills/chough-workflow/references/accept.md b/skills/chough-workflow/references/accept.md
+index f2a8f388..53dff0f7 100644
+--- a/skills/chough-workflow/references/accept.md
++++ b/skills/chough-workflow/references/accept.md
+@@ -80,8 +80,8 @@ Each lesson carries a certainty label:
+ 
+ Each lesson names its source (an observation ID, a bug ID or a commit) and its limits
+ (where it applies and where it was not checked). A project decision, meaning a
+-checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, always
+-outranks a lesson. A lesson never changes a decision; if a lesson argues against one,
++checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, usually
++matters more than a lesson. A lesson never changes a decision; if a lesson argues against one,
+ raise it with the human. A lesson that changes behavior or policy may need its own
+ native change. Write lessons from a change during closeout, inside the open native
+ change (see [librarian.md](librarian.md)). Archival does not mean no bug remains;
+
+== cargo test --locked --test cli -- --exact the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons
+exit 101
+--- stdout ---
+
+running 1 test
+test the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons ... FAILED
+
+failures:
+
+---- the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons stdout ----
+
+thread 'the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons' (155855096) panicked at tests/cli.rs:2693:13:
+skills/chough-workflow/references/accept.md lacks "always outranks a lesson"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 53 filtered out; finished in 0.01s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.36s
+     Running tests/cli.rs (target/debug/deps/cli-cc9590767b05a387)
+error: test failed, to rerun pass `--test cli`
+

@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793970827,
+      "digest": "677758586b1150288ced09ae02286290a70aa508f85cf2ce223bc2fae4e6451c",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19",
+        "title": "Pin every history and inbox bound at exactly its value (154, CH-19)",
+        "description": "Pin every history and inbox bound at exactly its value (154, CH-19)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "tests/history.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Issue #154 (audit CH-19): a mutation check found five history and inbox bounds no test pins; tests only, no requirement text changes.",
+        "acceptance_criteria": [
+          "Each of the five unpinned history and inbox bounds has an end-to-end test at exactly its value and one past it, and a mutation that loosens any of the 11 history and session bounds by one is caught; no product, contract, assertion or bound changes; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #154 (audit CH-19); orc queue: test gaps, tests only, mutation-checked, queued for Leif.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793975565,
+      "digest": "2072c2624ffdeb9f08c9362d6cd0b76ad09a78107ce4299c955b04f36b30611a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
