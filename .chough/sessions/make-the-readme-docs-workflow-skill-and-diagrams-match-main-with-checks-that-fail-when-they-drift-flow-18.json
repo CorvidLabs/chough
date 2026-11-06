@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-5c67e8fb8aaeaca193dc036d",
-    "head": "EVT-d942ca4271a702e649196576",
+    "head": "EVT-0df05ca2a1d970222aeccfa9",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -47,12 +47,14 @@
     "rejected: capturing the criterion as LIFE-17 because it would edit the same INTENT.md count line as #160 (LIFE-16)",
     "decided: KNOWN_PREVIOUS rows go at the end of the list because #151 inserts at its top",
     "decided: docs/cli.md:25 (bug row, bug merge) is left to #158 and #69's lines are not touched because those pull requests change them",
-    "Leif (0xLeif) decided \"Scope approval of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"Approve\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native definition approval as 0xLeif at c8a74aff); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
+    "Leif (0xLeif) decided \"Scope approval of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"Approve\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native definition approval as 0xLeif at c8a74aff); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated",
+    "decided: commit the rebuilt knowledge index after the passing runs because CI's library index --check needs it, and report those observations as historical by #136 rather than loop reruns"
   ],
   "open_questions": [],
   "completed": [
     "Failing tests: 7039f68b (tests/docs.rs, 8 of 10 FLOW-18 checks fail on the base; flags and links pass)",
-    "Docs, skill and diagrams corrected; stages, lifecycle and ownership re-rendered with Mermaid 11.12.0 and PNGs inspected; tests/docs.rs passes 10 of 10; cargo test 487 passed"
+    "Docs, skill and diagrams corrected; stages, lifecycle and ownership re-rendered with Mermaid 11.12.0 and PNGs inspected; tests/docs.rs passes 10 of 10; cargo test 487 passed",
+    "Passing run: ten FLOW-18 cases passed on local-macos-arm64 after the fix; bug verified"
   ],
   "observations": [
     "OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9",
@@ -64,13 +66,25 @@
     "OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c",
     "OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb",
     "OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a",
-    "OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72"
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72",
+    "OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325",
+    "OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b",
+    "OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a",
+    "OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad",
+    "OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931",
+    "OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc",
+    "OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20",
+    "OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd",
+    "OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3",
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681"
   ],
   "bugs": [
     "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18"
+  ],
   "run_consents": [],
-  "next_action": "Run the verify lane, tick tasks, materialize with specsync change check, rerun the FLOW-18 cases, then audit --strict and push"
+  "next_action": "Commit, specsync change check --commit, pre-push and audit --strict, push, open the PR and send ready for review; then wait for the human implementation review"
 }

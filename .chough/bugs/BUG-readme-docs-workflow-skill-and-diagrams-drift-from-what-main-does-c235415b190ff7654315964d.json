@@ -34,17 +34,44 @@
     "OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c",
     "OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb",
     "OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a",
-    "OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72"
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72",
+    "OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325",
+    "OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b",
+    "OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a",
+    "OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad",
+    "OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931",
+    "OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc",
+    "OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20",
+    "OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd",
+    "OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3",
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681"
   ],
   "impact": "An agent or person following the docs or skill resumes from the wrong files, clears instead of closes the review gate, or uses a stale SpecSync version",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "ch-docs-accuracy audit, ../ch-docs-findings.md",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793982542,
+      "text": "status: open -> verified. Fixed by de02abd0: tests/docs.rs passes 10 of 10 at the materialized change; all ten FLOW-18 cases passed on local-macos-arm64 after the failures of 7039f68b",
+      "observations": [
+        "OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325",
+        "OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b",
+        "OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a",
+        "OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad",
+        "OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931",
+        "OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc",
+        "OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20",
+        "OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd",
+        "OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3",
+        "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793980107,
-  "updated_at_unix_seconds": 1793980107
+  "updated_at_unix_seconds": 1793982542
 }
