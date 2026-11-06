@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143",
+  "slug": "keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143",
+  "title": "Keep the archived session that holds the legacy history anchor out of the roll-up (143)",
+  "description": "Keep the archived session that holds the legacy history anchor out of the roll-up (143)",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "f35f721ae0049cd6247119b6ff1085108fa4494f",
+  "created_at": 1793972519,
+  "updated_at": 1793972598,
+  "affected_specs": [
+    "history"
+  ],
+  "affected_paths": [
+    "hi/knowledge.md",
+    "src/sessions.rs",
+    "tests/reduce.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "KNOW-29 as amended by Leif on 2026-11-06 (HI captured in hi/knowledge.md) and REQ-history-011: the archived session whose history cursor holds the legacy anchor is never rolled into the vault and does not count toward the five; with seven archived sessions where only the one that would roll first holds the anchor, the move into done keeps it and the five newest others and rolls only the remaining one. The KNOW-29 fixture models a single anchor holder; the new test fails first, no other assertion changes, docs/cli.md says so, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "KNOW-29 amended by Leif (relayed by orc, 2026-11-06, 'Amend KNOW-29' with this wording); issue #143 option A; #141 keeps adopted_anchor reading rolled and shelved sessions for anchors already in the vault; the no-replace and byte-for-byte rules of REQ-history-011 are kept.",
+    "public_contract": "yes"
+  }
+}
