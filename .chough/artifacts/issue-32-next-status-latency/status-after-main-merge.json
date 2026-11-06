@@ -1,0 +1,126 @@
+{
+  "acceptance_entries": [],
+  "approved_deltas": [
+    {
+      "delta_intact": true,
+      "materialized": false,
+      "module": "cli",
+      "requirements": {
+        "added": [
+          "REQ-cli-053"
+        ],
+        "modified": [],
+        "removed": []
+      },
+      "sections": {
+        "added": [],
+        "modified": [],
+        "removed": []
+      }
+    }
+  ],
+  "briefing": {
+    "lessons": [
+      {
+        "excerpt": "2026-10-31: The human selected Chough, a private CorvidLabs repository, Rust helper\nplus portable skills, and current-agent-first v1. Rune coordination is deferred.\nHI captures intent; SpecSync owns module contracts and lifecycle; Fledge owns task\nexecution. The helper records observations and focused session context only.\nBootstrap implementation and initial private push are explicitly authorized. Native\nSDD is optional by upstream policy and remains disabled for this baseline. Structural\nSpecSync dogfooding is strict. No scope approval, human implementation review,\narchive, merge, release or deployment is implied by the bootstrap.\n2026-10-31: The human approved native change\nevolve-chough-into-a-resumable-stage-workflow (FLOW-1 to FLOW-13, REQ-cli-007 to\nREQ-cli-017), adopting the full lifecycle with SpecSync 6.1.1, the TOML\n`chough-testing/1` profile, deferred APS, explicit case execution and capture-only\nmonitoring. See docs/DECISIONS.md D-008 to D-016. The bootstrap paragraph above is\nhistory. It merged as the squash commit 4008346 (PR #2).\nLater native changes, each approved by 0xLeif and archived under\n`.specsync/archive/changes/` on its own pull request:",
+        "lines": 458,
+        "path": "specs/cli/context.md",
+        "truncated": true
+      }
+    ],
+    "principles": null
+  },
+  "change": {
+    "acceptance_criteria": [
+      "On this macOS arm64 Chough checkout with 121 archives, a release build of next and status for a session naming an archived change each finishes at or below 2000 ms at p95 and 3000 ms for every run across 10 warm runs after one successful priming run. A valid warm archive entry makes zero SpecSync status calls; cold or invalid entries make one live bounded read and preserve observed, failed, timed-out and unknown states. Only a completed authenticated read primes an entry; a timed-out prime writes no entry, leaves no native descendants, and causes another bounded cold attempt rather than a warm claim. Every stage transition, timing report, retention decision and native verification keeps its live authoritative read and existing gate, output and timeout bounds. Cache invalidation covers archive bytes and Git identity, the resolved SpecSync binary and version, native policy/configuration/baseline, and shallow/replace/graft history inputs. Snapshot optimizations preserve byte-identical legacy and content fingerprints and observation freshness. Failing-first regressions, before/after real measurements and fledge lanes run verify are recorded."
+    ],
+    "affected_paths": [
+      "src/native.rs",
+      "src/main.rs",
+      "src/stage.rs",
+      "src/evidence.rs",
+      "tests/native.rs",
+      "tests/next.rs",
+      "tests/evidence.rs",
+      "tests/common/mod.rs",
+      "docs/cli.md",
+      "docs/FRD.md",
+      "hi/drive.md",
+      "CHANGELOG.md"
+    ],
+    "affected_specs": [
+      "cli"
+    ],
+    "answers": {
+      "architecture_risk": "yes",
+      "constraints": "DRIVE-2 permits committed archive reads or a digest-keyed cache but requires native state to keep deciding gates. specs/cli/context.md records that per-archive native status is expensive and that PR 69 omitted Git history inputs. Keep the existing native timeout, output, evidence and lifecycle bounds; do not edit checkpoint or session storage, do not create a second native authority, and preserve PR 133's overlapping edits when main is merged.",
+      "public_contract": "yes"
+    },
+    "base_commit": "e99dc7961323e5c4e2aff1a2cf13333b0c47037e",
+    "created_at": 1793936770,
+    "dependencies": [],
+    "description": "Make archived next and status fast within explicit warm budgets",
+    "id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+    "kind": "feature",
+    "no_spec_change": false,
+    "no_spec_change_rationale": null,
+    "schema_version": 1,
+    "selected_artifacts": [
+      "context",
+      "requirements",
+      "plan",
+      "tasks",
+      "testing",
+      "docs",
+      "design",
+      "research"
+    ],
+    "slug": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+    "state": "approved",
+    "title": "Make archived next and status fast within explicit warm budgets",
+    "updated_at": 1793941222,
+    "workflow_origin_version": 2,
+    "workflow_version": 2
+  },
+  "corrections": [],
+  "effective_definition": {
+    "answers": {
+      "architecture_risk": "yes",
+      "constraints": "DRIVE-2 permits committed archive reads or a digest-keyed cache but requires native state to keep deciding gates. specs/cli/context.md records that per-archive native status is expensive and that PR 69 omitted Git history inputs. Keep the existing native timeout, output, evidence and lifecycle bounds; do not edit checkpoint or session storage, do not create a second native authority, and preserve PR 133's overlapping edits when main is merged.",
+      "public_contract": "yes"
+    },
+    "selected_artifacts": [
+      "context",
+      "requirements",
+      "plan",
+      "tasks",
+      "testing",
+      "docs",
+      "design",
+      "research"
+    ],
+    "view_digest": "7e8529758032524d9d15c52c77c05dd90c88b10119231085dce77986dd83171e"
+  },
+  "questions": [],
+  "summary": {
+    "approval_valid": true,
+    "artifacts_complete": true,
+    "correction_count": 0,
+    "correction_valid": true,
+    "definition_digest": "fbe2dd3e67eedfb17e949fafd5bd74e704aa6a36fac0dc172ecabfd4a3429d6d",
+    "handoff": {
+      "readiness": "safe",
+      "reason": "the approval pins the definition; a fresh session in this tree resumes at `change check`",
+      "resume": "specsync change status make-archived-next-and-status-fast-within-explicit-warm-budgets"
+    },
+    "id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+    "next_action": "run `specsync change check make-archived-next-and-status-fast-within-explicit-warm-budgets`",
+    "scoped_review_current": false,
+    "state": "approved",
+    "strict_validation_required": false,
+    "title": "Make archived next and status fast within explicit warm budgets",
+    "verification_commands": [
+      "specsync check --spec cli --spec history"
+    ]
+  }
+}

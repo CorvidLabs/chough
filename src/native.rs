@@ -365,7 +365,7 @@ fn bounded_file(path: &Path, limit: u64) -> Option<Vec<u8>> {
 fn specsync_binary() -> Option<Value> {
     for directory in std::env::split_paths(&std::env::var_os("PATH")?) {
         let candidate = directory.join("specsync");
-        if let Ok(meta) = candidate.symlink_metadata()
+        if let Ok(meta) = fs::metadata(&candidate)
             && meta.is_file()
         {
             let path = candidate.canonicalize().ok()?;

@@ -6,7 +6,7 @@ artifact: tasks
 # Tasks
 
 - [x] Obtain Leif's intent/scope decision through the orc; capture the approved HI wording and native approval with agent actor and human authority source.
-- [ ] Merge origin/main and refresh affected contracts, IDs and overlapping PR #133 edits.
+- [x] Merge origin/main and refresh affected contracts, IDs and overlapping PR #133 edits.
 - [x] Add and run failing-first native cache, invalidation, anti-spoof, live-gate and exact-fingerprint regressions.
 - [x] Implement the bounded read-only authenticated-archive cache and report-only integration.
 - [x] Implement scoped exact-digest snapshot workers without persistent evidence caching.

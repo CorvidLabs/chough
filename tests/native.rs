@@ -388,3 +388,25 @@ fn failed_malformed_and_oversized_inputs_never_become_authenticated() {
     fs::write(&entry, vec![b'x'; 8 * 1024 * 1024 + 1]).unwrap();
     expect_live(&fixture, "oversized entry");
 }
+
+#[cfg(unix)]
+#[test]
+fn a_resolved_specsync_symlink_can_prime_and_reuse() {
+    let fixture = archived();
+    let real = fixture.root().join("real-specsync");
+    fs::rename(fixture.root().join("bin/specsync"), &real).unwrap();
+    std::os::unix::fs::symlink(&real, fixture.root().join("bin/specsync")).unwrap();
+    prime(&fixture);
+    let entry = fs::read_dir(cache_dir(&fixture))
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap()
+        .path();
+    let record: Value = serde_json::from_str(&fs::read_to_string(entry).unwrap()).unwrap();
+    assert_eq!(
+        record["specsync"]["path"].as_str().unwrap(),
+        real.canonicalize().unwrap().to_str().unwrap()
+    );
+    expect_cached(&fixture, "resolved SpecSync symlink");
+}

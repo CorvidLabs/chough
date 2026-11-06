@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bfa7e93bcea3966ef7705d22",
-    "head": "EVT-47a2701b838ea1f17fefebb6",
+    "head": "EVT-865368c599b9fe1da9d401f2",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "intent",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -17,30 +17,38 @@
   "native_change": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
   "references": {
     "criteria": [
-      "DRIVE-2"
+      "DRIVE-2",
+      "DRIVE-15"
     ],
-    "requirements": [],
+    "requirements": [
+      "REQ-cli-053"
+    ],
     "cases": [],
     "design": [],
-    "files": []
+    "files": [
+      "src/native.rs",
+      "src/main.rs",
+      "src/evidence.rs",
+      "tests/native.rs"
+    ]
   },
   "decisions": [
     "proposed: warm archived next/status budgets are 2000 ms p95 and 3000 ms maximum over ten release runs because archived native status alone measured 4.36-4.84 s and local hashing can exceed 2 s.",
     "rejected: cached stage transitions, cached active native state, or Chough-parsed archive validity because lifecycle mutations must keep live SpecSync authority and Chough must not become a second authenticator.",
     "decided: the PR 69 split assigns archive caching to issue 32 and batched stage advance to a separate PR because the orc coordinated that ownership with ch-pr69; the ID audit assigns REQ-cli-052 and DRIVE-15 above every existing claim.",
     "decided: issue 32 uses REQ-cli-053 instead of REQ-cli-052 because ch-pr69 subsequently claimed REQ-cli-052 for the separate stage-advance PR; DRIVE-15 remains unclaimed.",
-    "decided: the warm budget begins only after a successful authenticated prime because ch-pr69 measured cold SpecSync reads beyond Chough's 120 second timeout under load; a timeout must write no entry, leave no native descendants, and produce no warm claim."
+    "decided: the warm budget begins only after a successful authenticated prime because ch-pr69 measured cold SpecSync reads beyond Chough's 120 second timeout under load; a timeout must write no entry, leave no native descendants, and produce no warm claim.",
+    "decided: Leif said \"Approve\" at 22:00 MST through the orc for the exact REQ-cli-053/DRIVE-15 scope at de8e0cd3; the archive cache is read-only and all lifecycle mutations stay live."
   ],
   "open_questions": [],
   "completed": [
-    "Profiled no-active, active and archived native status plus fresh debug/release next/status on the 121-archive repository; measurements and limits are in .chough/artifacts/issue-32-next-status-latency/PROFILE.md."
+    "Profiled no-active, active and archived native status plus fresh debug/release next/status on the 121-archive repository; measurements and limits are in .chough/artifacts/issue-32-next-status-latency/PROFILE.md.",
+    "Failing tests first: 1f94916d9a1c7b0c017b528838b9137e973cfa85. Implemented the read-only cache and exact snapshot workers at c1d4223b43c818027c377e90b04c97828548f889, then merged #141/main at ce9e140f0d86e0342531c45dd6e92af66c9a7e52."
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Intent and scope decision of make-archived-next-and-status-fast-within-explicit-warm-budgets: approve the numeric warm budgets, read-only archive cache using REQ-cli-053 and DRIVE-15, and exact snapshot workers"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for Leif's relayed intent/scope decision through the orc; do not edit product code or record approval before it arrives."
+  "next_action": "Run the complete Fledge verification lane, then measure the approved warm archived release budgets and record Chough case evidence."
 }
