@@ -1,0 +1,48 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793942204,
+      "digest": "4b47b456e468197d3d555a0746876db3bcf401e9d566673748ab104ab1953c0c",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132",
+        "title": "Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132)",
+        "description": "Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/cli.rs",
+          "tests/common/mod.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Issue #132: ETXTBSY reproduced 2 of 60 stress rounds; test helpers only, no requirement text changes.",
+        "acceptance_criteria": [
+          "Test stand-in scripts are installed as fresh files from a child sh with a rename, so a write handle a forked child leaked never makes them busy; the new test fails first with ETXTBSY and passes after; 60 stress rounds at 32 threads show no Text file busy; no assertion, gate, bound or timeout changes; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #132; Leif queue: #132 after KNOW-29 (2026-11-05 via the orc); spec-sync#888 pattern; no weakening.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793946959,
+      "digest": "307b203ff90f59b2637ee673e2d99e42b96a759ddb727f7bca4d181974e7b615",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
