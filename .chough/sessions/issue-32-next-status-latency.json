@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bfa7e93bcea3966ef7705d22",
-    "head": "EVT-865368c599b9fe1da9d401f2",
+    "head": "EVT-e283a7abe57bd4c2488e60bc",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "build",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -48,7 +48,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope correction for make-archived-next-and-status-fast-within-explicit-warm-budgets: native audit requires adding specs/cli/cli.spec.md and specs/cli/testing.md to affected_paths and fresh approval"
+  ],
   "run_consents": [],
-  "next_action": "Run the complete Fledge verification lane, then measure the approved warm archived release budgets and record Chough case evidence."
+  "next_action": "Wait for Leif's relayed authorization for the two-path scope correction; do not send the native change back without it."
 }
