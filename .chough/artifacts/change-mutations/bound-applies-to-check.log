@@ -1,0 +1,36 @@
+
+running 7 tests
+test a_missing_specsync_refuses_naming_install_and_the_step_to_rerun ... FAILED
+test change_new_answer_check_and_status_run_specsync_with_exact_arguments ... ok
+test sigterm_to_change_check_stops_specsync ... ok
+test check_outlives_the_native_bound_while_status_refuses_past_it ... FAILED
+test an_invalid_native_bound_refuses_status_naming_a_valid_retry ... ok
+test specsync_output_and_exit_code_pass_through_byte_for_byte ... ok
+test no_change_command_writes_under_dot_chough ... ok
+
+failures:
+
+---- a_missing_specsync_refuses_naming_install_and_the_step_to_rerun stdout ----
+
+thread 'a_missing_specsync_refuses_naming_install_and_the_step_to_rerun' (356993824) panicked at tests/change.rs:287:9:
+["change", "check", "free-shipping"] names no step to rerun: Error: specsync could not be started (No such file or directory (os error 2)), so nothing ran. Install it with `cargo install --locked specsync@6.2.0` (README, Install the toolchain), then run `chough change status` again with the same arguments.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- check_outlives_the_native_bound_while_status_refuses_past_it stdout ----
+
+thread 'check_outlives_the_native_bound_while_status_refuses_past_it' (356993827) panicked at tests/change.rs:225:5:
+check was stopped by the read bound: Error: specsync change status gave no response within 1 s (CHOUGH_NATIVE_TIMEOUT_SECONDS) and was stopped; nothing was recorded. Run `CHOUGH_NATIVE_TIMEOUT_SECONDS=4 chough change check` to wait longer.
+
+
+
+failures:
+    a_missing_specsync_refuses_naming_install_and_the_step_to_rerun
+    check_outlives_the_native_bound_while_status_refuses_past_it
+
+test result: FAILED. 5 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.64s
+
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456-drive)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.13s
+     Running tests/change.rs (target/debug/deps/change-c1495f4ded81b8f7)
+error: test failed, to rerun pass `--test change`

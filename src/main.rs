@@ -1,6 +1,7 @@
 mod attachments;
 mod bugs;
 mod cases;
+mod change;
 mod checkpoint;
 mod context;
 mod doctor;
@@ -150,6 +151,12 @@ enum Commands {
         #[command(subcommand)]
         command: sessions::InboxCommand,
     },
+    /// Run SpecSync's change new, answer, check (with --commit) and status steps and pass
+    /// their output, refusals and exit code through unchanged (REQ-cli-057).
+    Change {
+        #[command(subcommand)]
+        command: change::ChangeCommand,
+    },
     /// Find the Chough debt that stops a fresh worktree from entering Chough; `--fix`
     /// fixes it, and decision fixes also need `--reason` (DRIVE-17).
     Doctor(Box<doctor::DoctorArgs>),
@@ -240,6 +247,12 @@ fn main() -> Result<()> {
         Commands::Skill { command } => skill::run(&root, command)?,
         Commands::Session { command } => sessions::run(&root, command)?,
         Commands::Inbox { command } => sessions::inbox(&root, command)?,
+        Commands::Change { command } => {
+            let code = change::run(&root, command)?;
+            if code != 0 {
+                std::process::exit(code);
+            }
+        }
         Commands::Doctor(args) => {
             if doctor::run(&root, *args)? {
                 std::process::exit(1);

@@ -1,0 +1,26 @@
+--- stdout ---
+
+running 1 test
+test a_missing_specsync_refuses_naming_install_and_the_step_to_rerun ... FAILED
+
+failures:
+
+---- a_missing_specsync_refuses_naming_install_and_the_step_to_rerun stdout ----
+
+thread 'a_missing_specsync_refuses_naming_install_and_the_step_to_rerun' (351339133) panicked at tests/change.rs:280:9:
+assertion `left == right` failed: ["change", "new", "Free shipping at the threshold", "--kind", "feature", "--spec", "shipping", "--spec", "cart", "--path", "src/shipping.rs", "--path", "tests/"]
+  left: Some(2)
+ right: Some(1)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_missing_specsync_refuses_naming_install_and_the_step_to_rerun
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.92s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.44s
+     Running tests/change.rs (target/debug/deps/change-c1495f4ded81b8f7)
+error: test failed, to rerun pass `--test change`

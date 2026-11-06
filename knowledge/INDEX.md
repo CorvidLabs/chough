@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 146
+archived_changes: 147
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) (hot)
 - [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18) (hot)
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) (hot)
-- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (hot)
+- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (cold)
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18) (cold)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) (cold)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (cold)
 - [a-session-archives-itself-at-its-own-move-into-done-155](archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155) (cold)
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (cold)
 - [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](archives/place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16.md) Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16) (cold)
-- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (cold)
-- All 146 archived changes, by month: [timeline.md](timeline.md)
+- All 147 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](../.specsync/archive/changes/2026-11-06-run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20/lesson-bundle.md)
 - [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](../.specsync/archive/changes/2026-11-06-name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18/lesson-bundle.md)
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../.specsync/archive/changes/2026-11-06-a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18/lesson-bundle.md)
 - [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../.specsync/archive/changes/2026-11-06-make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [a-session-archives-itself-at-its-own-move-into-done-155](../.specsync/archive/changes/2026-11-06-a-session-archives-itself-at-its-own-move-into-done-155/lesson-bundle.md)
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../.specsync/archive/changes/2026-11-06-keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143/lesson-bundle.md)
 - [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](../.specsync/archive/changes/2026-11-06-place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16/lesson-bundle.md)
-- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../.specsync/archive/changes/2026-11-06-pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-505 recorded; most recent:
+496 recorded; most recent:
 
+- OBS-tc-cli-change-invalid-bound-recovery-c177387564b8d1ef87a3ca52 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-sigterm-stops-specsync-954f09784932db762fbad2dc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-missing-specsync-recovery-e03af699a3453d46b2aafeb2 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-check-outlives-read-bound-6b6f8c12c429f4d6ced6dbbc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-steps-write-nothing-faff94c566bb9f21d3f4658b ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-steps-pass-through-ff1601248ad19f8e292363ca ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-steps-exact-arguments-b45af62e9645ac2b19daaf8a ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-product-test-af55b3e0d282e728bde7629e ProductTest Passed in local-linux-aarch64 at 3daef9eb3c1c
 - OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
 - OBS-tc-cli-closeout-closes-review-gate-8dadafef9ca3a33ff272628b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-docs-name-pinned-versions-90ac939608e60d8035f51ef4 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-documented-merge-drivers-match-b53546cd197b92ba3fe5bcbb ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-doc-links-resolve-7ae693725b770179dfab510b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-documented-flags-exist-809d7bc57d54f26407d3e500 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-readme-verify-list-matches-fledge-ada79377544057e2b4ebfa6b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-readme-helper-table-covers-help-5b78f314111304a0ccb7f4d7 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-inline-diagrams-match-sources-6454169bc1e8aa1489845142 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-stage-diagram-matches-the-helper-3de53f0de2795e49e67ec6f6 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
 
 ## Briefs
 
