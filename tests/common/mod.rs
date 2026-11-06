@@ -66,6 +66,10 @@ impl Fixture {
     }
 
     pub(super) fn run(&self, args: &[&str]) -> Output {
+        self.run_with_env(args, &[])
+    }
+
+    pub(super) fn run_with_env(&self, args: &[&str], environment: &[(&str, &str)]) -> Output {
         let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
         command.arg("--root").arg(self.root()).args(args);
         let mut paths = vec![self.root().join("bin")];
@@ -73,6 +77,7 @@ impl Fixture {
             &std::env::var_os("PATH").unwrap_or_default(),
         ));
         command.env("PATH", std::env::join_paths(paths).unwrap());
+        command.envs(environment.iter().copied());
         command.output().unwrap()
     }
 
