@@ -1,6 +1,6 @@
 ---
 id: write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127
-state: approved
+state: implementing
 type: bug_fix
 base_commit: ec4bf5861d0e13b6ff32731b9e68c0a61944a3d1
 ---
