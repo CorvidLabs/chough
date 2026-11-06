@@ -1,0 +1,48 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-1b54bc711067f522ca82323e",
+    "head": "EVT-c88b6483cb989457413b94ec",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18",
+  "references": {
+    "criteria": [
+      "FLOW-18"
+    ],
+    "requirements": [
+      "REQ-cli-019"
+    ],
+    "cases": [
+      "TC-cli-cli-command-table-matches-help"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "decided: the #173 check is a separate test in tests/docs.rs because docs/cli.md's command table writes subcommands with escaped pipes and bracketed options, unlike the README's helper table",
+    "Leif (0xLeif) decided \"Scope approval of name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18\": \"approved\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy as 'Leif approved #173' (orc's wording; Leif's own words were not quoted); orc recorded the native definition approval as 0xLeif at 46ce740a); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Implementation review of name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18\": \"pass\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native scoped review as 0xLeif, verdict pass at 77579661 on PR #176); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Fix: docs/cli.md's bug row names merge (#173); the Commands table check failed first at 46ce740a and passes; all eleven docs cases and cargo test (533) pass"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "After Leif's review (recorded by orc): ship, close the review gate with his relayed words, stage advance, commit, audit --strict and pre-push, push, CI, merge pinned"
+}

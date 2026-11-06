@@ -50,15 +50,27 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+13 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f | failed (by cycle time) | local-macos-arm64 | TC-cli-cli-command-table-matches-help |
+| OBS-tc-cli-cli-command-table-matches-help-4bb9fc6a4f11994c45c7d052 | passed (by cycle time) | local-macos-arm64 | TC-cli-cli-command-table-matches-help |
+| OBS-tc-cli-closeout-closes-review-gate-8dadafef9ca3a33ff272628b | passed (by cycle time) | local-macos-arm64 | TC-cli-closeout-closes-review-gate |
+| OBS-tc-cli-doc-links-resolve-7ae693725b770179dfab510b | passed (by cycle time) | local-macos-arm64 | TC-cli-doc-links-resolve |
+| OBS-tc-cli-docs-name-pinned-versions-90ac939608e60d8035f51ef4 | passed (by cycle time) | local-macos-arm64 | TC-cli-docs-name-pinned-versions |
+| OBS-tc-cli-documented-flags-exist-809d7bc57d54f26407d3e500 | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-flags-exist |
+| OBS-tc-cli-documented-merge-drivers-match-b53546cd197b92ba3fe5bcbb | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-merge-drivers-match |
+| OBS-tc-cli-inline-diagrams-match-sources-6454169bc1e8aa1489845142 | passed (by cycle time) | local-macos-arm64 | TC-cli-inline-diagrams-match-sources |
+| OBS-tc-cli-readme-helper-table-covers-help-5b78f314111304a0ccb7f4d7 | passed (by cycle time) | local-macos-arm64 | TC-cli-readme-helper-table-covers-help |
+| OBS-tc-cli-readme-verify-list-matches-fledge-ada79377544057e2b4ebfa6b | passed (by cycle time) | local-macos-arm64 | TC-cli-readme-verify-list-matches-fledge |
+| OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-615b587b-known-outdated |
+| OBS-tc-cli-stage-diagram-matches-the-helper-3de53f0de2795e49e67ec6f6 | passed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
 | OBS-tc-cli-subdirectory-project-records-evidence-08e49ae695965281b908aec4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-subdirectory-project-records-evidence |
 
 ## Bugs
 
-- none
+- BUG-cli-reference-command-table-omits-bug-merge-173-cfae88809770918250b18b65 verified (references OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f, OBS-tc-cli-cli-command-table-matches-help-4bb9fc6a4f11994c45c7d052)
 
 ## Loose artifacts
 
