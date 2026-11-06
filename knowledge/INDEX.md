@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20 (active; `specsync change status chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20`)
 
 Archived changes (newest first; the newest 3 are hot):
 

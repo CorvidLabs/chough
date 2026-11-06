@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-e74ffdb1544c6de7bd6fefd9",
+    "head": "EVT-da5b8dbf2ef1f87ccc837b81",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "chough change ship: ship after the review, close the review gate with the relay, and move to done (#179, DRIVE-20 slice 2)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Slice 2 of the approved order (Leif, relayed by the orc): chough change ship, plus the walkthrough's direct calls (option A from #174's re-approval); REQ-cli-059 (058 is #177's)",
+    "The relay goes with ship: nothing may write .chough/ between check and finalize, so the review gate closes after ship, and the relay is checked in full before ship",
+    "Rejected: closing the gate before ship, a separate chough change finalize, library index inside ship, and rewriting stage advance or checkpoint (the follow-up steps run Chough's own commands)"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Definition approval of chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20"
+  ],
+  "run_consents": [],
+  "next_action": "After Leif's definition approval is recorded natively, close the gate with the relay, advance to build, add the cases and implement chough change ship"
+}

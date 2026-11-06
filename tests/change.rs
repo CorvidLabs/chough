@@ -386,3 +386,331 @@ fn an_invalid_native_bound_refuses_status_naming_a_valid_retry() {
         ["change", "status", "free-shipping", "--json"]
     );
 }
+
+// REQ-cli-059 (#179, DRIVE-20 slice 2): `chough change ship` ships after the review,
+// closes the review gate with its relay and moves the session to done.
+
+const SHIP_ID: &str = "a5";
+const SHIP_KEY: &str = "ship-a5";
+const REVIEW_GATE: &str = "Implementation review of a5";
+
+/// A stand-in for `specsync change ship` and `change status`. Ship records each
+/// argument on its own line in `.stub-ship-calls` (appending), writes its PID to
+/// `.stub-pid`, sleeps `.stub-ship-sleep` seconds when that file exists, prints
+/// `.stub-ship-out` and `.stub-ship-err`, and exits with `.stub-ship-exit` (0 when
+/// absent). Status reports an archived change, or exits 2 while `.stub-status-fail`
+/// exists.
+const SHIP_STUB: &str = r#"#!/bin/sh
+if [ "$2" = ship ]; then
+    for argument in "$@"; do printf '%s\n' "$argument"; done >>.stub-ship-calls
+    echo $$ >.stub-pid
+    if [ -f .stub-ship-sleep ]; then sleep "$(cat .stub-ship-sleep)"; fi
+    if [ -f .stub-ship-out ]; then cat .stub-ship-out; fi
+    if [ -f .stub-ship-err ]; then cat .stub-ship-err >&2; fi
+    exit "$(cat .stub-ship-exit 2>/dev/null || echo 0)"
+fi
+if [ -f .stub-status-fail ]; then echo 'status failed' >&2; exit 2; fi
+printf '{"summary":{"id":"%s","state":"archived","approval_valid":true,"correction_valid":true,"terminal_evidence":{"validity":"authenticated-history"}},"acceptance_entries":[{"path":"specs/cli/cli.spec.md","kind":"file"}]}\n' "$3"
+"#;
+
+/// A session for native change `a5` at `stage`, its review gate open, with the
+/// archive files the move into done reads (as `tests/advance_to.rs` builds them).
+fn shipping_session_at(stage: &str) -> Fixture {
+    let fixture = Fixture::new();
+    fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
+    fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+    fixture.write("bin/specsync", SHIP_STUB);
+    fixture.executable("bin/specsync");
+    fixture.hi_stand_in();
+    let dir = ".specsync/archive/changes/2026-11-01-a5";
+    fixture.write(
+        &format!("{dir}/finalization.json"),
+        &format!(
+            "{{\"schema_version\": 2, \"change_id\": \"a5\", \"timestamp\": 500, \"implementation_commit\": \"{}\"}}\n",
+            "1".repeat(40)
+        ),
+    );
+    fixture.write(
+        &format!("{dir}/verification.json"),
+        &serde_json::to_string_pretty(&serde_json::json!({
+            "commit": "2".repeat(40),
+            "passed": true,
+            "requirement_ids": ["REQ-cli-001"],
+            "acceptance_manifest": {"schema_version": 1, "entries": [
+                {"path": "specs/cli/cli.spec.md", "kind": "file"}
+            ]},
+        }))
+        .unwrap(),
+    );
+    fixture.write(
+        &format!("{dir}/change.md"),
+        "---\nid: a5\nstate: archived\n---\n\n# Title of a5\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- a5 works\n",
+    );
+    fixture.ok(&["session", "new", SHIP_KEY, "--objective", "Ship a5"]);
+    fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
+    fixture.ok(&["stage", "reset", "--to", stage, "--reason", "Ready to ship"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", REVIEW_GATE]);
+    fixture.commit("fixture");
+    fixture
+}
+
+/// The ship session's checkpoint, open or archived.
+fn ship_session(fixture: &Fixture) -> serde_json::Value {
+    for path in [
+        format!(".chough/sessions/{SHIP_KEY}.json"),
+        format!(".chough/sessions/archive/{SHIP_KEY}.json"),
+    ] {
+        if fixture.exists(&path) {
+            return serde_json::from_str(&fixture.read(&path)).unwrap();
+        }
+    }
+    panic!("no session {SHIP_KEY}");
+}
+
+/// The four relay values for the review gate.
+fn review_relay() -> Vec<&'static str> {
+    vec![
+        "--close-gate",
+        REVIEW_GATE,
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "pass",
+        "--where",
+        "a test",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]
+}
+
+fn ship_with<'a>(id: &'a str, rest: &[&'a str]) -> Vec<&'a str> {
+    let mut args = vec!["change", "ship", id];
+    args.extend_from_slice(rest);
+    args
+}
+
+fn ship_calls(fixture: &Fixture) -> Vec<String> {
+    if !fixture.exists(".stub-ship-calls") {
+        return vec![];
+    }
+    fixture
+        .read(".stub-ship-calls")
+        .lines()
+        .map(String::from)
+        .collect()
+}
+
+/// Every file under `.chough/` except the lock directory, with its bytes.
+fn records(root: &Path) -> BTreeMap<String, Vec<u8>> {
+    dot_chough(root)
+        .into_iter()
+        .filter(|(name, _)| !name.starts_with(".chough/local"))
+        .collect()
+}
+
+/// Whether a history event records the review gate closed with the four values.
+fn gate_closed_with_relay(fixture: &Fixture) -> bool {
+    let expected = serde_json::json!({
+        "decided_by": "SYNTHETIC-human", "words": "pass", "where": "a test",
+        "recorded_by": "SYNTHETIC-agent"
+    });
+    let cycles = fixture.root().join(".chough/history/cycles");
+    let Ok(cycles) = fs::read_dir(cycles) else {
+        return false;
+    };
+    for cycle in cycles {
+        for event in fs::read_dir(cycle.unwrap().path()).unwrap() {
+            let value: serde_json::Value =
+                serde_json::from_str(&fs::read_to_string(event.unwrap().path()).unwrap()).unwrap();
+            let transition = &value["transition"];
+            if transition["kind"] == "gate-closed" && transition["relayed_by"] == expected {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+#[test]
+fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-out", "SHIPPED a5\n");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID]);
+    assert!(
+        output.stdout.starts_with(b"SHIPPED a5\n"),
+        "SpecSync's output does not come first: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+    assert!(
+        gate_closed_with_relay(&fixture),
+        "no relayed gate-closed event"
+    );
+    let session = ship_session(&fixture);
+    assert_eq!(session["stage"]["current"], "done", "{session:#}");
+    assert_eq!(session["awaiting_human"], serde_json::json!([]));
+}
+
+#[test]
+fn a_specsync_ship_refusal_passes_through_and_records_nothing() {
+    let fixture = shipping_session_at("accept");
+    let stdout: &[u8] = b"Ship readiness: blocked\r\n\xff";
+    let stderr: &[u8] = b"Error: the scoped review is stale\nrun `specsync change review`";
+    fs::write(fixture.root().join(".stub-ship-out"), stdout).unwrap();
+    fs::write(fixture.root().join(".stub-ship-err"), stderr).unwrap();
+    fixture.write(".stub-ship-exit", "1");
+    let before = records(fixture.root());
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(output.stdout, stdout);
+    assert_eq!(output.stderr, stderr);
+    assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID]);
+    assert_eq!(records(fixture.root()), before, ".chough/ changed");
+}
+
+#[test]
+fn ship_refuses_before_running_without_the_relay_or_outside_accept() {
+    // Each case: the arguments, the stage, and the command the refusal must name,
+    // which then succeeds.
+    let incomplete: Vec<&str> = review_relay()[..8].to_vec();
+    let mut wrong_gate = review_relay();
+    wrong_gate[1] = "Scope approval of a5";
+    let full = format!("chough change ship {SHIP_ID} --close-gate \"{REVIEW_GATE}\"");
+    let cases: Vec<(Vec<&str>, &str, String)> = vec![
+        (ship_with(SHIP_ID, &[]), "accept", full.clone()),
+        (ship_with(SHIP_ID, &incomplete), "accept", full.clone()),
+        (ship_with(SHIP_ID, &wrong_gate), "accept", full.clone()),
+        (
+            ship_with("b6", &review_relay()),
+            "accept",
+            format!("chough change ship {SHIP_ID}"),
+        ),
+        (
+            ship_with(SHIP_ID, &review_relay()),
+            "test",
+            "chough stage advance --to accept".into(),
+        ),
+    ];
+    for (args, stage, recovery) in cases {
+        let fixture = shipping_session_at(stage);
+        let before = records(fixture.root());
+        let output = run_env(&fixture, &args, &[]);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert_eq!(output.status.code(), Some(1), "{args:?}: {error}");
+        assert!(ship_calls(&fixture).is_empty(), "{args:?}: SpecSync ran");
+        assert_eq!(
+            records(fixture.root()),
+            before,
+            "{args:?}: .chough/ changed"
+        );
+        assert!(
+            error.contains(&format!("`{recovery}")),
+            "{args:?}: the refusal does not name `{recovery}`: {error}"
+        );
+        // The recovery it names succeeds.
+        if recovery.starts_with("chough stage advance") {
+            fixture.ok(&[
+                "checkpoint",
+                "--close-gate",
+                REVIEW_GATE,
+                "--decided-by",
+                "SYNTHETIC-human",
+                "--words",
+                "ready",
+                "--where",
+                "a test",
+                "--recorded-by",
+                "SYNTHETIC-agent",
+            ]);
+            fixture.ok(&["stage", "advance", "--to", "accept"]);
+            fixture.ok(&["checkpoint", "--awaiting-human", REVIEW_GATE]);
+        }
+        let retried = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+        assert!(
+            retried.status.success(),
+            "{args:?}: the recovery failed: {}",
+            String::from_utf8_lossy(&retried.stderr)
+        );
+        assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+    }
+}
+
+#[test]
+fn a_refused_done_move_after_ship_names_the_remaining_step() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-status-fail", "");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    let error = String::from_utf8_lossy(&output.stderr);
+    assert_eq!(output.status.code(), Some(1), "{error}");
+    assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID]);
+    assert!(error.contains("shipped"), "{error}");
+    assert!(
+        error.contains("`chough stage advance --to done`"),
+        "the refusal names no remaining step: {error}"
+    );
+    assert!(gate_closed_with_relay(&fixture));
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "accept");
+    // The step it names succeeds once native status answers.
+    fs::remove_file(fixture.root().join(".stub-status-fail")).unwrap();
+    fixture.ok(&["stage", "advance", "--to", "done"]);
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+}
+
+#[test]
+fn ship_outlives_the_native_read_bound() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-sleep", "2");
+    let output = run_env(
+        &fixture,
+        &ship_with(SHIP_ID, &review_relay()),
+        &[("CHOUGH_NATIVE_TIMEOUT_SECONDS", "1")],
+    );
+    assert!(
+        output.status.success(),
+        "ship was stopped by the read bound: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+}
+
+#[test]
+fn the_walkthrough_and_closeout_run_chough_change() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    for name in [
+        "docs/walkthrough.md",
+        "skills/chough-workflow/references/accept.md",
+    ] {
+        let text = fs::read_to_string(root.join(name)).unwrap();
+        for wanted in [
+            "chough change check",
+            "chough change ship",
+            "specsync change review",
+        ] {
+            assert!(text.contains(wanted), "{name} does not name `{wanted}`");
+        }
+        for line in text.lines() {
+            assert!(
+                !line.contains("specsync change new"),
+                "{name} still runs specsync change new: {line}"
+            );
+            assert!(
+                !(line.contains("specsync change check") && line.contains("--commit")),
+                "{name} still runs specsync change check --commit: {line}"
+            );
+            for direct in [
+                "specsync change ship ",
+                "specsync change ship`",
+                "specsync change finalize",
+            ] {
+                assert!(!line.contains(direct), "{name} still runs {direct}: {line}");
+            }
+        }
+    }
+    let walkthrough = fs::read_to_string(root.join("docs/walkthrough.md")).unwrap();
+    assert!(walkthrough.contains("chough change new"));
+}
