@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-496 recorded; most recent:
+502 recorded; most recent:
 
+- OBS-tc-cli-change-walkthrough-runs-chough-932d8c05ae5a9f2dff43dd49 ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
+- OBS-tc-cli-change-ship-outlives-read-bound-6474718972663d4b81bef563 ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
+- OBS-tc-cli-change-ship-names-remaining-step-9d58101db8dc293b5ff2f97d ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
+- OBS-tc-cli-change-ship-checks-before-running-a1285806eaa44873ff77349c ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
+- OBS-tc-cli-change-ship-refusal-passes-through-79995b81cd057ee17b9cbd03 ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
+- OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-c02b6b130c4b64cc5f9a9e85 ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
 - OBS-tc-cli-change-invalid-bound-recovery-c177387564b8d1ef87a3ca52 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
 - OBS-tc-cli-change-sigterm-stops-specsync-954f09784932db762fbad2dc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
 - OBS-tc-cli-change-missing-specsync-recovery-e03af699a3453d46b2aafeb2 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
 - OBS-tc-cli-change-check-outlives-read-bound-6b6f8c12c429f4d6ced6dbbc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-steps-write-nothing-faff94c566bb9f21d3f4658b ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-steps-pass-through-ff1601248ad19f8e292363ca ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-tc-cli-change-steps-exact-arguments-b45af62e9645ac2b19daaf8a ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
-- OBS-product-test-af55b3e0d282e728bde7629e ProductTest Passed in local-linux-aarch64 at 3daef9eb3c1c
-- OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-closeout-closes-review-gate-8dadafef9ca3a33ff272628b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
 
 ## Briefs
 

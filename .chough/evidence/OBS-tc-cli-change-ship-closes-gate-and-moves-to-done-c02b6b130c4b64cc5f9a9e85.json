@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-c02b6b130c4b64cc5f9a9e85",
+  "criteria": [
+    "DRIVE-20",
+    "FLOW-16"
+  ],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done for TC-cli-change-ship-closes-gate-and-moves-to-done: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-c02b6b130c4b64cc5f9a9e85.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-c02b6b130c4b64cc5f9a9e85.log": "240e9c8b4a7316dc94ecb6a746f3ad5ca0a8be60d60002e5033abfa6fdedfae9"
+  },
+  "observed_at_unix_seconds": 1794008095,
+  "snapshot": {
+    "revision": "6b20a31d9b63194994117a540b1e93a8f04415d1",
+    "dirty": false,
+    "fingerprint": "5e72b24b674857923dce417a4e3888f3a64393c123e28cf7a8fe82e9d38f2e00",
+    "content": "4908111be67c1bb6168704d3d6bd6b304777bafaecbbf9b1cce29eb8a8bb9509"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-ship-closes-gate-and-moves-to-done",
+      "digest": "09da149a1168d019339682b0dbf57a61b91469e84ed3945ec956d2f12df1bce7"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
