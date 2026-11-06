@@ -1366,38 +1366,30 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
             "# Context\n\n## Lessons\n\nA lesson.\n",
         );
     }
-    // The session record is bounded at 64 KiB, so 50 decisions, 40 gates and 40
-    // blockers of 4 KiB each cannot all be stored. The 5 decisions shown and the first
-    // 2 gates and blockers are 4 KiB long; the other shown gates and blockers are 700
-    // bytes, longer than the 512-byte cut, so every shown entry fills its cut.
-    let sized = |prefix: &str, index: usize, size: usize| {
+    // REQ-cli-021 AC1 at its full shape (#125, D9; DRIVE-14): 50 decisions, 40 gates
+    // and 40 blockers of 4,096 bytes each, which the 1 MiB checkpoint cap holds.
+    let sized = |prefix: &str, index: usize| {
         let mut text = format!("{prefix} {index:02} ");
-        text.push_str(&"w".repeat(size * 3 / 4));
+        text.push_str(&"w".repeat(4_096 * 3 / 4));
         text.push_str(" because ");
-        text.push_str(&"r".repeat(size - text.len()));
+        text.push_str(&"r".repeat(4_096 - text.len()));
         text
     };
-    let list = |prefix: &str, count: usize, long: std::ops::Range<usize>| -> Vec<String> {
-        (0..count)
-            .map(|index| {
-                if long.contains(&index) {
-                    sized(prefix, index, 4_096)
-                } else if prefix != "decided:" && index < 10 {
-                    sized(prefix, index, 700)
-                } else {
-                    format!("{prefix} {index:02}")
-                }
-            })
-            .collect()
+    let list = |prefix: &str, count: usize| -> Vec<String> {
+        (0..count).map(|index| sized(prefix, index)).collect()
     };
     let mut session = fixture.session();
     session["modules"] = json!(modules);
-    session["decisions"] = json!(list("decided:", 50, 45..50));
-    session["awaiting_human"] = json!(list("Gate", 40, 0..2));
-    session["blockers"] = json!(list("Blocker", 40, 0..2));
+    session["decisions"] = json!(list("decided:", 50));
+    session["awaiting_human"] = json!(list("Gate", 40));
+    session["blockers"] = json!(list("Blocker", 40));
     session["observations"] = json!(["stale-000"]);
     let session_text = serde_json::to_string(&session).unwrap();
-    assert!(session_text.len() < 65_536, "{}", session_text.len());
+    assert!(
+        session_text.len() > 130 * 4_096 && session_text.len() <= common::CHECKPOINT_CAP,
+        "{}",
+        session_text.len()
+    );
     fixture.write(".chough/session.json", &session_text);
     fixture.write(".stub-count", "");
 
@@ -1815,4 +1807,73 @@ fn open_questions_appear_in_next_and_status() {
             .unwrap()
             .contains(&Value::from(questions[0].as_str()))
     );
+}
+
+/// DRIVE-14 (REQ-cli-032): a checkpoint at exactly the 1 MiB cap is read, and `next`,
+/// `status` and `context` answer within the debug-build budget of 2 seconds, with the
+/// focused view still within 16,384 bytes; one byte more is refused naming the cap.
+#[test]
+fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let mut session = fixture.session();
+    let lists = [
+        "decisions",
+        "completed",
+        "open_questions",
+        "blockers",
+        "awaiting_human",
+    ];
+    for list in lists {
+        session[list] = json!([]);
+    }
+    let size = |session: &Value| serde_json::to_string(session).unwrap().len();
+    'fill: for list in lists {
+        for index in 0..199 {
+            if size(&session) + 4_200 > common::CHECKPOINT_CAP {
+                break 'fill;
+            }
+            session[list]
+                .as_array_mut()
+                .unwrap()
+                .push(json!(format!("{list} {index:03} {}", "x".repeat(4_000))));
+        }
+    }
+    let compact = serde_json::to_string(&session).unwrap();
+    let at_cap = format!(
+        "{compact}{}",
+        " ".repeat(common::CHECKPOINT_CAP - compact.len())
+    );
+    assert_eq!(at_cap.len(), common::CHECKPOINT_CAP);
+    fixture.write(".chough/session.json", &at_cap);
+    for args in [
+        &["next"][..],
+        &["next", "--json"],
+        &["status", "--json"],
+        &["context"],
+    ] {
+        let started = std::time::Instant::now();
+        let output = fixture.run(args);
+        let elapsed = started.elapsed();
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(
+            elapsed.as_secs_f64() < 2.0,
+            "{args:?} took {elapsed:?} at the cap"
+        );
+        if args[0] == "next" {
+            assert!(
+                output.stdout.len() <= 16_384,
+                "{args:?}: {}",
+                output.stdout.len()
+            );
+        }
+    }
+    fixture.write(".chough/session.json", &format!("{at_cap} "));
+    let output = fixture.run(&["next"]);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
