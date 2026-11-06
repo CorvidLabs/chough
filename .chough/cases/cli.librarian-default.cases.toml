@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-one-librarian-default"
+title = "The requirements give the librarian one default, on, matching the runtime"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-12", "FLOW-9"]
+requirements = ["REQ-cli-013"]
+paths = ["specs/cli/requirements.md"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the optional test the_requirements_give_the_librarian_one_default_and_it_is_on passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "the_requirements_give_the_librarian_one_default_and_it_is_on"
