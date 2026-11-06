@@ -358,7 +358,7 @@ Native check result in next. When the recorded native change has a workspace und
 
 Acceptance Criteria
 - After a failed attempt, `next` text and JSON show its time, commit, failing commands and exit codes; a later passing attempt replaces it.
-- With the change approved or implementing, `next` says the native check has not passed for this tree, that SpecSync keeps no reason for refusals, and names `specsync change check <id>`; when verifying, it does not.
+- With the change approved or implementing, `next` says the native check has not passed for this tree, that SpecSync keeps no reason for refusals, and names `specsync change check <id>`; when verifying, it shows no note only with handoff readiness `safe`, and any other or missing readiness keeps a note, as the last criterion states.
 - A malformed attempts file is reported as unknown, and `next` still makes one native status read.
 - A verifying change whose handoff readiness is not `safe` (the tree moved after the last check) is reported as not passed for this tree with SpecSync's reason; with readiness `safe` there is no note; with no readiness, freshness is reported as unknown.
 
@@ -492,4 +492,12 @@ Acceptance Criteria
   - `library index --check` passes.
 - A leftover copy in `.chough/pruned.jsonl` of a shard line, after its restore, does not make the restored ID pruned again.
 - `git check-attr` reports `union` for an attachments folder's `pruned.jsonl`.
+
+### REQ-cli-051
+
+Session notes. `chough library index` SHALL write `<library-dir>/sessions/<key>.md` for each session rolled into the vault by REQ-history-011, found at `<library-dir>/attachments/<folder>/sessions/<key>.json`. Each note SHALL have front matter giving `id` (`session/<key>`), `title` (the session's objective), `type: session`, `native_change`, `stage` and `tags`. It SHALL link the session's attachment and, when it exists, the native change's archive note. `library index --check` SHALL cover these notes, and the repository SHALL declare `knowledge/sessions/*.md merge=union`. Trace: KNOW-29, KNOW-14, DRIVE-12.
+
+Acceptance Criteria
+- After a roll-up, `knowledge/sessions/<key>.md` names `session/<key>` and the session's objective and links `../attachments/<key>/sessions/<key>.json`, and `library index --check` passes.
+- `git check-attr` reports `union` for a session note.
 

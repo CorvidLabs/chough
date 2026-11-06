@@ -1529,3 +1529,100 @@ fn a_rotation_larger_than_the_record_bound_still_rotates() {
         300 + pruned(&moved["applied"]["librarian_trim"]).len()
     );
 }
+
+/// Archived sessions for KNOW-29: s1 to s5 belong to archives a1 to a5 (finalized 60 to 20
+/// days ago), s0 ties with s1 on a1 and sorts before it by key, and s6 has no native
+/// change, so it is the oldest. The active session is adopted from the legacy checkpoint.
+fn seven_archived_sessions(fixture: &Fixture) -> Vec<(String, String)> {
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    let template: Value =
+        serde_json::from_str(&fixture.read(".chough/sessions/legacy.json")).unwrap();
+    let mut written = vec![];
+    for (key, change) in [
+        ("s0", Some("a1")),
+        ("s1", Some("a1")),
+        ("s2", Some("a2")),
+        ("s3", Some("a3")),
+        ("s4", Some("a4")),
+        ("s5", Some("a5")),
+        ("s6", None),
+    ] {
+        let mut session = template.clone();
+        session["stage"]["current"] = json!("done");
+        session["objective"] = json!(format!("Archived objective {key}"));
+        session["native_change"] = json!(change);
+        session["observations"] = json!([]);
+        let text = serde_json::to_string_pretty(&session).unwrap() + "\n";
+        let path = format!(".chough/sessions/archive/{key}.json");
+        fixture.write(&path, &text);
+        written.push((key.to_string(), text));
+    }
+    fixture.commit("seven archived sessions");
+    written
+}
+
+/// KNOW-29: at done only the five most recent archived sessions stay in
+/// `.chough/sessions/archive/`, newest by their native change's finalization; older ones
+/// move byte for byte into the vault with a summary note, and nothing else changes.
+#[test]
+fn done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault() {
+    let fixture = project("0");
+    let written = seven_archived_sessions(&fixture);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let rollup = &moved["applied"]["session_rollup"];
+    assert_eq!(rollup["status"], "rolled", "{moved:#}");
+    assert_eq!(rollup["moved"], json!(["s0", "s6"]), "{rollup:#}");
+    for key in ["s1", "s2", "s3", "s4", "s5"] {
+        assert!(
+            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
+            "{key}"
+        );
+    }
+    for (key, text) in written.iter().filter(|(key, _)| key == "s0" || key == "s6") {
+        assert!(
+            !fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
+            "{key}"
+        );
+        let attachment = format!("knowledge/attachments/{key}/sessions/{key}.json");
+        assert_eq!(&fixture.read(&attachment), text, "{key}");
+        let note = fixture.read(&format!("knowledge/sessions/{key}.md"));
+        assert!(note.contains(&format!("id: \"session/{key}\"")), "{note}");
+        assert!(
+            note.contains(&format!("../attachments/{key}/sessions/{key}.json")),
+            "{note}"
+        );
+        assert!(
+            note.contains(&format!("Archived objective {key}")),
+            "{note}"
+        );
+    }
+    fixture.ok(&["library", "index", "--check"]);
+    fixture.ok(&["session", "list"]);
+}
+
+/// KNOW-29: with the librarian off, no session moves.
+#[test]
+fn with_the_librarian_off_archived_sessions_stay() {
+    let fixture = project("0");
+    seven_archived_sessions(&fixture);
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "Human: keep everything",
+    ]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["session_rollup"]["status"], "skipped",
+        "{moved:#}"
+    );
+    for key in ["s0", "s1", "s6"] {
+        assert!(
+            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
+            "{key}"
+        );
+    }
+}

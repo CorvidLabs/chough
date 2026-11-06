@@ -58,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105.json](../attachments/spread-the-3d79d94d/sessions/spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105.json)

@@ -61,4 +61,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.json](../attachments/mark-the-0-4-0-ec4cf279/sessions/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.json)

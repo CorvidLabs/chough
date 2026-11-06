@@ -64,4 +64,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.json](../attachments/fold-the-8fdf4b7a/sessions/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.json)
