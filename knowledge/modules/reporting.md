@@ -5,7 +5,7 @@ type: module
 modules:
   - reporting
 lessons: 0
-archived_changes: 3
+archived_changes: 4
 tags:
   - chough/module
   - module/reporting
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched reporting
 
-3 archived changes, newest first.
+4 archived changes, newest first.
 
+- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)
 - [give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138](../archives/give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138.md) Give real assertions to the nine criteria the audit found with no selected assertion (138)
 - [read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an](../archives/read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an.md) Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100)
 - [split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new](../archives/split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new.md) Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound
