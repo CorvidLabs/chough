@@ -11,7 +11,7 @@ byte-identical, and the table shows the new preview sizes.
 |---|---|---|---|
 | [ownership.mmd](diagrams/ownership.mmd) | [ownership.svg](diagrams/ownership.svg) | 1552 × 660 | Labels readable; every arrow reaches its node; the dotted edge marks the optional librarian |
 | [stages.mmd](diagrams/stages.mmd) | [stages.svg](diagrams/stages.svg) | 1073 × 1204 | Main path top to bottom with labelled gates; back edges dotted; release only from done; side stages and the checkpoint tied to "any stage"; every edge label sits on its own edge with an opaque background, and no edge crosses another edge's label |
-| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1496 | Human review before `review`, `ship` and archive; changes requested loop back; release dotted and conditional |
+| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1520 | Human review before `review`, `ship` and archive; push and hosted CI only after the archive and done move (re-rendered 2026-11-05 for #122 with the same Mermaid 11.12.0 renderer, PNG inspected); changes requested loop back; release dotted and conditional |
 | [context.mmd](diagrams/context.mmd) | [context.svg](diagrams/context.svg) | 1180 × 636 | Inputs reach the packet; limits feed it explicitly; native status joins at chough next |
 
 Two problems were found and fixed before this record. The first `stages` render was

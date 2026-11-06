@@ -257,6 +257,25 @@ step "Accept: only a human review and native archive can close this"
 $chough stage advance >/dev/null
 expect_refusal "leaving accept before review and archive" "refused:native-verifying" $chough stage advance
 $chough next --environment "$env_name" --json | jq -r '.next_valid_action.action'
+
+step "Archive-first closeout: finish locally, then push for CI (#122)"
+# The hosted Archive gate (.github/scripts/check-specsync-archive.py) refuses while a
+# native change is open, so the closeout finishes before CI is expected to pass.
+inspector="$here/../.github/scripts/check-specsync-archive.py"
+seed=$(git rev-list --max-parents=0 HEAD | tail -1)
+$chough checkpoint --awaiting-human "Implementation review of $id" >/dev/null
+commit "Record the implementation review gate"
+specsync change check "$id" --commit >/dev/null
+expect_refusal "the archive gate before review and finalize" "unfinished" \
+    python3 "$inspector" --root "$work" --base "$seed"
+specsync change review "$id" --reviewer "SIMULATED-sample-reviewer-not-a-human" >/dev/null
+specsync change finalize "$id" >/dev/null
+$chough checkpoint --clear-awaiting-human \
+    --decision "Implementation of $id reviewed by a SIMULATED actor in this sample; not a human decision" >/dev/null
+$chough stage advance --note "SIMULATED review recorded; change archived" | jq -r '.applied | "\(.from) -> \(.to)"'
+commit "Close out $id"
+python3 "$inspector" --root "$work" --base "$seed" | head -1
+printf 'Archived and committed before any CI: now push and observe CI at this tip.\n'
 if [ -n "$created" ]; then
     printf '\nEXERCISE PASSED (removing %s)\n' "$work"
 else

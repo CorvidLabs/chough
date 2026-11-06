@@ -150,10 +150,11 @@ chough next --environment local
 Before presenting, the agent records the gate (`chough checkpoint --awaiting-human
 "Implementation review of free-shipping-at-the-threshold"`), commits the source
 together with `.chough/`, runs `specsync change check free-shipping-at-the-threshold
---commit`, pushes the branch and observes CI. Your implementation review is the
-decision; only after it does the agent run `specsync change review` and then `ship` or
-`finalize` on the same pull request, writing nothing to `.chough/` in between, and
-only then clears the gate and runs `chough stage advance`. See [the closeout
+--commit` and presents the work. Your implementation review is the decision; only
+after it does the agent run `specsync change review` and then `ship` or `finalize` on
+the same pull request, writing nothing to `.chough/` in between, and only then clears
+the gate, runs `chough stage advance` and commits. It then finalizes before it pushes
+and observes CI, because the hosted Archive gate refuses while the change is open. See [the closeout
 order](lifecycle.md#acceptance-and-native-closeout). Release is a separate, optional
 request.
 

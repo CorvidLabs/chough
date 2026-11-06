@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5",
+  "implementation_commit": "fde7074045b684a43b8292db1c390d41cae70488",
+  "implementation_tree": "947ef1d7598fc82eca0fd1474757ebce8d742417",
+  "contract_digest": "c6768f5f3828b00cb31f0bc45716b1a570ac22cb9c8aae6b7de70ccda9c4e695",
+  "workspace_digest": "0ff68f0c2c1a2ded8998d858400073273051eb5359675d958db6fa3a43217aa1",
+  "closing_digest": "f5eb939ae73ac3f778bcc052eebbf4589121890a5142b1189f5313d26203412c",
+  "review_digest": "188233c4e64d56311e62db97fe38de2d4065f44c2f69461e7bb556feb9f877e4",
+  "finalization_digest": "f0557236126f693166837817d9e73ecbbfb1fef7ea08b0c39824cbcc92e5f96e",
+  "timestamp": 1793932828
+}

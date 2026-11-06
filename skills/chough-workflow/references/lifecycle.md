@@ -15,8 +15,8 @@ result and genuine decisions still needed, then perform authorized recovery step
 ```text
 new → interview → artifacts and delta → one human scope approval → implement →
 check (when requirements change) → cases run → gate → commit with .chough/ →
-check --commit → push, CI → human implementation review → review → ship/finalize →
-clear gate, stage advance → push archive, CI → merge
+check --commit → present → human implementation review → review → ship/finalize →
+clear gate, stage advance → commit → push, then CI on the archived tip → merge
 ```
 
 Between `check --commit` and finalize, nothing writes to `.chough/` and nothing is
@@ -79,8 +79,10 @@ action status names.
 
 ## Review, archive, merge
 
-Push only after the applicable local gates and observe required CI at the actual tip.
-After the human reviews the change package, diff, delta and evidence:
+The hosted Archive gate refuses while any native change is open, so the closeout is
+archive-first: finish it locally before you wait on CI. After the applicable local
+gates, present the work; after the human reviews the change package, diff, delta and
+evidence:
 
 ```sh
 specsync change review <id> --reviewer "<agent-account>"
@@ -90,8 +92,10 @@ specsync change ship <id>
 Use the project agent account for the native record and retain the actual human
 acceptance source separately; the actor label does not supply that acceptance. The
 reviewer may be the scope approver. Do not commit between review and ship or
-finalize. Archive on the same pull request, push the archive commit, wait for its
-checks, and merge only when every change on that pull request is archived. Review and
+finalize. Archive on the same pull request, then push and observe required CI at the
+actual tip, and merge only when every change on that pull request is archived. A push
+before the review only shows the work early: expect the Archive gate red and do not
+wait on it. Review and
 finalize several changes one at a time.
 
 Merge, package publication, release, deployment and live health are separate

@@ -19,11 +19,13 @@ records. Follow native status where it names a different next action.
 3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
 4. Commit the source together with `.chough/`.
 5. Run `specsync change check <id> --commit` (stage new source files first).
-6. Push the branch, open or update the pull request, and observe hosted CI at the
-   real tip. Report product tests, structural checks, native lifecycle state,
-   provenance and platforms separately.
-7. Present to the human: what changed, the current verification, the relevant case
+6. Present to the human: what changed, the current verification, the relevant case
    observations with freshness, open bugs and limits, and what was not checked.
+   Report product tests, structural checks, native lifecycle state, provenance and
+   platforms separately.
+7. Do not wait on CI yet. The hosted Archive gate refuses while the change is open, so
+   CI is observed after finalize, below. Pushing the branch now only shows the work
+   early: expect the Archive gate red and do not wait on it.
 
 Between the check in step 5 and finalize, nothing writes to `.chough/` and nothing is
 committed. Committing Chough records or SpecSync bookkeeping does not make Chough
@@ -56,9 +58,9 @@ checkpoint --clear-awaiting-human` and run `chough stage advance`, which moves a
 to done; it is refused until native state is `archived`. Record the actual acceptance
 source in the checkpoint after archival, preserving the verification window above.
 With the librarian on, the move into done
-also refreshes the knowledge directory; commit it with the checkpoint. Push the archive
-commit, the checkpoint and the knowledge directory on the same pull request, wait for
-required checks, then merge through the repository's normal process. If several changes share a pull request, review and
+also refreshes the knowledge directory; commit it with the checkpoint. Then push the
+archive commit, the checkpoint and the knowledge directory on the same pull request,
+observe hosted CI at the real tip, and merge through the repository's normal process. If several changes share a pull request, review and
 finalize them one at a time. If evidence went stale, use the recovery action that
 `specsync change status` names. Finishing never enters release.
 
