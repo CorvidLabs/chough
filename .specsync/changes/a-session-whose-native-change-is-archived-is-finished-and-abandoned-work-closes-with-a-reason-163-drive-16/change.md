@@ -1,6 +1,6 @@
 ---
 id: a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16
-state: draft
+state: approved
 type: feature
 base_commit: dab18909368bb3c2d1a4521b4f82efca4ec1e58a
 ---
