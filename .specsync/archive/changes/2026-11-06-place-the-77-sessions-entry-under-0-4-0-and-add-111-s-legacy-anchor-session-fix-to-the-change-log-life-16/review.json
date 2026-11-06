@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "c8c1b6b7ddb63ce78173255bf4370b5b43595c26",
+  "contract_digest": "e82c8ae31b1fe803145c4567bf11db86b8f39c29cd2ca5bd954420936dd81666",
+  "execution_digest": "d3a0a6a0cff03482c36048f96d306b88827d578f1cc452fd2a79f315e9188d71",
+  "workspace_digest": "3c7628d5867ea6d8c61ec56ce47c01f1c5e3c2de601c78e88ff6557410c2507c",
+  "timestamp": 1793976270
+}

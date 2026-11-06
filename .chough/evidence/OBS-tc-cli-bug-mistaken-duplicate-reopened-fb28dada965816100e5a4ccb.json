@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-054"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery for TC-cli-bug-mistaken-duplicate-reopened: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb.log": "847ece42bed8da12743a5e484c2c0f7533be2afa9e395d307016be786cb4504e"
+  },
+  "observed_at_unix_seconds": 1793971793,
+  "snapshot": {
+    "revision": "fd52ed635432bb049b171c9f4dc03ffff39d79f9",
+    "dirty": false,
+    "fingerprint": "c85e5c7be3db182b5fa9029f698173b09ba9142c4cd7912ee247de67b1de5772",
+    "content": "5a03cb0adb51d3a42ce993d39f59a745a243a3f1942f3a36b2a93455f00c0068"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-mistaken-duplicate-reopened",
+      "digest": "55deda4ba0c5ee623250e1fd10b111b10c023f2c64794091a57f1efdacc6ad50"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

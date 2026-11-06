@@ -1992,3 +1992,253 @@ fn cases_split_per_change_load_together_and_ids_stay_unique() {
     }
     assert_eq!(list(&fixture).len(), 2);
 }
+
+/// Every file under `.chough/evidence` with its bytes, to show a refusal wrote nothing.
+#[cfg(unix)]
+fn evidence_files(fixture: &Fixture) -> Vec<(String, Vec<u8>)> {
+    let dir = fixture.root().join(".chough/evidence");
+    let mut files: Vec<(String, Vec<u8>)> = std::fs::read_dir(&dir)
+        .map(|entries| {
+            entries
+                .map(|entry| {
+                    let path = entry.unwrap().path();
+                    (
+                        path.file_name().unwrap().to_string_lossy().into_owned(),
+                        std::fs::read(&path).unwrap(),
+                    )
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    files.sort();
+    files
+}
+
+/// REQ-cli-029, last criterion (#138; Leif's choice A, 2026-11-05): a fresh-agent cold
+/// start is its own agent-assisted case, apart from the automated source and package
+/// checks, and a skipped one is never promoted to a pass. A record that leaves an expected
+/// outcome of the cold start without a verdict is refused and writes nothing, and a cold
+/// start recorded as not run reads `not-run` in status, never `passed`.
+#[cfg(unix)]
+#[test]
+fn a_skipped_cold_start_is_never_recorded_or_read_as_a_pass() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!(
+            "{HEADER}\n[[case]]\nid = \"TC-cli-0009\"\ntitle = \"A fresh agent resumes cold from the records alone\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"agent-assisted\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"fresh-agent\"]\nartifacts = [\"transcript\"]\nsetup = [\"A new session with no earlier conversation\"]\nsteps = [\"Resume with chough next\"]\nexpected = [\"It states the handoff before its first edit\", \"It continues the recorded next task\", \"It records no human decision\"]\n"
+        ),
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    let before = evidence_files(&fixture);
+    let refusal = fixture.fails(&[
+        "cases",
+        "record",
+        "TC-cli-0009",
+        "--environment",
+        "fresh-agent",
+        "--method",
+        "agent-assisted",
+        "--summary",
+        "The cold start was skipped after the first step",
+        "--verdict",
+        "1=pass",
+    ]);
+    assert!(refusal.contains("every expected outcome"), "{refusal}");
+    assert_eq!(
+        evidence_files(&fixture),
+        before,
+        "a refused record wrote evidence"
+    );
+
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "not-run",
+        "--environment",
+        "fresh-agent",
+        "--method",
+        "agent-assisted",
+        "--case",
+        "TC-cli-0009",
+        "--summary",
+        "Fresh-agent cold start not run; source and package checks are separate cases",
+        "--limitation",
+        "no fresh agent was started",
+    ]);
+    let status = fixture.ok(&["status"]);
+    let records: Vec<&Value> = status["observations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|observation| &observation["record"])
+        .filter(|record| record["cases"][0]["id"] == "TC-cli-0009")
+        .collect();
+    assert_eq!(records.len(), 1, "{status:#}");
+    assert_eq!(records[0]["outcome"], "not-run", "{status:#}");
+    assert!(
+        !status.to_string().contains("\"outcome\":\"passed\""),
+        "a skipped cold start read as passed: {status:#}"
+    );
+}
+
+/// REQ-cli-010, second criterion (#152, audit MA-01): requesting the copy-localization
+/// track selects its linked cases. Design-QA cases stay omitted, with their reason, until
+/// their own track is requested too, and with no track requested both are omitted, each
+/// with its own reason.
+#[cfg(unix)]
+#[test]
+fn requesting_the_copy_localization_track_selects_its_linked_cases() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!(
+            "{HEADER}{}{}{}{}",
+            case("TC-cli-0001", "functional", "REQ-cli-001", ""),
+            case("TC-cli-0002", "functional", "REQ-cli-002", ""),
+            case("TC-cli-0003", "design-qa", "REQ-cli-001", ""),
+            case("TC-cli-0004", "copy-localization", "REQ-cli-001", ""),
+        ),
+    );
+    let ids = |value: &Value, key: &str| -> Vec<String> {
+        value[key]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|case| case["id"].as_str().unwrap().to_string())
+            .collect()
+    };
+    let reason = |value: &Value, id: &str| -> String {
+        value["omitted"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|case| case["id"] == id)
+            .and_then(|case| case["reason"].as_str())
+            .unwrap_or_default()
+            .to_string()
+    };
+    let default = fixture.ok(&["cases", "select", "--requirement", "REQ-cli-001"]);
+    assert_eq!(ids(&default, "selected"), ["TC-cli-0001"]);
+    assert!(
+        reason(&default, "TC-cli-0004").contains("copy-localization track not requested"),
+        "{default:#}"
+    );
+
+    let copy = fixture.ok(&[
+        "cases",
+        "select",
+        "--requirement",
+        "REQ-cli-001",
+        "--track",
+        "copy-localization",
+    ]);
+    assert_eq!(ids(&copy, "selected"), ["TC-cli-0001", "TC-cli-0004"]);
+    assert_eq!(ids(&copy, "omitted"), ["TC-cli-0002", "TC-cli-0003"]);
+    assert!(
+        reason(&copy, "TC-cli-0003").contains("design-qa track not requested"),
+        "{copy:#}"
+    );
+
+    let both = fixture.ok(&[
+        "cases",
+        "select",
+        "--requirement",
+        "REQ-cli-001",
+        "--track",
+        "copy-localization",
+        "--track",
+        "design-qa",
+    ]);
+    assert_eq!(
+        ids(&both, "selected"),
+        ["TC-cli-0001", "TC-cli-0003", "TC-cli-0004"]
+    );
+    assert_eq!(ids(&both, "omitted"), ["TC-cli-0002"]);
+}
+
+/// REQ-cli-014 and REQ-cli-017 (#152, audit MA-02): every delivery kind is accepted and
+/// reported as itself: publication, installation, deployment and live health, and the
+/// older delivery-observation kind still. A dry run of the same case and environment is
+/// reported as a dry run, never as any delivery kind.
+#[cfg(unix)]
+#[test]
+fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let kinds = [
+        "publication-observation",
+        "installation-observation",
+        "deployment-observation",
+        "live-health-observation",
+        "delivery-observation",
+        "dry-run",
+    ];
+    for (index, kind) in kinds.iter().enumerate() {
+        let id = format!("OBS-{kind}-{:024x}", index + 1);
+        fixture.ok(&[
+            "evidence",
+            "add",
+            &id,
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            kind,
+            "--outcome",
+            "passed",
+            "--environment",
+            "production",
+            "--summary",
+            &format!("A {kind} of the 1.2.0 release"),
+        ]);
+        let record: Value =
+            serde_json::from_str(&fixture.read(&format!(".chough/evidence/{id}.json"))).unwrap();
+        assert_eq!(record["schema_version"], 2, "{record:#}");
+        assert_eq!(record["kind"], *kind, "{record:#}");
+    }
+    let status = fixture.ok(&["status", "--environment", "production", "--json"]);
+    let reported: std::collections::BTreeMap<String, String> = status["observations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|observation| {
+            (
+                observation["record"]["id"].as_str().unwrap().to_string(),
+                observation["record"]["kind"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    assert_eq!(reported.len(), kinds.len(), "{status:#}");
+    for (index, kind) in kinds.iter().enumerate() {
+        assert_eq!(
+            reported.get(&format!("OBS-{kind}-{:024x}", index + 1)),
+            Some(&kind.to_string()),
+            "{status:#}"
+        );
+    }
+    let dry_runs: Vec<&String> = reported
+        .iter()
+        .filter(|(id, _)| id.starts_with("OBS-dry-run-"))
+        .map(|(_, kind)| kind)
+        .collect();
+    assert_eq!(dry_runs, ["dry-run"], "a dry run read as a delivery kind");
+}

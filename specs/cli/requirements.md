@@ -177,6 +177,7 @@ Optional release routing. The helper SHALL advance from accept to done and never
 Acceptance Criteria
 - Advancing from accept never enters release, and entering release without authorization is refused.
 - A dry-run observation is reported as a dry run, not as deployment or live health.
+- Publication, installation, deployment and live-health observations are each accepted and reported with their own kind, and each is key-item proof: retention protects it with its kind as the reason and moves it into the vault when its archive turns cold. A dry run's kind is never a protection, and a superseded dry run is trimmed with no vault copy.
 
 ### REQ-cli-015
 
@@ -334,12 +335,13 @@ Acceptance Criteria
 
 ### REQ-cli-037
 
-Active session checkpoint. When `.chough/sessions/` exists, the canonical checkpoint SHALL be the active session file `.chough/sessions/<key>.json`, named by the untracked pointer `.chough/local/active-session` or, with no pointer, the only open session, and every command SHALL read and write that file instead of `.chough/session.json`. Chough SHALL refuse with nothing written when it cannot tell which session is active, and `init` SHALL refuse in sessions mode. Only the active session is written, so this is not a second writable store (REQ-cli-007). Each command SHALL resolve the active session once and save only to that session, so a switch by another process partway through a command does not redirect its save; if that session is archived or removed meanwhile, the save SHALL refuse with nothing written. Without `.chough/sessions/` behaviour and bytes SHALL be unchanged. Trace: DRIVE-3.
+Active session checkpoint. When `.chough/sessions/` exists, the canonical checkpoint SHALL be the active session file `.chough/sessions/<key>.json`, named by the untracked pointer `.chough/local/active-session` or, with no pointer, the only open session or else the only open session that is not finished (REQ-history-006), and every command SHALL read and write that file instead of `.chough/session.json`. A finished session SHALL NOT count toward several open sessions, and telling which sessions are finished SHALL need no native read (DRIVE-16). Chough SHALL refuse with nothing written when it cannot tell which session is active, and `init` SHALL refuse in sessions mode. Only the active session is written, so this is not a second writable store (REQ-cli-007). Each command SHALL resolve the active session once and save only to that session, so a switch by another process partway through a command does not redirect its save; if that session is archived or removed meanwhile, the save SHALL refuse with nothing written. Without `.chough/sessions/` behaviour and bytes SHALL be unchanged. Trace: DRIVE-3, DRIVE-16.
 
 Acceptance Criteria
 - A stage move in sessions mode changes only the active session file and its history cycle.
 - No session, several open sessions without a pointer, or a pointer to a missing or archived session refuses with nothing written.
 - A `session use` by another process partway through a command leaves the newly active session's file unchanged, and the command's save lands in the session it resolved.
+- With no pointer, an open session whose native change is archived on HEAD does not count toward several open sessions: the only other open session is active, with no native read.
 
 ### REQ-cli-038
 
@@ -479,7 +481,7 @@ Acceptance Criteria
 
 ### REQ-cli-049
 
-Retention ledger rotation. When `chough stage advance` moves into done, with the librarian on, after the trim of REQ-cli-041 and the knowledge refresh of REQ-cli-043, the helper SHALL rotate `.chough/pruned.jsonl`. It SHALL keep the newest 100 entries there, newest by `pruned_at_unix_seconds` and then by later line, and SHALL keep every entry that has no archive or names an archive without a knowledge note under `<library-dir>/archives/`. Each other entry SHALL move into `<library-dir>/attachments/<folder of its first archive>/pruned.jsonl`, the folder formed as in REQ-cli-046, and a `restored` event SHALL move with the entry it follows for the same ID (KNOW-23). A rotation SHALL append the moved lines to their shards and only then rewrite `.chough/pruned.jsonl` without them, so an interruption leaves at most lines held in both a shard and the ledger. It SHALL refuse, moving nothing, when a shard would exceed 16 MiB. It SHALL report `applied.ledger_rotation` with status `rotated` and the counts moved and kept, `unchanged`, `skipped` (librarian off), or `refused` with its reason, and SHALL NOT undo or refuse the move into done. Every reader of the retention ledger SHALL read each shard in path order and then `.chough/pruned.jsonl`, each file within 16 MiB. Each shard copy of a line SHALL cancel one identical copy in `.chough/pruned.jsonl`, the leftover of an interrupted rotation, which the next rotation drops; identical lines within one file SHALL all be kept, since a prune, a restore and another prune in one second write two identical entries. These readers are observation labels, bug views, `evidence prune`, the post-archive summary and the knowledge notes. Shard files SHALL NOT be listed as attachments. The repository SHALL declare `knowledge/attachments/*/pruned.jsonl merge=union`. Trace: KNOW-23, KNOW-13, DRIVE-12.
+Retention ledger rotation. When `chough stage advance` moves into done, with the librarian on, after the trim of REQ-cli-041 and the knowledge refresh of REQ-cli-043, the helper SHALL rotate `.chough/pruned.jsonl`. It SHALL keep the newest 100 entries there, newest by `pruned_at_unix_seconds` and then by later line, and SHALL keep every entry that has no archive or names an archive without a knowledge note under `<library-dir>/archives/`. Each other entry SHALL move into `<library-dir>/attachments/<folder of its first archive>/pruned.jsonl`, the folder formed as in REQ-cli-046, and a `restored` event SHALL move with the entry it follows for the same ID (KNOW-23). A rotation SHALL append the moved lines to their shards and only then rewrite `.chough/pruned.jsonl` without them, so an interruption leaves at most lines held in both a shard and the ledger. It SHALL refuse, moving nothing, when a shard would exceed 16 MiB. It SHALL report `applied.ledger_rotation` with status `rotated` and the counts moved and kept, `unchanged`, `skipped` (librarian off), or `refused` with its reason, and SHALL NOT undo or refuse the move into done. In sessions mode the rotation SHALL run before the active session archives itself, which is the last step of the move into done (REQ-history-006, #155). Every reader of the retention ledger SHALL read each shard in path order and then `.chough/pruned.jsonl`, each file within 16 MiB. Each shard copy of a line SHALL cancel one identical copy in `.chough/pruned.jsonl`, the leftover of an interrupted rotation, which the next rotation drops; identical lines within one file SHALL all be kept, since a prune, a restore and another prune in one second write two identical entries. These readers are observation labels, bug views, `evidence prune`, the post-archive summary and the knowledge notes. Shard files SHALL NOT be listed as attachments. The repository SHALL declare `knowledge/attachments/*/pruned.jsonl merge=union`. Trace: KNOW-23, KNOW-13, DRIVE-12.
 
 Acceptance Criteria
 - With 105 old entries of cold `a1`, a restore of the oldest, and an old entry of an archive without a note, the move into done:
@@ -493,6 +495,7 @@ Acceptance Criteria
   - `library index --check` passes.
 - A leftover copy in `.chough/pruned.jsonl` of a shard line, after its restore, does not make the restored ID pruned again.
 - `git check-attr` reports `union` for an attachments folder's `pruned.jsonl`.
+- In sessions mode, the move into done reports `applied.ledger_rotation` and then `applied.session_archive`, and the session is archived only after the rotation ran.
 
 ### REQ-cli-050
 
@@ -533,4 +536,16 @@ Acceptance Criteria
   - `stage advance` from accept to done also runs it exactly once, where before this change it ran twice.
 - `stage advance` without `--to` records one transition, as before.
 - Every test of new behavior above fails against main before the implementation, and passes after it. The unchanged plain advance passes both times. `fledge lanes run verify` passes.
+
+### REQ-cli-054
+
+Bug value, deduplication and report mappings. `chough bug add` and `chough bug update` SHALL accept exactly the six classifications (unclassified, product-defect, regression, environment, requirement-gap, evidence-gap), the three scopes (blocking, in-scope, out-of-scope) and the seven statuses (open, investigating, fix-pending-verification, verified, deferred, duplicate, wont-fix), and SHALL refuse any other value naming the allowed ones, with nothing written. A bug SHALL block leaving test only while its scope is blocking and its status is not verified, duplicate or wont-fix. Search SHALL score the word overlap of a report with each bug's title, symptom and trigger, adding 0.25 when they share a criterion, requirement or case; it SHALL list matches from 0.2 and refuse a new bug only from 0.5, naming `chough bug update <id> --observation <id> --note <text>` and `--distinct <why this is a different defect>`. A distinct reason SHALL NOT be blank and SHALL be kept in the new bug's notes. A duplicate or related link SHALL name another existing bug: a link to the bug itself or to an unknown bug, and an update or report of an unknown bug, SHALL be refused with nothing written, naming `chough bug list --all`. Changing the status of a duplicate bug SHALL clear its `duplicate_of` link and record that in its notes, so a mistaken duplicate can be reopened. Marking a bug verified without a linked failure and a later linked pass SHALL name `chough bug update <id> --observation <id>`. The report candidate SHALL show every stored field, and `none recorded` (for steps, `Not recorded.`) for each empty one. Trace: FLOW-8, LIFE-5.
+
+Acceptance Criteria
+- Each classification, scope and status is accepted on add or update and recorded; any other value is refused with the allowed list and the record stays byte-identical.
+- Of every scope and status, only an open bug with scope blocking is listed as blocking and stops leaving test; making it wont-fix releases the gate.
+- A report sharing only a requirement with a bug is listed by search at 0.25 and added without `--distinct`; one sharing its words is refused, naming both ways forward; a blank distinct reason is refused with nothing written, and a given one is kept in the new bug's notes.
+- Linking a bug to itself or to an unknown bug, as duplicate or related, and updating or reporting an unknown bug, are refused with nothing written and name `chough bug list --all`, which lists the bugs.
+- A bug marked duplicate by mistake is reopened with `chough bug update <id> --status open`, which clears `duplicate_of` and notes it; marking it verified without a linked failure names `chough bug update <id> --observation <id>`, and linking a failure and a later pass then verifies it.
+- The report shows every stored field of a fully recorded bug, and `none recorded` (for steps, `Not recorded.`) for each empty one.
 

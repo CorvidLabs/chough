@@ -45,7 +45,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-32 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+22 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -53,38 +53,28 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43 | failed (by cycle time) | local-macos-arm64 | TC-cli-closeout-closes-review-gate |
 | OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325 | passed (by cycle time) | local-macos-arm64 | TC-cli-closeout-closes-review-gate |
 | OBS-tc-cli-closeout-closes-review-gate-cd10b909d16761f96c0f38f5 | passed (by cycle time) | local-macos-arm64 | TC-cli-closeout-closes-review-gate |
-| OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9 | failed (by cycle time) | local-macos-arm64 | TC-cli-closeout-closes-review-gate |
 | OBS-tc-cli-doc-links-resolve-9692f41fb7a6065250612657 | passed (by cycle time) | local-macos-arm64 | TC-cli-doc-links-resolve |
-| OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932 | passed (by cycle time) | local-macos-arm64 | TC-cli-doc-links-resolve |
 | OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b | passed (by cycle time) | local-macos-arm64 | TC-cli-doc-links-resolve |
-| OBS-tc-cli-docs-name-pinned-versions-2909e52082ea849ecbdd5980 | failed (by cycle time) | local-macos-arm64 | TC-cli-docs-name-pinned-versions |
 | OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a | passed (by cycle time) | local-macos-arm64 | TC-cli-docs-name-pinned-versions |
 | OBS-tc-cli-docs-name-pinned-versions-7e78ff292af0e904bf82da7b | passed (by cycle time) | local-macos-arm64 | TC-cli-docs-name-pinned-versions |
 | OBS-tc-cli-documented-flags-exist-aaa7b6981b174c0d0b11f192 | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-flags-exist |
-| OBS-tc-cli-documented-flags-exist-c93c273024940d8058480e32 | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-flags-exist |
 | OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-flags-exist |
 | OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931 | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-merge-drivers-match |
 | OBS-tc-cli-documented-merge-drivers-match-896b1ba90244d08fe9b7d0dc | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-merge-drivers-match |
-| OBS-tc-cli-documented-merge-drivers-match-a6a7136235f460d66b8cd4c5 | failed (by cycle time) | local-macos-arm64 | TC-cli-documented-merge-drivers-match |
 | OBS-tc-cli-inline-diagrams-match-sources-55fef8ab48aa2dc94c3117df | passed (by cycle time) | local-macos-arm64 | TC-cli-inline-diagrams-match-sources |
 | OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc | passed (by cycle time) | local-macos-arm64 | TC-cli-inline-diagrams-match-sources |
-| OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488 | failed (by cycle time) | local-macos-arm64 | TC-cli-inline-diagrams-match-sources |
 | OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20 | passed (by cycle time) | local-macos-arm64 | TC-cli-readme-helper-table-covers-help |
 | OBS-tc-cli-readme-helper-table-covers-help-224c0ab2a60e621f228f3ca7 | passed (by cycle time) | local-macos-arm64 | TC-cli-readme-helper-table-covers-help |
-| OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c | failed (by cycle time) | local-macos-arm64 | TC-cli-readme-helper-table-covers-help |
-| OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb | failed (by cycle time) | local-macos-arm64 | TC-cli-readme-verify-list-matches-fledge |
 | OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd | passed (by cycle time) | local-macos-arm64 | TC-cli-readme-verify-list-matches-fledge |
 | OBS-tc-cli-readme-verify-list-matches-fledge-d13dd6b7d5df8164ce7a5e9c | passed (by cycle time) | local-macos-arm64 | TC-cli-readme-verify-list-matches-fledge |
-| OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a | failed (by cycle time) | local-macos-arm64 | TC-cli-skill-615b587b-known-outdated |
 | OBS-tc-cli-skill-615b587b-known-outdated-1c6bc1821e91c3d7b6231c86 | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-615b587b-known-outdated |
 | OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3 | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-615b587b-known-outdated |
 | OBS-tc-cli-stage-diagram-matches-the-helper-688bc12b578de1eb30607fb1 | passed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
 | OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681 | passed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
-| OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72 | failed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
 
 ## Bugs
 
-- BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d verified (references OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9, OBS-tc-cli-docs-name-pinned-versions-2909e52082ea849ecbdd5980, OBS-tc-cli-documented-merge-drivers-match-a6a7136235f460d66b8cd4c5, OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488, OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c, OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb, OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a, OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72, OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325, OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b, OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a, OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad, OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931, OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc, OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20, OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd, OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3, OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681, OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43, OBS-tc-cli-closeout-closes-review-gate-2b35e8a8e6a4584f4d27d6fd)
+- BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d verified (references OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325, OBS-tc-cli-doc-links-resolve-d1b7f80e0de48d21d290b46b, OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a, OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad, OBS-tc-cli-documented-merge-drivers-match-09959a868f64ea9e18ed6931, OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc, OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20, OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd, OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3, OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681, OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43, OBS-tc-cli-closeout-closes-review-gate-2b35e8a8e6a4584f4d27d6fd)
 
 ## Loose artifacts
 

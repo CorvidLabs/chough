@@ -1,0 +1,5 @@
+evidence-gap-recorded-as-requirement-gap: new test FAILED (caught); old test passed (gap shown)
+wont-fix-still-open: new test FAILED (caught); old test passed (gap shown)
+shared-id-bonus-dropped: new test FAILED (caught); old test passed (gap shown)
+duplicate-threshold-lowered: new test FAILED (caught); old test passed (gap shown)
+report-fixture-hidden: new test FAILED (caught); old test passed (gap shown)

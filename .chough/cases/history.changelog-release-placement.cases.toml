@@ -1,0 +1,38 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-changelog-sessions-under-0-4-0"
+title = "The #77 sessions entry is under [0.4.0], the release that first contained #77, and appears once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-16"]
+requirements = ["REQ-history-006"]
+paths = ["CHANGELOG.md", "tests/changelog.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the changelog test the_sessions_entry_is_under_0_4_0_where_77_first_shipped passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "changelog"
+test = "the_sessions_entry_is_under_0_4_0_where_77_first_shipped"
+
+[[case]]
+id = "TC-history-changelog-111-under-0-4-0"
+title = "#111's legacy-anchor session fix has one entry, under [0.4.0], the release that first contained #111"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-16"]
+requirements = ["REQ-history-006"]
+paths = ["CHANGELOG.md", "tests/changelog.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the changelog test the_111_legacy_anchor_session_fix_is_under_0_4_0 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "changelog"
+test = "the_111_legacy_anchor_session_fix_is_under_0_4_0"

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee",
+  "criteria": [
+    "DRIVE-16"
+  ],
+  "requirements": [
+    "REQ-cli-037"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact a_session_whose_native_change_is_archived_is_finished_without_a_native_read for TC-cli-finished-session-not-counted-open: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee.log": "13de905c98afa51a2891a8aaf30a1d5c894279027be53aaca1d9b9b2c42e4acd"
+  },
+  "observed_at_unix_seconds": 1793991073,
+  "snapshot": {
+    "revision": "28042787eb57b2746b97641b0decec4d838e3465",
+    "dirty": false,
+    "fingerprint": "e7731d24a1da6b5455d47d54a165e15900caa202f90a9b46735ae1210bba1f33",
+    "content": "5659738dc06ba1374395432c47ad09fe8eda81b74512057a650cf75b11e54f75"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-finished-session-not-counted-open",
+      "digest": "a47c2c02a06408dab41bac078b1918f68bb63c1465a1c0c82ff5e078feab0fe4"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "a_session_whose_native_change_is_archived_is_finished_without_a_native_read"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

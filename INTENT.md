@@ -17,5 +17,5 @@ Current-agent-first is the selected first version; Rune coordination is deferred
 - [drive](hi/drive.md): DRIVE (14 criteria)
 - [flow](hi/flow.md): FLOW (18 criteria)
 - [knowledge](hi/knowledge.md): KNOW (29 criteria)
-- [life](hi/life.md): LIFE (15 criteria)
+- [life](hi/life.md): LIFE (16 criteria)
 <!-- /hi:index -->

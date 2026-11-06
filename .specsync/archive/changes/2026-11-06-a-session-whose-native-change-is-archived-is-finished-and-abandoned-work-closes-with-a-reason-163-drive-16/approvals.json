@@ -1,0 +1,106 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793989032,
+      "digest": "da5743242d431d6e10faedcce3a4d2a130da3b9a44f265f695ea83c646a41444",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16",
+        "title": "A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)",
+        "description": "A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "src/sessions.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "DRIVE-16 (Leif, relayed by orc 2026-11-06, A1 + B for chough#163), in REQ-history-006 and REQ-cli-037: session new and session use archive, bytes unchanged, every other session whose native change is archived on HEAD (finalization.json, no native read) at any stage, keeping one with unfolded inbox entries open; with no pointer such a finished session does not count toward several open sessions, so the only unfinished one is active; chough session close <key> --reason <text> archives an open session for abandoned work with the reason recorded as a decision and no native read, clears the pointer when it named it, and refuses a blank reason, an archived or missing session and unfolded inbox entries with nothing changed. The four new tests in tests/sessions.rs fail first; docs, the skill reference and CHANGELOG say so; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-16 (new, captured from Leif's 'Capture both'); DRIVE-13 and DRIVE-3; REQ-history-006 as amended by #155 (self-archive at done, kept-open rule for unfolded inbox entries); REQ-cli-037 refusals when the active session is unclear; no native read in session commands; KNOW-29 roll-up (REQ-history-011) unchanged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "ff546e6d607e99ceb7ac0a0689b65d86b831f6cdb622f65ddcd650546d559f81",
+        "history": "414aca07966c1959c511b1b9e64ca4fcc6545979c02fceee91d93e8622f975ac"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-037": "81aaee893163959aca3486bbff61ca23ec3738124a07f18b9ecb42581cd67481",
+        "history: REQUIREMENT REQ-history-006": "1c806a29bee35dae200abd5fe9db90463a8e745f479ab6735f7c9007c2639558"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793991440,
+      "digest": "da5743242d431d6e10faedcce3a4d2a130da3b9a44f265f695ea83c646a41444",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16",
+        "title": "A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)",
+        "description": "A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "src/sessions.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "DRIVE-16 (Leif, relayed by orc 2026-11-06, A1 + B for chough#163), in REQ-history-006 and REQ-cli-037: session new and session use archive, bytes unchanged, every other session whose native change is archived on HEAD (finalization.json, no native read) at any stage, keeping one with unfolded inbox entries open; with no pointer such a finished session does not count toward several open sessions, so the only unfinished one is active; chough session close <key> --reason <text> archives an open session for abandoned work with the reason recorded as a decision and no native read, clears the pointer when it named it, and refuses a blank reason, an archived or missing session and unfolded inbox entries with nothing changed. The four new tests in tests/sessions.rs fail first; docs, the skill reference and CHANGELOG say so; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-16 (new, captured from Leif's 'Capture both'); DRIVE-13 and DRIVE-3; REQ-history-006 as amended by #155 (self-archive at done, kept-open rule for unfolded inbox entries); REQ-cli-037 refusals when the active session is unclear; no native read in session commands; KNOW-29 roll-up (REQ-history-011) unchanged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "ff546e6d607e99ceb7ac0a0689b65d86b831f6cdb622f65ddcd650546d559f81",
+        "history": "2eb1079bbdc78d4efb1825f3ca1deeed7f4f29e598193e3cba3764b6133e222c"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-037": "81aaee893163959aca3486bbff61ca23ec3738124a07f18b9ecb42581cd67481",
+        "history: REQUIREMENT REQ-history-006": "a5f5b00f0e13e9aad6d1d4fe96194d3d8038eaf56fd9a5afef89797a63689706"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793991828,
+      "digest": "e9496173933e1b00d25e1602400550b0141ba7e6b22292e9e0aa06410a217b79",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

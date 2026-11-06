@@ -1,0 +1,44 @@
+== mutation req-cli-007-second-store in src/checkpoint.rs
+diff --git a/src/checkpoint.rs b/src/checkpoint.rs
+index b91c6660..98a05487 100644
+--- a/src/checkpoint.rs
++++ b/src/checkpoint.rs
+@@ -526,6 +526,7 @@ fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
+ pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
+     lock_checkpoint(root)?;
+     remove_orphaned_session_temps(root)?;
++    std::fs::write(root.join(".chough/session.mirror.json"), serialize_checkpoint(session)?)?;
+     write_replace_bounded(
+         root,
+         &crate::sessions::checkpoint_path(root)?,
+
+== cargo test --locked --test stages -- --exact one_checkpoint_store_and_no_aps_adapter_in_either_mode
+exit 101
+--- stdout ---
+
+running 1 test
+test one_checkpoint_store_and_no_aps_adapter_in_either_mode ... FAILED
+
+failures:
+
+---- one_checkpoint_store_and_no_aps_adapter_in_either_mode stdout ----
+
+thread 'one_checkpoint_store_and_no_aps_adapter_in_either_mode' (155885671) panicked at tests/stages.rs:3980:5:
+assertion `left == right` failed
+  left: [".chough/session.json", ".chough/session.mirror.json"]
+ right: [".chough/session.json"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    one_checkpoint_store_and_no_aps_adapter_in_either_mode
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 58 filtered out; finished in 1.26s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.01s
+     Running tests/stages.rs (target/debug/deps/stages-d370d6489f515904)
+error: test failed, to rerun pass `--test stages`
+

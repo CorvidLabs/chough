@@ -1,0 +1,43 @@
+== mutation req-cli-002-lesson-store in src/vault.rs
+diff --git a/src/vault.rs b/src/vault.rs
+index 3c811302..04f2b9d2 100644
+--- a/src/vault.rs
++++ b/src/vault.rs
+@@ -627,7 +627,7 @@ this note only links them.\n\n\
+                 rows
+             },
+         );
+-        notes.push((format!("{dir}/modules/{module}.md"), content));
++        notes.push((format!("{dir}/modules/{module}.md"), content + &read(root, &format!("{base}/context.md")).unwrap_or_default()));
+     }
+     Ok(notes)
+ }
+
+== cargo test --locked --test cli -- --exact chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger
+exit 101
+--- stdout ---
+
+running 1 test
+test chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger ... FAILED
+
+failures:
+
+---- chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger stdout ----
+
+thread 'chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger' (155864538) panicked at tests/cli.rs:2775:5:
+lesson text was stored in ["/var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/.tmptQU0mV/knowledge/modules/cli.md"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 53 filtered out; finished in 1.94s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.03s
+     Running tests/cli.rs (target/debug/deps/cli-cc9590767b05a387)
+error: test failed, to rerun pass `--test cli`
+

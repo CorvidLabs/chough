@@ -15,7 +15,9 @@ requirements:
   - REQ-cli-042
   - REQ-history-006
 criteria:
+  - DRIVE-13
   - DRIVE-14
+  - DRIVE-16
   - DRIVE-3
   - FLOW-12
   - FLOW-13
@@ -45,7 +47,7 @@ verification records, the retention ledger and Git stay authoritative.
 - Status: cold (hot = the 3 most recently finalized archived changes)
 - Finalized: 2026-11-06T03:34:13Z
 - Modules: [cli](../modules/cli.md), [history](../modules/history.md)
-- Criteria: [DRIVE-14](../intent/drive.md), [DRIVE-3](../intent/drive.md), [FLOW-12](../intent/flow.md), [FLOW-13](../intent/flow.md), [FLOW-2](../intent/flow.md), [LIFE-1](../intent/life.md), [LIFE-11](../intent/life.md), [LIFE-15](../intent/life.md), [LIFE-3](../intent/life.md), [LIFE-6](../intent/life.md), [LIFE-7](../intent/life.md), [LIFE-8](../intent/life.md)
+- Criteria: [DRIVE-13](../intent/drive.md), [DRIVE-14](../intent/drive.md), [DRIVE-16](../intent/drive.md), [DRIVE-3](../intent/drive.md), [FLOW-12](../intent/flow.md), [FLOW-13](../intent/flow.md), [FLOW-2](../intent/flow.md), [LIFE-1](../intent/life.md), [LIFE-11](../intent/life.md), [LIFE-15](../intent/life.md), [LIFE-3](../intent/life.md), [LIFE-6](../intent/life.md), [LIFE-7](../intent/life.md), [LIFE-8](../intent/life.md)
 - Base commit: ec830cfb001cc5f71f4f83809ca3294d685f42a4
 - Implementation commit: bb8154ca295f7c6ba78039df24cd53c0956bbb93
 - Verification commit: bb8154ca295f7c6ba78039df24cd53c0956bbb93

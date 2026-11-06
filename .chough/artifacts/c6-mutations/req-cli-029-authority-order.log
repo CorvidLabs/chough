@@ -1,0 +1,55 @@
+== mutation req-cli-029-authority-order in skills/chough-workflow/references/plan.md
+diff --git a/skills/chough-workflow/references/plan.md b/skills/chough-workflow/references/plan.md
+index b5a79db6..f7950a48 100644
+--- a/skills/chough-workflow/references/plan.md
++++ b/skills/chough-workflow/references/plan.md
+@@ -25,15 +25,17 @@ new` prints the lessons of the modules you declare.
+ 
+ Prepare one coherent concrete package: outcome, contract delta, plan, verification
+ and consequential choices. Apply the main skill's authorization rule before asking
+-for a decision. If an actual prior or standing human instruction covers this scope,
+-that authorization already exists: record its source, scope and limits in the
+-checkpoint and native context, then run the native operation yourself.
++for a decision. 
+ 
+ ```sh
+ specsync change approve <id> --actor "<agent-account>" --note "<human authority source, covered scope and limits>"
+ chough checkpoint --clear-awaiting-human
+ ```
+ 
++If an actual prior or standing human instruction covers this scope,
++that authorization already exists: record its source, scope and limits in the
++checkpoint and native context, then run the native operation yourself.
++
+ The acting agent account is the actor; the human instruction supplies the authority.
+ Do not use the human's name merely because they authorized the agent's work, and do
+ not ask the operator to execute this command or repeat covered permission.
+
+== cargo test --locked --test workflow_authority -- --exact the_skill_records_authority_before_approval_and_labels_never_decide
+exit 101
+--- stdout ---
+
+running 1 test
+test the_skill_records_authority_before_approval_and_labels_never_decide ... FAILED
+
+failures:
+
+---- the_skill_records_authority_before_approval_and_labels_never_decide stdout ----
+
+thread 'the_skill_records_authority_before_approval_and_labels_never_decide' (155919217) panicked at tests/workflow_authority.rs:706:9:
+skills/chough-workflow plan.md approves before recording the authority
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_skill_records_authority_before_approval_and_labels_never_decide
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.01s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.44s
+     Running tests/workflow_authority.rs (target/debug/deps/workflow_authority-44f1c357a6528064)
+error: test failed, to rerun pass `--test workflow_authority`
+

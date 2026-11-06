@@ -1,0 +1,56 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-copy-localization-track-selected"
+title = "Requesting the copy-localization track selects its linked case while design-QA stays omitted"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-6"]
+requirements = ["REQ-cli-010"]
+paths = ["src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the cases test requesting_the_copy_localization_track_selects_its_linked_cases passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "requesting_the_copy_localization_track_selects_its_linked_cases"
+
+[[case]]
+id = "TC-cli-every-delivery-kind-recorded-as-itself"
+title = "Every delivery kind is recorded and reported as itself, and a dry run as a dry run"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-11", "LIFE-7"]
+requirements = ["REQ-cli-014", "REQ-cli-017"]
+paths = ["src/evidence.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the cases test every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run"
+
+[[case]]
+id = "TC-cli-delivery-kinds-kept-dry-run-not"
+title = "Delivery observations are kept as proof and moved into the vault, while a superseded dry run is not"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-11", "LIFE-7"]
+requirements = ["REQ-cli-014"]
+paths = ["src/evidence.rs", "src/stage.rs", "tests/reduce.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the reduce test delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not"

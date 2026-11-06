@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0",
+  "criteria": [
+    "LIFE-16"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test changelog -- --exact the_sessions_entry_is_under_0_4_0_where_77_first_shipped for TC-history-changelog-sessions-under-0-4-0: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0.log": "e86971055f4a1a93e9ec74072f09e0d36325cb3cff16e70e740f218be85c4c9b"
+  },
+  "observed_at_unix_seconds": 1793974725,
+  "snapshot": {
+    "revision": "2a5e6008d349d3da9a4d0fcb9eb3b327de374ae0",
+    "dirty": false,
+    "fingerprint": "0076eebb434d765fbcef047d903528c9f6345f52acca85014f3bd47f4fbf3554",
+    "content": "81496fc0b2ff8929808b14dd1ccbd89ad7fbe80fadf2dde3ab8676b6ccb035aa"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-changelog-sessions-under-0-4-0",
+      "digest": "0a1420ec5ac35d5ebbf89cd5a10f9ecbec246a34b29e1674b63ac80cc7b55090"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "changelog",
+    "--",
+    "--exact",
+    "the_sessions_entry_is_under_0_4_0_where_77_first_shipped"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

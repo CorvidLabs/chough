@@ -63,4 +63,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17.json](../attachments/support-macos-00d4eb43/sessions/support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17.json)
