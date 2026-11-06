@@ -541,7 +541,10 @@ every command uses `.chough/session.json` exactly as before.
 - At each move into done, with the librarian on, only the five most recent archived
   sessions stay in `.chough/sessions/archive/` (REQ-history-011, KNOW-29). Most recent
   means newest by the finalization of the session's native change, then by key; a
-  session without one counts as the oldest. Each older session moves byte for byte to
+  session without one counts as the oldest. The session that adopted the legacy
+  history, whose cursor holds the legacy anchor, never rolls: it stays in the archive
+  in addition to the five, so history never depends on the knowledge directory
+  (#143). Each older session moves byte for byte to
   `knowledge/attachments/<folder of its key>/sessions/<key>.json`, never replacing a
   file. `chough library index` then writes `knowledge/sessions/<key>.md`
   (REQ-cli-051), linking the session record and its change's archive note. The step is

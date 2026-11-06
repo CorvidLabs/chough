@@ -800,8 +800,17 @@ fn roll_up(root: &Path) -> Result<serde_json::Value> {
     let mut archived = vec![];
     for key in keys_in(root, ARCHIVE)? {
         // An archived session that cannot be read stays; `session list` reports it.
-        let finalized = read_at(root, &archive_file(&key))
-            .ok()
+        let session = read_at(root, &archive_file(&key)).ok();
+        // The session that adopted the legacy history never rolls and does not count
+        // toward the five, so the anchor never depends on the vault (KNOW-29, #143).
+        if session
+            .as_ref()
+            .and_then(|session| session.history_cursor.as_ref())
+            .is_some_and(|cursor| cursor.legacy.is_some())
+        {
+            continue;
+        }
+        let finalized = session
             .and_then(|session| session.native_change)
             .and_then(|change| crate::library::finalized_at(root, &change));
         archived.push((finalized, key));
