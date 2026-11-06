@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-65c231d73aa7e50fdfd340a9",
-    "head": "EVT-775211d67207d5f6e5771fe9",
+    "head": "EVT-91e63926d47d59174d64dec0",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -28,7 +28,8 @@
   },
   "decisions": [
     "failed: OBS-tc-cli-0101-d4305fdb1d19732792489328 was recorded with --environment ci-linux by mistake; it ran in local Docker Linux aarch64 (local-linux-aarch64), not CI. Do not read it as CI evidence; hosted CI on the PR is the CI evidence.",
-    "decided: removed OBS-tc-cli-0101-d4305fdb1d19732792489328 and its log, which claimed ci-linux but ran in local Docker Linux aarch64; it was never referenced. OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 records the same exercise run as local-linux-aarch64. Hosted CI on the PR is the CI evidence."
+    "decided: removed OBS-tc-cli-0101-d4305fdb1d19732792489328 and its log, which claimed ci-linux but ran in local Docker Linux aarch64; it was never referenced. OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 records the same exercise run as local-linux-aarch64. Hosted CI on the PR is the CI evidence.",
+    "PR #130 (C1, #122) accepted by Leif (0xLeif), 2026-11-05 through the orc: Approve (19:24 MST) and review (pass) recorded at fde70740."
   ],
   "open_questions": [],
   "completed": [],
@@ -37,9 +38,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then fix the closeout order"
 }

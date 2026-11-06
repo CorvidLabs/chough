@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 116
+archived_changes: 117
 tags:
   - chough/index
 ---
@@ -43,21 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5 (active; `specsync change status teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](archives/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.md) Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5) (hot)
 - [union-merge-the-generated-bug-notes-128](archives/union-merge-the-generated-bug-notes-128.md) Union-merge the generated bug notes (128) (hot)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](archives/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.md) Restore the test closing brace lost when merging main into KNOW-22 (121) (hot)
-- [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22) (hot)
+- [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22) (cold)
 - [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](archives/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.md) Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21) (cold)
 - [spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105](archives/spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105.md) Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105) (cold)
 - [mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.4.0 release published in the roadmap with its install observation (cold)
 - [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](archives/prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0.md) Prepare the 0.4.0 release: set the package version to 0.4.0 and date the change log section for 0.4.0 (cold)
 - [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](archives/stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review.md) Stage each vault copy privately so a failed copy never deletes another writer bytes (115 review) (cold)
 - [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](archives/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.md) Keep vault copies another writer changed when a refused trim rolls back (110) (cold)
-- [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](archives/union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix.md) Union-merge only the generated knowledge notes, and cover the vault code of the index fix (cold)
-- All 116 archived changes, by month: [timeline.md](timeline.md)
+- All 117 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](../.specsync/archive/changes/2026-11-06-teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5/lesson-bundle.md)
 - [union-merge-the-generated-bug-notes-128](../.specsync/archive/changes/2026-11-06-union-merge-the-generated-bug-notes-128/lesson-bundle.md)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](../.specsync/archive/changes/2026-11-06-restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121/lesson-bundle.md)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](../.specsync/archive/changes/2026-11-06-closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0](../.specsync/archive/changes/2026-11-05-prepare-the-0-4-0-release-set-the-package-version-to-0-4-0-and-date-the-change-log-section-for-0-4-0/lesson-bundle.md)
 - [stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review](../.specsync/archive/changes/2026-11-05-stage-each-vault-copy-privately-so-a-failed-copy-never-deletes-another-writer-bytes-115-review/lesson-bundle.md)
 - [keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110](../.specsync/archive/changes/2026-11-05-keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110/lesson-bundle.md)
-- [union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix](../.specsync/archive/changes/2026-11-05-union-merge-only-the-generated-knowledge-notes-and-cover-the-vault-code-of-the-index-fix/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
