@@ -47,6 +47,7 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (hot)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148) (hot)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (hot)
 - [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](archives/name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up.md) Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up) (hot)
@@ -71,6 +72,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../.specsync/archive/changes/2026-11-06-pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19/lesson-bundle.md)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../.specsync/archive/changes/2026-11-06-an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148/lesson-bundle.md)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../.specsync/archive/changes/2026-11-06-stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144/lesson-bundle.md)
 - [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](../.specsync/archive/changes/2026-11-06-name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up/lesson-bundle.md)
@@ -101,6 +103,8 @@ Archived lesson bundles:
 
 406 recorded; most recent:
 
+- OBS-tc-history-inbox-bounds-pinned-exactly-a3d8c4fb1a993f500fd75027 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
+- OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
 - OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 ProductTest Passed in local-linux-aarch64 at c8b4c8daf5d3
 - OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 ProductTest Passed in local-macos-arm64 at 769fba2e29ce
 - OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 ProductTest Failed in local-macos-arm64 at 4da25aa93cb2
