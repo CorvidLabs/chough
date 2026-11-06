@@ -149,9 +149,7 @@ fn switching_archives_done_sessions() {
     let fixture = Fixture::new();
     sessions(&fixture);
     fixture.ok(&["session", "use", "alpha"]);
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
+    // Release is requested before done, so the session stays open for it (#155).
     fixture.ok(&[
         "consent",
         "grant",
@@ -159,8 +157,12 @@ fn switching_archives_done_sessions() {
         "--source",
         "Human: release alpha",
     ]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     fixture.ok(&["stage", "advance"]);
+    left_open(&fixture, "alpha");
     assert_eq!(
         json(&fixture, ".chough/sessions/alpha.json")["stage"]["current"],
         "done"
@@ -374,9 +376,7 @@ fn a_project_without_sessions_is_unchanged() {
 
 fn finish(fixture: &Fixture, key: &str) {
     fixture.ok(&["session", "use", key]);
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
+    // Release is requested before done, so the session stays open for it (#155).
     fixture.ok(&[
         "consent",
         "grant",
@@ -384,8 +384,25 @@ fn finish(fixture: &Fixture, key: &str) {
         "--source",
         "Human: release it",
     ]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     fixture.ok(&["stage", "advance"]);
+    left_open(fixture, key);
+}
+
+/// Since #155 a session archives itself at its move into done. A done session still
+/// open is one an older Chough left, or one merged in from another branch; this puts
+/// the session back where such a one sits, so the switch rules can be tested.
+fn left_open(fixture: &Fixture, key: &str) {
+    std::fs::rename(
+        fixture
+            .root()
+            .join(format!(".chough/sessions/archive/{key}.json")),
+        fixture.root().join(format!(".chough/sessions/{key}.json")),
+    )
+    .unwrap();
 }
 
 fn add_entry(fixture: &Fixture, key: &str, kind: &str, text: &str) -> String {
@@ -1290,4 +1307,58 @@ fn sessions_still_write_after_the_anchor_holder_rolls_into_the_vault_or_is_shelv
             "{destination}: {refused}"
         );
     }
+}
+
+/// CH-19 (REQ-history-009): an inbox entry file of exactly 16,384 bytes is read; one byte
+/// more is refused naming the bound.
+#[test]
+fn an_inbox_entry_of_exactly_16_kib_is_read_and_one_byte_more_is_refused() {
+    for (size, readable) in [(16_384usize, true), (16_385, false)] {
+        let fixture = Fixture::new();
+        sessions(&fixture);
+        let id = add_entry(&fixture, "alpha", "decision", "a note from a subagent");
+        let path = format!(".chough/sessions/alpha.inbox/{id}.json");
+        let text = fixture.read(&path);
+        assert!(text.len() < size);
+        fixture.write(&path, &format!("{text}{}", " ".repeat(size - text.len())));
+        fixture.ok(&["session", "use", "alpha"]);
+        let output = fixture.run(&["inbox", "list"]);
+        assert_eq!(
+            output.status.success(),
+            readable,
+            "{size}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        if !readable {
+            assert!(
+                String::from_utf8_lossy(&output.stderr).contains("16384"),
+                "{size}"
+            );
+        }
+    }
+}
+
+/// CH-19 (REQ-history-009): an inbox holds 200 unfolded entries; the 201st is refused,
+/// naming the bound and the fold that recovers.
+#[test]
+fn an_inbox_holds_200_unfolded_entries_and_refuses_the_201st() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    for index in 0..200 {
+        add_entry(&fixture, "alpha", "decision", &format!("note {index}"));
+    }
+    let refused = fixture.fails(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "decision",
+        "--text",
+        "one more",
+    ]);
+    assert!(refused.contains("200 unfolded entries"), "{refused}");
+    assert!(refused.contains("fold"), "{refused}");
 }

@@ -1,0 +1,11 @@
+req-cli-002-outranks: test FAILED (mutation caught) exit 101
+req-cli-002-lesson-store: test FAILED (mutation caught) exit 101
+req-cli-007-second-store: test FAILED (mutation caught) exit 101
+req-cli-012-upgrade-note: test FAILED (mutation caught) exit 101
+req-cli-029-authority-order: test FAILED (mutation caught) exit 101
+req-cli-029-missing-verdict: test FAILED (mutation caught) exit 101
+req-cli-029-roadmap-cold-start: test FAILED (mutation caught) exit 101
+req-cli-031-walkthrough-order: test FAILED (mutation caught) exit 101
+req-cli-045-librarian-off: test FAILED (mutation caught) exit 101
+req-cli-045-no-reset: test FAILED (mutation caught) exit 101
+req-reporting-003-timeout-counted: test FAILED (mutation caught) exit 101

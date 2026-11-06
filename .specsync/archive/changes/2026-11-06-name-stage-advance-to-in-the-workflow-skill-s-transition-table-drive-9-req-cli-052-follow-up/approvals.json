@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793947339,
+      "digest": "bc2b413a26daa32d1294f049bdda52706a3b9b378c21b32c7baf876bf910dfbd",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up",
+        "title": "Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up)",
+        "description": "Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up)",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/stages.md",
+          "CHANGELOG.md",
+          "skills/chough-workflow/references/stages.md",
+          "src/skill.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Skill guidance for the existing REQ-cli-052 command, which #147 shipped without a row in the skill's transition table; the earlier stages.md digest joins the known previous copies so installed 0.4.0 copies update; no requirement text changes.",
+        "acceptance_criteria": [
+          "The bundled and installed chough-workflow references/stages.md transition tables have a byte-identical row for 'chough stage advance --to <stage>' saying every step is checked first on one native read, a refused step records nothing, and into done it reads native status once. The stages.md that main shipped from 0.1.0 to 01f1d023 (sha256 658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f) is reported known-outdated by 'chough skill status' and becomes current with 'chough skill update', while an edited copy stays edited. The new test fails first, and fledge lanes run verify passes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Follow-up (2) the orc assigned after #147 merged (t18 relay, 2026-11-05 late evening MST); DRIVE-9 and REQ-cli-052 unchanged; the pgrep flake is #144's; kimi-perf32 (#32) does not touch the skill.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793974043,
+      "digest": "f44b3e02af0afa2c4d8b76f51043b9bec650f13848faf908c912fef5bb17e7fe",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

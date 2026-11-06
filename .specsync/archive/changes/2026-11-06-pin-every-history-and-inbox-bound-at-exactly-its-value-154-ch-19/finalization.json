@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19",
+  "implementation_commit": "b49e9681fdc36fb550e57f835068d5c777dff26c",
+  "implementation_tree": "32204f0d79ae32a91afe6d713cb3777b858546c6",
+  "contract_digest": "677758586b1150288ced09ae02286290a70aa508f85cf2ce223bc2fae4e6451c",
+  "workspace_digest": "c48affd76f8a596ca7da0c9d1706ca35af28e965e205794281780603efded8c1",
+  "closing_digest": "2072c2624ffdeb9f08c9362d6cd0b76ad09a78107ce4299c955b04f36b30611a",
+  "review_digest": "dc6cfacf8cad9a4b0a94765020226979c2dbfae1129b92f1e127c33950e9654a",
+  "finalization_digest": "b48f054cce69c48472380b9f99ee551569d8f0462d83d8f3b9572a682bf57412",
+  "timestamp": 1793975565
+}

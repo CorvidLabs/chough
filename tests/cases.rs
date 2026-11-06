@@ -1993,6 +1993,106 @@ fn cases_split_per_change_load_together_and_ids_stay_unique() {
     assert_eq!(list(&fixture).len(), 2);
 }
 
+/// Every file under `.chough/evidence` with its bytes, to show a refusal wrote nothing.
+#[cfg(unix)]
+fn evidence_files(fixture: &Fixture) -> Vec<(String, Vec<u8>)> {
+    let dir = fixture.root().join(".chough/evidence");
+    let mut files: Vec<(String, Vec<u8>)> = std::fs::read_dir(&dir)
+        .map(|entries| {
+            entries
+                .map(|entry| {
+                    let path = entry.unwrap().path();
+                    (
+                        path.file_name().unwrap().to_string_lossy().into_owned(),
+                        std::fs::read(&path).unwrap(),
+                    )
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    files.sort();
+    files
+}
+
+/// REQ-cli-029, last criterion (#138; Leif's choice A, 2026-11-05): a fresh-agent cold
+/// start is its own agent-assisted case, apart from the automated source and package
+/// checks, and a skipped one is never promoted to a pass. A record that leaves an expected
+/// outcome of the cold start without a verdict is refused and writes nothing, and a cold
+/// start recorded as not run reads `not-run` in status, never `passed`.
+#[cfg(unix)]
+#[test]
+fn a_skipped_cold_start_is_never_recorded_or_read_as_a_pass() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &format!(
+            "{HEADER}\n[[case]]\nid = \"TC-cli-0009\"\ntitle = \"A fresh agent resumes cold from the records alone\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"agent-assisted\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"fresh-agent\"]\nartifacts = [\"transcript\"]\nsetup = [\"A new session with no earlier conversation\"]\nsteps = [\"Resume with chough next\"]\nexpected = [\"It states the handoff before its first edit\", \"It continues the recorded next task\", \"It records no human decision\"]\n"
+        ),
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    let before = evidence_files(&fixture);
+    let refusal = fixture.fails(&[
+        "cases",
+        "record",
+        "TC-cli-0009",
+        "--environment",
+        "fresh-agent",
+        "--method",
+        "agent-assisted",
+        "--summary",
+        "The cold start was skipped after the first step",
+        "--verdict",
+        "1=pass",
+    ]);
+    assert!(refusal.contains("every expected outcome"), "{refusal}");
+    assert_eq!(
+        evidence_files(&fixture),
+        before,
+        "a refused record wrote evidence"
+    );
+
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "not-run",
+        "--environment",
+        "fresh-agent",
+        "--method",
+        "agent-assisted",
+        "--case",
+        "TC-cli-0009",
+        "--summary",
+        "Fresh-agent cold start not run; source and package checks are separate cases",
+        "--limitation",
+        "no fresh agent was started",
+    ]);
+    let status = fixture.ok(&["status"]);
+    let records: Vec<&Value> = status["observations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|observation| &observation["record"])
+        .filter(|record| record["cases"][0]["id"] == "TC-cli-0009")
+        .collect();
+    assert_eq!(records.len(), 1, "{status:#}");
+    assert_eq!(records[0]["outcome"], "not-run", "{status:#}");
+    assert!(
+        !status.to_string().contains("\"outcome\":\"passed\""),
+        "a skipped cold start read as passed: {status:#}"
+    );
+}
+
 /// REQ-cli-010, second criterion (#152, audit MA-01): requesting the copy-localization
 /// track selects its linked cases. Design-QA cases stay omitted, with their reason, until
 /// their own track is requested too, and with no track requested both are omitted, each
