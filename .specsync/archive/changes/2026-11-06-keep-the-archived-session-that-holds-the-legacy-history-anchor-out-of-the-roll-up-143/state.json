@@ -7,11 +7,11 @@
   "title": "Keep the archived session that holds the legacy history anchor out of the roll-up (143)",
   "description": "Keep the archived session that holds the legacy history anchor out of the roll-up (143)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "f35f721ae0049cd6247119b6ff1085108fa4494f",
   "created_at": 1793972519,
-  "updated_at": 1793977189,
+  "updated_at": 1793979336,
   "affected_specs": [
     "history"
   ],
