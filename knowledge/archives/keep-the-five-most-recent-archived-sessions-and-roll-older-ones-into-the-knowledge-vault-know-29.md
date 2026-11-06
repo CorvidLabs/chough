@@ -62,6 +62,8 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd | passed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 | OBS-tc-cli-supported-platforms-cf84a4b69599d4e71ffec6b6 | failed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 | OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e | passed (by cycle time) | local-linux-aarch64 | TC-history-keep-five-archived-sessions |
+| ID | Outcome | Environment | Cases |
+|---|---|---|---|
 
 ## Bugs
 
