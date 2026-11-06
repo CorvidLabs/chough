@@ -11,7 +11,7 @@ artifact: tasks
 - [x] Implement the bounded read-only authenticated-archive cache and report-only integration.
 - [x] Implement scoped exact-digest snapshot workers without persistent evidence caching.
 - [ ] Run focused tests, mutation checks and the complete Fledge verification lane.
-- [ ] Run and retain the ten-run archived release benchmark, call counts and phase traces against the approved budget.
-- [ ] Run the scoped native check and record per-change Chough case evidence.
+- [x] Run and retain the ten-run archived release benchmark, call counts and phase traces against the approved budget.
+- Run the scoped native check and record per-change Chough case evidence after materialization.
 
 Human scope approval, implementation review and merge decisions are human gates, not agent task checkboxes.
