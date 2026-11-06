@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "id": "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d",
+  "title": "README, docs, workflow skill and diagrams drift from what main does",
+  "symptom": "Docs, the workflow skill and two diagrams describe behavior main no longer has: a skip edge from intent to plan, a test to accept gate without the unlinked failure, 'Optional librarian', 'clear the gate', SpecSync 6.1 and 6.1.2 as current, a README helper table without history, session, inbox, bug merge and skill remove-legacy, a cli.md .gitattributes block missing four lines, and the 615b587b skill files reading as current",
+  "trigger": "cargo test --locked --test docs at 7039f68b (base 615b587b plus the FLOW-18 checks)",
+  "expected": "tests/docs.rs passes: every page, the skill and the diagrams match the helper, fledge.toml, .gitattributes and the CI pins (FLOW-18)",
+  "actual": "8 of 10 checks in tests/docs.rs fail; the flag and link checks pass",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [],
+  "cases": [
+    "TC-cli-stage-diagram-matches-the-helper",
+    "TC-cli-inline-diagrams-match-sources",
+    "TC-cli-readme-helper-table-covers-help",
+    "TC-cli-readme-verify-list-matches-fledge",
+    "TC-cli-documented-merge-drivers-match",
+    "TC-cli-docs-name-pinned-versions",
+    "TC-cli-closeout-closes-review-gate",
+    "TC-cli-skill-615b587b-known-outdated"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "7039f68b5d4a84f4506a53e8d720e7ac24c5d316",
+  "steps": [
+    "cargo test --locked --test docs"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9",
+    "OBS-tc-cli-docs-name-pinned-versions-2909e52082ea849ecbdd5980",
+    "OBS-tc-cli-documented-merge-drivers-match-a6a7136235f460d66b8cd4c5",
+    "OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488",
+    "OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c",
+    "OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb",
+    "OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a",
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72"
+  ],
+  "impact": "An agent or person following the docs or skill resumes from the wrong files, clears instead of closes the review gate, or uses a stale SpecSync version",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "ch-docs-accuracy audit, ../ch-docs-findings.md",
+  "notes": [],
+  "created_at_unix_seconds": 1793980107,
+  "updated_at_unix_seconds": 1793980107
+}

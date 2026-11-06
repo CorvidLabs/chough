@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact inline_diagrams_equal_their_sources_and_svgs_carry_every_label for TC-cli-inline-diagrams-match-sources: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488.log": "fb3b94bfb215984c7f50c34a5856b959dadcfe412afae8a3c991943c60a5f192"
+  },
+  "observed_at_unix_seconds": 1793979968,
+  "snapshot": {
+    "revision": "7039f68b5d4a84f4506a53e8d720e7ac24c5d316",
+    "dirty": false,
+    "fingerprint": "1a00fe360ee969a211d3baf3e8548b9366a9364d95a98224ab591ce134437c46",
+    "content": "804c78228734dd5dc1fc0ad7420b856c47349370f70c8447f0b532abcb6b7fa4"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-inline-diagrams-match-sources",
+      "digest": "ba2ebb9f9acf2cdbd35c734e3d01bcb2cbfc658dcba5513f5beed0218e10eb54"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "inline_diagrams_equal_their_sources_and_svgs_carry_every_label"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

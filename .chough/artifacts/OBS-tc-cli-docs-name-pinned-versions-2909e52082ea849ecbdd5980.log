@@ -1,0 +1,27 @@
+--- stdout ---
+
+running 1 test
+test docs_state_only_the_pinned_tool_versions ... FAILED
+
+failures:
+
+---- docs_state_only_the_pinned_tool_versions stdout ----
+
+thread 'docs_state_only_the_pinned_tool_versions' (272324890) panicked at tests/docs.rs:901:5:
+docs/exercises/feature-bug-loop.md: "The README now pins 6.1.2" states 6.1.2; CI pins 6.2.0, 1.8.0, 0.8.0
+docs/walkthrough.md: "## Install       Use the same SpecSync version for every lifecycle writer and CI (this repository uses 6.1.2)" states 6.1.2; CI pins 6.2.0, 1.8.0, 0.8.0
+skills/chough-workflow/references/lifecycle.md: "This reference follows SpecSync 6.1" states 6.1; CI pins 6.2.0, 1.8.0, 0.8.0
+.agents/skills/chough-workflow/references/lifecycle.md: "This reference follows SpecSync 6.1" states 6.1; CI pins 6.2.0, 1.8.0, 0.8.0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    docs_state_only_the_pinned_tool_versions
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.89s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running tests/docs.rs (target/debug/deps/docs-592487f356832a3e)
+error: test failed, to rerun pass `--test docs`

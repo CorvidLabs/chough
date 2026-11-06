@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-5c67e8fb8aaeaca193dc036d",
-    "head": "EVT-632dae81f9254c1cc792aa03",
+    "head": "EVT-34458c2a7d9130eaf42a1eba",
     "legacy": null
   },
   "schema_version": 2,
@@ -25,7 +25,18 @@
       "FLOW-2"
     ],
     "requirements": [],
-    "cases": [],
+    "cases": [
+      "TC-cli-stage-diagram-matches-the-helper",
+      "TC-cli-inline-diagrams-match-sources",
+      "TC-cli-readme-helper-table-covers-help",
+      "TC-cli-readme-verify-list-matches-fledge",
+      "TC-cli-documented-flags-exist",
+      "TC-cli-doc-links-resolve",
+      "TC-cli-documented-merge-drivers-match",
+      "TC-cli-docs-name-pinned-versions",
+      "TC-cli-closeout-closes-review-gate",
+      "TC-cli-skill-615b587b-known-outdated"
+    ],
     "design": [],
     "files": []
   },
@@ -38,11 +49,28 @@
     "decided: docs/cli.md:25 (bug row, bug merge) is left to #158 and #69's lines are not touched because those pull requests change them"
   ],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
-  "bugs": [],
+  "completed": [
+    "Failing tests: 7039f68b (tests/docs.rs, 8 of 10 FLOW-18 checks fail on the base; flags and links pass)"
+  ],
+  "observations": [
+    "OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9",
+    "OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932",
+    "OBS-tc-cli-docs-name-pinned-versions-2909e52082ea849ecbdd5980",
+    "OBS-tc-cli-documented-flags-exist-c93c273024940d8058480e32",
+    "OBS-tc-cli-documented-merge-drivers-match-a6a7136235f460d66b8cd4c5",
+    "OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488",
+    "OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c",
+    "OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb",
+    "OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a",
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72"
+  ],
+  "bugs": [
+    "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d"
+  ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18"
+  ],
   "run_consents": [],
-  "next_action": "Write the failing FLOW-18 checks in tests/docs.rs, run them on the base, then send ready for approval"
+  "next_action": "Wait for orc's relayed scope approval; then specsync change approve as the agent, close the gate, advance to build and fix the docs"
 }

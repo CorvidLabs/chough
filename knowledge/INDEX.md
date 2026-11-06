@@ -93,24 +93,25 @@ Archived lesson bundles:
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
+- BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d README, docs, workflow skill and diagrams drift from what main does (open, in-scope, reproduced)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 - BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
 
 ## Observations
 
-403 recorded; most recent:
+413 recorded; most recent:
 
-- OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-one-read-in-a-session-cee97305e88e3d1d60719b91 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9 ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-docs-name-pinned-versions-2909e52082ea849ecbdd5980 ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-documented-merge-drivers-match-a6a7136235f460d66b8cd4c5 ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932 ProductTest Passed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-documented-flags-exist-c93c273024940d8058480e32 ProductTest Passed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488 ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
+- OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72 ProductTest Failed in local-macos-arm64 at 7039f68b5d4a
 
 ## Briefs
 
