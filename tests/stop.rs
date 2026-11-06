@@ -209,6 +209,8 @@ fn stopping_a_case_run_stops_its_command_and_records_nothing() {
         ("TERM", libc::SIGTERM, 612),
         ("HUP", libc::SIGHUP, 613),
     ] {
+        // #144: a token only this fixture uses, so a concurrent run is never matched.
+        let seconds = identity(seconds);
         let fixture = Fixture::new();
         fixture.hi_stand_in();
         let argv = format!("[\"sh\", \"-c\", \"touch running; sleep {seconds} & wait\"]");
@@ -264,6 +266,8 @@ fn stopping_a_native_read_stops_specsync_and_records_nothing() {
         ("TERM", libc::SIGTERM, 622),
         ("HUP", libc::SIGHUP, 623),
     ] {
+        // #144: a token only this fixture uses, so a concurrent run is never matched.
+        let seconds = identity(seconds);
         let fixture = Fixture::new();
         fixture.stubs();
         fixture.native("approved");
@@ -306,6 +310,8 @@ fn stopping_a_case_run_while_it_saves_stops_git_and_records_nothing() {
         ("TERM", libc::SIGTERM, 632),
         ("HUP", libc::SIGHUP, 633),
     ] {
+        // #144: a token only this fixture uses, so a concurrent run is never matched.
+        let seconds = identity(seconds);
         let fixture = Fixture::new();
         fixture.hi_stand_in();
         let argv = "[\"sh\", \"-c\", \"touch ran; echo finished\"]";
@@ -371,7 +377,7 @@ fn a_stop_signal_inherited_as_blocked_stays_blocked() {
 
 /// A `git` stand-in that, once `armed` exists, marks itself running and stalls in
 /// `sleep {seconds}` before running the real Git.
-fn stall_git(fixture: &Fixture, seconds: u32) {
+fn stall_git(fixture: &Fixture, seconds: impl std::fmt::Display) {
     fixture.write(
         "bin/git",
         &format!(
@@ -387,11 +393,47 @@ fn stall_git(fixture: &Fixture, seconds: u32) {
 /// stops that Git and records nothing (Chough bot review 5762745045 on #79).
 #[test]
 fn stopping_a_backfill_stops_its_git_and_records_nothing() {
+    stop_backfills();
+}
+
+/// #144: the backfill stop test finds and reaps only its own fixture's processes; a
+/// `sleep 641` to `sleep 643` from another worktree's run of the same test is neither
+/// taken for a survivor nor killed.
+#[cfg(target_os = "linux")]
+#[test]
+fn the_backfill_stop_test_leaves_another_runs_processes_alone() {
+    struct Decoys(Vec<Child>);
+    impl Drop for Decoys {
+        fn drop(&mut self) {
+            for decoy in &mut self.0 {
+                let _ = decoy.kill();
+                let _ = decoy.wait();
+            }
+        }
+    }
+    let mut decoys = Decoys(
+        ["641", "642", "643"]
+            .iter()
+            .map(|seconds| Command::new("sleep").arg(seconds).spawn().unwrap())
+            .collect(),
+    );
+    stop_backfills();
+    for decoy in &mut decoys.0 {
+        assert!(
+            decoy.try_wait().unwrap().is_none(),
+            "the stop test killed another run's sleep"
+        );
+    }
+}
+
+fn stop_backfills() {
     for (signal, number, seconds) in [
         ("INT", libc::SIGINT, 641),
         ("TERM", libc::SIGTERM, 642),
         ("HUP", libc::SIGHUP, 643),
     ] {
+        // #144: a token only this fixture uses, so a concurrent run is never matched.
+        let seconds = identity(seconds);
         let fixture = Fixture::new();
         fixture.stubs();
         fixture.native("approved");
@@ -432,7 +474,7 @@ fn stopping_a_backfill_stops_its_git_and_records_nothing() {
             .as_secs()
             - 5_000)
             .to_string();
-        stall_git(&fixture, seconds);
+        stall_git(&fixture, &seconds);
         assert_stopped(
             &fixture,
             &[
@@ -462,6 +504,8 @@ fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
         ("TERM", libc::SIGTERM, 652),
         ("HUP", libc::SIGHUP, 653),
     ] {
+        // #144: a token only this fixture uses, so a concurrent run is never matched.
+        let seconds = identity(seconds);
         let fixture = Fixture::new();
         fixture.hi_stand_in();
         fixture.init();
@@ -469,7 +513,7 @@ fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
         fixture.write(".gitignore", "armed\nrunning\n");
         fixture.commit("base");
         fixture.ok(&["library", "index"]);
-        stall_git(&fixture, seconds);
+        stall_git(&fixture, &seconds);
         assert_stopped_in(
             &fixture,
             &[
@@ -523,8 +567,10 @@ fn stopping_while_a_descendant_of_git_holds_its_output_stops_both() {
         ("TERM", libc::SIGTERM, 662),
         ("HUP", libc::SIGHUP, 663),
     ] {
+        // #144: a token only this fixture uses, so a concurrent run is never matched.
+        let seconds = identity(seconds);
         let fixture = snapshot_fixture();
-        hold_git(&fixture, seconds);
+        hold_git(&fixture, &seconds);
         // The marker is written as the stand-in exits; the signal follows once git has
         // exited and well inside the grace for the held pipes.
         assert_stopped_after(
@@ -549,8 +595,10 @@ fn stopping_while_a_descendant_of_git_holds_its_output_stops_both() {
 /// bounded grace once git exits, and the command finishes with git's output.
 #[test]
 fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
+    let sleep = format!("sleep {}", identity(671));
+    let _reap = Reap(sleep.clone());
     let fixture = snapshot_fixture();
-    hold_git(&fixture, 671);
+    hold_git(&fixture, sleep.trim_start_matches("sleep "));
     let started = Instant::now();
     let (mut child, outputs) = start(
         &fixture,
@@ -570,15 +618,12 @@ fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
         }
         if started_at.elapsed() > Duration::from_secs(30) {
             let _ = child.kill();
-            let _ = Command::new("pkill").args(["-f", "sleep 671"]).status();
             panic!("chough waited on the held pipes with no limit");
         }
         std::thread::sleep(Duration::from_millis(20));
     };
-    let survived = still_running("sleep 671");
-    if survived {
-        let _ = Command::new("pkill").args(["-f", "sleep 671"]).status();
-    }
+    // `_reap` kills only this fixture's sleep, whatever the outcome.
+    let survived = still_running(&sleep);
     assert!(!survived, "the descendant holding git's output survived");
     assert!(
         status.success(),

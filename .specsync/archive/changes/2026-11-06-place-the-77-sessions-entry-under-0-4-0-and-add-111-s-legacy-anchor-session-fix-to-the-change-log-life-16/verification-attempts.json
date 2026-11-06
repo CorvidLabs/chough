@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1793974603,
+      "commit": "a85536f24a12e5acfbabfbd259e91af18e3e1155",
+      "contract_digest": "e82c8ae31b1fe803145c4567bf11db86b8f39c29cd2ca5bd954420936dd81666",
+      "execution_digest": "d3a0a6a0cff03482c36048f96d306b88827d578f1cc452fd2a79f315e9188d71",
+      "workspace_digest": "a510e35f0e50a49f03df9b5b777ca77fc24ed168622bd9d5c960df9bf0a5da08",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793974622,
+      "commit": "49e4af7050a9c86b6460a28c23b5617a12c88133",
+      "contract_digest": "e82c8ae31b1fe803145c4567bf11db86b8f39c29cd2ca5bd954420936dd81666",
+      "execution_digest": "d3a0a6a0cff03482c36048f96d306b88827d578f1cc452fd2a79f315e9188d71",
+      "workspace_digest": "a510e35f0e50a49f03df9b5b777ca77fc24ed168622bd9d5c960df9bf0a5da08",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793974754,
+      "commit": "38d3be0fea0e621c3a6e6893f919faf85d788102",
+      "contract_digest": "e82c8ae31b1fe803145c4567bf11db86b8f39c29cd2ca5bd954420936dd81666",
+      "execution_digest": "d3a0a6a0cff03482c36048f96d306b88827d578f1cc452fd2a79f315e9188d71",
+      "workspace_digest": "3c7628d5867ea6d8c61ec56ce47c01f1c5e3c2de601c78e88ff6557410c2507c",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793974793,
+      "commit": "52ea1848575aa5a2389f522ab2b9fe151d3012a9",
+      "contract_digest": "e82c8ae31b1fe803145c4567bf11db86b8f39c29cd2ca5bd954420936dd81666",
+      "execution_digest": "d3a0a6a0cff03482c36048f96d306b88827d578f1cc452fd2a79f315e9188d71",
+      "workspace_digest": "3c7628d5867ea6d8c61ec56ce47c01f1c5e3c2de601c78e88ff6557410c2507c",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1793974793,
+      "commit": "c8c1b6b7ddb63ce78173255bf4370b5b43595c26",
+      "contract_digest": "e82c8ae31b1fe803145c4567bf11db86b8f39c29cd2ca5bd954420936dd81666",
+      "execution_digest": "d3a0a6a0cff03482c36048f96d306b88827d578f1cc452fd2a79f315e9188d71",
+      "workspace_digest": "3c7628d5867ea6d8c61ec56ce47c01f1c5e3c2de601c78e88ff6557410c2507c",
+      "acceptance_input_digest": "8a3fecd1371e88e619a3ffa0c6a52677f12bcc5d0b683ac7dd31746b9694ba02",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "CHANGELOG.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3df70e71b2eaf22ef74be80f415d89944da488ee5b2845fd1c62784332b91cd1",
+            "entry_digest": "28f3d171247ad9b32a0b085e1144342c69a1218ec10a8782407d075a93a18d65",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "tests/changelog.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8202c4966e5442eb8dd1e27ee5d84cb86202ca5dfa7c85a3bf5d58d5f0693c1a",
+            "entry_digest": "f9446b96f0c71ddbe5294591df2045b4c4b076b3faa26d8263379fceb9bf5245",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 2 tests
+test a_session_whose_native_change_is_archived_is_finished_without_a_native_read ... ok
+test session_use_archives_a_finalized_session_unless_its_inbox_has_entries ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 0.03s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/sessions.rs (target/debug/deps/sessions-87f16f70381f133d)

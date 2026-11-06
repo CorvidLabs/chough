@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact readme_verify_lane_list_names_every_fledge_verify_step for TC-cli-readme-verify-list-matches-fledge: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd.log": "8ebc579c2385acddcf3f7b787cde4af3ce86d16c2fa2609e50bd51989966c801"
+  },
+  "observed_at_unix_seconds": 1793982514,
+  "snapshot": {
+    "revision": "de02abd046f1140085215bbb0f3b64f369d0eae1",
+    "dirty": true,
+    "fingerprint": "fa5342ab2c10355d075665c1ebea902b82739263b59100d8f53bccfd6fec9734",
+    "content": "e83058e7ddc9242de3b60d0c55c55c6dcf136256e0bd9f5e277696f7d428d248"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-readme-verify-list-matches-fledge",
+      "digest": "8053fe1bd76560e758c7d613849c909d72c620944f864dc5d9bfa8e51fdae130"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "readme_verify_lane_list_names_every_fledge_verify_step"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

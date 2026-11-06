@@ -990,6 +990,76 @@ fn relayed_decision(
     Ok(Some((gate.clone(), relay, decision)))
 }
 
+/// Save `session` with a gate-closed event for each of `cleared` and a gate-opened
+/// event for each of `opened`, sizing the cursor first so a refused save publishes no
+/// event. `checkpoint` and the doctor's gate withdrawal (REQ-history-012) share it.
+fn save_with_gate_events(
+    root: &Path,
+    session: &mut Checkpoint,
+    current_stage: &str,
+    cleared: &[String],
+    opened: &[String],
+    relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
+) -> Result<()> {
+    let mut candidate = session.clone();
+    if (!cleared.is_empty() || !opened.is_empty())
+        && let Some(cursor) = candidate.history_cursor.as_mut()
+        && cursor.head.is_none()
+    {
+        // Every gate event keeps the cycle and leaves a fixed-width head.
+        // Size the final cursor before publishing any events; this ID is
+        // only a serialization placeholder and is never allocated or saved.
+        cursor.head = Some("EVT-000000000000000000000000".into());
+    }
+    serialize_checkpoint(&candidate)?;
+    if session.history_cursor.is_some() {
+        for gate in cleared {
+            stage::log_gate(
+                root,
+                session,
+                stage::GATE_CLOSED,
+                current_stage,
+                gate,
+                relay_for(gate),
+            )?;
+        }
+        for gate in opened {
+            stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
+        }
+        save_checkpoint(root, session)?;
+    } else {
+        save_checkpoint(root, session)?;
+        for gate in cleared {
+            stage::log_gate(
+                root,
+                session,
+                stage::GATE_CLOSED,
+                current_stage,
+                gate,
+                relay_for(gate),
+            )?;
+        }
+        for gate in opened {
+            stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
+        }
+    }
+    Ok(())
+}
+
+/// Withdraw every open awaiting-human gate of the canonical checkpoint, as
+/// `chough checkpoint --clear-awaiting-human` does: gate-closed events with no relayed
+/// decision, and no decision recorded. Returns the withdrawn gates.
+pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
+    let mut session = read_checkpoint(root)?;
+    let cleared = std::mem::take(&mut session.awaiting_human);
+    if cleared.is_empty() {
+        return Ok(cleared);
+    }
+    let current_stage = session.stage.current.clone();
+    save_with_gate_events(root, &mut session, &current_stage, &cleared, &[], |_| None)?;
+    Ok(cleared)
+}
+
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
     if let Some(operands) = args.merge {
         return merge_checkpoints(&operands);
@@ -1098,62 +1168,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .filter(|gate| !open_before_additions.contains(gate))
             .cloned()
             .collect();
-        let mut candidate = session.clone();
-        if (!cleared.is_empty() || !opened.is_empty())
-            && let Some(cursor) = candidate.history_cursor.as_mut()
-            && cursor.head.is_none()
-        {
-            // Every gate event keeps the cycle and leaves a fixed-width head.
-            // Size the final cursor before publishing any events; this ID is
-            // only a serialization placeholder and is never allocated or saved.
-            cursor.head = Some("EVT-000000000000000000000000".into());
-        }
-        serialize_checkpoint(&candidate)?;
-        if session.history_cursor.is_some() {
-            for gate in &cleared {
-                stage::log_gate(
-                    root,
-                    &mut session,
-                    stage::GATE_CLOSED,
-                    &current_stage,
-                    gate,
-                    relay_for(gate),
-                )?;
-            }
-            for gate in &opened {
-                stage::log_gate(
-                    root,
-                    &mut session,
-                    stage::GATE_OPENED,
-                    &current_stage,
-                    gate,
-                    None,
-                )?;
-            }
-            save_checkpoint(root, &session)?;
-        } else {
-            save_checkpoint(root, &session)?;
-            for gate in &cleared {
-                stage::log_gate(
-                    root,
-                    &mut session,
-                    stage::GATE_CLOSED,
-                    &current_stage,
-                    gate,
-                    relay_for(gate),
-                )?;
-            }
-            for gate in &opened {
-                stage::log_gate(
-                    root,
-                    &mut session,
-                    stage::GATE_OPENED,
-                    &current_stage,
-                    gate,
-                    None,
-                )?;
-            }
-        }
+        save_with_gate_events(
+            root,
+            &mut session,
+            &current_stage,
+            &cleared,
+            &opened,
+            relay_for,
+        )?;
     }
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
     if let Some((gate, relay, _)) = &relayed {

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "47874558f954d8d49ec70b80ec17358a558a1b2c",
+      "contract_digest": "fbe6796dbc2f3c89889df102c14fdc9bef6bcb5583084b134c4de469d4f71221",
+      "execution_digest": "e5ffda3f3bba40eb245f02cd37a38a1abf94fba50b7b5b89957116d9e18b1651",
+      "workspace_digest": "bce1dd53371d3a34a46d00545b3d0dd50d490a0b91353c130496e1971a762781",
+      "timestamp": 1793995852
+    }
+  ]
+}

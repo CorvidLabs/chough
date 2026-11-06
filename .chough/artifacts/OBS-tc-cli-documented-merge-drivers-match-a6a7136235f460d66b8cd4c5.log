@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test cli_reference_declares_the_merge_drivers_this_repository_declares ... FAILED
+
+failures:
+
+---- cli_reference_declares_the_merge_drivers_this_repository_declares stdout ----
+
+thread 'cli_reference_declares_the_merge_drivers_this_repository_declares' (272232831) panicked at tests/docs.rs:783:5:
+docs/cli.md Declare the drivers: missing ["CHANGELOG.md merge=union", "knowledge/attachments/*/pruned.jsonl merge=union", "knowledge/bugs/*.md merge=union", "knowledge/sessions/*.md merge=union"]; not in .gitattributes []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    cli_reference_declares_the_merge_drivers_this_repository_declares
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.01s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s
+     Running tests/docs.rs (target/debug/deps/docs-592487f356832a3e)
+error: test failed, to rerun pass `--test docs`

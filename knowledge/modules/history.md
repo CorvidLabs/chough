@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 5
-archived_changes: 17
+archived_changes: 22
 tags:
   - chough/module
   - module/history
@@ -31,16 +31,16 @@ this note only links them.
 
 ## Archived changes that touched history
 
-17 archived changes, newest first.
+22 archived changes, newest first.
 
+- [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)
+- [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)
+- [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
+- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143)
+- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19)
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files
-- [adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog](../archives/adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog.md) Adopt event history and per-change sessions in this repository and union-merge the retention ledger and changelog
-- [let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded](../archives/let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded.md) Let a session started after legacy history adoption write events while the adopted legacy log stays guarded
-- [record-the-2026-11-04-retention-lessons-in-the-history-lesson-source](../archives/record-the-2026-11-04-retention-lessons-in-the-history-lesson-source.md) Record the 2026-11-04 retention lessons in the history lesson source
-- [lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention](../archives/lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention.md) Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98)
-- [remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that](../archives/remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that.md) Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82)
-- 7 more on the [timeline](../timeline.md)
+- 12 more on the [timeline](../timeline.md)

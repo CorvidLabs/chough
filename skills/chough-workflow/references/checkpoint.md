@@ -1,8 +1,10 @@
 # Checkpoint and cold resume
 
-Essential state must never live only in model context. `.chough/session.json` is the
-single writable checkpoint. It works without the librarian and without any other
-storage adapter.
+Essential state must never live only in model context. The checkpoint is the single
+writable record of where work stands: `.chough/session.json`, or, once
+`.chough/sessions/` exists, the active session `.chough/sessions/<key>.json` (see
+[Sessions per objective](#sessions-per-objective)). It works without the librarian and
+without any other storage adapter.
 
 ## What it holds
 
@@ -19,7 +21,9 @@ storage adapter.
 
 Standing preferences are in `.chough/preferences.json`. Legacy transitions stay in
 `.chough/transitions.jsonl`; adopted and new projects use immutable events under
-`.chough/history/cycles/`, selected by `history_cursor` in the same checkpoint.
+`.chough/history/cycles/`, selected by `history_cursor` in the same checkpoint. With
+sessions, `.chough/local/active-session` names the active one; `.chough/local/` stays
+in each worktree and is never committed.
 Observations are in `.chough/evidence/`, bugs in
 `.chough/bugs/`, case definitions in `.chough/cases/` and retention removals in
 `.chough/pruned.jsonl`.
@@ -34,12 +38,13 @@ chough checkpoint --completed "<what was done>" --observation <id> \
   --decision "<decision, because reason>" --next-action "<next step>"
 ```
 
-Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` record to
-`.chough/transitions.jsonl` (only when that gate is not already open), and
-`--clear-awaiting-human` appends one `gate-closed` record per gate it clears. They
-record when a gate waited, and `chough timing` reads them to show waiting-on-human
-time. Open and close gates through these flags rather than by editing `session.json`,
-or the waiting time is lost.
+Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` record to the
+transition history, an event under `.chough/history/cycles/` (or a line of
+`.chough/transitions.jsonl` in a legacy project), only when that gate is not already
+open; `--close-gate` and `--clear-awaiting-human` append one `gate-closed` record per
+gate they close. They record when a gate waited, and `chough timing` reads them to
+show waiting-on-human time. Open and close gates through these flags rather than by
+editing the checkpoint file, or the waiting time is lost.
 
 When the human decides a gate, record their decision on their behalf with
 `chough checkpoint --close-gate "<gate>" --decided-by "<who>" --words "<their exact
@@ -145,8 +150,15 @@ one-owner rule for live writes.
 When `.chough/sessions/` exists, each objective or native change has its own
 checkpoint at `.chough/sessions/<key>.json`, and every command uses the active one
 (`chough session new|adopt|use|list`). Start one with `chough session new <change-id>`
-or move the existing checkpoint with `chough session adopt <key>`. Finished sessions
-move to `.chough/sessions/archive/` when you switch away. Subagents do not edit the
+or move the existing checkpoint with `chough session adopt <key>`. A session archives
+itself at its move into done, in its own change, and the active pointer is cleared;
+then start the next one with `chough session new`. It stays open while its inbox has
+unfolded entries or release is authorized (ask for release before done). Do not stage
+another session's archive move. A session whose native change is already archived
+is finished too, and the next `session new` or `session use` archives it; close
+abandoned work with `chough session close <key> --reason <text>`. When a fresh
+worktree refuses to enter Chough, run `chough doctor` to see the debt and
+`chough doctor --fix` to clear it; decisions also need `--reason`. Subagents do not edit the
 session: they run `chough inbox add --session <key> --from <name> --kind
 observation|decision|completed|question --text <text>`, and the agent that owns the
 session runs `chough inbox fold`. Inbox entries never approve, review, consent, clear a

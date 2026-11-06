@@ -7,7 +7,7 @@ flowchart TB
     build --> tests
     human -->|"approved"| review["specsync change review"]
     review -->|"no commit in between"| ship["specsync change ship or finalize (same PR)"]
-    ship --> archive["Clear the gate, stage advance; commit"]
+    ship --> archive["Review gate: --close-gate, then stage advance; commit"]
     archive --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
     merge -. "only if authorized" .-> release["Optional release with real commands"]

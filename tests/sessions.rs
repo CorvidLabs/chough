@@ -149,9 +149,7 @@ fn switching_archives_done_sessions() {
     let fixture = Fixture::new();
     sessions(&fixture);
     fixture.ok(&["session", "use", "alpha"]);
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
+    // Release is requested before done, so the session stays open for it (#155).
     fixture.ok(&[
         "consent",
         "grant",
@@ -159,8 +157,12 @@ fn switching_archives_done_sessions() {
         "--source",
         "Human: release alpha",
     ]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     fixture.ok(&["stage", "advance"]);
+    left_open(&fixture, "alpha");
     assert_eq!(
         json(&fixture, ".chough/sessions/alpha.json")["stage"]["current"],
         "done"
@@ -374,9 +376,7 @@ fn a_project_without_sessions_is_unchanged() {
 
 fn finish(fixture: &Fixture, key: &str) {
     fixture.ok(&["session", "use", key]);
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
+    // Release is requested before done, so the session stays open for it (#155).
     fixture.ok(&[
         "consent",
         "grant",
@@ -384,8 +384,25 @@ fn finish(fixture: &Fixture, key: &str) {
         "--source",
         "Human: release it",
     ]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     fixture.ok(&["stage", "advance"]);
+    left_open(fixture, key);
+}
+
+/// Since #155 a session archives itself at its move into done. A done session still
+/// open is one an older Chough left, or one merged in from another branch; this puts
+/// the session back where such a one sits, so the switch rules can be tested.
+fn left_open(fixture: &Fixture, key: &str) {
+    std::fs::rename(
+        fixture
+            .root()
+            .join(format!(".chough/sessions/archive/{key}.json")),
+        fixture.root().join(format!(".chough/sessions/{key}.json")),
+    )
+    .unwrap();
 }
 
 fn add_entry(fixture: &Fixture, key: &str, kind: &str, text: &str) -> String {
@@ -1290,4 +1307,215 @@ fn sessions_still_write_after_the_anchor_holder_rolls_into_the_vault_or_is_shelv
             "{destination}: {refused}"
         );
     }
+}
+
+/// CH-19 (REQ-history-009): an inbox entry file of exactly 16,384 bytes is read; one byte
+/// more is refused naming the bound.
+#[test]
+fn an_inbox_entry_of_exactly_16_kib_is_read_and_one_byte_more_is_refused() {
+    for (size, readable) in [(16_384usize, true), (16_385, false)] {
+        let fixture = Fixture::new();
+        sessions(&fixture);
+        let id = add_entry(&fixture, "alpha", "decision", "a note from a subagent");
+        let path = format!(".chough/sessions/alpha.inbox/{id}.json");
+        let text = fixture.read(&path);
+        assert!(text.len() < size);
+        fixture.write(&path, &format!("{text}{}", " ".repeat(size - text.len())));
+        fixture.ok(&["session", "use", "alpha"]);
+        let output = fixture.run(&["inbox", "list"]);
+        assert_eq!(
+            output.status.success(),
+            readable,
+            "{size}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        if !readable {
+            assert!(
+                String::from_utf8_lossy(&output.stderr).contains("16384"),
+                "{size}"
+            );
+        }
+    }
+}
+
+/// CH-19 (REQ-history-009): an inbox holds 200 unfolded entries; the 201st is refused,
+/// naming the bound and the fold that recovers.
+#[test]
+fn an_inbox_holds_200_unfolded_entries_and_refuses_the_201st() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    for index in 0..200 {
+        add_entry(&fixture, "alpha", "decision", &format!("note {index}"));
+    }
+    let refused = fixture.fails(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "decision",
+        "--text",
+        "one more",
+    ]);
+    assert!(refused.contains("200 unfolded entries"), "{refused}");
+    assert!(refused.contains("fold"), "{refused}");
+}
+
+/// A `specsync` on PATH that records any call and fails, so a test sees a native read.
+#[cfg(unix)]
+fn no_native_reads(fixture: &Fixture) {
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\necho \"$*\" >>.native-calls\nexit 2\n",
+    );
+    fixture.executable("bin/specsync");
+}
+
+/// Give `key` the native change `change` and archive that change on HEAD, as a move
+/// into done that timed out after SpecSync finalized it leaves things.
+fn finalized_change(fixture: &Fixture, key: &str, change: &str) {
+    let file = format!(".chough/sessions/{key}.json");
+    let mut session = json(fixture, &file);
+    session["native_change"] = Value::String(change.to_string());
+    fixture.write(
+        &file,
+        &(serde_json::to_string_pretty(&session).unwrap() + "\n"),
+    );
+    fixture.write(
+        &format!(".specsync/archive/changes/2026-11-06-{change}/finalization.json"),
+        &format!("{{\"schema_version\": 2, \"change_id\": \"{change}\", \"timestamp\": 700}}\n"),
+    );
+}
+
+/// DRIVE-16 (chough#163): a session whose native change is archived on HEAD is
+/// finished even short of done, so it is not one of several open sessions, and the
+/// next switch archives it unchanged, all without a native read.
+#[cfg(unix)]
+#[test]
+fn a_session_whose_native_change_is_archived_is_finished_without_a_native_read() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    finalized_change(&fixture, "alpha", "ch-alpha");
+    no_native_reads(&fixture);
+    fs::remove_file(fixture.root().join(".chough/local/active-session")).unwrap();
+    let alpha = fixture.read(".chough/sessions/alpha.json");
+    // Only beta is still open work, so it is active without a pointer.
+    fixture.ok(&["checkpoint", "--decision", "beta decision"]);
+    assert_eq!(
+        json(&fixture, ".chough/sessions/beta.json")["decisions"][0],
+        "beta decision"
+    );
+    assert_eq!(fixture.read(".chough/sessions/alpha.json"), alpha);
+
+    let created = fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    assert_eq!(
+        created["archived"],
+        serde_json::json!(["alpha"]),
+        "{created}"
+    );
+    assert!(!fixture.exists(".chough/sessions/alpha.json"));
+    assert_eq!(fixture.read(".chough/sessions/archive/alpha.json"), alpha);
+    assert!(fixture.exists(".chough/sessions/beta.json"));
+    assert!(
+        !fixture.exists(".native-calls"),
+        "{}",
+        fixture.read(".native-calls")
+    );
+}
+
+/// DRIVE-16: `session use` archives a finalized session too, and one with unfolded
+/// inbox entries stays open and is reported, as a done one does.
+#[cfg(unix)]
+#[test]
+fn session_use_archives_a_finalized_session_unless_its_inbox_has_entries() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    finalized_change(&fixture, "alpha", "ch-alpha");
+    finalized_change(&fixture, "gamma", "ch-gamma");
+    add_entry(&fixture, "gamma", "decision", "late note");
+    no_native_reads(&fixture);
+    let switched = fixture.ok(&["session", "use", "beta"]);
+    assert_eq!(
+        switched["archived"],
+        serde_json::json!(["alpha"]),
+        "{switched}"
+    );
+    assert_eq!(switched["kept_open"][0]["key"], "gamma", "{switched}");
+    assert!(fixture.exists(".chough/sessions/gamma.json"));
+    assert!(!fixture.exists(".native-calls"));
+}
+
+/// DRIVE-16: `chough session close <key> --reason` archives abandoned work with the
+/// reason recorded in it, without a native read, and clears the pointer when it named
+/// that session.
+#[cfg(unix)]
+#[test]
+fn session_close_archives_abandoned_work_with_its_reason() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    no_native_reads(&fixture);
+    let before = fixture.read(".chough/sessions/alpha.json");
+    let refused = fixture.fails(&["session", "close", "alpha", "--reason", " "]);
+    assert!(refused.contains("reason"), "{refused}");
+    assert_eq!(fixture.read(".chough/sessions/alpha.json"), before);
+
+    let closed = fixture.ok(&[
+        "session",
+        "close",
+        "alpha",
+        "--reason",
+        "Superseded by beta",
+    ]);
+    assert_eq!(closed["closed"], "alpha", "{closed}");
+    assert_eq!(closed["archived"], ".chough/sessions/archive/alpha.json");
+    assert!(!fixture.exists(".chough/sessions/alpha.json"));
+    let archived = json(&fixture, ".chough/sessions/archive/alpha.json");
+    let decisions = archived["decisions"].as_array().unwrap();
+    assert!(
+        decisions
+            .last()
+            .and_then(Value::as_str)
+            .is_some_and(|text| text.contains("Superseded by beta")),
+        "{archived}"
+    );
+    // Beta, the active session, is untouched and still active.
+    assert_eq!(fixture.read(".chough/local/active-session").trim(), "beta");
+    let refused = fixture.fails(&["session", "close", "alpha", "--reason", "again"]);
+    assert!(refused.contains("archived"), "{refused}");
+    let refused = fixture.fails(&["session", "close", "delta", "--reason", "none"]);
+    assert!(refused.contains("no session delta"), "{refused}");
+
+    // Closing the active session clears the pointer.
+    fixture.ok(&["session", "close", "beta", "--reason", "Abandoned"]);
+    assert!(!fixture.exists(".chough/local/active-session"));
+    let list = fixture.ok(&["session", "list"]);
+    assert!(
+        list["sessions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|session| session["archived"] == true),
+        "{list}"
+    );
+    assert!(!fixture.exists(".native-calls"));
+}
+
+/// DRIVE-16: closing a session with unfolded inbox entries refuses with nothing moved,
+/// naming the commands that fold them first.
+#[test]
+fn session_close_refuses_a_session_with_unfolded_inbox_entries() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    add_entry(&fixture, "alpha", "decision", "unfolded");
+    let before = fixture.read(".chough/sessions/alpha.json");
+    let refused = fixture.fails(&["session", "close", "alpha", "--reason", "Abandoned"]);
+    assert!(
+        refused.contains("chough session use alpha") && refused.contains("chough inbox fold"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(".chough/sessions/alpha.json"), before);
+    assert!(!fixture.exists(".chough/sessions/archive/alpha.json"));
 }

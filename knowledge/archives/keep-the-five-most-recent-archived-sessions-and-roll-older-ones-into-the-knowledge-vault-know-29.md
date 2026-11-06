@@ -59,7 +59,7 @@ verification records, the retention ledger and Git stay authoritative.
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-relay-closes-one-gate-with-four-values-4aeb84d60f1ea766aefdb776 | passed (by cycle time) | local | TC-cli-relay-closes-one-gate-with-four-values |
-| OBS-tc-cli-relay-closes-one-gate-with-four-values-591766803ac5a151a11fae6a | passed (by cycle time) | local | TC-cli-relay-closes-one-gate-with-four-values |
+| OBS-tc-cli-relay-closes-one-gate-with-four-values-591766803ac5a151a11fae6a | passed (pruned) (by cycle time) | local | TC-cli-relay-closes-one-gate-with-four-values |
 
 ## Bugs
 
@@ -71,4 +71,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.json](../attachments/keep-the-five-0b51185a/sessions/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.json)

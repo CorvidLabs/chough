@@ -13,6 +13,83 @@ All notable changes to Chough are recorded here. The format follows
   grafted/alternate history, active changes and every mismatch go live. A timed-out
   prime writes no entry and keeps the existing deadline and descendant kill. The two
   exact snapshot digest passes now run concurrently without changing freshness.
+- A project in a subdirectory of its Git repository can run cases and record evidence
+  there (#170, DRIVE-18). The evidence snapshot then covers only the project's files,
+  with the repository's `HEAD`. Before, every such command refused with "--root must be
+  the Git repository root for evidence", and that advice did not work there. Nothing
+  changes for a project at the repository root.
+- The timing trace test no longer fails when its two runs straddle a second (#169,
+  DRIVE-19). It runs each report once and requires them to be equal except for the
+  exact clock shift between the runs, instead of retrying for a byte-equal pair.
+- The README, docs, workflow skill and diagrams say what main does again, and
+  `tests/docs.rs` fails when they drift (FLOW-18). It checks the stage diagram
+  against the helper's stages and moves, every inline Mermaid block against its
+  source and each SVG against its labels, the README helper table against
+  `chough --help`, the README verify list against `fledge.toml`, every documented
+  `chough` flag and relative link, the CLI reference's `.gitattributes` lines against
+  the repository's, and stated SpecSync, Fledge and HI versions against CI's pins.
+  Corrected: the skill's no-helper resume and checkpoint reference name sessions and
+  event history; the stage diagram skips from design to plan and names the unlinked
+  failure; the closeout closes the review gate with `--close-gate`; SpecSync's
+  `verification_ignored_paths` ships from 6.1.2; the archive summary keeps the newest
+  run (KNOW-17); releasing.md works for any version. Installed copies of the earlier
+  `SKILL.md`, `checkpoint.md` and `lifecycle.md` update as known-outdated.
+  The CLI reference's Commands table is also checked against `chough --help`, and its
+  bug row names `merge` (#173).
+- `chough doctor` finds and fixes the Chough debt that stops a fresh worktree from
+  entering Chough (DRIVE-17): finished sessions left open, a legacy
+  `.chough/session.json` to adopt, a stale active pointer, and awaiting-human gates on
+  sessions whose native change is archived. With no flag or `--dry-run` it only
+  reports. `--fix` applies the safe fixes. Withdrawing a gate and closing unfinished
+  work (`--close <key>`) are decisions that also need `--reason`; without it they are
+  reported as skipped. It makes no native read and records no human decision.
+- A session whose native change is archived on HEAD is finished even short of done
+  (#163, DRIVE-16), for example after a move into done timed out once SpecSync had
+  finalized the change. `session new` and `session use` archive it, and with no
+  active pointer it no longer makes other worktrees refuse with "several open
+  sessions". `chough session close <key> --reason <text>` closes abandoned work with
+  the reason recorded. Neither reads native state.
+- Bug links name their way out, and a mistaken duplicate can be reopened (#153, audit
+  Bugs row, REQ-cli-054). `chough bug update <id> --status open` on a bug marked
+  duplicate used to fail with "duplicate_of is only set for duplicate bugs"; changing a
+  duplicate's status now clears `duplicate_of` and notes it. A bug can no longer relate
+  to itself. Self or unknown links, and unknown bugs, are refused naming
+  `chough bug list --all`, and `verified` without linked proof names
+  `chough bug update <id> --observation <id>`. New tests also hold every
+  classification, scope and status, the blocking rule, the search scores and the
+  report's fields. REQ-cli-054 states these mappings.
+- Tests now hold positive track selection and every delivery-observation kind (#152,
+  audit MA-01, MA-02). Requesting `--track copy-localization` selects its linked case
+  while design-QA stays omitted, and both tracks select all three. Publication,
+  installation, deployment, live-health and the legacy `delivery-observation` kind are
+  each recorded and reported as themselves, and a dry run as a dry run. Each delivery kind is
+  key-item proof: `evidence prune` protects it with its kind as the reason and the done
+  trim moves it into the vault, while a superseded dry run is never protected and is
+  removed with no vault copy. REQ-cli-014 gains the matching criterion; no behavior
+  changes.
+- The nine acceptance criteria the audit found with no assertion now have tests (#138).
+  REQ-cli-002 (lesson labels, no lesson store), REQ-cli-007 (one checkpoint store, no
+  APS), REQ-cli-012 (the bug-ID upgrade note), REQ-cli-029 (recorded authority, labels
+  never decide, a skipped cold start is never a pass), REQ-cli-031 (the walkthrough
+  opening), REQ-cli-045 (librarian off, no reset time) and REQ-reporting-003. For the
+  last, `sh examples/measure-report.sh OLD NEW ROOT [RUNS]` pairs two binaries on one
+  root and keeps native wait apart from local time. Each new assertion was shown to fail
+  under a targeted mutation. Behavior is unchanged.
+- A session archives itself at its own move into done and clears the active pointer
+  (#155, REQ-history-006, DRIVE-13), so a done session merged to main is already
+  archived and no other worktree's `session new` moves it into an unrelated change. It
+  stays open while its inbox has unfolded entries or release is authorized.
+- The KNOW-29 roll-up never rolls the archived session that holds the legacy history
+  anchor (#143, KNOW-29 amended by Leif). It stays in `.chough/sessions/archive/` in
+  addition to the five, so the anchor never depends on the knowledge directory.
+- The chough-workflow skill's transition table now names `chough stage advance --to
+  <stage>` (REQ-cli-052, DRIVE-9). Installed copies of `references/stages.md` from 0.1.0
+  to 0.4.0 report `known-outdated`, and `chough skill update` refreshes them.
+- An empty change directory left by a branch switch no longer counts as an open native
+  change (#148). The knowledge index no longer lists it as active, which had made
+  `library index --check` fail on a fresh clone, and the trim no longer refuses because
+  of it. A directory with a change file still counts as open.
+
 - A test now holds REQ-cli-033's ceiling of 8 archive validity reads at once on any
   host (#137, audit CH-M11). The reader count is a pure function, `validity_readers`,
   with no behavior change. A unit test checks a host that reports 128 cores, and a
@@ -127,6 +204,26 @@ All notable changes to Chough are recorded here. The format follows
   staging file, then hard-linked into place, so a failed copy removes only its staging
   file. A rollback removes a copy only while it still holds the bytes and mode written,
   and names any copy it kept.
+- Sessions per objective or native change (#77, REQ-cli-037, REQ-history-006): `chough
+  session new <key>` creates `.chough/sessions/<key>.json` with its own history
+  cycle, `session adopt` moves an existing checkpoint there byte for byte, `session
+  use` and an untracked pointer pick the active session, and switching archives done
+  sessions unchanged (a done session with unfolded inbox entries stays open, and
+  `session list` shows each session's unfolded count). Subagents append create-only
+  entries with `chough inbox add`, and `chough inbox fold` adds them to the active
+  session after checking every entry and target first. Branches that record work
+  in different sessions merge without conflict; `checkpoint --merge` still merges two
+  edits of the same session. Each command saves to the session it resolved when it
+  started, even if another process switches sessions meanwhile, and evidence
+  retention protects what every open and archived session references, refusing when
+  one cannot be read. Without `.chough/sessions/` nothing changes. Older Chough
+  binaries do not know sessions mode, so upgrade every agent before adopting. `session new
+  --module` accepts the same SpecSync module IDs as `init`, such as `chat.service`.
+- A session started with `chough session new` in a project that adopted its legacy
+  transition log now writes events (#111, REQ-history-006). Its first transition used to
+  refuse with "legacy history anchor changed", so a new session in an adopted project
+  could not record a transition. The new session's history stays its own, the legacy log
+  keeps its bytes, and a change to that log still refuses writes in every session.
 - Parallel pull requests no longer conflict in files Chough writes (REQ-cli-047,
   DRIVE-12). Each change can add its cases in its own
   `.chough/cases/<module>.<part>.cases.toml`. `chough library index --check` fails
@@ -321,21 +418,6 @@ All notable changes to Chough are recorded here. The format follows
   lists backfilled moves separately, marks the segments they bound and keeps those
   stages out of estimates. Older Chough binaries refuse a transition log that holds a
   backfilled record, so upgrade every agent on a project before using it.
-- Sessions per objective or native change (REQ-cli-037, REQ-history-006): `chough
-  session new <key>` creates `.chough/sessions/<key>.json` with its own history
-  cycle, `session adopt` moves an existing checkpoint there byte for byte, `session
-  use` and an untracked pointer pick the active session, and switching archives done
-  sessions unchanged (a done session with unfolded inbox entries stays open, and
-  `session list` shows each session's unfolded count). Subagents append create-only
-  entries with `chough inbox add`, and `chough inbox fold` adds them to the active
-  session after checking every entry and target first. Branches that record work
-  in different sessions merge without conflict; `checkpoint --merge` still merges two
-  edits of the same session. Each command saves to the session it resolved when it
-  started, even if another process switches sessions meanwhile, and evidence
-  retention protects what every open and archived session references, refusing when
-  one cannot be read. Without `.chough/sessions/` nothing changes. Older Chough
-  binaries do not know sessions mode, so upgrade every agent before adopting. `session new
-  --module` accepts the same SpecSync module IDs as `init`, such as `chat.service`.
 
 - Checkpoint writers in parallel in one clone no longer lose updates (#62): commands
   that change `.chough/session.json` take an exclusive lock (an empty file in the

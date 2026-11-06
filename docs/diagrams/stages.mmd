@@ -5,11 +5,10 @@ config:
 ---
 flowchart TB
     intent["intent: HI criteria, FRD, one intent decision"] --> design["design: only for visual changes"]
-    intent -. "skip design with a reason" .-> plan
-    design --> plan["plan: native change, one scope approval"]
+    design -->|"advance, or skip with a reason when nothing is visual"| plan["plan: native change, one scope approval"]
     plan -->|"gate: native definition approved"| build["build: approved tasks"]
     build -->|"gate: native approval valid or archived"| test["test: focused cases, three tracks"]
-    test -->|"gate: no open blocking bug; native approval valid or archived"| accept["accept: evidence for human review"]
+    test -->|"gate: no open blocking bug or unlinked failure; native approval valid or archived"| accept["accept: evidence for human review"]
     accept -->|"gate: native change archived, terminal evidence authenticates"| done["done"]
     done -. "only on request or standing setting" .-> release["release: optional, real commands"]
     release -->|"same archive gate"| done

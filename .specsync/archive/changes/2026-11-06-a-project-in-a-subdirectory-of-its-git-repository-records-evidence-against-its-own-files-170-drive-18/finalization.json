@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18",
+  "implementation_commit": "8568be3fb0a07faf386629aafb353bebb335dcc2",
+  "implementation_tree": "aebbdcf9e7ee42de1527d96bd59e117c3da9cc12",
+  "contract_digest": "ea03682781bcc6228f3326362991c023341b91fbc939729f83767afeb2f8ffd9",
+  "workspace_digest": "c7de79aa673bf797a2c12e4a133daaff76b97663125991167a5076209c8ea7b2",
+  "closing_digest": "26dca71ba0b9f67914a0df97f80f1f790164fcc4530d2e0fdb1c992fab012e39",
+  "review_digest": "9c14fc2e6e4c1b2b618d1324cc41fa1371fc7b917538d04f28e8350f30ac2b47",
+  "finalization_digest": "ecf6b92845099a0d3f7071e4d64ad4cdbd87db48f1242c66e68e5d046fa98c54",
+  "timestamp": 1794001542
+}

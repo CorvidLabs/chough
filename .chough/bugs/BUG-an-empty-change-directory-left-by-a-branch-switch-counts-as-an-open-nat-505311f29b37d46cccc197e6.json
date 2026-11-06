@@ -30,7 +30,13 @@
   "duplicate_of": null,
   "related": [],
   "source": "ch-c456 agent, C5 (#137) closeout, 2026-11-05",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793947855,
+      "text": "Filed as GitHub issue CorvidLabs/chough#148 (2026-11-05, at the orc's request deciding for Leif overnight).",
+      "observations": []
+    }
+  ],
   "created_at_unix_seconds": 1793943400,
-  "updated_at_unix_seconds": 1793943400
+  "updated_at_unix_seconds": 1793947855
 }

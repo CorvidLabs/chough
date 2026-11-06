@@ -2,7 +2,11 @@
 
 Run `chough --help` and each subcommand's `--help` for the installed executable. All
 commands accept global `--root PATH` (default: the current directory). Recording
-evidence or running cases requires the Git repository root and an existing commit.
+evidence or running cases needs a Git repository with an existing commit. The project
+may be the repository root or a subdirectory of it. In a subdirectory the evidence
+snapshot covers only the project's files, with the repository's `HEAD` as its
+revision, and changes elsewhere in the repository do not affect it (REQ-cli-056,
+DRIVE-18).
 Output is JSON unless stated otherwise. Exit codes: 0 on success; 1 when Chough
 refuses or fails, with `Error: ...` on stderr; 2 for an unknown command or invalid
 flag; 3 when `cases run` or `cases record` recorded an outcome other than `passed`.
@@ -22,16 +26,17 @@ their JSON.
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return\|backfill` | Transitions with reasons and an append-only log. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the transition keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While the checkpoint has an open awaiting-human gate, `advance` and `skip` (release → done included) are refused as `refused:awaiting-human` before any native read, naming up to 3 gates; record the decision, then `chough checkpoint --clear-awaiting-human`. There is no bypass; `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are unaffected. `backfill` records an advance that already happened; see [Backfilled moves](#backfilled-moves). `advance --to <stage>` moves through each main stage up to `<stage>` on one native read; see [Batched advance](#batched-advance). |
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding; record a manual or agent-assisted run with `--verdict N=pass\|fail` for every expected outcome. `run` and `record` allocate an OBS ID when `--observation-id` is omitted and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]`, `evidence prune [--apply]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID allocates the new OBS form; an explicit ID must use that form for a new write. Never replaces an ID. `prune`: preview, or with `--apply` remove, eligible observation sets; see [Retention](#retention). |
-| `bug add\|update\|list\|search\|show\|report` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. |
+| `bug add\|update\|list\|search\|show\|report\|merge` | Local backlog. `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual`, `--environment` (required) and refuses likely duplicates unless `--distinct REASON`; regression needs `--regression-baseline`. New manual and automatically captured bugs share the creation-time generator under [Bug identities](#bug-identities). `update ID` takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification`, `--regression-baseline`; updates never recompute or rename the ID. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)); without them the refusal names `chough bug update ID --observation OBS`. `--duplicate-of` and `--related` must name another existing bug: a link to the bug itself or to an unknown bug, and an update or report of an unknown bug, are refused with nothing written and name `chough bug list --all`. Changing a duplicate's status clears its `duplicate_of` and notes it, so `--status open` reopens a bug marked duplicate by mistake (REQ-cli-054). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared IDs; `report` prints Markdown and posts nothing. `merge BASE OURS THEIRS` is the Git merge driver for `.chough/bugs/*.json` that `.gitattributes` declares as `merge=chough-bug` (see [Merging branches](#merging-branches)). |
 | `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto, manual (manual opts out of trimming at done, KNOW-13). Only `always`, `standing` and `auto` authorize without a run consent, except that with the librarian on, an unset `retention` lets the trim at done run (see [Post-archive summary](#post-archive-summary)); `manual` or a recorded `off` stops it. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. A new run receives a VAL ID and every attempt receives a new OBS ID. `resume ID` continues a new or legacy run under its original ID; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
-| `library init\|snapshot PATH... --reason R\|index\|archive [--apply]` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` (new and legacy dated snapshots, archived changes newest first with the newest 3 marked hot, a lessons index of pointers, and any earlier `library/` folder listed as is) and one `archives/<change-id>.md` entry per archived native change. `archive` previews, or with `--apply` performs, the post-archive summary; see [Post-archive summary](#post-archive-summary). No gate reads the knowledge directory. |
+| `library init\|snapshot PATH... --reason R\|index [--check]\|archive [--apply]` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` (new and legacy dated snapshots, archived changes newest first with the newest 3 marked hot, a lessons index of pointers, and any earlier `library/` folder listed as is) and one `archives/<change-id>.md` entry per archived native change; `index --check` writes nothing and fails when a generated note is missing or differs (see [Merging branches](#merging-branches)). `archive` previews, or with `--apply` performs, the post-archive summary; see [Post-archive summary](#post-archive-summary). No gate reads the knowledge directory. |
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. Hosts that share a directory get one entry. Both report a `legacy` list for an older `.claude/skills` copy, with each file's state, and never write it. |
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
-| `session new\|adopt\|use\|list`, `inbox add\|list\|fold` | Sessions per objective or native change, and the create-only subagent inbox. See [Sessions](#sessions). |
+| `session new\|adopt\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
+| `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--adopt-as KEY]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
 
 ## Backfilled moves
 
@@ -467,8 +472,9 @@ Declare the drivers in `.gitattributes`:
 .chough/session.json merge=chough-session
 .chough/sessions/*.json merge=chough-session
 .chough/sessions/archive/*.json merge=chough-session
-.chough/bugs/*.json merge=chough-bug
 .chough/pruned.jsonl merge=union
+CHANGELOG.md merge=union
+.chough/bugs/*.json merge=chough-bug
 knowledge/INDEX.md merge=union
 knowledge/rules.md merge=union
 knowledge/timeline.md merge=union
@@ -476,10 +482,15 @@ knowledge/timeline/*.md merge=union
 knowledge/archives/*.md merge=union
 knowledge/modules/*.md merge=union
 knowledge/intent/*.md merge=union
+knowledge/bugs/*.md merge=union
+knowledge/sessions/*.md merge=union
+knowledge/attachments/*/pruned.jsonl merge=union
 ```
 
-Only the generated notes, which `library index --check` compares, are union-merged.
-Attachments, snapshots, briefs and the README still conflict.
+In the knowledge directory, only the generated notes, which `library index --check`
+compares, and the retention ledger shards, which are append-only like the ledger, are
+union-merged. Attachments, snapshots, briefs and the README still conflict.
+`CHANGELOG.md` is this repository's own; a project declares it only if it keeps one.
 
 Set up the two Chough drivers once per clone:
 
@@ -507,12 +518,32 @@ every command uses `.chough/session.json` exactly as before.
   first). Adopt on the main line before branches diverge: a branch that still edits
   `.chough/session.json` conflicts once with the removal.
 - `chough session use <key>` makes an open session active. `session new` and `session
-  use` move every other open session whose stage is `done` to
-  `.chough/sessions/archive/<key>.json` with its bytes unchanged and report the keys
-  under `archived`. A done session with unfolded inbox entries stays open, so its
-  entries are not stranded; it is reported under `kept_open` with its
+  use` move every other finished session to `.chough/sessions/archive/<key>.json`
+  with its bytes unchanged and report the keys under `archived`. A session is
+  finished at stage `done`, or at any stage once its native change is archived on
+  HEAD, as an archive's `finalization.json` records; telling needs no native read
+  (#163, DRIVE-16). That covers a move into done that timed out after SpecSync
+  finalized the change. A finished session with unfolded inbox entries stays open, so
+  its entries are not stranded; it is reported under `kept_open` with its
   `inbox_unfolded` count. Make it active and run `chough inbox fold`, and the next
-  switch archives it.
+  switch archives it. With no active pointer, finished sessions do not count toward
+  several open sessions: the only unfinished one is active.
+- `chough session close <key> --reason <text>` closes an open session for abandoned
+  work, without a native read (#163, DRIVE-16). It adds the decision `Closed without
+  done: <reason>`, writes the session to `.chough/sessions/archive/<key>.json` (never
+  replacing a file), removes the open file and clears the active pointer when it
+  named that session. A blank reason, an archived or missing session, and a session
+  with unfolded inbox entries refuse with nothing changed; fold the entries first
+  with `chough session use <key>` and `chough inbox fold`.
+- At a successful move into done, the active session archives itself, last among the
+  done steps and in its own change, and the active pointer is cleared (#155,
+  REQ-history-006, DRIVE-13). It is reported as `applied.session_archive`: `archived`
+  with the key; `kept_open` while the inbox has unfolded entries or release is
+  authorized (release is entered from done, so ask for it before done; the move from
+  release into done archives it); or `skipped` without sessions. Afterwards `next`
+  and `status` refuse, naming `chough session new <key>`. A done session merged to
+  main is already archived, so no other worktree moves it; `session new` and `use`
+  still archive done sessions left open by older versions.
 - `chough session list` reports each open and archived session's key, objective,
   native change, stage, status, whether it is active and its `inbox_unfolded` count.
   An archived session's status is `archived`; an open one's is its stage status (#84).
@@ -532,7 +563,10 @@ every command uses `.chough/session.json` exactly as before.
 - At each move into done, with the librarian on, only the five most recent archived
   sessions stay in `.chough/sessions/archive/` (REQ-history-011, KNOW-29). Most recent
   means newest by the finalization of the session's native change, then by key; a
-  session without one counts as the oldest. Each older session moves byte for byte to
+  session without one counts as the oldest. The session that adopted the legacy
+  history, whose cursor holds the legacy anchor, never rolls: it stays in the archive
+  in addition to the five, so history never depends on the knowledge directory
+  (#143). Each older session moves byte for byte to
   `knowledge/attachments/<folder of its key>/sessions/<key>.json`, never replacing a
   file. `chough library index` then writes `knowledge/sessions/<key>.md`
   (REQ-cli-051), linking the session record and its change's archive note. The step is
@@ -564,6 +598,32 @@ it for the session files too:
 .chough/sessions/*.json merge=chough-session
 .chough/sessions/archive/*.json merge=chough-session
 ```
+
+### Doctor
+
+`chough doctor` finds the Chough debt that stops a fresh worktree from entering Chough
+and fixes it with Chough's own steps (REQ-cli-055, REQ-history-012, DRIVE-17). It
+prints JSON: `mode` (`report`, `dry-run` or `fix`) and `findings`. Each finding has a
+`kind`, a `target`, the `fix` command, whether the fix is a `decision`, and a `status`
+of `found`, `fixed` or `skipped` (a skipped finding also has a `reason`). It makes no
+native read, and never records a human decision, approval, review or consent.
+
+| Kind | What it finds | Fix |
+|---|---|---|
+| `legacy_checkpoint` | `.chough/session.json` exists | Adopt history if it has no cursor, then `session adopt` under its native change ID or `--adopt-as <key>`; with neither key it is skipped |
+| `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
+| `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, then archive the session |
+| `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it byte for byte; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
+| `unfinished_session` | An open, unfinished session named with `--close <key>` | A decision: `session close <key> --reason` |
+
+- **No flag or `--dry-run`:** reports every finding as `found` and changes nothing.
+- **`--fix`:** applies the fixes in the order of the table. It applies a decision fix
+  only with `--reason <text>`, and otherwise reports it as `skipped`.
+- **Exit code:** 0 when nothing is left `found` or `skipped`, 1 otherwise, so CI can
+  run `chough doctor` as a check.
+
+Run it when a fresh worktree refuses to enter Chough (for example "several open
+sessions"), or after merging main.
 
 ### Subagent inbox
 
@@ -1131,8 +1191,8 @@ they union-merge like the ledger.
 - A set is eligible only when cold archives list it, no hot archive does, and no other
   retention protection applies once age and the latest-archive reason are set aside:
   checkpoint and bug references, active native manifests, named files, non-routine
-  records, the newest 3 and the newest failure per case and environment, and validation
-  failures and first and last passes all still protect it.
+  records, the newest run and the newest failure per case and environment (KNOW-17),
+  and validation failures and first and last passes all still protect it.
 - Every file of an eligible set must be tracked at HEAD with identical bytes; a set
   that is not is listed under `uncommitted` and kept. Bytes are hashed with `git
   hash-object --no-filters`, so `core.autocrlf` or a clean filter cannot make a file
@@ -1373,7 +1433,12 @@ independent wall time. Existing native state/time and timing phase lines remain.
 
 Profile old/new freshly built binaries against identical frozen inputs. Record the
 revision, source patch if dirty, binary hash, build profile, input sizes, flags and
-native outcomes. A first process does not imply a purged OS cache. A native timeout
+native outcomes. `sh examples/measure-report.sh OLD NEW ROOT [RUNS]` does this for
+`next`. It runs both binaries against one root and prints that root with its
+revision and dirty state, each binary's SHA-256 and version, and each run as first
+process or repeated. Native wait (completed native reads in the trace) is reported
+apart from local time. Any native read that did not complete makes the native side
+incomplete, with no native comparison, and no line combines local and native time. A first process does not imply a purged OS cache. A native timeout
 is incomplete qualification even when the reporting command exits zero; a sum of
 zero completed native calls is not zero native work. Request-local case reuse alone
 does not fix expensive native authentication, and authenticated archived reuse never

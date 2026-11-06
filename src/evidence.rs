@@ -301,10 +301,21 @@ fn hash_input(
 
 pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     let phase = Instant::now();
-    let actual_root = git(root, &["rev-parse", "--show-toplevel"])?;
+    // A project may live in a subdirectory of its repository (REQ-cli-056, DRIVE-18):
+    // the snapshot then covers the files under it. At the top level the prefix is empty
+    // and every byte is as before.
+    let top = git(root, &["rev-parse", "--show-toplevel"])?;
+    let prefix = String::from_utf8(git(root, &["rev-parse", "--show-prefix"])?.stdout)?
+        .trim_end_matches(['\n', '\r'])
+        .to_string();
     ensure!(
-        Path::new(std::str::from_utf8(&actual_root.stdout)?.trim()).canonicalize()? == root,
-        "--root must be the Git repository root for evidence"
+        Path::new(std::str::from_utf8(&top.stdout)?.trim())
+            .canonicalize()?
+            .join(&prefix)
+            .canonicalize()?
+            == root,
+        "{} is not where Git places this project; run chough from the project directory",
+        root.display()
     );
     let revision = String::from_utf8(git(root, &["rev-parse", "HEAD"])?.stdout)?
         .trim()
@@ -384,9 +395,18 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     })?;
     crate::records::trace_phase("snapshot.hash", phase);
     let phase = Instant::now();
-    let dirty_output = git(root, &["status", "--porcelain", "--untracked-files=all"])?;
+    let dirty_output = if prefix.is_empty() {
+        git(root, &["status", "--porcelain", "--untracked-files=all"])?
+    } else {
+        git(
+            root,
+            &["status", "--porcelain", "--untracked-files=all", "--", "."],
+        )?
+    };
+    // Porcelain paths are relative to the repository root; strip the project's prefix.
     let dirty = String::from_utf8(dirty_output.stdout)?.lines().any(|line| {
         line.get(3..)
+            .and_then(|name| name.strip_prefix(prefix.as_str()))
             .is_some_and(|name| fingerprint_key(name) != Key::Skip)
     });
     crate::records::trace_phase("snapshot.git-status", phase);
@@ -1249,7 +1269,36 @@ impl Native {
     }
 }
 
-/// Change directories, rejecting links and names that are not plain change IDs.
+/// Whether a change directory holds a file at any depth (#148): a branch switch leaves
+/// the empty directories of a change whose files Git removed, and such a directory is
+/// not an open change. Walks at most 10,000 entries; past that it counts as open.
+pub(super) fn has_change_files(path: &Path) -> bool {
+    let mut pending = vec![path.to_path_buf()];
+    let mut seen = 0usize;
+    while let Some(directory) = pending.pop() {
+        let Ok(entries) = fs::read_dir(&directory) else {
+            return true;
+        };
+        for entry in entries {
+            seen += 1;
+            if seen > 10_000 {
+                return true;
+            }
+            let Ok(entry) = entry else {
+                return true;
+            };
+            match entry.file_type() {
+                Ok(kind) if kind.is_dir() => pending.push(entry.path()),
+                _ => return true,
+            }
+        }
+    }
+    false
+}
+
+/// Change directories, rejecting links and names that are not plain change IDs. Under
+/// `.specsync/changes`, a directory with no file at any depth is not an open change
+/// (#148) and is left out.
 fn change_dirs(root: &Path, directory: &str) -> Result<Vec<String>, String> {
     let path = local_path(root, directory).map_err(|error| error.to_string())?;
     if !path.exists() {
@@ -1270,7 +1319,7 @@ fn change_dirs(root: &Path, directory: &str) -> Result<Vec<String>, String> {
         if kind.is_symlink() {
             return Err(format!("{directory}/{name} is a symlink"));
         }
-        if kind.is_dir() {
+        if kind.is_dir() && (directory != ".specsync/changes" || has_change_files(&entry.path())) {
             names.push(name);
         }
     }

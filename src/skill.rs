@@ -43,6 +43,12 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Releases 0.1.0 to 0.4.0, unchanged since #22 through main 01f1d023; superseded by
+    // the `stage advance --to` row in the transition table (REQ-cli-052, DRIVE-9).
+    (
+        "references/stages.md",
+        "658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f",
+    ),
     // Main ec830cf, release 0.4.0 for SKILL.md, plan.md and checkpoint.md; superseded
     // by relayed decisions at gates (#123, D7).
     (
@@ -336,6 +342,20 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "references/librarian.md",
         "b9887069d8d37460e96c2fb73da125dedb61bae1f6af4c48fa37becf351349ae",
+    ),
+    // Main 615b587b; superseded by the docs-accuracy corrections (FLOW-18): where the
+    // checkpoint and transitions live with sessions and event history, and SpecSync 6.2.
+    (
+        "SKILL.md",
+        "860cc96169ac2c63de5f60aae1fc7fb417c99a799746a208fcedb968ad6039d5",
+    ),
+    (
+        "references/checkpoint.md",
+        "40afaeaf8494d52c4492861f9983fba0babddbe987673ba4981046aea0218016",
+    ),
+    (
+        "references/lifecycle.md",
+        "9f989fd4b2a9a9b1edd7288a6385a12e4dcaeba324e14ad5308c68233e2d1644",
     ),
 ];
 

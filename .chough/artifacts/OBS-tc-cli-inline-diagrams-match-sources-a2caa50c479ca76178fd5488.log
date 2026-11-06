@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test inline_diagrams_equal_their_sources_and_svgs_carry_every_label ... FAILED
+
+failures:
+
+---- inline_diagrams_equal_their_sources_and_svgs_carry_every_label stdout ----
+
+thread 'inline_diagrams_equal_their_sources_and_svgs_carry_every_label' (271770571) panicked at tests/docs.rs:488:5:
+docs/architecture.md:11: this Mermaid block is not any docs/diagrams/*.mmd source; make them the same
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    inline_diagrams_equal_their_sources_and_svgs_carry_every_label
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.01s
+
+
+--- stderr ---
+    Blocking waiting for file lock on package cache
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.71s
+     Running tests/docs.rs (target/debug/deps/docs-592487f356832a3e)
+error: test failed, to rerun pass `--test docs`

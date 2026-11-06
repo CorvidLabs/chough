@@ -3,6 +3,7 @@ mod bugs;
 mod cases;
 mod checkpoint;
 mod context;
+mod doctor;
 mod evidence;
 mod history;
 mod identity;
@@ -150,6 +151,9 @@ enum Commands {
         #[command(subcommand)]
         command: sessions::InboxCommand,
     },
+    /// Find the Chough debt that stops a fresh worktree from entering Chough; `--fix`
+    /// fixes it, and decision fixes also need `--reason` (DRIVE-17).
+    Doctor(Box<doctor::DoctorArgs>),
 }
 
 #[derive(Subcommand)]
@@ -237,6 +241,11 @@ fn main() -> Result<()> {
         Commands::Skill { command } => skill::run(&root, command)?,
         Commands::Session { command } => sessions::run(&root, command)?,
         Commands::Inbox { command } => sessions::inbox(&root, command)?,
+        Commands::Doctor(args) => {
+            if doctor::run(&root, *args)? {
+                std::process::exit(1);
+            }
+        }
     }
     Ok(())
 }

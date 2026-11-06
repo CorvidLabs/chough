@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17",
+  "slug": "chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17",
+  "title": "Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)",
+  "description": "chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "1030252cb5ca2e2b45b736833013f8cd5dbabab0",
+  "created_at": 1793994241,
+  "updated_at": 1793995918,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/doctor.rs",
+    "src/sessions.rs",
+    "src/checkpoint.rs",
+    "src/history.rs",
+    "tests/doctor.rs",
+    "specs/cli/cli.spec.md",
+    "hi/drive.md",
+    "docs/cli.md",
+    "skills/chough-workflow/references/checkpoint.md",
+    ".agents/skills/chough-workflow/references/checkpoint.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "DRIVE-17 (Leif, relayed by orc 2026-11-06, 'Capture + both defaults'), in the new REQ-cli-055 and REQ-history-012. chough doctor reports legacy_checkpoint, stale_pointer, finished_session, stale_gates and unfinished_session findings without a native read. No flag and --dry-run report only and change nothing. --fix applies the safe fixes: adopt the legacy checkpoint, remove a stale pointer, archive finished sessions byte for byte (a session with unfolded inbox entries is skipped). Decision fixes (withdraw stale gates, close sessions named by --close) need --reason; without it they are skipped. No human decision is ever recorded. Exit 0 only when nothing is left. The five new tests in tests/doctor.rs fail first; docs, the skill reference and CHANGELOG say so; fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "DRIVE-17 (new); DRIVE-16 finished rule and session close (#166); DRIVE-13 and DRIVE-3; REQ-history-006 kept-open rule for unfolded inbox entries; --clear-awaiting-human records no human decision; no native read; never replace a file; spec-sync #941 as the debt it replaces by hand.",
+    "public_contract": "yes"
+  }
+}

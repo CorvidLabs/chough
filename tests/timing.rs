@@ -1243,6 +1243,7 @@ if [ -f ".stub-fail-$id" ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f ".stub-malformed-$id" ]; then echo 'not json {'; exit 0; fi
 if [ -f ".stub-hang-$id" ]; then sleep 60 & echo $! >>.stub-children; wait; fi
 if [ -f ".stub-sleep-$id" ]; then exec sleep 30; fi
+if [ -f ".stub-delay-$id" ]; then sleep "$(cat ".stub-delay-$id")"; fi
 if [ -f ".stub-status-$id" ]; then cat ".stub-status-$id"; exit 0; fi
 printf '{"change":{"id":"%s","created_at":100,"updated_at":200},"summary":{"state":"archived","approval_valid":true}}\n' "$id"
 "#,
@@ -1674,24 +1675,97 @@ fn a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown() {
     }
 }
 
+/// Whether `traced` equals `plain` except that times (`unix_seconds`/`utc`) and spans
+/// (`seconds`) may be later by exactly `shift` seconds, every other field equal; the
+/// first other difference is returned as a JSON path.
+fn differs_only_by_clock(
+    path: &str,
+    plain: &Value,
+    traced: &Value,
+    shift: u64,
+) -> Result<(), String> {
+    if plain == traced {
+        return Ok(());
+    }
+    let later = |key: &str,
+                 a: &serde_json::Map<String, Value>,
+                 b: &serde_json::Map<String, Value>| {
+        match (a[key].as_u64(), b[key].as_u64()) {
+            (Some(before), Some(after)) => before + shift == after,
+            _ => false,
+        }
+    };
+    match (plain, traced) {
+        (Value::Object(a), Value::Object(b)) => {
+            let keys =
+                |map: &serde_json::Map<String, Value>| map.keys().cloned().collect::<Vec<_>>();
+            if keys(a) != keys(b) {
+                return Err(format!("{path} (keys)"));
+            }
+            if a.contains_key("unix_seconds") && a.contains_key("utc") {
+                return if later("unix_seconds", a, b) && a["unknown"] == b["unknown"] {
+                    Ok(())
+                } else {
+                    Err(format!("{path}.unix_seconds"))
+                };
+            }
+            if a.contains_key("seconds") && a.contains_key("label") {
+                return if later("seconds", a, b)
+                    && a["label"] == b["label"]
+                    && a["reason"] == b["reason"]
+                {
+                    Ok(())
+                } else {
+                    Err(format!("{path}.seconds"))
+                };
+            }
+            for (key, value) in a {
+                differs_only_by_clock(&format!("{path}.{key}"), value, &b[key], shift)?;
+            }
+            Ok(())
+        }
+        (Value::Array(a), Value::Array(b)) if a.len() == b.len() => {
+            for (index, (x, y)) in a.iter().zip(b).enumerate() {
+                differs_only_by_clock(&format!("{path}[{index}]"), x, y, shift)?;
+            }
+            Ok(())
+        }
+        _ => Err(path.to_string()),
+    }
+}
+
 #[cfg(unix)]
 #[test]
 fn timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit() {
     let fixture = native_fixture();
-    // Reports end ongoing segments now, so compare runs made within one second.
-    let mut matched = None;
-    for _ in 0..5 {
-        stub_calls(&fixture);
-        let plain = run_env(&fixture, &["timing", "--json"], &[]);
-        let calls = stub_calls(&fixture).len();
-        let traced = run_env(&fixture, &["timing", "--json"], &[("CHOUGH_TRACE", "1")]);
-        stub_calls(&fixture);
-        if plain.stdout == traced.stdout {
-            matched = Some((plain, traced, calls));
-            break;
-        }
+    // DRIVE-19 (#169): each run takes over a second, so the plain and traced runs always
+    // straddle a second boundary; the comparison must not depend on when they ran.
+    fixture.write(".stub-delay-cur-change", "1.1");
+    stub_calls(&fixture);
+    let plain = run_env(&fixture, &["timing", "--json"], &[]);
+    let calls = stub_calls(&fixture).len();
+    let traced = run_env(&fixture, &["timing", "--json"], &[("CHOUGH_TRACE", "1")]);
+    stub_calls(&fixture);
+    // Reports end ongoing segments at their own `generated_at`. The traced report must
+    // equal the plain one except that every time and span that runs to now is later by
+    // exactly the gap between the two runs; nothing else may differ (DRIVE-19, #169).
+    let plain_report: Value = serde_json::from_slice(&plain.stdout).unwrap();
+    let traced_report: Value = serde_json::from_slice(&traced.stdout).unwrap();
+    let shift = traced_report["generated_at"]["unix_seconds"]
+        .as_u64()
+        .unwrap()
+        - plain_report["generated_at"]["unix_seconds"]
+            .as_u64()
+            .unwrap();
+    if let Err(path) = differs_only_by_clock("", &plain_report, &traced_report, shift) {
+        panic!("traced and untraced reports differ at {path} beyond a {shift}s clock shift");
     }
-    let (plain, traced, calls) = matched.expect("traced and untraced reports differ");
+    // The comparison is strict: a changed field, or a clock shift by any other amount,
+    // is a difference.
+    let mut changed = traced_report.clone();
+    changed["filters"]["cycle"] = json!("changed");
+    assert!(differs_only_by_clock("", &plain_report, &changed, shift).is_err());
+    assert!(differs_only_by_clock("", &plain_report, &traced_report, shift + 1).is_err());
     assert_eq!(plain.status.code(), traced.status.code());
     assert!(plain.stderr.is_empty(), "untraced stderr is unchanged");
     let lines: Vec<String> = String::from_utf8(traced.stderr)
@@ -1856,4 +1930,174 @@ fn a_case_run_records_its_run_time_and_the_report_shows_it() {
     assert_eq!(observation["id"], id);
     assert_eq!(seconds(&observation["run_time"]), Some(duration));
     assert_eq!(observation["run_time"]["label"], "elapsed wall-clock");
+}
+
+/// Run `examples/measure-report.sh` with `args`, the fixture's stand-ins first on PATH and
+/// exactly `env` set among the native variables.
+#[cfg(unix)]
+fn measure(fixture: &Fixture, args: &[&Path], env: &[(&str, &str)]) -> std::process::Output {
+    let script = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/measure-report.sh");
+    let mut command = std::process::Command::new("sh");
+    command.arg(script).args(args);
+    for name in NATIVE_VARIABLES {
+        command.env_remove(name);
+    }
+    command.envs(env.iter().copied());
+    command.env(
+        "PATH",
+        std::env::join_paths(std::iter::once(fixture.root().join("bin")).chain(
+            std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()),
+        ))
+        .unwrap(),
+    );
+    command.output().unwrap()
+}
+
+/// REQ-reporting-003, last criterion (#138, audit assertion review): a before/after
+/// measurement with `examples/measure-report.sh` uses one input root and names it with its
+/// revision, names both binaries by SHA-256 and version, keeps first-process and repeated
+/// runs apart, reports native wait apart from local time, and turns a timed-out native read
+/// into an incomplete result with no native comparison, so local work is never reported as
+/// fixing native slowness.
+#[cfg(unix)]
+#[test]
+fn measure_report_pairs_two_binaries_on_one_root_and_keeps_native_wait_apart() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("implementing");
+    fixture.init();
+    fixture.commit("measured root");
+    let revision = String::from_utf8(
+        std::process::Command::new("git")
+            .arg("-C")
+            .arg(fixture.root())
+            .args(["rev-parse", "HEAD"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    let binaries = tempfile::tempdir().unwrap();
+    let mut digests = vec![];
+    for side in ["old", "new"] {
+        let path = binaries.path().join(side);
+        fs::copy(env!("CARGO_BIN_EXE_chough"), &path).unwrap();
+        digests.push(format!("{:x}", Sha256::digest(fs::read(&path).unwrap())));
+    }
+    let (old, new) = (binaries.path().join("old"), binaries.path().join("new"));
+    let root = fixture.root().canonicalize().unwrap();
+    let runs = Path::new("2");
+
+    let output = measure(&fixture, &[&old, &new, fixture.root(), runs], &[]);
+    let text = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert!(
+        output.status.success(),
+        "{text}{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let lines: Vec<&str> = text.lines().collect();
+    assert_eq!(
+        lines[0],
+        format!(
+            "root {} revision {} dirty no",
+            root.display(),
+            revision.trim()
+        ),
+        "{text}"
+    );
+    let version = format!("version chough {}", env!("CARGO_PKG_VERSION"));
+    for (side, digest) in ["old", "new"].iter().zip(&digests) {
+        assert!(
+            lines.contains(&format!("binary {side} sha256 {digest} {version}").as_str()),
+            "{text}"
+        );
+    }
+    let runs: Vec<&str> = lines
+        .iter()
+        .copied()
+        .filter(|line| line.starts_with("run "))
+        .collect();
+    assert_eq!(runs.len(), 4, "{text}");
+    for side in ["old", "new"] {
+        assert!(
+            runs.iter()
+                .any(|line| line.starts_with(&format!("run {side} 1 first-process exit=0 "))),
+            "{text}"
+        );
+        assert!(
+            runs.iter()
+                .any(|line| line.starts_with(&format!("run {side} 2 repeated exit=0 "))),
+            "{text}"
+        );
+    }
+    for line in &runs {
+        for field in ["wall_ms=", "native_ms=", "local_ms="] {
+            assert!(line.contains(field), "{line}");
+        }
+        assert!(
+            line.ends_with("native_reads=1 incomplete_reads=0"),
+            "{line}"
+        );
+    }
+    assert!(
+        lines
+            .iter()
+            .any(|line| line.starts_with("summary local old_median_ms=")),
+        "{text}"
+    );
+    assert!(
+        lines
+            .iter()
+            .any(|line| line.starts_with("summary native old_median_ms=")),
+        "{text}"
+    );
+    assert!(!text.contains("incomplete:"), "{text}");
+
+    // A native read that times out makes the pair incomplete: native wait is not compared,
+    // while local time still is.
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nsleep 5\nprintf '{\"summary\":{\"id\":\"%s\",\"state\":\"implementing\",\"next_action\":\"stub\",\"approval_valid\":true,\"correction_valid\":true}}\\n' \"$3\"\n",
+    );
+    fixture.executable("bin/specsync");
+    let output = measure(
+        &fixture,
+        &[&old, &new, fixture.root(), Path::new("1")],
+        &[("CHOUGH_NATIVE_TIMEOUT_SECONDS", "1")],
+    );
+    let text = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert!(output.status.success(), "{text}");
+    assert!(text.contains("native_timeout_seconds 1"), "{text}");
+    for side in ["old", "new"] {
+        assert!(
+            text.lines().any(
+                |line| line.starts_with(&format!("run {side} 1 first-process "))
+                    && line.ends_with("native_reads=1 incomplete_reads=1")
+            ),
+            "{text}"
+        );
+    }
+    assert!(
+        text.contains("summary native incomplete: 2 native reads timed out or were unavailable; no native comparison"),
+        "{text}"
+    );
+    assert!(!text.contains("summary native old_median_ms="), "{text}");
+    assert!(
+        text.lines()
+            .any(|line| line.starts_with("summary local old_median_ms=")),
+        "{text}"
+    );
+
+    // A missing binary is refused with the usage line that names the command to run.
+    let output = measure(
+        &fixture,
+        &[&binaries.path().join("absent"), &new, fixture.root()],
+        &[],
+    );
+    assert_eq!(output.status.code(), Some(2));
+    let refusal = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        refusal.contains("usage: sh examples/measure-report.sh OLD NEW ROOT [RUNS]"),
+        "{refusal}"
+    );
 }

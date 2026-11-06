@@ -1,0 +1,200 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-lesson-labels-in-skill"
+title = "The skill states lesson labels, source and limits, and that decisions outrank lessons"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-6"]
+requirements = ["REQ-cli-002"]
+paths = ["skills/chough-workflow/references/accept.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["the cli test the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons"
+
+[[case]]
+id = "TC-cli-no-lesson-store"
+title = "Chough points to lessons and keeps no lesson store, index or ledger"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "FLOW-12"]
+requirements = ["REQ-cli-002"]
+paths = ["src/vault.rs", "src/context.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the cli test chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger"
+
+[[case]]
+id = "TC-cli-one-checkpoint-store-no-aps"
+title = "One checkpoint store in either mode and no APS adapter"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-007"]
+paths = ["src/checkpoint.rs", "src/sessions.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the stages test one_checkpoint_store_and_no_aps_adapter_in_either_mode passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "one_checkpoint_store_and_no_aps_adapter_in_either_mode"
+
+[[case]]
+id = "TC-cli-bug-id-upgrade-note"
+title = "The CLI documentation tells older versions to upgrade for new-form bug IDs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-012"]
+paths = ["docs/cli.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["the bugs test the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids"
+
+[[case]]
+id = "TC-cli-authority-before-approval"
+title = "The skill records authority before approval and labels never decide"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-7"]
+requirements = ["REQ-cli-029"]
+paths = ["skills/chough-workflow/references/plan.md", "skills/chough-workflow/references/lifecycle.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["the workflow_authority test the_skill_records_authority_before_approval_and_labels_never_decide passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "workflow_authority"
+test = "the_skill_records_authority_before_approval_and_labels_never_decide"
+
+[[case]]
+id = "TC-cli-claimed-approvals-open-no-gate"
+title = "Claimed approvals in Chough records never open the build gate"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-7"]
+requirements = ["REQ-cli-029"]
+paths = ["src/stage.rs", "src/sessions.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the workflow_authority test claimed_approvals_in_chough_records_never_open_the_build_gate passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "workflow_authority"
+test = "claimed_approvals_in_chough_records_never_open_the_build_gate"
+
+[[case]]
+id = "TC-cli-skipped-cold-start-not-a-pass"
+title = "A skipped cold start is never recorded or read as a pass"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-029"]
+paths = ["src/cases.rs", "src/evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the cases test a_skipped_cold_start_is_never_recorded_or_read_as_a_pass passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_skipped_cold_start_is_never_recorded_or_read_as_a_pass"
+
+[[case]]
+id = "TC-cli-roadmap-claims-no-cold-start-pass"
+title = "The roadmap claims no passing cold start for delivered work"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-029"]
+paths = ["docs/ROADMAP.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["the workflow_authority test the_roadmap_claims_no_passing_cold_start_for_delivered_work passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "workflow_authority"
+test = "the_roadmap_claims_no_passing_cold_start_for_delivered_work"
+
+[[case]]
+id = "TC-cli-walkthrough-opens-new-project"
+title = "The walkthrough begins with the new-project setup path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-9", "LIFE-6"]
+requirements = ["REQ-cli-031"]
+paths = ["docs/walkthrough.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux", "ci-windows"]
+artifacts = ["test-log"]
+expected = ["the cli test the_walkthrough_begins_with_the_new_project_setup_path passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "the_walkthrough_begins_with_the_new_project_setup_path"
+
+[[case]]
+id = "TC-cli-librarian-off-references-skipped"
+title = "With the librarian off, done leaves the references and reports skipped"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-16"]
+requirements = ["REQ-cli-045"]
+paths = ["src/stage.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the reduce test with_the_librarian_off_done_leaves_the_references_and_reports_skipped passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "with_the_librarian_off_done_leaves_the_references_and_reports_skipped"
+
+[[case]]
+id = "TC-cli-no-reset-drops-no-observation"
+title = "With no reset time, done drops no observation reference"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-16"]
+requirements = ["REQ-cli-045"]
+paths = ["src/stage.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the reduce test with_no_reset_time_done_drops_no_observation_reference passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "with_no_reset_time_done_drops_no_observation_reference"

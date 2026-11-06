@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-b35aa02ebabd567d1f18f807",
+    "head": "EVT-758276ba6f9f4853f7708d52",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "chough#170: a project in a subdirectory of its Git repository records evidence (DRIVE-18)",
+  "intent_scope": "DRIVE-18",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "DRIVE-18 captured from Leif via the orc ('Capture both')",
+    "REQ-cli-056 coordinated with ch-c456 (it takes 057 onward)"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Await scope approval through the orc; then scope evidence::snapshot to the project"
+}

@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+[[case]]
+id = "TC-reporting-measure-report-pairs-binaries"
+title = "A before/after measurement names both binaries and the root and keeps native wait apart"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-10"]
+requirements = ["REQ-reporting-003"]
+paths = ["examples/measure-report.sh", "tests/timing.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the timing test measure_report_pairs_two_binaries_on_one_root_and_keeps_native_wait_apart passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "measure_report_pairs_two_binaries_on_one_root_and_keeps_native_wait_apart"

@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793998158,
+      "digest": "ea03682781bcc6228f3326362991c023341b91fbc939729f83767afeb2f8ffd9",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18",
+        "title": "A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18)",
+        "description": "A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "specs/cli/cli.spec.md",
+          "src/evidence.rs",
+          "tests/subdirectory.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "DRIVE-18 (Leif, relayed by orc 2026-11-06, 'Capture both'; chough#170), in the new REQ-cli-056: in a project in a subdirectory of its Git repository, cases run, evidence add and status work from that directory. The snapshot covers the project's own files with the repository's HEAD. Edits outside the project change nothing, and edits inside make it dirty. The same project has the same content fingerprint at the root and in a subdirectory. The '--root must be the Git repository root' refusal is gone. The three new tests in tests/subdirectory.rs fail first; docs/cli.md (the line-5 limitation) and CHANGELOG say so; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-18 (new); SpecSync D2 (spec-sync #879/#890) as the parallel fix; the snapshot at the Git top level must not change (evidence freshness depends on it); REQ-cli-056 is coordinated with ch-c456, which takes REQ-cli-057 onward.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "8d7875277a63fbde808043c6fee2bd4aea9c28d2465d50a31b8b07cd9c865e6e"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794001542,
+      "digest": "26dca71ba0b9f67914a0df97f80f1f790164fcc4530d2e0fdb1c992fab012e39",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

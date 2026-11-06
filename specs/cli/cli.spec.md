@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 65
+version: 71
 status: active
 files:
   - src/main.rs
@@ -8,6 +8,7 @@ files:
   - src/cases.rs
   - src/checkpoint.rs
   - src/context.rs
+  - src/doctor.rs
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
@@ -30,6 +31,8 @@ files:
   - tests/common/mod.rs
   - tests/native.rs
   - tests/workflow_authority.rs
+  - tests/subdirectory.rs
+  - tests/doctor.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
   - tests/fixtures/workflow-at-edbc3c1-lifecycle.md
@@ -284,4 +287,10 @@ provider, runtime or hosted service.
 | 62 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |
 | 63 | 2026-11-06 | advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into: Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) |
 | 64 | 2026-11-06 | assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11: Assert the eight-reader ceiling for archive validity reads on any host (CH-M11) |
-| 65 | 2026-11-06 | make-archived-next-and-status-fast-within-explicit-warm-budgets: Make archived next and status fast within explicit warm budgets (32, DRIVE-15) |
+| 65 | 2026-11-06 | a-session-archives-itself-at-its-own-move-into-done-155: A session archives itself at its own move into done (155) |
+| 66 | 2026-11-06 | assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma: Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02) |
+| 67 | 2026-11-06 | bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153: Bug classification, deduplication and report mappings, and their recovery branches (153) |
+| 68 | 2026-11-06 | a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16: A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) |
+| 69 | 2026-11-06 | chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17: Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) |
+| 70 | 2026-11-06 | a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18: A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) |
+| 71 | 2026-11-06 | make-archived-next-and-status-fast-within-explicit-warm-budgets: Make archived next and status fast within explicit warm budgets (32, DRIVE-15) |

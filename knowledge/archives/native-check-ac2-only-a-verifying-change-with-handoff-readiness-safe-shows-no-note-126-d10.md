@@ -53,7 +53,7 @@ verification records, the retention ledger and Git stay authoritative.
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-session-notes-union-90a6e1a6772009154dcfdce5 | passed (by cycle time) | local-linux-aarch64 | TC-cli-session-notes-union |
-| OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd | passed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
+| OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 | OBS-tc-cli-supported-platforms-cf84a4b69599d4e71ffec6b6 | failed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 | OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e | passed (by cycle time) | local-linux-aarch64 | TC-history-keep-five-archived-sessions |
 
@@ -67,4 +67,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.json](../attachments/native-check-d1cc0d73/sessions/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.json)

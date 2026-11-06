@@ -1693,30 +1693,35 @@ fn prune(root: &Path, apply: bool) -> Result<Value> {
     )
 }
 
+/// `chough history adopt [--apply]`: give the canonical checkpoint a history cursor
+/// anchored on the legacy log, returning the report (REQ-history-002). The doctor's
+/// legacy-checkpoint fix calls it too (REQ-history-012).
+pub(super) fn adopt(root: &Path, apply: bool) -> Result<Value> {
+    let mut session = read_checkpoint(root)?;
+    if let Some(cursor) = &session.history_cursor {
+        validate_cursor(cursor)?;
+        verify_anchor(root, cursor)?;
+        return Ok(json!({"applied":false,"already_adopted":true,"cursor":cursor}));
+    }
+    let legacy = anchor(root)?;
+    if apply {
+        let mut cursor = new_cursor(root)?;
+        cursor.legacy = legacy.clone();
+        session.history_cursor = Some(cursor);
+        save_checkpoint(root, &session)?;
+    }
+    Ok(
+        json!({"applied":apply,"legacy_anchor":legacy,"cursor":session.history_cursor,"note":"legacy transition and migration bytes are unchanged; older helpers may refuse the adopted checkpoint"}),
+    )
+}
+
 pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {
     let _budget = matches!(command, HistoryCommand::Show | HistoryCommand::Prune { .. })
         .then(maintenance_budget);
     let report = match command {
         HistoryCommand::Show => show(root),
         HistoryCommand::Prune { apply } => prune(root, apply),
-        HistoryCommand::Adopt { apply } => (|| -> Result<Value> {
-            let mut session = read_checkpoint(root)?;
-            if let Some(cursor) = &session.history_cursor {
-                validate_cursor(cursor)?;
-                verify_anchor(root, cursor)?;
-                return Ok(json!({"applied":false,"already_adopted":true,"cursor":cursor}));
-            }
-            let legacy = anchor(root)?;
-            if apply {
-                let mut cursor = new_cursor(root)?;
-                cursor.legacy = legacy.clone();
-                session.history_cursor = Some(cursor);
-                save_checkpoint(root, &session)?;
-            }
-            Ok(
-                json!({"applied":apply,"legacy_anchor":legacy,"cursor":session.history_cursor,"note":"legacy transition and migration bytes are unchanged; older helpers may refuse the adopted checkpoint"}),
-            )
-        })(),
+        HistoryCommand::Adopt { apply } => adopt(root, apply),
     };
     match report {
         Ok(report) => print_json(&report),

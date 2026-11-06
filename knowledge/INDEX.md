@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 130
+archived_changes: 146
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
-- [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](archives/assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11.md) Assert the eight-reader ceiling for archive validity reads on any host (CH-M11) (hot)
-- [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](archives/install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132.md) Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132) (hot)
-- [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](archives/advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into.md) Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) (hot)
-- [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1) (cold)
-- [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](archives/support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17.md) Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17) (cold)
-- [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7) (cold)
-- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) (cold)
-- [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](archives/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.md) Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10) (cold)
-- [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) (cold)
-- [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](archives/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.md) Read requirements with CRLF line endings in the librarian-default test (131 Windows) (cold)
-- All 130 archived changes, by month: [timeline.md](timeline.md)
+- [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18) (hot)
+- [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) (hot)
+- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (hot)
+- [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18) (cold)
+- [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) (cold)
+- [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (cold)
+- [a-session-archives-itself-at-its-own-move-into-done-155](archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155) (cold)
+- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (cold)
+- [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](archives/place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16.md) Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16) (cold)
+- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (cold)
+- All 146 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,16 +71,16 @@ Module lesson sources:
 
 Archived lesson bundles:
 
-- [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](../.specsync/archive/changes/2026-11-06-assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11/lesson-bundle.md)
-- [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](../.specsync/archive/changes/2026-11-06-install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132/lesson-bundle.md)
-- [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](../.specsync/archive/changes/2026-11-06-advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into/lesson-bundle.md)
-- [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../.specsync/archive/changes/2026-11-06-find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1/lesson-bundle.md)
-- [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](../.specsync/archive/changes/2026-11-06-support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17/lesson-bundle.md)
-- [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../.specsync/archive/changes/2026-11-06-record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7/lesson-bundle.md)
-- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../.specsync/archive/changes/2026-11-06-keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29/lesson-bundle.md)
-- [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](../.specsync/archive/changes/2026-11-06-native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10/lesson-bundle.md)
-- [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../.specsync/archive/changes/2026-11-06-size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each/lesson-bundle.md)
-- [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](../.specsync/archive/changes/2026-11-06-read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows/lesson-bundle.md)
+- [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](../.specsync/archive/changes/2026-11-06-name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18/lesson-bundle.md)
+- [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../.specsync/archive/changes/2026-11-06-a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18/lesson-bundle.md)
+- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../.specsync/archive/changes/2026-11-06-make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive/lesson-bundle.md)
+- [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](../.specsync/archive/changes/2026-11-06-make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18/lesson-bundle.md)
+- [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../.specsync/archive/changes/2026-11-06-chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17/lesson-bundle.md)
+- [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../.specsync/archive/changes/2026-11-06-a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16/lesson-bundle.md)
+- [a-session-archives-itself-at-its-own-move-into-done-155](../.specsync/archive/changes/2026-11-06-a-session-archives-itself-at-its-own-move-into-done-155/lesson-bundle.md)
+- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../.specsync/archive/changes/2026-11-06-keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143/lesson-bundle.md)
+- [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](../.specsync/archive/changes/2026-11-06-place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16/lesson-bundle.md)
+- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../.specsync/archive/changes/2026-11-06-pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-403 recorded; most recent:
+505 recorded; most recent:
 
-- OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-one-read-in-a-session-cee97305e88e3d1d60719b91 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
+- OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-closeout-closes-review-gate-8dadafef9ca3a33ff272628b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-docs-name-pinned-versions-90ac939608e60d8035f51ef4 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-documented-merge-drivers-match-b53546cd197b92ba3fe5bcbb ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-doc-links-resolve-7ae693725b770179dfab510b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-documented-flags-exist-809d7bc57d54f26407d3e500 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-readme-verify-list-matches-fledge-ada79377544057e2b4ebfa6b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-readme-helper-table-covers-help-5b78f314111304a0ccb7f4d7 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-inline-diagrams-match-sources-6454169bc1e8aa1489845142 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
+- OBS-tc-cli-stage-diagram-matches-the-helper-3de53f0de2795e49e67ec6f6 ProductTest Passed in local-macos-arm64 at 46ce740ac98c
 
 ## Briefs
 
