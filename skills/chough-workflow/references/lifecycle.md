@@ -2,7 +2,7 @@
 
 Installed `specsync change status <id> --json`, `specsync change ship-status <id>` and
 command help are authoritative for the current state and recovery path. This
-reference follows SpecSync 6.1; do not hardcode it over another version's output.
+reference follows SpecSync 6.2; do not hardcode it over another version's output.
 Match the SpecSync version used by lifecycle writers and CI.
 
 You run the native commands in this reference as part of Chough's current-agent

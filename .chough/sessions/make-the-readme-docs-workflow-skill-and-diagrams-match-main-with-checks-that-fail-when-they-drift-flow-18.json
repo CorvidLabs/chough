@@ -51,7 +51,8 @@
   ],
   "open_questions": [],
   "completed": [
-    "Failing tests: 7039f68b (tests/docs.rs, 8 of 10 FLOW-18 checks fail on the base; flags and links pass)"
+    "Failing tests: 7039f68b (tests/docs.rs, 8 of 10 FLOW-18 checks fail on the base; flags and links pass)",
+    "Docs, skill and diagrams corrected; stages, lifecycle and ownership re-rendered with Mermaid 11.12.0 and PNGs inspected; tests/docs.rs passes 10 of 10; cargo test 487 passed"
   ],
   "observations": [
     "OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9",
@@ -71,5 +72,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Fix the docs, skill and diagrams until tests/docs.rs passes; re-render diagrams; then verify, audit --strict, push and PR"
+  "next_action": "Run the verify lane, tick tasks, materialize with specsync change check, rerun the FLOW-18 cases, then audit --strict and push"
 }

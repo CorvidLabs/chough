@@ -26,12 +26,12 @@ their JSON.
 | `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto, manual (manual opts out of trimming at done, KNOW-13). Only `always`, `standing` and `auto` authorize without a run consent, except that with the librarian on, an unset `retention` lets the trim at done run (see [Post-archive summary](#post-archive-summary)); `manual` or a recorded `off` stops it. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. A new run receives a VAL ID and every attempt receives a new OBS ID. `resume ID` continues a new or legacy run under its original ID; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
-| `library init\|snapshot PATH... --reason R\|index\|archive [--apply]` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` (new and legacy dated snapshots, archived changes newest first with the newest 3 marked hot, a lessons index of pointers, and any earlier `library/` folder listed as is) and one `archives/<change-id>.md` entry per archived native change. `archive` previews, or with `--apply` performs, the post-archive summary; see [Post-archive summary](#post-archive-summary). No gate reads the knowledge directory. |
+| `library init\|snapshot PATH... --reason R\|index [--check]\|archive [--apply]` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` (new and legacy dated snapshots, archived changes newest first with the newest 3 marked hot, a lessons index of pointers, and any earlier `library/` folder listed as is) and one `archives/<change-id>.md` entry per archived native change; `index --check` writes nothing and fails when a generated note is missing or differs (see [Merging branches](#merging-branches)). `archive` previews, or with `--apply` performs, the post-archive summary; see [Post-archive summary](#post-archive-summary). No gate reads the knowledge directory. |
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. Hosts that share a directory get one entry. Both report a `legacy` list for an older `.claude/skills` copy, with each file's state, and never write it. |
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
-| `session new\|adopt\|use\|list`, `inbox add\|list\|fold` | Sessions per objective or native change, and the create-only subagent inbox. See [Sessions](#sessions). |
+| `session new\|adopt\|use\|list\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
 
 ## Backfilled moves
 
@@ -467,8 +467,9 @@ Declare the drivers in `.gitattributes`:
 .chough/session.json merge=chough-session
 .chough/sessions/*.json merge=chough-session
 .chough/sessions/archive/*.json merge=chough-session
-.chough/bugs/*.json merge=chough-bug
 .chough/pruned.jsonl merge=union
+CHANGELOG.md merge=union
+.chough/bugs/*.json merge=chough-bug
 knowledge/INDEX.md merge=union
 knowledge/rules.md merge=union
 knowledge/timeline.md merge=union
@@ -476,10 +477,15 @@ knowledge/timeline/*.md merge=union
 knowledge/archives/*.md merge=union
 knowledge/modules/*.md merge=union
 knowledge/intent/*.md merge=union
+knowledge/bugs/*.md merge=union
+knowledge/sessions/*.md merge=union
+knowledge/attachments/*/pruned.jsonl merge=union
 ```
 
-Only the generated notes, which `library index --check` compares, are union-merged.
-Attachments, snapshots, briefs and the README still conflict.
+In the knowledge directory, only the generated notes, which `library index --check`
+compares, and the retention ledger shards, which are append-only like the ledger, are
+union-merged. Attachments, snapshots, briefs and the README still conflict.
+`CHANGELOG.md` is this repository's own; a project declares it only if it keeps one.
 
 Set up the two Chough drivers once per clone:
 
@@ -1093,8 +1099,8 @@ they union-merge like the ledger.
 - A set is eligible only when cold archives list it, no hot archive does, and no other
   retention protection applies once age and the latest-archive reason are set aside:
   checkpoint and bug references, active native manifests, named files, non-routine
-  records, the newest 3 and the newest failure per case and environment, and validation
-  failures and first and last passes all still protect it.
+  records, the newest run and the newest failure per case and environment (KNOW-17),
+  and validation failures and first and last passes all still protect it.
 - Every file of an eligible set must be tracked at HEAD with identical bytes; a set
   that is not is listed under `uncommitted` and kept. Bytes are hashed with `git
   hash-object --no-filters`, so `core.autocrlf` or a clean filter cannot make a file

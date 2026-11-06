@@ -5,13 +5,20 @@ headless Chromium (Playwright 1.64.1, Chromium headless shell 1248) under Bun 1.
 using `docs/diagrams/render.mjs`. The PNG previews were opened and inspected. On
 2026-11-01 the same tooling re-rendered them after the stage gates, the closeout gate
 step and the native status edge were corrected; `ownership.svg` came out
-byte-identical, and the table shows the new preview sizes.
+byte-identical, and the table shows the new preview sizes. On 2026-11-06 the same
+renderer (Mermaid 11.12.0, Playwright 1.64.1, Chromium headless shell 1248, Bun 1.4.0)
+re-rendered them for FLOW-18: `stages` draws skip from design to plan and names the
+unlinked failure at test to accept, `lifecycle` closes the review gate with
+`--close-gate`, and `ownership` says the librarian is on by default. `context.svg` came
+out byte-identical, and the PNG previews of the other three were opened and inspected.
+`tests/docs.rs` now fails when a source's labels are missing from its SVG or a page's
+Mermaid block differs from its source.
 
 | Source | Committed render | Preview | Inspection |
 |---|---|---|---|
-| [ownership.mmd](diagrams/ownership.mmd) | [ownership.svg](diagrams/ownership.svg) | 1552 × 660 | Labels readable; every arrow reaches its node; the dotted edge marks the optional librarian |
-| [stages.mmd](diagrams/stages.mmd) | [stages.svg](diagrams/stages.svg) | 1073 × 1204 | Main path top to bottom with labelled gates; back edges dotted; release only from done; side stages and the checkpoint tied to "any stage"; every edge label sits on its own edge with an opaque background, and no edge crosses another edge's label |
-| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1520 | Human review before `review`, `ship` and archive; push and hosted CI only after the archive and done move (re-rendered 2026-11-05 for #122 with the same Mermaid 11.12.0 renderer, PNG inspected); changes requested loop back; release dotted and conditional |
+| [ownership.mmd](diagrams/ownership.mmd) | [ownership.svg](diagrams/ownership.svg) | 1552 × 682 | Labels readable; every arrow reaches its node; the dotted edge marks the librarian, on by default and possible to turn off (re-rendered 2026-11-06) |
+| [stages.mmd](diagrams/stages.mmd) | [stages.svg](diagrams/stages.svg) | 870 × 1276 | Main path top to bottom with labelled gates; skip only on design to plan; back edges dotted; release only from done; side stages and the checkpoint tied to "any stage"; every edge label sits on its own edge with an opaque background, and no edge crosses another edge's label (re-rendered 2026-11-06) |
+| [lifecycle.mmd](diagrams/lifecycle.mmd) | [lifecycle.svg](diagrams/lifecycle.svg) | 483 × 1544 | Human review before `review`, `ship` and archive; push and hosted CI only after the archive and done move (re-rendered 2026-11-05 for #122); the review gate closed with `--close-gate`, the flag on one line (re-rendered 2026-11-06); changes requested loop back; release dotted and conditional |
 | [context.mmd](diagrams/context.mmd) | [context.svg](diagrams/context.svg) | 1180 × 636 | Inputs reach the packet; limits feed it explicitly; native status joins at chough next |
 
 Two problems were found and fixed before this record. The first `stages` render was

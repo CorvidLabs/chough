@@ -6,6 +6,19 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The README, docs, workflow skill and diagrams say what main does again, and
+  `tests/docs.rs` fails when they drift (FLOW-18). It checks the stage diagram
+  against the helper's stages and moves, every inline Mermaid block against its
+  source and each SVG against its labels, the README helper table against
+  `chough --help`, the README verify list against `fledge.toml`, every documented
+  `chough` flag and relative link, the CLI reference's `.gitattributes` lines against
+  the repository's, and stated SpecSync, Fledge and HI versions against CI's pins.
+  Corrected: the skill's no-helper resume and checkpoint reference name sessions and
+  event history; the stage diagram skips from design to plan and names the unlinked
+  failure; the closeout closes the review gate with `--close-gate`; SpecSync's
+  `verification_ignored_paths` ships from 6.1.2; the archive summary keeps the newest
+  run (KNOW-17); releasing.md works for any version. Installed copies of the earlier
+  `SKILL.md`, `checkpoint.md` and `lifecycle.md` update as known-outdated.
 - A test now holds REQ-cli-033's ceiling of 8 archive validity reads at once on any
   host (#137, audit CH-M11). The reader count is a pure function, `validity_readers`,
   with no behavior change. A unit test checks a host that reports 128 cores, and a

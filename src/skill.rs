@@ -337,6 +337,20 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/librarian.md",
         "b9887069d8d37460e96c2fb73da125dedb61bae1f6af4c48fa37becf351349ae",
     ),
+    // Main 615b587b; superseded by the docs-accuracy corrections (FLOW-18): where the
+    // checkpoint and transitions live with sessions and event history, and SpecSync 6.2.
+    (
+        "SKILL.md",
+        "860cc96169ac2c63de5f60aae1fc7fb417c99a799746a208fcedb968ad6039d5",
+    ),
+    (
+        "references/checkpoint.md",
+        "40afaeaf8494d52c4492861f9983fba0babddbe987673ba4981046aea0218016",
+    ),
+    (
+        "references/lifecycle.md",
+        "9f989fd4b2a9a9b1edd7288a6385a12e4dcaeba324e14ad5308c68233e2d1644",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.
