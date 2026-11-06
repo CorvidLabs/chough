@@ -7,10 +7,10 @@
   "title": "Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)",
   "description": "Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
   "created_at": 1793934880,
-  "updated_at": 1793934949,
+  "updated_at": 1793934992,
   "affected_specs": [
     "cli",
     "history"
