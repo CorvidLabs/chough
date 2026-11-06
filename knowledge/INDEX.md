@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148 (active; `specsync change status an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-403 recorded; most recent:
+404 recorded; most recent:
 
+- OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 ProductTest Passed in local-linux-aarch64 at c8b4c8daf5d3
 - OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 
 ## Briefs
 
