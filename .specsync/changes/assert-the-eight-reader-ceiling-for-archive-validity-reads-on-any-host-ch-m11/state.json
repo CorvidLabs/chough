@@ -7,10 +7,10 @@
   "title": "Assert the eight-reader ceiling for archive validity reads on any host (CH-M11)",
   "description": "Assert the eight-reader ceiling for archive validity reads on any host (CH-M11)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "73a7da5653312e907621c0165d0b5f903c22ff53",
   "created_at": 1793937841,
-  "updated_at": 1793937991,
+  "updated_at": 1793940210,
   "affected_specs": [
     "cli"
   ],
