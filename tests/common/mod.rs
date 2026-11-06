@@ -246,10 +246,12 @@ printf '{"summary":{"id":"%s","state":"%s","next_action":"%s"%s}%s}\n' "$3" "$st
         count
     }
 
+    /// Make the script at `name` executable as a fresh file (see [`install_executable`]).
     #[cfg(unix)]
     pub(super) fn executable(&self, name: &str) {
-        use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(self.root().join(name), fs::Permissions::from_mode(0o755)).unwrap();
+        let path = self.root().join(name);
+        let content = fs::read(&path).unwrap();
+        install_executable(&path, &content);
     }
 
     /// Configure an enabled native lifecycle whose status the stub reports.
@@ -258,6 +260,32 @@ printf '{"summary":{"id":"%s","state":"%s","next_action":"%s"%s}%s}\n' "$3" "$st
         self.write(".specsync/sdd.json", "{\"enabled\": true}\n");
         self.write(".stub-state", &format!("{state}\n"));
     }
+}
+
+/// Install an executable script at `path` as a fresh file (#132). A child `sh` writes it
+/// to a temporary name, makes it executable and renames it into place. No handle in the
+/// test process ever opens the new file for writing, so a child that another test
+/// thread forked, still holding an old write handle until it execs, cannot make the
+/// script "Text file busy" (ETXTBSY), the pattern of CorvidLabs/spec-sync#888.
+#[cfg(unix)]
+pub(super) fn install_executable(path: &Path, content: &[u8]) {
+    use std::io::Write;
+    let mut child = std::process::Command::new("sh")
+        .args([
+            "-c",
+            "temporary=\"$1.install.$$\" && cat > \"$temporary\" && chmod 755 \"$temporary\" && mv -f \"$temporary\" \"$1\"",
+            "sh",
+        ])
+        .arg(path)
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    child.stdin.take().unwrap().write_all(content).unwrap();
+    assert!(
+        child.wait().unwrap().success(),
+        "installing {}",
+        path.display()
+    );
 }
 
 /// The `hi export` response the stand-ins report.
@@ -270,14 +298,15 @@ pub(super) fn stand_in(bin: &Path, name: &str, stdout: &str) {
     fs::create_dir_all(bin).unwrap();
     #[cfg(unix)]
     {
-        use std::os::unix::fs::PermissionsExt;
         assert!(
             !stdout.contains('\''),
             "stand-in output must not contain a quote"
         );
         let path = bin.join(name);
-        fs::write(&path, format!("#!/bin/sh\nprintf '%s\\n' '{stdout}'\n")).unwrap();
-        fs::set_permissions(&path, fs::Permissions::from_mode(0o755)).unwrap();
+        install_executable(
+            &path,
+            format!("#!/bin/sh\nprintf '%s\\n' '{stdout}'\n").as_bytes(),
+        );
     }
     #[cfg(windows)]
     {

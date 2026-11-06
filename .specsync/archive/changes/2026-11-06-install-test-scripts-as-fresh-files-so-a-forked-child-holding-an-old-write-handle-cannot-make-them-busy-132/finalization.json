@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132",
+  "implementation_commit": "74a6133d0015b7652e64762592aa263bc7306987",
+  "implementation_tree": "bdb388a79db3d6e24958a4c9ed7cea3c23cc48fc",
+  "contract_digest": "4b47b456e468197d3d555a0746876db3bcf401e9d566673748ab104ab1953c0c",
+  "workspace_digest": "09c37db7169fd320fa4698d31b1eb36b1ecb2bc6ae317cad29005aacfbbf027f",
+  "closing_digest": "307b203ff90f59b2637ee673e2d99e42b96a759ddb727f7bca4d181974e7b615",
+  "review_digest": "a7116cfb1138bd3dee5b35bb557b716fcd9f72321f3e3d30d36e14283340b0fa",
+  "finalization_digest": "0dd90597d518d15d8a94c091dd8ac42fea700a0ee0f154180fd3408ab75dd706",
+  "timestamp": 1793946959
+}
