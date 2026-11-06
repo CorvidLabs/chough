@@ -1,4 +1,52 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793937477,
+      "digest": "89b77e1244deb298552633c49b61257c1ed0e9329f57153d4abb53a4a1c7bb87",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17",
+        "title": "Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17)",
+        "description": "Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17)",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/workflows/ci.yml",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "README.md",
+          "docs/DECISIONS.md",
+          "docs/FRD.md",
+          "docs/ROADMAP.md",
+          "docs/ci.md",
+          "docs/cli.md",
+          "docs/integrations.md",
+          "hi/flow.md",
+          "knowledge/",
+          "specs/cli/testing.md",
+          "tests/package.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement text changes: no REQ promises that Chough runs on native Windows. The CI matrix, the platform statements in README and docs, the cli testing companion's Windows CI lines and a package test that keeps them in agreement change; REQ-cli-046's short attachment paths stay because they keep a repository's tracked tree checkable out by any Git client.",
+        "acceptance_criteria": [
+          "Hosted CI runs the product tests and release build on ubuntu-latest and macos-latest only, and no job runs on Windows; the MSRV, Fledge / HI / SpecSync (the verify lane with the feature-and-bug exercise), Archive, SpecSync Archive and CI gate fixtures jobs stay on Ubuntu, unchanged. README, docs/ci.md and docs/integrations.md say Chough supports macOS and Linux and Windows only through WSL 2 with Ubuntu, and say exactly what the Ubuntu jobs cover for WSL and what they do not. No requirement or criterion promises native Windows behavior, no Linux or macOS requirement changes (REQ-cli-046 keeps its short attachment paths and file modes), and specs/cli/testing.md no longer claims Windows CI. tests/package.rs::supported_platforms_are_macos_and_linux_with_windows_through_wsl fails on the base and passes after; the CRLF-normalizing tests stay; fledge lanes run verify passes on Linux or macOS."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "FLOW-17 (Leif, Mac + Linux; Windows via WSL, 2026-11-05 20:17 MST, relayed by orc t18; first drafted as FLOW-16, renumbered because chough#123's branch holds FLOW-16); SpecSync 6.0+ publishes no Windows binary; REQ-cli-046 and every Linux and macOS guarantee unchanged; CRLF-normalizing tests kept; no branch rule or issue changed.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }

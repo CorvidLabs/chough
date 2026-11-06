@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9b9d1cdba5df6ff89fa8773e",
-    "head": "EVT-d5e167347a324fc98fe2b1b2",
+    "head": "EVT-40082b460b38c88b686f5c49",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "intent",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,8 @@
     "decided: \"Mac + Linux; Windows via WSL\" (Leif, orc tab, 2026-11-05 20:17 MST, relayed by orc in hc t18) because Chough should match SpecSync 6.0, which publishes no Windows binary, and other PRs wait on the native Windows job",
     "decided: \"Approve, A on D1-D5\" (Leif, relayed by orc in hc t18, 2026-11-05) because the gate recommended A on each: no requirement delta, keep cfg(windows) code untested, Ubuntu jobs cover WSL 2, close no issues, leave ci-windows case labels",
     "decided: take FLOW-17 and no REQ IDs (orc ID registry: ch-d7 owns FLOW-16, REQ-cli-050, REQ-history-010) because FLOW-17 is free on origin/main and every branch and worktree",
-    "rejected: keeping the first draft numbered FLOW-16 in a commit because the SpecSync Archive walk refuses a change that a PR revision held and later omitted; the unpushed commit 72a26382 was reset locally instead"
+    "rejected: keeping the first draft numbered FLOW-16 in a commit because the SpecSync Archive walk refuses a change that a PR revision held and later omitted; the unpushed commit 72a26382 was reset locally instead",
+    "decided: native scope approval recorded by orc as actor 0xLeif at 2301ee38 after Leif confirmed \"Approve, A on D1-D5\" in the orc tab (hc t18) because the definition gate is his; this agent recorded no approval"
   ],
   "open_questions": [],
   "completed": [
@@ -46,9 +47,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native scope approval of support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17: Leif's relayed 'Approve, A on D1-D5', to be recorded after orc's go"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Record the failing-first run, apply the implementation, merge origin/main, commit, send orc 'ready for approval' at the commit"
+  "next_action": "Run verify, change check --commit, push, open the PR, send orc ready for review"
 }
