@@ -7,10 +7,11 @@
   "title": "Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132)",
   "description": "Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "47237d549eb395dfb8c301322d95f371ca4ea3ae",
   "created_at": 1793940535,
-  "updated_at": 1793942204,
+  "updated_at": 1793942535,
   "affected_specs": [
     "cli"
   ],
