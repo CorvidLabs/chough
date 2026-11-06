@@ -98,7 +98,7 @@ Archived lesson bundles:
 
 ## Observations
 
-397 recorded; most recent:
+401 recorded; most recent:
 
 - OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
@@ -110,18 +110,6 @@ Archived lesson bundles:
 - OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-389 recorded; most recent:
-
-- OBS-tc-cli-supported-platforms-e99a5e875c28321368248744 ProductTest Passed in local-macos-arm64 at 2c3834fe817f
-- OBS-tc-cli-supported-platforms-740fae9392dd55ffb48cb418 ProductTest Passed in local-macos-arm64 at 1e076695cedf
-- OBS-tc-history-relay-invalid-payloads-736bae7a3a483a4d9a691e67 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-cli-relay-never-touches-native-d782698f8446ac9d148f1bd4 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-cli-relay-refusals-recover-b8da2ecf35c89b0c399b1e15 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-cli-relay-closes-one-gate-with-four-values-f7953d03c79922c844d899b2 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-history-relay-invalid-payloads-d9941deec425b224a5e3cd5e ProductTest Passed in local at 98aa658d861b
-- OBS-tc-history-relay-invalid-payloads-a9fe4eaaf31e180bffc750aa ProductTest Passed in local at 98aa658d861b
-- OBS-tc-cli-relay-clear-records-none-6fa5a5b6c92a58c7e09b25ed ProductTest Passed in local at 98aa658d861b
 
 ## Briefs
 
