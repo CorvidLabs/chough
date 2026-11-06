@@ -96,7 +96,7 @@ Archived lesson bundles:
 
 ## Observations
 
-375 recorded; most recent:
+374 recorded; most recent:
 
 - OBS-tc-cli-supported-platforms-e99a5e875c28321368248744 ProductTest Passed in local-macos-arm64 at 2c3834fe817f
 - OBS-tc-cli-supported-platforms-740fae9392dd55ffb48cb418 ProductTest Passed in local-macos-arm64 at 1e076695cedf
@@ -104,10 +104,10 @@ Archived lesson bundles:
 - OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
 - OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd ProductTest Passed in local-macos-arm64 at 17a6a1f74a3e
 - OBS-tc-cli-supported-platforms-cf84a4b69599d4e71ffec6b6 ProductTest Failed in local-macos-arm64 at ec830cfb001c
-- OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923 ProductTest Failed in local-macos-arm64 at ec830cfb001c
 - OBS-tc-cli-native-check-not-passed-note-4df482e80586149e4a0c3dbc ProductTest Passed in local-macos-arm64 at e4e8371f9e8e
 - OBS-tc-cli-native-check-safe-verifying-8b455b7140c543c7009cea93 ProductTest Passed in local-macos-arm64 at e4e8371f9e8e
 - OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
+- OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
 
 ## Briefs
 
