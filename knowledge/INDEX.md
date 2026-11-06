@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-403 recorded; most recent:
+405 recorded; most recent:
 
 - OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 ProductTest Passed in local-macos-arm64 at 769fba2e29ce
 - OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 ProductTest Failed in local-macos-arm64 at 4da25aa93cb2
