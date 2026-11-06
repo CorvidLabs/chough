@@ -351,3 +351,38 @@ fn sigterm_to_change_check_stops_specsync() {
         std::thread::sleep(Duration::from_millis(20));
     }
 }
+
+#[test]
+fn an_invalid_native_bound_refuses_status_naming_a_valid_retry() {
+    let fixture = fixture();
+    fixture.write(".stub-out", "{}\n");
+    for invalid in ["0", "3601", "soon"] {
+        let _ = fs::remove_file(fixture.root().join(".stub-argv"));
+        let output = run_env(
+            &fixture,
+            &["change", "status", "free-shipping"],
+            &[("CHOUGH_NATIVE_TIMEOUT_SECONDS", invalid)],
+        );
+        assert_eq!(output.status.code(), Some(1), "{invalid}");
+        assert!(!fixture.exists(".stub-argv"), "{invalid}: specsync ran");
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(
+            error.contains("from 1 to 3600")
+                && error.contains(
+                    "`CHOUGH_NATIVE_TIMEOUT_SECONDS=120 chough change status free-shipping`"
+                ),
+            "{invalid}: {error}"
+        );
+    }
+    // The retry it names succeeds.
+    let output = run_env(
+        &fixture,
+        &["change", "status", "free-shipping"],
+        &[("CHOUGH_NATIVE_TIMEOUT_SECONDS", "120")],
+    );
+    assert!(output.status.success());
+    assert_eq!(
+        argv(&fixture),
+        ["change", "status", "free-shipping", "--json"]
+    );
+}

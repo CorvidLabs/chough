@@ -108,3 +108,21 @@ expected = ["the change test sigterm_to_change_check_stops_specsync passes"]
 adapter = "cargo-test"
 test_target = "change"
 test = "sigterm_to_change_check_stops_specsync"
+
+[[case]]
+id = "TC-cli-change-invalid-bound-recovery"
+title = "An invalid native read bound refuses chough change status naming a valid retry, which then succeeds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test an_invalid_native_bound_refuses_status_naming_a_valid_retry passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "an_invalid_native_bound_refuses_status_naming_a_valid_retry"
