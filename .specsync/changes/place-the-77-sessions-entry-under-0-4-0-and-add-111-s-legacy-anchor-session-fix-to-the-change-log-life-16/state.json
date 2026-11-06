@@ -7,10 +7,10 @@
   "title": "Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16)",
   "description": "Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16)",
   "kind": "documentation",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "b535b92fb0e7cf5679449c18860e136bb27397e6",
   "created_at": 1793972647,
-  "updated_at": 1793972698,
+  "updated_at": 1793973765,
   "affected_specs": [],
   "affected_paths": [
     "CHANGELOG.md",

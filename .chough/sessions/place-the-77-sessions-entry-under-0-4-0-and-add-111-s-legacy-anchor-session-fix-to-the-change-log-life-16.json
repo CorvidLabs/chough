@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-919815bdba99506d9e6c962e",
-    "head": "EVT-4316657280cbea2f9089d311",
+    "head": "EVT-c9ef38cdd83144f8182491cd",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "intent",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -27,16 +27,15 @@
     "files": []
   },
   "decisions": [
-    "decided: one docs-only PR that moves the #77 sessions entry to [0.4.0] and adds #111's entry, because #77 and #111 first shipped in v0.4.0 (tags); Leif chose 'Yes, one small PR' and captured LIFE-16 with 'Capture as written' (orc relay, hc t18, 2026-11-06)"
+    "decided: one docs-only PR that moves the #77 sessions entry to [0.4.0] and adds #111's entry, because #77 and #111 first shipped in v0.4.0 (tags); Leif chose 'Yes, one small PR' and captured LIFE-16 with 'Capture as written' (orc relay, hc t18, 2026-11-06)",
+    "Leif, through the orc (t18), which recorded the approval as 0xLeif at 548cab2d decided \"Scope decision of place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16\": \"im telling you to approve and continue all of these... approve as me (Leif in the orc tab, relayed by the orc: approval for the CHANGELOG change (548cab2d) recorded as 0xLeif; build it, PR, then 'ready for review'; it merges after #150)\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Scope decision of place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Send 'ready for approval' to orc t18; then commit the failing tests/changelog.rs"
 }

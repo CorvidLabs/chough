@@ -1,6 +1,6 @@
 ---
 id: place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16
-state: draft
+state: approved
 type: documentation
 base_commit: b535b92fb0e7cf5679449c18860e136bb27397e6
 ---
