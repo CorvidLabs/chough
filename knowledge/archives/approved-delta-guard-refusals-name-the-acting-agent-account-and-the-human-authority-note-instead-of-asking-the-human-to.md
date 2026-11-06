@@ -137,16 +137,16 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/pr51-root-qualification/repair-lint.log` | 34b36f97e29262999ea987ae07ee7344f593c8aee423352b3ce48024d7765ebd | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/repair-quality.json` | 3614ec1896f6628c5c8a2d3109a3047f49b15322fc8b52ceda37f089d48b2667 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
 | `.chough/artifacts/pr51-root-qualification/unfixed-source.diff` | db20804c4acc92b8697f3b9a719fd2b4c2d14f9cc31c0a5756b852ef5f066cb8 | working tree |
-| `.chough/artifacts/pr51-writer-atomicity/before/before.json` | dded784b54b0d2576a1f6a3495af9ab6dfc91b95d7809e0d3161eee71a081e04 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-writer-atomicity/before/capture.py` | abd117be731485ca650c8fd368c59eaedda14acf9bf883d87b6445fd7ec7ad43 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-writer-atomicity/before/coverage-note.json` | 9d98027f62ed44ab111816a3571795411c0c476bda55da54b9478a189cb83111 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-writer-atomicity/before/fmt.log` | 069260a8f1e4ab4e07fdc5d73618acc9349c3779698905389d37be43613a15b1 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-writer-atomicity/before/inputs/src/checkpoint.rs` | f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-writer-atomicity/before/inputs/src/history.rs` | e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-writer-atomicity/before/inputs/tests/cli.rs` | 66aa50bcd0b26f69045cc069ef036266b1501a7bb4f5ccf9bb49b2986dcb39bb | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-writer-atomicity/before/red.log` | e7315c898503f3aa83c85e9234d1a26f6ce0f3134aa4b18f6962191a07276a3f | working tree |
-| `.chough/artifacts/pr51-writer-atomicity/before/regression.patch` | c9140ef7c2d0ae1e5c96d088419046f45bb8060e6e04daa36e3b6be12fd9ab03 | working tree |
-| `.chough/artifacts/pr51-writer-atomicity/before/result.json` | 3627b6aaa30ba0338d8656d1432bcd56ad39808303c5412a187a674b6d84f660 | working tree |
+| `.chough/artifacts/pr51-writer-atomicity/before/before.json` | dded784b54b0d2576a1f6a3495af9ab6dfc91b95d7809e0d3161eee71a081e04 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-writer-atomicity/before/capture.py` | abd117be731485ca650c8fd368c59eaedda14acf9bf883d87b6445fd7ec7ad43 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-writer-atomicity/before/coverage-note.json` | 9d98027f62ed44ab111816a3571795411c0c476bda55da54b9478a189cb83111 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-writer-atomicity/before/fmt.log` | 069260a8f1e4ab4e07fdc5d73618acc9349c3779698905389d37be43613a15b1 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-writer-atomicity/before/inputs/src/checkpoint.rs` | f4ccbd705196680da028af17b21a63dcef29ed2fdc931e4d76a9cfe43cadc750 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-writer-atomicity/before/inputs/src/history.rs` | e4deda0384980e54ca1defaf032b1b759c4a1afbadf39290131892aee60059c8 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-writer-atomicity/before/inputs/tests/cli.rs` | 66aa50bcd0b26f69045cc069ef036266b1501a7bb4f5ccf9bb49b2986dcb39bb | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-writer-atomicity/before/red.log` | e7315c898503f3aa83c85e9234d1a26f6ce0f3134aa4b18f6962191a07276a3f | Git 54e9ce1f75d59de368b639993f5631a094ac117f |
+| `.chough/artifacts/pr51-writer-atomicity/before/regression.patch` | c9140ef7c2d0ae1e5c96d088419046f45bb8060e6e04daa36e3b6be12fd9ab03 | Git 54e9ce1f75d59de368b639993f5631a094ac117f |
+| `.chough/artifacts/pr51-writer-atomicity/before/result.json` | 3627b6aaa30ba0338d8656d1432bcd56ad39808303c5412a187a674b6d84f660 | Git 54e9ce1f75d59de368b639993f5631a094ac117f |
 
 ## Observations
 
@@ -259,7 +259,7 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json)
 - `.chough/artifacts/history-post-prune-reference-before/commands.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json)
 - `.chough/artifacts/history-post-prune-reference-before/merge-result.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json)
-- 271 more are listed in .chough/pruned.jsonl
+- 242 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 
