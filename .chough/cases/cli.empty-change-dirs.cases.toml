@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-empty-change-dir-not-open"
+title = "An empty change directory left by a branch switch is not an open native change"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1"]
+requirements = ["REQ-cli-043"]
+paths = ["src/evidence.rs", "src/library.rs", "tests/evidence.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the evidence test an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change"
