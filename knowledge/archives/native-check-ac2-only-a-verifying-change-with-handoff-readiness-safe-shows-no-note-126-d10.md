@@ -67,4 +67,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.json](../attachments/native-check-d1cc0d73/sessions/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.json)

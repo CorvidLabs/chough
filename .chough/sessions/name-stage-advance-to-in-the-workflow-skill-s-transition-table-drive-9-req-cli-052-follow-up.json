@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-b510afe825f059bf479282f0",
-    "head": "EVT-914553ba5b615a98e14b39d6",
+    "head": "EVT-8250acd331a37cc9272627e1",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,8 @@
   },
   "decisions": [
     "decided: add 'stage advance --to' to the chough-workflow skill's transition table as its own small change and PR, because the orc assigned follow-up (2) after #147 merged (t18 relay, 2026-11-05 late evening MST); the pgrep flake is #144's",
-    "the orc (t18), deciding as Leif under his overnight delegation decided \"Scope decision of name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up\": \"approval recorded as 0xLeif at 252659ac (overnight delegation). Build, verify, push, PR, 'ready for review'.\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 early morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated"
+    "the orc (t18), deciding as Leif under his overnight delegation decided \"Scope decision of name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up\": \"approval recorded as 0xLeif at 252659ac (overnight delegation). Build, verify, push, PR, 'ready for review'.\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 early morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated",
+    "Leif, through the orc (t18), which recorded the review as 0xLeif at 7868b0a6 decided \"Implementation review of name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up\": \"im telling you to approve and continue all of these... approve as me (Leif in the orc tab, relayed by the orc: review for #151 (7868b0a6) recorded as 0xLeif; ship with no commit between, close the gate as relayed, stage advance to done, push the archive tip, full CI green, merge pinned right after #149 lands)\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -45,9 +46,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Complete the definition and send 'ready for approval' to orc t18"
 }
