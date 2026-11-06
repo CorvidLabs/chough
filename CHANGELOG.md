@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The workflow skill and docs now teach an archive-first closeout (#122, audit D5).
+  The order is: verify locally, the human's implementation review, the native review,
+  finalize and the done move, and only then push and observe CI. The hosted Archive
+  gate refuses while a change is open. The no-commit rule between check and finalize
+  is unchanged. Installed 0.4.0 copies of the lifecycle and accept references update.
+  The feature-and-bug exercise now runs this closeout against the real archive
+  inspector, with a simulated reviewer.
+
 - Generated bug notes (`knowledge/bugs/*.md`) now union-merge and are rebuilt like the
   other generated knowledge notes, so parallel branches no longer conflict on them
   (#128, REQ-cli-047, DRIVE-12).
