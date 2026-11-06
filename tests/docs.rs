@@ -911,7 +911,12 @@ fn closeout_guidance_closes_the_review_gate_with_the_relayed_decision() {
     let mut problems = vec![];
     for page in &pages {
         let text = read(page).to_lowercase().replace('\n', " ");
-        for phrase in ["clear the gate", "clears the gate", "clearing the gate"] {
+        for phrase in [
+            "clear the gate",
+            "clears the gate",
+            "clearing the gate",
+            "clear gate",
+        ] {
             if text.contains(phrase) {
                 problems.push(format!(
                     "{page}: \"{phrase}\"; close it with `chough checkpoint --close-gate` and the relayed decision"
