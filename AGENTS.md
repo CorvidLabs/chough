@@ -11,6 +11,9 @@ Before changing behavior, read [INTENT.md](INTENT.md), the relevant `hi/` criter
 [docs/FRD.md](docs/FRD.md) and the affected contract and companions under `specs/`.
 Use Fledge first: `fledge run fmt`, `fledge run test`, `fledge run lint`, `fledge
 lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.2.0.
+On Linux, `fledge run linux-image` builds the test images from `tools/linux/` with those
+pins, and `fledge run linux-verify` runs the verify lane in them; rebuild the images
+with `linux-image` after a Docker reset.
 One command installs all three; see "Install the toolchain" in [README.md](README.md).
 
 Each pull request records its work in its own session, so parallel branches never write

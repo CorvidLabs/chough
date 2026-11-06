@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "a530d96674a853372c42ec2daa69184adfdc6436",
+  "contract_digest": "df4084b81e47994add0d5de6018f4e1957fbaa13da3f0ea97c7eaf2562d49f51",
+  "execution_digest": "6a0e44f6b0de5d3c87089df77c8911a5a1d99b5c3b8f7e2993242ea14d725da1",
+  "workspace_digest": "ad99e4d8f506c1bae33551d1337bed7141b5801cc49cb9c386b2c987fcb8306c",
+  "timestamp": 1794007757
+}

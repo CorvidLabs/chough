@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 71
+version: 72
 status: active
 files:
   - src/main.rs
@@ -30,6 +30,7 @@ files:
   - tests/stages.rs
   - tests/common/mod.rs
   - tests/workflow_authority.rs
+  - tests/linux_image.rs
   - tests/subdirectory.rs
   - tests/doctor.rs
   - tests/change.rs
@@ -294,3 +295,4 @@ provider, runtime or hosted service.
 | 69 | 2026-11-06 | chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17: Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) |
 | 70 | 2026-11-06 | a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18: A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) |
 | 71 | 2026-11-06 | run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20: Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) |
+| 72 | 2026-11-06 | rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177: Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22) |

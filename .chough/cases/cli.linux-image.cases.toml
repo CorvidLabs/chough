@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-linux-image-from-ci-pins"
+title = "The Linux test images take their tool versions from the CI workflow's pins, refuse missing or disagreeing pins, and the verify gate refuses a tool that is not pinned"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-22"]
+requirements = ["REQ-cli-058"]
+paths = ["tools/linux/Dockerfile", "tools/linux/pins.sh", "tools/linux/image.sh", "tools/linux/check-versions.sh", "tools/linux/verify.sh", "fledge.toml", "tests/linux_image.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the five linux_image tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "linux_image"]
+expect_output = ["test result: ok. 5 passed"]
+timeout_seconds = 600
