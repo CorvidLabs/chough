@@ -1,6 +1,6 @@
 ---
 id: give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 260ecc949ea01214f4bec43b30ea4226ce8fae59
 ---

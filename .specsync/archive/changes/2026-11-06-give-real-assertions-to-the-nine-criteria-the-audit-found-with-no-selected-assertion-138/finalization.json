@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138",
+  "implementation_commit": "7894feaa3aeacdbdc1b421ed3357e2a8702280d5",
+  "implementation_tree": "3460b5542359576e0be4d2ba28506cd9ac1e2bed",
+  "contract_digest": "b132144fecba19b023ce2b4eca922ba03210acf47609012f7e05dd4c61ef3a11",
+  "workspace_digest": "471f39aacb9b0f9749f60f5a89aca3dfee1c39db056fcfe6a29b4acbfd7ffdc8",
+  "closing_digest": "0184e0bf3873a3e78cb9b0fe46423852cac3211ba5026f3c859f1bea04ae475d",
+  "review_digest": "7087428a69d8d19d66a08939f5e1dfa04e6784986925416e227252f87d30efc1",
+  "finalization_digest": "2d7533035112f826865afb9ababf04e75c2d36730f80de4587c355d6d86e4978",
+  "timestamp": 1793974035
+}
