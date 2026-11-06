@@ -311,6 +311,7 @@ Acceptance Criteria
 - Of four routine runs of one case and environment listed only by a cold archive, the newest run and the newest failure stay and the other two are trimmed.
 - A record no archive lists, observed in a cold archive's cycle, is trimmed and ledgered with that archive and its knowledge entry, and that entry names it; a record in a hot archive's cycle, or observed after the newest archive, stays.
 - The native validity reads of the affected archives overlap.
+- With twelve affected archives, no more than 8 validity reads run at once, and the reader count is at most 8 whatever parallelism the host reports.
 
 ### REQ-cli-034
 

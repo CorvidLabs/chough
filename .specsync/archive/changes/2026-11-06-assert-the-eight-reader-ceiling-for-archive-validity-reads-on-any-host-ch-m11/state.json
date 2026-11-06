@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11",
+  "slug": "assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11",
+  "title": "Assert the eight-reader ceiling for archive validity reads on any host (CH-M11)",
+  "description": "Assert the eight-reader ceiling for archive validity reads on any host (CH-M11)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "73a7da5653312e907621c0165d0b5f903c22ff53",
+  "created_at": 1793937841,
+  "updated_at": 1793946979,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/reduce.rs",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "REQ-cli-033 gains a criterion: with twelve affected archives no more than 8 validity reads run at once, and the reader count is at most 8 whatever parallelism the host reports. The reader count is a pure function with no behavior change. A unit test holds the ceiling for a host reporting 128 cores, and a 12-cold-archive integration test observes at most 8 overlapping reads. Both fail with the ceiling raised to 128 (the audit's CH-M11 mutant) and pass restored; the existing overlap test still passes. fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Audit CH-M11 (mutation .clamp(2, 8) -> .clamp(2, 128) survived native_validity_reads_run_in_parallel); Leif's 95% plan C5 (2026-11-05, via the orc): a test that asserts the eight-reader ceiling, which the mutation must fail; never weaken a test, gate, bound or timeout. The ceiling stays 8 and the floor 2; no runtime behavior changes.",
+    "public_contract": "no"
+  }
+}

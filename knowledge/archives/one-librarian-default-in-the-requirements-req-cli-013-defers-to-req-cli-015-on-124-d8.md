@@ -65,4 +65,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.json](../attachments/one-librarian-411b229f/sessions/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.json)

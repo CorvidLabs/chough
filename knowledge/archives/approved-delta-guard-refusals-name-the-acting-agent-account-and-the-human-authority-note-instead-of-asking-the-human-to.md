@@ -115,7 +115,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/pr51-root-integration/raw/base747-transitions.jsonl` | c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/artifacts/pr51-root-integration/raw/root51-session.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
 | `.chough/artifacts/pr51-root-integration/raw/root51-transitions.jsonl` | f59a698df2f52f0d7a5f8787277ec8cbc12d96023f31e35989033c8d49dff9cf | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
-| `.chough/artifacts/pr51-root-qualification/applied-metadata-peer.json` | 6fe408dba547e7b143a9f4508dcf6cbc3afe36be204d915cd50ca66f6dbade26 | working tree |
+| `.chough/artifacts/pr51-root-qualification/applied-metadata-peer.json` | 6fe408dba547e7b143a9f4508dcf6cbc3afe36be204d915cd50ca66f6dbade26 | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
 | `.chough/artifacts/pr51-root-qualification/final-case-1.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/final-case-1.stdout` | 8a8f944a84c9d287f193be7b5aa78d99cc5c784e50ffe1f04ed5dfdf92758e29 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/final-case-2.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
@@ -124,9 +124,9 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/pr51-root-qualification/final-case-3.stdout` | 5ab6db93e3514786d937cd2aa403a019a52a3d7fc04360ca04a872c5f2dd308a | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/final-execution-plan.json` | 04e7332dcdd9fd118392cb789a48b1c85258e3c8ab49a8b1e8c002a09d6be57b | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/final-freshness-peer.json` | fe7608d20e1056056322b4dca36bda8af747e24c3f6a6f7fc681c2c5ae0efebf | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/pr51-root-qualification/final-qualification.json` | 5169326f7d826af8c0bed5d88b12fcc15f319b19789803a7667fbdac50b4c9fd | working tree |
-| `.chough/artifacts/pr51-root-qualification/final-source-peer.json` | 3428153697d3e1bf7f8d013340d99da67d0d5598151ccfbe619f929396d0f678 | working tree |
-| `.chough/artifacts/pr51-root-qualification/final-verify.log` | edc39bb75f65b4d58e859c6ea0cd08ca301dab4e970197459ff53649f331c259 | working tree |
+| `.chough/artifacts/pr51-root-qualification/final-qualification.json` | 5169326f7d826af8c0bed5d88b12fcc15f319b19789803a7667fbdac50b4c9fd | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
+| `.chough/artifacts/pr51-root-qualification/final-source-peer.json` | 3428153697d3e1bf7f8d013340d99da67d0d5598151ccfbe619f929396d0f678 | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
+| `.chough/artifacts/pr51-root-qualification/final-verify.log` | edc39bb75f65b4d58e859c6ea0cd08ca301dab4e970197459ff53649f331c259 | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
 | `.chough/artifacts/pr51-root-qualification/named-bound-after.json` | 5d4680b86c6b03879f3347b98eb43f5c832dfec65a8d650ebbdf693a821b2564 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
 | `.chough/artifacts/pr51-root-qualification/named-bound-after.log` | c97065b518c01aa511f4248613f1917d11e7f9880128764761492891257651a7 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
 | `.chough/artifacts/pr51-root-qualification/named-bound-before.json` | 9a1fe65b798ad74db9e840c7c9edc3671f409c38d27d3e2ee7809baa4276b345 | working tree |

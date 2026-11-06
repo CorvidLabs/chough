@@ -9,6 +9,11 @@ All notable changes to Chough are recorded here. The format follows
 - The chough-workflow skill's transition table now names `chough stage advance --to
   <stage>` (REQ-cli-052, DRIVE-9). Installed copies of `references/stages.md` from 0.1.0
   to 0.4.0 report `known-outdated`, and `chough skill update` refreshes them.
+- A test now holds REQ-cli-033's ceiling of 8 archive validity reads at once on any
+  host (#137, audit CH-M11). The reader count is a pure function, `validity_readers`,
+  with no behavior change. A unit test checks a host that reports 128 cores, and a
+  12-archive test sees no more than 8 reads overlap. Raising the ceiling to 128 fails
+  both; the earlier overlap test passed it. REQ-cli-033 gains the matching criterion.
 - `chough stage advance --to <stage>` moves through each main stage up to `<stage>` on
   one `specsync change status` read. Every step is checked first, as a plain advance
   would check it, and a refused step refuses the whole batch with nothing recorded
