@@ -45,7 +45,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-22 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+23 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -71,6 +71,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-skill-615b587b-known-outdated-ad9acbbba3b8e195ac8a6f24 | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-615b587b-known-outdated |
 | OBS-tc-cli-stage-diagram-matches-the-helper-076aedef472d1f833fe184f1 | passed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
 | OBS-tc-cli-stage-diagram-matches-the-helper-48b43b88711c7e823d7ed451 | passed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
+| OBS-tc-reporting-timing-trace-straddles-a-second-a7c0aeaed236fde0da9c4b72 | passed (by cycle time) | local-linux-aarch64 | TC-reporting-timing-trace-straddles-a-second |
 
 ## Bugs
 

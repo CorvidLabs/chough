@@ -43,7 +43,10 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
     (
         "REQ-cli-024",
         "REQ-reporting-002",
-        "85422fa81149313efd0227e2cf0607b4924b9866dc145636241e2b2e387c9a62",
+        // Modified by native change make-the-timing-trace-test-fail-only-when-tracing-
+        // changes-the-report-never-because-its-runs-straddle-a-second-169-drive (#169):
+        // the trace criterion now reads "identical ... except for the clock".
+        "ca7a72a418f2bccc33f625aedbfa58c541a1ed9dbd77e290d50ccc24713db8f1",
     ),
     (
         "REQ-cli-028",

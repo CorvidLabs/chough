@@ -48,6 +48,7 @@ Active:
 Archived changes (newest first; the newest 3 are hot):
 
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) (hot)
+- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (hot)
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18) (hot)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) (hot)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (cold)
@@ -72,6 +73,7 @@ Module lesson sources:
 Archived lesson bundles:
 
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../.specsync/archive/changes/2026-11-06-a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18/lesson-bundle.md)
+- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../.specsync/archive/changes/2026-11-06-make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive/lesson-bundle.md)
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](../.specsync/archive/changes/2026-11-06-make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18/lesson-bundle.md)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../.specsync/archive/changes/2026-11-06-chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17/lesson-bundle.md)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../.specsync/archive/changes/2026-11-06-a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16/lesson-bundle.md)
@@ -102,6 +104,7 @@ Archived lesson bundles:
 492 recorded; most recent:
 
 - OBS-tc-cli-subdirectory-project-records-evidence-08e49ae695965281b908aec4 ProductTest Passed in local-linux-aarch64 at 667c99299cef
+- OBS-tc-reporting-timing-trace-straddles-a-second-a7c0aeaed236fde0da9c4b72 ProductTest Passed in local-linux-aarch64 at 7142f286393e
 - OBS-tc-cli-skill-615b587b-known-outdated-49aa9e0f9901a7d1a489d2e7 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-closeout-closes-review-gate-0b30553d30e616c34b4082dc ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-docs-name-pinned-versions-82c95068c1ab83a81ac881e0 ProductTest Passed in local-macos-arm64 at e017ebe5fee7

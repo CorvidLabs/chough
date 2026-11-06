@@ -1,0 +1,168 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793997263,
+      "digest": "4688f499b8b4b7a286957616d2f930bc7cd1e1a189ea98900caf2b3882e454c4",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+        "title": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "description": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "reporting"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "hi/drive.md",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Test-only: the timing trace test compared two reports that end ongoing segments at their own now. No product behavior or contract changes.",
+        "acceptance_criteria": [
+          "DRIVE-19 (Leif, relayed by orc 2026-11-06, 'Capture both'; chough#169): timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit fails only when tracing changes the report. It runs the plain and traced timing --json once each, with no retry, and requires them to be equal except that every time and span running to now is later by exactly the gap between the two runs' generated_at. With a native stub that makes each run take over a second, today's test fails every time and the fixed test passes. A mutated field or a wrong shift makes the comparison fail. No other test, gate, bound or timeout changes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-19 (new, spec-sync CI-7 wording); issue #30: no runtime clock switch may forge times, so the fix stays in the test; never weaken a test: byte equality is replaced by an exact clock-shift equality that is checked on every run.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793998185,
+      "digest": "2f44a20f9024350fd60d0d87b88f4b61c7f19cb0d1600a2b04499e2709139337",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+        "title": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "description": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "reporting"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "hi/drive.md",
+          "specs/reporting/requirements.md",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "DRIVE-19 (Leif, relayed by orc 2026-11-06, 'Capture both', then 'Record both, reword the AC'; chough#169). REQ-reporting-002's trace criterion is reworded from 'byte-identical to the untraced run' to 'identical to the untraced run except for the clock'; no other text changes. timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit checks that criterion. It runs plain and traced timing --json once each, with no retry, and they must be equal except that every time and span running to now is later by exactly the gap between the two runs' generated_at. With a native stub that makes each run take over a second, the old comparison fails every time and the new one passes. A mutated field or a wrong shift fails the comparison. No other test, gate, bound or timeout changes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-19 (new, spec-sync CI-7 wording); issue #30: no runtime clock switch may forge times, so the fix stays in the test; never weaken a test: byte equality is replaced by an exact clock-shift equality that is checked on every run.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "reporting": "cebb0ad6a0032d2cafa4c9f645e4337a92741513753215f76fe0a2e2253500ce"
+      },
+      "approved_delta_bases": {
+        "reporting: REQUIREMENT REQ-reporting-002": "32650e56acca261bdbb851195bc7f001047790047b0c566fcfde367a458eab98"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793998776,
+      "digest": "ec3172be5a6e3167ad710775252488108c14039ba26491e72dd71e91dbfbc1b8",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+        "title": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "description": "Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "reporting"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "hi/drive.md",
+          "specs/reporting/requirements.md",
+          "tests/spec_split.rs",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "DRIVE-19 (Leif, relayed by orc 2026-11-06, 'Capture both', then 'Record both, reword the AC'; chough#169). REQ-reporting-002's trace criterion is reworded from 'byte-identical to the untraced run' to 'identical to the untraced run except for the clock'; no other text changes. timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit checks that criterion. It runs plain and traced timing --json once each, with no retry, and they must be equal except that every time and span running to now is later by exactly the gap between the two runs' generated_at. With a native stub that makes each run take over a second, the old comparison fails every time and the new one passes. A mutated field or a wrong shift fails the comparison. No other test, gate, bound or timeout changes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-19 (new, spec-sync CI-7 wording); issue #30: no runtime clock switch may forge times, so the fix stays in the test; never weaken a test: byte equality is replaced by an exact clock-shift equality that is checked on every run.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "reporting": "cebb0ad6a0032d2cafa4c9f645e4337a92741513753215f76fe0a2e2253500ce"
+      },
+      "approved_delta_bases": {
+        "reporting: REQUIREMENT REQ-reporting-002": "32650e56acca261bdbb851195bc7f001047790047b0c566fcfde367a458eab98"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793999717,
+      "digest": "ac97d8dee8a47f9e452e4db15e3bdfd52bbee3b2e92852f03735106d12d3e77c",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+      "actor": "0xLeif",
+      "reason": "Reword REQ-reporting-002's criterion from 'byte-identical' to 'identical except for the clock' so it says what the test checks (Leif, 2026-11-06).",
+      "timestamp": 1793998062,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": true
+    },
+    {
+      "schema_version": 1,
+      "change_id": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+      "actor": "0xLeif",
+      "reason": "add tests/spec_split.rs: the reworded REQ-reporting-002 changes the split guard's pinned digest, updated as #77 did",
+      "timestamp": 1793998540,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 2,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "reporting",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-reporting-002",
+          "content": "Timing native reads. Within one `chough timing` report the helper SHALL pass each distinct native change ID to `specsync change status` at most once, reusing that response for every place the report shows the change; the reuse SHALL be local to the request and SHALL NOT persist or serve any other command. The report SHALL read archived native history only when its selection shows history, which is `--cycle all` with no `--stage`, `--case` or `--bug` filter; otherwise it SHALL read only the checkpoint's native change, SHALL set `native.history` to null rather than an empty list, and SHALL report `native.history_selection` with state `skipped-by-filter` and the filters that excluded it, and the text form SHALL say that archived history was not read because of those filters. When history is selected, `native.history_selection` SHALL have state `selected` and SHALL report how many archived changes were read, reused, skipped beyond the existing bound of ten, and not read because the budget ran out. Total time spent waiting on native reads in one timing report SHALL be bounded by `CHOUGH_TIMING_NATIVE_BUDGET_SECONDS`, a whole number from 1 to 3600 with default 120, refused before any native read when invalid; a read SHALL run with the smaller of the per-read deadline and the remaining budget, and a read not started because the budget is exhausted SHALL be reported with status_read `not-read` and reason `budget-exhausted`, with its times unknown, never zero. Stage estimates SHALL continue to derive only from recorded transitions and SHALL NOT change with native history selection. With `CHOUGH_TRACE=1` the helper SHALL write to standard error one line per bounded native read with the program, arguments, elapsed milliseconds and final state, and timing SHALL write per-phase elapsed milliseconds; without it standard output and standard error SHALL be unchanged, and the trace SHALL NOT change any report, record or exit code. The budget, history selection and reuse SHALL NOT apply to stage moves, `chough next` or `chough status`, whose single native read keeps the per-read deadline and whose gates keep refusing missing, timed-out, failed or invalid native evidence. Trace: LIFE-10, LIFE-3, LIFE-6, LIFE-7.\n\nAcceptance Criteria\n- With a counting SpecSync stub and the checkpoint change also present in the archive, an unfiltered timing report runs `specsync change status` once for that change and at most ten archived reads in total, and the current and history entries for it carry the same response.\n- `--cycle current`, `--stage test`, `--case <id>` and `--bug <id>` each run only the checkpoint read, emit `native.history` null with `history_selection.state` `skipped-by-filter` naming the filter, and say so in text; the unfiltered report emits `selected` with read, reused, skipped and budget counts; stage estimates are identical in filtered and unfiltered reports of the same records.\n- With a 2 s budget and stub reads that sleep, hang, exit non-zero and print malformed JSON, the report ends within the budget plus process-stop grace, reports timed-out, failed, invalid-output and not-read budget-exhausted entries with unknown times, leaves no stub descendant running, and an invalid budget value is refused before any native process starts.\n- With `CHOUGH_TRACE=1` each native read and each timing phase produces one stderr line and standard output is identical to the untraced run except for the clock (each time and span that runs to now is later by exactly the gap between the two runs); without it both streams are byte-identical to the base behavior for the same records.\n- A stage move whose native read times out or fails is still refused with the budget variable set to 1, and `chough next` and `chough status` still make exactly one native read each.\n- Running the report leaves every Chough and SpecSync record byte-identical.",
+          "previous_content": "Timing native reads. Within one `chough timing` report the helper SHALL pass each distinct native change ID to `specsync change status` at most once, reusing that response for every place the report shows the change; the reuse SHALL be local to the request and SHALL NOT persist or serve any other command. The report SHALL read archived native history only when its selection shows history, which is `--cycle all` with no `--stage`, `--case` or `--bug` filter; otherwise it SHALL read only the checkpoint's native change, SHALL set `native.history` to null rather than an empty list, and SHALL report `native.history_selection` with state `skipped-by-filter` and the filters that excluded it, and the text form SHALL say that archived history was not read because of those filters. When history is selected, `native.history_selection` SHALL have state `selected` and SHALL report how many archived changes were read, reused, skipped beyond the existing bound of ten, and not read because the budget ran out. Total time spent waiting on native reads in one timing report SHALL be bounded by `CHOUGH_TIMING_NATIVE_BUDGET_SECONDS`, a whole number from 1 to 3600 with default 120, refused before any native read when invalid; a read SHALL run with the smaller of the per-read deadline and the remaining budget, and a read not started because the budget is exhausted SHALL be reported with status_read `not-read` and reason `budget-exhausted`, with its times unknown, never zero. Stage estimates SHALL continue to derive only from recorded transitions and SHALL NOT change with native history selection. With `CHOUGH_TRACE=1` the helper SHALL write to standard error one line per bounded native read with the program, arguments, elapsed milliseconds and final state, and timing SHALL write per-phase elapsed milliseconds; without it standard output and standard error SHALL be unchanged, and the trace SHALL NOT change any report, record or exit code. The budget, history selection and reuse SHALL NOT apply to stage moves, `chough next` or `chough status`, whose single native read keeps the per-read deadline and whose gates keep refusing missing, timed-out, failed or invalid native evidence. Trace: LIFE-10, LIFE-3, LIFE-6, LIFE-7.\n\nAcceptance Criteria\n- With a counting SpecSync stub and the checkpoint change also present in the archive, an unfiltered timing report runs `specsync change status` once for that change and at most ten archived reads in total, and the current and history entries for it carry the same response.\n- `--cycle current`, `--stage test`, `--case <id>` and `--bug <id>` each run only the checkpoint read, emit `native.history` null with `history_selection.state` `skipped-by-filter` naming the filter, and say so in text; the unfiltered report emits `selected` with read, reused, skipped and budget counts; stage estimates are identical in filtered and unfiltered reports of the same records.\n- With a 2 s budget and stub reads that sleep, hang, exit non-zero and print malformed JSON, the report ends within the budget plus process-stop grace, reports timed-out, failed, invalid-output and not-read budget-exhausted entries with unknown times, leaves no stub descendant running, and an invalid budget value is refused before any native process starts.\n- With `CHOUGH_TRACE=1` each native read and each timing phase produces one stderr line and standard output is byte-identical to the untraced run; without it both streams are byte-identical to the base behavior for the same records.\n- A stage move whose native read times out or fails is still refused with the budget variable set to 1, and `chough next` and `chough status` still make exactly one native read each.\n- Running the report leaves every Chough and SpecSync record byte-identical."
+        }
+      ],
+      "applied_modules": [
+        "reporting"
+      ]
+    }
+  ]
+}

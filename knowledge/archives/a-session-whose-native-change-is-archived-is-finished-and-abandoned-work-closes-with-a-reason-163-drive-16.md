@@ -94,6 +94,7 @@ verification records, the retention ledger and Git stay authoritative.
 ## Loose artifacts
 
 - `.chough/artifacts/c6-mutations/req-cli-029-authority-order-after-140.log`: Git 26e6ab0857af69d66322638d9739076a00c63285
+- `.chough/artifacts/c6-mutations/req-cli-029-authority-order-after-140.log`: Git 30e3f2d9351fdb6024d47dccd5a881fcaeb9c803
 
 ## Attachments
 
