@@ -16,7 +16,7 @@ result and genuine decisions still needed, then perform authorized recovery step
 new → interview → artifacts and delta → one human scope approval → implement →
 check (when requirements change) → cases run → gate → commit with .chough/ →
 check --commit → present → human implementation review → review → ship/finalize →
-clear gate, stage advance → commit → push, then CI on the archived tip → merge
+close gate (--close-gate), stage advance → commit → push, then CI on the archived tip → merge
 ```
 
 Between `check --commit` and finalize, nothing writes to `.chough/` and nothing is

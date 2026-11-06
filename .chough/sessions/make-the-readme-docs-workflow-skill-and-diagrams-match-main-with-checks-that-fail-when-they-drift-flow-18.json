@@ -55,7 +55,8 @@
     "Failing tests: 7039f68b (tests/docs.rs, 8 of 10 FLOW-18 checks fail on the base; flags and links pass)",
     "Docs, skill and diagrams corrected; stages, lifecycle and ownership re-rendered with Mermaid 11.12.0 and PNGs inspected; tests/docs.rs passes 10 of 10; cargo test 487 passed",
     "Passing run: ten FLOW-18 cases passed on local-macos-arm64 after the fix; bug verified",
-    "Merged main (#149, #157, #159, #151) and reran the ten FLOW-18 cases on the merged tree: all passed"
+    "Merged main (#149, #157, #159, #151) and reran the ten FLOW-18 cases on the merged tree: all passed",
+    "Confirmed the archive-first order orc relayed (local verify, human review, ship archive commit, push/CI) in the skill and docs; fixed the skill's 'clear gate' step name failing first"
   ],
   "observations": [
     "OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9",
@@ -87,7 +88,9 @@
     "OBS-tc-cli-readme-helper-table-covers-help-224c0ab2a60e621f228f3ca7",
     "OBS-tc-cli-readme-verify-list-matches-fledge-d13dd6b7d5df8164ce7a5e9c",
     "OBS-tc-cli-skill-615b587b-known-outdated-1c6bc1821e91c3d7b6231c86",
-    "OBS-tc-cli-stage-diagram-matches-the-helper-688bc12b578de1eb30607fb1"
+    "OBS-tc-cli-stage-diagram-matches-the-helper-688bc12b578de1eb30607fb1",
+    "OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43",
+    "OBS-tc-cli-closeout-closes-review-gate-2b35e8a8e6a4584f4d27d6fd"
   ],
   "bugs": [
     "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d"

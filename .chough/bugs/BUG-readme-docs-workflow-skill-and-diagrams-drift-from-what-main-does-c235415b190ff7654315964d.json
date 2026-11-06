@@ -44,7 +44,9 @@
     "OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20",
     "OBS-tc-cli-readme-verify-list-matches-fledge-b711ae13adcaf9fd2298aabd",
     "OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3",
-    "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681"
+    "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681",
+    "OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43",
+    "OBS-tc-cli-closeout-closes-review-gate-2b35e8a8e6a4584f4d27d6fd"
   ],
   "impact": "An agent or person following the docs or skill resumes from the wrong files, clears instead of closes the review gate, or uses a stale SpecSync version",
   "classification": "product-defect",
@@ -70,8 +72,22 @@
         "OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3",
         "OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681"
       ]
+    },
+    {
+      "at_unix_seconds": 1793983424,
+      "text": "status: verified -> open. Reopened: the strengthened closeout check (3cf076e0) finds \"clear gate\" in the skill's lifecycle reference and its .agents copy",
+      "observations": [
+        "OBS-tc-cli-closeout-closes-review-gate-60aba156e72e424eea8b1b43"
+      ]
+    },
+    {
+      "at_unix_seconds": 1793983448,
+      "text": "status: open -> verified. Fixed: the lifecycle reference's change shape says close gate (--close-gate); the closeout check passes",
+      "observations": [
+        "OBS-tc-cli-closeout-closes-review-gate-2b35e8a8e6a4584f4d27d6fd"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793980107,
-  "updated_at_unix_seconds": 1793982542
+  "updated_at_unix_seconds": 1793983448
 }
