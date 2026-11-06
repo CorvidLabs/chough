@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-7f5421ab10da2997e42f32b2",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Stop tests stall on a per-fixture token (#144)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144",
+  "references": {
+    "criteria": [
+      "DRIVE-10"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then stall on per-fixture tokens"
+}

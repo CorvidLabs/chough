@@ -387,6 +387,40 @@ fn stall_git(fixture: &Fixture, seconds: u32) {
 /// stops that Git and records nothing (Chough bot review 5762745045 on #79).
 #[test]
 fn stopping_a_backfill_stops_its_git_and_records_nothing() {
+    stop_backfills();
+}
+
+/// #144: the backfill stop test finds and reaps only its own fixture's processes; a
+/// `sleep 641` to `sleep 643` from another worktree's run of the same test is neither
+/// taken for a survivor nor killed.
+#[cfg(target_os = "linux")]
+#[test]
+fn the_backfill_stop_test_leaves_another_runs_processes_alone() {
+    struct Decoys(Vec<Child>);
+    impl Drop for Decoys {
+        fn drop(&mut self) {
+            for decoy in &mut self.0 {
+                let _ = decoy.kill();
+                let _ = decoy.wait();
+            }
+        }
+    }
+    let mut decoys = Decoys(
+        ["641", "642", "643"]
+            .iter()
+            .map(|seconds| Command::new("sleep").arg(seconds).spawn().unwrap())
+            .collect(),
+    );
+    stop_backfills();
+    for decoy in &mut decoys.0 {
+        assert!(
+            decoy.try_wait().unwrap().is_none(),
+            "the stop test killed another run's sleep"
+        );
+    }
+}
+
+fn stop_backfills() {
     for (signal, number, seconds) in [
         ("INT", libc::SIGINT, 641),
         ("TERM", libc::SIGTERM, 642),
