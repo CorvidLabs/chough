@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923",
+  "criteria": [
+    "FLOW-16",
+    "LIFE-9"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test package -- --exact supported_platforms_are_macos_and_linux_with_windows_through_wsl for TC-cli-supported-platforms: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923.log": "b9c31b0eb9052cf2d4954339efb4e6f2445607dcae624c6d9e1c18eebe5d34cf"
+  },
+  "observed_at_unix_seconds": 1793935877,
+  "snapshot": {
+    "revision": "ec830cfb001cc5f71f4f83809ca3294d685f42a4",
+    "dirty": true,
+    "fingerprint": "7a63970434ca23823c38db35aeefb6b64a7afd313c64667c90ed491834a43b9b",
+    "content": "2ad66b331656085941e81edc23f2005e1e95c80895cd71ef08c204cd4c51e06a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-supported-platforms",
+      "digest": "55ec0884018fef6a3bbdada46ccd899c1b9a7d78ee1c1692fda4a2eb27f60d2c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "package",
+    "--",
+    "--exact",
+    "supported_platforms_are_macos_and_linux_with_windows_through_wsl"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

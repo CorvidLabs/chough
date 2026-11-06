@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-supported-platforms"
+title = "CI and the platform statements say macOS and Linux, with Windows through WSL 2"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-17", "LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = [".github/workflows/ci.yml", "fledge.toml", "README.md", "docs/ci.md", "docs/integrations.md", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::supported_platforms_are_macos_and_linux_with_windows_through_wsl passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "supported_platforms_are_macos_and_linux_with_windows_through_wsl"

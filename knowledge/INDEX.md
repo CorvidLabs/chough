@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17 (active; `specsync change status support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,10 @@ Archived lesson bundles:
 
 ## Observations
 
-368 recorded; most recent:
+370 recorded; most recent:
 
+- OBS-tc-cli-supported-platforms-cf84a4b69599d4e71ffec6b6 ProductTest Failed in local-macos-arm64 at ec830cfb001c
+- OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923 ProductTest Failed in local-macos-arm64 at ec830cfb001c
 - OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
 - OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 - OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
@@ -105,8 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-key-items-move-to-vault-ed7a30c1fb6534c91d7288de ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
-- OBS-tc-cli-done-drops-file-and-design-refs-7fd113db7423ebb35826babb ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
-- OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 InstallationObservation Passed in macos-arm64-cargo-1.95.0 at 2082dddff420
 
 ## Briefs
 
