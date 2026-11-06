@@ -46,6 +46,55 @@
         "history": "82bc9fe32e0a9308dda98079d34cd57a1ed4ef821eef0fda9245a29ff80730c1"
       },
       "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793994701,
+      "digest": "fbe6796dbc2f3c89889df102c14fdc9bef6bcb5583084b134c4de469d4f71221",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17",
+        "title": "Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)",
+        "description": "chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "specs/cli/cli.spec.md",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/history.rs",
+          "src/main.rs",
+          "src/sessions.rs",
+          "tests/doctor.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "DRIVE-17 (Leif, relayed by orc 2026-11-06, 'Capture + both defaults'), in the new REQ-cli-055 and REQ-history-012. chough doctor reports legacy_checkpoint, stale_pointer, finished_session, stale_gates and unfinished_session findings without a native read. No flag and --dry-run report only and change nothing. --fix applies the safe fixes: adopt the legacy checkpoint, remove a stale pointer, archive finished sessions byte for byte (a session with unfolded inbox entries is skipped). Decision fixes (withdraw stale gates, close sessions named by --close) need --reason; without it they are skipped. No human decision is ever recorded. Exit 0 only when nothing is left. The five new tests in tests/doctor.rs fail first; docs, the skill reference and CHANGELOG say so; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-17 (new); DRIVE-16 finished rule and session close (#166); DRIVE-13 and DRIVE-3; REQ-history-006 kept-open rule for unfolded inbox entries; --clear-awaiting-human records no human decision; no native read; never replace a file; spec-sync #941 as the debt it replaces by hand.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "204fe9b87d90565df50896d5cbcce6f7b168ad360ac493b4e94c42a748661372",
+        "history": "82bc9fe32e0a9308dda98079d34cd57a1ed4ef821eef0fda9245a29ff80730c1"
+      },
+      "approved_delta_bases": {}
     }
   ],
   "reopenings": [],
