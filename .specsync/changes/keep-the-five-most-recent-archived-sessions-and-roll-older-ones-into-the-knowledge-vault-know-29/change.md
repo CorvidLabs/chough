@@ -1,6 +1,6 @@
 ---
 id: keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29
-state: approved
+state: implementing
 type: feature
 base_commit: 73a7da5653312e907621c0165d0b5f903c22ff53
 ---
