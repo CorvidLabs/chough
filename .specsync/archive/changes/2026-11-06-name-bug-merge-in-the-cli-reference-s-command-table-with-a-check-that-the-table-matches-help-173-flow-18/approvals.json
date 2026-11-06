@@ -1,0 +1,49 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793998930,
+      "digest": "b95ff553ccde27ff7e308a8a42031fbd849a85414c9c5a2e9692a856ea5e0cdd",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18",
+        "title": "Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)",
+        "description": "Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "knowledge/",
+          "tests/docs.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement text changes: docs/cli.md's command table gains the bug merge subcommand main already ships (REQ-cli-019's existing rule that the docs say what the helper does), and tests/docs.rs checks that table against chough --help as it already checks the README's helper table. No helper behavior changes.",
+        "acceptance_criteria": [
+          "tests/docs.rs gains a check that docs/cli.md's command table names every chough command and every subcommand chough --help lists; it fails on main at 69caa0e7 because the bug row omits merge (#173), and passes after the row reads bug add|update|list|search|show|report|merge with merge described as the bug-record merge driver. A chough-testing/1 case binds the check. No helper behavior or requirement text changes, and fledge lanes run verify passes locally."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "FLOW-18 (already captured; Leif's 'FLOW-18, one PR' and later direction relayed by orc t18): orc assigned #173 under FLOW-18 on 2026-11-06 ('add bug merge to docs/cli.md's bug row and a check that cli.md's command table matches --help (failing first)'). Failing check first; no helper behavior or requirement text changes; specsync change audit --strict before every push; no tag, release or publication.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794001744,
+      "digest": "604d12707fbdc67bf265dbb9a828995ec3bc54bc773db1af270f8bbc14d3d783",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

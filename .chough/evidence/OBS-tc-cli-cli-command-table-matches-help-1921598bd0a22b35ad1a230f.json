@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact cli_reference_command_table_matches_the_helpers_help for TC-cli-cli-command-table-matches-help: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f.log": "2c584b1940c17c6f3f754823f25e7128dd77b45e40bd70ccc1db9b83d64e6763"
+  },
+  "observed_at_unix_seconds": 1793998809,
+  "snapshot": {
+    "revision": "69caa0e721d0a150652fd50b7104fcb6f4e444a7",
+    "dirty": true,
+    "fingerprint": "ce005bb57b04510db0ac10c7dd71fbd7736d470b65a594a031f0d72c6d72c9fe",
+    "content": "6637fca2a903f628b1383d38b830c010128f74cdfcc5e81d386981a7e6d68002"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-cli-command-table-matches-help",
+      "digest": "bdbec5b6aebc017d6974bcd537996a0cfbfc9645beb5d0b0b47ed4295db9ce4a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "cli_reference_command_table_matches_the_helpers_help"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

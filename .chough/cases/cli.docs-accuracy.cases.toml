@@ -180,3 +180,21 @@ expected = ["tests/docs.rs::skill_files_from_main_615b587b_are_known_outdated_an
 adapter = "cargo-test"
 test_target = "docs"
 test = "skill_files_from_main_615b587b_are_known_outdated_and_edited_copies_stay"
+
+[[case]]
+id = "TC-cli-cli-command-table-matches-help"
+title = "The CLI reference's Commands table names every command and subcommand the helper lists, and only real subcommands and flags"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["docs/cli.md", "src/main.rs", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::cli_reference_command_table_matches_the_helpers_help passes: every command has a row, the bug rows name merge (#173), and every subcommand and flag a row names is in that command's help"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "cli_reference_command_table_matches_the_helpers_help"

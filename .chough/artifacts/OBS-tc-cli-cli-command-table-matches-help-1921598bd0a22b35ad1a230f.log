@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test cli_reference_command_table_matches_the_helpers_help ... FAILED
+
+failures:
+
+---- cli_reference_command_table_matches_the_helpers_help stdout ----
+
+thread 'cli_reference_command_table_matches_the_helpers_help' (356755625) panicked at tests/docs.rs:908:5:
+docs/cli.md Commands: `bug` rows do not name merge
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    cli_reference_command_table_matches_the_helpers_help
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 2.02s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s
+     Running tests/docs.rs (target/debug/deps/docs-592487f356832a3e)
+error: test failed, to rerun pass `--test docs`

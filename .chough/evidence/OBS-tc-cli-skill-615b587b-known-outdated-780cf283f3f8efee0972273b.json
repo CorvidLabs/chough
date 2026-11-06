@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b",
+  "criteria": [
+    "FLOW-18",
+    "FLOW-13",
+    "LIFE-9"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact skill_files_from_main_615b587b_are_known_outdated_and_edited_copies_stay for TC-cli-skill-615b587b-known-outdated: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b.log": "ed8d8ee944119d8f65834d6e854946b287254d218113e1965127608cdea2f7f6"
+  },
+  "observed_at_unix_seconds": 1793999170,
+  "snapshot": {
+    "revision": "46ce740ac98c9448c5dcf6e1e2422bd5081fe28e",
+    "dirty": true,
+    "fingerprint": "cdb346faaae2960e82d54b43134b0f170075a5076282706d107728bfb9d1a09e",
+    "content": "3985793f09c9f3fd2a09911446ad1694293ede07cf9126b3b043e88863438829"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-skill-615b587b-known-outdated",
+      "digest": "18cc8d5a8c9336ab326b33d150964c9f63024c8434db1503f8353dbd7dc50e34"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "skill_files_from_main_615b587b_are_known_outdated_and_edited_copies_stay"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
