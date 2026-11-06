@@ -1,0 +1,55 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-d182a69b5c86a37e800e6e6b",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Give real assertions to the nine criteria with no selected assertion (#138, audit assertion review, plan C6)",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli",
+    "reporting"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138",
+  "references": {
+    "criteria": [
+      "LIFE-3",
+      "LIFE-7",
+      "FLOW-13",
+      "KNOW-16"
+    ],
+    "requirements": [
+      "REQ-cli-002",
+      "REQ-cli-007",
+      "REQ-cli-012",
+      "REQ-cli-029",
+      "REQ-cli-031",
+      "REQ-cli-045",
+      "REQ-reporting-003"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Leif (0xLeif), 2026-11-05 21:52 MST, through the orc (t18): 'Both recommended': REQ-cli-029/AC-5 asserted in Chough's evidence model plus ROADMAP text; REQ-reporting-003's measurement criterion through examples/measure-report.sh plus a test.",
+    "failed: opening the gate 'Scope decision of give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138' with checkpoint --awaiting-human because of the KNOW-29 history regression (legacy history anchor changed); the gate waits in the orc, not in the session, until chough's fix lands"
+  ],
+  "open_questions": [],
+  "completed": [
+    "C6 definition drafted with Leif's choices (both A); measure_report_pairs_two_binaries_on_one_root_and_keeps_native_wait_apart fails first (no script yet)"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif's scope decision through the orc; then write examples/measure-report.sh and the eight other assertions, each with a recorded mutation"
+}
