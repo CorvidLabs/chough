@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The KNOW-29 roll-up never rolls the archived session that holds the legacy history
+  anchor (#143, KNOW-29 amended by Leif). It stays in `.chough/sessions/archive/` in
+  addition to the five, so the anchor never depends on the knowledge directory.
 - The chough-workflow skill's transition table now names `chough stage advance --to
   <stage>` (REQ-cli-052, DRIVE-9). Installed copies of `references/stages.md` from 0.1.0
   to 0.4.0 report `known-outdated`, and `chough skill update` refreshes them.

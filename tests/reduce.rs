@@ -1553,6 +1553,8 @@ fn seven_archived_sessions(fixture: &Fixture) -> Vec<(String, String)> {
         session["objective"] = json!(format!("Archived objective {key}"));
         session["native_change"] = json!(change);
         session["observations"] = json!([]);
+        // One session holds the legacy anchor: the adopting one, still open (#143).
+        session["history_cursor"]["legacy"] = Value::Null;
         let text = serde_json::to_string_pretty(&session).unwrap() + "\n";
         let path = format!(".chough/sessions/archive/{key}.json");
         fixture.write(&path, &text);
@@ -1667,4 +1669,42 @@ fn a_script_installed_while_an_old_write_handle_is_open_still_runs() {
         assert_eq!(String::from_utf8_lossy(&output.stdout), "ran\n", "{name}");
         drop(leaked);
     }
+}
+
+/// #143 (REQ-history-011): the archived session that holds the legacy history anchor is
+/// never rolled into the vault and does not count toward the five, so the anchor never
+/// depends on the knowledge directory. Here s0, which would roll first, holds the
+/// anchor; it stays, and s6 still rolls.
+#[test]
+fn the_roll_up_keeps_the_session_that_holds_the_legacy_anchor() {
+    let fixture = project("0");
+    // A legacy log, so adoption records a real legacy anchor in the adopting session.
+    fixture.write(".chough/transitions.jsonl", "");
+    seven_archived_sessions(&fixture);
+    let adopting: Value =
+        serde_json::from_str(&fixture.read(".chough/sessions/legacy.json")).unwrap();
+    let anchor = adopting["history_cursor"]["legacy"].clone();
+    assert!(anchor.is_object(), "{adopting:#}");
+    let path = ".chough/sessions/archive/s0.json";
+    let mut holder: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    holder["history_cursor"]["legacy"] = anchor;
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&holder).unwrap() + "\n"),
+    );
+    fixture.commit("s0 holds the legacy anchor");
+    let moved = fixture.ok(&["stage", "advance"]);
+    let rollup = &moved["applied"]["session_rollup"];
+    assert_eq!(rollup["status"], "rolled", "{moved:#}");
+    assert_eq!(rollup["moved"], json!(["s6"]), "{rollup:#}");
+    for key in ["s0", "s1", "s2", "s3", "s4", "s5"] {
+        assert!(
+            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
+            "{key}"
+        );
+    }
+    assert!(
+        !fixture.exists("knowledge/attachments/s0/sessions/s0.json"),
+        "{rollup:#}"
+    );
 }
