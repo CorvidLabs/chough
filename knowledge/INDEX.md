@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-507 recorded; most recent:
+514 recorded; most recent:
 
+- OBS-tc-cli-change-invalid-bound-recovery-c177387564b8d1ef87a3ca52 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-sigterm-stops-specsync-954f09784932db762fbad2dc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-missing-specsync-recovery-e03af699a3453d46b2aafeb2 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-check-outlives-read-bound-6b6f8c12c429f4d6ced6dbbc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-steps-write-nothing-faff94c566bb9f21d3f4658b ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-steps-pass-through-ff1601248ad19f8e292363ca ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
+- OBS-tc-cli-change-steps-exact-arguments-b45af62e9645ac2b19daaf8a ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
 - OBS-product-test-af55b3e0d282e728bde7629e ProductTest Passed in local-linux-aarch64 at 3daef9eb3c1c
 - OBS-product-test-88bbe2aab8066fa7be63937f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
 - OBS-tc-cli-change-invalid-bound-recovery-70d66a01bb48f6d3e5686e69 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
-- OBS-tc-cli-change-sigterm-stops-specsync-1faa4a8c6c1fd6a4b1dadf28 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
-- OBS-tc-cli-change-missing-specsync-recovery-2b565184bee9a0e9e5a929c0 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
-- OBS-tc-cli-change-check-outlives-read-bound-9945f416fe07101b498cccd6 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
-- OBS-tc-cli-change-steps-write-nothing-eca6338eb5cb73067e391c7f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
-- OBS-tc-cli-change-steps-pass-through-e7c98b22680b15f295f2125f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
-- OBS-tc-cli-change-steps-exact-arguments-a6ac0dd265ce055b985f7321 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
-- OBS-tc-cli-change-invalid-bound-recovery-a9891ba2772692301e30692a ProductTest Failed in local-macos-arm64 at f4f2106ed5e5
 
 ## Briefs
 
