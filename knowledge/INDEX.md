@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-423 recorded; most recent:
+428 recorded; most recent:
 
 - OBS-tc-cli-skill-615b587b-known-outdated-d50e606ec6e682d8a8bfd7f3 ProductTest Passed in local-macos-arm64 at de02abd046f1
 - OBS-tc-cli-closeout-closes-review-gate-b339c520f241aa7d51419325 ProductTest Passed in local-macos-arm64 at de02abd046f1
@@ -111,18 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-readme-helper-table-covers-help-1077f9c657e1c00321428c20 ProductTest Passed in local-macos-arm64 at de02abd046f1
 - OBS-tc-cli-inline-diagrams-match-sources-65edaa71d824af2d092395cc ProductTest Passed in local-macos-arm64 at de02abd046f1
 - OBS-tc-cli-stage-diagram-matches-the-helper-8bb583e87a2fcff6b736e681 ProductTest Passed in local-macos-arm64 at de02abd046f1
-408 recorded; most recent:
-
-- OBS-tc-history-inbox-bounds-pinned-exactly-a3d8c4fb1a993f500fd75027 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
-- OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
-- OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 ProductTest Passed in local-linux-aarch64 at c8b4c8daf5d3
-- OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 ProductTest Passed in local-macos-arm64 at 769fba2e29ce
-- OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 ProductTest Failed in local-macos-arm64 at 4da25aa93cb2
-- OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
-- OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 
 ## Briefs
 
