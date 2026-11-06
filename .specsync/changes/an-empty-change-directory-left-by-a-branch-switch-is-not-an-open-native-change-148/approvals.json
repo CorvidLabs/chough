@@ -1,4 +1,42 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793970823,
+      "digest": "6d3b0d14d6e85a503a46be312f6a738e592f5c02bb458134f58ec6079f381427",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148",
+        "title": "An empty change directory left by a branch switch is not an open native change (148)",
+        "description": "An empty change directory left by a branch switch is not an open native change (148)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "src/evidence.rs",
+          "src/library.rs",
+          "tests/evidence.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Issue #148: Chough counted any directory under .specsync/changes as an open change, so an empty one left by a branch switch broke the index check and could refuse the trim; no requirement text changes.",
+        "acceptance_criteria": [
+          "A directory under .specsync/changes with no file at any depth is not an open change: the knowledge index does not list it and the trim does not refuse on it, while a directory with a change file still counts as open; the new test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #148 (ch-c456); orc queue order: #148 next; REQ-cli-043 and the open-change refusal kept for real changes.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
