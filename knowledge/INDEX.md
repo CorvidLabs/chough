@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18 (active; `specsync change status a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-491 recorded; most recent:
+492 recorded; most recent:
 
+- OBS-tc-cli-subdirectory-project-records-evidence-08e49ae695965281b908aec4 ProductTest Passed in local-linux-aarch64 at 667c99299cef
 - OBS-tc-cli-skill-615b587b-known-outdated-49aa9e0f9901a7d1a489d2e7 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-closeout-closes-review-gate-0b30553d30e616c34b4082dc ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-docs-name-pinned-versions-82c95068c1ab83a81ac881e0 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-readme-verify-list-matches-fledge-a773a2519b5e2897358dd0c6 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-inline-diagrams-match-sources-d4664eceddd1a4585482940b ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-stage-diagram-matches-the-helper-076aedef472d1f833fe184f1 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-readme-helper-table-covers-help-e3ced10f0b4c241f3494efeb ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 
 ## Briefs
 
