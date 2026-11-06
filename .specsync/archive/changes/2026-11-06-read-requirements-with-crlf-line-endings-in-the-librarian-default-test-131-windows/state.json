@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows",
+  "slug": "read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows",
+  "title": "Read requirements with CRLF line endings in the librarian-default test (131 Windows)",
+  "description": "Read requirements with CRLF line endings in the librarian-default test (131 Windows)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "217680e292733680b377daee33b37dcde14b9424",
+  "created_at": 1793934154,
+  "updated_at": 1793934520,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/optional.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "The #124 test split sentences after joining only LF lines, so a Windows CRLF checkout failed it; test repair only, no requirement text changes.",
+  "acceptance_criteria": [
+    "The librarian-default test reads the requirements correctly with LF and with CRLF line endings, checking both; it fails first on the CRLF form; the hosted Windows product job passes; fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "#131 Windows failure at run 42153579452 after Leif reviewed C2 (Record and merge, 2026-11-05 19:50 MST); test repair only.",
+    "public_contract": "no"
+  }
+}

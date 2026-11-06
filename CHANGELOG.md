@@ -12,6 +12,24 @@ All notable changes to Chough are recorded here. The format follows
   Git for Windows). Native Windows is not supported, matching SpecSync from 6.0.
   Requirements are unchanged, and the CRLF-safe tests still run on Linux and macOS.
 
+- The checkpoint cap is now 1 MiB (1,048,576 bytes), up from 128 KiB, chosen from
+  measured use (DRIVE-14, REQ-cli-032):
+  - It is at least 10 times the largest per-change session and 4 times the largest
+    single checkpoint observed.
+  - At the cap, `next` and `status` measured 69 ms on macOS and 19 ms on Linux in
+    release.
+  - A test builds a checkpoint at exactly the cap and checks the budgets, and one byte
+    more is refused.
+  - REQ-cli-021's full 40/40/50 x 4 KiB stress shape now fits and is tested as written
+    (#125, audit D9).
+- New `chough session shelve <key>` (and `--legacy`) sets an oversized or unreadable
+  checkpoint aside, byte for byte, so work continues. One unreadable session no longer
+  breaks `session list`, `session new`, `session use` or another session's `next`;
+  `session list` reports it and names `shelve` (REQ-history-006).
+
+- REQ-cli-013 no longer gives the librarian an `off` default. It defers to REQ-cli-015,
+  so the requirements state one librarian default, `on`, which is what the runtime
+  reports (#124, audit D8). Behavior is unchanged.
 - The workflow skill and docs now teach an archive-first closeout (#122, audit D5).
   The order is: verify locally, the human's implementation review, the native review,
   finalize and the done move, and only then push and observe CI. The hosted Archive

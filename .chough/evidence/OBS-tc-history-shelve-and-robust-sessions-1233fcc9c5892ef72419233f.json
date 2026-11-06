@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f",
+  "criteria": [
+    "DRIVE-14",
+    "DRIVE-13"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test sessions -- shelv one_oversized_or_unreadable_session_does_not_break_the_others for TC-history-shelve-and-robust-sessions: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f.log": "b9a6182cfa7ff3c0b5d032209d9e68c84a418f2a08b0b91f98e4016537aae31f"
+  },
+  "observed_at_unix_seconds": 1793935650,
+  "snapshot": {
+    "revision": "9ce3cf486af5c78f9332242a0c91be85501ee1ea",
+    "dirty": false,
+    "fingerprint": "bc8ea84b9d8bdf1f82029d7125f2426b1208415c9b58c959c4961ff220b925af",
+    "content": "17b65f2bd8de19fce4a1ff98f073821d6814a81d0873fa4ccd0439d8e9b63236"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-shelve-and-robust-sessions",
+      "digest": "6e344d54b52beb6ce63433fca2a24e83326eb5dcf3e63f1aedca5301fc60c5d7"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "shelv",
+    "one_oversized_or_unreadable_session_does_not_break_the_others"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

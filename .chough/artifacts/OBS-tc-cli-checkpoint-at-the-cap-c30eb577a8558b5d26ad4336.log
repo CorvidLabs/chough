@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 6.05s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/next.rs (target/debug/deps/next-9184e7ed0ea2b2e8)

@@ -1,0 +1,38 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-checkpoint-at-the-cap"
+title = "A checkpoint at exactly the 1 MiB cap stays within budget and one byte more is refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-14"]
+requirements = ["REQ-cli-032"]
+paths = ["src/checkpoint.rs"]
+environments = ["local-linux-aarch64", "local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the next test a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused"
+
+[[case]]
+id = "TC-cli-full-stress-shape"
+title = "REQ-cli-021's 40 gates, 40 blockers and 50 decisions of 4 KiB fit the cap and the focused view stays bounded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-14", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/checkpoint.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the next test handoff_blocks_stay_within_the_cap_and_are_byte_identical passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "handoff_blocks_stay_within_the_cap_and_are_byte_identical"

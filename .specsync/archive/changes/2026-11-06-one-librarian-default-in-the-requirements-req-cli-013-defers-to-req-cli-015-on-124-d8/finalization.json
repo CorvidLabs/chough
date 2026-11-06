@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8",
+  "implementation_commit": "e89be5d75f6e31d49592687cbb8e2980de0bca07",
+  "implementation_tree": "9bff0c8283050941c0e574d855b518d7b092591e",
+  "contract_digest": "59015952f337aadfb12021d6eee49768ededdd891c31fc7a7d573ad438fe33c6",
+  "workspace_digest": "962246b15ba775ff309fe8a0e9e3d1cf44b4918c565ac684cd332cf304cd615f",
+  "closing_digest": "959bce3af786e1f6381a99aaed3d51af4e4505385cd38f98e3d211c4bd1e08ca",
+  "review_digest": "8ee818da5f4ae3f4463bf10913f7ed8dacae27b552f6263fdfdb047f8370e641",
+  "finalization_digest": "b9fe9bc4757a7e7b3ea10016b030c527aaaa6fb0db2a032a86bc432f40df7dff",
+  "timestamp": 1793933434
+}

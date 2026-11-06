@@ -10,6 +10,7 @@ requirements:
   - REQ-cli-007
   - REQ-cli-032
 criteria:
+  - DRIVE-14
   - DRIVE-3
   - FLOW-13
   - LIFE-11
@@ -31,7 +32,7 @@ verification records, the retention ledger and Git stay authoritative.
 - Status: cold (hot = the 3 most recently finalized archived changes)
 - Finalized: 2026-11-03T04:49:27Z
 - Modules: [cli](../modules/cli.md)
-- Criteria: [DRIVE-3](../intent/drive.md), [FLOW-13](../intent/flow.md), [LIFE-11](../intent/life.md), [LIFE-3](../intent/life.md)
+- Criteria: [DRIVE-14](../intent/drive.md), [DRIVE-3](../intent/drive.md), [FLOW-13](../intent/flow.md), [LIFE-11](../intent/life.md), [LIFE-3](../intent/life.md)
 - Base commit: 747a12cc6fc396f0e8646fee1f2801e02b7d3035
 - Implementation commit: ac57e4c2338a793b85c3eaad8ea3154446ac296f
 - Verification commit: ac57e4c2338a793b85c3eaad8ea3154446ac296f

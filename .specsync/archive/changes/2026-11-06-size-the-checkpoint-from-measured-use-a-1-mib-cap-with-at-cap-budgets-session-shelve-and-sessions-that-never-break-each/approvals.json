@@ -1,0 +1,69 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793934992,
+      "digest": "413e03a6f1b539094e0b40499bdf2d711c4e06afc1d69b34c1c987682d92cab2",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each",
+        "title": "Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)",
+        "description": "Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/evidence.rs",
+          "src/history.rs",
+          "src/main.rs",
+          "src/sessions.rs",
+          "tests/cli.rs",
+          "tests/common/mod.rs",
+          "tests/next.rs",
+          "tests/sessions.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": "DRIVE-14 (Leif: 1 MiB from the sizing study, Add shelve, 2026-11-05): REQ-cli-032 cap and budgets, REQ-cli-021 stress shape (C3, #125), REQ-history-006 shelve and per-session robustness.",
+        "acceptance_criteria": [
+          "Every checkpoint is bounded at 1,048,576 bytes; at the cap next, status and context answer within 2 s in the debug test build (250 ms release) with the focused view within 16,384 bytes; one byte over is refused naming the cap and chough session shelve; chough session shelve <key> and --legacy move the oversized checkpoint byte for byte into .chough/sessions/shelved/ so session new and next work; one unreadable session never breaks list, new, use or another session next; retention reads shelved sessions; REQ-cli-021 AC1 holds 40 gates, 40 blockers and 50 decisions of 4 KiB within the cap. The new tests fail first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-14, DRIVE-13 (captured 2026-11-05 in Leif words, relayed by orc); Leif chose 1 MiB (20:08 MST) and Add shelve (20:12 MST); 16 KiB focused view unchanged; KNOW-29 separate.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "b34cf349fa516359da3108b46a4d1da0190ac7303deb4044f868ff8a331e2c75",
+        "history": "0186718317e5aba94d3c15ac649e0c571f77ade57a26b0d77440d731c20be726"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-007": "a4b58fbea38e4da863027cc9ebee6d69852746586e0386f54cf8ce812ca5c0b8",
+        "cli: REQUIREMENT REQ-cli-021": "55bae4fe9edcebde12f93ffb52feba61aa93e131a4dc874ca513ee72945266bb",
+        "cli: REQUIREMENT REQ-cli-032": "9c02b7f437c4613ff80b63778b424093716a218c9aaca63ee3d87abb35fa9036",
+        "cli: REQUIREMENT REQ-cli-034": "e5e1a5a2db70e3874f802a8f2023e5710266a7976fad0ef744545e73219ba443",
+        "cli: REQUIREMENT REQ-cli-042": "0494732867e78582bb1b5745e7e4194e77feecaf481735bbdc7864c664215de0",
+        "history: REQUIREMENT REQ-history-006": "7dca2f865eb6796a000b45dcec12875eb55477177407d518c87a9b59a7ddaf03"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793936053,
+      "digest": "a312a1e63db6e96b7b4602ecbb59d95e5c7b523adaa187c9aae04a36c59d88c3",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
