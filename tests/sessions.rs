@@ -1253,3 +1253,41 @@ fn shelving_an_oversized_legacy_checkpoint_lets_a_session_start() {
     fixture.ok(&["session", "new", "fresh", "--objective", "Next change"]);
     fixture.ok(&["next", "--json"]);
 }
+
+/// #141 (P1): the session that adopted the legacy history holds its anchor. Once KNOW-29
+/// rolls it into the vault, or it is shelved, other sessions still find the anchor and
+/// keep writing; a changed legacy log is still refused.
+#[test]
+fn sessions_still_write_after_the_anchor_holder_rolls_into_the_vault_or_is_shelved() {
+    for destination in [
+        "knowledge/attachments/legacy/sessions/legacy.json",
+        ".chough/sessions/shelved/legacy.json",
+    ] {
+        let fixture = Fixture::new();
+        fixture.init();
+        fixture.ok(&["stage", "advance"]);
+        let log = fixture.read(".chough/transitions.jsonl");
+        fixture.ok(&["history", "adopt", "--apply"]);
+        fixture.ok(&["session", "adopt", "legacy"]);
+        fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+        let holder = fixture.read(".chough/sessions/legacy.json");
+        assert!(
+            holder.contains("\"legacy\""),
+            "the adopting session holds the anchor"
+        );
+        fs::remove_file(fixture.root().join(".chough/sessions/legacy.json")).unwrap();
+        fixture.write(destination, &holder);
+        fixture.ok(&["stage", "advance"]);
+        assert_eq!(
+            fixture.read(".chough/transitions.jsonl"),
+            log,
+            "{destination}"
+        );
+        fixture.write(".chough/transitions.jsonl", &format!("{log}\n"));
+        let refused = fixture.fails(&["stage", "advance"]);
+        assert!(
+            refused.contains("legacy history anchor changed"),
+            "{destination}: {refused}"
+        );
+    }
+}

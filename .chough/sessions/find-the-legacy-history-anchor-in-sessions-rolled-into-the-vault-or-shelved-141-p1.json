@@ -1,0 +1,40 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-d0e2adf21534172a2437b917",
+    "head": "EVT-aa13eddc842db1c9ea40e31c",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Find the legacy history anchor in rolled or shelved sessions (#141, P1)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "history"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1",
+  "references": {
+    "criteria": [
+      "DRIVE-13"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "PR #142 (#141 P1) accepted by Leif (0xLeif), 2026-11-05 22:10 MST through the orc: Record and merge; his native review (pass) recorded at 14f6b289."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then extend adopted_anchor"
+}

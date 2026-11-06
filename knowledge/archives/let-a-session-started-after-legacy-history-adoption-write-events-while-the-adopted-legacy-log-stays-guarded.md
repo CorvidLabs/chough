@@ -49,7 +49,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-product-test-5d86bc7f549cf14c727d5614 | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-product-test-5d86bc7f549cf14c727d5614 | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-tc-history-session-after-legacy-adoption-3115eb0ba8be566874a7dc8c | passed (by cycle time) | local-linux-aarch64 | TC-history-session-after-legacy-adoption |
 | OBS-tc-history-session-after-legacy-adoption-4b6f7eb1047f7f9fd028d20d | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-session-after-legacy-adoption |
 
