@@ -3255,7 +3255,7 @@ fn rotate_ledger(root: &Path) -> Result<Value> {
         if let Some(parent) = local_path(root, shard)?.parent() {
             fs::create_dir_all(parent)?;
         }
-        crate::records::write_replace(root, shard, content)?;
+        crate::records::write_replace_bounded(root, shard, content, LEDGER_LIMIT)?;
     }
     let remaining: String = lines
         .iter()
@@ -3263,7 +3263,9 @@ fn rotate_ledger(root: &Path) -> Result<Value> {
         .filter(|(index, _)| !destination.contains_key(index))
         .map(|(_, line)| format!("{line}\n"))
         .collect();
-    crate::records::write_replace(root, LEDGER, &remaining)?;
+    // The ledger and its shards have the ledger bound, not the managed-record bound
+    // (#127: a real ledger is larger than 64 KiB).
+    crate::records::write_replace_bounded(root, LEDGER, &remaining, LEDGER_LIMIT)?;
     Ok(json!({
         "status": "rotated",
         "moved": moved,
