@@ -1019,7 +1019,6 @@ fn successful_native_process_with_invalid_json_does_not_establish_lifecycle_stat
 #[cfg(unix)]
 #[test]
 fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
-    use std::os::unix::fs::PermissionsExt;
     use std::time::Instant;
     let fixture = Fixture::new();
     fixture.evidence_fixture();
@@ -1038,12 +1037,10 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
     let stand_in = |script: &str| {
-        fixture.write("bin/specsync", &format!("#!/bin/sh\n{script}\n"));
-        fs::set_permissions(
-            fixture.root().join("bin/specsync"),
-            fs::Permissions::from_mode(0o755),
-        )
-        .unwrap();
+        common::install_executable(
+            &fixture.root().join("bin/specsync"),
+            format!("#!/bin/sh\n{script}\n").as_bytes(),
+        );
     };
     let next = |timeout: Option<&str>| {
         let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));

@@ -1,0 +1,40 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-feeef915d6396bc59bff14f7",
+    "head": "EVT-6cbfb40d7806bf9458eb8d7e",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Install test scripts as fresh files so a forked child cannot make them busy (#132)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132",
+  "references": {
+    "criteria": [
+      "DRIVE-10"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "PR #145 (#132) accepted: native review (pass) recorded as 0xLeif at 74a6133d by the orc under Leif authorization to decide as him overnight (2026-11-05 23:3x MST)."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then install scripts as fresh files"
+}

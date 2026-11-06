@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "74a6133d0015b7652e64762592aa263bc7306987",
+      "contract_digest": "4b47b456e468197d3d555a0746876db3bcf401e9d566673748ab104ab1953c0c",
+      "execution_digest": "6786f8fdc6ee6cbecdf910564b230c469cb525d5306123c0a1d3ca8465b32d71",
+      "workspace_digest": "09c37db7169fd320fa4698d31b1eb36b1ecb2bc6ae317cad29005aacfbbf027f",
+      "timestamp": 1793946798
+    }
+  ]
+}
