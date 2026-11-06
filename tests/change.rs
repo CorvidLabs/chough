@@ -416,6 +416,12 @@ printf '{"summary":{"id":"%s","state":"archived","approval_valid":true,"correcti
 /// A session for native change `a5` at `stage`, its review gate open, with the
 /// archive files the move into done reads (as `tests/advance_to.rs` builds them).
 fn shipping_session_at(stage: &str) -> Fixture {
+    shipping_session(stage, true, &[REVIEW_GATE])
+}
+
+/// As [`shipping_session_at`], with or without the native change recorded and with
+/// `gates` open.
+fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
     let fixture = Fixture::new();
     fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
     fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
@@ -447,9 +453,13 @@ fn shipping_session_at(stage: &str) -> Fixture {
         "---\nid: a5\nstate: archived\n---\n\n# Title of a5\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- a5 works\n",
     );
     fixture.ok(&["session", "new", SHIP_KEY, "--objective", "Ship a5"]);
-    fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
+    if native {
+        fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
+    }
     fixture.ok(&["stage", "reset", "--to", stage, "--reason", "Ready to ship"]);
-    fixture.ok(&["checkpoint", "--awaiting-human", REVIEW_GATE]);
+    for gate in gates {
+        fixture.ok(&["checkpoint", "--awaiting-human", gate]);
+    }
     fixture.commit("fixture");
     fixture
 }
@@ -575,68 +585,177 @@ fn a_specsync_ship_refusal_passes_through_and_records_nothing() {
 
 #[test]
 fn ship_refuses_before_running_without_the_relay_or_outside_accept() {
-    // Each case: the arguments, the stage, and the command the refusal must name,
-    // which then succeeds.
-    let incomplete: Vec<&str> = review_relay()[..8].to_vec();
+    let relay = review_relay();
+    let incomplete: Vec<&str> = relay[..8].to_vec();
     let mut wrong_gate = review_relay();
     wrong_gate[1] = "Scope approval of a5";
+    let long_words = "w".repeat(5_000);
+    let mut too_long = review_relay();
+    too_long[5] = &long_words;
+    let values_only: Vec<&str> = relay[2..].to_vec();
+    let docs_gate = "Docs check of a5";
     let full = format!("chough change ship {SHIP_ID} --close-gate \"{REVIEW_GATE}\"");
-    let cases: Vec<(Vec<&str>, &str, String)> = vec![
-        (ship_with(SHIP_ID, &[]), "accept", full.clone()),
-        (ship_with(SHIP_ID, &incomplete), "accept", full.clone()),
-        (ship_with(SHIP_ID, &wrong_gate), "accept", full.clone()),
-        (
-            ship_with("b6", &review_relay()),
-            "accept",
-            format!("chough change ship {SHIP_ID}"),
-        ),
-        (
-            ship_with(SHIP_ID, &review_relay()),
-            "test",
-            "chough stage advance --to accept".into(),
-        ),
+    let bare = format!("chough change ship {SHIP_ID}`");
+    let close_docs: Vec<&str> = [
+        "checkpoint",
+        "--close-gate",
+        docs_gate,
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "fine",
+        "--where",
+        "a test",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]
+    .to_vec();
+    // Each case: the arguments; the stage, whether the native change is recorded and
+    // the open gates; the command the refusal must name; the steps that recovery
+    // takes; and the ship that then succeeds.
+    struct Case<'a> {
+        args: Vec<&'a str>,
+        stage: &'a str,
+        native: bool,
+        gates: Vec<&'a str>,
+        names: String,
+        recover: Vec<Vec<&'a str>>,
+        then: Vec<&'a str>,
+    }
+    let with_relay = ship_with(SHIP_ID, &relay);
+    let without_relay = ship_with(SHIP_ID, &[]);
+    let review = vec![REVIEW_GATE];
+    let cases = vec![
+        Case {
+            args: without_relay.clone(),
+            stage: "accept",
+            native: true,
+            gates: review.clone(),
+            names: full.clone(),
+            recover: vec![],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: ship_with(SHIP_ID, &incomplete),
+            stage: "accept",
+            native: true,
+            gates: review.clone(),
+            names: full.clone(),
+            recover: vec![],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: ship_with(SHIP_ID, &wrong_gate),
+            stage: "accept",
+            native: true,
+            gates: review.clone(),
+            names: full.clone(),
+            recover: vec![],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: ship_with(SHIP_ID, &too_long),
+            stage: "accept",
+            native: true,
+            gates: review.clone(),
+            names: full.clone(),
+            recover: vec![],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: ship_with(SHIP_ID, &values_only),
+            stage: "accept",
+            native: true,
+            gates: review.clone(),
+            names: full.clone(),
+            recover: vec![],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: ship_with("b6", &relay),
+            stage: "accept",
+            native: true,
+            gates: review.clone(),
+            names: format!("chough change ship {SHIP_ID}"),
+            recover: vec![],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: with_relay.clone(),
+            stage: "accept",
+            native: false,
+            gates: review.clone(),
+            names: format!("chough checkpoint --native-change {SHIP_ID}`"),
+            recover: vec![vec!["checkpoint", "--native-change", SHIP_ID]],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: with_relay.clone(),
+            stage: "accept",
+            native: true,
+            gates: vec![REVIEW_GATE, docs_gate],
+            names: format!("chough checkpoint --close-gate \"{docs_gate}\""),
+            recover: vec![close_docs.clone()],
+            then: with_relay.clone(),
+        },
+        Case {
+            args: without_relay.clone(),
+            stage: "test",
+            native: true,
+            gates: vec![],
+            names: "chough stage advance --to accept`".into(),
+            recover: vec![vec!["stage", "advance", "--to", "accept"]],
+            then: without_relay.clone(),
+        },
+        Case {
+            args: with_relay.clone(),
+            stage: "accept",
+            native: true,
+            gates: vec![],
+            names: bare.clone(),
+            recover: vec![],
+            then: without_relay.clone(),
+        },
+        Case {
+            args: ship_with(SHIP_ID, &values_only),
+            stage: "accept",
+            native: true,
+            gates: vec![],
+            names: bare.clone(),
+            recover: vec![],
+            then: without_relay.clone(),
+        },
     ];
-    for (args, stage, recovery) in cases {
-        let fixture = shipping_session_at(stage);
+    for case in cases {
+        let fixture = shipping_session(case.stage, case.native, &case.gates);
         let before = records(fixture.root());
-        let output = run_env(&fixture, &args, &[]);
+        let output = run_env(&fixture, &case.args, &[]);
         let error = String::from_utf8_lossy(&output.stderr);
-        assert_eq!(output.status.code(), Some(1), "{args:?}: {error}");
-        assert!(ship_calls(&fixture).is_empty(), "{args:?}: SpecSync ran");
-        assert_eq!(
-            records(fixture.root()),
-            before,
-            "{args:?}: .chough/ changed"
-        );
+        let label = format!("{:?} at {} with {:?}", case.args, case.stage, case.gates);
+        assert_eq!(output.status.code(), Some(1), "{label}: {error}");
+        assert!(ship_calls(&fixture).is_empty(), "{label}: SpecSync ran");
+        assert_eq!(records(fixture.root()), before, "{label}: .chough/ changed");
         assert!(
-            error.contains(&format!("`{recovery}")),
-            "{args:?}: the refusal does not name `{recovery}`: {error}"
+            error.contains(&format!("`{}", case.names)),
+            "{label}: the refusal does not name `{}`: {error}",
+            case.names
         );
-        // The recovery it names succeeds.
-        if recovery.starts_with("chough stage advance") {
-            fixture.ok(&[
-                "checkpoint",
-                "--close-gate",
-                REVIEW_GATE,
-                "--decided-by",
-                "SYNTHETIC-human",
-                "--words",
-                "ready",
-                "--where",
-                "a test",
-                "--recorded-by",
-                "SYNTHETIC-agent",
-            ]);
-            fixture.ok(&["stage", "advance", "--to", "accept"]);
-            fixture.ok(&["checkpoint", "--awaiting-human", REVIEW_GATE]);
+        // The recovery it names succeeds, and then so does the ship.
+        for step in &case.recover {
+            fixture.ok(step);
         }
-        let retried = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+        let retried = run_env(&fixture, &case.then, &[]);
         assert!(
             retried.status.success(),
-            "{args:?}: the recovery failed: {}",
+            "{label}: the recovery failed: {}",
             String::from_utf8_lossy(&retried.stderr)
         );
-        assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+        assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID], "{label}");
+        assert_eq!(
+            ship_session(&fixture)["stage"]["current"],
+            "done",
+            "{label}"
+        );
     }
 }
 
