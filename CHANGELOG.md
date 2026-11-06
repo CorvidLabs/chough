@@ -20,6 +20,12 @@ All notable changes to Chough are recorded here. The format follows
     are recorded claims bound to their content, not authenticated identity.
   - Installed copies of the changed skill files update.
   - A binary without this change refuses a history event that carries `relayed_by`.
+- History writes no longer refuse once the session that adopted the legacy history is
+  rolled into the vault (KNOW-29) or shelved (#141). The legacy anchor is now also
+  found in `.chough/sessions/shelved/` and in the vault's
+  `<library-dir>/attachments/*/sessions/`, with the same exact match, and a changed
+  legacy log is still refused.
+
 - REQ-cli-039 AC2 now says that a `verifying` change shows no native-check note only
   with handoff readiness `safe`; any other or missing readiness keeps a note, as the
   requirement's body and last criterion already said (#126, audit D10). Behavior is

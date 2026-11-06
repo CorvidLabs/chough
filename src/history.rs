@@ -363,8 +363,25 @@ fn verify_anchor(root: &Path, cursor: &Cursor) -> Result<()> {
 /// `current` when an open or archived session's cursor recorded it as its legacy anchor,
 /// else None. Only a checkpoint within the session size bound is read.
 fn adopted_anchor(root: &Path, current: &Anchor) -> Result<Option<Anchor>> {
-    let archive = format!("{}/archive", crate::sessions::DIR);
-    for dir in [crate::sessions::DIR, archive.as_str()] {
+    // The session that adopted the legacy history may be open, archived, shelved
+    // (REQ-history-006) or rolled into the vault (KNOW-29); #141.
+    let mut dirs = vec![
+        crate::sessions::DIR.to_string(),
+        format!("{}/archive", crate::sessions::DIR),
+        format!("{}/shelved", crate::sessions::DIR),
+    ];
+    if let Ok((library, _)) = crate::prefs::effective(root, "library-dir")
+        && let Ok(base) = local_path(root, &format!("{library}/attachments"))
+        && let Ok(folders) = fs::read_dir(base)
+    {
+        let mut rolled: Vec<String> = folders
+            .filter_map(|entry| entry.ok()?.file_name().into_string().ok())
+            .map(|folder| format!("{library}/attachments/{folder}/sessions"))
+            .collect();
+        rolled.sort();
+        dirs.extend(rolled);
+    }
+    for dir in dirs.iter().map(String::as_str) {
         let path = local_path(root, dir)?;
         let Ok(entries) = fs::read_dir(&path) else {
             continue;

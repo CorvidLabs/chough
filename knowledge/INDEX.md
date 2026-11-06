@@ -48,6 +48,7 @@ Active:
 Archived changes (newest first; the newest 3 are hot):
 
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7) (hot)
+- [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1) (hot)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) (hot)
 - [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](archives/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.md) Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10) (hot)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) (cold)
@@ -72,6 +73,7 @@ Module lesson sources:
 Archived lesson bundles:
 
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../.specsync/archive/changes/2026-11-06-record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7/lesson-bundle.md)
+- [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../.specsync/archive/changes/2026-11-06-find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1/lesson-bundle.md)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../.specsync/archive/changes/2026-11-06-keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29/lesson-bundle.md)
 - [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](../.specsync/archive/changes/2026-11-06-native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10/lesson-bundle.md)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../.specsync/archive/changes/2026-11-06-size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each/lesson-bundle.md)
@@ -99,6 +101,7 @@ Archived lesson bundles:
 ## Observations
 
 391 recorded; most recent:
+370 recorded; most recent:
 
 - OBS-tc-history-relay-invalid-payloads-736bae7a3a483a4d9a691e67 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
 - OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b ProductTest Passed in local-linux-aarch64 at 98aa658d861b

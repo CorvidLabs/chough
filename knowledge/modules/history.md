@@ -34,6 +34,7 @@ this note only links them.
 16 archived changes, newest first.
 
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
+- [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)
 - [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files
