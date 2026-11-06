@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+[[case]]
+id = "TC-reporting-timing-trace-straddles-a-second"
+title = "The timing trace test passes when its plain and traced runs straddle a second, and fails only on a real difference"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-19"]
+requirements = ["REQ-reporting-002"]
+paths = ["tests/timing.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the timing trace test passes under a forced one-second straddle"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "timing", "--", "--exact", "timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
