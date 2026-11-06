@@ -1688,7 +1688,10 @@ fn the_roll_up_keeps_the_session_that_holds_the_legacy_anchor() {
     let path = ".chough/sessions/archive/s0.json";
     let mut holder: Value = serde_json::from_str(&fixture.read(path)).unwrap();
     holder["history_cursor"]["legacy"] = anchor;
-    fixture.write(path, &(serde_json::to_string_pretty(&holder).unwrap() + "\n"));
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&holder).unwrap() + "\n"),
+    );
     fixture.commit("s0 holds the legacy anchor");
     let moved = fixture.ok(&["stage", "advance"]);
     let rollup = &moved["applied"]["session_rollup"];
