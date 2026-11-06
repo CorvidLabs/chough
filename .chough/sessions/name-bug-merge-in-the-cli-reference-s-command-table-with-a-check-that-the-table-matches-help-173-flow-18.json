@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-1b54bc711067f522ca82323e",
-    "head": "EVT-f16674fcf828295013a732e0",
+    "head": "EVT-3df264aeba292a00f3b8dccf",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -38,11 +38,15 @@
     "Leif (0xLeif) decided \"Scope approval of name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18\": \"approved\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy as 'Leif approved #173' (orc's wording; Leif's own words were not quoted); orc recorded the native definition approval as 0xLeif at 46ce740a); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
   ],
   "open_questions": [],
-  "completed": [],
+  "completed": [
+    "Fix: docs/cli.md's bug row names merge (#173); the Commands table check failed first at 46ce740a and passes; all eleven docs cases and cargo test (533) pass"
+  ],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18"
+  ],
   "run_consents": [],
-  "next_action": "Add merge to docs/cli.md's bug row, rerun the case, verify, PR, ready for review"
+  "next_action": "After Leif's review (recorded by orc): ship, close the review gate with his relayed words, stage advance, commit, audit --strict and pre-push, push, CI, merge pinned"
 }
