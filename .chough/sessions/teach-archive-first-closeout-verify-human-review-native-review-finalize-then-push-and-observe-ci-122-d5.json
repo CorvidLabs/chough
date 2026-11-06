@@ -27,11 +27,14 @@
     "files": []
   },
   "decisions": [
-    "failed: OBS-tc-cli-0101-d4305fdb1d19732792489328 was recorded with --environment ci-linux by mistake; it ran in local Docker Linux aarch64 (local-linux-aarch64), not CI. Do not read it as CI evidence; hosted CI on the PR is the CI evidence."
+    "failed: OBS-tc-cli-0101-d4305fdb1d19732792489328 was recorded with --environment ci-linux by mistake; it ran in local Docker Linux aarch64 (local-linux-aarch64), not CI. Do not read it as CI evidence; hosted CI on the PR is the CI evidence.",
+    "decided: removed OBS-tc-cli-0101-d4305fdb1d19732792489328 and its log, which claimed ci-linux but ran in local Docker Linux aarch64; it was never referenced. OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 records the same exercise run as local-linux-aarch64. Hosted CI on the PR is the CI evidence."
   ],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [

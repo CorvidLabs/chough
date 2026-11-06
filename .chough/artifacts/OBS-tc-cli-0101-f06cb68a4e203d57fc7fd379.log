@@ -16,13 +16,13 @@ plan -> build, gate native:approved
 == Test: focused selection for the affected requirement and path
 selected: TC-shipping-0001, TC-shipping-0002, TC-shipping-0003
 omitted: TC-shipping-0004 (copy-localization track not requested as relevant to this change)
-TC-shipping-0001: failed, observation OBS-tc-shipping-0001-21c56ca20d45efb2c4192a53
-TC-shipping-0002: passed, observation OBS-tc-shipping-0002-97f48c8b20e9c71dc35f8686
-TC-shipping-0003: passed, observation OBS-tc-shipping-0003-2bba75bb308c1291139a6738
+TC-shipping-0001: failed, observation OBS-tc-shipping-0001-cde35a6ad8418a3582bff030
+TC-shipping-0002: passed, observation OBS-tc-shipping-0002-dafca751448de5a378a42001
+TC-shipping-0003: passed, observation OBS-tc-shipping-0003-66285cfad98dd245893f1694
 
 == Bug: reproduce, search, record locally, and refuse a duplicate
 existing matches: 0
-recorded BUG-shipping-charged-at-exactly-the-free-threshold-7ae0ee95a22d3c80bc72ba59: reproduced
+recorded BUG-shipping-charged-at-exactly-the-free-threshold-64d8b22b4b3d65eefa84a096: reproduced
 refused as expected: a duplicate report (similar bugs exist)
 refused as expected: accepting with an open blocking bug (refused:blocking-bugs)
 refused as expected: repeated validation without consent (not authorized)
@@ -31,10 +31,10 @@ refused as expected: repeated validation without consent (not authorized)
 build: implementation against the current definition
 test: rerun affected cases; earlier observations may be stale
 checkpoint references: 1 case(s) and 1 observation(s) to re-check with `chough status`
-TC-shipping-0001: passed, observation OBS-tc-shipping-0001-03ba22a8ea749d1413451816
-TC-shipping-0002: passed, observation OBS-tc-shipping-0002-271b088bf80e30e9f880952a
-TC-shipping-0003: passed, observation OBS-tc-shipping-0003-5339521206254668d61ffac8
-BUG-shipping-charged-at-exactly-the-free-threshold-7ae0ee95a22d3c80bc72ba59: verified, reproduced-and-later-passed
+TC-shipping-0001: passed, observation OBS-tc-shipping-0001-b8e4e6f86400cf37cf9a2feb
+TC-shipping-0002: passed, observation OBS-tc-shipping-0002-5ddaac41a17add676a06564d
+TC-shipping-0003: passed, observation OBS-tc-shipping-0003-d66ccf0fc67182db46a4f39c
+BUG-shipping-charged-at-exactly-the-free-threshold-64d8b22b4b3d65eefa84a096: verified, reproduced-and-later-passed
 
 == Accept: only a human review and native archive can close this
 refused as expected: leaving accept before review and archive (refused:native-verifying)
@@ -46,7 +46,7 @@ accept -> done
 All native changes are archived; 1 archive(s) authenticated by SpecSync.
 Archived and committed before any CI: now push and observe CI at this tip.
 
-EXERCISE PASSED (removing /tmp/chough-exercise.NWNOMx)
-✅ exercise (27.6s)
+EXERCISE PASSED (removing /tmp/chough-exercise.VWFQll)
+✅ exercise (25.2s)
 
 --- stderr ---
