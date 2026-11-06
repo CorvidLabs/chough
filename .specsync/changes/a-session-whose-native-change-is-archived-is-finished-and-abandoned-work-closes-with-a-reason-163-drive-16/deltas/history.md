@@ -19,3 +19,4 @@ Acceptance Criteria
 - With release authorized before the move into done, the session stays open (`kept_open`), `stage enter release` works, and the move from release into done archives it and clears the pointer.
 - A session whose native change is archived on HEAD, at a stage short of done, is moved to the archive with its bytes unchanged by `session new` and by `session use`, and stays open while its inbox has unfolded entries, with no native read.
 - `chough session close <key> --reason <text>` moves the session to the archive with the reason in its decisions and no native read, and clears the active pointer when it named that session; a blank reason, an archived or missing session and a session with unfolded inbox entries refuse with nothing changed.
+
