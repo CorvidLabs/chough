@@ -1,0 +1,53 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-b8b7c31a5ef2d822ed600575",
+    "head": "EVT-75449009da85146a8d82e3ca",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Narrow Chough's approval promise to recorded claims and keep a relayed-decision record (decided_by, words, where, recorded_by) when an agent records a human gate on someone's behalf (#123, D7)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7",
+  "references": {
+    "criteria": [
+      "FLOW-16",
+      "FLOW-10",
+      "FLOW-13"
+    ],
+    "requirements": [
+      "REQ-cli-050",
+      "REQ-cli-030",
+      "REQ-history-010"
+    ],
+    "cases": [],
+    "design": [],
+    "files": [
+      "tests/relay.rs"
+    ]
+  },
+  "decisions": [
+    "Leif's 95-plan decision for D7 (orc tab 2026-11-05): narrow the promise to recorded, digest-protected claims, not authentication, and record relayed-by for human decisions an agent records; rejected: authenticating identity or signing inside the tool (spec-sync#633: that belongs to attest)",
+    "Leif (2026-11-05 20:18 MST, Herdr orc tab, relayed by orc t18): \"Approve shape + FLOW-16\": relayed_by = {decided_by, words, where, recorded_by} as proposed by ch-d7; --clear-awaiting-human option A (kept for withdrawing gates, records no decision); FLOW-16 captured in the drafted wording; FLOW-10 unchanged"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Native definition complete (audit passes); failing tests committed: tests/relay.rs (5 tests, all fail on main: no --close-gate, no relayed_by) and tests/stages.rs expectations naming --close-gate (3 tests fail)"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope approval of record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7"
+  ],
+  "run_consents": [],
+  "next_action": "Wait for the orc to confirm Leif's scope approval of record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7; then advance plan -> build and implement"
+}
