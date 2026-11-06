@@ -19,6 +19,8 @@ All notable changes to Chough are recorded here. The format follows
   `verification_ignored_paths` ships from 6.1.2; the archive summary keeps the newest
   run (KNOW-17); releasing.md works for any version. Installed copies of the earlier
   `SKILL.md`, `checkpoint.md` and `lifecycle.md` update as known-outdated.
+  The CLI reference's Commands table is also checked against `chough --help`, and its
+  bug row names `merge` (#173).
 - `chough doctor` finds and fixes the Chough debt that stops a fresh worktree from
   entering Chough (DRIVE-17): finished sessions left open, a legacy
   `.chough/session.json` to adopt, a stale active pointer, and awaiting-human gates on

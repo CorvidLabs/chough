@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-1b54bc711067f522ca82323e",
-    "head": "EVT-1b8bd766f8ed99041d0a8183",
+    "head": "EVT-f16674fcf828295013a732e0",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -34,16 +34,15 @@
     ]
   },
   "decisions": [
-    "decided: the #173 check is a separate test in tests/docs.rs because docs/cli.md's command table writes subcommands with escaped pipes and bracketed options, unlike the README's helper table"
+    "decided: the #173 check is a separate test in tests/docs.rs because docs/cli.md's command table writes subcommands with escaped pipes and bracketed options, unlike the README's helper table",
+    "Leif (0xLeif) decided \"Scope approval of name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18\": \"approved\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy as 'Leif approved #173' (orc's wording; Leif's own words were not quoted); orc recorded the native definition approval as 0xLeif at 46ce740a); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Scope approval of name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Failing check committed; send 'ready for approval name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18 at <commit>' to orc and wait for Leif's relayed scope approval"
+  "next_action": "Add merge to docs/cli.md's bug row, rerun the case, verify, PR, ready for review"
 }

@@ -16,17 +16,26 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f"
+    "OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f",
+    "OBS-tc-cli-cli-command-table-matches-help-4bb9fc6a4f11994c45c7d052"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "manual report",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1793999037,
+      "text": "status: open -> verified",
+      "observations": [
+        "OBS-tc-cli-cli-command-table-matches-help-4bb9fc6a4f11994c45c7d052"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793998815,
-  "updated_at_unix_seconds": 1793998815
+  "updated_at_unix_seconds": 1793999037
 }
