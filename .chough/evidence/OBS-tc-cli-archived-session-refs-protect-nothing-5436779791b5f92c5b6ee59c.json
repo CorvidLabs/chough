@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c",
+  "criteria": [
+    "KNOW-21"
+  ],
+  "requirements": [
+    "REQ-cli-045"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact an_archived_session_file_reference_protects_nothing for TC-cli-archived-session-refs-protect-nothing: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c.log": "a61e3f44149699fa33a72a153c7160fd0b5111a85dfd8d8e80213987fe72a24c"
+  },
+  "observed_at_unix_seconds": 1793922448,
+  "snapshot": {
+    "revision": "894d94a3d31e46b4de8b65b45d74f36551d02f81",
+    "dirty": false,
+    "fingerprint": "8ea4ec94ae64d1993a845222a2acad108cc1e6beb499b7766b84a5a33437c2f7",
+    "content": "3cffd764d97ed57e83f23d8db9530a7cc278a09d567996d3be61b7832a83d507"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-archived-session-refs-protect-nothing",
+      "digest": "69cf997734abaf2930ed5ec51883ffd84f72bf727ef0f22193f9f3ad2f2be2ab"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "an_archived_session_file_reference_protects_nothing"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

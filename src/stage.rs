@@ -924,10 +924,12 @@ fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
     }
 }
 
-/// REQ-cli-045 (KNOW-16): on the move into done, with the librarian on, drop the
+/// REQ-cli-045 (KNOW-16, KNOW-21): on the move into done, with the librarian on, drop the
 /// checkpoint's observation references whose record was observed before the current cycle
-/// began or has no record. Never fails: the result is `dropped`, `unchanged`, `skipped` or
-/// `refused`, so the move into done never depends on it.
+/// began or has no record, and every file and design reference: done closes the cycle, and
+/// the native archive and the vault keep what the change touched. Never fails: the result
+/// is `dropped`, `unchanged`, `skipped` or `refused`, so the move into done never depends
+/// on it.
 fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value {
     match crate::prefs::effective(root, "librarian") {
         Ok((value, _)) if value != "on" => {
@@ -936,20 +938,22 @@ fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value 
         Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
         Ok(_) => {}
     }
-    let Some(start) = current_cycle_start(root, session) else {
-        return json!({"status": "skipped", "reason": "no reset time can be read, so no cycle is known to be closed"});
-    };
+    let start = current_cycle_start(root, session);
     // Only a missing record may be dropped; an existing record that cannot be read keeps
     // every reference and refuses the step (review of #108).
     let mut kept = vec![];
     let mut dropped = vec![];
     let mut unreadable = vec![];
-    for id in &session.observations {
-        match crate::evidence::observed_at(root, id) {
-            Ok(Some(at)) if at >= start => kept.push(id.clone()),
-            Ok(_) => dropped.push(id.clone()),
-            Err(error) => unreadable.push(format!("{id}: {error:#}")),
+    if let Some(start) = start {
+        for id in &session.observations {
+            match crate::evidence::observed_at(root, id) {
+                Ok(Some(at)) if at >= start => kept.push(id.clone()),
+                Ok(_) => dropped.push(id.clone()),
+                Err(error) => unreadable.push(format!("{id}: {error:#}")),
+            }
         }
+    } else {
+        kept.clone_from(&session.observations);
     }
     if !unreadable.is_empty() {
         return json!({"status": "refused", "reason": format!(
@@ -957,14 +961,41 @@ fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value 
             unreadable.join("; ")
         )});
     }
-    if dropped.is_empty() {
-        return json!({"status": "unchanged"});
+    let dropped_files = session.references.files.clone();
+    let dropped_design = session.references.design.clone();
+    if dropped.is_empty() && dropped_files.is_empty() && dropped_design.is_empty() {
+        return match start {
+            Some(_) => json!({"status": "unchanged"}),
+            None => {
+                json!({"status": "skipped", "reason": "no reset time can be read, so no cycle is known to be closed"})
+            }
+        };
     }
-    let before = std::mem::replace(&mut session.observations, kept);
+    let before = (
+        std::mem::replace(&mut session.observations, kept),
+        std::mem::take(&mut session.references.files),
+        std::mem::take(&mut session.references.design),
+    );
     match save_checkpoint(root, session) {
-        Ok(()) => json!({"status": "dropped", "dropped": dropped}),
+        Ok(()) => {
+            let mut result = json!({
+                "status": "dropped",
+                "dropped": dropped,
+                "dropped_files": dropped_files,
+                "dropped_design": dropped_design,
+            });
+            if start.is_none() {
+                result["observations"] =
+                    json!("kept: no reset time can be read, so no cycle is known to be closed");
+            }
+            result
+        }
         Err(error) => {
-            session.observations = before;
+            (
+                session.observations,
+                session.references.files,
+                session.references.design,
+            ) = before;
             json!({"status": "refused", "reason": format!("{error:#}")})
         }
     }
@@ -2025,8 +2056,8 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         .as_mut()
         .filter(|applied| applied["kind"] == "advance" && applied["to"] == "done")
     {
-        // REQ-cli-045 (KNOW-16): first drop the checkpoint's references from closed
-        // cycles, so they no longer protect proof the archives and vault now keep.
+        // REQ-cli-045 (KNOW-16, KNOW-21): first drop the checkpoint's references from
+        // closed cycles, so they no longer protect proof the archives and vault now keep.
         applied["checkpoint_references"] = drop_closed_cycle_references(root, &mut session);
         applied["librarian_trim"] = crate::library::trim_at_done(root);
         // REQ-cli-043: then refresh the knowledge directory, so the change just archived
