@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "union-merge-the-generated-bug-notes-128",
+  "implementation_commit": "a1dba47c0a06374a72d65f510219131680512701",
+  "implementation_tree": "4ba6e7e386f24397573bfaa2b61e629f8eb49067",
+  "contract_digest": "96007e63abaa18e4aa3fbeb846300186542e22daf2956ea1d7cff10ab3926977",
+  "workspace_digest": "0770368abba3b2689c99e8ae511893c7e9a2de80059c05cd3657436da7777cab",
+  "closing_digest": "ff652a20d7ded93dc3835f97f504485f7586c1dd88bdbd0f6b1232f353e186e4",
+  "review_digest": "6b4ac3aead77abf21e290c47c1d77196d7d2f55dfdc32d4711000242f2b81bef",
+  "finalization_digest": "43e87adb4e9df5a432bffbd41e3659dcb81111df11b7db5445f701e7edf2135e",
+  "timestamp": 1793930261
+}
