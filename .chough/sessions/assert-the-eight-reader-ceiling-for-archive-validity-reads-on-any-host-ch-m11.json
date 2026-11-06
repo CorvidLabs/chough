@@ -34,7 +34,8 @@
   "decisions": [
     "Agent's reading, not a human decision: an end-to-end test alone cannot kill the mutant on hosts reporting 8 or fewer cores, so the plan adds a pure validity_readers function with a unit test; the ceiling stays 8 and the floor 2.",
     "Leif (0xLeif), 2026-11-05 21:23 MST, through the orc (t18): approves C5 (his 21:22 'Hold' was a misclick, the orc said); the orc recorded the native approval on 87d4e76e. GitHub issue #137 filed at his request.",
-    "decided: stage moves resumed after chough#141's fix (#142, 90e5de6f) merged into this branch; build -> test -> accept. Commit a7bfba06's message said these moves and the review gate happened; the KNOW-29 regression refused them then, and they happen here."
+    "decided: stage moves resumed after chough#141's fix (#142, 90e5de6f) merged into this branch; build -> test -> accept. Commit a7bfba06's message said these moves and the review gate happened; the KNOW-29 regression refused them then, and they happen here.",
+    "failed: fd0345df's knowledge index listed the C6 change as active, from an empty .specsync/changes/<C6>/deltas/ directory the branch switch left behind; the Linux knowledge step rejected it. Removed the empty directory (no files in it), rebuilt the index, recorded BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 (out of scope)"
   ],
   "open_questions": [],
   "completed": [
@@ -46,7 +47,9 @@
     "OBS-tc-cli-at-most-eight-validity-reads-5b7afc441c01deea7818e53b",
     "OBS-product-test-56d46b6484dae509ee8e848c"
   ],
-  "bugs": [],
+  "bugs": [
+    "BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6"
+  ],
   "blockers": [],
   "awaiting_human": [
     "Implementation review of assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11"

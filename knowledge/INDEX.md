@@ -44,7 +44,6 @@ Canonical prototypes:
 Active:
 
 - assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11 (active; `specsync change status assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11`)
-- give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138 (active; `specsync change status give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -92,6 +91,7 @@ Archived lesson bundles:
 - BUG-0020 Approved-delta guard matches the latest approval, not the digest-matching one, for older workflow versions (open, out-of-scope, unverified)
 - BUG-0022 Initial host tools do not match CI versions (open, out-of-scope, reproduced)
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
+- BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 
