@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The chough-workflow skill's transition table now names `chough stage advance --to
+  <stage>` (REQ-cli-052, DRIVE-9). Installed copies of `references/stages.md` from 0.1.0
+  to 0.4.0 report `known-outdated`, and `chough skill update` refreshes them.
 - `chough stage advance --to <stage>` moves through each main stage up to `<stage>` on
   one `specsync change status` read. Every step is checked first, as a plain advance
   would check it, and a refused step refuses the whole batch with nothing recorded
