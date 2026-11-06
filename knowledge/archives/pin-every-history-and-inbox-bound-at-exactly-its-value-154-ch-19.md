@@ -58,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.json](../attachments/pin-every-9a043504/sessions/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.json)

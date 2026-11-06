@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-b35aa02ebabd567d1f18f807",
-    "head": "EVT-391192af3fd4753dc4f74369",
+    "head": "EVT-758276ba6f9f4853f7708d52",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
