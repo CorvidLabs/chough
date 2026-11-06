@@ -4,7 +4,7 @@ title: "Module cli"
 type: module
 modules:
   - cli
-lessons: 55
+lessons: 57
 archived_changes: 103
 tags:
   - chough/module
@@ -26,7 +26,7 @@ this note only links them.
 
 ## Lessons
 
-55 lessons recorded in the `## Lessons` section of
+57 lessons recorded in the `## Lessons` section of
 [specs/cli/context.md](../../specs/cli/context.md); the lessons stay there.
 
 ## Archived changes that touched cli

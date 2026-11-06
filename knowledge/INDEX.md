@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows (active; `specsync change status read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows`)
 
 Archived changes (newest first; the newest 3 are hot):
 

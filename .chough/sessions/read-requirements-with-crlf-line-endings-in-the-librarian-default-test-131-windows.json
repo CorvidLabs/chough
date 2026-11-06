@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-befba131f997351c58ff06df",
-    "head": "EVT-e1466f7895bcc50e9be885c5",
+    "head": "EVT-f7e6d0a1afacf6c916a0513e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then normalize CRLF in the test"
 }
