@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A session whose native change is archived on HEAD is finished even short of done
+  (#163, DRIVE-16), for example after a move into done timed out once SpecSync had
+  finalized the change. `session new` and `session use` archive it, and with no
+  active pointer it no longer makes other worktrees refuse with "several open
+  sessions". `chough session close <key> --reason <text>` closes abandoned work with
+  the reason recorded. Neither reads native state.
 - A session archives itself at its own move into done and clears the active pointer
   (#155, REQ-history-006, DRIVE-13), so a done session merged to main is already
   archived and no other worktree's `session new` moves it into an unrelated change. It
