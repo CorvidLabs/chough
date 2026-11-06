@@ -1,0 +1,46 @@
+
+running 7 tests
+test sigterm_to_change_check_stops_specsync ... ok
+test change_new_answer_check_and_status_run_specsync_with_exact_arguments ... FAILED
+test specsync_output_and_exit_code_pass_through_byte_for_byte ... ok
+test an_invalid_native_bound_refuses_status_naming_a_valid_retry ... ok
+test no_change_command_writes_under_dot_chough ... FAILED
+test a_missing_specsync_refuses_naming_install_and_the_step_to_rerun ... FAILED
+test check_outlives_the_native_bound_while_status_refuses_past_it ... ok
+
+failures:
+
+---- change_new_answer_check_and_status_run_specsync_with_exact_arguments stdout ----
+
+thread 'change_new_answer_check_and_status_run_specsync_with_exact_arguments' (356236962) panicked at tests/change.rs:160:9:
+assertion `left == right` failed: ["change", "check", "free-shipping"]
+  left: ["change", "check", "free-shipping"]
+ right: ["change", "check", "free-shipping", "--commit"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- no_change_command_writes_under_dot_chough stdout ----
+
+thread 'no_change_command_writes_under_dot_chough' (356236964) panicked at tests/change.rs:207:13:
+assertion `left == right` failed: ["change", "check", "free-shipping"] did not run SpecSync
+  left: ["change", "check", "free-shipping"]
+ right: ["change", "check", "free-shipping", "--commit"]
+
+---- a_missing_specsync_refuses_naming_install_and_the_step_to_rerun stdout ----
+
+thread 'a_missing_specsync_refuses_naming_install_and_the_step_to_rerun' (356236960) panicked at tests/change.rs:299:9:
+assertion `left == right` failed
+  left: ["change", "check", "free-shipping"]
+ right: ["change", "check", "free-shipping", "--commit"]
+
+
+failures:
+    a_missing_specsync_refuses_naming_install_and_the_step_to_rerun
+    change_new_answer_check_and_status_run_specsync_with_exact_arguments
+    no_change_command_writes_under_dot_chough
+
+test result: FAILED. 4 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.98s
+
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456-drive)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.95s
+     Running tests/change.rs (target/debug/deps/change-c1495f4ded81b8f7)
+error: test failed, to rerun pass `--test change`

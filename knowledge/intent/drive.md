@@ -24,6 +24,8 @@ criteria:
   - DRIVE-17
   - DRIVE-18
   - DRIVE-19
+  - DRIVE-20
+  - DRIVE-21
 tags:
   - chough/intent
 ---
@@ -55,3 +57,5 @@ archived changes whose requirements trace it.
 - **DRIVE-17**: [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md)
 - **DRIVE-18**: [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md)
 - **DRIVE-19**: none yet
+- **DRIVE-20**: none yet
+- **DRIVE-21**: none yet

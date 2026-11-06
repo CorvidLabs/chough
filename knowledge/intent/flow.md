@@ -23,6 +23,8 @@ criteria:
   - FLOW-16
   - FLOW-17
   - FLOW-18
+  - FLOW-19
+  - FLOW-20
 tags:
   - chough/intent
 ---
@@ -53,3 +55,5 @@ archived changes whose requirements trace it.
 - **FLOW-16**: [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md), [human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38](../archives/human-gate-hold-stage-advance-and-skip-refuse-while-the-checkpoint-has-an-open-awaiting-human-gate-issue-38.md)
 - **FLOW-17**: none yet
 - **FLOW-18**: none yet
+- **FLOW-19**: none yet
+- **FLOW-20**: none yet

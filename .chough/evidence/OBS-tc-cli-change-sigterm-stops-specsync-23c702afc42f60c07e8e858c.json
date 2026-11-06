@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-sigterm-stops-specsync-23c702afc42f60c07e8e858c",
+  "criteria": [
+    "DRIVE-20",
+    "FLOW-14"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact sigterm_to_change_check_stops_specsync for TC-cli-change-sigterm-stops-specsync: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-sigterm-stops-specsync-23c702afc42f60c07e8e858c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-sigterm-stops-specsync-23c702afc42f60c07e8e858c.log": "a3a85fdb2a87db89a9f282c451d26392b3e73eed5e49fb3ad103adeeebfed754"
+  },
+  "observed_at_unix_seconds": 1793998313,
+  "snapshot": {
+    "revision": "7037d082e874e091ab4ab0ba27007a494e9728e2",
+    "dirty": false,
+    "fingerprint": "b5bbf4ed1b5d592d8d67a0404a5ef0ad2980685ddeb8a92b295d87e00467d92d",
+    "content": "a15213acfdc158c84ee931227eb568c4192550235d74b9f5c3e106b46bd023b7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-sigterm-stops-specsync",
+      "digest": "fc1a96f595a66366acfbf54cad76142e8a4d7637239153bc5f6400ddb06fc9ce"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "sigterm_to_change_check_stops_specsync"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 20
+}

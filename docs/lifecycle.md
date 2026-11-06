@@ -82,7 +82,8 @@ checkpoint records that change.
 The order before the review is: when the delta adds or modifies requirements, run
 `specsync change check <id>` first to materialize them; `chough cases run`; record the
 gate with `chough checkpoint --awaiting-human`; commit the source together with
-`.chough/`; `specsync change check <id> --commit`; present the work. After the human
+`.chough/`; `chough change check <id>` (SpecSync's `change check <id> --commit`); present
+the work. After the human
 decision come `specsync change review`, then `ship` or `finalize`, and only then
 closing the review gate with the human's relayed decision (`chough checkpoint
 --close-gate "<gate>" --decided-by ... --words ... --where ... --recorded-by ...`) and
@@ -103,7 +104,8 @@ has not adopted it: its entries are directory prefixes, so covering
 stay verified. Unless a project lists only directories that are safe to leave out,
 any Chough write in that window forces another `change check`.
 
-`specsync change check <id> --commit` materializes the approved delta and records
+`chough change check <id>` (SpecSync's `change check <id> --commit`) materializes the
+approved delta and records
 targeted structural verification; it does not run product tests and refuses while
 tasks are unchecked. The human implementation review happens after verification and
 before archive; the native `review` record follows a real decision only. Then `ship`

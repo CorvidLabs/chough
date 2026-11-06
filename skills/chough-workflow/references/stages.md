@@ -57,7 +57,7 @@ observations and evidence named in the refresh list must be redone by their owne
 - Purpose: technical design, task plan, estimates and ownership in the native change.
 - Inputs: intent, design, contracts, architecture, native lessons and principles.
 - Outputs: native change package and deltas (SpecSync), estimates and ownership (plan artifact).
-- Roles and tools: engineering, architecture, QA; `specsync change new/answer`.
+- Roles and tools: engineering, architecture, QA; `chough change new/answer`.
 - Completion evidence: native artifacts complete and status ready for approval.
 - Approval: one human scope approval over the concrete definition, recorded natively.
 - Questions: consequential open choices, batched into the one approval question.
@@ -93,7 +93,7 @@ observations and evidence named in the refresh list must be redone by their owne
 - Purpose: present the implementation and evidence for the human's review, then close natively.
 - Inputs: verification, product evidence, remaining bugs and limits.
 - Outputs: native review and archive (SpecSync), lessons (native module sources).
-- Roles and tools: the human reviewer; `specsync change check/review/ship/finalize`.
+- Roles and tools: the human reviewer; `chough change check`, then `specsync change review/ship/finalize`.
 - Completion evidence: native state `archived`.
 - Approval: the human implementation review, recorded natively only after it happens.
 - Questions: the review itself.

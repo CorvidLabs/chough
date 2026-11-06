@@ -19,7 +19,8 @@ records. Follow native status where it names a different next action.
    project lanes.
 3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
 4. Commit the source together with `.chough/`.
-5. Run `specsync change check <id> --commit` (stage new source files first).
+5. Run `chough change check <id>`, which runs `specsync change check <id> --commit`
+   (stage new source files first).
 6. Present to the human: what changed, the current verification, the relevant case
    observations with freshness, open bugs and limits, and what was not checked.
    Report product tests, structural checks, native lifecycle state, provenance and
@@ -71,7 +72,7 @@ also refreshes the knowledge directory; commit it with the checkpoint. Then push
 archive commit, the checkpoint and the knowledge directory on the same pull request,
 observe hosted CI at the real tip, and merge through the repository's normal process. If several changes share a pull request, review and
 finalize them one at a time. If evidence went stale, use the recovery action that
-`specsync change status` names. Finishing never enters release.
+`chough change status` names. Finishing never enters release.
 
 ## Compounding
 

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-steps-pass-through-8b387a2f06ba2494c9c37cd5",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact specsync_output_and_exit_code_pass_through_byte_for_byte for TC-cli-change-steps-pass-through: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-steps-pass-through-8b387a2f06ba2494c9c37cd5.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-steps-pass-through-8b387a2f06ba2494c9c37cd5.log": "76a1a84403dc211573eea1bf9c6ba78af2c2780b8fc1a283f74ec1e1221d9538"
+  },
+  "observed_at_unix_seconds": 1793998253,
+  "snapshot": {
+    "revision": "7037d082e874e091ab4ab0ba27007a494e9728e2",
+    "dirty": false,
+    "fingerprint": "b5bbf4ed1b5d592d8d67a0404a5ef0ad2980685ddeb8a92b295d87e00467d92d",
+    "content": "a15213acfdc158c84ee931227eb568c4192550235d74b9f5c3e106b46bd023b7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-steps-pass-through",
+      "digest": "3d4bd427739544679ace0ad49a5d5efb44470853c9ddbbeac0de112170b41fd8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "specsync_output_and_exit_code_pass_through_byte_for_byte"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

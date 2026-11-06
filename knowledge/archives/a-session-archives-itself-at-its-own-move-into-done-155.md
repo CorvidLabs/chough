@@ -86,4 +86,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/a-session-archives-itself-at-its-own-move-into-done-155.json](../attachments/a-session-45f989be/sessions/a-session-archives-itself-at-its-own-move-into-done-155.json)
