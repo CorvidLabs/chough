@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22 (active; `specsync change status closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -95,8 +95,11 @@ Archived lesson bundles:
 
 ## Observations
 
-495 recorded; most recent:
+498 recorded; most recent:
 
+- OBS-tc-cli-open-bug-keeps-links-89538a43c3a4b93c529e6b4b ProductTest Passed in local-linux-aarch64 at a5246bd81940
+- OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
+- OBS-tc-cli-closed-bug-key-items-move-to-vault-ed7a30c1fb6534c91d7288de ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 InstallationObservation Passed in macos-arm64-cargo-1.95.0 at 2082dddff420
 - OBS-dry-run-2d42138c5939105291d8aed7 DryRun Passed in local-linux-aarch64 at 5959fe239d85
 - OBS-structural-ce74f6d127b1f262c869b327 Structural Passed in local-linux-aarch64 at 5959fe239d85
@@ -104,9 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-ad4356ae97e0d1fc8a02a87b ProductTest Passed in local-linux-aarch64 at 7f113f4ec6a5
 - OBS-tc-cli-rollback-keeps-changed-vault-copies-8d5671f81cc50a0665e4bc21 ProductTest Passed in local-linux-aarch64 at 25d92de2b0c3
 - OBS-tc-cli-union-only-generated-notes-665f0919d400d0c56e42ade0 ProductTest Passed in local-linux-aarch64 at e6fab9305e6b
-- OBS-tc-cli-knowledge-index-bounded-timeline-7e7a8fe1e56dc73d605521c6 ProductTest Passed in local-linux-aarch64 at 6149a4c692ab
-- OBS-product-test-efc8d08578411f2174668043 ProductTest Passed in local at 01cf8a124d6e
-- OBS-structural-b532801a6be2bb05fbc01858 Structural Passed in local-linux-aarch64 at 12b36fecc03a
 
 ## Briefs
 
