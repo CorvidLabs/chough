@@ -919,3 +919,451 @@ fn the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids() 
         "docs/cli.md has no single upgrade note for new-form bug IDs"
     );
 }
+
+/// The stored record of bug `id`.
+fn bug_record(fixture: &Fixture, id: &str) -> Value {
+    serde_json::from_str(&fixture.read(&format!(".chough/bugs/{id}.json"))).unwrap()
+}
+
+/// Overwrite fields of bug `id`'s stored record, as a hand edit would.
+fn set_bug_fields(fixture: &Fixture, id: &str, fields: &[(&str, Value)]) {
+    let mut record = bug_record(fixture, id);
+    for (field, value) in fields {
+        record[*field] = value.clone();
+    }
+    fixture.write(
+        &format!(".chough/bugs/{id}.json"),
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+}
+
+/// A second bug with no words in common with `add_bug`'s, and no shared IDs.
+fn add_other_bug(fixture: &Fixture) -> String {
+    json(&fixture.run(&[
+        "bug",
+        "add",
+        "--title",
+        "Coupon codes expire one day early",
+        "--symptom",
+        "Coupon rejected one day before expiry",
+        "--trigger",
+        "Applying a coupon near midnight",
+        "--expected",
+        "Accepted until expiry",
+        "--actual",
+        "Rejected",
+        "--environment",
+        "test-local",
+    ]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string()
+}
+
+/// REQ-cli-054 (#153, audit Bugs row): add and update accept each of the six
+/// classifications, three scopes and seven statuses, and refuse any other value with the
+/// allowed list, leaving the record byte-identical. A regression needs its baseline (see
+/// regression_needs_a_passed_observation_at_an_earlier_ancestor_revision) and verified its
+/// observations (see the verified tests), so both are set by hand here.
+#[test]
+fn every_classification_scope_and_status_is_accepted_and_others_are_refused() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let added = json(&add_bug(
+        &fixture,
+        &["--classification", "environment", "--scope", "out-of-scope"],
+    ));
+    let id = added["id"].as_str().unwrap().to_string();
+    let record = bug_record(&fixture, &id);
+    assert_eq!(
+        (
+            &record["classification"],
+            &record["scope"],
+            &record["status"]
+        ),
+        (
+            &json!("environment"),
+            &json!("out-of-scope"),
+            &json!("open")
+        )
+    );
+    for (flag, values) in [
+        (
+            "--classification",
+            &[
+                "unclassified",
+                "product-defect",
+                "environment",
+                "requirement-gap",
+                "evidence-gap",
+            ][..],
+        ),
+        ("--scope", &["blocking", "in-scope", "out-of-scope"][..]),
+        (
+            "--status",
+            &[
+                "open",
+                "investigating",
+                "fix-pending-verification",
+                "deferred",
+                "duplicate",
+                "wont-fix",
+            ][..],
+        ),
+    ] {
+        for value in values {
+            let updated = json(&fixture.run(&["bug", "update", &id, flag, value]));
+            assert_eq!(updated["bug"][&flag[2..]], *value, "{flag} {value}");
+        }
+    }
+    for (field, value) in [("classification", "regression"), ("status", "verified")] {
+        set_bug_fields(&fixture, &id, &[(field, json!(value))]);
+        assert_eq!(bug_record(&fixture, &id)[field], value);
+        assert!(fixture.run(&["bug", "show", &id]).status.success());
+        set_bug_fields(
+            &fixture,
+            &id,
+            &[
+                ("classification", json!("unclassified")),
+                ("status", json!("open")),
+            ],
+        );
+    }
+    let before = fixture.read(&format!(".chough/bugs/{id}.json"));
+    for (flag, value, allowed) in [
+        (
+            "--classification",
+            "flaky",
+            "classification must be one of unclassified, product-defect, regression, environment, requirement-gap, evidence-gap",
+        ),
+        (
+            "--scope",
+            "urgent",
+            "scope must be one of blocking, in-scope, out-of-scope",
+        ),
+        (
+            "--status",
+            "closed",
+            "status must be one of open, investigating, fix-pending-verification, verified, deferred, duplicate, wont-fix",
+        ),
+    ] {
+        let refusal = fixture.fails(&["bug", "update", &id, flag, value]);
+        assert!(refusal.contains(allowed), "{flag} {value}: {refusal}");
+        assert_eq!(fixture.read(&format!(".chough/bugs/{id}.json")), before);
+    }
+}
+
+/// REQ-cli-054 (#153): of every scope and status, only an open bug (any status but
+/// verified, duplicate or wont-fix) with scope blocking is a blocking bug, and only it
+/// stops leaving test; closing it releases the gate.
+#[test]
+fn only_an_open_blocking_bug_blocks_leaving_test() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    for scope in ["blocking", "in-scope", "out-of-scope"] {
+        for status in [
+            "open",
+            "investigating",
+            "fix-pending-verification",
+            "verified",
+            "deferred",
+            "duplicate",
+            "wont-fix",
+        ] {
+            set_bug_fields(
+                &fixture,
+                &id,
+                &[("scope", json!(scope)), ("status", json!(status))],
+            );
+            let blocking = fixture.ok(&["status", "--json"])["blocking_bugs"].clone();
+            let expected =
+                scope == "blocking" && !["verified", "duplicate", "wont-fix"].contains(&status);
+            assert_eq!(
+                blocking == json!([id.clone()]),
+                expected,
+                "{scope} {status}: {blocking}"
+            );
+            assert_eq!(
+                blocking == json!([]),
+                !expected,
+                "{scope} {status}: {blocking}"
+            );
+        }
+    }
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    assert_eq!(fixture.session()["stage"]["current"], "test");
+    set_bug_fields(
+        &fixture,
+        &id,
+        &[("scope", json!("blocking")), ("status", json!("deferred"))],
+    );
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("refused:blocking-bugs")
+    );
+    fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--status",
+        "wont-fix",
+        "--note",
+        "Not fixing",
+    ]);
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+}
+
+/// REQ-cli-054 (#153): search scores word overlap of title, symptom and trigger, plus 0.25
+/// for a shared criterion, requirement or case; it lists matches from 0.2 and refuses a
+/// new bug only from 0.5, naming both ways forward. A distinct reason is recorded in the
+/// new bug's notes and may not be blank.
+#[test]
+fn search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let words = "Coupon codes expire one day early";
+    let shared = fixture.ok(&["bug", "search", words, "--requirement", "REQ-cli-001"]);
+    assert_eq!(
+        shared["matches"],
+        json!([{"id": id, "title": "Shipping is charged at exactly the free threshold", "status": "open", "score": 0.25}]),
+        "{shared:#}"
+    );
+    assert_eq!(fixture.ok(&["bug", "search", words])["matches"], json!([]));
+    // Sharing only a requirement lists the bug without stopping a new report.
+    let other = json(&fixture.run(&[
+        "bug",
+        "add",
+        "--title",
+        words,
+        "--symptom",
+        "Coupon rejected one day before expiry",
+        "--trigger",
+        "Applying a coupon near midnight",
+        "--expected",
+        "Accepted until expiry",
+        "--actual",
+        "Rejected",
+        "--environment",
+        "test-local",
+        "--requirement",
+        "REQ-cli-001",
+    ]));
+    assert_eq!(other["similar"][0]["score"], 0.25, "{other:#}");
+
+    let count = || {
+        std::fs::read_dir(fixture.root().join(".chough/bugs"))
+            .unwrap()
+            .count()
+    };
+    let bugs = count();
+    let refusal = String::from_utf8_lossy(&add_bug(&fixture, &[]).stderr).into_owned();
+    assert!(
+        refusal.contains("similar bugs exist")
+            && refusal.contains(&id)
+            && refusal.contains("chough bug update <id> --observation <id> --note <text>")
+            && refusal.contains("--distinct <why this is a different defect>"),
+        "{refusal}"
+    );
+    let blank =
+        String::from_utf8_lossy(&add_bug(&fixture, &["--distinct", " "]).stderr).into_owned();
+    assert!(
+        blank.contains("distinct reason must not be blank"),
+        "{blank}"
+    );
+    assert_eq!(count(), bugs, "a refused report wrote a bug");
+    let distinct = json(&add_bug(
+        &fixture,
+        &["--distinct", "Only on the mobile checkout"],
+    ));
+    let record = bug_record(&fixture, distinct["id"].as_str().unwrap());
+    assert_eq!(
+        record["notes"][0]["text"],
+        "Added despite similar reports: Only on the mobile checkout"
+    );
+    assert_eq!(count(), bugs + 1);
+}
+
+/// REQ-cli-054 (#153): a duplicate or related link names another existing bug. Linking a
+/// bug to itself, or to an unknown bug, is refused with nothing written, and the refusal
+/// names `chough bug list --all`, which lists the bugs that can be named.
+#[test]
+fn links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let path = format!(".chough/bugs/{id}.json");
+    let before = fixture.read(&path);
+    for (args, refused) in [
+        (
+            vec!["bug", "update", &id, "--duplicate-of", &id],
+            "a bug cannot duplicate itself",
+        ),
+        (
+            vec!["bug", "update", &id, "--related", &id],
+            "a bug cannot relate to itself",
+        ),
+        (
+            vec!["bug", "update", &id, "--related", "BUG-0099"],
+            "unknown bug: BUG-0099",
+        ),
+        (
+            vec!["bug", "update", &id, "--duplicate-of", "BUG-0099"],
+            "unknown bug: BUG-0099",
+        ),
+        (
+            vec!["bug", "update", "BUG-0099", "--status", "open"],
+            "unknown bug: BUG-0099",
+        ),
+        (vec!["bug", "report", "BUG-0099"], "unknown bug: BUG-0099"),
+    ] {
+        let refusal = fixture.fails(&args);
+        assert!(
+            refusal.contains(refused) && refusal.contains("chough bug list --all"),
+            "{args:?}: {refusal}"
+        );
+        assert_eq!(fixture.read(&path), before, "{args:?} changed the bug");
+    }
+    let listed = fixture.ok(&["bug", "list", "--all"]);
+    assert!(listed.to_string().contains(&id), "{listed:#}");
+}
+
+/// REQ-cli-054 (#153): a bug marked duplicate by mistake is reopened by changing its
+/// status, which clears `duplicate_of` and says so in its notes. Marking a bug verified
+/// with no linked failure names `chough bug update <id> --observation <id>`, and following
+/// it with a failure and then a later pass verifies the bug.
+#[test]
+fn a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.commit("fixture");
+    let original = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let other = add_other_bug(&fixture);
+    let marked = json(&fixture.run(&["bug", "update", &other, "--duplicate-of", &original]));
+    assert_eq!(marked["bug"]["status"], "duplicate");
+    let reopened = json(&fixture.run(&["bug", "update", &other, "--status", "open"]));
+    assert_eq!(reopened["bug"]["status"], "open", "{reopened:#}");
+    assert_eq!(reopened["bug"]["duplicate_of"], Value::Null, "{reopened:#}");
+    let notes = reopened["bug"]["notes"].to_string();
+    assert!(
+        notes.contains(&format!("no longer a duplicate of {original}")),
+        "{notes}"
+    );
+    let report =
+        String::from_utf8_lossy(&fixture.run(&["bug", "report", &other]).stdout).into_owned();
+    assert!(report.contains("duplicate of: none"), "{report}");
+
+    let refusal = fixture.fails(&["bug", "update", &other, "--status", "verified"]);
+    assert!(
+        refusal.contains(&format!("chough bug update {other} --observation <id>")),
+        "{refusal}"
+    );
+    observe(&fixture, "coupon-fails", "failed");
+    fixture.observed_at("coupon-fails", 1_793_900_000);
+    observe(&fixture, "coupon-passes", "passed");
+    fixture.observed_at("coupon-passes", 1_793_900_001);
+    fixture.ok(&["bug", "update", &other, "--observation", "coupon-fails"]);
+    let verified = json(&fixture.run(&[
+        "bug",
+        "update",
+        &other,
+        "--observation",
+        "coupon-passes",
+        "--status",
+        "verified",
+    ]));
+    assert_eq!(verified["bug"]["status"], "verified", "{verified:#}");
+}
+
+/// REQ-cli-054 (#153): the report candidate shows every stored field of a fully recorded
+/// bug, and `none recorded` (or `Not recorded.` for steps) for each empty one.
+#[test]
+fn the_report_shows_every_stored_field_and_none_recorded_for_empty_ones() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.write("repro/coupon.sh", "#!/bin/sh\n");
+    fixture.commit("fixture");
+    observe(&fixture, "shipping-fails", "failed");
+    let other = add_other_bug(&fixture);
+    let full = json(&add_bug(
+        &fixture,
+        &[
+            "--criterion",
+            "LIFE-1",
+            "--case",
+            "TC-cli-0001",
+            "--step",
+            "Open checkout",
+            "--step",
+            "Enter 50.00",
+            "--fixture",
+            "repro/coupon.sh",
+            "--impact",
+            "Every order at the threshold",
+            "--classification",
+            "product-defect",
+            "--scope",
+            "in-scope",
+            "--observation",
+            "shipping-fails",
+        ],
+    ))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    fixture.ok(&["bug", "update", &full, "--related", &other]);
+    let revision = bug_record(&fixture, &full)["revision"]
+        .as_str()
+        .unwrap_or("unknown")
+        .to_string();
+    let report =
+        String::from_utf8_lossy(&fixture.run(&["bug", "report", &full]).stdout).into_owned();
+    for shown in [
+        "# Shipping is charged at exactly the free threshold".to_string(),
+        "Classification and confidence: product-defect; verification: reproduced".into(),
+        "Impact: Every order at the threshold".into(),
+        "Traceability: HI LIFE-1; requirements REQ-cli-001; cases TC-cli-0001".into(),
+        "Scope and status: in-scope, open".into(),
+        format!("Revision: {revision}"),
+        "Environment: test-local".into(),
+        "Fixture: repro/coupon.sh".into(),
+        "Steps:\n1. Open checkout\n2. Enter 50.00".into(),
+        "Expected: Free shipping at 50.00".into(),
+        "Observed: Shipping fee of 4.99 applied".into(),
+        "Observations: shipping-fails".into(),
+        format!("Related: {other}; duplicate of: none"),
+        "Not published".into(),
+    ] {
+        assert!(report.contains(&shown), "missing {shown:?}:\n{report}");
+    }
+    let empty =
+        String::from_utf8_lossy(&fixture.run(&["bug", "report", &other]).stdout).into_owned();
+    for shown in [
+        "Traceability: HI none recorded; requirements none recorded; cases none recorded",
+        "Fixture: none recorded",
+        "Steps:\nNot recorded.",
+        "Observations: none recorded",
+        "Related: none recorded; duplicate of: none",
+    ] {
+        assert!(empty.contains(shown), "missing {shown:?}:\n{empty}");
+    }
+}

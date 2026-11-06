@@ -47,11 +47,24 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-5 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+18 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-product-test-68612a5deaeb975d4cdb0c1a | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-dff775cc31b7e3161bf2186d | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-tc-cli-bug-mistaken-duplicate-reopened-5b25cda941f9982b4a833f00 | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-mistaken-duplicate-reopened |
+| OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb | failed (by cycle time) | local-macos-arm64 | TC-cli-bug-mistaken-duplicate-reopened |
+| OBS-tc-cli-bug-only-open-blocking-blocks-adcc669269da23a9ea1d46e2 | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-only-open-blocking-blocks |
+| OBS-tc-cli-bug-report-shows-every-field-548b2ac9b3d7b795e9aefe63 | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-report-shows-every-field |
+| OBS-tc-cli-bug-search-scores-and-refuses-likely-duplicates-6289660cafeab00be8740628 | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-search-scores-and-refuses-likely-duplicates |
+| OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355 | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-self-or-unknown-links-refused-with-recovery |
+| OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-7bb4a5f534267588823b6c95 | failed (by cycle time) | local-macos-arm64 | TC-cli-bug-self-or-unknown-links-refused-with-recovery |
+| OBS-tc-cli-bug-values-accepted-others-refused-be3710283ea7041554b6a30d | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-values-accepted-others-refused |
+| OBS-tc-cli-copy-localization-track-selected-b765be97292d359b7bc5d20e | passed (by cycle time) | local-macos-arm64 | TC-cli-copy-localization-track-selected |
+| OBS-tc-cli-delivery-kinds-kept-dry-run-not-25ccbfe16f35370862c2803c | passed (by cycle time) | local-macos-arm64 | TC-cli-delivery-kinds-kept-dry-run-not |
 | OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 | passed (by cycle time) | local-linux-aarch64 | TC-cli-empty-change-dir-not-open |
+| OBS-tc-cli-every-delivery-kind-recorded-as-itself-05fa50eaf8cfb50e528c0317 | passed (by cycle time) | local-macos-arm64 | TC-cli-every-delivery-kind-recorded-as-itself |
 | OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-names-advance-to |
 | OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 | failed (by cycle time) | local-macos-arm64 | TC-cli-skill-names-advance-to |
 | OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 | passed (by cycle time) | local-linux-aarch64 | TC-history-bounds-pinned-exactly |
@@ -59,7 +72,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Bugs
 
-- none
+- BUG-a-mistaken-duplicate-cannot-be-reopened-a-bug-can-relate-to-itself-and-2823f5504985675b64530948 verified (references OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-7bb4a5f534267588823b6c95, OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb, OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355, OBS-tc-cli-bug-mistaken-duplicate-reopened-5b25cda941f9982b4a833f00)
 
 ## Loose artifacts
 

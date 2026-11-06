@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153",
+  "implementation_commit": "d204d97ff893db23cfcfbc437500d11fda770fc7",
+  "implementation_tree": "02306fc542f34335f1b7742f6838d62828505ca3",
+  "contract_digest": "02fa74e39396d2a8e91d4da46db7a24d481aede00d60d80aefe784e8a54e9f44",
+  "workspace_digest": "e44a38bb45bbbd748e40483c28e02041ef93bdba491c8f1fb6accfec252479a3",
+  "closing_digest": "b18373c35abbea214973d62de9618c017f8e45df6657b78a6a51bbcc173d5f84",
+  "review_digest": "a8b6d51cd77b55cddb5782c68f690ec1590676f104c9374d44dc17da8922abe6",
+  "finalization_digest": "41897b0c5e5c7cf3e6350c8a9fe68258e4a7d44eda6d692d8377f59457ae858b",
+  "timestamp": 1793974113
+}

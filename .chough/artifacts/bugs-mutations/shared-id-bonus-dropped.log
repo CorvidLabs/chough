@@ -1,0 +1,60 @@
+== shared-id-bonus-dropped
+diff --git a/src/bugs.rs b/src/bugs.rs
+index 4bf1402f..632807cd 100644
+--- a/src/bugs.rs
++++ b/src/bugs.rs
+@@ -631,7 +631,8 @@ fn similarity(
+     let shared = bug.criteria.iter().any(|id| criteria.contains(id))
+         || bug.requirements.iter().any(|id| requirements.contains(id))
+         || bug.cases.iter().any(|id| cases.contains(id));
+-    overlap + if shared { 0.25 } else { 0.0 }
++    let _ = shared;
++    overlap
+ }
+ 
+ fn search(
+
+== new: cargo test --locked --test bugs -- --exact search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates
+exit 101
+
+running 1 test
+test search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates ... FAILED
+
+failures:
+
+---- search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates stdout ----
+
+thread 'search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates' (207324403) panicked at tests/bugs.rs:1110:5:
+assertion `left == right` failed: {
+  "matches": [],
+  "note": "Scores compare words in title, symptom and trigger plus shared IDs; decide duplicates from the evidence.",
+  "schema_version": 1
+}
+  left: Array []
+ right: Array [Object {"id": String("BUG-shipping-is-charged-at-exactly-the-free-threshold-ba976bc5830e5277a38af3db"), "score": Number(0.25), "status": String("open"), "title": String("Shipping is charged at exactly the free threshold")}]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 18 filtered out; finished in 1.03s
+
+
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456-bugs)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.46s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)
+error: test failed, to rerun pass `--test bugs`
+
+== old: cargo test --locked --test bugs -- --exact a_reproduced_bug_is_deduplicated_and_keeps_added_evidence
+exit 0
+
+running 1 test
+test a_reproduced_bug_is_deduplicated_and_keeps_added_evidence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 4.42s
+
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)
+
