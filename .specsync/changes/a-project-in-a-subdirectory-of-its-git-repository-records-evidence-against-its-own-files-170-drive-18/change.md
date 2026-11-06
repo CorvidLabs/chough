@@ -1,6 +1,6 @@
 ---
 id: a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18
-state: draft
+state: approved
 type: bug_fix
 base_commit: 167790489735b3e6a88ec21a20bb2530d4c96138
 ---
