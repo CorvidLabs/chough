@@ -99,20 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-440 recorded; most recent:
+492 recorded; most recent:
 
 - OBS-tc-reporting-timing-trace-straddles-a-second-a7c0aeaed236fde0da9c4b72 ProductTest Passed in local-linux-aarch64 at 7142f286393e
-- OBS-tc-history-doctor-fixes-session-debt-6b69ccc429d60b2cd04bd601 ProductTest Passed in local-linux-aarch64 at 298c8a775180
-- OBS-tc-cli-doctor-report-changes-nothing-8a051b3416c4c0d132e1c972 ProductTest Passed in local-linux-aarch64 at 298c8a775180
-- OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
-- OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
-- OBS-tc-history-session-close-with-reason-d61f0bc09ce6a873e1613697 ProductTest Passed in local-linux-aarch64 at fe653b315f36
-- OBS-tc-history-switch-archives-sessions-left-open-561b78cfe5b4189dd0026fee ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
-- OBS-tc-history-session-archives-itself-at-done-0d438868f7c194b8c847d1e8 ProductTest Passed in local-linux-aarch64 at 1e6f30cdc6ca
-- OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
-- OBS-tc-history-changelog-111-under-0-4-0-51c2b5238ff8ac90bf33995d ProductTest Passed in local-macos-arm64 at 2a5e6008d349
-491 recorded; most recent:
-
 - OBS-tc-cli-skill-615b587b-known-outdated-49aa9e0f9901a7d1a489d2e7 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-closeout-closes-review-gate-0b30553d30e616c34b4082dc ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-docs-name-pinned-versions-82c95068c1ab83a81ac881e0 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
@@ -122,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-readme-verify-list-matches-fledge-a773a2519b5e2897358dd0c6 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-inline-diagrams-match-sources-d4664eceddd1a4585482940b ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 - OBS-tc-cli-stage-diagram-matches-the-helper-076aedef472d1f833fe184f1 ProductTest Passed in local-macos-arm64 at e017ebe5fee7
-- OBS-tc-cli-readme-helper-table-covers-help-e3ced10f0b4c241f3494efeb ProductTest Passed in local-macos-arm64 at e017ebe5fee7
 
 ## Briefs
 
