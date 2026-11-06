@@ -2660,3 +2660,156 @@ fn the_skill_says_chough_bounds_never_justify_editing_native_sources() {
         skill
     );
 }
+
+/// The text of a repository file with every run of whitespace (line ends included, so CRLF
+/// and LF alike) collapsed to one space.
+fn flat_repository_text(path: &str) -> String {
+    fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(path))
+        .unwrap()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// REQ-cli-002, third criterion (#138, audit assertion review): the canonical skill and its
+/// installed copy state the three certainty labels, that each lesson names its source and
+/// limits, and that a project decision outranks a lesson.
+#[test]
+fn the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons() {
+    for path in [
+        "skills/chough-workflow/references/accept.md",
+        ".agents/skills/chough-workflow/references/accept.md",
+    ] {
+        let text = flat_repository_text(path);
+        for needed in [
+            "Each lesson carries a certainty label:",
+            "- `observation`:",
+            "- `hypothesis`:",
+            "- `verified`:",
+            "Each lesson names its source (an observation ID, a bug ID or a commit) and its limits",
+            "always outranks a lesson",
+            "Chough keeps no lesson store of its own",
+        ] {
+            assert!(text.contains(needed), "{path} lacks {needed:?}");
+        }
+    }
+}
+
+/// REQ-cli-002, third criterion (#138): Chough points to lessons and keeps no lesson store,
+/// index or ledger of its own. A lesson in the module's `## Lessons` section and one in an
+/// archived lesson bundle reach no file under `.chough/` or `knowledge/`; the module note
+/// links the source and `next` names it without printing either lesson.
+#[cfg(unix)]
+#[test]
+fn chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger() {
+    const LESSON: &str = "walrus lesson 7f3a stays only in its module source";
+    const BUNDLED: &str = "walrus bundle 9c2e stays only in its archive";
+    let fixture = Fixture::new();
+    fixture.native_fixtures();
+    fs::remove_file(fixture.root().join("specs/cli/cli.3md")).unwrap();
+    fixture.write(
+        "specs/cli/context.md",
+        &format!(
+            "# Context\n\n## Lessons\n\n- 2026-11-05, {LESSON} (observation). Source: OBS-a. Limits: this fixture.\n"
+        ),
+    );
+    let archive = ".specsync/archive/changes/2026-01-01-old-change";
+    fixture.write(
+        &format!("{archive}/change.md"),
+        &format!(
+            "---\nid: old-change\nstate: archived\nbase_commit: {}\n---\n\n# Old change\n\n## Acceptance Criteria\n\n- it works\n",
+            "3".repeat(40)
+        ),
+    );
+    fixture.write(
+        &format!("{archive}/finalization.json"),
+        &format!(
+            "{{\"schema_version\": 2, \"change_id\": \"old-change\", \"timestamp\": 1767225600, \"implementation_commit\": \"{}\"}}\n",
+            "1".repeat(40)
+        ),
+    );
+    fixture.write(
+        &format!("{archive}/lesson-bundle.md"),
+        &format!("# Lessons\n\n- {BUNDLED}\n"),
+    );
+    fixture.init();
+    fixture.ok(&[
+        "checkpoint",
+        "--decision",
+        "decided: keep lessons in their source because the skill says so",
+    ]);
+    let next = fixture.run(&["next"]);
+    assert!(next.status.success());
+    let next = String::from_utf8_lossy(&next.stdout).into_owned();
+    assert!(
+        next.contains("specs/cli/context.md (## Lessons at line"),
+        "{next}"
+    );
+    assert!(
+        next.contains(&format!("{archive}/lesson-bundle.md")),
+        "{next}"
+    );
+    fixture.ok(&["status"]);
+    fixture.ok(&["library", "index"]);
+    assert!(
+        !next.contains(LESSON) && !next.contains(BUNDLED),
+        "next printed a lesson: {next}"
+    );
+    let mut stored = vec![];
+    for dir in [".chough", "knowledge"] {
+        let mut pending = vec![fixture.root().join(dir)];
+        while let Some(path) = pending.pop() {
+            if path.is_dir() {
+                pending.extend(
+                    fs::read_dir(&path)
+                        .unwrap()
+                        .map(|entry| entry.unwrap().path()),
+                );
+            } else if let Ok(text) = fs::read_to_string(&path)
+                && (text.contains(LESSON) || text.contains(BUNDLED))
+            {
+                stored.push(path);
+            }
+        }
+    }
+    assert!(stored.is_empty(), "lesson text was stored in {stored:?}");
+    let note = fs::read_to_string(fixture.root().join("knowledge/modules/cli.md")).unwrap();
+    assert!(
+        note.contains("recorded in the `## Lessons` section of")
+            && note.contains("[specs/cli/context.md](../../specs/cli/context.md)"),
+        "{note}"
+    );
+}
+
+/// REQ-cli-031, last criterion (#138): the walkthrough begins with the new-project setup
+/// path, which covers a minimal HI criteria file, `specsync init` and scaffolded module
+/// files, `specsync change adopt`, and what `ungated:sdd-disabled` means.
+#[test]
+fn the_walkthrough_begins_with_the_new_project_setup_path() {
+    let raw = fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/walkthrough.md"))
+        .unwrap();
+    // A Windows checkout has CRLF line endings (#131), so check both forms.
+    for text in [
+        raw.replace("\r\n", "\n"),
+        raw.replace("\r\n", "\n").replace('\n', "\r\n"),
+    ] {
+        let text = text.replace("\r\n", "\n");
+        let first = text
+            .split("\n## ")
+            .nth(1)
+            .unwrap_or_else(|| panic!("the walkthrough has no section"));
+        assert!(first.starts_with("New project\n"), "{first:.120}");
+        for needed in [
+            "hi: 1",
+            "## Criteria",
+            "hi check",
+            "specsync init",
+            "specsync scaffold",
+            "specsync change adopt",
+            "ungated:sdd-disabled",
+            "chough init",
+        ] {
+            assert!(first.contains(needed), "New project lacks {needed:?}");
+        }
+    }
+}
