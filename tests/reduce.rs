@@ -1691,6 +1691,66 @@ fn with_no_reset_time_done_drops_no_observation_reference() {
     assert_eq!(fixture.session()["observations"], json!(["r2", "u3"]));
 }
 
+/// REQ-cli-014 (#152, audit MA-02): a dry run never stands in for a delivery kind. Among
+/// the runs of one case and environment that only a cold archive lists, an older delivery
+/// observation of each kind is a key item: retention protects it with its kind as the
+/// reason, and the trim at done moves it into the vault. A dry run is routine: its kind is
+/// never a protection, and once superseded it is removed with no vault copy.
+#[test]
+fn delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not() {
+    for kind in [
+        "publication-observation",
+        "installation-observation",
+        "deployment-observation",
+        "live-health-observation",
+    ] {
+        let fixture = project("0");
+        for (id, as_kind) in [("r1", kind), ("r2", "dry-run")] {
+            let path = format!(".chough/evidence/{id}.json");
+            let mut record: Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+            record["kind"] = json!(as_kind);
+            fixture.write(
+                &path,
+                &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+            );
+        }
+        fixture.commit(&format!("r1 is a {kind}, r2 a dry run"));
+        set_checkpoint(&fixture, &[]);
+        let preview = fixture.ok(&["evidence", "prune"]);
+        let reasons = |id: &str| -> String {
+            preview["protected"]
+                .as_array()
+                .unwrap_or_else(|| panic!("{preview:#}"))
+                .iter()
+                .find(|entry| entry["id"] == id)
+                .map(|entry| entry["reasons"].to_string())
+                .unwrap_or_default()
+        };
+        assert!(reasons("r1").contains(kind), "{kind}: {preview:#}");
+        // The dry run may be protected for other reasons (it is among the newest three
+        // routine runs here), but never for its kind.
+        assert!(!reasons("r2").contains("dry-run"), "{kind}: {preview:#}");
+
+        let moved = fixture.ok(&["stage", "advance"]);
+        let trim = &moved["applied"]["librarian_trim"];
+        assert_eq!(trim["status"], "trimmed", "{kind}: {trim:#}");
+        assert!(
+            fixture.exists("knowledge/attachments/a1/evidence/r1.json"),
+            "{kind}: the delivery observation was not kept: {trim:#}"
+        );
+        assert!(
+            !fixture.exists(".chough/evidence/r2.json")
+                && !fixture.exists("knowledge/attachments/a1/evidence/r2.json"),
+            "{kind}: the superseded dry run was kept: {trim:#}"
+        );
+        let ledger = fixture.read(".chough/pruned.jsonl");
+        assert!(
+            ledger.contains("knowledge/attachments/a1/evidence/r1.json"),
+            "{kind}: {ledger}"
+        );
+    }
+}
+
 /// #132: a script a test installs must run even while an old write handle to its path
 /// is still open, as a child forked by another test thread holds one until it execs
 /// (ETXTBSY, "Text file busy"). Both the `stand_in` helper and `Fixture::executable`

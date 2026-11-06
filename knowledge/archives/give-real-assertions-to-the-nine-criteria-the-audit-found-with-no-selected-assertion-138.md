@@ -47,11 +47,15 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-5 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+9 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-product-test-68612a5deaeb975d4cdb0c1a | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-tc-cli-copy-localization-track-selected-b765be97292d359b7bc5d20e | passed (by cycle time) | local-macos-arm64 | TC-cli-copy-localization-track-selected |
+| OBS-tc-cli-delivery-kinds-kept-dry-run-not-25ccbfe16f35370862c2803c | passed (by cycle time) | local-macos-arm64 | TC-cli-delivery-kinds-kept-dry-run-not |
 | OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 | passed (by cycle time) | local-linux-aarch64 | TC-cli-empty-change-dir-not-open |
+| OBS-tc-cli-every-delivery-kind-recorded-as-itself-05fa50eaf8cfb50e528c0317 | passed (by cycle time) | local-macos-arm64 | TC-cli-every-delivery-kind-recorded-as-itself |
 | OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 | passed (by cycle time) | local-macos-arm64 | TC-cli-skill-names-advance-to |
 | OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 | failed (by cycle time) | local-macos-arm64 | TC-cli-skill-names-advance-to |
 | OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 | passed (by cycle time) | local-linux-aarch64 | TC-history-bounds-pinned-exactly |

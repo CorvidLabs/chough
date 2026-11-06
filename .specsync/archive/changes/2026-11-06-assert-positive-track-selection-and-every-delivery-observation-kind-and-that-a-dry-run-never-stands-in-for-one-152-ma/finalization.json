@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma",
+  "implementation_commit": "05c19c33da32d7c58d42d9c561bc101433c6b2ad",
+  "implementation_tree": "32b897635706e96961d8b42bd6d13844053a9219",
+  "contract_digest": "eab25d231ac62299ebb3edd7bfcc2304169056030a314f776e4c9cc72eb5c677",
+  "workspace_digest": "2d95ee724df59dc535f887f4268f44696084050874b1241d94efe9cdeb236f02",
+  "closing_digest": "5af6fbe3d16ec50efd99e6043b30227bc181e29abb2b66250a0be4598e749db0",
+  "review_digest": "0dd7ea061d93a585abe4853e57860fb6c5a74c94475cfa61f512dcb752e63a4a",
+  "finalization_digest": "b3c22d611fef7f40e5b69ade44bc6d9f1d62cef11cc50469c2a5916004dc5e27",
+  "timestamp": 1793974113
+}
