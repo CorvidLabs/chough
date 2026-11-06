@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d0e2adf21534172a2437b917",
-    "head": "EVT-78766d7226c63725059975f6",
+    "head": "EVT-bfc441ed5b15430f1ae95b90",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "history"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve, then extend adopted_anchor"
 }

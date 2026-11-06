@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1 (active; `specsync change status find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1`)
 
 Archived changes (newest first; the newest 3 are hot):
 
