@@ -7,10 +7,11 @@
   "title": "Union-merge the generated bug notes (128)",
   "description": "Union-merge the generated bug notes (128)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "4c68cca7275b3ab8f49af94cc925bf547842757a",
   "created_at": 1793929514,
-  "updated_at": 1793929776,
+  "updated_at": 1793929834,
   "affected_specs": [
     "cli"
   ],

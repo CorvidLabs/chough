@@ -1,6 +1,6 @@
 ---
 id: union-merge-the-generated-bug-notes-128
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 4c68cca7275b3ab8f49af94cc925bf547842757a
 ---
