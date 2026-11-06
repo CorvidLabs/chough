@@ -1,6 +1,6 @@
 ---
 id: run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20
-state: approved
+state: implementing
 type: feature
 base_commit: 167790489735b3e6a88ec21a20bb2530d4c96138
 ---
