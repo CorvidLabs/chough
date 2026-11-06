@@ -25,7 +25,10 @@
     "requirements": [
       "REQ-cli-039"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-native-check-safe-verifying",
+      "TC-cli-native-check-not-passed-note"
+    ],
     "design": [],
     "files": []
   },
@@ -35,12 +38,13 @@
   ],
   "open_questions": [],
   "completed": [
-    "Change package drafted and the wording test req_cli_039_criteria_clear_the_note_only_for_safe_verifying_readiness fails first on AC2's clause 'when verifying, it does not.'"
+    "Change package drafted and the wording test req_cli_039_criteria_clear_the_note_only_for_safe_verifying_readiness fails first on AC2's clause 'when verifying, it does not.'",
+    "REQ-cli-039 AC2 materialized (cli version 58); CHANGELOG line added; cases defined in .chough/cases/cli.native-check-safe-verifying.cases.toml"
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Materialize the REQ-cli-039 AC2 delta with specsync change check, add the CHANGELOG line and a case, run verify on Linux"
+  "next_action": "Run the two cases, run fledge lanes run verify on Linux, then move to accept and ask for the implementation review"
 }
