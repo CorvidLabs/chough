@@ -9,6 +9,7 @@ files:
   - src/checkpoint.rs
   - src/context.rs
   - src/doctor.rs
+  - src/change.rs
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
@@ -30,6 +31,7 @@ files:
   - tests/common/mod.rs
   - tests/workflow_authority.rs
   - tests/doctor.rs
+  - tests/change.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
   - tests/fixtures/workflow-at-edbc3c1-lifecycle.md
