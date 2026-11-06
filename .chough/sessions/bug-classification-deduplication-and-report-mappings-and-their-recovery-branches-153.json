@@ -25,7 +25,14 @@
     "requirements": [
       "REQ-cli-012"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-bug-values-accepted-others-refused",
+      "TC-cli-bug-only-open-blocking-blocks",
+      "TC-cli-bug-search-scores-and-refuses-likely-duplicates",
+      "TC-cli-bug-self-or-unknown-links-refused-with-recovery",
+      "TC-cli-bug-mistaken-duplicate-reopened",
+      "TC-cli-bug-report-shows-every-field"
+    ],
     "design": [],
     "files": []
   },
@@ -37,12 +44,18 @@
   ],
   "open_questions": [],
   "completed": [
-    "Change package drafted with REQ-cli-054; six tests, of which links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery and a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery fail first on the defects; a prototype of the fix (reverted, kept as a patch) passes all 19 bug tests; 5 of 5 mapping mutations caught while the existing tests let them pass"
+    "Change package drafted with REQ-cli-054; six tests, of which links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery and a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery fail first on the defects; a prototype of the fix (reverted, kept as a patch) passes all 19 bug tests; 5 of 5 mapping mutations caught while the existing tests let them pass",
+    "Six cases defined; the two failing-first cases recorded failing on fd52ed63 and linked to BUG-a-mistaken-duplicate-cannot-be-reopened-a-bug-can-relate-to-itself-and-2823f5504985675b64530948"
   ],
-  "observations": [],
-  "bugs": [],
+  "observations": [
+    "OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-7bb4a5f534267588823b6c95",
+    "OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb"
+  ],
+  "bugs": [
+    "BUG-a-mistaken-duplicate-cannot-be-reopened-a-bug-can-relate-to-itself-and-2823f5504985675b64530948"
+  ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for Leif's scope decision through the orc; then record the failing-first cases and link a local bug, apply the fix, record the passes and verify the bug, materialize REQ-cli-054, docs, CHANGELOG, verify on Linux, PR"
+  "next_action": "Apply the src/bugs.rs fix, add the docs/cli.md, FRD and CHANGELOG lines, run all six cases, link the passes and verify the bug"
 }
