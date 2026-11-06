@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9b9d1cdba5df6ff89fa8773e",
-    "head": "EVT-c67ac2895d66661f9a346302",
+    "head": "EVT-f0259dcdcbe37fc69a552cc6",
     "legacy": null
   },
   "schema_version": 2,
@@ -49,7 +49,9 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Human implementation review of support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17, through orc t18"
+  ],
   "run_consents": [],
-  "next_action": "change check --commit, push, open the PR, send orc ready for review; then human review, native review, finalize, push and observe CI"
+  "next_action": "After the relayed human review: specsync change review --reviewer as relayed, ship/finalize, stage advance to done, commit, push, observe CI, merge only on orc's relay"
 }
