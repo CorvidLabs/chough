@@ -31,7 +31,7 @@ their JSON.
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
-| `session new\|adopt\|use\|list\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
+| `session new\|adopt\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--adopt-as KEY]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
 
 ## Backfilled moves
