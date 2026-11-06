@@ -1992,14 +1992,18 @@ fn checkpoint_merge_enforces_input_collection_and_output_byte_bounds() {
     let fixture = Fixture::new();
     fixture.init();
     let valid = merge_json(&merge_base());
-    let oversized = format!("{}{}", valid, " ".repeat(131_072));
+    let oversized = format!("{}{}", valid, " ".repeat(common::CHECKPOINT_CAP));
     for position in 0..3 {
         let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
         inputs[position] = oversized.clone();
-        assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "131072");
+        assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "1048576");
     }
-    let exact = format!("{}{}", valid, " ".repeat(131_072 - valid.len()));
-    assert_eq!(exact.len(), 131_072);
+    let exact = format!(
+        "{}{}",
+        valid,
+        " ".repeat(common::CHECKPOINT_CAP - valid.len())
+    );
+    assert_eq!(exact.len(), common::CHECKPOINT_CAP);
     for position in 0..3 {
         let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
         inputs[position] = exact.clone();
@@ -2032,24 +2036,28 @@ fn checkpoint_merge_enforces_input_collection_and_output_byte_bounds() {
         "too many",
     );
 
-    ours["decisions"] = json!(
-        (0..100)
-            .map(|index| format!("ours-{index}-{}", "o".repeat(680)))
-            .collect::<Vec<_>>()
-    );
-    theirs["decisions"] = json!(
-        (0..100)
-            .map(|index| format!("theirs-{index}-{}", "t".repeat(680)))
-            .collect::<Vec<_>>()
-    );
-    assert!(merge_json(&ours).len() <= 131_072);
-    assert!(merge_json(&theirs).len() <= 131_072);
+    // Each side within the cap and each merged list within 200 entries; the merged
+    // result over the cap (DRIVE-14, 1 MiB).
+    for list in ["decisions", "completed"] {
+        ours[list] = json!(
+            (0..100)
+                .map(|index| format!("ours-{list}-{index}-{}", "o".repeat(3_900)))
+                .collect::<Vec<_>>()
+        );
+        theirs[list] = json!(
+            (0..100)
+                .map(|index| format!("theirs-{list}-{index}-{}", "t".repeat(3_900)))
+                .collect::<Vec<_>>()
+        );
+    }
+    assert!(merge_json(&ours).len() <= common::CHECKPOINT_CAP);
+    assert!(merge_json(&theirs).len() <= common::CHECKPOINT_CAP);
     assert_merge_refusal(
         &fixture,
         &merge_json(&base),
         &merge_json(&ours),
         &merge_json(&theirs),
-        "131072",
+        "1048576",
     );
 
     let observations = |side: &str, count: usize| {

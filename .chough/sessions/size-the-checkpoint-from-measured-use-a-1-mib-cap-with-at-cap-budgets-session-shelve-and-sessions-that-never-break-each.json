@@ -1,0 +1,40 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-8dddb94f2aecb7d6178e8086",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Size the checkpoint from measured use: 1 MiB cap, shelve, per-session robustness (DRIVE-14, #125)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each",
+  "references": {
+    "criteria": [
+      "DRIVE-14",
+      "DRIVE-13"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve the scope, then implement"
+}
