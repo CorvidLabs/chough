@@ -961,6 +961,28 @@ bug's links as protection. `chough library index` writes `knowledge/bugs/<id>.md
 each closed bug with files in its attachments folder, linking the bug record and each
 attachment.
 
+The retention ledger is rotated last in the move into done, after the trim and the
+knowledge refresh (REQ-cli-049, KNOW-23):
+- **What stays:** `.chough/pruned.jsonl` keeps its newest 100 entries, by pruned time
+  and then by later line. It also keeps any entry that has no archive, or names an
+  archive without a note in `knowledge/archives/`.
+- **What moves:** every other entry moves into
+  `knowledge/attachments/<folder of its first archive>/pruned.jsonl`. A `restored` event
+  moves with the entry it follows.
+
+Shards are written first and the ledger is replaced last. A rotation that would push a
+shard past 16 MiB refuses and moves nothing. The step is reported as
+`applied.ledger_rotation`: `rotated` with the counts moved and kept, `unchanged`,
+`skipped` when the librarian is off, or `refused` with its reason. It never undoes the
+move into done.
+
+Every ledger reader reads the shards in path order and then the ledger: labels, bug
+views, `evidence prune`, the summary and the notes. So a moved entry is still `pruned`,
+and its archive note still lists it. A shard copy of a line cancels one identical copy
+left in the ledger by an interrupted rotation, and the next rotation drops that copy.
+Identical lines within one file are all kept. Shards are not listed as attachments, and
+they union-merge like the ledger.
+
 - Each entry stays within 65,536 bytes. Verification manifests are cumulative, so a
   path an earlier archive already listed is counted but detailed only in that earlier
   entry, and at most 100 rows are listed in full; the rest are counted and left to the

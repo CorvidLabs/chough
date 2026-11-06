@@ -1,0 +1,100 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793928513,
+      "digest": "9b47cfc951432088eea4ada6547dc57df4751b65b92ecb46fb8348657470b963",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their",
+        "title": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
+        "description": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".gitattributes",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/attachments.rs",
+          "src/evidence.rs",
+          "src/library.rs",
+          "src/stage.rs",
+          "tests/reduce.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": "KNOW-23 (Leif: Keep newest N, not 14 days, the rest as proposed, 2026-11-05 18:24 MST): a new requirement for ledger rotation at done and for every ledger reader to read the vault shards.",
+        "acceptance_criteria": [
+          "At done the retention ledger keeps its newest 100 entries plus entries without an archive or note; older entries move with their restores into knowledge/attachments/<first archive folder>/pruned.jsonl, shards first, nothing lost or duplicated, reported as applied.ledger_rotation; every ledger reader reads shards then the hot ledger ignoring duplicate lines, so labels, bug views and notes are unchanged; shards union-merge and are not listed as attachments. The new tests fail first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-23; Leif: Keep newest N, not 14 days, the rest as proposed (2026-11-05 18:24 MST, via the orc); N approved in this scope; 16 MiB ledger bound kept; REQ-cli-041/043/046 unchanged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "fc4436d0f35702094ac51fd87b723edd4fe6b95df0f456e875d603dff22e4707"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793929153,
+      "digest": "9b47cfc951432088eea4ada6547dc57df4751b65b92ecb46fb8348657470b963",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their",
+        "title": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
+        "description": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".gitattributes",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/attachments.rs",
+          "src/evidence.rs",
+          "src/library.rs",
+          "src/stage.rs",
+          "tests/reduce.rs",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": "KNOW-23 (Leif: Keep newest N, not 14 days, the rest as proposed, 2026-11-05 18:24 MST): a new requirement for ledger rotation at done and for every ledger reader to read the vault shards.",
+        "acceptance_criteria": [
+          "At done the retention ledger keeps its newest 100 entries plus entries without an archive or note; older entries move with their restores into knowledge/attachments/<first archive folder>/pruned.jsonl, shards first, nothing lost or duplicated, reported as applied.ledger_rotation; every ledger reader reads shards then the hot ledger ignoring duplicate lines, so labels, bug views and notes are unchanged; shards union-merge and are not listed as attachments. The new tests fail first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-23; Leif: Keep newest N, not 14 days, the rest as proposed (2026-11-05 18:24 MST, via the orc); N approved in this scope; 16 MiB ledger bound kept; REQ-cli-041/043/046 unchanged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "097410322577ad1727ced3a3fafdb2712b7534e69f3680c02043b102a3887bde"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793929590,
+      "digest": "8743ce4fb0d1ef29efcf1669252e3c87662928531dfbb3fbf2c79f20d57aeea7",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

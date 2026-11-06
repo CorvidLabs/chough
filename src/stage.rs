@@ -2063,6 +2063,8 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         // REQ-cli-043: then refresh the knowledge directory, so the change just archived
         // and any proof just trimmed are summarized; never undoes the move either.
         applied["librarian_index"] = crate::library::refresh_at_done(root);
+        // REQ-cli-049 (KNOW-23): last, rotate the retention ledger into the vault.
+        applied["ledger_rotation"] = crate::evidence::rotate_at_done(root);
     }
     report(root, &session, applied)
 }

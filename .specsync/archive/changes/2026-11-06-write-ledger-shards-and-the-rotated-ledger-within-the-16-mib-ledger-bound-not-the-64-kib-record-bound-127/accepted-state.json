@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127",
+  "slug": "write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127",
+  "title": "Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127)",
+  "description": "Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "ec4bf5861d0e13b6ff32731b9e68c0a61944a3d1",
+  "created_at": 1793930028,
+  "updated_at": 1793930706,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/reduce.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fix within REQ-cli-049: rotation wrote with the 64 KiB managed-record bound and refused on every real ledger; REQ-cli-049 already sets 16 MiB; no requirement text changes.",
+  "acceptance_criteria": [
+    "A rotation whose shard and kept ledger each exceed 64 KiB writes both within the 16 MiB ledger bound and reports rotated, losing no line; on this repository the rotation leaves 100 entries in .chough/pruned.jsonl. The test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "REQ-cli-049 (16 MiB bound); #127 held unmerged; Leif decides approval and review via the orc (2026-11-05).",
+    "public_contract": "no"
+  }
+}

@@ -164,7 +164,13 @@ pub(super) fn attachments_of(root: &Path, dir: &str, archive: &str) -> Vec<Strin
     if path.is_dir() && walk(&path, &base, &mut files).is_err() {
         return vec![];
     }
-    let unique: BTreeSet<String> = files.into_iter().map(|(file, _)| file).collect();
+    // A ledger shard lives beside the attachments but is not one (KNOW-23).
+    let shard = format!("{base}/{}", crate::evidence::SHARD);
+    let unique: BTreeSet<String> = files
+        .into_iter()
+        .map(|(file, _)| file)
+        .filter(|file| *file != shard)
+        .collect();
     unique.into_iter().collect()
 }
 

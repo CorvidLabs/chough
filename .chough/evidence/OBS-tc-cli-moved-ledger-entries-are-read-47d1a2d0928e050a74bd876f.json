@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f",
+  "criteria": [
+    "KNOW-23"
+  ],
+  "requirements": [
+    "REQ-cli-049"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact moved_ledger_entries_are_still_read for TC-cli-moved-ledger-entries-are-read: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f.log": "9697ff80ee31b1f55dd1333dd192bb0a5caba122ea6eb0fedc3c53d8f225dd1c"
+  },
+  "observed_at_unix_seconds": 1793929272,
+  "snapshot": {
+    "revision": "3b55b5d0381f2063f46f4739a6fda0b068c99d40",
+    "dirty": false,
+    "fingerprint": "914e7e7fb9e663352d58c50b74dc20a1b4b12dbfc682d6f7a83fd3e622e32bf6",
+    "content": "22990fa72080f363cc9b746fc377814d591f7489dcd055b1f2f6352bb6cafe75"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-moved-ledger-entries-are-read",
+      "digest": "48c7e5d0b1cfdb9268d1a6a9f36aea8053cb7243e2233fab9371d15e3f410076"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "moved_ledger_entries_are_still_read"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
