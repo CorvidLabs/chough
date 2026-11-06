@@ -47,13 +47,6 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-3 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
-| ID | Outcome | Environment | Cases |
-|---|---|---|---|
-| OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 | passed (by cycle time) | local-linux-aarch64 | TC-cli-empty-change-dir-not-open |
-| OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 | passed (by cycle time) | local-linux-aarch64 | TC-history-bounds-pinned-exactly |
-| OBS-tc-history-inbox-bounds-pinned-exactly-a3d8c4fb1a993f500fd75027 | passed (by cycle time) | local-linux-aarch64 | TC-history-inbox-bounds-pinned-exactly |
 
 ## Bugs
 
