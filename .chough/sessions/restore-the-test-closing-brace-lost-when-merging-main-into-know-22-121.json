@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-6c0ac94de20b03bbed282833",
-    "head": "EVT-a71cdffceceb8c34d2b67627",
+    "head": "EVT-825d38e286c494a2d0055e6e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,15 +26,15 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "#121 merge repair accepted by Leif (0xLeif), 2026-11-05 18:00 MST through the orc: Approve + review; his native review (pass) recorded at aa73bcfe."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Leif approves the definition and reviews the merge repair"
 }
