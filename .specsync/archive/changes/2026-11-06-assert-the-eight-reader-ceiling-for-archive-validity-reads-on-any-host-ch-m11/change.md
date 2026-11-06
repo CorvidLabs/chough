@@ -1,6 +1,6 @@
 ---
 id: assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 73a7da5653312e907621c0165d0b5f903c22ff53
 ---
