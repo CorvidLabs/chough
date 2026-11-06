@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-a7be57919d82da20c2f12fc1",
-    "head": "EVT-0c792c57ae8f6532bbf3f407",
+    "head": "EVT-43ac67bcc6f0be3f51967e1b",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -41,7 +41,8 @@
     "decided: on the move into done the librarian reuses the gate's native read, so advance into done is 1 read (DRIVE-2), because Leif answered Q2 'Yes' (orc relay t18, 2026-11-05 21:52 MST)",
     "rejected: porting #69's persistent archive-verdict cache here because the cache for next and status moves to kimi-perf32's #32 change (REQ-cli-053, DRIVE-15) under Leif's split; this change keeps every native read live and reuses one only within a command",
     "decided: REQ-cli-052 for this change because REQ-cli-050 (ch-d7) and REQ-cli-051 (KNOW-29) are claimed and kimi-perf32 took REQ-cli-053; reported to orc",
-    "decided: the scope of this change is approved, because Leif said 'Approve' (orc relay t18, 2026-11-05 22:12 MST); the orc recorded the native definition approval as 0xLeif at 4730661c"
+    "decided: the scope of this change is approved, because Leif said 'Approve' (orc relay t18, 2026-11-05 22:12 MST); the orc recorded the native definition approval as 0xLeif at 4730661c",
+    "the orc (t18), deciding as Leif under his overnight delegation decided \"Implementation review of advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into\": \"review recorded as 0xLeif at 516dcfc2 under Leif's overnight delegation (he authorized me to decide as him where I'm 95% confident: in approved scope, failing-first, verify green). Finalize (no commit between), stage advance to done, push the archive tip, merge pinned on green + corvid-agent.\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-05 late evening MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -66,9 +67,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Leif reviews the PR through the orc; on his relayed acceptance: specsync change review, then ship/finalize with no commit between, clear the gate, stage advance to done, push the archive on the same PR"
 }

@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 127
+archived_changes: 128
 tags:
   - chough/index
 ---
@@ -43,21 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into (active; `specsync change status advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](archives/advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into.md) Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) (hot)
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1) (hot)
 - [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](archives/support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17.md) Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17) (hot)
-- [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7) (hot)
+- [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7) (cold)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) (cold)
 - [native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10](archives/native-check-ac2-only-a-verifying-change-with-handoff-readiness-safe-shows-no-note-126-d10.md) Native check AC2: only a verifying change with handoff readiness safe shows no note (126, D10) (cold)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) (cold)
 - [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](archives/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.md) Read requirements with CRLF line endings in the librarian-default test (131 Windows) (cold)
 - [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](archives/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.md) One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8) (cold)
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](archives/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.md) Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5) (cold)
-- [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](archives/write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127.md) Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127) (cold)
-- All 127 archived changes, by month: [timeline.md](timeline.md)
+- All 128 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](../.specsync/archive/changes/2026-11-06-advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into/lesson-bundle.md)
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../.specsync/archive/changes/2026-11-06-find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1/lesson-bundle.md)
 - [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](../.specsync/archive/changes/2026-11-06-support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17/lesson-bundle.md)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../.specsync/archive/changes/2026-11-06-record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](../.specsync/archive/changes/2026-11-06-read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows/lesson-bundle.md)
 - [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](../.specsync/archive/changes/2026-11-06-one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8/lesson-bundle.md)
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](../.specsync/archive/changes/2026-11-06-teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5/lesson-bundle.md)
-- [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](../.specsync/archive/changes/2026-11-06-write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
