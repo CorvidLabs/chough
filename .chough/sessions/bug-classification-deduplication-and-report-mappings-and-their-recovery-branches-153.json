@@ -1,0 +1,48 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-7b6b9be67e10c0cb39c582e6",
+    "head": "EVT-c85ef47eb12e9a8b7caa9e4b",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Bug classification, deduplication and report mappings, and their recovery branches (#153, audit Bugs row)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153",
+  "references": {
+    "criteria": [
+      "FLOW-8",
+      "LIFE-5"
+    ],
+    "requirements": [
+      "REQ-cli-012"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Assignment from the orc (t18), deciding overnight for Leif (2026-11-06): the audit's Bugs row, with its own issue (#153), a worktree from origin/main, failing tests first, a mutation check, 'ready for approval' queued for Leif; REQ-cli-054 from the registry.",
+    "Agent's recommendation, not a human decision: fix the two defects and the missing recovery hints in this change (small src/bugs.rs change), because the row's recovery branches cannot be exercised otherwise; the alternative is tests for the mappings only, with the defects filed apart."
+  ],
+  "open_questions": [],
+  "completed": [
+    "Change package drafted with REQ-cli-054; six tests, of which links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery and a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery fail first on the defects; a prototype of the fix (reverted, kept as a patch) passes all 19 bug tests; 5 of 5 mapping mutations caught while the existing tests let them pass"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope decision of bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153"
+  ],
+  "run_consents": [],
+  "next_action": "Wait for Leif's scope decision through the orc; then record the failing-first cases and link a local bug, apply the fix, record the passes and verify the bug, materialize REQ-cli-054, docs, CHANGELOG, verify on Linux, PR"
+}
