@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e",
+  "criteria": [
+    "KNOW-29",
+    "DRIVE-13"
+  ],
+  "requirements": [
+    "REQ-history-011"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test reduce -- done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault with_the_librarian_off_archived_sessions_stay for TC-history-keep-five-archived-sessions: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e.log": "9803e7a34575d194e29d14bdd698c3e3db2f68ad3a8c88b8e67f179d13e33344"
+  },
+  "observed_at_unix_seconds": 1793937154,
+  "snapshot": {
+    "revision": "cbeb5e70f409a5d451235c341a10a1a920135ddc",
+    "dirty": false,
+    "fingerprint": "c72962d45f02fd84d4f7666ad5ef9e0bcea189a3953ca934703dff2a66680c5c",
+    "content": "f255ffe2b69bc5cdff86b268f81da1fcb7187d91b2903743ce4c0aead1b19469"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-keep-five-archived-sessions",
+      "digest": "d7134bf32c53ab9c2bd873dbd7130cfd29c1dfab5305d4f40b39416fd980a6fb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault",
+    "with_the_librarian_off_archived_sessions_stay"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 3
+}

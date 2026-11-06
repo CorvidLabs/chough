@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29",
+  "implementation_commit": "3be6c5e46362f610e5716de0036c66ed5f8b9f14",
+  "implementation_tree": "7f325f6e5b507255b9470eafe02372be9363f930",
+  "contract_digest": "771a62916c187714cddd82740d7879d95889ab5405bdc338082fa27064f9d91c",
+  "workspace_digest": "2488d6da54f33c3e9d568b7de7fef0924fb1e8a2912004e65dd85e8253dd85e7",
+  "closing_digest": "99bdab7646cc3fc100b30acb7cd9ec6ad069a63047cad82e245c23396e8b7b0a",
+  "review_digest": "02b27fcb5e928829e9d8e71f240b9b13e00d38ee86734e2f1210af5d9c21a3fb",
+  "finalization_digest": "a85e97dfc619083d2ee7e9dbd211ff98077c86eafd01a95203f1b8244eb9e58c",
+  "timestamp": 1793937732
+}

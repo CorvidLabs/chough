@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 122
+archived_changes: 123
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) (hot)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) (hot)
 - [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](archives/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.md) Read requirements with CRLF line endings in the librarian-default test (131 Windows) (hot)
-- [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](archives/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.md) One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8) (hot)
+- [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](archives/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.md) One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8) (cold)
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](archives/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.md) Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5) (cold)
 - [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](archives/write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127.md) Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127) (cold)
 - [union-merge-the-generated-bug-notes-128](archives/union-merge-the-generated-bug-notes-128.md) Union-merge the generated bug notes (128) (cold)
 - [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](archives/rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their.md) Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23) (cold)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](archives/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.md) Restore the test closing brace lost when merging main into KNOW-22 (121) (cold)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22) (cold)
-- [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](archives/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.md) Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21) (cold)
-- All 122 archived changes, by month: [timeline.md](timeline.md)
+- All 123 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../.specsync/archive/changes/2026-11-06-keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29/lesson-bundle.md)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../.specsync/archive/changes/2026-11-06-size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each/lesson-bundle.md)
 - [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](../.specsync/archive/changes/2026-11-06-read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows/lesson-bundle.md)
 - [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](../.specsync/archive/changes/2026-11-06-one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their](../.specsync/archive/changes/2026-11-06-rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their/lesson-bundle.md)
 - [restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121](../.specsync/archive/changes/2026-11-06-restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121/lesson-bundle.md)
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](../.specsync/archive/changes/2026-11-06-closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22/lesson-bundle.md)
-- [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](../.specsync/archive/changes/2026-11-05-done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -96,18 +96,18 @@ Archived lesson bundles:
 
 ## Observations
 
-372 recorded; most recent:
+389 recorded; most recent:
 
-- OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592 ProductTest Passed in local-linux-aarch64 at 43c10cbef323
-- OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
-- OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
-- OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
-- OBS-tc-cli-ledger-keeps-newest-and-moves-the-rest-5d279876a8ea8bfd6438b66f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
-- OBS-tc-cli-open-bug-keeps-links-89538a43c3a4b93c529e6b4b ProductTest Passed in local-linux-aarch64 at a5246bd81940
-- OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
+- OBS-tc-history-relay-invalid-payloads-736bae7a3a483a4d9a691e67 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-cli-relay-never-touches-native-d782698f8446ac9d148f1bd4 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-cli-relay-refusals-recover-b8da2ecf35c89b0c399b1e15 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-cli-relay-closes-one-gate-with-four-values-f7953d03c79922c844d899b2 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
+- OBS-tc-history-relay-invalid-payloads-d9941deec425b224a5e3cd5e ProductTest Passed in local at 98aa658d861b
+- OBS-tc-history-relay-invalid-payloads-a9fe4eaaf31e180bffc750aa ProductTest Passed in local at 98aa658d861b
+- OBS-tc-cli-relay-clear-records-none-6fa5a5b6c92a58c7e09b25ed ProductTest Passed in local at 98aa658d861b
+- OBS-tc-cli-relay-clear-records-none-45cd0109e41656d3e182af21 ProductTest Passed in local at 98aa658d861b
+- OBS-tc-cli-relay-never-touches-native-5dea5635501e04bd5ba3e573 ProductTest Passed in local at 98aa658d861b
 
 ## Briefs
 

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 60
+version: 61
 status: active
 files:
   - src/main.rs
@@ -277,4 +277,5 @@ provider, runtime or hosted service.
 | 57 | 2026-11-06 | rotate-the-retention-ledger-keep-the-newest-100-entries-and-move-older-summarized-ones-into-the-vault-with-their: Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23) |
 | 58 | 2026-11-06 | one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8: One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8) |
 | 59 | 2026-11-06 | size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each: Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) |
-| 60 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |
+| 60 | 2026-11-06 | keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29: Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) |
+| 61 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |

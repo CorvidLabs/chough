@@ -2124,6 +2124,9 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         // closed cycles, so they no longer protect proof the archives and vault now keep.
         applied["checkpoint_references"] = drop_closed_cycle_references(root, &mut session);
         applied["librarian_trim"] = crate::library::trim_at_done(root);
+        // REQ-history-011 (KNOW-29): keep the five most recent archived sessions and roll
+        // older ones into the vault, before the refresh writes their notes.
+        applied["session_rollup"] = crate::sessions::roll_up_at_done(root);
         // REQ-cli-043: then refresh the knowledge directory, so the change just archived
         // and any proof just trimmed are summarized; never undoes the move either.
         applied["librarian_index"] = crate::library::refresh_at_done(root);

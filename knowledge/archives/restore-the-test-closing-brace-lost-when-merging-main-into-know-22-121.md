@@ -58,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.json](../attachments/restore-the-752854b9/sessions/restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121.json)
