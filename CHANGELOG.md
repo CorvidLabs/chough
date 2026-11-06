@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The Linux test images are rebuilt from the repository with one command (#177,
+  DRIVE-22). `fledge run linux-image` builds `chough-linux:1` to `:3` from
+  `tools/linux/`, taking the specsync, fledge and human-intent versions from the CI
+  workflow's pins. `fledge run linux-verify` runs the verify lane on the current
+  commit inside `chough-linux:3`, and refuses with exit 3 when a tool is not pinned.
 - A project in a subdirectory of its Git repository can run cases and record evidence
   there (#170, DRIVE-18). The evidence snapshot then covers only the project's files,
   with the repository's `HEAD`. Before, every such command refused with "--root must be
