@@ -7,10 +7,10 @@
   "title": "Make archived next and status fast within explicit warm budgets",
   "description": "Make archived next and status fast within explicit warm budgets",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "e99dc7961323e5c4e2aff1a2cf13333b0c47037e",
   "created_at": 1793936770,
-  "updated_at": 1793940995,
+  "updated_at": 1793941222,
   "affected_specs": [
     "cli"
   ],
