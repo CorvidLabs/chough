@@ -1,0 +1,40 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-9de79fd14b80b488780800e1",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Keep the five most recent archived sessions; roll older ones into the vault (KNOW-29)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "history",
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29",
+  "references": {
+    "criteria": [
+      "KNOW-29",
+      "DRIVE-13"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve the scope, then implement the roll-up"
+}
