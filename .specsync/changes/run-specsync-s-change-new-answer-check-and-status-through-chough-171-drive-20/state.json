@@ -7,10 +7,10 @@
   "title": "Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)",
   "description": "Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "167790489735b3e6a88ec21a20bb2530d4c96138",
   "created_at": 1793997534,
-  "updated_at": 1793997741,
+  "updated_at": 1793998080,
   "affected_specs": [
     "cli"
   ],
