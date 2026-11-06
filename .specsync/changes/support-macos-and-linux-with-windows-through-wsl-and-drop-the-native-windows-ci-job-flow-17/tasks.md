@@ -9,6 +9,6 @@ artifact: tasks
 - [x] Remove `windows-latest` from the product matrix in `.github/workflows/ci.yml`.
 - [x] Update README.md, docs/ci.md, docs/integrations.md, docs/cli.md, docs/ROADMAP.md, docs/DECISIONS.md and CHANGELOG.md.
 - [x] Update specs/cli/testing.md so it no longer claims Windows CI.
-- [ ] Run `fledge lanes run verify` locally.
+- [x] Run `fledge lanes run verify` locally.
 
 Not tasks (human gates and Chough records): orc's scope approval relay, recording and running case `TC-cli-supported-platforms`, the human implementation review, and merge on orc's relay.
