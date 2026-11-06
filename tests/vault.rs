@@ -604,6 +604,8 @@ fn only_generated_knowledge_notes_merge_by_union() {
         "knowledge/archives/some-change.md",
         "knowledge/modules/cli.md",
         "knowledge/intent/drive.md",
+        // #128: the bug notes KNOW-22 generates are rebuilt like the rest.
+        "knowledge/bugs/BUG-0001.md",
     ] {
         assert_eq!(merge_attribute(path), "union", "{path}");
     }

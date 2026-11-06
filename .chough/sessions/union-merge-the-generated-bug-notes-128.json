@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-7147b6d0b9862c5055670552",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Union-merge the generated bug notes (#128)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "union-merge-the-generated-bug-notes-128",
+  "references": {
+    "criteria": [
+      "DRIVE-12"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve the definition, then add the union line"
+}
