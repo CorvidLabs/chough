@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-92dea44925c6e80e9af07ce4",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Closed bugs release proof: key items move into the vault under the bug, the rest is trimmed when cold (KNOW-22)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22",
+  "references": {
+    "criteria": [
+      "KNOW-22"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve the definition, then implement against the failing tests"
+}

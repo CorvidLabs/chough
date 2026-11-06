@@ -1154,7 +1154,8 @@ printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity"
     let mut manual = Obs::run("manual", "TC-a", "passed", 11);
     manual.method = Some("manual");
     write_obs(&fixture, &manual);
-    write_bug(&fixture, "BUG-0001", "verified", &["bugref"], None);
+    // An open bug: since KNOW-22 a closed one no longer holds proof in the trim.
+    write_bug(&fixture, "BUG-0001", "open", &["bugref"], None);
     fixture.commit("fixture");
     // Written after the commit, so its bytes are not at HEAD.
     write_obs(&fixture, &Obs::run("cold-c", "TC-a", "passed", 12));
