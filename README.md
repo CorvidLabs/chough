@@ -133,7 +133,7 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `init`, `skill status/update/remove-legacy` | Install the skill per host without overwriting edits; remove a legacy `.claude/skills` copy explicitly |
 | `next`, `status`, `context` | Resume: stage, gates, freshness, open bugs, focused sources |
 | `checkpoint`, `migrate` | Keep the checkpoint, record relayed gate decisions and merge parallel edits; migrate schema 1 explicitly |
-| `session new/adopt/use/list/shelve`, `inbox add/list/fold` | One checkpoint per change or objective; subagents report through a create-only inbox |
+| `session new/adopt/use/list/close/shelve`, `inbox add/list/fold` | One checkpoint per change or objective; subagents report through a create-only inbox |
 | `stage …` | Show, advance (one stage or `--to` several), skip, iterate, back, reset, pause, resume, enter and return, and backfill a move that already happened |
 | `history show/adopt/prune` | Inspect, adopt and prune the immutable transition history |
 | `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |

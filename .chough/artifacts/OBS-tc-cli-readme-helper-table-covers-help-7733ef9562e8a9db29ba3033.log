@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test readme_helper_table_names_every_command_the_helper_lists ... FAILED
+
+failures:
+
+---- readme_helper_table_names_every_command_the_helper_lists stdout ----
+
+thread 'readme_helper_table_names_every_command_the_helper_lists' (335521450) panicked at tests/docs.rs:550:5:
+README.md What the helper does: `session` lists subcommands but not close
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    readme_helper_table_names_every_command_the_helper_lists
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 1.73s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s
+     Running tests/docs.rs (target/debug/deps/docs-592487f356832a3e)
+error: test failed, to rerun pass `--test docs`
