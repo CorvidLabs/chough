@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11",
+  "implementation_commit": "69a9cec01c391ec4fb2f2ca7c35e02a633d5fa70",
+  "implementation_tree": "33e807229c36243981683f433d9480c462a9d03b",
+  "contract_digest": "832c4af5dc23e0bdebb4f9b3fb2433e77c748c9bf26e87920185abcc5ad7cdae",
+  "workspace_digest": "4eace069f33aab8b867ba926bd7cfaef6194e0dd063f6b8b793dfe45016db2fc",
+  "closing_digest": "89b41388e665c325c05c25d32876006249cf2f111dd4874f9485317c04b57df6",
+  "review_digest": "dcfda99814a8c740e5058d92c306d799ff7ffd8a9af2568ecbafa3077b43891a",
+  "finalization_digest": "8f6b2d4c29f4e31ad2319c526d4007a871a8381b11d07d007c8a2ffb0fd6cb17",
+  "timestamp": 1793946972
+}

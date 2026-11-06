@@ -35,8 +35,13 @@
       "at_unix_seconds": 1793936459,
       "text": "Added despite similar reports: BUG-0015 (#10) was committing .chough records, fixed by excluding .chough/ from the content identity; this one is the generated knowledge/ directory (KNOW-1, default on since #106), which lists observations and is still inside the identity",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1793940690,
+      "text": "Filed as GitHub issue CorvidLabs/chough#136 at Leif's request (2026-11-05 20:58 MST, through the orc).",
+      "observations": []
     }
   ],
   "created_at_unix_seconds": 1793936459,
-  "updated_at_unix_seconds": 1793936459
+  "updated_at_unix_seconds": 1793940690
 }

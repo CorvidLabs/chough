@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "69a9cec01c391ec4fb2f2ca7c35e02a633d5fa70",
+      "contract_digest": "832c4af5dc23e0bdebb4f9b3fb2433e77c748c9bf26e87920185abcc5ad7cdae",
+      "execution_digest": "b7ce68e3f24bc719f92d6ff884cb1af19e8facf93d0e7e8f6fd1ca2fadbea6d5",
+      "workspace_digest": "4eace069f33aab8b867ba926bd7cfaef6194e0dd063f6b8b793dfe45016db2fc",
+      "timestamp": 1793946837
+    }
+  ]
+}
