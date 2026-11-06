@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177 (active; `specsync change status rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-496 recorded; most recent:
+497 recorded; most recent:
 
+- OBS-tc-cli-linux-image-from-ci-pins-7553ec1c8fafef747b7a69fe ProductTest Passed in local-linux-aarch64 at 5b0b44217021
 - OBS-tc-cli-change-invalid-bound-recovery-c177387564b8d1ef87a3ca52 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
 - OBS-tc-cli-change-sigterm-stops-specsync-954f09784932db762fbad2dc ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
 - OBS-tc-cli-change-missing-specsync-recovery-e03af699a3453d46b2aafeb2 ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-change-steps-exact-arguments-b45af62e9645ac2b19daaf8a ProductTest Passed in local-macos-arm64 at 4f4d932c1a72
 - OBS-product-test-af55b3e0d282e728bde7629e ProductTest Passed in local-linux-aarch64 at 3daef9eb3c1c
 - OBS-tc-cli-skill-615b587b-known-outdated-780cf283f3f8efee0972273b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
-- OBS-tc-cli-closeout-closes-review-gate-8dadafef9ca3a33ff272628b ProductTest Passed in local-macos-arm64 at 46ce740ac98c
 
 ## Briefs
 

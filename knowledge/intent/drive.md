@@ -25,6 +25,7 @@ criteria:
   - DRIVE-19
   - DRIVE-20
   - DRIVE-21
+  - DRIVE-22
 tags:
   - chough/intent
 ---
@@ -57,3 +58,4 @@ archived changes whose requirements trace it.
 - **DRIVE-19**: none yet
 - **DRIVE-20**: none yet
 - **DRIVE-21**: none yet
+- **DRIVE-22**: none yet
