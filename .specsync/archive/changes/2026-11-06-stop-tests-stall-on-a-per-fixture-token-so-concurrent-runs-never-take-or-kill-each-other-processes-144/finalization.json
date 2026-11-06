@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144",
+  "implementation_commit": "4999ba52714e22a66e51962912c14692d2d4bf03",
+  "implementation_tree": "7f78a435a2203a0c20e846fd937041f45788b608",
+  "contract_digest": "a56f647864a498faaa58369b09754b13ea8e555245ced171fad6a11fdc796f24",
+  "workspace_digest": "5019a85ec98ef51f1c8efd58b021cdb851b25b42fcceb13f9da44b94657734ec",
+  "closing_digest": "e260796b263a673edd1a3039f4795afe6455e747ee86cf99376d5d0eec617d51",
+  "review_digest": "62664787d0fe3171a31b3d039d056ca3385d1381831faa372e43b798d06b4e96",
+  "finalization_digest": "181335c2ecdb6509595f6cc1e9be7f13a3fcdc94109218c4662c8e413e51eb43",
+  "timestamp": 1793974086
+}
