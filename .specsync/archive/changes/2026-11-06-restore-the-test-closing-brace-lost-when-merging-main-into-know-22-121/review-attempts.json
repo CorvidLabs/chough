@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "aa73bcfe1943c9ff3d5862123dcc1994c63e335a",
+      "contract_digest": "36ec9de3a426ba3dcc64c1cc50256fa311f7ef7d653d22237e7f14a9c3c15ef3",
+      "execution_digest": "866db84ff470fb57529fa218a32ca5439bda9137cfcf1d818f76983184a1e074",
+      "workspace_digest": "e4a0c52ee2dd37f46c58e6389128c906cf36c5e9e18927c90401e0a73dfeac72",
+      "timestamp": 1793927152
+    }
+  ]
+}

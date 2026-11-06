@@ -1,6 +1,6 @@
 ---
 id: restore-the-test-closing-brace-lost-when-merging-main-into-know-22-121
-state: implementing
+state: archived
 type: bug_fix
 base_commit: b3868b844923348903cf67e40dfe6347fb1fb6a1
 ---
