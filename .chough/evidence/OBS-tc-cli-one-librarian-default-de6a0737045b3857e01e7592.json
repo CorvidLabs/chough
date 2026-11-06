@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592",
+  "criteria": [
+    "FLOW-12",
+    "FLOW-9"
+  ],
+  "requirements": [
+    "REQ-cli-013"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test optional -- --exact the_requirements_give_the_librarian_one_default_and_it_is_on for TC-cli-one-librarian-default: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592.log": "9b4c610b84425c647f2f8a5a416d0092019862ffc7aea613f920a40d3492e9e6"
+  },
+  "observed_at_unix_seconds": 1793933037,
+  "snapshot": {
+    "revision": "43c10cbef3233cf45a1fd14a3706d5f42395dde4",
+    "dirty": false,
+    "fingerprint": "3d2589353a78c373ce98f0a3a1c8bf6f93eed0ee32b4bc7f5b5cf0e95f86b8ba",
+    "content": "7da62e2c0535f289c3ab3f2e81441623ae923965e34ef9bd234c9a6d9f05397a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-one-librarian-default",
+      "digest": "62e85bd1b96402c62c3d9b636442a4d576264d411c1b44a349b920e0d99975d5"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "optional",
+    "--",
+    "--exact",
+    "the_requirements_give_the_librarian_one_default_and_it_is_on"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

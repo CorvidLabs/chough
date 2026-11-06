@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows",
+  "implementation_commit": "0a143163eef68f70ba8b1c75ad36a12306c0977c",
+  "implementation_tree": "6866fd63cfa3832aadf845ba4d72da42739195e8",
+  "contract_digest": "97ac2250f2ef55d7cf344e71548672d78982e89782b250530abc5a397156571b",
+  "workspace_digest": "2fe6f6d157e9de084db11dbb55f9a60b296cdeee445f336ad2852b7f25e6cacc",
+  "closing_digest": "5def585e27a22561b712ae00535f67f9880c865c579ac4987c6799e5729f89e1",
+  "review_digest": "b33d3fcb1faf2d851b19f94055597fbe2d0b1367b1a7f6985716cb9bf4dc7fa5",
+  "finalization_digest": "81e5b4da4ce2059b2f15052923c4ab6829fe8ee0ad4626887a57928003d7807e",
+  "timestamp": 1793934518
+}

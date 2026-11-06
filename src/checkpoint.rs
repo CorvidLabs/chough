@@ -27,8 +27,9 @@ const LOCK_WAIT: Duration = Duration::from_millis(300);
 const LOCK_POLL: Duration = Duration::from_millis(25);
 const MAX_CALLERS: usize = 4;
 const MAX_ITEMS: usize = 200;
-/// Byte bound of the canonical checkpoint (128 KiB); other records keep the 64 KiB bound.
-pub(super) const SESSION_LIMIT: u64 = 131_072;
+/// Byte bound of every checkpoint (1 MiB, DRIVE-14: chosen from measured use on
+/// 2026-11-05); other records keep the 64 KiB bound.
+pub(super) const SESSION_LIMIT: u64 = 1_048_576;
 /// Bound of the checkpoint `observations` list; other checkpoint lists keep `MAX_ITEMS`.
 const MAX_OBSERVATIONS: usize = 400;
 
@@ -348,8 +349,14 @@ pub(super) fn parse(content: &str) -> Result<Session> {
 }
 
 pub(super) fn read_session(root: &Path) -> Result<Session> {
-    let path = local_path(root, &crate::sessions::checkpoint_path(root)?)?;
-    parse(&read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?)
+    let relative = crate::sessions::checkpoint_path(root)?;
+    let path = local_path(root, &relative)?;
+    if !path.exists() {
+        return Err(anyhow::anyhow!("{relative} does not exist")).context("run chough init first");
+    }
+    read_bounded_record(&path, SESSION_LIMIT)
+        .and_then(|content| parse(&content))
+        .with_context(|| crate::sessions::shelve_hint(&relative))
 }
 
 /// The project's checkpoint writer lock (issues 62 and 83, DRIVE-11): the empty,
@@ -1162,6 +1169,19 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// DRIVE-14 (REQ-cli-032): validation, which `init` runs before it writes anything,
+    /// refuses a checkpoint whose serialization is over the 1 MiB cap and names the cap.
+    #[test]
+    fn validation_refuses_a_checkpoint_over_the_cap() {
+        // JSON escapes each control character to six bytes: 180,000 of them serialize
+        // to about 1.08 MB.
+        let session = new_checkpoint("\u{0001}".repeat(180_000), String::new(), vec![]);
+        let refused = validate_v2(&session).unwrap_err();
+        assert!(format!("{refused:#}").contains("1048576"), "{refused:#}");
+        let within = new_checkpoint("\u{0001}".repeat(170_000), String::new(), vec![]);
+        validate_v2(&within).unwrap();
+    }
 
     #[test]
     fn a_held_checkpoint_lock_refuses_as_busy_after_the_wait() {
