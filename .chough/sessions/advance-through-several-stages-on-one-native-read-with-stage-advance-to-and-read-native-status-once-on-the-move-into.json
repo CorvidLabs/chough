@@ -25,7 +25,14 @@
     "requirements": [
       "REQ-cli-052"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-advance-to-one-read-in-a-session",
+      "TC-cli-advance-to-single-checkpoint",
+      "TC-cli-advance-to-no-prerequisite",
+      "TC-cli-advance-to-refusal-records-nothing",
+      "TC-cli-advance-into-done-one-read",
+      "TC-cli-plain-advance-unchanged"
+    ],
     "design": [],
     "files": []
   },
@@ -39,9 +46,17 @@
   "open_questions": [],
   "completed": [
     "Assessed #69 on main 73a7da56 with SpecSync 6.2.0 (scratch clones of Chough and Raven, interleaved A/B; numbers in the native change context)",
-    "Drafted tests/advance_to.rs (uncommitted) and ran it against main 260ecc94: 5 of 6 fail first as expected (--to unknown; into done made 2 native reads, expected 1), a_plain_advance_is_unchanged passes; output kept in the session scratchpad"
+    "Drafted tests/advance_to.rs (uncommitted) and ran it against main 260ecc94: 5 of 6 fail first as expected (--to unknown; into done made 2 native reads, expected 1), a_plain_advance_is_unchanged passes; output kept in the session scratchpad",
+    "Failing first at 6602bf5b: the five new-behavior cases failed and TC-cli-plain-advance-unchanged passed, cargo-test adapter on local-macos-arm64"
   ],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b",
+    "OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8",
+    "OBS-tc-cli-advance-to-one-read-in-a-session-fd54de11353f4dea531e3a92",
+    "OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6",
+    "OBS-tc-cli-advance-to-single-checkpoint-4df68202eaeb04f8397846dc",
+    "OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
