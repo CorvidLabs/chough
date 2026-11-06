@@ -1223,6 +1223,8 @@ fn ledger_line(id: &str, archive: &str, age_minutes: u64) -> String {
         "policy": "chough-retention/1", "reason": "fixture", "removed": [],
         "artifacts": {}, "record_digest": ZERO, "revision": "0".repeat(40), "head": "0".repeat(40),
         "knowledge": format!("knowledge/archives/{archive}.md"),
+        // As a cycle-time trim records it, so the archive's note lists it (KNOW-20).
+        "attributed": "cycle time",
     })
     .to_string()
 }
@@ -1337,4 +1339,38 @@ fn moved_ledger_entries_are_still_read() {
     assert!(shown.to_string().contains("\"pruned\""), "{shown:#}");
     assert!(fixture.read("knowledge/archives/a1.md").contains("old-001"));
     fixture.ok(&["library", "index", "--check"]);
+}
+
+/// KNOW-23: an interrupted rotation (shard written, ledger not yet replaced) leaves a
+/// line in both; it is read once. Here the leftover copy of old-000's entry after its
+/// restore must not make old-000 pruned again.
+#[test]
+fn an_interrupted_rotation_leftover_is_read_once() {
+    let fixture = project("0");
+    bug(&fixture, "BUG-0009", "open", "a description, not a path");
+    let path = ".chough/bugs/BUG-0009.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["observations"] = json!(["old-000"]);
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    let moved = rotated(&fixture);
+    assert_eq!(
+        moved["applied"]["ledger_rotation"]["status"], "rotated",
+        "{moved:#}"
+    );
+    let shard = fixture.read("knowledge/attachments/a1/pruned.jsonl");
+    let leftover = shard
+        .lines()
+        .find(|line| line.contains("\"old-000\"") && !line.contains("restored"))
+        .unwrap()
+        .to_string();
+    let hot = fixture.read(".chough/pruned.jsonl");
+    fixture.write(".chough/pruned.jsonl", &format!("{hot}{leftover}\n"));
+    let shown = fixture.ok(&["bug", "show", "BUG-0009"]).to_string();
+    assert!(
+        !shown.contains("\"pruned\""),
+        "a restored ID must not read as pruned: {shown}"
+    );
 }

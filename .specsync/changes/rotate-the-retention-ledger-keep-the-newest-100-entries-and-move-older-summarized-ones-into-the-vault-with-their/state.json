@@ -7,10 +7,10 @@
   "title": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
   "description": "Rotate the retention ledger: keep the newest 100 entries and move older summarized ones into the vault with their archive (KNOW-23)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "4c68cca7275b3ab8f49af94cc925bf547842757a",
   "created_at": 1793928412,
-  "updated_at": 1793928465,
+  "updated_at": 1793928513,
   "affected_specs": [
     "cli"
   ],
