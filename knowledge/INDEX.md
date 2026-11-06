@@ -99,19 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-383 recorded; most recent:
-
-- OBS-product-test-914b2391e3fbf93b4a7a8d94 ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-no-reset-drops-no-observation-4375674fc4309dbcaa7720ac ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-librarian-off-references-skipped-78c662772da0ad1678335bb3 ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-walkthrough-opens-new-project-a6255a1be6e806b186429fc5 ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-roadmap-claims-no-cold-start-pass-8f438197307c7964dc5f82cc ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-skipped-cold-start-not-a-pass-cd3d98c4de358380c172e437 ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-claimed-approvals-open-no-gate-e6df9aafec11a9035810789b ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-authority-before-approval-fbd5bf934b0f879a36fd1094 ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-bug-id-upgrade-note-416010ee81c8f8c006a70056 ProductTest Passed in local-macos-arm64 at b87a108798e4
-- OBS-tc-cli-one-checkpoint-store-no-aps-a847bd2418a95115590ef735 ProductTest Passed in local-macos-arm64 at b87a108798e4
-403 recorded; most recent:
+416 recorded; most recent:
 
 - OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b

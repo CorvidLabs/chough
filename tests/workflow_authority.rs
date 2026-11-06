@@ -709,7 +709,8 @@ fn the_skill_records_authority_before_approval_and_labels_never_decide() {
         );
         for needed in [
             "When a consequential decision or authority is actually missing, ask one concise question",
-            "An actor label alone never supplies human authority.",
+            "An actor label alone never supplies human authority",
+            "neither Chough nor SpecSync authenticates who decided",
         ] {
             assert!(plan.contains(needed), "{skill} plan.md lacks {needed:?}");
         }
@@ -727,7 +728,7 @@ fn the_skill_records_authority_before_approval_and_labels_never_decide() {
         let main = flat_text(&format!("{skill}/SKILL.md"));
         assert!(
             main.contains(
-                "Continuation, bot reviews and actor labels alone are not human decisions."
+                "Continuation, bot reviews and actor labels are not human decisions; approvals are claims."
             ),
             "{skill} SKILL.md"
         );

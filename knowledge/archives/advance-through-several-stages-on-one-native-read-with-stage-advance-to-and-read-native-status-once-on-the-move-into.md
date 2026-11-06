@@ -50,10 +50,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-12 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+25 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-product-test-914b2391e3fbf93b4a7a8d94 | passed (by cycle time) | local-macos-arm64 |  |
 | OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 | passed (by cycle time) | local-macos-arm64 | TC-cli-advance-into-done-one-read |
 | OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b | failed (by cycle time) | local-macos-arm64 | TC-cli-advance-into-done-one-read |
 | OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e | passed (by cycle time) | local-macos-arm64 | TC-cli-advance-to-no-prerequisite |
@@ -64,8 +65,20 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab | passed (by cycle time) | local-macos-arm64 | TC-cli-advance-to-refusal-records-nothing |
 | OBS-tc-cli-advance-to-single-checkpoint-4df68202eaeb04f8397846dc | failed (by cycle time) | local-macos-arm64 | TC-cli-advance-to-single-checkpoint |
 | OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 | passed (by cycle time) | local-macos-arm64 | TC-cli-advance-to-single-checkpoint |
+| OBS-tc-cli-authority-before-approval-fbd5bf934b0f879a36fd1094 | passed (by cycle time) | local-macos-arm64 | TC-cli-authority-before-approval |
+| OBS-tc-cli-bug-id-upgrade-note-416010ee81c8f8c006a70056 | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-id-upgrade-note |
+| OBS-tc-cli-claimed-approvals-open-no-gate-e6df9aafec11a9035810789b | passed (by cycle time) | local-macos-arm64 | TC-cli-claimed-approvals-open-no-gate |
+| OBS-tc-cli-lesson-labels-in-skill-f56aae1735b81683065cb7da | passed (by cycle time) | local-macos-arm64 | TC-cli-lesson-labels-in-skill |
+| OBS-tc-cli-librarian-off-references-skipped-78c662772da0ad1678335bb3 | passed (by cycle time) | local-macos-arm64 | TC-cli-librarian-off-references-skipped |
+| OBS-tc-cli-no-lesson-store-d377f20930cd989dae866fe0 | passed (by cycle time) | local-macos-arm64 | TC-cli-no-lesson-store |
+| OBS-tc-cli-no-reset-drops-no-observation-4375674fc4309dbcaa7720ac | passed (by cycle time) | local-macos-arm64 | TC-cli-no-reset-drops-no-observation |
+| OBS-tc-cli-one-checkpoint-store-no-aps-a847bd2418a95115590ef735 | passed (by cycle time) | local-macos-arm64 | TC-cli-one-checkpoint-store-no-aps |
 | OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 | passed (by cycle time) | local-macos-arm64 | TC-cli-plain-advance-unchanged |
 | OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 | passed (by cycle time) | local-macos-arm64 | TC-cli-plain-advance-unchanged |
+| OBS-tc-cli-roadmap-claims-no-cold-start-pass-8f438197307c7964dc5f82cc | passed (by cycle time) | local-macos-arm64 | TC-cli-roadmap-claims-no-cold-start-pass |
+| OBS-tc-cli-skipped-cold-start-not-a-pass-cd3d98c4de358380c172e437 | passed (by cycle time) | local-macos-arm64 | TC-cli-skipped-cold-start-not-a-pass |
+| OBS-tc-cli-walkthrough-opens-new-project-a6255a1be6e806b186429fc5 | passed (by cycle time) | local-macos-arm64 | TC-cli-walkthrough-opens-new-project |
+| OBS-tc-reporting-measure-report-pairs-binaries-55ce02c72535d3475d27da9e | passed (by cycle time) | local-macos-arm64 | TC-reporting-measure-report-pairs-binaries |
 
 ## Bugs
 
