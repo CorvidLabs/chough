@@ -1,6 +1,6 @@
 ---
 id: a-session-archives-itself-at-its-own-move-into-done-155
-state: implementing
+state: archived
 type: feature
 base_commit: b09682e0cbb62f08e9bc1ab52f335311a3da4b8e
 ---
