@@ -1668,3 +1668,76 @@ fn a_script_installed_while_an_old_write_handle_is_open_still_runs() {
         drop(leaked);
     }
 }
+
+/// Adopts the legacy checkpoint as session `legacy`, the active session at accept.
+fn adopted_session(fixture: &Fixture) {
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    fixture.commit("adopted session");
+}
+
+/// #155 (REQ-history-006, DRIVE-13, DRIVE-3): the move into done archives the session
+/// itself, in its own change, and clears the active pointer, so no later `session new`
+/// in another worktree moves it.
+#[test]
+fn the_move_into_done_archives_the_session_and_clears_the_pointer() {
+    let fixture = project("0");
+    adopted_session(&fixture);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
+    let archive = &moved["applied"]["session_archive"];
+    assert_eq!(archive["status"], "archived", "{moved:#}");
+    assert_eq!(archive["key"], "legacy", "{moved:#}");
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    assert!(!fixture.exists(".chough/sessions/legacy.json"));
+    let archived: Value =
+        serde_json::from_str(&fixture.read(".chough/sessions/archive/legacy.json")).unwrap();
+    assert_eq!(archived["stage"]["current"], "done", "{archived:#}");
+    assert!(!fixture.exists(".chough/local/active-session"));
+    let next = fixture.fails(&["next"]);
+    assert!(next.contains("no open session"), "{next}");
+    assert!(next.contains("chough session new <key>"), "{next}");
+    let started = fixture.ok(&["session", "new", "beta", "--objective", "Next work"]);
+    assert_eq!(started["archived"], json!([]), "{started:#}");
+    let list = fixture.ok(&["session", "list"]);
+    assert!(list.to_string().contains("\"archived\""), "{list:#}");
+}
+
+/// #155: a session with unfolded inbox entries stays open at done, as on a switch.
+#[test]
+fn the_move_into_done_keeps_a_session_with_unfolded_inbox_entries_open() {
+    let fixture = project("0");
+    adopted_session(&fixture);
+    fixture.ok(&[
+        "inbox",
+        "add",
+        "--session",
+        "legacy",
+        "--from",
+        "worker",
+        "--kind",
+        "decision",
+        "--text",
+        "Fold me first",
+    ]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let archive = &moved["applied"]["session_archive"];
+    assert_eq!(archive["status"], "kept_open", "{moved:#}");
+    assert_eq!(archive["inbox_unfolded"], 1, "{moved:#}");
+    assert!(fixture.exists(".chough/sessions/legacy.json"));
+    assert!(!fixture.exists(".chough/sessions/archive/legacy.json"));
+    assert_eq!(fixture.read(".chough/local/active-session"), "legacy\n");
+    fixture.ok(&["next", "--json"]);
+}
+
+/// #155: a project still on the single legacy checkpoint has no session to archive.
+#[test]
+fn the_move_into_done_skips_the_archive_without_sessions() {
+    let fixture = project("0");
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["session_archive"]["status"], "skipped",
+        "{moved:#}"
+    );
+    assert!(fixture.exists(".chough/session.json"));
+}

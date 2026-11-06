@@ -1,0 +1,36 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-842bbab4d9ae4886cf1e93f0",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "A session archives itself at its own move into done (#155)",
+  "intent_scope": "DRIVE-13, DRIVE-3",
+  "modules": [
+    "history"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "a-session-archives-itself-at-its-own-move-into-done-155",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then add archive_at_done as the last done step"
+}
