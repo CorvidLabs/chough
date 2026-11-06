@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test closeout_guidance_closes_the_review_gate_with_the_relayed_decision ... FAILED
+
+failures:
+
+---- closeout_guidance_closes_the_review_gate_with_the_relayed_decision stdout ----
+
+thread 'closeout_guidance_closes_the_review_gate_with_the_relayed_decision' (295833458) panicked at tests/docs.rs:936:5:
+skills/chough-workflow/references/lifecycle.md: "clear gate"; close it with `chough checkpoint --close-gate` and the relayed decision
+.agents/skills/chough-workflow/references/lifecycle.md: "clear gate"; close it with `chough checkpoint --close-gate` and the relayed decision
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    closeout_guidance_closes_the_review_gate_with_the_relayed_decision
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.01s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/docs.rs (target/debug/deps/docs-592487f356832a3e)
+error: test failed, to rerun pass `--test docs`

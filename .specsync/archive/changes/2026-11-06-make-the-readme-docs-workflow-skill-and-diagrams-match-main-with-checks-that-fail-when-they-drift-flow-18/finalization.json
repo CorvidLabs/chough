@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18",
+  "implementation_commit": "ae62fafe8e15c25a4d0d278cc3ef50e92a47d90c",
+  "implementation_tree": "cc4ca3a9c1304cbbbf2c88cf8ef205398fd4050f",
+  "contract_digest": "cd0fd5b9747682146b1e8e7afb67cebb61ad033bb5663088320e3c927d672572",
+  "workspace_digest": "a96e7446cb6a9027afeb34d4c971286bba8069c921dd55e2d44b68c20b3c3eae",
+  "closing_digest": "9ac564317e86cc05a2bfb837adf0cbdeabe0ad4f9c6e03e781fe109186d41e98",
+  "review_digest": "6fc5db3d77eaf62214e39724e9c6026ef7dcefa797392f0702cf9121cd75f762",
+  "finalization_digest": "e622a9dbc013858873ec43d58cbec17cf057994e6d1f6688c00743e70acd31cb",
+  "timestamp": 1793997949
+}

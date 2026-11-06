@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact relative_links_and_anchors_resolve for TC-cli-doc-links-resolve: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932.log": "51c8cd7b3a27fbcba6042fb28b87a38a8d4993ce80f8732df201b7e0acc8c723"
+  },
+  "observed_at_unix_seconds": 1793980029,
+  "snapshot": {
+    "revision": "7039f68b5d4a84f4506a53e8d720e7ac24c5d316",
+    "dirty": false,
+    "fingerprint": "1a00fe360ee969a211d3baf3e8548b9366a9364d95a98224ab591ce134437c46",
+    "content": "804c78228734dd5dc1fc0ad7420b856c47349370f70c8447f0b532abcb6b7fa4"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-doc-links-resolve",
+      "digest": "bc8019ca3cf835f594fa494d827d7c34b8f2e9a77993c9cf1c379afc62c4fef5"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "relative_links_and_anchors_resolve"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

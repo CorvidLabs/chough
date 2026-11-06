@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "id": "BUG-readme-helper-table-omits-session-close-after-166-bffb0c93c65a7cdeee281a27",
+  "title": "README helper table omits session close after #166",
+  "symptom": "tests/docs.rs readme_helper_table_names_every_command_the_helper_lists fails on #164 merged with main: '`session` lists subcommands but not close'",
+  "trigger": "Merging main at ef2dae8e (#166 adds chough session close <key> --reason) into the FLOW-18 branch",
+  "expected": "README.md's helper row names every session subcommand chough session --help lists, including close",
+  "actual": "README.md:136 names session new/adopt/use/list/shelve",
+  "criteria": [],
+  "requirements": [],
+  "cases": [
+    "TC-cli-readme-helper-table-covers-help"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "15cdaef2c48f5ce02f9fd5caaa6fdf5dc246f8d4",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-readme-helper-table-covers-help-7733ef9562e8a9db29ba3033",
+    "OBS-tc-cli-readme-helper-table-covers-help-4738d41898b5a2e4375fa215"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1793996054,
+      "text": "status: open -> verified",
+      "observations": [
+        "OBS-tc-cli-readme-helper-table-covers-help-4738d41898b5a2e4375fa215"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1793996014,
+  "updated_at_unix_seconds": 1793996054
+}
