@@ -1,9 +1,9 @@
 {
-  "timestamp": 1793997476,
-  "commit": "9de080963d9bb1c84d2e0b7c7cb02ec622279947",
-  "contract_digest": "4688f499b8b4b7a286957616d2f930bc7cd1e1a189ea98900caf2b3882e454c4",
-  "execution_digest": "e553d21ed1fd4d927ba91ee0644a1a481920522f22720c75c01f12af4ba05351",
-  "workspace_digest": "ed4cf6f831e74ee45641512fc6ef96528a4b6153de8b10581af034e87425253b",
+  "timestamp": 1793998268,
+  "commit": "555b4b92200992acbd2d1f2111b06935801fed5b",
+  "contract_digest": "2f44a20f9024350fd60d0d87b88f4b61c7f19cb0d1600a2b04499e2709139337",
+  "execution_digest": "28978884ad093ae4e74f81c152d23693df4d9c2d086a10a396bfbb9c7e15eddd",
+  "workspace_digest": "7bb1139eb7e5b51afc2f72116316370fae2e4c1ed339d4056b012fde5bcfccc6",
   "passed": true,
   "commands": [
     {
@@ -12,5 +12,7 @@
       "exit_code": 0
     }
   ],
-  "requirement_ids": []
+  "requirement_ids": [
+    "REQ-reporting-002"
+  ]
 }
