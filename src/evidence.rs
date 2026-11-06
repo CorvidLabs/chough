@@ -1269,10 +1269,19 @@ fn change_id_ok(id: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
 }
 
-/// The paths a change's acceptance manifest lists, read with `specsync change status`.
-fn manifest(root: &Path, id: &str) -> Result<BTreeSet<String>, String> {
+/// A `specsync change status <id> --json` reply this command already read, as `(id,
+/// reply)`. A manifest read of that same change reuses it instead of reading again; it
+/// serves one command and is never written (REQ-cli-052).
+pub(super) type Prior<'a> = Option<(&'a str, &'a Value)>;
+
+/// The paths a change's acceptance manifest lists, read with `specsync change status`,
+/// or taken from `prior` when it is that change's reply.
+fn manifest(root: &Path, id: &str, prior: Prior<'_>) -> Result<BTreeSet<String>, String> {
     if !change_id_ok(id) {
         return Err(format!("unexpected native change ID {id:?}"));
+    }
+    if let Some((_, value)) = prior.filter(|(prior_id, _)| *prior_id == id) {
+        return manifest_paths(id, value);
     }
     let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
     let value = response.value.ok_or_else(|| {
@@ -1281,6 +1290,11 @@ fn manifest(root: &Path, id: &str) -> Result<BTreeSet<String>, String> {
             response.section.source, response.section.state, response.section.content
         )
     })?;
+    manifest_paths(id, &value)
+}
+
+/// The paths of the `acceptance_entries` in a change's status reply.
+fn manifest_paths(id: &str, value: &Value) -> Result<BTreeSet<String>, String> {
     let entries = value
         .get("acceptance_entries")
         .and_then(Value::as_array)
@@ -1324,7 +1338,7 @@ fn latest_archive(root: &Path) -> Result<Option<String>, String> {
     Ok(latest.map(|(_, _, id)| id))
 }
 
-fn native_manifests(root: &Path) -> Result<Native> {
+fn native_manifests(root: &Path, prior: Prior<'_>) -> Result<Native> {
     if !local_path(root, ".specsync/config.toml")?.is_file()
         && !local_path(root, ".specsync/config.json")?.is_file()
     {
@@ -1337,11 +1351,11 @@ fn native_manifests(root: &Path) -> Result<Native> {
     let read = || -> Result<Vec<(String, BTreeSet<String>)>, String> {
         let mut manifests = vec![];
         for id in change_dirs(root, ".specsync/changes")? {
-            let paths = manifest(root, &id)?;
+            let paths = manifest(root, &id, prior)?;
             manifests.push((format!("native active {id}"), paths));
         }
         if let Some(id) = latest_archive(root)? {
-            let paths = manifest(root, &id)?;
+            let paths = manifest(root, &id, prior)?;
             manifests.push((format!("native archive {id}"), paths));
         }
         Ok(manifests)
@@ -1381,7 +1395,7 @@ pub(super) fn retention_protection(root: &Path) -> Result<Vec<String>> {
     }
     let mut paths = BTreeSet::new();
     for id in ids {
-        paths.extend(manifest(root, &id).map_err(anyhow::Error::msg)?);
+        paths.extend(manifest(root, &id, None).map_err(anyhow::Error::msg)?);
     }
     Ok(paths.into_iter().collect())
 }
@@ -1494,7 +1508,7 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
     let named_files = file_references(root)?;
     let native = match native {
         Some(native) => native,
-        None => native_manifests(root)?,
+        None => native_manifests(root, None)?,
     };
     let manifest_keys: Vec<(&String, BTreeSet<String>)> = native
         .manifests
@@ -2721,14 +2735,21 @@ pub(super) fn archive_summary(
     knowledge_dir: &str,
     authority: Option<&str>,
     write_entries: &dyn Fn(&Path) -> Result<()>,
+    prior: Prior<'_>,
 ) -> Result<Value> {
     let _budget = authority.map(|_| crate::history::maintenance_budget());
+    // With a reply already read for the change just archived, its manifest comes from
+    // that reply; every other manifest is read live (REQ-cli-052).
+    let manifests = match prior {
+        Some(_) => Some(native_manifests(root, prior)?),
+        None => None,
+    };
     let SummaryPlan {
         eligible,
         protected,
         uncommitted,
         native,
-    } = summary_plan(root, archives, None, knowledge_dir)?;
+    } = summary_plan(root, archives, manifests, knowledge_dir)?;
     let entry_path = |archive: &str| format!("{knowledge_dir}/archives/{archive}.md");
     let listed: Vec<Value> = eligible
         .iter()

@@ -93,12 +93,15 @@ updates and edited-copy preservation. No new case number was allocated.
 | REQ-cli-042 | HI family exports over 16 KiB validate criteria and still refuse retired ones; archived `finalization.json` and `change.md` and `.specsync/sdd.json` over 64 KiB are read; display cuts point to the complete source; the skill says Chough bounds never justify editing HI, specs or SpecSync files | TC-cli-hi-export-over-16-kib-validates, TC-cli-archived-finalization-over-record-bound, TC-cli-archived-change-md-over-record-bound, TC-cli-sdd-policy-over-record-bound, TC-cli-display-cut-points-to-source, TC-cli-skill-bounds-never-justify-native-edits |
 
 Unix-only tests are gated with `cfg(unix)` because they use shell stubs for native
-tools; their cases list only macOS and Linux environments. Windows runs the portable
-tests and the build. The content-identity freshness tests (TC-cli-0067 to 0074, with
-a CRLF `change.md` in TC-cli-0070) and the bug-ordering tests (TC-cli-0076 to 0079)
-are portable: their `hi` and `specsync` stand-ins are compiled programs on Windows, so
-Windows CI exercises the `/`-separated path and change keys and CRLF front matter; the
-exec-bit test stays Unix-only.
+tools; their cases list only macOS and Linux environments. Chough supports macOS and
+Linux, and Windows through WSL 2 with Ubuntu (FLOW-17), so hosted CI runs no Windows
+job; the Ubuntu jobs cover WSL 2 as Linux. The content-identity freshness tests
+(TC-cli-0067 to 0074, with a CRLF `change.md` in TC-cli-0070) and the bug-ordering
+tests (TC-cli-0076 to 0079) still write their CRLF front matter and `/`-separated keys
+explicitly and run on Linux and macOS. Their `cfg(windows)` compiled stand-ins remain
+but are not built by CI. Earlier case definitions that list `ci-windows` keep it as a
+label only. `TC-cli-supported-platforms` keeps the CI matrix, the Linux exercise and
+the platform statements in agreement.
 
 No physical deployment, live monitoring, authenticated human acceptance, APS,
 Magpie or other unbuilt integration is covered by this test contract.
@@ -228,8 +231,9 @@ native check.
 - Exercises: docs/exercises/feature-bug-loop.md, visual-design.md, intent.md and
   cold-start.md, with diagrams verified in docs/verification.md.
 
-Not covered: Windows execution of the Unix-gated tests (shell stubs), Cursor, Gemini
-and Grok discovery and cold starts, any post-fix Kimi run, real releases, live
+Not covered: native Windows (unsupported), anything run inside WSL itself (WSL 1, a
+checkout on a Windows drive, Windows-side Git), Cursor, Gemini and Grok discovery and
+cold starts, any post-fix Kimi run, real releases, live
 monitoring, and any human acceptance.
 
 ## Observed bootstrap verification — 2026-10-31
