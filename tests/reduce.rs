@@ -1629,6 +1629,128 @@ fn with_the_librarian_off_archived_sessions_stay() {
     }
 }
 
+/// Record a reset `days` ago in the legacy transition log, so the current cycle began then.
+fn reset_days_ago(fixture: &Fixture, days: u64) {
+    let reset = json!({
+        "schema_version": 1, "at_unix_seconds": now() - days * DAY, "kind": "reset",
+        "from": "done", "to": "plan", "reason": "fixture cycle",
+    });
+    let path = fixture.root().join(".chough/transitions.jsonl");
+    let mut log = std::fs::read_to_string(&path).unwrap_or_default();
+    log.push_str(&(reset.to_string() + "\n"));
+    std::fs::write(&path, log).unwrap();
+}
+
+/// REQ-cli-045 (#138, audit assertion review): with the librarian off by a recorded
+/// preference, the move into done reports the checkpoint references `skipped` and leaves
+/// every observation, file and design reference as it was, even one from a closed cycle.
+#[test]
+fn with_the_librarian_off_done_leaves_the_references_and_reports_skipped() {
+    let fixture = project("0");
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "Fixture: the human turned the librarian off",
+    ]);
+    reset_days_ago(&fixture, 15);
+    set_checkpoint(&fixture, &["r2", "u3"]);
+    set_references(&fixture, &["src/main.rs"], &["docs/design.md"]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    let references = &moved["applied"]["checkpoint_references"];
+    assert_eq!(
+        references,
+        &json!({"status": "skipped", "reason": "the librarian is off"}),
+        "{moved:#}"
+    );
+    let session = fixture.session();
+    assert_eq!(session["observations"], json!(["r2", "u3"]), "{session:#}");
+    assert_eq!(session["references"]["files"], json!(["src/main.rs"]));
+    assert_eq!(session["references"]["design"], json!(["docs/design.md"]));
+}
+
+/// REQ-cli-045 (#138): with no reset recorded, no reset time can be read, so no observation
+/// reference is dropped, however old its record; with nothing else to drop the step reports
+/// `skipped` with that reason.
+#[test]
+fn with_no_reset_time_done_drops_no_observation_reference() {
+    let fixture = project("0");
+    // r2 was observed 65 days ago and u3 10 days ago; with no reset neither is known to be
+    // from a closed cycle.
+    set_checkpoint(&fixture, &["r2", "u3"]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    assert_eq!(
+        moved["applied"]["checkpoint_references"],
+        json!({"status": "skipped", "reason": "no reset time can be read, so no cycle is known to be closed"}),
+        "{moved:#}"
+    );
+    assert_eq!(fixture.session()["observations"], json!(["r2", "u3"]));
+}
+
+/// REQ-cli-014 (#152, audit MA-02): a dry run never stands in for a delivery kind. Among
+/// the runs of one case and environment that only a cold archive lists, an older delivery
+/// observation of each kind is a key item: retention protects it with its kind as the
+/// reason, and the trim at done moves it into the vault. A dry run is routine: its kind is
+/// never a protection, and once superseded it is removed with no vault copy.
+#[test]
+fn delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not() {
+    for kind in [
+        "publication-observation",
+        "installation-observation",
+        "deployment-observation",
+        "live-health-observation",
+    ] {
+        let fixture = project("0");
+        for (id, as_kind) in [("r1", kind), ("r2", "dry-run")] {
+            let path = format!(".chough/evidence/{id}.json");
+            let mut record: Value = serde_json::from_str(&fixture.read(&path)).unwrap();
+            record["kind"] = json!(as_kind);
+            fixture.write(
+                &path,
+                &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+            );
+        }
+        fixture.commit(&format!("r1 is a {kind}, r2 a dry run"));
+        set_checkpoint(&fixture, &[]);
+        let preview = fixture.ok(&["evidence", "prune"]);
+        let reasons = |id: &str| -> String {
+            preview["protected"]
+                .as_array()
+                .unwrap_or_else(|| panic!("{preview:#}"))
+                .iter()
+                .find(|entry| entry["id"] == id)
+                .map(|entry| entry["reasons"].to_string())
+                .unwrap_or_default()
+        };
+        assert!(reasons("r1").contains(kind), "{kind}: {preview:#}");
+        // The dry run may be protected for other reasons (it is among the newest three
+        // routine runs here), but never for its kind.
+        assert!(!reasons("r2").contains("dry-run"), "{kind}: {preview:#}");
+
+        let moved = fixture.ok(&["stage", "advance"]);
+        let trim = &moved["applied"]["librarian_trim"];
+        assert_eq!(trim["status"], "trimmed", "{kind}: {trim:#}");
+        assert!(
+            fixture.exists("knowledge/attachments/a1/evidence/r1.json"),
+            "{kind}: the delivery observation was not kept: {trim:#}"
+        );
+        assert!(
+            !fixture.exists(".chough/evidence/r2.json")
+                && !fixture.exists("knowledge/attachments/a1/evidence/r2.json"),
+            "{kind}: the superseded dry run was kept: {trim:#}"
+        );
+        let ledger = fixture.read(".chough/pruned.jsonl");
+        assert!(
+            ledger.contains("knowledge/attachments/a1/evidence/r1.json"),
+            "{kind}: {ledger}"
+        );
+    }
+}
+
 /// #132: a script a test installs must run even while an old write handle to its path
 /// is still open, as a child forked by another test thread holds one until it execs
 /// (ETXTBSY, "Text file busy"). Both the `stand_in` helper and `Fixture::executable`

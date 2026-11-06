@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 137
+archived_changes: 140
 tags:
   - chough/index
 ---
@@ -52,12 +52,12 @@ Archived changes (newest first; the newest 3 are hot):
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (hot)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (cold)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148) (cold)
+- [bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153](archives/bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153.md) Bug classification, deduplication and report mappings, and their recovery branches (153) (cold)
+- [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](archives/assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma.md) Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02) (cold)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (cold)
 - [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](archives/name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up.md) Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up) (cold)
-- [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](archives/assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11.md) Assert the eight-reader ceiling for archive validity reads on any host (CH-M11) (cold)
-- [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](archives/install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132.md) Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132) (cold)
-- [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](archives/advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into.md) Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) (cold)
-- All 137 archived changes, by month: [timeline.md](timeline.md)
+- [give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138](archives/give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138.md) Give real assertions to the nine criteria the audit found with no selected assertion (138) (cold)
+- All 140 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -76,11 +76,11 @@ Archived lesson bundles:
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../.specsync/archive/changes/2026-11-06-keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143/lesson-bundle.md)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../.specsync/archive/changes/2026-11-06-pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19/lesson-bundle.md)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../.specsync/archive/changes/2026-11-06-an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148/lesson-bundle.md)
+- [bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153](../.specsync/archive/changes/2026-11-06-bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153/lesson-bundle.md)
+- [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](../.specsync/archive/changes/2026-11-06-assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma/lesson-bundle.md)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../.specsync/archive/changes/2026-11-06-stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144/lesson-bundle.md)
 - [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](../.specsync/archive/changes/2026-11-06-name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up/lesson-bundle.md)
-- [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](../.specsync/archive/changes/2026-11-06-assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11/lesson-bundle.md)
-- [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](../.specsync/archive/changes/2026-11-06-install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132/lesson-bundle.md)
-- [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](../.specsync/archive/changes/2026-11-06-advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into/lesson-bundle.md)
+- [give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138](../.specsync/archive/changes/2026-11-06-give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-409 recorded; most recent:
+435 recorded; most recent:
 
 - OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
 - OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
@@ -109,8 +109,8 @@ Archived lesson bundles:
 - OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
 - OBS-tc-history-inbox-bounds-pinned-exactly-a3d8c4fb1a993f500fd75027 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
 - OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
-- OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 ProductTest Passed in local-linux-aarch64 at c8b4c8daf5d3
-- OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 ProductTest Passed in local-macos-arm64 at 769fba2e29ce
+- OBS-product-test-dff775cc31b7e3161bf2186d ProductTest Passed in local-macos-arm64 at 4edae0554e42
+- OBS-tc-cli-bug-report-shows-every-field-548b2ac9b3d7b795e9aefe63 ProductTest Passed in local-macos-arm64 at 4edae0554e42
 
 ## Briefs
 

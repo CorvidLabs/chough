@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.01s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.75s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)

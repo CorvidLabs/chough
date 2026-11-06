@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-id-upgrade-note-416010ee81c8f8c006a70056",
+  "criteria": [
+    "FLOW-8"
+  ],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids for TC-cli-bug-id-upgrade-note: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-id-upgrade-note-416010ee81c8f8c006a70056.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-id-upgrade-note-416010ee81c8f8c006a70056.log": "a6acf79607475a82f2fe60f1746137f87c96e1655bd238a84bfac410ed4841f3"
+  },
+  "observed_at_unix_seconds": 1793941900,
+  "snapshot": {
+    "revision": "b87a108798e4199ff5100d1e29dab7162b8e322e",
+    "dirty": false,
+    "fingerprint": "9d5d7f0c4b7b00bd70ee17d0b44ab52bdd75a2b25da6486b01a8df48a130e264",
+    "content": "0d2e31d59d5b53ebee1b2162ea550a0c0e22a291d947951607dfc7e5a18e9830"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-id-upgrade-note",
+      "digest": "8b0990f42852eab3729b518979243b7e9b061314eefcdaab67e5aae32884d7fe"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

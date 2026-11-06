@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-054"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery for TC-cli-bug-self-or-unknown-links-refused-with-recovery: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-self-or-unknown-links-refused-with-recovery-4e8ec21f18075198237f2355.log": "6d38ce6d382538a6a274229babc7589539ddd7c4b8bc577ae31baa3010385fbb"
+  },
+  "observed_at_unix_seconds": 1793972034,
+  "snapshot": {
+    "revision": "4edae0554e42cc3c4ead3424431388c251c557e3",
+    "dirty": false,
+    "fingerprint": "cfe3c72ce35afbcd99830a083f7b85ea7850065391d767dab4f55b4e751125e5",
+    "content": "d5b087fb4d8a7069f0af53f6bd3c649da8801d2b4a71c683fab6d9d72f5cce05"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-self-or-unknown-links-refused-with-recovery",
+      "digest": "869a6cd7b00dcabca0e463bbbf52900640ef62323a33dad9dc635ef8a94b29fb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

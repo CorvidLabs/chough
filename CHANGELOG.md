@@ -12,6 +12,32 @@ All notable changes to Chough are recorded here. The format follows
   active pointer it no longer makes other worktrees refuse with "several open
   sessions". `chough session close <key> --reason <text>` closes abandoned work with
   the reason recorded. Neither reads native state.
+- Bug links name their way out, and a mistaken duplicate can be reopened (#153, audit
+  Bugs row, REQ-cli-054). `chough bug update <id> --status open` on a bug marked
+  duplicate used to fail with "duplicate_of is only set for duplicate bugs"; changing a
+  duplicate's status now clears `duplicate_of` and notes it. A bug can no longer relate
+  to itself. Self or unknown links, and unknown bugs, are refused naming
+  `chough bug list --all`, and `verified` without linked proof names
+  `chough bug update <id> --observation <id>`. New tests also hold every
+  classification, scope and status, the blocking rule, the search scores and the
+  report's fields. REQ-cli-054 states these mappings.
+- Tests now hold positive track selection and every delivery-observation kind (#152,
+  audit MA-01, MA-02). Requesting `--track copy-localization` selects its linked case
+  while design-QA stays omitted, and both tracks select all three. Publication,
+  installation, deployment, live-health and the legacy `delivery-observation` kind are
+  each recorded and reported as themselves, and a dry run as a dry run. Each delivery kind is
+  key-item proof: `evidence prune` protects it with its kind as the reason and the done
+  trim moves it into the vault, while a superseded dry run is never protected and is
+  removed with no vault copy. REQ-cli-014 gains the matching criterion; no behavior
+  changes.
+- The nine acceptance criteria the audit found with no assertion now have tests (#138).
+  REQ-cli-002 (lesson labels, no lesson store), REQ-cli-007 (one checkpoint store, no
+  APS), REQ-cli-012 (the bug-ID upgrade note), REQ-cli-029 (recorded authority, labels
+  never decide, a skipped cold start is never a pass), REQ-cli-031 (the walkthrough
+  opening), REQ-cli-045 (librarian off, no reset time) and REQ-reporting-003. For the
+  last, `sh examples/measure-report.sh OLD NEW ROOT [RUNS]` pairs two binaries on one
+  root and keeps native wait apart from local time. Each new assertion was shown to fail
+  under a targeted mutation. Behavior is unchanged.
 - A session archives itself at its own move into done and clears the active pointer
   (#155, REQ-history-006, DRIVE-13), so a done session merged to main is already
   archived and no other worktree's `session new` moves it into an unrelated change. It

@@ -1,0 +1,55 @@
+== wont-fix-still-open
+diff --git a/src/bugs.rs b/src/bugs.rs
+index 4bf1402f..6bfba12f 100644
+--- a/src/bugs.rs
++++ b/src/bugs.rs
+@@ -25,7 +25,7 @@ const STATUSES: [&str; 7] = [
+     "duplicate",
+     "wont-fix",
+ ];
+-const CLOSED: [&str; 3] = ["verified", "duplicate", "wont-fix"];
++const CLOSED: [&str; 3] = ["verified", "duplicate", "deferred"];
+ const SCOPES: [&str; 3] = ["blocking", "in-scope", "out-of-scope"];
+ const CLASSES: [&str; 6] = [
+     "unclassified",
+
+== new: cargo test --locked --test bugs -- --exact only_an_open_blocking_bug_blocks_leaving_test
+exit 101
+
+running 1 test
+test only_an_open_blocking_bug_blocks_leaving_test ... FAILED
+
+failures:
+
+---- only_an_open_blocking_bug_blocks_leaving_test stdout ----
+
+thread 'only_an_open_blocking_bug_blocks_leaving_test' (207174896) panicked at tests/bugs.rs:1057:13:
+assertion `left == right` failed: blocking deferred: []
+  left: false
+ right: true
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    only_an_open_blocking_bug_blocks_leaving_test
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 18 filtered out; finished in 1.36s
+
+
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456-bugs)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.36s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)
+error: test failed, to rerun pass `--test bugs`
+
+== old: cargo test --locked --test bugs -- --exact an_open_blocking_bug_sends_work_back_to_build
+exit 0
+
+running 1 test
+test an_open_blocking_bug_sends_work_back_to_build ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 2.63s
+
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running tests/bugs.rs (target/debug/deps/bugs-528fec1d2ab3bc38)
+

@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "7894feaa3aeacdbdc1b421ed3357e2a8702280d5",
+  "contract_digest": "b132144fecba19b023ce2b4eca922ba03210acf47609012f7e05dd4c61ef3a11",
+  "execution_digest": "edc267f2973e9dc454d1dd890e5facc6c324ffe13035667b5380166d7cf08190",
+  "workspace_digest": "471f39aacb9b0f9749f60f5a89aca3dfee1c39db056fcfe6a29b4acbfd7ffdc8",
+  "timestamp": 1793973307
+}

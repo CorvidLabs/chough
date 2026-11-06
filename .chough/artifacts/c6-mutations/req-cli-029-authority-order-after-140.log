@@ -1,0 +1,22 @@
+
+running 1 test
+test the_skill_records_authority_before_approval_and_labels_never_decide ... FAILED
+
+failures:
+
+---- the_skill_records_authority_before_approval_and_labels_never_decide stdout ----
+
+thread 'the_skill_records_authority_before_approval_and_labels_never_decide' (186820183) panicked at tests/workflow_authority.rs:706:9:
+skills/chough-workflow plan.md approves before recording the authority
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_skill_records_authority_before_approval_and_labels_never_decide
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.75s
+     Running tests/workflow_authority.rs (target/debug/deps/workflow_authority-44f1c357a6528064)
+error: test failed, to rerun pass `--test workflow_authority`

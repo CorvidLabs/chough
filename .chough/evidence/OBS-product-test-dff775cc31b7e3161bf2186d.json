@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-dff775cc31b7e3161bf2186d",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-054"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "#153 mutation round on 4edae055: 5 targeted mutations of the mappings (evidence-gap recorded as requirement-gap; wont-fix counted open; shared-ID bonus dropped; duplicate threshold lowered to 0.25; report hides the fixture), each applied to src/bugs.rs and restored with git checkout; each made its new test fail on an assertion (no compile errors) while the existing test named for it in testing.md still passed; src was clean afterwards",
+  "artifacts": [
+    ".chough/artifacts/bugs-mutations/duplicate-threshold-lowered.log",
+    ".chough/artifacts/bugs-mutations/evidence-gap-recorded-as-requirement-gap.log",
+    ".chough/artifacts/bugs-mutations/report-fixture-hidden.log",
+    ".chough/artifacts/bugs-mutations/run_mutations.py",
+    ".chough/artifacts/bugs-mutations/shared-id-bonus-dropped.log",
+    ".chough/artifacts/bugs-mutations/summary.txt",
+    ".chough/artifacts/bugs-mutations/wont-fix-still-open.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/bugs-mutations/duplicate-threshold-lowered.log": "5a572b63242fb6dc6aa95249c94c8aa6560bc1d74802320f909f672f68fc0f91",
+    ".chough/artifacts/bugs-mutations/evidence-gap-recorded-as-requirement-gap.log": "d96d6e7567ddd5595f3e8b23e282838d199a0cd564584f351f80125b908cb0ec",
+    ".chough/artifacts/bugs-mutations/report-fixture-hidden.log": "619e721807207f888134526e5fceff5d74993f8960c3229fdd17d3e8fd645070",
+    ".chough/artifacts/bugs-mutations/run_mutations.py": "ec7bfe8ee3dbbe8d5d6e06e5ff5bebe3d7e8e18f326149b74e0ccc8f3089b78f",
+    ".chough/artifacts/bugs-mutations/shared-id-bonus-dropped.log": "8f65305ac634661b36ccc0d69a1fd4a9f4b1d8d9e5d8f689f764140d11abc02f",
+    ".chough/artifacts/bugs-mutations/summary.txt": "e6355111eb6c605b967d52264ee3fb7a03f1cadbf3c1f6c470e2882a652b3510",
+    ".chough/artifacts/bugs-mutations/wont-fix-still-open.log": "45891cb9a351c8e0b7c26493d6aee0040db19b1d7b93868182df6cedbaaf9081"
+  },
+  "observed_at_unix_seconds": 1793972184,
+  "snapshot": {
+    "revision": "4edae0554e42cc3c4ead3424431388c251c557e3",
+    "dirty": false,
+    "fingerprint": "cfe3c72ce35afbcd99830a083f7b85ea7850065391d767dab4f55b4e751125e5",
+    "content": "d5b087fb4d8a7069f0af53f6bd3c649da8801d2b4a71c683fab6d9d72f5cce05"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "mutations were applied by run_mutations.py by exact string replacement, not by a mutation tool",
+    "the two link and reopen tests are shown real by their recorded failures before the fix, not by a mutation"
+  ]
+}

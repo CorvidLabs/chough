@@ -408,7 +408,9 @@ fn load(root: &Path, id: &str) -> Result<Bug> {
     load_all(root)?
         .into_iter()
         .find(|bug| bug.id == id)
-        .with_context(|| format!("unknown bug: {id}"))
+        .with_context(|| {
+            format!("unknown bug: {id}; run `chough bug list --all` to see the bug IDs")
+        })
 }
 
 fn valid_bug_id(id: &str) -> bool {
@@ -859,7 +861,10 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
         bug.regression_baseline = Some(baseline);
     }
     if let Some(original) = args.duplicate_of {
-        ensure!(original != bug.id, "a bug cannot duplicate itself");
+        ensure!(
+            original != bug.id,
+            "a bug cannot duplicate itself; name the original with --duplicate-of <id> (run `chough bug list --all` to see the bug IDs)"
+        );
         load(root, &original)?;
         bug.duplicate_of = Some(original.clone());
         if bug.status != "duplicate" {
@@ -868,10 +873,20 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
         }
     }
     for related in args.related {
+        ensure!(
+            related != bug.id,
+            "a bug cannot relate to itself; name another bug with --related <id> (run `chough bug list --all` to see the bug IDs)"
+        );
         load(root, &related)?;
         if !bug.related.contains(&related) {
             bug.related.push(related);
         }
+    }
+    // Reopening a bug marked duplicate by mistake clears its link to the original.
+    if bug.status != "duplicate"
+        && let Some(previous) = bug.duplicate_of.take()
+    {
+        changes.push(format!("no longer a duplicate of {previous}"));
     }
     for observation in &args.observations {
         if !bug.observations.contains(observation) {
@@ -881,12 +896,14 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     if bug.status == "verified" {
         match order(root, &bug)? {
             None => bail!(
-                "verified needs a linked failed observation that reproduces the bug, then a linked passed observation after it; no failed observation is linked"
+                "verified needs a linked failed observation that reproduces the bug, then a linked passed observation after it; no failed observation is linked: link one with `chough bug update {} --observation <id>`",
+                bug.id
             ),
             Some((failure, false)) => bail!(
-                "verified needs a linked passed observation after the fix, observed after the latest linked failure {} (observed_at_unix_seconds {})",
+                "verified needs a linked passed observation after the fix, observed after the latest linked failure {} (observed_at_unix_seconds {}): link a later pass with `chough bug update {} --observation <id>`",
                 failure.id,
-                failure.observed_at_unix_seconds
+                failure.observed_at_unix_seconds,
+                bug.id
             ),
             Some((_, true)) => {}
         }

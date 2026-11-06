@@ -1,0 +1,110 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-bug-values-accepted-others-refused"
+title = "Every classification, scope and status is accepted and any other value is refused with nothing written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the bugs test every_classification_scope_and_status_is_accepted_and_others_are_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "every_classification_scope_and_status_is_accepted_and_others_are_refused"
+
+[[case]]
+id = "TC-cli-bug-only-open-blocking-blocks"
+title = "Only an open blocking bug blocks leaving test, and wont-fix releases the gate"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the bugs test only_an_open_blocking_bug_blocks_leaving_test passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "only_an_open_blocking_bug_blocks_leaving_test"
+
+[[case]]
+id = "TC-cli-bug-search-scores-and-refuses-likely-duplicates"
+title = "Search scores words and shared IDs and refuses only likely duplicates, naming both ways forward"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the bugs test search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "search_scores_words_and_shared_ids_and_refuses_only_likely_duplicates"
+
+[[case]]
+id = "TC-cli-bug-self-or-unknown-links-refused-with-recovery"
+title = "Links to the bug itself or to an unknown bug are refused with nothing written, naming chough bug list --all"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the bugs test links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "links_to_the_bug_itself_or_to_an_unknown_bug_are_refused_with_their_recovery"
+
+[[case]]
+id = "TC-cli-bug-mistaken-duplicate-reopened"
+title = "A mistaken duplicate is reopened, and an unverifiable fix names its recovery"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the bugs test a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_mistaken_duplicate_is_reopened_and_an_unverifiable_fix_names_its_recovery"
+
+[[case]]
+id = "TC-cli-bug-report-shows-every-field"
+title = "The report shows every stored field, and none recorded for empty ones"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8", "LIFE-5"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the bugs test the_report_shows_every_stored_field_and_none_recorded_for_empty_ones passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "the_report_shows_every_stored_field_and_none_recorded_for_empty_ones"
