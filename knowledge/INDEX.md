@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-511 recorded; most recent:
+517 recorded; most recent:
 
+- OBS-tc-cli-change-walkthrough-runs-chough-eeab06073c51349b7b6ecf79 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-outlives-read-bound-63957ecaa5867c7baa0ff452 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-names-remaining-step-4dab9573dc57469f2f0cacfb ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-checks-before-running-b9525101163d73b8ba5a3738 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-refusal-passes-through-b81f1986cced1d35cc1c2489 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-b8b96571c25ed80fcdfcd791 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
 - OBS-product-test-43953badfa0bdb247decd5d4 ProductTest Passed in local-macos-arm64 at da37b4a73515
 - OBS-tc-cli-change-walkthrough-runs-chough-dc9b4b427e025a35a068c618 ProductTest Passed in local-macos-arm64 at da37b4a73515
 - OBS-tc-cli-change-ship-outlives-read-bound-bb6a80a50486f991edc7efbb ProductTest Passed in local-macos-arm64 at da37b4a73515
 - OBS-tc-cli-change-ship-names-remaining-step-327e6e5541f57979ac03b8ff ProductTest Passed in local-macos-arm64 at da37b4a73515
-- OBS-tc-cli-change-ship-checks-before-running-c14a4660777723bfb60f4498 ProductTest Passed in local-macos-arm64 at da37b4a73515
-- OBS-tc-cli-change-ship-refusal-passes-through-35ba56b399a6c0153517e135 ProductTest Passed in local-macos-arm64 at da37b4a73515
-- OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-7696aff038e3442e9225ef43 ProductTest Passed in local-macos-arm64 at da37b4a73515
-- OBS-tc-cli-change-ship-checks-before-running-850fd2b5156999ca3757ed47 ProductTest Failed in local-macos-arm64 at a7aa029b3e9a
-- OBS-tc-cli-change-walkthrough-runs-chough-932d8c05ae5a9f2dff43dd49 ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
-- OBS-tc-cli-change-ship-outlives-read-bound-6474718972663d4b81bef563 ProductTest Failed in local-macos-arm64 at 6b20a31d9b63
 
 ## Briefs
 

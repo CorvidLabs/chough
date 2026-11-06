@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-e74ffdb1544c6de7bd6fefd9",
-    "head": "EVT-b1e3822f32ff0c69214e65d1",
+    "head": "EVT-9a41332b4dc3de161eab5e9b",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -35,7 +35,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20"
+  ],
   "run_consents": [],
-  "next_action": "After Leif's definition approval is recorded natively, close the gate with the relay, advance to build, add the cases and implement chough change ship"
+  "next_action": "After Leif's implementation review is recorded natively, run chough change ship chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20 with the review relay (no commit between), commit and push the archive tip"
 }
