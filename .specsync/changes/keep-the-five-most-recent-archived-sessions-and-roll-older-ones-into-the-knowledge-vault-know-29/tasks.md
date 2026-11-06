@@ -5,8 +5,8 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Commit the failing tests.
-- [ ] Roll older archived sessions into the vault at done.
-- [ ] Write the session notes, and add the union line.
-- [ ] Update the docs, the CHANGELOG and the cases.
-- [ ] Run verify on Linux.
+- [x] Commit the failing tests.
+- [x] Roll older archived sessions into the vault at done.
+- [x] Write the session notes, and add the union line.
+- [x] Update the docs, the CHANGELOG and the cases.
+- [x] Run verify on Linux.
