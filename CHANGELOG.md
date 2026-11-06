@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The retention ledger stays small (KNOW-23, REQ-cli-049). At done,
+  `.chough/pruned.jsonl` keeps its newest 100 entries. Older entries that an archive's
+  note summarizes move, with their restores, into
+  `knowledge/attachments/<archive>/pruned.jsonl`. Every ledger reader reads those shards
+  too, so labels, bug views and notes are unchanged. The step is reported as
+  `applied.ledger_rotation`.
+
 - Closed bugs release proof (KNOW-22, REQ-cli-048). In the librarian trim, a verified,
   duplicate or wont-fix bug no longer protects the observations it links. Its key items
   move into `knowledge/attachments/<bug>/` when they would otherwise be trimmed:

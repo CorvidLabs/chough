@@ -846,6 +846,10 @@ impl Drop for Reads<'_> {
 
 /// Append-only record of every pruned observation set.
 pub(super) const LEDGER: &str = ".chough/pruned.jsonl";
+/// A vault shard of the ledger, in an archive's attachments folder (KNOW-23).
+pub(super) const SHARD: &str = "pruned.jsonl";
+/// Ledger entries kept in `.chough/pruned.jsonl` at each rotation (KNOW-23).
+const LEDGER_KEEP: usize = 100;
 const POLICY: &str = "chough-retention/1";
 const KEEP_NEWEST: usize = 3;
 const MIN_AGE_DAYS: u64 = 14;
@@ -872,23 +876,92 @@ pub(super) fn is_present(root: &Path, id: &str) -> Result<bool> {
     Ok(local_path(root, &format!("{EVIDENCE_DIR}/{id}.json"))?.exists())
 }
 
+/// Every line of the retention ledger as its readers see it (REQ-cli-049, KNOW-23): each
+/// vault shard `<library-dir>/attachments/<folder>/pruned.jsonl` in path order, then
+/// `.chough/pruned.jsonl` without its interrupted-rotation leftovers (see
+/// [`rotation_leftovers`]), skipping blank lines; each file within the ledger bound.
+/// Identical lines within one file are all kept: a prune, restore and prune again in
+/// one second writes two identical entries, and both are real.
+fn ledger_lines(root: &Path) -> Result<Vec<String>> {
+    let (shard_lines, hot) = ledger_files(root)?;
+    let mut leftovers = rotation_leftovers(&shard_lines, &hot);
+    let mut lines = shard_lines;
+    for line in hot {
+        match leftovers.get_mut(&line) {
+            Some(count) if *count > 0 => *count -= 1,
+            _ => lines.push(line),
+        }
+    }
+    Ok(lines)
+}
+
+/// Lines of `.chough/pruned.jsonl` a shard already holds, by count: each shard copy of a
+/// line cancels one identical copy in the hot ledger, which is what an interrupted
+/// rotation (shards written, ledger not yet replaced) leaves behind.
+fn rotation_leftovers(shard_lines: &[String], hot: &[String]) -> BTreeMap<String, usize> {
+    let mut in_shards: BTreeMap<&str, usize> = BTreeMap::new();
+    for line in shard_lines {
+        *in_shards.entry(line).or_default() += 1;
+    }
+    let mut leftovers: BTreeMap<String, usize> = BTreeMap::new();
+    for line in hot {
+        if let Some(count) = in_shards.get_mut(line.as_str())
+            && *count > 0
+        {
+            *count -= 1;
+            *leftovers.entry(line.clone()).or_default() += 1;
+        }
+    }
+    leftovers
+}
+
+/// The non-blank lines of every shard, in path order, and of the hot ledger.
+fn ledger_files(root: &Path) -> Result<(Vec<String>, Vec<String>)> {
+    let mut files = vec![];
+    if let Ok((dir, _)) = crate::prefs::effective(root, "library-dir") {
+        let base = local_path(root, &format!("{dir}/attachments"))?;
+        if base.is_dir() {
+            let mut shards = vec![];
+            for entry in fs::read_dir(&base)? {
+                let entry = entry?;
+                if entry.file_type()?.is_dir()
+                    && let Some(name) = entry.file_name().to_str()
+                {
+                    shards.push(format!("{dir}/attachments/{name}/{SHARD}"));
+                }
+            }
+            shards.sort();
+            files.extend(shards);
+        }
+    }
+    let read = |relative: &str| -> Result<Vec<String>> {
+        let path = local_path(root, relative)?;
+        if !path.exists() {
+            return Ok(vec![]);
+        }
+        ensure!(path.is_file(), "{relative} must be a file");
+        ensure!(
+            fs::metadata(&path)?.len() <= LEDGER_LIMIT,
+            "{relative} exceeds {LEDGER_LIMIT} bytes"
+        );
+        Ok(fs::read_to_string(&path)?
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .map(str::to_string)
+            .collect())
+    };
+    let mut shard_lines = vec![];
+    for relative in &files {
+        shard_lines.extend(read(relative)?);
+    }
+    Ok((shard_lines, read(LEDGER)?))
+}
+
 /// Observation IDs listed in the retention ledger.
 fn read_ledger(root: &Path) -> Result<BTreeSet<String>> {
-    let path = local_path(root, LEDGER)?;
-    if !path.exists() {
-        return Ok(BTreeSet::new());
-    }
-    ensure!(path.is_file(), "{LEDGER} must be a file");
-    ensure!(
-        fs::metadata(&path)?.len() <= LEDGER_LIMIT,
-        "{LEDGER} exceeds {LEDGER_LIMIT} bytes"
-    );
     let mut ids = BTreeSet::new();
-    for line in fs::read_to_string(&path)?.lines() {
-        if line.trim().is_empty() {
-            continue;
-        }
-        let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
+    for line in ledger_lines(root)? {
+        let entry: Value = serde_json::from_str(&line).context("invalid retention ledger line")?;
         let id = entry["id"]
             .as_str()
             .context("retention ledger line without an id")?
@@ -912,21 +985,9 @@ pub(super) struct PrunedEntry {
 /// Each pruned observation's recorded time and outcome, by ID, read within the
 /// ledger's bound; an unreadable ledger is an error the caller reports.
 pub(super) fn ledger_entries(root: &Path) -> Result<BTreeMap<String, PrunedEntry>> {
-    let path = local_path(root, LEDGER)?;
-    if !path.exists() {
-        return Ok(BTreeMap::new());
-    }
-    ensure!(path.is_file(), "{LEDGER} must be a file");
-    ensure!(
-        fs::metadata(&path)?.len() <= LEDGER_LIMIT,
-        "{LEDGER} exceeds {LEDGER_LIMIT} bytes"
-    );
     let mut entries = BTreeMap::new();
-    for line in fs::read_to_string(&path)?.lines() {
-        if line.trim().is_empty() {
-            continue;
-        }
-        let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
+    for line in ledger_lines(root)? {
+        let entry: Value = serde_json::from_str(&line).context("invalid retention ledger line")?;
         let id = entry["id"]
             .as_str()
             .context("retention ledger line without an id")?
@@ -1750,20 +1811,9 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
 
 /// The newest ledger line per observation ID, with `restored` events undoing a removal.
 pub(super) fn ledger_records(root: &Path) -> Result<BTreeMap<String, Value>> {
-    let path = local_path(root, LEDGER)?;
-    if !path.exists() {
-        return Ok(BTreeMap::new());
-    }
-    ensure!(
-        path.is_file() && fs::metadata(&path)?.len() <= LEDGER_LIMIT,
-        "{LEDGER} must be a file within {LEDGER_LIMIT} bytes"
-    );
     let mut records = BTreeMap::new();
-    for line in fs::read_to_string(&path)?.lines() {
-        if line.trim().is_empty() {
-            continue;
-        }
-        let entry: Value = serde_json::from_str(line).context("invalid retention ledger line")?;
+    for line in ledger_lines(root)? {
+        let entry: Value = serde_json::from_str(&line).context("invalid retention ledger line")?;
         let id = entry["id"]
             .as_str()
             .context("retention ledger line without an id")?
@@ -3076,6 +3126,150 @@ pub(super) fn auto_prune(root: &Path) -> Value {
     })();
     result
         .unwrap_or_else(|error| json!({"error": format!("automatic retention failed: {error:#}")}))
+}
+
+/// REQ-cli-049 (KNOW-23): after the trim and the knowledge refresh of the move into done,
+/// keep the newest [`LEDGER_KEEP`] ledger entries and move older ones whose archives all
+/// have a knowledge note into the first archive's vault shard, each `restored` event with
+/// the entry it follows. Shards are written first and the ledger replaced last, so an
+/// interruption leaves at most a duplicate line, which readers ignore. Never fails.
+pub(super) fn rotate_at_done(root: &Path) -> Value {
+    match crate::prefs::effective(root, "librarian") {
+        Ok((value, _)) if value != "on" => {
+            return json!({"status": "skipped", "reason": "the librarian is off"});
+        }
+        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
+        Ok(_) => {}
+    }
+    rotate_ledger(root)
+        .unwrap_or_else(|error| json!({"status": "refused", "reason": format!("{error:#}")}))
+}
+
+fn rotate_ledger(root: &Path) -> Result<Value> {
+    let (dir, _) = crate::prefs::effective(root, "library-dir")?;
+    let path = local_path(root, LEDGER)?;
+    if !path.exists() {
+        return Ok(json!({"status": "unchanged", "kept": 0}));
+    }
+    ensure!(
+        path.is_file() && fs::metadata(&path)?.len() <= LEDGER_LIMIT,
+        "{LEDGER} must be a file within {LEDGER_LIMIT} bytes"
+    );
+    // An interrupted rotation's leftovers are already in their shards: drop them first.
+    let (shard_lines, hot) = ledger_files(root)?;
+    let mut leftovers = rotation_leftovers(&shard_lines, &hot);
+    let had_leftovers = leftovers.values().any(|count| *count > 0);
+    let mut lines = vec![];
+    for line in hot {
+        match leftovers.get_mut(&line) {
+            Some(count) if *count > 0 => *count -= 1,
+            _ => lines.push(line),
+        }
+    }
+    let mut parsed = vec![];
+    for line in &lines {
+        parsed.push(serde_json::from_str::<Value>(line).context("invalid retention ledger line")?);
+    }
+    // Each restore belongs to the nearest earlier entry for its ID.
+    let mut owner: Vec<Option<usize>> = vec![None; lines.len()];
+    for (index, entry) in parsed.iter().enumerate() {
+        if entry["event"] == "restored" {
+            owner[index] = (0..index).rev().find(|earlier| {
+                parsed[*earlier]["event"] != "restored" && parsed[*earlier]["id"] == entry["id"]
+            });
+        }
+    }
+    let mut entries: Vec<usize> = (0..lines.len())
+        .filter(|index| parsed[*index]["event"] != "restored")
+        .collect();
+    entries.sort_by_key(|index| {
+        std::cmp::Reverse((
+            parsed[*index]["pruned_at_unix_seconds"]
+                .as_u64()
+                .unwrap_or(0),
+            *index,
+        ))
+    });
+    let mut destination: BTreeMap<usize, String> = BTreeMap::new();
+    for index in entries.iter().skip(LEDGER_KEEP) {
+        let archives: Vec<&str> = parsed[*index]["archives"]
+            .as_array()
+            .map(|list| list.iter().filter_map(Value::as_str).collect())
+            .unwrap_or_default();
+        let summarized = !archives.is_empty()
+            && archives.iter().all(|archive| {
+                local_path(root, &format!("{dir}/archives/{archive}.md"))
+                    .is_ok_and(|note| note.is_file())
+            });
+        if summarized {
+            let folder = crate::attachments::attachment_folder(archives[0]);
+            destination.insert(*index, format!("{dir}/attachments/{folder}/{SHARD}"));
+        }
+    }
+    for (index, entry_owner) in owner.iter().enumerate() {
+        if let Some(entry) = entry_owner
+            && let Some(shard) = destination.get(entry).cloned()
+        {
+            destination.insert(index, shard);
+        }
+    }
+    let moved = destination
+        .keys()
+        .filter(|index| parsed[**index]["event"] != "restored")
+        .count();
+    if destination.is_empty() && !had_leftovers {
+        return Ok(json!({"status": "unchanged", "kept": entries.len()}));
+    }
+    let mut shards: BTreeMap<String, Vec<&String>> = BTreeMap::new();
+    for (index, shard) in &destination {
+        shards
+            .entry(shard.clone())
+            .or_default()
+            .push(&lines[*index]);
+    }
+    // Plan every shard first, so an oversized one refuses before anything is written.
+    let mut writes = vec![];
+    for (shard, moving) in &shards {
+        let target = local_path(root, shard)?;
+        let existing = if target.exists() {
+            ensure!(target.is_file(), "{shard} must be a file");
+            fs::read_to_string(&target)?
+        } else {
+            String::new()
+        };
+        let mut content = existing.clone();
+        if !content.is_empty() && !content.ends_with('\n') {
+            content.push('\n');
+        }
+        for line in moving {
+            content.push_str(line);
+            content.push('\n');
+        }
+        ensure!(
+            content.len() as u64 <= LEDGER_LIMIT,
+            "{shard} would exceed {LEDGER_LIMIT} bytes; nothing was moved"
+        );
+        writes.push((shard.clone(), content));
+    }
+    for (shard, content) in &writes {
+        if let Some(parent) = local_path(root, shard)?.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        crate::records::write_replace(root, shard, content)?;
+    }
+    let remaining: String = lines
+        .iter()
+        .enumerate()
+        .filter(|(index, _)| !destination.contains_key(index))
+        .map(|(_, line)| format!("{line}\n"))
+        .collect();
+    crate::records::write_replace(root, LEDGER, &remaining)?;
+    Ok(json!({
+        "status": "rotated",
+        "moved": moved,
+        "kept": entries.len() - moved,
+        "shards": shards.keys().collect::<Vec<_>>(),
+    }))
 }
 
 #[cfg(test)]

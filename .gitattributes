@@ -24,3 +24,5 @@ knowledge/timeline/*.md merge=union
 knowledge/archives/*.md merge=union
 knowledge/modules/*.md merge=union
 knowledge/intent/*.md merge=union
+# Ledger shards are append-only, like the ledger they came from (KNOW-23).
+knowledge/attachments/*/pruned.jsonl merge=union
