@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-lesson-labels-in-skill-f56aae1735b81683065cb7da",
+  "criteria": [
+    "LIFE-6"
+  ],
+  "requirements": [
+    "REQ-cli-002"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- --exact the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons for TC-cli-lesson-labels-in-skill: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-lesson-labels-in-skill-f56aae1735b81683065cb7da.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-lesson-labels-in-skill-f56aae1735b81683065cb7da.log": "8c844df7006898dd224b957c4389aa6fac5b3a9df0788006da06f29a070cdae4"
+  },
+  "observed_at_unix_seconds": 1793941871,
+  "snapshot": {
+    "revision": "b87a108798e4199ff5100d1e29dab7162b8e322e",
+    "dirty": false,
+    "fingerprint": "9d5d7f0c4b7b00bd70ee17d0b44ab52bdd75a2b25da6486b01a8df48a130e264",
+    "content": "0d2e31d59d5b53ebee1b2162ea550a0c0e22a291d947951607dfc7e5a18e9830"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-lesson-labels-in-skill",
+      "digest": "6835e82c23fdec63c35ef066524afab9cd78afe5951961c15bd19048fd5abee8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "--exact",
+    "the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_lessons"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

@@ -3,6 +3,7 @@ id: "timeline"
 title: "Timeline"
 type: timeline
 archived_changes: 131
+archived_changes: 137
 tags:
   - chough/timeline
 ---
@@ -14,4 +15,6 @@ finalized, newest first. The index lists only the newest 10.
 
 - [2026-11](timeline/2026-11.md): 105 archived changes
 - [2026-11, page 2](timeline/2026-11-p2.md): 20 archived changes
+- [2026-11](timeline/2026-11.md): 104 archived changes
+- [2026-11, page 2](timeline/2026-11-p2.md): 27 archived changes
 - [2026-10](timeline/2026-10.md): 6 archived changes

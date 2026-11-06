@@ -3927,3 +3927,107 @@ fn an_unreadable_legacy_log_leaves_the_cycle_unknown() {
     );
     assert_ne!(action["command"], RESET_COMMAND, "{action}");
 }
+
+/// Every schema 2 checkpoint in the project, as relative paths: JSON objects with a schema
+/// version of 2 and the checkpoint's objective, stage and native change fields.
+#[cfg(unix)]
+fn checkpoint_files(fixture: &Fixture) -> Vec<String> {
+    let mut found = vec![];
+    let mut pending = vec![fixture.root().to_path_buf()];
+    while let Some(path) = pending.pop() {
+        let name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("");
+        if path.is_dir() {
+            if name != ".git" && name != "bin" {
+                pending.extend(
+                    fs::read_dir(&path)
+                        .unwrap()
+                        .map(|entry| entry.unwrap().path()),
+                );
+            }
+        } else if let Ok(value) = serde_json::from_slice::<Value>(&fs::read(&path).unwrap())
+            && value["schema_version"] == 2
+            && ["objective", "stage", "native_change"]
+                .iter()
+                .all(|field| value.get(field).is_some())
+        {
+            let relative = path.strip_prefix(fixture.root()).unwrap();
+            found.push(relative.to_string_lossy().into_owned());
+        }
+    }
+    found.sort();
+    found
+}
+
+/// REQ-cli-007, fourth criterion (#138, audit assertion review): no second writable
+/// checkpoint store is introduced and no adapter such as APS is required. An `aps`
+/// stand-in that records any call is never run while checkpoints are saved, stages move
+/// and reports read; the only schema 2 checkpoints are the canonical file, then the session
+/// files, and a write changes only the active session.
+#[cfg(unix)]
+#[test]
+fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write("bin/aps", "#!/bin/sh\necho \"$*\" >>.aps-calls\nexit 1\n");
+    fixture.executable("bin/aps");
+    fixture.init();
+    fixture.ok(&[
+        "checkpoint",
+        "--decision",
+        "decided: one store because REQ-cli-007 says so",
+    ]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "no visuals change"]);
+    assert!(fixture.run(&["next"]).status.success());
+    fixture.ok(&["status"]);
+    assert_eq!(checkpoint_files(&fixture), [".chough/session.json"]);
+
+    // Sessions mode starts by adopting event history and then the checkpoint, as the
+    // refusals of `session new` and `session adopt` name; the canonical file then moves
+    // into the sessions store.
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "first"]);
+    assert!(!fixture.exists(".chough/session.json"));
+    fixture.ok(&[
+        "session",
+        "new",
+        "second",
+        "--objective",
+        "Second objective",
+    ]);
+    let first = fixture.read(".chough/sessions/first.json");
+    fixture.ok(&[
+        "checkpoint",
+        "--decision",
+        "decided: only the active session changes because it is the one store",
+    ]);
+    assert_eq!(fixture.read(".chough/sessions/first.json"), first);
+    assert!(
+        fixture
+            .read(".chough/sessions/second.json")
+            .contains("only the active session changes")
+    );
+    fixture.ok(&["session", "use", "first"]);
+    fixture.ok(&["stage", "advance"]);
+    assert!(fixture.run(&["next"]).status.success());
+    let files = checkpoint_files(&fixture);
+    assert!(
+        files
+            .iter()
+            .all(|file| file.starts_with(".chough/sessions/")),
+        "a checkpoint outside the sessions store: {files:?}"
+    );
+    assert!(
+        files.contains(&".chough/sessions/first.json".to_string())
+            && files.iter().any(|file| file.ends_with("/second.json")),
+        "{files:?}"
+    );
+    assert!(
+        !fixture.exists(".aps-calls"),
+        "an APS adapter was run: {}",
+        fixture.read(".aps-calls")
+    );
+}

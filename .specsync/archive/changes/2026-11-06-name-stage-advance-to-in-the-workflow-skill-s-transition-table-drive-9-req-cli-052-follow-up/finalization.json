@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up",
+  "implementation_commit": "7868b0a64ee43687534718678e5e901a4c7ec9c9",
+  "implementation_tree": "eba40b066579945bfe5df2a23c618e9efeb9f6da",
+  "contract_digest": "bc2b413a26daa32d1294f049bdda52706a3b9b378c21b32c7baf876bf910dfbd",
+  "workspace_digest": "a1b5c752328b40af54b10b4307840d556223d7a507912565a20585d1204afbbd",
+  "closing_digest": "f44b3e02af0afa2c4d8b76f51043b9bec650f13848faf908c912fef5bb17e7fe",
+  "review_digest": "eab0ac4e2b0cb23be236d3e24f42ad9e5218d8eca306359b762f0e85f2a1f4c9",
+  "finalization_digest": "16d73eb5b3d80defc0aec2542477e7f688bf8950764480eb101d5d415ba67f63",
+  "timestamp": 1793974043
+}

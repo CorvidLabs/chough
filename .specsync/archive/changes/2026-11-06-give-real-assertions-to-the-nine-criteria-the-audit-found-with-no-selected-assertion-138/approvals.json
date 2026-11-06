@@ -1,0 +1,56 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793941088,
+      "digest": "b132144fecba19b023ce2b4eca922ba03210acf47609012f7e05dd4c61ef3a11",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138",
+        "title": "Give real assertions to the nine criteria the audit found with no selected assertion (138)",
+        "description": "Give real assertions to the nine criteria the audit found with no selected assertion (138)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "reporting"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "examples/measure-report.sh",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/cli.rs",
+          "tests/reduce.rs",
+          "tests/stages.rs",
+          "tests/timing.rs",
+          "tests/workflow_authority.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Issue #138 (audit assertion review): the nine criteria stay as written; this change adds tests that assert them, and one measurement script, examples/measure-report.sh, that REQ-reporting-003's before/after criterion is asserted through (Leif's choice A, 2026-11-05 21:52 MST)",
+        "acceptance_criteria": [
+          "Each of the nine criteria the audit found with no selected assertion (#138) has a test that asserts it: REQ-cli-002 lesson labels and no lesson store; REQ-cli-007 no second checkpoint store and no APS; REQ-cli-012 the upgrade note for new-form bug IDs; REQ-cli-029 recorded authority before approval and no human decision from labels, and no skipped cold-start proof promoted to a pass; REQ-cli-031 the walkthrough opening; REQ-cli-045 librarian off and no reset time; REQ-reporting-003 before/after measurement through examples/measure-report.sh. Each new assertion fails under a recorded targeted mutation and passes restored; no criterion, test, bound or timeout is weakened. The measure-report test fails first, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #138 (audit assertion review); Leif's 95% plan C6 and his choices (2026-11-05 21:52 MST, via the orc): REQ-cli-029 AC-5 asserted in Chough's evidence model plus ROADMAP text, and REQ-reporting-003's measurement criterion through examples/measure-report.sh plus a test. No runtime change and no new REQ or HI IDs. Lesson 2026-11-05: normalize CRLF before parsing repository text in a test and check a CRLF copy.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793974034,
+      "digest": "0184e0bf3873a3e78cb9b0fe46423852cac3211ba5026f3c859f1bea04ae475d",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
