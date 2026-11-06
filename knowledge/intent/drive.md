@@ -26,6 +26,7 @@ criteria:
   - DRIVE-19
   - DRIVE-20
   - DRIVE-21
+  - DRIVE-22
 tags:
   - chough/intent
 ---
@@ -59,3 +60,4 @@ archived changes whose requirements trace it.
 - **DRIVE-19**: none yet
 - **DRIVE-20**: none yet
 - **DRIVE-21**: none yet
+- **DRIVE-22**: [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md)

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177",
+  "implementation_commit": "a530d96674a853372c42ec2daa69184adfdc6436",
+  "implementation_tree": "570139d4f6c4ff64b62312c92a6d503403ff2c4e",
+  "contract_digest": "df4084b81e47994add0d5de6018f4e1957fbaa13da3f0ea97c7eaf2562d49f51",
+  "workspace_digest": "ad99e4d8f506c1bae33551d1337bed7141b5801cc49cb9c386b2c987fcb8306c",
+  "closing_digest": "f013747d047685ca6e3317441088d64244525ea03baedd3b499d51be73295279",
+  "review_digest": "f417ddeb1a61f84355a675fc58d39472ed0bb3e67eba86108faf5a6c01e8388d",
+  "finalization_digest": "150d17227552f7dd21e12132a1b5019ffcb186986c6e4411c4a04f75cf5707ce",
+  "timestamp": 1794007887
+}
