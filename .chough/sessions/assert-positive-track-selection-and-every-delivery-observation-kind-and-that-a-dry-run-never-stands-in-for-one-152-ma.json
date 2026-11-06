@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9cf3807fc22ec809e733f9ce",
-    "head": null,
+    "head": "EVT-a4712b57af23ba238b0b70cc",
     "legacy": null
   },
   "schema_version": 2,
@@ -32,13 +32,20 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "Assignment from the orc (t18), deciding overnight for Leif (2026-11-06): the Cases/evidence item, as tests and contract only, with its own issue (#152), a worktree from origin/main, failing tests first, a mutation check, and 'ready for approval' queued for Leif.",
+    "decided: a dry run 'never satisfies a delivery kind' is asserted where Chough distinguishes them, in reporting and in retention (delivery kinds are non-routine key items, kept in the vault; a dry run is routine), because Chough has no other delivery aggregate"
+  ],
   "open_questions": [],
-  "completed": [],
+  "completed": [
+    "Change package drafted; three new tests pass on main and each fails under a targeted mutation that the existing tests let pass (4 of 4 caught; logs in the ch-c456 scratchpad delivery-mutations/)"
+  ],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope decision of assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma"
+  ],
   "run_consents": [],
-  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+  "next_action": "Wait for Leif's scope decision through the orc; then materialize the REQ-cli-014 criterion, add the CHANGELOG line and the cases, record the mutation evidence, and verify on Linux"
 }
