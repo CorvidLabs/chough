@@ -10,3 +10,5 @@ Issue #169. In the auditor's verify-lane run at 1030252c, `tests/timing.rs::timi
 Leif captured DRIVE-19 ("Capture both"), in the wording of spec-sync's CI-7: "A failing test always means something is actually wrong, never that it ran at an unlucky moment."
 
 Issue #30 rules out a runtime clock switch, which could forge observation times, so the fix stays in the test.
+
+Leif then asked to reword the criterion ('Record both, reword the AC'), relayed by the orc on 2026-11-06 with a send-back. REQ-reporting-002's acceptance criterion said the traced standard output is "byte-identical to the untraced run", which two runs in different seconds cannot be. It now says "identical to the untraced run except for the clock": this change's one MODIFIED line, in `deltas/reporting.md`.

@@ -12,3 +12,5 @@ artifact: testing
   - Its other assertions (stderr, trace lines, native read count, phases, text mode, the refused budget) stay unchanged.
 - **Strictness:** the test also checks that the comparison rejects a report with one non-time field changed, and one compared with the wrong shift.
 - `fledge lanes run verify` passes on Linux.
+
+The test checks REQ-reporting-002's reworded criterion: identical except for the clock, with each time and span that runs to now later by exactly the gap between the two runs.

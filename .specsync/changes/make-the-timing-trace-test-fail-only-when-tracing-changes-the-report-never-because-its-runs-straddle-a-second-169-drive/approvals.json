@@ -37,5 +37,18 @@
       "approved_delta_bases": {}
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+      "actor": "0xLeif",
+      "reason": "Reword REQ-reporting-002's criterion from 'byte-identical' to 'identical except for the clock' so it says what the test checks (Leif, 2026-11-06).",
+      "timestamp": 1793998062,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": true
+    }
+  ]
 }
