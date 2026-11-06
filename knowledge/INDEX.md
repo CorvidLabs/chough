@@ -96,8 +96,7 @@ Archived lesson bundles:
 
 ## Observations
 
-389 recorded; most recent:
-370 recorded; most recent:
+383 recorded; most recent:
 
 - OBS-product-test-914b2391e3fbf93b4a7a8d94 ProductTest Passed in local-macos-arm64 at b87a108798e4
 - OBS-tc-cli-no-reset-drops-no-observation-4375674fc4309dbcaa7720ac ProductTest Passed in local-macos-arm64 at b87a108798e4

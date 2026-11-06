@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d182a69b5c86a37e800e6e6b",
-    "head": null,
+    "head": "EVT-5448993086c02c54ab411f03",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "intent",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -54,7 +54,8 @@
   "decisions": [
     "Leif (0xLeif), 2026-11-05 21:52 MST, through the orc (t18): 'Both recommended': REQ-cli-029/AC-5 asserted in Chough's evidence model plus ROADMAP text; REQ-reporting-003's measurement criterion through examples/measure-report.sh plus a test.",
     "failed: opening the gate 'Scope decision of give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138' with checkpoint --awaiting-human because of the KNOW-29 history regression (legacy history anchor changed); the gate waits in the orc, not in the session, until chough's fix lands",
-    "Leif (0xLeif), through the orc (t18), 'Approve' for the C6 definition; the orc recorded the native approval on 8833f048. The session stays at intent until chough's KNOW-29 history fix lets stage events be written."
+    "Leif (0xLeif), through the orc (t18), 'Approve' for the C6 definition; the orc recorded the native approval on 8833f048. The session stays at intent until chough's KNOW-29 history fix lets stage events be written.",
+    "decided: stage moves resumed after chough#141's fix (#142, 90e5de6f) merged into this branch; intent -> design (skipped) -> plan -> build -> test -> accept"
   ],
   "open_questions": [],
   "completed": [
@@ -78,7 +79,9 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138"
+  ],
   "run_consents": [],
-  "next_action": "Once chough#141's fix is on main: merge main, move the session to accept with the review gate, change check --commit, verify on Linux, open the PR (Fixes #138), send ready for review"
+  "next_action": "Wait for Leif's implementation review through the orc; the orc records the native review, then this agent ships, finalizes, moves to done, pushes and merges on green plus corvid-agent"
 }
