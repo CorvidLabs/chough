@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-5c67e8fb8aaeaca193dc036d",
-    "head": "EVT-0df05ca2a1d970222aeccfa9",
+    "head": "EVT-c914f8951b6caba440e8f87e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -48,7 +48,8 @@
     "decided: KNOWN_PREVIOUS rows go at the end of the list because #151 inserts at its top",
     "decided: docs/cli.md:25 (bug row, bug merge) is left to #158 and #69's lines are not touched because those pull requests change them",
     "Leif (0xLeif) decided \"Scope approval of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"Approve\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native definition approval as 0xLeif at c8a74aff); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated",
-    "decided: commit the rebuilt knowledge index after the passing runs because CI's library index --check needs it, and report those observations as historical by #136 rather than loop reruns"
+    "decided: commit the rebuilt knowledge index after the passing runs because CI's library index --check needs it, and report those observations as historical by #136 rather than loop reruns",
+    "Leif (0xLeif) decided \"Implementation review of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18\": \"pass\" (orc tab, 2026-11-06, relayed by orc (hc t18) to ch-docs-accuracy; orc recorded the native scoped review as 0xLeif, verdict pass at 24cb2231 on PR #164); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -96,9 +97,7 @@
     "BUG-readme-docs-workflow-skill-and-diagrams-drift-from-what-main-does-c235415b190ff7654315964d"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Commit, specsync change check --commit, pre-push and audit --strict, push, open the PR and send ready for review; then wait for the human implementation review"
 }
