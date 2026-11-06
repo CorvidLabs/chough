@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-b8b7c31a5ef2d822ed600575",
-    "head": "EVT-386670ff119be8ba7092a46a",
+    "head": "EVT-e93af37326fab965c1668b79",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -36,15 +36,14 @@
       "TC-history-relay-invalid-payloads"
     ],
     "design": [],
-    "files": [
-      "tests/relay.rs"
-    ]
+    "files": []
   },
   "decisions": [
     "Leif's 95-plan decision for D7 (orc tab 2026-11-05): narrow the promise to recorded, digest-protected claims, not authentication, and record relayed-by for human decisions an agent records; rejected: authenticating identity or signing inside the tool (spec-sync#633: that belongs to attest)",
     "Leif (2026-11-05 20:18 MST, Herdr orc tab, relayed by orc t18): \"Approve shape + FLOW-16\": relayed_by = {decided_by, words, where, recorded_by} as proposed by ch-d7; --clear-awaiting-human option A (kept for withdrawing gates, records no decision); FLOW-16 captured in the drafted wording; FLOW-10 unchanged",
     "Leif (2026-11-05 20:33 MST, Herdr orc tab, relayed by orc t18): \"Approve\" for record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7 at 5aa2abea; definition approval recorded natively by the orc as 0xLeif",
-    "decided: SKILL.md keeps only the in-place narrowing \"approvals are claims\" because it has a 6144-byte bound and main was at 6141; --close-gate is taught in plan, accept and checkpoint references and the waiting action"
+    "decided: SKILL.md keeps only the in-place narrowing \"approvals are claims\" because it has a 6144-byte bound and main was at 6141; --close-gate is taught in plan, accept and checkpoint references and the waiting action",
+    "Leif decided \"Implementation review of record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7\": \"Record and merge\" (Herdr orc tab, 2026-11-05 21:46 MST, relayed by orc t18; native review recorded by the orc as 0xLeif at eb38f705); recorded by claude-code ch-d7 (t71); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -71,9 +70,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for the orc to relay Leif's implementation review; then native review (recorded by the orc), finalize, close the gate with --close-gate, advance to done, push, observe CI, merge on the relayed decision"
 }
