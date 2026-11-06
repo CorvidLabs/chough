@@ -178,8 +178,11 @@ rules.
 
 Native approvals and reviews remain in SpecSync. The current agent invokes those
 writers from actual human authority; the Rust helper reads native state for gates.
-Actor labels do not authenticate people, and a structural pass or exit code does
-not establish behavioral proof or human acceptance. Publication and deployment
+Approvals and reviews are recorded claims bound to their content, not authenticated
+identity: actor labels do not authenticate people, and a structural pass or exit code
+does not establish behavioral proof or human acceptance. When an agent records a
+human's decision at a gate, `chough checkpoint --close-gate` keeps who decided, their
+words, where and the recording agent as a relayed claim, never as a native approval. Publication and deployment
 keep their separate authorization and evidence requirements.
 
 ## Tested platforms

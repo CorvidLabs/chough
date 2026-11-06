@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7",
+  "implementation_commit": "eb38f705adfe93cbd4cd3b12b53414ec15632bcf",
+  "implementation_tree": "fbe4b4dc5a1295b13545cf56fc1748e5bfbd9301",
+  "contract_digest": "92502958763a2134c98784c9cb30a3390b455d5c6fc0d75c6a53e0f456a8b87f",
+  "workspace_digest": "da2ff5b9894a9cdbea19dc5aeedc48b0f4044f298f9d9004538f018c7d0d638a",
+  "closing_digest": "533dbd202f78f54e5d3f63c6a2e48eae33e514c07d07bcf578e49d30f4ff5f3e",
+  "review_digest": "cde271fe14ddf698cf0f60c902bc72f5384ec56681fff57dd37e01921a6ca9c0",
+  "finalization_digest": "e02502e969916a788c00142ac0a97ec7212d70319b490ca2913e3cef403b3670",
+  "timestamp": 1793940457
+}

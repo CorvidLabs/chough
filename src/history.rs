@@ -318,7 +318,7 @@ fn validate_payload(transition: &stage::Transition) -> Result<()> {
             ),
         "unknown transition kind"
     );
-    Ok(())
+    stage::validate_relay(transition)
 }
 
 fn anchor(root: &Path) -> Result<Option<Anchor>> {
@@ -456,6 +456,7 @@ fn parse_event(bytes: &[u8], cycle: &str, id: &str) -> Result<Event> {
             ),
         "unknown transition kind at {path}"
     );
+    stage::validate_relay(&event.transition).with_context(|| format!("at {path}"))?;
     Ok(event)
 }
 
@@ -1749,6 +1750,7 @@ mod tests {
             revision: None,
             refresh: vec![],
             backfill: None,
+            relayed_by: None,
         }
     }
 

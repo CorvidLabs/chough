@@ -45,12 +45,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-supported-platforms-740fae9392dd55ffb48cb418 | passed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
-| OBS-tc-cli-supported-platforms-e99a5e875c28321368248744 | passed (by cycle time) | local-macos-arm64 | TC-cli-supported-platforms |
 
 ## Bugs
 

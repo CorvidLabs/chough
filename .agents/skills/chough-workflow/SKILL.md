@@ -17,10 +17,10 @@ second ledger, and never record a human decision that a human did not make.
 Run HI, SpecSync and Fledge yourself. Native commands in references are agent
 instructions; give the human outcomes and PRs.
 
-Use applicable explicit prior or standing human authorization for a concrete scope.
-Record the agent actor and human source, scope and limits before native approval;
-do not ask again just to run a tool. Ask when authority is missing or exceeded.
-Continuation, bot reviews and actor labels alone are not human decisions.
+Use explicit prior or standing human authorization for a concrete scope. Record the
+agent actor, human source, scope and limits before native approval; do not ask again
+just to run a tool. Ask when authority is missing or exceeded. Continuation, bot
+reviews and actor labels are not human decisions; approvals are claims.
 
 Keep native checks and separate implementation acceptance and delivery authority.
 See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
