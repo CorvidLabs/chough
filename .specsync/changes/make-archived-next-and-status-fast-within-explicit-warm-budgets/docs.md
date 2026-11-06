@@ -8,7 +8,7 @@ artifact: docs
 After approval, update:
 
 - `hi/drive.md` with Leif's approved numeric warm-budget criterion, using the next free integrated ID.
-- `docs/FRD.md` and the cli semantic delta with REQ-cli-050 and its DRIVE-2 trace.
+- `docs/FRD.md` and the cli semantic delta with REQ-cli-052 and its DRIVE-2 trace.
 - `docs/cli.md` with cached versus live read states, cache location/trust/removal, cold fallback, the exact warm measurement conditions, and the unchanged live behavior of stage/timing/retention/verification.
 - `CHANGELOG.md` with the user-visible latency improvement and its archived/read-only limits.
 - `.chough/cases/cli.next-status-latency.cases.toml` with focused requirement bindings after the scoped native check materializes the requirement.

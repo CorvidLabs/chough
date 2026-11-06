@@ -5,7 +5,7 @@ artifact: requirements
 
 # Requirements
 
-Proposed REQ-cli-050, traced to DRIVE-2, LIFE-3, LIFE-6, LIFE-7 and FLOW-2:
+Proposed REQ-cli-052, traced to DRIVE-2, LIFE-3, LIFE-6, LIFE-7 and FLOW-2:
 
 1. On the measured 121-archive macOS arm64 Chough repository, release `next` and `status` for a session naming an archived change each complete at or below 2000 ms at p95 and 3000 ms for every run across ten warm runs after one priming run.
 2. A warm report with a valid entry reuses only a live SpecSync `authenticated-history` verdict and makes zero SpecSync status calls. The output labels the read as cached and retains the native summary fields and deterministic output bounds.

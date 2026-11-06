@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bfa7e93bcea3966ef7705d22",
-    "head": "EVT-8ab13ab39a6be330c7f99380",
+    "head": "EVT-d03f804c334a1c12b4d4bad7",
     "legacy": null
   },
   "schema_version": 2,
@@ -26,7 +26,8 @@
   },
   "decisions": [
     "proposed: warm archived next/status budgets are 2000 ms p95 and 3000 ms maximum over ten release runs because archived native status alone measured 4.36-4.84 s and local hashing can exceed 2 s.",
-    "rejected: cached stage transitions, cached active native state, or Chough-parsed archive validity because lifecycle mutations must keep live SpecSync authority and Chough must not become a second authenticator."
+    "rejected: cached stage transitions, cached active native state, or Chough-parsed archive validity because lifecycle mutations must keep live SpecSync authority and Chough must not become a second authenticator.",
+    "decided: the PR 69 split assigns archive caching to issue 32 and batched stage advance to a separate PR because the orc coordinated that ownership with ch-pr69; the ID audit assigns REQ-cli-052 and DRIVE-15 above every existing claim."
   ],
   "open_questions": [],
   "completed": [
@@ -36,7 +37,7 @@
   "bugs": [],
   "blockers": [],
   "awaiting_human": [
-    "Intent and scope decision of make-archived-next-and-status-fast-within-explicit-warm-budgets: approve the numeric warm budgets, read-only archive cache, exact snapshot workers, and supersession of stale PR 69"
+    "Intent and scope decision of make-archived-next-and-status-fast-within-explicit-warm-budgets: approve the numeric warm budgets, read-only archive cache using REQ-cli-052 and DRIVE-15, and exact snapshot workers"
   ],
   "run_consents": [],
   "next_action": "Wait for Leif's relayed intent/scope decision through the orc; do not edit product code or record approval before it arrives."

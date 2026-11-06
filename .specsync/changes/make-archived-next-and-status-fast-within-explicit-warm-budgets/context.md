@@ -16,7 +16,9 @@ Profiling at `e99dc7961323e5c4e2aff1a2cf13333b0c47037e` on macOS arm64 with Spec
 
 The full measurements and limitations are in `.chough/artifacts/issue-32-next-status-latency/PROFILE.md`.
 
-PR #69 previously proposed authenticated archive reuse. It is stale/conflicting, reviewer evidence showed that shallow-history changes were absent from its key, and it reused verdicts for stage mutations. This proposal retains SpecSync as the only authenticator, adds the missing history inputs, and limits reuse to read-only `next`/`status`. Every stage transition, timing report, retention decision and native verification stays live. No cached active-change status is allowed.
+PR #69 previously proposed authenticated archive reuse. It is stale/conflicting, reviewer evidence showed that shallow-history changes were absent from its key, and it reused verdicts for stage mutations. The coordinated split assigns its archive cache to this #32 change and batched `stage advance --to` to a separate small PR; #69 closes pointing to both replacements. This proposal retains SpecSync as the only authenticator, adds the missing history inputs, and limits reuse to read-only `next`/`status`. Every stage transition, timing report, retention decision and native verification stays live. No cached active-change status is allowed.
+
+The ID registry audit covered origin/main `260ecc949ea01214f4bec43b30ea4226ce8fae59` and every remote branch. REQ-cli-051, REQ-history-011, FLOW-17 and DRIVE-14 were the highest respective claims. This change takes REQ-cli-052 and proposes DRIVE-15; it claims no history or FLOW ID.
 
 The checkpoint-cap owner retains `src/checkpoint.rs`, `src/sessions.rs`, `tests/cli.rs`, `tests/sessions.rs`, and session/capacity records. PR #133 also touches `src/evidence.rs`, `tests/next.rs`, `tests/common/mod.rs`, `docs/cli.md`, and `hi/drive.md`; merge main after it lands and preserve those edits. No rebase or force push is permitted.
 

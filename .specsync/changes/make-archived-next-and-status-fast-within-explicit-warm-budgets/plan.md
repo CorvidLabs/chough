@@ -15,17 +15,17 @@ Implement a strictly invalidated, read-only cache of SpecSync-authenticated arch
 - Cached or reconstructed stage-gate decisions; cached active-change status.
 - Changes to `timing`, retention, native verification, native gate predicates, deadlines, output caps or evidence freshness semantics.
 - A cold-cache latency promise, an active-change latency promise, SpecSync internals, or a new upstream fix for spec-sync#831.
-- Reworking or merging PR #69 from this branch. Ask Leif to close it as superseded if this scope is approved.
+- Batched `stage advance --to`: the coordinated PR #69 split assigns that behavior to a separate small PR. The archive cache belongs to this #32 change, and #69 closes pointing to both replacements.
 - Release, deployment or automatic merge.
 
 ## Steps
 
-1. Obtain the combined intent/scope decision on the numeric budget, read-only cache and snapshot worker design. Capture the agreed HI criterion after checking the integrated main for the next free ID; DRIVE-15 is the expected ID because PR #133 uses DRIVE-13/14.
+1. Obtain the combined intent/scope decision on the numeric budget, read-only cache and snapshot worker design. Capture the agreed HI criterion as DRIVE-15; the registry audit of origin/main `260ecc949ea01214f4bec43b30ea4226ce8fae59` and every remote branch found DRIVE-14 highest and assigned REQ-cli-052 to this change because REQ-cli-051 is highest.
 2. Merge current origin/main without rebasing, preserve PR #133 and other integrated edits, and refresh the native delta/scope if the integration changes the definition.
 3. Add controlled failing tests for cold recording, warm zero-status reuse, invalidation/fallback, anti-spoofing, and live stage/retention reads. Run them against unmodified product code and retain the failure logs.
 4. Implement `src/native.rs` and the report-only call seam. Keep live failure/timeout behavior and native output parsing unchanged.
 5. Add exact fingerprint known-answer and freshness regressions, then implement scoped snapshot workers. Confirm identical legacy/content digests and errors remain visible.
-6. Run focused tests and mutation checks, then the complete Fledge verification lane. Add per-change Chough case definitions after the scoped native check materializes REQ-cli-050.
+6. Run focused tests and mutation checks, then the complete Fledge verification lane. Add per-change Chough case definitions after the scoped native check materializes REQ-cli-052.
 7. Build release Chough and record ten warm archived `next` and `status` runs after one priming run on the same 121-archive inputs. Record every run, p95, maximum, native call counts, phase traces and limitations. Repeat if the budget fails; do not relax it.
 8. Merge origin/main again before review/merge, rebuild the knowledge index if needed, and leave a clean pinned head for human review.
 
