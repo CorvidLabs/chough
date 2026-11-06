@@ -67,4 +67,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11.json](../attachments/assert-the-2ce3f9b7/sessions/assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11.json)

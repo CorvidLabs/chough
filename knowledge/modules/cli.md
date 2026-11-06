@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 116
+archived_changes: 117
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-116 archived changes, newest first.
+117 archived changes, newest first.
 
+- [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)
 - [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144)
@@ -42,5 +43,4 @@ this note only links them.
 - [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](../archives/advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into.md) Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2)
 - [support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17](../archives/support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17.md) Support macOS and Linux with Windows through WSL and drop the native Windows CI job (FLOW-17)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
-- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
-- 106 more on the [timeline](../timeline.md)
+- 107 more on the [timeline](../timeline.md)
