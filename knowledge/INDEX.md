@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20 (active; `specsync change status run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20`)
 
 Archived changes (newest first; the newest 3 are hot):
 
