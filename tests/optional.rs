@@ -1159,8 +1159,21 @@ fn legacy_claude_copy_is_reported_and_removed_only_explicitly() {
 #[test]
 fn the_requirements_give_the_librarian_one_default_and_it_is_on() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("specs/cli/requirements.md");
-    let text = std::fs::read_to_string(path).unwrap().replace('\n', " ");
-    let contradicting: Vec<&str> = text
+    let raw = std::fs::read_to_string(path).unwrap();
+    // #131: a Windows checkout has CRLF line endings, so check both forms.
+    for text in [
+        raw.replace("\r\n", "\n"),
+        raw.replace("\r\n", "\n").replace('\n', "\r\n"),
+    ] {
+        let contradicting = librarian_default_contradictions(&text);
+        assert!(contradicting.is_empty(), "{contradicting:#?}");
+    }
+}
+
+/// Requirement sentences that name the librarian, a default and `off` without saying it
+/// is on by default.
+fn librarian_default_contradictions(text: &str) -> Vec<String> {
+    text.replace('\n', " ")
         .split(". ")
         .filter(|sentence| {
             let lower = sentence.to_lowercase();
@@ -1172,6 +1185,6 @@ fn the_requirements_give_the_librarian_one_default_and_it_is_on() {
                 && !lower.contains("on by default")
                 && !lower.contains("librarian is on (the default)")
         })
-        .collect();
-    assert!(contradicting.is_empty(), "{contradicting:#?}");
+        .map(str::to_string)
+        .collect()
 }

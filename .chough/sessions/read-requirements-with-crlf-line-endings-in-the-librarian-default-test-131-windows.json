@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-befba131f997351c58ff06df",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Read requirements with CRLF line endings in the librarian-default test (#131 Windows)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows",
+  "references": {
+    "criteria": [
+      "FLOW-12"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then normalize CRLF in the test"
+}
