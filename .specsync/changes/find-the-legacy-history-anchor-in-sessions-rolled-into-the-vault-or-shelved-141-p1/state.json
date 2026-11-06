@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1",
+  "slug": "find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1",
+  "title": "Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)",
+  "description": "Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "260ecc949ea01214f4bec43b30ea4226ce8fae59",
+  "created_at": 1793940908,
+  "updated_at": 1793940943,
+  "affected_specs": [
+    "history"
+  ],
+  "affected_paths": [
+    "src/history.rs",
+    "tests/sessions.rs",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Issue #141 P1 regression from KNOW-29 (#135): adopted_anchor scanned only open and archived sessions; the adopting session rolled into the vault and every other session refused writes. No requirement text changes.",
+  "acceptance_criteria": [
+    "A session without its own legacy anchor keeps writing gate and stage events when the session holding the anchor has been rolled into the vault or shelved, finding the anchor there with the same exact match; a changed legacy log is still refused. The new test fails first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #141 P1 (found by ch-d7 on main 260ecc94); orc: drop to this first; REQ-history-002 anchor guard unchanged.",
+    "public_contract": "no"
+  }
+}

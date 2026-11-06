@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-d0e2adf21534172a2437b917",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Find the legacy history anchor in rolled or shelved sessions (#141, P1)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "history"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1",
+  "references": {
+    "criteria": [
+      "DRIVE-13"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then extend adopted_anchor"
+}
