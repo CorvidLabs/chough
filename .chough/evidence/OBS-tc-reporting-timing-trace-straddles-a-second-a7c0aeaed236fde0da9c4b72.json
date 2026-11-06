@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-reporting-timing-trace-straddles-a-second-a7c0aeaed236fde0da9c4b72",
+  "criteria": [
+    "DRIVE-19"
+  ],
+  "requirements": [
+    "REQ-reporting-002"
+  ],
+  "contracts": [
+    "specs/reporting/reporting.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test timing -- --exact timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit for TC-reporting-timing-trace-straddles-a-second: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-reporting-timing-trace-straddles-a-second-a7c0aeaed236fde0da9c4b72.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-reporting-timing-trace-straddles-a-second-a7c0aeaed236fde0da9c4b72.log": "962551868e34d1677bbdb741ef380d77a4079035356347686f9811abc8851adb"
+  },
+  "observed_at_unix_seconds": 1793997452,
+  "snapshot": {
+    "revision": "7142f286393ef3c24e328c34542328ce00ffcd65",
+    "dirty": false,
+    "fingerprint": "4b90c895bf55f23e4352e8bc6ec310115e8cf3a8e4f3fdf290b4c219dc86cc15",
+    "content": "962691b7517c120710f9f42e05685e4384dff20eba8916e2b46cb619b364a4ca"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-reporting-timing-trace-straddles-a-second",
+      "digest": "10db212a036a1f73e21927c33afd851ab3840f028534bf2ba5abfad992828dd9"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 6
+}
