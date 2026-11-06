@@ -1,7 +1,7 @@
 # Native lifecycle and evidence
 
-Installed `specsync change status <id> --json`, `specsync change ship-status <id>` and
-command help are authoritative for the current state and recovery path. This
+`chough change status <id>` (SpecSync's own status, passed through unchanged),
+`specsync change ship-status <id>` and installed command help are authoritative for the current state and recovery path. This
 reference follows SpecSync 6.1; do not hardcode it over another version's output.
 Match the SpecSync version used by lifecycle writers and CI.
 
@@ -70,8 +70,8 @@ boundaries separate.
 
 `specsync change check <id>` materializes the approved delta. Cases may link the
 requirements it adds or modifies before then while the checkpoint records the
-approved change (see testing.md). `specsync change check <id>
---commit` also records targeted structural verification; run it after committing the
+approved change (see testing.md). `chough change check <id>`
+(SpecSync's `change check <id> --commit`) also records targeted structural verification; run it after committing the
 source with `.chough/`. Stage new source files first. It does not run the project's
 tests; product checks are separate observations. It refuses an edited delta and
 incomplete tasks. Fix real failures; if evidence is stale, follow the exact recovery

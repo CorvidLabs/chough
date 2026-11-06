@@ -94,7 +94,7 @@ A fresh agent with none of the earlier conversation:
    never records a pending human decision itself. In stage done with the native
    change archived, the cycle is closed: `chough next` recommends `chough stage reset
    --to intent --reason "<why>"` (or `--to plan` when the approved intent already
-   covers the new work), then `specsync change new "<outcome>" --spec <module> --path
+   covers the new work), then `chough change new "<outcome>" --spec <module> --path
    <path>` and `chough checkpoint --native-change <id> --next-action "<next step>"`.
    The same holds at an earlier stage when the native change is already archived:
    `chough next` names the archive and the new cycle instead of continuing, after

@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough change new`, `answer`, `check` and `status` run SpecSync's own change steps
+  (#171, DRIVE-20, REQ-cli-057), so an agent can drive a change through `chough` for
+  them. `check` runs `specsync change check <id> --commit`, and the other three add
+  `--json`. SpecSync's output, refusals and exit code pass through byte for byte, and
+  nothing under `.chough/` is written. `status` keeps the native read bound, and a
+  refusal past it names a retry with a longer bound. The writes are never stopped by
+  that bound. A missing `specsync` refuses naming the install command and the step to
+  run again. The workflow skill and docs now name `chough change` for these steps. This
+  is slice 1 of "Chough drives SpecSync"; DRIVE-21, FLOW-19 and FLOW-20 are captured
+  for later slices, and FLOW-16 and the Drive intent carry "amended by FLOW-19" notes.
 - `chough doctor` finds and fixes the Chough debt that stops a fresh worktree from
   entering Chough (DRIVE-17): finished sessions left open, a legacy
   `.chough/session.json` to adopt, a stale active pointer, and awaiting-human gates on

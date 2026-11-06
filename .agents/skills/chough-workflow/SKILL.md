@@ -31,7 +31,7 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
 2. Find the checkpoint: run `chough next --environment <env>`. Without the helper,
    read `.chough/session.json`, the last lines of `.chough/transitions.jsonl`,
    `.chough/preferences.json`, open bugs in `.chough/bugs/`, and
-   `specsync change status <native_change> --json`.
+   `chough change status <native_change>`.
 3. Check what is still true: native state, evidence freshness, open blocking bugs,
    and `awaiting_human`. A saved stage or next action is a suggestion; native status
    decides gates.
