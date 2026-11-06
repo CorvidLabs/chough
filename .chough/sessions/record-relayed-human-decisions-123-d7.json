@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-b8b7c31a5ef2d822ed600575",
-    "head": "EVT-2c0917f47432eaa2be5ba23d",
+    "head": "EVT-386670ff119be8ba7092a46a",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -28,7 +28,13 @@
       "REQ-cli-030",
       "REQ-history-010"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-relay-closes-one-gate-with-four-values",
+      "TC-cli-relay-refusals-recover",
+      "TC-cli-relay-never-touches-native",
+      "TC-cli-relay-clear-records-none",
+      "TC-history-relay-invalid-payloads"
+    ],
     "design": [],
     "files": [
       "tests/relay.rs"
@@ -43,12 +49,31 @@
   "open_questions": [],
   "completed": [
     "Native definition complete (audit passes); failing tests committed: tests/relay.rs (5 tests, all fail on main: no --close-gate, no relayed_by) and tests/stages.rs expectations naming --close-gate (3 tests fail)",
-    "Implemented relayed_by (REQ-history-010), chough checkpoint --close-gate with four refusals (REQ-cli-050) and the --close-gate guidance (REQ-cli-030); narrowed README, skill (+installed copy, KNOWN_PREVIOUS), docs, FRD and cli.spec.md invariant 2; cases in cli/history relayed-decisions files. Full suite 456 passed, 1 flaky timing test (BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b, out of scope); clippy and fmt clean"
+    "Implemented relayed_by (REQ-history-010), chough checkpoint --close-gate with four refusals (REQ-cli-050) and the --close-gate guidance (REQ-cli-030); narrowed README, skill (+installed copy, KNOWN_PREVIOUS), docs, FRD and cli.spec.md invariant 2; cases in cli/history relayed-decisions files. Full suite 456 passed, 1 flaky timing test (BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b, out of scope); clippy and fmt clean",
+    "Cases passed: the 5 relay cases locally (local, twice each) and on Linux (local-linux-aarch64, Docker chough-linux:3, SpecSync 6.2.0 built from source) at 98aa658d. Test steps of fledge lanes run verify passed on macOS (463 tests) and Linux; the audit step needs a re-run after the final check (stale verification on macOS; git safe.directory in the container on Linux)"
   ],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-relay-clear-records-none-45cd0109e41656d3e182af21",
+    "OBS-tc-cli-relay-clear-records-none-6fa5a5b6c92a58c7e09b25ed",
+    "OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b",
+    "OBS-tc-cli-relay-closes-one-gate-with-four-values-4aeb84d60f1ea766aefdb776",
+    "OBS-tc-cli-relay-closes-one-gate-with-four-values-591766803ac5a151a11fae6a",
+    "OBS-tc-cli-relay-closes-one-gate-with-four-values-f7953d03c79922c844d899b2",
+    "OBS-tc-cli-relay-never-touches-native-469424f8ed508e8e708ecfec",
+    "OBS-tc-cli-relay-never-touches-native-5dea5635501e04bd5ba3e573",
+    "OBS-tc-cli-relay-never-touches-native-d782698f8446ac9d148f1bd4",
+    "OBS-tc-cli-relay-refusals-recover-87dcfa66ee55b5c03ff00854",
+    "OBS-tc-cli-relay-refusals-recover-b8da2ecf35c89b0c399b1e15",
+    "OBS-tc-cli-relay-refusals-recover-c53afc18239889e07f9ac065",
+    "OBS-tc-history-relay-invalid-payloads-736bae7a3a483a4d9a691e67",
+    "OBS-tc-history-relay-invalid-payloads-a9fe4eaaf31e180bffc750aa",
+    "OBS-tc-history-relay-invalid-payloads-d9941deec425b224a5e3cd5e"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7"
+  ],
   "run_consents": [],
-  "next_action": "Merge origin/main, rebuild knowledge, specsync change check, run cases local and Linux, verify, open review gate"
+  "next_action": "Wait for the orc to relay Leif's implementation review; then native review (recorded by the orc), finalize, close the gate with --close-gate, advance to done, push, observe CI, merge on the relayed decision"
 }
