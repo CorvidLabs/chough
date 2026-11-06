@@ -632,3 +632,48 @@ fn lifecycle_guidance_from_v0_2_0_updates_to_the_backfill_guidance() {
     let delivered = fs::read_to_string(&installed).unwrap();
     assert!(delivered.contains("chough stage backfill"), "{delivered}");
 }
+
+/// D5 (#122): closeout guidance is archive-first. The hosted Archive gate refuses while a
+/// native change is open, so pushing for CI comes only after local verification, the
+/// human's implementation review, the native review and finalize. In every place that
+/// teaches the order, each instruction to push and observe CI comes after the first
+/// mention of finalize.
+#[test]
+fn closeout_guidance_pushes_for_ci_only_after_finalize() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let pushes = [
+        "push, ci",
+        "push the branch",
+        "push branch",
+        "pushes the branch",
+        "push and observe",
+        "observe required ci",
+        "observe hosted ci",
+    ];
+    for relative in [
+        "skills/chough-workflow/references/lifecycle.md",
+        "skills/chough-workflow/references/accept.md",
+        ".agents/skills/chough-workflow/references/lifecycle.md",
+        ".agents/skills/chough-workflow/references/accept.md",
+        "docs/lifecycle.md",
+        "docs/walkthrough.md",
+        "docs/diagrams/lifecycle.mmd",
+    ] {
+        let text = fs::read_to_string(root.join(relative))
+            .unwrap()
+            .to_lowercase()
+            .replace('\n', " ");
+        let finalize = text
+            .find("finalize")
+            .unwrap_or_else(|| panic!("{relative} never names finalize"));
+        for push in pushes {
+            if let Some(at) = text.find(push) {
+                assert!(
+                    at > finalize,
+                    "{relative}: \"{push}\" comes before finalize: …{}…",
+                    &text[at.saturating_sub(80)..(at + 80).min(text.len())]
+                );
+            }
+        }
+    }
+}
