@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "b49e9681fdc36fb550e57f835068d5c777dff26c",
+      "contract_digest": "677758586b1150288ced09ae02286290a70aa508f85cf2ce223bc2fae4e6451c",
+      "execution_digest": "f3637e12874eb3ff7cf3761bf5e1b4729eb840c018bf3ad4a6217a7ac81ad7f0",
+      "workspace_digest": "c48affd76f8a596ca7da0c9d1706ca35af28e965e205794281780603efded8c1",
+      "timestamp": 1793973775
+    }
+  ]
+}

@@ -1961,3 +1961,30 @@ fn a_refused_apply_keeps_vault_copies_another_writer_changed() {
         }
     }
 }
+
+/// #148: a directory under `.specsync/changes/` with no change files (left empty by a
+/// branch switch, which removes tracked files but not directories) is not an open
+/// change: the knowledge index does not list it as active, and the trim does not refuse
+/// on it. A directory with a change file still counts as open.
+#[cfg(unix)]
+#[test]
+fn an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change() {
+    let fixture = knowledge_fixture();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: summarize old proof",
+    ]);
+    fs::create_dir_all(fixture.root().join(".specsync/changes/left-behind/deltas")).unwrap();
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/INDEX.md");
+    assert!(!index.contains("left-behind"), "{index}");
+    let applied = fixture.ok(&["library", "archive", "--apply"]);
+    assert!(!applied.to_string().contains("left-behind"), "{applied:#}");
+    fixture.write(".specsync/changes/really-open/change.md", "open\n");
+    let refused = fixture.fails(&["library", "archive", "--apply"]);
+    assert!(refused.contains("really-open"), "{refused}");
+    assert!(!refused.contains("left-behind"), "{refused}");
+}

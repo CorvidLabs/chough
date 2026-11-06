@@ -1231,7 +1231,36 @@ impl Native {
     }
 }
 
-/// Change directories, rejecting links and names that are not plain change IDs.
+/// Whether a change directory holds a file at any depth (#148): a branch switch leaves
+/// the empty directories of a change whose files Git removed, and such a directory is
+/// not an open change. Walks at most 10,000 entries; past that it counts as open.
+pub(super) fn has_change_files(path: &Path) -> bool {
+    let mut pending = vec![path.to_path_buf()];
+    let mut seen = 0usize;
+    while let Some(directory) = pending.pop() {
+        let Ok(entries) = fs::read_dir(&directory) else {
+            return true;
+        };
+        for entry in entries {
+            seen += 1;
+            if seen > 10_000 {
+                return true;
+            }
+            let Ok(entry) = entry else {
+                return true;
+            };
+            match entry.file_type() {
+                Ok(kind) if kind.is_dir() => pending.push(entry.path()),
+                _ => return true,
+            }
+        }
+    }
+    false
+}
+
+/// Change directories, rejecting links and names that are not plain change IDs. Under
+/// `.specsync/changes`, a directory with no file at any depth is not an open change
+/// (#148) and is left out.
 fn change_dirs(root: &Path, directory: &str) -> Result<Vec<String>, String> {
     let path = local_path(root, directory).map_err(|error| error.to_string())?;
     if !path.exists() {
@@ -1252,7 +1281,7 @@ fn change_dirs(root: &Path, directory: &str) -> Result<Vec<String>, String> {
         if kind.is_symlink() {
             return Err(format!("{directory}/{name} is a symlink"));
         }
-        if kind.is_dir() {
+        if kind.is_dir() && (directory != ".specsync/changes" || has_change_files(&entry.path())) {
             names.push(name);
         }
     }

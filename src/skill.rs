@@ -43,6 +43,12 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Releases 0.1.0 to 0.4.0, unchanged since #22 through main 01f1d023; superseded by
+    // the `stage advance --to` row in the transition table (REQ-cli-052, DRIVE-9).
+    (
+        "references/stages.md",
+        "658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f",
+    ),
     // Main ec830cf, release 0.4.0 for SKILL.md, plan.md and checkpoint.md; superseded
     // by relayed decisions at gates (#123, D7).
     (

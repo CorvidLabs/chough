@@ -930,6 +930,11 @@ fn index(
         .collect();
     let active = sorted_entries(root, ".specsync/changes")?
         .into_iter()
+        // A change directory with no file, left by a branch switch, is not open (#148).
+        .filter(|name| {
+            local_path(root, &format!(".specsync/changes/{name}"))
+                .is_ok_and(|path| crate::evidence::has_change_files(&path))
+        })
         .map(|name| format!("{name} (active; `specsync change status {name}`)"))
         .collect();
     let mut archived: Vec<String> = found

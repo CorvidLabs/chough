@@ -1,0 +1,40 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-bounds-pinned-exactly"
+title = "The recent, cycle and receipt bounds hold at exactly their value and refuse one byte past it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-8"]
+requirements = ["REQ-history-003"]
+paths = ["src/history.rs", "src/evidence.rs", "tests/history.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the three history tests that pin RECENT_BYTES, CYCLE_BYTES and RECEIPT_BYTES pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "history", "--", "recent_traversal_stops_at_exactly_512_kib", "a_cycle_of_exactly_16_mib_is_full_and_one_byte_more_is_over_its_bound", "a_receipt_of_exactly_1_mib_is_read_and_one_byte_more_is_refused"]
+expect_output = ["test result: ok. 3 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-history-inbox-bounds-pinned-exactly"
+title = "An inbox entry of 16 KiB and 200 unfolded entries are accepted, and one more of either is refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two sessions tests that pin INBOX_LIMIT and MAX_INBOX pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "an_inbox_entry_of_exactly_16_kib_is_read_and_one_byte_more_is_refused", "an_inbox_holds_200_unfolded_entries_and_refuses_the_201st"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600
