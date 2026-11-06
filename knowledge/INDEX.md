@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 141
+archived_changes: 142
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) (hot)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (hot)
 - [a-session-archives-itself-at-its-own-move-into-done-155](archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155) (hot)
-- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (hot)
+- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (cold)
 - [place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16](archives/place-the-77-sessions-entry-under-0-4-0-and-add-111-s-legacy-anchor-session-fix-to-the-change-log-life-16.md) Place the #77 sessions entry under 0.4.0 and add #111's legacy-anchor session fix to the change log (LIFE-16) (cold)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (cold)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148) (cold)
 - [bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153](archives/bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153.md) Bug classification, deduplication and report mappings, and their recovery branches (153) (cold)
 - [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](archives/assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma.md) Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02) (cold)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (cold)
-- [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](archives/name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up.md) Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up) (cold)
-- All 141 archived changes, by month: [timeline.md](timeline.md)
+- All 142 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../.specsync/archive/changes/2026-11-06-chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17/lesson-bundle.md)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../.specsync/archive/changes/2026-11-06-a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16/lesson-bundle.md)
 - [a-session-archives-itself-at-its-own-move-into-done-155](../.specsync/archive/changes/2026-11-06-a-session-archives-itself-at-its-own-move-into-done-155/lesson-bundle.md)
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../.specsync/archive/changes/2026-11-06-keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153](../.specsync/archive/changes/2026-11-06-bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153/lesson-bundle.md)
 - [assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma](../.specsync/archive/changes/2026-11-06-assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma/lesson-bundle.md)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../.specsync/archive/changes/2026-11-06-stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144/lesson-bundle.md)
-- [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](../.specsync/archive/changes/2026-11-06-name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,8 +99,10 @@ Archived lesson bundles:
 
 ## Observations
 
-441 recorded; most recent:
+439 recorded; most recent:
 
+- OBS-tc-history-doctor-fixes-session-debt-6b69ccc429d60b2cd04bd601 ProductTest Passed in local-linux-aarch64 at 298c8a775180
+- OBS-tc-cli-doctor-report-changes-nothing-8a051b3416c4c0d132e1c972 ProductTest Passed in local-linux-aarch64 at 298c8a775180
 - OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
 - OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
 - OBS-tc-history-session-close-with-reason-d61f0bc09ce6a873e1613697 ProductTest Passed in local-linux-aarch64 at fe653b315f36
@@ -109,8 +111,6 @@ Archived lesson bundles:
 - OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
 - OBS-tc-history-changelog-111-under-0-4-0-51c2b5238ff8ac90bf33995d ProductTest Passed in local-macos-arm64 at 2a5e6008d349
 - OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0 ProductTest Passed in local-macos-arm64 at 2a5e6008d349
-- OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c ProductTest Passed in local-macos-arm64 at 54f7a782597a
-- OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4 ProductTest Passed in local-macos-arm64 at 54f7a782597a
 
 ## Briefs
 

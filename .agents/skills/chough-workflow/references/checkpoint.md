@@ -151,7 +151,9 @@ then start the next one with `chough session new`. It stays open while its inbox
 unfolded entries or release is authorized (ask for release before done). Do not stage
 another session's archive move. A session whose native change is already archived
 is finished too, and the next `session new` or `session use` archives it; close
-abandoned work with `chough session close <key> --reason <text>`. Subagents do not edit the
+abandoned work with `chough session close <key> --reason <text>`. When a fresh
+worktree refuses to enter Chough, run `chough doctor` to see the debt and
+`chough doctor --fix` to clear it; decisions also need `--reason`. Subagents do not edit the
 session: they run `chough inbox add --session <key> --from <name> --kind
 observation|decision|completed|question --text <text>`, and the agent that owns the
 session runs `chough inbox fold`. Inbox entries never approve, review, consent, clear a
