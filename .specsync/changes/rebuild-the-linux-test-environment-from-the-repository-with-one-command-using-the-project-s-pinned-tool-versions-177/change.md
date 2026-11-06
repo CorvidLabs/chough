@@ -1,6 +1,6 @@
 ---
 id: rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177
-state: approved
+state: implementing
 type: feature
 base_commit: dd5bbb764169d8e38f1de65a8cb5a5b70eb6483d
 ---
