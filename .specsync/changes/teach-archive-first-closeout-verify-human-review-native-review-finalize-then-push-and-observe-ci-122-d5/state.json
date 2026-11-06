@@ -7,10 +7,11 @@
   "title": "Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5)",
   "description": "Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "d3b301e35fcf78430da3ca49b172ae00babaa657",
   "created_at": 1793931813,
-  "updated_at": 1793931892,
+  "updated_at": 1793932060,
   "affected_specs": [
     "cli"
   ],
