@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+  "implementation_commit": "18af4851adae0dc3daebebe2ff32beda2cc3fdbf",
+  "implementation_tree": "c5271e2e64a5c9960e350b088d6de2a087eca1ae",
+  "contract_digest": "2a07b6eebe9917330e9178f0f537a6a509cfc584d4e208580e44f3daf436c005",
+  "workspace_digest": "195494efb081cfd330ca7f25771503818ce840d53467c0f05e69b279989abd72",
+  "closing_digest": "0e15fa27fcdc6db8799702d2b76d0dfb54536cce9ff8857111fa00149f0432c7",
+  "review_digest": "74354bb9843d5a9110a8d22ea0ae158515527ae0b3bd7283c9039c959611ea40",
+  "finalization_digest": "cec2c9e3c3807483d8e38b3378ddbc8bf72ec696a46750e8d8c2b8c5f69f8953",
+  "timestamp": 1794009210
+}

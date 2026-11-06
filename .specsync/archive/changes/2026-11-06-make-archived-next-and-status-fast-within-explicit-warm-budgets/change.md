@@ -1,6 +1,6 @@
 ---
 id: make-archived-next-and-status-fast-within-explicit-warm-budgets
-state: implementing
+state: archived
 type: feature
 base_commit: e99dc7961323e5c4e2aff1a2cf13333b0c47037e
 ---
