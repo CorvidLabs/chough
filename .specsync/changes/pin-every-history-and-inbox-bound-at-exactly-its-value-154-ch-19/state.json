@@ -7,10 +7,10 @@
   "title": "Pin every history and inbox bound at exactly its value (154, CH-19)",
   "description": "Pin every history and inbox bound at exactly its value (154, CH-19)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "64aa77e01d2763395d8af7566e62743ede37cc32",
   "created_at": 1793949683,
-  "updated_at": 1793949707,
+  "updated_at": 1793970827,
   "affected_specs": [
     "history"
   ],
