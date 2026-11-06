@@ -7,10 +7,10 @@
   "title": "Give real assertions to the nine criteria the audit found with no selected assertion (138)",
   "description": "Give real assertions to the nine criteria the audit found with no selected assertion (138)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "260ecc949ea01214f4bec43b30ea4226ce8fae59",
   "created_at": 1793940871,
-  "updated_at": 1793940978,
+  "updated_at": 1793941088,
   "affected_specs": [
     "cli",
     "reporting"

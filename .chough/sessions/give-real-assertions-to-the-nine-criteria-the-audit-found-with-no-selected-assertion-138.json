@@ -40,7 +40,8 @@
   },
   "decisions": [
     "Leif (0xLeif), 2026-11-05 21:52 MST, through the orc (t18): 'Both recommended': REQ-cli-029/AC-5 asserted in Chough's evidence model plus ROADMAP text; REQ-reporting-003's measurement criterion through examples/measure-report.sh plus a test.",
-    "failed: opening the gate 'Scope decision of give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138' with checkpoint --awaiting-human because of the KNOW-29 history regression (legacy history anchor changed); the gate waits in the orc, not in the session, until chough's fix lands"
+    "failed: opening the gate 'Scope decision of give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138' with checkpoint --awaiting-human because of the KNOW-29 history regression (legacy history anchor changed); the gate waits in the orc, not in the session, until chough's fix lands",
+    "Leif (0xLeif), through the orc (t18), 'Approve' for the C6 definition; the orc recorded the native approval on 8833f048. The session stays at intent until chough's KNOW-29 history fix lets stage events be written."
   ],
   "open_questions": [],
   "completed": [
@@ -51,5 +52,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for Leif's scope decision through the orc; then write examples/measure-report.sh and the eight other assertions, each with a recorded mutation"
+  "next_action": "Write examples/measure-report.sh and the eight other assertions with their mutations; move stages once the history fix is on main"
 }
