@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17",
+  "implementation_commit": "47874558f954d8d49ec70b80ec17358a558a1b2c",
+  "implementation_tree": "0ba02be1dd091f37b24c512bc863dddaa9b5f109",
+  "contract_digest": "fbe6796dbc2f3c89889df102c14fdc9bef6bcb5583084b134c4de469d4f71221",
+  "workspace_digest": "bce1dd53371d3a34a46d00545b3d0dd50d490a0b91353c130496e1971a762781",
+  "closing_digest": "9adcaa19195da2583d38ad6fd32ae84cedcf8c6d664d53547413cb33bd7c18a9",
+  "review_digest": "d509c5c156b60ca5c345cbab7abc137e218496b4551c662923bc598e037834d9",
+  "finalization_digest": "3dbc7ed651dd1893874d9c654372e0efe7970246ee31fc4b1bea35ab43510066",
+  "timestamp": 1793995918
+}

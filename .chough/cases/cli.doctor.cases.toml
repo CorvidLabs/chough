@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-doctor-report-changes-nothing"
+title = "chough doctor with no flag or --dry-run reports each finding with its fix, changes nothing, makes no native read and exits 1 while there is debt"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-055"]
+paths = ["src/doctor.rs", "src/main.rs", "tests/doctor.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the report-mode doctor test passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "--exact", "doctor_reports_debt_and_changes_nothing"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600

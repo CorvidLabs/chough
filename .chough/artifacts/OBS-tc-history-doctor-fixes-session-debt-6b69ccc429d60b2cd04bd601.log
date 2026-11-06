@@ -1,0 +1,14 @@
+--- stdout ---
+
+running 4 tests
+test doctor_fix_keeps_a_finished_session_with_unfolded_entries_open ... ok
+test doctor_fix_archives_finished_sessions_and_removes_a_stale_pointer ... ok
+test doctor_fix_adopts_a_legacy_checkpoint ... ok
+test doctor_decision_fixes_need_a_reason_and_record_no_human_decision ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.14s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/doctor.rs (target/debug/deps/doctor-8522907fc7ceaab0)

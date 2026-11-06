@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test doctor_reports_debt_and_changes_nothing ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.10s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/doctor.rs (target/debug/deps/doctor-8522907fc7ceaab0)
