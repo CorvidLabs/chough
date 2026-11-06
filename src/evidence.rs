@@ -1101,6 +1101,12 @@ fn file_references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 /// Every referenced observation ID with what references it: the checkpoint, bugs of
 /// any status and stored validation runs.
 fn references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
+    references_from(root, false)
+}
+
+/// As [`references`]; with `lenient`, for display, a session that cannot be read adds no
+/// references instead of failing the view (DRIVE-14).
+fn references_from(root: &Path, lenient: bool) -> Result<BTreeMap<String, Vec<String>>> {
     let mut map: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut add = |id: &str, source: String| {
         let sources = map.entry(id.to_string()).or_default();
@@ -1108,7 +1114,12 @@ fn references(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
             sources.push(source);
         }
     };
-    for (label, checkpoint) in crate::sessions::every_checkpoint(root)? {
+    let checkpoints = if lenient {
+        crate::sessions::readable_checkpoints(root)?
+    } else {
+        crate::sessions::every_checkpoint(root)?
+    };
+    for (label, checkpoint) in checkpoints {
         for id in &checkpoint.observations {
             add(id, label.clone());
         }
@@ -1193,7 +1204,7 @@ impl Reads<'_> {
     ) -> Result<Vec<Value>> {
         let pruned = read_ledger(self.root).unwrap_or_default();
         let mut values = vec![];
-        for (id, sources) in references(self.root)? {
+        for (id, sources) in references_from(self.root, true)? {
             let label = self.label_reference(&id, current, environment, &pruned)?;
             values.push(json!({"id": id, "label": label, "referenced_by": sources}));
         }

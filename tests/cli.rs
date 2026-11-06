@@ -451,7 +451,9 @@ fn fill_checkpoint_to_pretty_bytes(session: &mut Value, bytes: usize) {
         session[list] = json!([]);
     }
     'fill: for list in lists {
-        for _ in 0..199 {
+        // At most 190 per list, so a test that adds one more entry meets the byte
+        // bound, not the 200-entry list bound.
+        for _ in 0..190 {
             if size(session) + 4_200 > bytes {
                 break 'fill;
             }
@@ -463,7 +465,7 @@ fn fill_checkpoint_to_pretty_bytes(session: &mut Value, bytes: usize) {
     }
     let last = lists
         .iter()
-        .find(|list| session[**list].as_array().unwrap().len() < 200)
+        .find(|list| session[**list].as_array().unwrap().len() < 190)
         .unwrap();
     session[*last]
         .as_array_mut()
@@ -654,19 +656,14 @@ fn records_other_than_the_checkpoint_keep_the_65536_byte_bound() {
     assert!(String::from_utf8_lossy(&output.stderr).contains("65536"));
 }
 
+/// `init` validates the whole checkpoint before it writes anything. Since the 1 MiB cap
+/// (DRIVE-14), no command-line objective can serialize past the cap within the 128 KiB
+/// Linux per-argument limit, so the over-cap refusal is covered at the unit level by
+/// `checkpoint::tests::validation_refuses_a_checkpoint_over_the_cap`; here a module list
+/// over its bound proves that a refused `init` writes nothing.
 #[test]
 fn init_rejects_unreadable_session_sizes_before_writing() {
     let fixture = Fixture::new();
-    // JSON escapes each control character to six bytes. Keep the actual argument
-    // below Windows' process limit while still exceeding the serialized record cap.
-    let objective = "\u{0001}".repeat(22_000);
-    assert!(
-        !fixture
-            .run(&["init", "--objective", &objective])
-            .status
-            .success()
-    );
-    assert!(!fixture.root().join(".chough").exists());
     let mut arguments = vec!["init"];
     for _ in 0..17 {
         arguments.extend(["--module", "cli"]);

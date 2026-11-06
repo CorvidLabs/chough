@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-shelve-and-robust-sessions"
+title = "Shelving an oversized session or legacy checkpoint lets work continue, and one unreadable session never breaks the others"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-14", "DRIVE-13"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the sessions tests for shelve and per-session robustness pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "shelv", "one_oversized_or_unreadable_session_does_not_break_the_others"]
+expect_output = ["test result: ok. 3 passed"]
+timeout_seconds = 600

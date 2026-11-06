@@ -120,8 +120,15 @@ human operations, not consequences of scope approval or implementation closeout.
 
 ## Records and limits
 
-Managed JSON is bounded to 64 KiB, except the checkpoint `.chough/session.json`,
-which is bounded to 128 KiB (131,072 bytes). Case files are bounded to 256 KiB,
+Managed JSON is bounded to 64 KiB, except a checkpoint (`.chough/session.json` or a
+session under `.chough/sessions/`), which is bounded to 1 MiB (1,048,576 bytes;
+REQ-cli-032, DRIVE-14). The cap comes from measured use: at least 10 times the largest
+per-change session and 4 times the largest single checkpoint seen on 2026-11-05. At the
+cap, `chough next` and `chough status` answer within 250 ms in a release build on
+macOS and Linux, and the focused view stays within 16 KiB; a test builds a checkpoint
+at exactly the cap and checks these budgets. A checkpoint over the cap is refused with
+a message naming the cap and the recovery `chough session shelve <key>` (or
+`--legacy`). Case files are bounded to 256 KiB,
 captured output to 1 MiB, context to 16 KiB per section and 128 KiB in total,
 sessions to 16 modules, the checkpoint `observations` list to 400 items, every other
 checkpoint list to 200 items and side-stage nesting to 4 levels. Chough releases
@@ -310,7 +317,7 @@ versions, malformed JSON, wrong types and unknown fields at any level refuse. Sc
 1 live writes still require the explicit backup-preserving `chough migrate` command;
 merge never migrates it or creates a schema 1 backup.
 
-Every input and the emitted result stay within the 131072-byte checkpoint bound,
+Every input and the emitted result stay within the 1048576-byte checkpoint bound,
 the 400-item `observations` bound and the 200-item bound of every other collection,
 with all existing field validation enforced. A
 compatible merge atomically replaces only `<ours>` after the complete result passes
@@ -443,6 +450,19 @@ every command uses `.chough/session.json` exactly as before.
 - `chough session list` reports each open and archived session's key, objective,
   native change, stage, status, whether it is active and its `inbox_unfolded` count.
   An archived session's status is `archived`; an open one's is its stage status (#84).
+  A session that cannot be read (over the cap or invalid) is reported in its own
+  entry with `readable: false`, the reason and the recovery
+  `chough session shelve <key>`; it never stops `session list`, `session new`,
+  `session use` or another session's `next` (REQ-history-006, DRIVE-14). Evidence
+  retention still refuses while any session cannot be read.
+- `chough session shelve <key>` moves an oversized or unreadable session, unparsed
+  and byte for byte, to `.chough/sessions/shelved/<key>.json`, never replacing a file.
+  It writes `<key>.shelved.json` beside it, with the size, SHA-256, cap, reason and
+  time, and clears the active pointer when it named that session. Then
+  `chough session new <key>` works again. `chough session shelve --legacy` does the
+  same for `.chough/session.json` as `legacy`. Only retention reads `shelved/`, within
+  16 MiB, so what a shelved checkpoint references stays protected. Its bytes also stay
+  in Git.
 
 The active session is named by `.chough/local/active-session`. That directory holds a
 `.gitignore` of `*`, so the pointer stays local to each worktree. It also holds the
