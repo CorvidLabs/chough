@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 68
+version: 69
 status: active
 files:
   - src/main.rs
@@ -288,3 +288,4 @@ provider, runtime or hosted service.
 | 66 | 2026-11-06 | assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma: Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02) |
 | 67 | 2026-11-06 | bug-classification-deduplication-and-report-mappings-and-their-recovery-branches-153: Bug classification, deduplication and report mappings, and their recovery branches (153) |
 | 68 | 2026-11-06 | a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16: A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) |
+| 69 | 2026-11-06 | chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17: Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) |
