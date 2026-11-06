@@ -1,6 +1,6 @@
 ---
 id: teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5
-state: implementing
+state: archived
 type: bug_fix
 base_commit: d3b301e35fcf78430da3ca49b172ae00babaa657
 ---
