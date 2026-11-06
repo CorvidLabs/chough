@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22",
+  "implementation_commit": "3d2709369d066318aa8570031ad66ea0d33c0361",
+  "implementation_tree": "4c0e05fb0ed166fb9d648bc0805b687c50fe66e5",
+  "contract_digest": "9ce7611a8de8e35b2e1575a7767361d6d50b7a9a8e85a98040a1e737a8532bc5",
+  "workspace_digest": "58f09ccd9b2f8e4616839fc6aacb82577820a5b82ff1bf7db523b6820429988c",
+  "closing_digest": "49edfc9103c5c2a9fd10915f31c35e37b15309b244883dd2eed061953632dbde",
+  "review_digest": "1b18336ba65f49280c17e5e238fdf3b4a53d8141b81a138d86d0a360149dbda9",
+  "finalization_digest": "11c24423b638ffa1d6cc0e81152d7c7e88a9dd36ed973c0991a7dfbaedecaeb4",
+  "timestamp": 1793923656
+}
