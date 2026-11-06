@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9b9d1cdba5df6ff89fa8773e",
-    "head": "EVT-40082b460b38c88b686f5c49",
+    "head": "EVT-c67ac2895d66661f9a346302",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -39,15 +39,17 @@
   "completed": [
     "Captured FLOW-17 with hi (renumbered from the unpushed FLOW-16 draft), FRD section, native change support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17 drafted with artifacts complete",
     "Failing-first: TC-cli-supported-platforms (FLOW-17, LIFE-9, REQ-cli-019) fails on the base CI and docs with the new test",
-    "Implementation: Product matrix [ubuntu-latest, macos-latest]; README, docs/integrations.md Platforms, docs/ci.md, docs/cli.md, ROADMAP, D-022, CHANGELOG and specs/cli/testing.md say macOS and Linux, Windows through WSL 2 with Ubuntu; TC-cli-supported-platforms passes"
+    "Implementation: Product matrix [ubuntu-latest, macos-latest]; README, docs/integrations.md Platforms, docs/ci.md, docs/cli.md, ROADMAP, D-022, CHANGELOG and specs/cli/testing.md say macOS and Linux, Windows through WSL 2 with Ubuntu; TC-cli-supported-platforms passes",
+    "specsync change check passed (verifying); fledge lanes run verify passed on macOS arm64 with Fledge 1.8.0 after the main merge: 10 steps, 459 tests, audit and the exercise green; TC-cli-supported-platforms passes on the merged tree"
   ],
   "observations": [
     "OBS-tc-cli-supported-platforms-cf84a4b69599d4e71ffec6b6",
-    "OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd"
+    "OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd",
+    "OBS-tc-cli-supported-platforms-740fae9392dd55ffb48cb418"
   ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Run verify, change check --commit, push, open the PR, send orc ready for review"
+  "next_action": "change check --commit, push, open the PR, send orc ready for review; then human review, native review, finalize, push and observe CI"
 }

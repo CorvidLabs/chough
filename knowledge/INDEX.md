@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-375 recorded; most recent:
+376 recorded; most recent:
 
+- OBS-tc-cli-supported-platforms-740fae9392dd55ffb48cb418 ProductTest Passed in local-macos-arm64 at 1e076695cedf
 - OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd ProductTest Passed in local-macos-arm64 at 17a6a1f74a3e
 - OBS-tc-cli-supported-platforms-cf84a4b69599d4e71ffec6b6 ProductTest Failed in local-macos-arm64 at ec830cfb001c
 - OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923 ProductTest Failed in local-macos-arm64 at ec830cfb001c
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592 ProductTest Passed in local-linux-aarch64 at 43c10cbef323
 - OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
 - OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
-- OBS-tc-cli-moved-ledger-entries-are-read-47d1a2d0928e050a74bd876f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 
 ## Briefs
 
