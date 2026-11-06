@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Chough supports macOS and Linux, and Windows through WSL 2 with Ubuntu (FLOW-17).
+  Hosted CI no longer runs the native Windows product job; the Ubuntu jobs cover WSL 2
+  as Linux, and the docs say what they do not cover (WSL 1, a checkout on `/mnt/c`,
+  Git for Windows). Native Windows is not supported, matching SpecSync from 6.0.
+  Requirements are unchanged, and the CRLF-safe tests still run on Linux and macOS.
+
 - The workflow skill and docs now teach an archive-first closeout (#122, audit D5).
   The order is: verify locally, the human's implementation review, the native review,
   finalize and the done move, and only then push and observe CI. The hosted Archive

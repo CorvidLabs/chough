@@ -520,12 +520,11 @@ while reading and keeps draining beyond it, counting every byte.
 
 At the deadline, or when output stays open more than 2 s after the command exits
 (cut short at the deadline, but at least 200 ms after the exit), Chough stops the
-command and its descendants: on Unix the process group the command leads, on Windows
-its process tree with `taskkill /T /F`. It then waits at most 1 s for the output to
-close and abandons any reader still blocked, so the run returns on time and its
-capture is reported incomplete. On Windows, `taskkill` cannot find descendants whose
-parent has already exited; such a run returns on time with an incomplete capture,
-and those descendants may keep running.
+command and its descendants: on Unix the process group the command leads. It then
+waits at most 1 s for the output to close and abandons any reader still blocked, so
+the run returns on time and its capture is reported incomplete. Native Windows is not
+supported (FLOW-17); the code that stops a process tree there with `taskkill /T /F`
+remains but is no longer built or tested.
 
 Stopping Chough stops what it started (FLOW-14). On Unix, when Chough gets SIGINT
 (Ctrl-C), SIGTERM (a plain `kill`) or SIGHUP while a case binding, a native read or
@@ -547,7 +546,7 @@ before the save begins records nothing (no observation, artifact or checkpoint
 change), and a stop once it has begun lets the artifact and the observation both be
 written first, so a run is never half recorded. A signal Chough inherited as ignored
 (for example under `nohup`) or as blocked keeps that disposition. A hard `kill -9`
-cannot be caught, so a command may outlive it; Windows behavior is unchanged.
+cannot be caught, so a command may outlive it.
 
 A case artifact keeps both streams within 1 MiB in total and ends with a note for
 each stream that did not fit: `[truncated: stdout wrote N bytes; M discarded]`. Case

@@ -95,8 +95,9 @@ Archived lesson bundles:
 
 ## Observations
 
-370 recorded; most recent:
+371 recorded; most recent:
 
+- OBS-tc-cli-supported-platforms-67170b58d041096d0989d3dd ProductTest Passed in local-macos-arm64 at 17a6a1f74a3e
 - OBS-tc-cli-supported-platforms-cf84a4b69599d4e71ffec6b6 ProductTest Failed in local-macos-arm64 at ec830cfb001c
 - OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923 ProductTest Failed in local-macos-arm64 at ec830cfb001c
 - OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
@@ -106,7 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-open-bug-keeps-links-89538a43c3a4b93c529e6b4b ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-key-items-move-to-vault-ed7a30c1fb6534c91d7288de ProductTest Passed in local-linux-aarch64 at a5246bd81940
-- OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 
 ## Briefs
 
