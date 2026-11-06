@@ -1,8 +1,9 @@
 # Native lifecycle and evidence
 
 `chough change status <id>` (SpecSync's own status, passed through unchanged),
-`specsync change ship-status <id>` and installed command help are authoritative for the current state and recovery path. This
-reference follows SpecSync 6.1; do not hardcode it over another version's output.
+`specsync change ship-status <id>` and installed command help are authoritative for
+the current state and recovery path. This reference follows SpecSync 6.2; do not
+hardcode it over another version's output.
 Match the SpecSync version used by lifecycle writers and CI.
 
 You run the native commands in this reference as part of Chough's current-agent
@@ -16,7 +17,7 @@ result and genuine decisions still needed, then perform authorized recovery step
 new → interview → artifacts and delta → one human scope approval → implement →
 check (when requirements change) → cases run → gate → commit with .chough/ →
 check --commit → present → human implementation review → review → ship/finalize →
-clear gate, stage advance → commit → push, then CI on the archived tip → merge
+close gate (--close-gate), stage advance → commit → push, then CI on the archived tip → merge
 ```
 
 Between `check --commit` and finalize, nothing writes to `.chough/` and nothing is

@@ -75,12 +75,16 @@ chough next --environment local
 ```
 
 `init` never overwrites existing files. It writes the checkpoint
-`.chough/session.json` and copies the skill bundle into each requested host's
-project skill directory (`openai`, the default, → `.agents/skills`, a shared skills
-directory, which `claude` shares (Claude Code 2.1.316 did not discover `.agents/skills` alone, so
-add a `CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init`
-does not write it, see [integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which no run has
-exercised; also `codex`, `cursor`, `grok`). Kimi Code CLI uses the existing `openai`
+`.chough/session.json`, creates the librarian's `knowledge/` directory (on by default)
+and copies the skill bundle into each requested host's project skill directory
+(`openai`, the default, → `.agents/skills`, a shared skills directory, which `claude`
+shares (Claude Code 2.1.316 did not discover `.agents/skills` alone, so add a
+`CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init` does not
+write it, see [integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which
+no run has exercised; also `codex` → `.codex/skills`, `cursor` → `.cursor/skills` and
+`grok` → `.grok/skills`). In a project that keeps one session per change
+(`.chough/sessions/`), `init` refuses; start each change with
+`chough session new <change-id>` instead. Kimi Code CLI uses the existing `openai`
 installer value and discovered `.agents/skills/chough-workflow/SKILL.md` in one
 observed run. Google Antigravity read the skill from `.agents/skills` in one run
 reported narratively in closed PR #20 and not independently verified. `chough next`
@@ -126,16 +130,19 @@ without SpecSync configured, or with SDD disabled, is not gated.
 
 | Command | Purpose |
 |---|---|
-| `init`, `skill status/update` | Install the skill per host without overwriting edits |
+| `init`, `skill status/update/remove-legacy` | Install the skill per host without overwriting edits; remove a legacy `.claude/skills` copy explicitly |
 | `next`, `status`, `context` | Resume: stage, gates, freshness, open bugs, focused sources |
-| `checkpoint`, `migrate` | Keep the single checkpoint; migrate schema 1 explicitly |
-| `stage …` | Advance, skip, iterate, back, reset, pause, resume, enter and return |
+| `checkpoint`, `migrate` | Keep the checkpoint, record relayed gate decisions and merge parallel edits; migrate schema 1 explicitly |
+| `session new/adopt/use/list/close/shelve`, `inbox add/list/fold` | One checkpoint per change or objective; subagents report through a create-only inbox |
+| `doctor` | Find, and with `--fix` repair, the Chough debt that stops a fresh worktree from entering Chough; no flag or `--dry-run` only reports |
+| `stage …` | Show, advance (one stage or `--to` several), skip, iterate, back, reset, pause, resume, enter and return, and backfill a move that already happened |
+| `history show/adopt/prune` | Inspect, adopt and prune the immutable transition history |
 | `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
 | `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
-| `bug add/update/search/list/show/report` | Local-first backlog; report candidates are never posted |
+| `bug add/update/search/list/show/report/merge` | Local-first backlog; report candidates are never posted; `merge` is the Git merge driver for bug records |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
-| `library init/snapshot/index/archive` | Project librarian, on by default in `knowledge/`; post-archive summary preview and apply |
+| `library init/snapshot/index/archive` | Project librarian, on by default in `knowledge/`; post-archive summary preview and apply; `index --check` fails when the generated notes drift |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
 ## Record identities and compatibility
@@ -195,7 +202,7 @@ from 6.0.
 |---|---|
 | Hosted CI: Ubuntu, macOS | `cargo test` and a release build |
 | Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
-| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the feature and bug exercise, build); the native archive check and its fixtures |
+| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the knowledge index check, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
 On Windows, install Rust, Chough, HI, SpecSync and Fledge inside Ubuntu on WSL 2, and
@@ -231,7 +238,8 @@ post-fix Kimi rerun. Other platforms may work but have not been exercised.
   HEAD` error as the snapshot; make a first commit before relying on freshness.
 - Cursor, Gemini and Grok have not had real discovery or cold-start exercises. Kimi
   remains limited to the single run above, with no fresh post-fix run. Google
-  Antigravity has only the unverified narrative report linked below.
+  Antigravity has only the unverified narrative report from closed PR #20, recorded
+  in the [cold-start exercise](docs/exercises/cold-start.md).
 
 See [integrations and limits](docs/integrations.md) for the rest.
 

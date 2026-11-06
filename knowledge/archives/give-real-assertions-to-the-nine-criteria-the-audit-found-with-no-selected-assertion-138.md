@@ -51,7 +51,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-product-test-68612a5deaeb975d4cdb0c1a | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-68612a5deaeb975d4cdb0c1a | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-dff775cc31b7e3161bf2186d | passed (by cycle time) | local-macos-arm64 |  |
 | OBS-tc-cli-bug-mistaken-duplicate-reopened-5b25cda941f9982b4a833f00 | passed (by cycle time) | local-macos-arm64 | TC-cli-bug-mistaken-duplicate-reopened |
 | OBS-tc-cli-bug-mistaken-duplicate-reopened-fb28dada965816100e5a4ccb | failed (by cycle time) | local-macos-arm64 | TC-cli-bug-mistaken-duplicate-reopened |

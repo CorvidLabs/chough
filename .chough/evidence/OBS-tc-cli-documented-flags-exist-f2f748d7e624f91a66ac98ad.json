@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact documented_chough_commands_and_flags_exist for TC-cli-documented-flags-exist: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-documented-flags-exist-f2f748d7e624f91a66ac98ad.log": "4c73c68a44f15884b22f12743bc713a5d94f79930401e4efe627132ac07be9b3"
+  },
+  "observed_at_unix_seconds": 1793982518,
+  "snapshot": {
+    "revision": "de02abd046f1140085215bbb0f3b64f369d0eae1",
+    "dirty": true,
+    "fingerprint": "fa5342ab2c10355d075665c1ebea902b82739263b59100d8f53bccfd6fec9734",
+    "content": "e83058e7ddc9242de3b60d0c55c55c6dcf136256e0bd9f5e277696f7d428d248"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-documented-flags-exist",
+      "digest": "ff7a879860dfb3617227b405f954d0b77861c0f8995eeb3c0c37b8e0fe352347"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "documented_chough_commands_and_flags_exist"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a",
+  "criteria": [
+    "FLOW-18"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact docs_state_only_the_pinned_tool_versions for TC-cli-docs-name-pinned-versions: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-docs-name-pinned-versions-649dd7f6872b1a18528a7a8a.log": "947fb6832a1205cd91affb5d12690bc4e75293b338d308683e8eea3f04af11b9"
+  },
+  "observed_at_unix_seconds": 1793982527,
+  "snapshot": {
+    "revision": "de02abd046f1140085215bbb0f3b64f369d0eae1",
+    "dirty": true,
+    "fingerprint": "fa5342ab2c10355d075665c1ebea902b82739263b59100d8f53bccfd6fec9734",
+    "content": "e83058e7ddc9242de3b60d0c55c55c6dcf136256e0bd9f5e277696f7d428d248"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-docs-name-pinned-versions",
+      "digest": "404be58afd21d5cd21d3eb5f7faed4cf91ff6ab0d49075d4eac06f227fa89015"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "docs_state_only_the_pinned_tool_versions"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

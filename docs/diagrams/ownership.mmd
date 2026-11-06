@@ -6,7 +6,7 @@ flowchart TB
     agent --> fledge["Fledge + project tools: real checks"]
     agent --> proto["Prototype + companion: approved design"]
     agent --> chough["Chough checkpoint: stage, decisions, consents, next action"]
-    agent -.-> library["Optional librarian: index, snapshots, briefs"]
+    agent -.-> library["Librarian (on by default, knowledge/): index, archive entries, snapshots, briefs"]
     fledge --> evidence["Observations: revision, inputs, environment"]
     evidence --> chough
     spec -->|"native state gates stages"| chough

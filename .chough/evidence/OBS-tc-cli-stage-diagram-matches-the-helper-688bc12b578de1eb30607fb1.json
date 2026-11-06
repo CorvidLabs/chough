@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-stage-diagram-matches-the-helper-688bc12b578de1eb30607fb1",
+  "criteria": [
+    "FLOW-18",
+    "FLOW-2"
+  ],
+  "requirements": [
+    "REQ-cli-008"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test docs -- --exact stage_diagrams_draw_only_the_helpers_stages_and_moves for TC-cli-stage-diagram-matches-the-helper: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-stage-diagram-matches-the-helper-688bc12b578de1eb30607fb1.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-stage-diagram-matches-the-helper-688bc12b578de1eb30607fb1.log": "f064df0ea65a17347ebfca51183ad13fd31533a93094c2dc51e0ef09699ab6e1"
+  },
+  "observed_at_unix_seconds": 1793982886,
+  "snapshot": {
+    "revision": "37a0ffb0bb2bf1c014df6dbd6671817cc135416d",
+    "dirty": false,
+    "fingerprint": "52de10beb1525adb01731cf6a558d306069a60adec03c6d81380af978296cd8e",
+    "content": "3448dc94d9a49c8e39c8e57f455996795affb6b956d328068b26b29594bab856"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-stage-diagram-matches-the-helper",
+      "digest": "195d94cc4c4af4256e3e2a8ae7ccdb72e67f12700ca6ab357f4ae6af77018051"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "docs",
+    "--",
+    "--exact",
+    "stage_diagrams_draw_only_the_helpers_stages_and_moves"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

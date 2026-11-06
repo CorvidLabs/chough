@@ -24,6 +24,7 @@ criteria:
   - FLOW-17
   - FLOW-19
   - FLOW-20
+  - FLOW-18
 tags:
   - chough/intent
 ---
@@ -55,3 +56,4 @@ archived changes whose requirements trace it.
 - **FLOW-17**: none yet
 - **FLOW-19**: none yet
 - **FLOW-20**: none yet
+- **FLOW-18**: none yet

@@ -1,0 +1,182 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-stage-diagram-matches-the-helper"
+title = "The stage diagram draws only the helper's stages and moves, with each gate's refusals"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["docs/diagrams/stages.mmd", "src/stage.rs", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::stage_diagrams_draw_only_the_helpers_stages_and_moves passes: the skip edge leaves the stage it skips and the test to accept gate names the unlinked failure"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "stage_diagrams_draw_only_the_helpers_stages_and_moves"
+
+[[case]]
+id = "TC-cli-inline-diagrams-match-sources"
+title = "Every inline Mermaid block is its docs/diagrams source and each SVG carries every label"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-008"]
+paths = ["docs/diagrams/", "docs/architecture.md", "docs/lifecycle.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::inline_diagrams_equal_their_sources_and_svgs_carry_every_label passes: architecture.md's ownership block equals ownership.mmd and every SVG carries its source's labels"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "inline_diagrams_equal_their_sources_and_svgs_carry_every_label"
+
+[[case]]
+id = "TC-cli-readme-helper-table-covers-help"
+title = "The README helper table names every command and subcommand chough --help lists"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "LIFE-4"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "src/main.rs", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::readme_helper_table_names_every_command_the_helper_lists passes: history, session, inbox, bug merge and skill remove-legacy are in the table"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "readme_helper_table_names_every_command_the_helper_lists"
+
+[[case]]
+id = "TC-cli-readme-verify-list-matches-fledge"
+title = "README's verify lane list names every step of fledge.toml's verify lane"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "fledge.toml", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::readme_verify_lane_list_names_every_fledge_verify_step passes: the knowledge index step is named"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "readme_verify_lane_list_names_every_fledge_verify_step"
+
+[[case]]
+id = "TC-cli-documented-flags-exist"
+title = "Every chough command and flag the docs and skill name is in that command's help"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "AGENTS.md", "docs/", "skills/chough-workflow/", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::documented_chough_commands_and_flags_exist passes: no documented flag is missing from --help"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "documented_chough_commands_and_flags_exist"
+
+[[case]]
+id = "TC-cli-doc-links-resolve"
+title = "Every relative link and anchor in the docs and skill resolves"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "AGENTS.md", "docs/", "skills/chough-workflow/", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::relative_links_and_anchors_resolve passes: no relative link or anchor is broken"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "relative_links_and_anchors_resolve"
+
+[[case]]
+id = "TC-cli-documented-merge-drivers-match"
+title = "The gitattributes lines the CLI reference documents are the ones the repository declares"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "DRIVE-12"]
+requirements = ["REQ-cli-047"]
+paths = ["docs/cli.md", ".gitattributes", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::cli_reference_declares_the_merge_drivers_this_repository_declares passes: the CHANGELOG, bug and session note and ledger shard lines are documented"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "cli_reference_declares_the_merge_drivers_this_repository_declares"
+
+[[case]]
+id = "TC-cli-docs-name-pinned-versions"
+title = "No page states a current SpecSync, Fledge or HI version other than the CI pin"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "docs/", "skills/chough-workflow/", ".github/workflows/ci.yml", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::docs_state_only_the_pinned_tool_versions passes: the walkthrough, the exercise record and the lifecycle reference name 6.2.0 or 6.2"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "docs_state_only_the_pinned_tool_versions"
+
+[[case]]
+id = "TC-cli-closeout-closes-review-gate"
+title = "Closeout guidance closes the review gate with the relayed decision, never clears it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "FLOW-16"]
+requirements = ["REQ-cli-050"]
+paths = ["docs/lifecycle.md", "docs/walkthrough.md", "docs/diagrams/lifecycle.mmd", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::closeout_guidance_closes_the_review_gate_with_the_relayed_decision passes: lifecycle.md, the walkthrough and lifecycle.mmd name --close-gate and no page says clear the gate"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "closeout_guidance_closes_the_review_gate_with_the_relayed_decision"
+
+[[case]]
+id = "TC-cli-skill-615b587b-known-outdated"
+title = "Skill files main shipped at 615b587b are known-outdated and update; edited copies stay"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "FLOW-13", "LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = ["skills/chough-workflow/", "src/skill.rs", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::skill_files_from_main_615b587b_are_known_outdated_and_edited_copies_stay passes: SKILL.md, checkpoint.md and lifecycle.md from 615b587b read known-outdated and update to current"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "skill_files_from_main_615b587b_are_known_outdated_and_edited_copies_stay"

@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test readme_verify_lane_list_names_every_fledge_verify_step ... FAILED
+
+failures:
+
+---- readme_verify_lane_list_names_every_fledge_verify_step stdout ----
+
+thread 'readme_verify_lane_list_names_every_fledge_verify_step' (271953122) panicked at tests/docs.rs:598:5:
+README.md Tested platforms: the verify lane list (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the feature and bug exercise, build) does not name `knowledge` ("knowledge index")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    readme_verify_lane_list_names_every_fledge_verify_step
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.69s
+     Running tests/docs.rs (target/debug/deps/docs-592487f356832a3e)
+error: test failed, to rerun pass `--test docs`
