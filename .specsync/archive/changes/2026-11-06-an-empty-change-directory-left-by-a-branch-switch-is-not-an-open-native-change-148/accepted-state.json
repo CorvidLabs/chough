@@ -7,11 +7,11 @@
   "title": "An empty change directory left by a branch switch is not an open native change (148)",
   "description": "An empty change directory left by a branch switch is not an open native change (148)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "64aa77e01d2763395d8af7566e62743ede37cc32",
   "created_at": 1793948117,
-  "updated_at": 1793972222,
+  "updated_at": 1793975050,
   "affected_specs": [
     "cli"
   ],
