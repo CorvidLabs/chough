@@ -11,6 +11,10 @@ All notable changes to Chough are recorded here. The format follows
   as Linux, and the docs say what they do not cover (WSL 1, a checkout on `/mnt/c`,
   Git for Windows). Native Windows is not supported, matching SpecSync from 6.0.
   Requirements are unchanged, and the CRLF-safe tests still run on Linux and macOS.
+- Only the five most recent archived sessions stay in `.chough/sessions/archive/`
+  (KNOW-29, REQ-history-011). At each move into done, older ones move byte for byte into
+  `knowledge/attachments/<key>/sessions/<key>.json`, and each gets a generated summary
+  note at `knowledge/sessions/<key>.md` (REQ-cli-051). Nothing leaves Git history.
 
 - The checkpoint cap is now 1 MiB (1,048,576 bytes), up from 128 KiB, chosen from
   measured use (DRIVE-14, REQ-cli-032):

@@ -726,6 +726,71 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
     }
 }
 
+/// Archived sessions kept in `.chough/sessions/archive/` (KNOW-29).
+const KEEP_ARCHIVED: usize = 5;
+
+/// REQ-history-011 (KNOW-29): at done, keep the five most recent archived sessions, by
+/// their native change's finalization and then key, and move older ones byte for byte
+/// into `<library-dir>/attachments/<folder>/sessions/<key>.json`. Never fails: the result
+/// is `rolled`, `unchanged`, `skipped` or `refused`.
+pub(super) fn roll_up_at_done(root: &Path) -> serde_json::Value {
+    match crate::prefs::effective(root, "librarian") {
+        Ok((value, _)) if value != "on" => {
+            return json!({"status": "skipped", "reason": "the librarian is off"});
+        }
+        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
+        Ok(_) => {}
+    }
+    roll_up(root)
+        .unwrap_or_else(|error| json!({"status": "refused", "reason": format!("{error:#}")}))
+}
+
+fn roll_up(root: &Path) -> Result<serde_json::Value> {
+    let (dir, _) = crate::prefs::effective(root, "library-dir")?;
+    let mut archived = vec![];
+    for key in keys_in(root, ARCHIVE)? {
+        // An archived session that cannot be read stays; `session list` reports it.
+        let finalized = read_at(root, &archive_file(&key))
+            .ok()
+            .and_then(|session| session.native_change)
+            .and_then(|change| crate::library::finalized_at(root, &change));
+        archived.push((finalized, key));
+    }
+    // Newest first: a later finalization, then a later key; none counts as oldest.
+    archived.sort_by(|left, right| right.cmp(left));
+    let mut moved = vec![];
+    let mut kept_back = vec![];
+    for (_, key) in archived.into_iter().skip(KEEP_ARCHIVED) {
+        let source = local_path(root, &archive_file(&key))?;
+        let target_relative = format!(
+            "{dir}/attachments/{}/sessions/{key}.json",
+            crate::attachments::attachment_folder(&key)
+        );
+        let target = local_path(root, &target_relative)?;
+        if target.exists() {
+            if fs::read(&target)? == fs::read(&source)? {
+                fs::remove_file(&source)?;
+                moved.push(key);
+            } else {
+                kept_back.push(json!({"key": key, "reason": format!("{target_relative} already holds different bytes; a move never overwrites")}));
+            }
+            continue;
+        }
+        if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::hard_link(&source, &target).with_context(|| format!("moving {key} into the vault"))?;
+        fs::remove_file(&source).with_context(|| format!("moving {key} into the vault"))?;
+        moved.push(key);
+    }
+    moved.sort();
+    Ok(if moved.is_empty() && kept_back.is_empty() {
+        json!({"status": "unchanged"})
+    } else {
+        json!({"status": "rolled", "moved": moved, "kept": kept_back})
+    })
+}
+
 /// Move `source` unparsed and byte for byte to `.chough/sessions/shelved/<key>.json`,
 /// never replacing a file, record why beside it, and clear the active pointer when it
 /// named this session (REQ-history-006, DRIVE-14).

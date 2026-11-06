@@ -463,6 +463,15 @@ every command uses `.chough/session.json` exactly as before.
   same for `.chough/session.json` as `legacy`. Only retention reads `shelved/`, within
   16 MiB, so what a shelved checkpoint references stays protected. Its bytes also stay
   in Git.
+- At each move into done, with the librarian on, only the five most recent archived
+  sessions stay in `.chough/sessions/archive/` (REQ-history-011, KNOW-29). Most recent
+  means newest by the finalization of the session's native change, then by key; a
+  session without one counts as the oldest. Each older session moves byte for byte to
+  `knowledge/attachments/<folder of its key>/sessions/<key>.json`, never replacing a
+  file. `chough library index` then writes `knowledge/sessions/<key>.md`
+  (REQ-cli-051), linking the session record and its change's archive note. The step is
+  reported as `applied.session_rollup`. A rolled session no longer protects proof,
+  `session list` no longer lists it, and Git keeps its history.
 
 The active session is named by `.chough/local/active-session`. That directory holds a
 `.gitignore` of `*`, so the pointer stays local to each worktree. It also holds the
