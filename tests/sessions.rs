@@ -1393,7 +1393,11 @@ fn a_session_whose_native_change_is_archived_is_finished_without_a_native_read()
     assert_eq!(fixture.read(".chough/sessions/alpha.json"), alpha);
 
     let created = fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
-    assert_eq!(created["archived"], serde_json::json!(["alpha"]), "{created}");
+    assert_eq!(
+        created["archived"],
+        serde_json::json!(["alpha"]),
+        "{created}"
+    );
     assert!(!fixture.exists(".chough/sessions/alpha.json"));
     assert_eq!(fixture.read(".chough/sessions/archive/alpha.json"), alpha);
     assert!(fixture.exists(".chough/sessions/beta.json"));
@@ -1417,7 +1421,11 @@ fn session_use_archives_a_finalized_session_unless_its_inbox_has_entries() {
     add_entry(&fixture, "gamma", "decision", "late note");
     no_native_reads(&fixture);
     let switched = fixture.ok(&["session", "use", "beta"]);
-    assert_eq!(switched["archived"], serde_json::json!(["alpha"]), "{switched}");
+    assert_eq!(
+        switched["archived"],
+        serde_json::json!(["alpha"]),
+        "{switched}"
+    );
     assert_eq!(switched["kept_open"][0]["key"], "gamma", "{switched}");
     assert!(fixture.exists(".chough/sessions/gamma.json"));
     assert!(!fixture.exists(".native-calls"));
@@ -1457,10 +1465,7 @@ fn session_close_archives_abandoned_work_with_its_reason() {
         "{archived}"
     );
     // Beta, the active session, is untouched and still active.
-    assert_eq!(
-        fixture.read(".chough/local/active-session").trim(),
-        "beta"
-    );
+    assert_eq!(fixture.read(".chough/local/active-session").trim(), "beta");
     let refused = fixture.fails(&["session", "close", "alpha", "--reason", "again"]);
     assert!(refused.contains("archived"), "{refused}");
     let refused = fixture.fails(&["session", "close", "delta", "--reason", "none"]);
