@@ -46,10 +46,10 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674.log` | 90d6757bc3592cf59664ef206df7ff39265663d8df6c871d1747124a7160ce07 | working tree |
-| `.chough/artifacts/OBS-slug-observation-allocation-6f0a2f94c38b11d27e45a901.log` | 760625033ae67467e6673606fd020540bed647de3f65ebf6520e655293c89211 | working tree |
-| `.chough/artifacts/OBS-slug-snapshot-allocation-b731a60c294f8de0175c34a2.log` | b90492c1a5abfe58592d8bb93dab09eef91c4944b40cb1cc83e95f396b773bb3 | working tree |
-| `.chough/artifacts/OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92.log` | 66c97678f658caf414a92e6fa597b8962de7c7bcc1c6da18cd777b8fd8ab0eb9 | working tree |
+| `.chough/artifacts/OBS-slug-case-compatibility-47d2a9106cb83ef519a0c674.log` | 90d6757bc3592cf59664ef206df7ff39265663d8df6c871d1747124a7160ce07 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/OBS-slug-observation-allocation-6f0a2f94c38b11d27e45a901.log` | 760625033ae67467e6673606fd020540bed647de3f65ebf6520e655293c89211 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/OBS-slug-snapshot-allocation-b731a60c294f8de0175c34a2.log` | b90492c1a5abfe58592d8bb93dab09eef91c4944b40cb1cc83e95f396b773bb3 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
+| `.chough/artifacts/OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92.log` | 66c97678f658caf414a92e6fa597b8962de7c7bcc1c6da18cd777b8fd8ab0eb9 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
 | `.chough/artifacts/OBS-tc-cli-0032-0d8c2b77cca109e7ccc7675e.log` | 2b8398a434d6c5e1823f324b246aa58d7ec037b0dfd8a8fbc95f8b1b8878aba7 | working tree |
 | `.chough/artifacts/OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e.log` | 783e1cfa250461adacfc6ba6d57e5f829bcc4636de0df396ae722e5658d74875 | working tree |
 | `.chough/artifacts/OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21.log` | 749c15741c82c5270bc83dbb834ea7a45a98073097eb0f5a843df22419483a92 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
@@ -108,7 +108,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/OBS-tc-cli-history-branches-3f0c0e57694e462991c42e03.log` | 80204737ed973d421b399c335dabbdfe8fe3162e0974f2d1dff5d6f2cc6e4886 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
 | `.chough/artifacts/OBS-tc-cli-history-branches-711de045b9208f05174f4f6f.log` | d93f15864085a425e25f24092803fb125ba64bf9811544b415654c8a2a6c5947 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
 | `.chough/artifacts/OBS-tc-cli-history-branches-a583af0dc8d289a8bc85e974.log` | 81bf4020ffdec354e1a5e0f2035f1c2ed6a39c53634e0c21bb361edc72bee966 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-branches-af8a1be077b88571650a8232.log` | 7a291e202d2832395fa92c9b4fd853019836b70323f2eb66b5928f30887bb8c4 | working tree |
+| `.chough/artifacts/OBS-tc-cli-history-branches-af8a1be077b88571650a8232.log` | 7a291e202d2832395fa92c9b4fd853019836b70323f2eb66b5928f30887bb8c4 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
 | `.chough/artifacts/OBS-tc-cli-history-branches-d7943501c417828e209b76c4.log` | d0d13a22bdf3f8f39bf8dda5734cb015faa15b38e5ae9d5f3e4a22bfaa2aafc0 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/OBS-tc-cli-history-branches-df08dbceeb00e4ad0a17e062.log` | 6d9f1dea0f7a2626846817512cad46da897d243c19d6f1a63d0779c8474f7eaf | working tree |
 | `.chough/artifacts/OBS-tc-cli-history-branches-f96f12df60db99b954afff2c.log` | b6fef15419cfa03f624348c46ba364810464de100da51862bb49f65cb38df3fd | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |

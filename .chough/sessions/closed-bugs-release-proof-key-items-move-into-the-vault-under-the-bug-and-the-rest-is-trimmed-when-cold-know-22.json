@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-92dea44925c6e80e9af07ce4",
-    "head": "EVT-8204fc82b0fda73b6fc713ce",
+    "head": "EVT-e069c0cd82078321f979436e",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,7 +26,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "PR #121 (KNOW-22) accepted by Leif (0xLeif), 2026-11-05 17:07 MST through the orc: Record and merge; his native review (pass) recorded at 3d270936."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [
@@ -36,9 +38,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Native implementation review of this change by Leif (FLOW-10)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Wait for Leif to approve the definition, then implement against the failing tests"
 }
