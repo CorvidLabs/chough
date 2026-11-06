@@ -87,3 +87,4 @@ verification records, the retention ledger and Git stay authoritative.
 ## Attachments
 
 - [artifacts/OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923.log](../attachments/size-the-05f91d78/artifacts/OBS-tc-cli-supported-platforms-92536f1d7e96bab88f3fb923.log)
+- [sessions/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.json](../attachments/size-the-05f91d78/sessions/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.json)
