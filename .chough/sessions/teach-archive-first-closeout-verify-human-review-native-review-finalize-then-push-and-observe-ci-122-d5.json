@@ -26,7 +26,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "failed: OBS-tc-cli-0101-d4305fdb1d19732792489328 was recorded with --environment ci-linux by mistake; it ran in local Docker Linux aarch64 (local-linux-aarch64), not CI. Do not read it as CI evidence; hosted CI on the PR is the CI evidence."
+  ],
   "open_questions": [],
   "completed": [],
   "observations": [],
