@@ -86,6 +86,24 @@
       "requirement_ids": [
         "REQ-reporting-002"
       ]
+    },
+    {
+      "timestamp": 1793998903,
+      "commit": "4b1274f43afe29bef5ff782a36ee59e6292db00b",
+      "contract_digest": "ec3172be5a6e3167ad710775252488108c14039ba26491e72dd71e91dbfbc1b8",
+      "execution_digest": "eed3e4a7850e55fd4c225c93870c8b0c7b57fc3e683d1e46ca052c9d8cd32699",
+      "workspace_digest": "e0bc18e604077afe035d443f260f3c1cbfaf2a7f8627319fd2cd79cd2731ecd3",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec history --spec reporting",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-reporting-002"
+      ]
     }
   ]
 }
