@@ -1,4 +1,53 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794006170,
+      "digest": "df4084b81e47994add0d5de6018f4e1957fbaa13da3f0ea97c7eaf2562d49f51",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177",
+        "title": "Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22)",
+        "description": "Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "AGENTS.md",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "fledge.toml",
+          "hi/drive.md",
+          "specs/cli/cli.spec.md",
+          "tests/linux_image.rs",
+          "tools/linux/Dockerfile",
+          "tools/linux/README.md",
+          "tools/linux/check-versions.sh",
+          "tools/linux/image.sh",
+          "tools/linux/pins.sh",
+          "tools/linux/verify.sh"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "DRIVE-22 (Leif, relayed by orc 2026-11-06, 'Capture as written'; chough#177), in the new REQ-cli-058. tools/linux/ holds the Dockerfile (three stages for chough-linux:1/:2/:3, with tool versions as build arguments), pins.sh (reads the specsync, fledge and human-intent pins from .github/workflows/ci.yml and refuses missing or disagreeing pins), image.sh, verify.sh and check-versions.sh. fledge run linux-image builds the images; fledge run linux-verify runs fledge lanes run verify on the current commit in chough-linux:3 and refuses with exit 3 when a tool is not pinned. The five new tests in tests/linux_image.rs need no Docker and fail first. The images are rebuilt with fledge run linux-image and linux-verify passes on Linux. Docs, AGENTS.md and CHANGELOG say so. linux-verify comes from ch-c456's linux-verify.sh at its request."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-22 (new); FLOW-17 (macOS and Linux); CI's pins in .github/workflows/ci.yml are the one source of tool versions; no crates.io publish by us (cargo install of published versions only); coordinated with ch-c456: REQ-cli-058, linux-verify owned here, its scratch script retired after this lands.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "aefd8305ef13977f656797e6bef57764237cb7d09e45b91943bb13d2a2d1698c"
+      },
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
