@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough stage advance --to <stage>` moves through each main stage up to `<stage>` on
+  one `specsync change status` read. Every step is checked first, as a plain advance
+  would check it, and a refused step refuses the whole batch with nothing recorded
+  (REQ-cli-052, DRIVE-9). The move into done, plain or batched, now reads native status
+  once: the librarian trim takes the change's own manifest from the gate's read instead
+  of reading it again (DRIVE-2). Other changes' manifests and the validity probes around
+  a removal stay live, and nothing is cached past the command. This is the part of
+  PR #69 that main still needed; its archive cache goes to #32.
 - Chough supports macOS and Linux, and Windows through WSL 2 with Ubuntu (FLOW-17).
   Hosted CI no longer runs the native Windows product job; the Ubuntu jobs cover WSL 2
   as Linux, and the docs say what they do not cover (WSL 1, a checkout on `/mnt/c`,

@@ -1,0 +1,110 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-advance-to-one-read-in-a-session"
+title = "A batched advance in a per-change session reads native status once and records one event per step"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-9", "DRIVE-2"]
+requirements = ["REQ-cli-052"]
+paths = ["src/stage.rs", "src/library.rs", "src/evidence.rs", "tests/advance_to.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the advance_to test a_batched_advance_reads_native_status_once_in_a_session passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "advance_to"
+test = "a_batched_advance_reads_native_status_once_in_a_session"
+
+[[case]]
+id = "TC-cli-advance-to-single-checkpoint"
+title = "A batched advance in a single-checkpoint project appends one transition per step on one read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-9"]
+requirements = ["REQ-cli-052"]
+paths = ["src/stage.rs", "src/library.rs", "src/evidence.rs", "tests/advance_to.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the advance_to test a_batched_advance_in_a_single_checkpoint_project passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "advance_to"
+test = "a_batched_advance_in_a_single_checkpoint_project"
+
+[[case]]
+id = "TC-cli-advance-to-no-prerequisite"
+title = "A batch with no native prerequisite makes no native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-9", "DRIVE-2"]
+requirements = ["REQ-cli-052"]
+paths = ["src/stage.rs", "src/library.rs", "src/evidence.rs", "tests/advance_to.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the advance_to test a_batch_with_no_native_prerequisite_reads_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "advance_to"
+test = "a_batch_with_no_native_prerequisite_reads_nothing"
+
+[[case]]
+id = "TC-cli-advance-to-refusal-records-nothing"
+title = "A refused step refuses the whole batch and records nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-9"]
+requirements = ["REQ-cli-052"]
+paths = ["src/stage.rs", "src/library.rs", "src/evidence.rs", "tests/advance_to.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the advance_to test a_refused_step_refuses_the_whole_batch_with_nothing_recorded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "advance_to"
+test = "a_refused_step_refuses_the_whole_batch_with_nothing_recorded"
+
+[[case]]
+id = "TC-cli-advance-into-done-one-read"
+title = "The move into done reads native status once, plain and batched"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-2", "DRIVE-9"]
+requirements = ["REQ-cli-052"]
+paths = ["src/stage.rs", "src/library.rs", "src/evidence.rs", "tests/advance_to.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the advance_to test advance_into_done_reads_native_status_once passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "advance_to"
+test = "advance_into_done_reads_native_status_once"
+
+[[case]]
+id = "TC-cli-plain-advance-unchanged"
+title = "A plain stage advance is unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-9"]
+requirements = ["REQ-cli-052"]
+paths = ["src/stage.rs", "src/library.rs", "src/evidence.rs", "tests/advance_to.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the advance_to test a_plain_advance_is_unchanged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "advance_to"
+test = "a_plain_advance_is_unchanged"
