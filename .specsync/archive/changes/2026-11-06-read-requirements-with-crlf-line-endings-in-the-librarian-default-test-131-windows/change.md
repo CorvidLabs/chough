@@ -1,6 +1,6 @@
 ---
 id: read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 217680e292733680b377daee33b37dcde14b9424
 ---

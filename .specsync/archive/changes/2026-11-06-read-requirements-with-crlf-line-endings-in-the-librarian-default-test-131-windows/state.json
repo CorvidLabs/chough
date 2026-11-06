@@ -7,11 +7,11 @@
   "title": "Read requirements with CRLF line endings in the librarian-default test (131 Windows)",
   "description": "Read requirements with CRLF line endings in the librarian-default test (131 Windows)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "217680e292733680b377daee33b37dcde14b9424",
   "created_at": 1793934154,
-  "updated_at": 1793934276,
+  "updated_at": 1793934520,
   "affected_specs": [
     "cli"
   ],
