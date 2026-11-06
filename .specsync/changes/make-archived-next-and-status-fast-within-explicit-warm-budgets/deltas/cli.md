@@ -1,6 +1,6 @@
 ## ADDED
 
-### REQUIREMENT REQ-cli-052
+### REQUIREMENT REQ-cli-053
 
 Responsive archived reports with bounded authenticated reuse. For a checkpoint whose native change is archived, `chough next` and `chough status` MAY reuse a native JSON response only after a live `specsync change status <id> --json` reported the same archived change with terminal evidence validity `authenticated-history`. The cached response SHALL be labelled as cached, SHALL retain the existing native summary and deterministic output bounds, and SHALL be used only by these read-only reports. Stage transitions, timing, retention, native verification and every lifecycle mutation SHALL continue to make their authoritative live native reads with the existing gate predicates, deadlines and output bounds. Active-change responses SHALL NOT be cached. Trace: DRIVE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2.
 
