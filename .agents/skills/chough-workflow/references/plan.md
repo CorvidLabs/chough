@@ -41,8 +41,18 @@ not ask the operator to execute this command or repeat covered permission.
 When a consequential decision or authority is actually missing, ask one concise
 question and record that real gate with `chough checkpoint --awaiting-human
 "Scope decision of <id>"`. Keep doing independent preparation while it is pending.
-After the missing decision arrives, record its source and perform the native steps
-as the agent. An actor label alone never supplies human authority.
+After the missing decision arrives, record it on the human's behalf and perform the
+native steps as the agent:
+
+```sh
+chough checkpoint --close-gate "Scope decision of <id>" --decided-by "<who>" \
+  --words "<their exact words>" --where "<where and when, and who relayed it>" \
+  --recorded-by "<agent-account>"
+```
+
+That closes only that gate and keeps a relayed claim on its gate record and in the
+decisions; it does not approve anything natively. An actor label alone never
+supplies human authority, and neither Chough nor SpecSync authenticates who decided.
 
 Lessons learned from rehearsing SpecSync 6.1: the delta is frozen once approved and
 `change check` refuses an edited delta; `change check` also refuses while `tasks.md`

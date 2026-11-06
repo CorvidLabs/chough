@@ -37,13 +37,21 @@ chough checkpoint --completed "<what was done>" --observation <id> \
 Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` record to
 `.chough/transitions.jsonl` (only when that gate is not already open), and
 `--clear-awaiting-human` appends one `gate-closed` record per gate it clears. They
-record when a gate waited, never who decided or what, and `chough timing` reads them
-to show waiting-on-human time. Open and clear gates through these flags rather than by
-editing `session.json`, or the waiting time is lost.
+record when a gate waited, and `chough timing` reads them to show waiting-on-human
+time. Open and close gates through these flags rather than by editing `session.json`,
+or the waiting time is lost.
 
-`--clear-awaiting-human` clears every open gate, not just one. To close some gates
-and keep the others, pass the gates still waiting with `--awaiting-human` in the same
-call; they are logged closed and opened again, so their waiting time restarts there.
+When the human decides a gate, record their decision on their behalf with
+`chough checkpoint --close-gate "<gate>" --decided-by "<who>" --words "<their exact
+words>" --where "<where and when, and who relayed it>" --recorded-by "<agent>"`. It
+closes only that gate, puts `relayed_by` on its `gate-closed` record and adds one
+decision. It is a relayed claim, not authenticated, and never a native approval or
+review. Each refusal saves nothing and names its recovery.
+
+`--clear-awaiting-human` withdraws every open gate and records no decision: use it
+for gates no human decision closes. To withdraw some gates and keep the others, pass
+the gates still waiting with `--awaiting-human` in the same call; they are logged
+closed and opened again, so their waiting time restarts there.
 
 Write decisions with a prefix and a reason, so a fresh agent can tell what was chosen,
 what was ruled out and what already failed:

@@ -111,7 +111,10 @@ chough stage advance        # refused: refused:awaiting-human (refused:native-dr
 
 Once actual human authority covers the definition, the agent runs
 `specsync change approve <id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"`
-and clears the resolved gate with `chough checkpoint --clear-awaiting-human`.
+and records your decision on the gate with `chough checkpoint --close-gate "Scope
+approval of free-shipping-at-the-threshold" --decided-by "<you>" --words "<your
+words>" --where "<where and when>" --recorded-by "<agent-account>"`, a relayed claim,
+not authenticated.
 Applicable existing permission is used without another tool-specific question.
 Then `chough stage advance` enters build. The acting account and human authority
 source remain separate, as does your later implementation acceptance.

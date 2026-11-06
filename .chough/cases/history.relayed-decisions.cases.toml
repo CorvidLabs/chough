@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-relay-invalid-payloads"
+title = "An invalid relay is refused as an invalid transition payload in the legacy log and in history events"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-13"]
+requirements = ["REQ-history-010"]
+paths = ["src/stage.rs", "src/history.rs"]
+environments = ["local", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the relay test invalid_relays_are_refused_as_invalid_payloads passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "invalid_relays_are_refused_as_invalid_payloads"
