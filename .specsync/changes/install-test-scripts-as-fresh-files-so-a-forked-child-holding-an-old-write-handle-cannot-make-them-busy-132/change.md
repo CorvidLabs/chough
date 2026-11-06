@@ -1,6 +1,6 @@
 ---
 id: install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132
-state: draft
+state: approved
 type: bug_fix
 base_commit: 47237d549eb395dfb8c301322d95f371ca4ea3ae
 ---
