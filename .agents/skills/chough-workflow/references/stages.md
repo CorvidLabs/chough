@@ -14,6 +14,7 @@ questions; what to checkpoint; and transitions.
 | Intent | Command | Notes |
 |---|---|---|
 | Next stage | `chough stage advance` | Every move meets its destination's native prerequisite (build, test, accept, done) |
+| Several stages at once | `chough stage advance --to <stage>` | Every step is checked first, on one native read; a refused step records nothing, and into done it reads native status once |
 | Not applicable | `chough stage skip --reason "<why>"` | The reason is required and kept |
 | Another pass | `chough stage iterate --note "<what changed>"` | |
 | Go back | `chough stage back --to <stage> --reason "<why>"` | Lists what to refresh; history is kept |

@@ -51,6 +51,8 @@ Archived changes (newest first; the newest 3 are hot):
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19) (hot)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148) (hot)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (cold)
+- [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](archives/stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144.md) Stop tests stall on a per-fixture token so concurrent runs never take or kill each other processes (144) (hot)
+- [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](archives/name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up.md) Name stage advance --to in the workflow skill's transition table (DRIVE-9, REQ-cli-052 follow-up) (cold)
 - [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](archives/assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11.md) Assert the eight-reader ceiling for archive validity reads on any host (CH-M11) (cold)
 - [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](archives/install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132.md) Install test scripts as fresh files so a forked child holding an old write handle cannot make them busy (132) (cold)
 - [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](archives/advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into.md) Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2) (cold)
@@ -75,6 +77,7 @@ Archived lesson bundles:
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../.specsync/archive/changes/2026-11-06-pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19/lesson-bundle.md)
 - [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../.specsync/archive/changes/2026-11-06-an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148/lesson-bundle.md)
 - [stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144](../.specsync/archive/changes/2026-11-06-stop-tests-stall-on-a-per-fixture-token-so-concurrent-runs-never-take-or-kill-each-other-processes-144/lesson-bundle.md)
+- [name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up](../.specsync/archive/changes/2026-11-06-name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up/lesson-bundle.md)
 - [assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11](../.specsync/archive/changes/2026-11-06-assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11/lesson-bundle.md)
 - [install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132](../.specsync/archive/changes/2026-11-06-install-test-scripts-as-fresh-files-so-a-forked-child-holding-an-old-write-handle-cannot-make-them-busy-132/lesson-bundle.md)
 - [advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into](../.specsync/archive/changes/2026-11-06-advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into/lesson-bundle.md)
@@ -100,11 +103,14 @@ Archived lesson bundles:
 ## Observations
 
 407 recorded; most recent:
+408 recorded; most recent:
 
 - OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
 - OBS-tc-history-inbox-bounds-pinned-exactly-a3d8c4fb1a993f500fd75027 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
 - OBS-tc-history-bounds-pinned-exactly-0530ce0b20e7128dfaf03434 ProductTest Passed in local-linux-aarch64 at f87cfbe8e466
 - OBS-tc-cli-empty-change-dir-not-open-57008086fb1fbbac0c81e584 ProductTest Passed in local-linux-aarch64 at c8b4c8daf5d3
+- OBS-tc-cli-skill-names-advance-to-9cbf60b000eb6a952def99a3 ProductTest Passed in local-macos-arm64 at 769fba2e29ce
+- OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5 ProductTest Failed in local-macos-arm64 at 4da25aa93cb2
 - OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
