@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-relay-closes-one-gate-with-four-values-f7953d03c79922c844d899b2",
+  "criteria": [
+    "FLOW-16",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-050"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test relay -- --exact a_relayed_decision_closes_only_its_gate_and_keeps_the_four_values for TC-cli-relay-closes-one-gate-with-four-values: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-relay-closes-one-gate-with-four-values-f7953d03c79922c844d899b2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-relay-closes-one-gate-with-four-values-f7953d03c79922c844d899b2.log": "1b1b61a8b72133ae297d71894787769911a2febdfed2a38cea1ea1e6d92d7658"
+  },
+  "observed_at_unix_seconds": 1793938146,
+  "snapshot": {
+    "revision": "98aa658d861bcb8b5b07e66e293f9a4188b822bc",
+    "dirty": false,
+    "fingerprint": "4e84a997668f8a8bc551436efda2fdd7ce1c257ef6e1f855281ee831ade62ef7",
+    "content": "2619f90e6b83ecd5e1b5cd58fc4f44da86d0b66d16fd199b166623465c419d6f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-relay-closes-one-gate-with-four-values",
+      "digest": "51c4bb43fa652c35d1075f778e4b0636d8a733c167532f4c49a9fd6ae768e65f"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "relay",
+    "--",
+    "--exact",
+    "a_relayed_decision_closes_only_its_gate_and_keeps_the_four_values"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

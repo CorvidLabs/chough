@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-relay-refusals-recover-c53afc18239889e07f9ac065",
+  "criteria": [
+    "FLOW-16"
+  ],
+  "requirements": [
+    "REQ-cli-050"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local",
+  "summary": "Ran cargo test --locked --test relay -- --exact relay_refusals_save_nothing_and_their_recovery_succeeds for TC-cli-relay-refusals-recover: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-relay-refusals-recover-c53afc18239889e07f9ac065.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-relay-refusals-recover-c53afc18239889e07f9ac065.log": "db4248c0728eccbc2f642b4fe459c8ee29248929f2d4db5547d9ed5d7637e302"
+  },
+  "observed_at_unix_seconds": 1793937745,
+  "snapshot": {
+    "revision": "98aa658d861bcb8b5b07e66e293f9a4188b822bc",
+    "dirty": false,
+    "fingerprint": "4e84a997668f8a8bc551436efda2fdd7ce1c257ef6e1f855281ee831ade62ef7",
+    "content": "2619f90e6b83ecd5e1b5cd58fc4f44da86d0b66d16fd199b166623465c419d6f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-relay-refusals-recover",
+      "digest": "bf623421aa8bb0835e447c8332e44bae4418caacdca415836709f11b42733dd8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "relay",
+    "--",
+    "--exact",
+    "relay_refusals_save_nothing_and_their_recovery_succeeds"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

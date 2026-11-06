@@ -51,11 +51,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-reduce-shared-artifact-released-55da340fad3623e400d52dac | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-reduce-shared-artifact-released |
 | OBS-tc-cli-vault-closed-bug-releases-fixture-6c3e6d34882720f6d3e65fc4 | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-closed-bug-releases-fixture |
+| OBS-tc-cli-vault-key-items-move-a416edd1a6617d1f5400d74f | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-key-items-move |
+| OBS-tc-cli-vault-loose-artifacts-trimmed-56a8278d63dfe84b5c53c47a | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-loose-artifacts-trimmed |
 
 ## Bugs
 
@@ -67,4 +70,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- [pruned.jsonl](../attachments/move-old-proof-f73dee71/pruned.jsonl)
+- none

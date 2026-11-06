@@ -2244,6 +2244,201 @@ fn tool_and_rust_version_pins_agree() {
     }
 }
 
+/// The files that state where Chough runs and where CI tests it (FLOW-17).
+struct PlatformSources<'a> {
+    ci: &'a str,
+    fledge: &'a str,
+    readme: &'a str,
+    ci_doc: &'a str,
+    integrations: &'a str,
+}
+
+/// The lines of a Markdown section, from its `## ` heading to the next one.
+fn markdown_section<'a>(text: &'a str, heading: &str) -> Vec<&'a str> {
+    text.lines()
+        .skip_while(|line| *line != heading)
+        .skip(1)
+        .take_while(|line| !line.starts_with("## "))
+        .collect()
+}
+
+/// Text with every run of whitespace made one space, so a phrase matches however
+/// the Markdown is wrapped.
+fn flat(lines: &[&str]) -> String {
+    lines
+        .iter()
+        .flat_map(|line| line.split_whitespace())
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// Every way CI or the platform statements disagree with FLOW-17: macOS and Linux,
+/// Windows only through WSL 2 with Ubuntu, and a Linux build running the exercise.
+fn platform_problems(sources: &PlatformSources) -> Vec<String> {
+    let mut problems = vec![];
+    let product = ci_job(sources.ci, "product");
+    if !product
+        .iter()
+        .any(|line| line.trim() == "os: [ubuntu-latest, macos-latest]")
+    {
+        problems.push(
+            ".github/workflows/ci.yml product job: matrix is not [ubuntu-latest, macos-latest]"
+                .into(),
+        );
+    }
+    if let Some(line) = sources
+        .ci
+        .lines()
+        .find(|line| line.to_ascii_lowercase().contains("windows"))
+    {
+        problems.push(format!(
+            ".github/workflows/ci.yml: names Windows: {}",
+            line.trim()
+        ));
+    }
+    // WSL 2 with Ubuntu is Linux: the Ubuntu verify lane runs the exercise.
+    let gates = ci_job(sources.ci, "native-gates");
+    if !gates
+        .iter()
+        .any(|line| line.trim() == "runs-on: ubuntu-latest")
+        || !gates
+            .iter()
+            .any(|line| line.trim() == "- run: fledge lanes run verify")
+    {
+        problems.push(
+            ".github/workflows/ci.yml native-gates job: does not run fledge lanes run verify \
+             on ubuntu-latest"
+                .into(),
+        );
+    }
+    let fledge: toml::Table = toml::from_str(sources.fledge).unwrap();
+    let verify_runs_exercise = fledge
+        .get("lanes")
+        .and_then(|lanes| lanes.get("verify"))
+        .and_then(|verify| verify.get("steps"))
+        .and_then(|steps| steps.as_array())
+        .is_some_and(|steps| steps.iter().any(|step| step.as_str() == Some("exercise")));
+    let exercise_is_the_loop = fledge
+        .get("tasks")
+        .and_then(|tasks| tasks.get("exercise"))
+        .and_then(|task| task.as_str())
+        .is_some_and(|task| task.contains("examples/feature-bug-loop.sh"));
+    if !verify_runs_exercise || !exercise_is_the_loop {
+        problems.push(
+            "fledge.toml: the verify lane does not run the exercise task \
+             (examples/feature-bug-loop.sh)"
+                .into(),
+        );
+    }
+    let support = [
+        "Windows is supported through WSL 2 with Ubuntu",
+        "native Windows is not supported",
+    ];
+    let tested = markdown_section(sources.readme, "## Tested platforms");
+    for row in tested.iter().filter(|line| line.starts_with("| Hosted CI")) {
+        if row.contains("Windows") {
+            problems.push(format!(
+                "README.md Tested platforms: claims Windows CI: {row}"
+            ));
+        }
+    }
+    if !tested
+        .iter()
+        .any(|line| line.starts_with("| Hosted CI: Ubuntu, macOS |"))
+    {
+        problems.push("README.md Tested platforms: no hosted CI row for Ubuntu and macOS".into());
+    }
+    let platforms = markdown_section(sources.integrations, "## Platforms");
+    for (file, section) in [
+        ("README.md Tested platforms", flat(&tested)),
+        ("docs/integrations.md Platforms", flat(&platforms)),
+    ] {
+        for phrase in support {
+            if !section.contains(phrase) {
+                problems.push(format!("{file}: does not say {phrase:?}"));
+            }
+        }
+        if !section.contains("WSL 1") || !section.contains("/mnt/c") {
+            problems.push(format!(
+                "{file}: does not name what the Ubuntu jobs do not cover (WSL 1, /mnt/c)"
+            ));
+        }
+    }
+    let ci_doc = flat(&sources.ci_doc.lines().collect::<Vec<_>>());
+    if sources.ci_doc.contains("windows-latest")
+        || !ci_doc.contains("release builds on Ubuntu and macOS")
+    {
+        problems.push("docs/ci.md: still lists Windows CI".into());
+    }
+    problems
+}
+
+#[test]
+fn supported_platforms_are_macos_and_linux_with_windows_through_wsl() {
+    let read = |file: &str| {
+        fs::read_to_string(manifest_dir().join(file))
+            .unwrap()
+            .replace("\r\n", "\n")
+    };
+    let (ci, fledge, readme, ci_doc, integrations) = (
+        read(".github/workflows/ci.yml"),
+        read("fledge.toml"),
+        read("README.md"),
+        read("docs/ci.md"),
+        read("docs/integrations.md"),
+    );
+    let sources = PlatformSources {
+        ci: &ci,
+        fledge: &fledge,
+        readme: &readme,
+        ci_doc: &ci_doc,
+        integrations: &integrations,
+    };
+    let problems = platform_problems(&sources);
+    assert!(problems.is_empty(), "{}", problems.join("\n"));
+
+    // The checker itself: bringing Windows back or dropping the exercise fails.
+    let ci_with_windows = ci.replace(
+        "os: [ubuntu-latest, macos-latest]",
+        "os: [ubuntu-latest, macos-latest, windows-latest]",
+    );
+    let fledge_without_exercise = fledge.replace("[lanes.verify]", "[lanes.unused]");
+    let readme_with_windows = readme.replace(
+        "| Hosted CI: Ubuntu, macOS |",
+        "| Hosted CI: Ubuntu, macOS, Windows |",
+    );
+    let mutations = [
+        (
+            PlatformSources {
+                ci: &ci_with_windows,
+                ..sources
+            },
+            ".github/workflows/ci.yml product job",
+        ),
+        (
+            PlatformSources {
+                fledge: &fledge_without_exercise,
+                ..sources
+            },
+            "fledge.toml",
+        ),
+        (
+            PlatformSources {
+                readme: &readme_with_windows,
+                ..sources
+            },
+            "README.md Tested platforms: claims Windows CI",
+        ),
+    ];
+    for (changed, expected) in mutations {
+        let problems = platform_problems(&changed);
+        assert!(
+            problems.iter().any(|problem| problem.starts_with(expected)),
+            "expected {expected:?}: {problems:?}"
+        );
+    }
+}
+
 #[test]
 fn a_skill_copy_from_main_before_the_release_prep_is_known_outdated_and_updated() {
     let project = empty_project();

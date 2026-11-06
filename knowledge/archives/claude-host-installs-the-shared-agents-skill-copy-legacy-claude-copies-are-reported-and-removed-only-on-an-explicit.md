@@ -52,39 +52,57 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.log` | 12212db2bd83151ab28efc8748757991401776c5d5356b71e24af04eab24a0c3 | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
+| `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.log` | 12212db2bd83151ab28efc8748757991401776c5d5356b71e24af04eab24a0c3 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-4ed5cdc73bfd915d9a8630ea.log` | 73e586cfff5186fc4a7b18994cc6a7c2fe395d42b29abc9038f5bfa4d586ead7 | working tree |
 | `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9.log` | 803715bc7de5b07ab0c25395f3cce30cec0b03e294c0bdbb8f96783fe640d80e | working tree |
-| `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544.log` | 4c8f6b91caec0c04160af40d6a4412601d55dc2b8fc82a12ee3fe1bd988a5e82 | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
-| `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.log` | ec787ab017cd487c2a7c8d82fb3f6297e42cc4ace680c737ffbb8a0c18a7f2db | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
-| `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.log` | bd4cce5335c294323b3670e4b17b438cace2f5548c1c2a8b92ebcb61c3622cbf | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
+| `.chough/artifacts/OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544.log` | 4c8f6b91caec0c04160af40d6a4412601d55dc2b8fc82a12ee3fe1bd988a5e82 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
+| `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.log` | ec787ab017cd487c2a7c8d82fb3f6297e42cc4ace680c737ffbb8a0c18a7f2db | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.log` | bd4cce5335c294323b3670e4b17b438cace2f5548c1c2a8b92ebcb61c3622cbf | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
 | `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-db41ac5fca1248aa46335397.log` | c2b6ff0746d10a3cf364e7b637ff27b4d0abae9349795d25a62afff0dd51dde4 | working tree |
 | `.chough/artifacts/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee.log` | db0bec1b2cd4d5b0d230f40d3c854e351d73ef169406d749dcc72bdf11575c1f | working tree |
-| `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.json` | 1b01edcd77d2a43f8a9ac431e05113e0740b35cd5983d55f3857ac4ff1c8dc1a | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
+| `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58.json` | 1b01edcd77d2a43f8a9ac431e05113e0740b35cd5983d55f3857ac4ff1c8dc1a | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-4ed5cdc73bfd915d9a8630ea.json` | d0f5f027ae3410213e7ca9708fd5dd8e80fff53b9482d3d8ffe015ec4a470760 | working tree |
 | `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9.json` | 06ba106a337d9469c095fc3c9595d7880c710b631a999892a2e235fb2bd32f45 | working tree |
-| `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544.json` | d6d43133142761d74fc76e2dd3feb3633b3837c926676427b5f6639f8463ed87 | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
-| `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.json` | f9940c9b0b0159c471ff3118569764db0cd6c7b1dcea97b6430dca79ef2b4692 | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
-| `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.json` | 7553d4deaf4971ee9416fa68099e31823439920bab51645d8b94703382aaa1ad | Git d036d9234b5926d26d0a8dcd2caeb03171138fe1 |
+| `.chough/evidence/OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544.json` | d6d43133142761d74fc76e2dd3feb3633b3837c926676427b5f6639f8463ed87 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
+| `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc.json` | f9940c9b0b0159c471ff3118569764db0cd6c7b1dcea97b6430dca79ef2b4692 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd.json` | 7553d4deaf4971ee9416fa68099e31823439920bab51645d8b94703382aaa1ad | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
 | `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-db41ac5fca1248aa46335397.json` | 0dc6a58cc102cfe5346f3bb9ed82b92b723e8ba6cb6f50c5f3c1dc8240388c6b | working tree |
 | `.chough/evidence/OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee.json` | 94ca8cfa9af3b57a890de170ab14fa0d5c75b79258ffbb7a566564db7d93cb5b | working tree |
 
 ## Observations
 
-2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+20 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58 | unavailable | ? |  |
+| OBS-tc-cli-claude-host-shares-agents-copy-0c88dccd284f5dec72d74b58 | passed (pruned) | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
 | OBS-tc-cli-claude-host-shares-agents-copy-4ed5cdc73bfd915d9a8630ea | failed | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
 | OBS-tc-cli-claude-host-shares-agents-copy-8e42980a3d131e6f96b33ac9 | passed | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
-| OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544 | unavailable | ? |  |
-| OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc | unavailable | ? |  |
-| OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd | unavailable | ? |  |
+| OBS-tc-cli-claude-host-shares-agents-copy-96b45c91b9d3423f9ef39544 | not-run (pruned) | local-linux-x86_64 | TC-cli-claude-host-shares-agents-copy |
+| OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-455d62a39d966074fe1e00fc | passed (pruned) | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
+| OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-bf01674cf01c5ac6d9ef69dd | not-run (pruned) | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-db41ac5fca1248aa46335397 | passed | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
 | OBS-tc-cli-legacy-claude-copy-removed-only-explicitly-f6b711b097118a041e2c42ee | failed | local-linux-x86_64 | TC-cli-legacy-claude-copy-removed-only-explicitly |
+| OBS-tc-cli-archive-summary-apply-017af1fee70a2b18d13ce95a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-73bd07d530eac90204447d25 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-80a2a6e3c6ec8bc4e18a7a26 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-apply-eb8be0166a59ac65618579ef | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
+| OBS-tc-cli-archive-summary-fails-closed-d96abea42ebd8134f6a36f36 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
+| OBS-tc-cli-archive-summary-preview-1f2c89765aee431f36668db2 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-8f893d16e89c4e10f42fdec2 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-b9b8f9d5b85bc0d07e74d888 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-archive-summary-preview-d0a76434022c89c7008e8d0a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
+| OBS-tc-cli-knowledge-archive-entries-5f87ff8883f726e6614de2db | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-631d2dfe1fd073767af005c6 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-794db939bed655f623b8a44b | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
 | OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8 | failed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-archive-entries-e16e5b4bb89ce6ef2835c056 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
+| OBS-tc-cli-knowledge-entries-bounded-1d9a0832d2c2f1c67fcb98ef | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
+| OBS-tc-cli-librarian-default-on-knowledge-12316a36b3c0df407410b76a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-2dcb29dd56d16f75384484c1 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
 | OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834 | failed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-ab75b0dd66df0f5ca429d3fc | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
+| OBS-tc-cli-librarian-default-on-knowledge-dec1f49f96921dfe2c76d423 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
 
 ## Bugs
 
@@ -92,6 +110,30 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
+- `.chough/artifacts/bug40-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/bug43-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
+- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
+- `.chough/artifacts/history-cycle-directory-history-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-cycle-directory-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-cycle-directory-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/source.diff`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-idle-closure-before/apply.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/apply.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/apply.json)
 - `.chough/artifacts/history-idle-closure-before/commands.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/commands.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/commands.json)
 - `.chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json)
@@ -110,6 +152,52 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-idle-closure-before/preview.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/preview.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/preview.json)
 - `.chough/artifacts/history-idle-closure-before/reproduce.py`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/reproduce.py](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/reproduce.py)
 - `.chough/artifacts/history-idle-closure-before/source.diff`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/source.diff](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/source.diff)
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/case-merge-choices.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/checkpoint-merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-owner-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/base.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/preservation.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-peer-history-fixes-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/limitations.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-history-show.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-prune-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-timing.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/baseline-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/baseline-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-after-prune-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-before-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-checkpoint.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/summary.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/target-original-event.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-history-show.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-history-show.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-history-show.json)
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-inventory.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-inventory.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-inventory.json)
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json)
@@ -122,19 +210,7 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json)
 - `.chough/artifacts/history-post-prune-reference-before/commands.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json)
 - `.chough/artifacts/history-post-prune-reference-before/merge-result.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json)
-- `.chough/artifacts/history-post-prune-reference-before/metadata.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/metadata.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/metadata.json)
-- `.chough/artifacts/history-post-prune-reference-before/reproduce.py`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/reproduce.py](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/reproduce.py)
-- `.chough/artifacts/history-post-prune-reference-before/summary.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/summary.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/summary.json)
-- `.chough/artifacts/history-post-prune-reference-before/target-original-event.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/target-original-event.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/target-original-event.json)
-- `.chough/artifacts/history-reference-boundary-final/metadata.json`: Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.head`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.head](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.head)
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.log`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.log](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.log)
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.metadata.json`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.metadata.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.metadata.json)
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.patch`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.patch](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.patch)
-- `.chough/artifacts/pr51-writer-atomicity/before/red.log`: moved to [knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/red.log](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/red.log)
-- `.chough/artifacts/pr51-writer-atomicity/before/regression.patch`: moved to [knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/regression.patch](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/regression.patch)
-- `.chough/artifacts/pr51-writer-atomicity/before/result.json`: moved to [knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/result.json](../attachments/claude-host-0be606ee/knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/result.json)
-- `.chough/artifacts/pr51-writer-atomicity/final-pair/result.json`: Git f01f1ee06f384a0317f1bbe8385c6f044f9b4307
+- 242 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 
@@ -238,4 +314,4 @@ verification records, the retention ledger and Git stay authoritative.
 - [artifacts/history-cycle-directory-references-before/single-quoted/target-original-event.json](../attachments/claude-host-0be606ee/artifacts/history-cycle-directory-references-before/single-quoted/target-original-event.json)
 - [artifacts/history-protected-reference-punctuation-proof/capture-note.md](../attachments/claude-host-0be606ee/artifacts/history-protected-reference-punctuation-proof/capture-note.md)
 - [artifacts/history-protected-reference-punctuation-proof/complete-capture.tar.gz](../attachments/claude-host-0be606ee/artifacts/history-protected-reference-punctuation-proof/complete-capture.tar.gz)
-- 143 more under attachments/claude-host-0be606ee/
+- 142 more under attachments/claude-host-0be606ee/

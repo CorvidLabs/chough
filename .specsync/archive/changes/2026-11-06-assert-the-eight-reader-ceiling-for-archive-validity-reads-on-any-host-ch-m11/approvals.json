@@ -1,0 +1,52 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793940210,
+      "digest": "832c4af5dc23e0bdebb4f9b3fb2433e77c748c9bf26e87920185abcc5ad7cdae",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11",
+        "title": "Assert the eight-reader ceiling for archive validity reads on any host (CH-M11)",
+        "description": "Assert the eight-reader ceiling for archive validity reads on any host (CH-M11)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "src/evidence.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-033 gains a criterion: with twelve affected archives no more than 8 validity reads run at once, and the reader count is at most 8 whatever parallelism the host reports. The reader count is a pure function with no behavior change. A unit test holds the ceiling for a host reporting 128 cores, and a 12-cold-archive integration test observes at most 8 overlapping reads. Both fail with the ceiling raised to 128 (the audit's CH-M11 mutant) and pass restored; the existing overlap test still passes. fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Audit CH-M11 (mutation .clamp(2, 8) -> .clamp(2, 128) survived native_validity_reads_run_in_parallel); Leif's 95% plan C5 (2026-11-05, via the orc): a test that asserts the eight-reader ceiling, which the mutation must fail; never weaken a test, gate, bound or timeout. The ceiling stays 8 and the floor 2; no runtime behavior changes.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "3fd4cabd72f4abd516b6cfd1db29cd2edeb80885af1dc9c8ac3b644e7028492a"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-033": "670d3a1e470bbe1396d3c667e6f1308f36edb98fd1c5394e019d2b9af4e02fbc"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1793946972,
+      "digest": "89b41388e665c325c05c25d32876006249cf2f111dd4874f9485317c04b57df6",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

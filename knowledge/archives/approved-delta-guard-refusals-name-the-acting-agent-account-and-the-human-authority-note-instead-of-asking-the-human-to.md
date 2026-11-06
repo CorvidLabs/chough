@@ -47,94 +47,94 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/OBS-tc-cli-checkpoint-byte-bound-is-131072-c8dacf9568169583826b2d30.log` | 8a77a1f5cbdbab806aa8541e8d8db98fe8d81ba913ebdb326ae24091cf569986 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2.log` | d805e5ab0ecc2f3f60f3478b10be115c0950ac9fd89682464bd708676bfbe134 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/OBS-tc-cli-checkpoint-byte-bound-is-131072-c8dacf9568169583826b2d30.log` | 8a77a1f5cbdbab806aa8541e8d8db98fe8d81ba913ebdb326ae24091cf569986 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-509cfb9429df416ca6d2eca2.log` | d805e5ab0ecc2f3f60f3478b10be115c0950ac9fd89682464bd708676bfbe134 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
 | `.chough/artifacts/OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a.log` | d65a03a35623a99b68b00f21d34cd11205e35a7d037725affca14fdb4f625961 | working tree |
 | `.chough/artifacts/OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0.log` | d52d4da8e173dedf7da02463c55048a130285bf322e256b3d4a14d1043658b47 | working tree |
-| `.chough/artifacts/OBS-tc-cli-observation-pointer-bound-is-400-faf381593527d3c0c4be37b1.log` | 7309ff6f0a6e496e19471a6730ef204b355d68d8d2ebf0c66033f4e18af0c6c9 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/OBS-tc-cli-report-case-read-budget-115b6dcd869d4b061b985d12.log` | f789a253dffda6bb4703f60f039f33c8cafea5a1a99a5bdac5738293a448a315 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/OBS-tc-cli-report-case-read-budget-2af9122b4596a360fdf87116.log` | 4b77fb766bd67f2f6e25d309a7b68c50201abf630b855dfd5cf69e06d8b53b56 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/OBS-tc-cli-observation-pointer-bound-is-400-faf381593527d3c0c4be37b1.log` | 7309ff6f0a6e496e19471a6730ef204b355d68d8d2ebf0c66033f4e18af0c6c9 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-report-case-read-budget-115b6dcd869d4b061b985d12.log` | f789a253dffda6bb4703f60f039f33c8cafea5a1a99a5bdac5738293a448a315 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/OBS-tc-cli-report-case-read-budget-2af9122b4596a360fdf87116.log` | 4b77fb766bd67f2f6e25d309a7b68c50201abf630b855dfd5cf69e06d8b53b56 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.log` | 834e7d66b7adc24c7fc2556c863257f9982445f92cafc33844ebffea10b78e0f | working tree |
 | `.chough/artifacts/OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895.log` | c55906efe0d2a080bb8045bc23c4394de28c6e2c306fc3dad5f0b8322edf35a0 | working tree |
-| `.chough/artifacts/OBS-tc-cli-report-read-invalidation-6352cd6b7a933e27a28d1bce.log` | 51e3acc367d553018521fbe686cb7602bb62bc0ff21276314b34053bcea38a7d | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/OBS-tc-cli-report-read-invalidation-e13d4017cd8f17a34782547f.log` | dc6200457e8dc4e015f2917399bec0b86cc64710b4f931f7e05378bbd43742de | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/OBS-tc-cli-report-trace-parity-4330cee0bcfefa49971754aa.log` | 0988e514ba6e047ba60528af080735c8678cae8a9cab90fbf5e05e9b4642d8f7 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/OBS-tc-cli-report-read-invalidation-6352cd6b7a933e27a28d1bce.log` | 51e3acc367d553018521fbe686cb7602bb62bc0ff21276314b34053bcea38a7d | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/OBS-tc-cli-report-read-invalidation-e13d4017cd8f17a34782547f.log` | dc6200457e8dc4e015f2917399bec0b86cc64710b4f931f7e05378bbd43742de | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/OBS-tc-cli-report-trace-parity-4330cee0bcfefa49971754aa.log` | 0988e514ba6e047ba60528af080735c8678cae8a9cab90fbf5e05e9b4642d8f7 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759.log` | e5a959796c750352499ac358cda5309409514d54933f2674d6f756d229e02948 | working tree |
-| `.chough/artifacts/OBS-tc-cli-report-trace-parity-f63fb27141834a3f4710be95.log` | 05934276c681adf5c098346add979940782a0206aa595779024f86cbd52e554d | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/actual-selection-result.json` | 6c67f613d6081045d22faabda971f5d849c6c7f5b034a2610655966de1d62429 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/base.json` | a9797ed27307393d6cd917d1c09184661172d74098ba2b24508a4252f06f8711 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/merge.stderr.log` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/merge.stdout.log` | 326374dc81b5fb81778f4da0df84a1a8bd541f539cbb824a7d24fc050b5989b6 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/ours-input.json` | fad6f9344b93f1cdb027ebfc7e0d29f687eaf52348451d64bffaf01ad71f1be2 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/ours-result.json` | 4f068c3a612696e8a7a238aff1278f8cd24afac63d9ab1862499492e262d42f3 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/theirs.json` | 5d9a7eeecfbac1b58d7cdc5276abfb7620c9b9310a956b8d0d097c83beb8aad0 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/literal-move-map.json` | 8e5115ed7c5a7f97c3b4b9aaae3674f8fd0523e4ab50fbcdaa71d50d7353153c | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/policy.json` | 8386f93db6407c303a30b9287733c656132fe1d0eb4caec68eb6f7f308848ad3 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw-alias-manifest.json` | 2941207f9caa806bc0f9327104aca82f73c056f65800c307d15bc719b7dbfc0b | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw-input-manifest.json` | 46528db895ec60003e8a20db628cd445470d5f232e45cb476e0b56e070e00c0f | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/accepted_main48-session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/accepted_main48-transitions.jsonl` | c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/base.session.json` | a9797ed27307393d6cd917d1c09184661172d74098ba2b24508a4252f06f8711 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/base16-session.json` | a9797ed27307393d6cd917d1c09184661172d74098ba2b24508a4252f06f8711 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/base16-transitions.jsonl` | d772639966f4bcb35d8ec08d37cd593f1a22863ecf1cddb54d231b4e65288d36 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/main48.session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/pr50.session.json` | 8876645db414137df57b284cff4a3b7ba0296dd72055988dba748aac8c503cd3 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/published50-session.json` | 8876645db414137df57b284cff4a3b7ba0296dd72055988dba748aac8c503cd3 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/published50-transitions.jsonl` | e69dd46d43620b4a0546b44006d8c8102528f22486e5512712977ef590d0c37a | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/root-live-session.json` | 8e0831c26c79c630f399c073be415cc152ff343929af09639a9948b6944f0c46 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/root-live-transitions.jsonl` | 7c94857a4590864124f00b284c97d9341688684eb68dd0ebddc0efba254a95fc | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/root-selected-commit-session.json` | f27ba7a38a4e42667e1096ce833833658e5c5658142c4fbef46b7b0a6a594578 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/reviewed-prototype-summary.json` | 83316049a82807f796a682d0e71c8e90cedc8b7c4e44b986e6b40fa9264f7352 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-checkpoint-coordination-index/reviewed-prototype.md` | ea4e2709fbdd522c1b5cf0baa0adf8d5e97a53c432a52c3464599d74f0a64feb | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/applied-policy-peer.json` | 6ca71b967df69378ce643b8847b35f9e5c3f49366e6ab23bbed2164695c9ecd2 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/case-1.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/case-1.stdout` | 60f3181d2f8ec293157450805b48472283eaf2793b9af34ca284f6aa2acf91b0 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/case-2.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/case-2.stdout` | 3b290b5df367e631e75a11021d2d2479da34964bb3969c8d2956b82dd472d156 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/case-3.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/case-3.stdout` | 02647e0c927f1e242eb3b0e7a13e8f03b0454a6c616530c416751524c533403d | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/check.log` | f296e941150e982afae2b693b24af98e38e31299e3cefd127e908fdc3f2e5daf | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/execution-plan.json` | 2df3680944b8ceef2fccf16dcb5ab938805b1a28103bfe2173052e4471d381da | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/final-freshness-peer.json` | f49e0864288d0c65c1992c931d7c51e1f7a2249525238c50a001d4c523ef4c11 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/fmt.log` | 5cf2c804eb7b27fbd8ca3b303ad062055150475dd4b557201c29f6e164b05496 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/lint.log` | 084b89f7af3e0281f560feb6d7d8a2efa7fe9300f8d80d169b77ab96f8fdec0c | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/qualification.json` | 0dec945cbfb933b3dc4b86f1755e0eaecd5163b37adddeb094eb1b236d7a9b73 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/source-composition.json` | 9e52aa1c80ae77560d55affb4012b2e4dd0a2b538131bd20c70543705ea387ed | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr50-root-qualification/verify.log` | 492a5a5afbb7bb215ca14169a5f875df0bfe79a275eab4be21bf1ccf8d2da934 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/applied-selection.json` | de7f8093243c0077c7806cd16bb9e535ed8aae1c2c83138061a6d5f165b496fb | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/derived/base.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/derived/ours-input.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/derived/ours-result.json` | e38351a562b24721f899e65d3ca6e61002899776df3c06d28801b8e532c84c95 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/derived/stderr.log` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/derived/stdout.log` | 04f287bdaa95424202fb6ff3a766da5c5430381ae6f7de09b72cdea68b492314 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/derived/theirs-selected.json` | 2d409c54ecd1a4ddbe846e2320b42cc8c9af903bdea765968a2dee31ef829ba1 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/raw-inputs.json` | 33b54d9b60bef461b53b7df38e8f588ab2d7557475f0a8bbaebbc3c4b5e5ff0d | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/raw/accepted50-session.json` | 137d0e425152b8d95b00f4a821410fb0d9b031092bb5772e62c9b4405388f9ee | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/raw/accepted50-transitions.jsonl` | 77c559b278caed085b0521628f53e5ea27a29739a2c231d7b1c9a9f5406774c2 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/raw/base747-session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/raw/base747-transitions.jsonl` | c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/raw/root51-session.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-integration/raw/root51-transitions.jsonl` | f59a698df2f52f0d7a5f8787277ec8cbc12d96023f31e35989033c8d49dff9cf | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/applied-metadata-peer.json` | 6fe408dba547e7b143a9f4508dcf6cbc3afe36be204d915cd50ca66f6dbade26 | working tree |
-| `.chough/artifacts/pr51-root-qualification/final-case-1.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-case-1.stdout` | 8a8f944a84c9d287f193be7b5aa78d99cc5c784e50ffe1f04ed5dfdf92758e29 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-case-2.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-case-2.stdout` | ccab47fdb041fbc0b116c366e417bce4e6f916fdc2f02d6ca7c628d4b09ad7d9 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-case-3.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-case-3.stdout` | 5ab6db93e3514786d937cd2aa403a019a52a3d7fc04360ca04a872c5f2dd308a | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-execution-plan.json` | 04e7332dcdd9fd118392cb789a48b1c85258e3c8ab49a8b1e8c002a09d6be57b | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-freshness-peer.json` | fe7608d20e1056056322b4dca36bda8af747e24c3f6a6f7fc681c2c5ae0efebf | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/final-qualification.json` | 5169326f7d826af8c0bed5d88b12fcc15f319b19789803a7667fbdac50b4c9fd | working tree |
-| `.chough/artifacts/pr51-root-qualification/final-source-peer.json` | 3428153697d3e1bf7f8d013340d99da67d0d5598151ccfbe619f929396d0f678 | working tree |
-| `.chough/artifacts/pr51-root-qualification/final-verify.log` | edc39bb75f65b4d58e859c6ea0cd08ca301dab4e970197459ff53649f331c259 | working tree |
+| `.chough/artifacts/OBS-tc-cli-report-trace-parity-f63fb27141834a3f4710be95.log` | 05934276c681adf5c098346add979940782a0206aa595779024f86cbd52e554d | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/actual-selection-result.json` | 6c67f613d6081045d22faabda971f5d849c6c7f5b034a2610655966de1d62429 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/base.json` | a9797ed27307393d6cd917d1c09184661172d74098ba2b24508a4252f06f8711 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/merge.stderr.log` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/merge.stdout.log` | 326374dc81b5fb81778f4da0df84a1a8bd541f539cbb824a7d24fc050b5989b6 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/ours-input.json` | fad6f9344b93f1cdb027ebfc7e0d29f687eaf52348451d64bffaf01ad71f1be2 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/ours-result.json` | 4f068c3a612696e8a7a238aff1278f8cd24afac63d9ab1862499492e262d42f3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/derived/theirs.json` | 5d9a7eeecfbac1b58d7cdc5276abfb7620c9b9310a956b8d0d097c83beb8aad0 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/literal-move-map.json` | 8e5115ed7c5a7f97c3b4b9aaae3674f8fd0523e4ab50fbcdaa71d50d7353153c | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/policy.json` | 8386f93db6407c303a30b9287733c656132fe1d0eb4caec68eb6f7f308848ad3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw-alias-manifest.json` | 2941207f9caa806bc0f9327104aca82f73c056f65800c307d15bc719b7dbfc0b | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw-input-manifest.json` | 46528db895ec60003e8a20db628cd445470d5f232e45cb476e0b56e070e00c0f | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/accepted_main48-session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/accepted_main48-transitions.jsonl` | c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/base.session.json` | a9797ed27307393d6cd917d1c09184661172d74098ba2b24508a4252f06f8711 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/base16-session.json` | a9797ed27307393d6cd917d1c09184661172d74098ba2b24508a4252f06f8711 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/base16-transitions.jsonl` | d772639966f4bcb35d8ec08d37cd593f1a22863ecf1cddb54d231b4e65288d36 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/main48.session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/pr50.session.json` | 8876645db414137df57b284cff4a3b7ba0296dd72055988dba748aac8c503cd3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/published50-session.json` | 8876645db414137df57b284cff4a3b7ba0296dd72055988dba748aac8c503cd3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/published50-transitions.jsonl` | e69dd46d43620b4a0546b44006d8c8102528f22486e5512712977ef590d0c37a | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/root-live-session.json` | 8e0831c26c79c630f399c073be415cc152ff343929af09639a9948b6944f0c46 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/root-live-transitions.jsonl` | 7c94857a4590864124f00b284c97d9341688684eb68dd0ebddc0efba254a95fc | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/raw/root-selected-commit-session.json` | f27ba7a38a4e42667e1096ce833833658e5c5658142c4fbef46b7b0a6a594578 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/reviewed-prototype-summary.json` | 83316049a82807f796a682d0e71c8e90cedc8b7c4e44b986e6b40fa9264f7352 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-checkpoint-coordination-index/reviewed-prototype.md` | ea4e2709fbdd522c1b5cf0baa0adf8d5e97a53c432a52c3464599d74f0a64feb | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/applied-policy-peer.json` | 6ca71b967df69378ce643b8847b35f9e5c3f49366e6ab23bbed2164695c9ecd2 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/case-1.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/case-1.stdout` | 60f3181d2f8ec293157450805b48472283eaf2793b9af34ca284f6aa2acf91b0 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/case-2.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/case-2.stdout` | 3b290b5df367e631e75a11021d2d2479da34964bb3969c8d2956b82dd472d156 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/case-3.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/case-3.stdout` | 02647e0c927f1e242eb3b0e7a13e8f03b0454a6c616530c416751524c533403d | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/check.log` | f296e941150e982afae2b693b24af98e38e31299e3cefd127e908fdc3f2e5daf | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/execution-plan.json` | 2df3680944b8ceef2fccf16dcb5ab938805b1a28103bfe2173052e4471d381da | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/final-freshness-peer.json` | f49e0864288d0c65c1992c931d7c51e1f7a2249525238c50a001d4c523ef4c11 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/fmt.log` | 5cf2c804eb7b27fbd8ca3b303ad062055150475dd4b557201c29f6e164b05496 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/lint.log` | 084b89f7af3e0281f560feb6d7d8a2efa7fe9300f8d80d169b77ab96f8fdec0c | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/qualification.json` | 0dec945cbfb933b3dc4b86f1755e0eaecd5163b37adddeb094eb1b236d7a9b73 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/source-composition.json` | 9e52aa1c80ae77560d55affb4012b2e4dd0a2b538131bd20c70543705ea387ed | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr50-root-qualification/verify.log` | 492a5a5afbb7bb215ca14169a5f875df0bfe79a275eab4be21bf1ccf8d2da934 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-integration/applied-selection.json` | de7f8093243c0077c7806cd16bb9e535ed8aae1c2c83138061a6d5f165b496fb | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/derived/base.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/derived/ours-input.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/derived/ours-result.json` | e38351a562b24721f899e65d3ca6e61002899776df3c06d28801b8e532c84c95 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/derived/stderr.log` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/derived/stdout.log` | 04f287bdaa95424202fb6ff3a766da5c5430381ae6f7de09b72cdea68b492314 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/derived/theirs-selected.json` | 2d409c54ecd1a4ddbe846e2320b42cc8c9af903bdea765968a2dee31ef829ba1 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/raw-inputs.json` | 33b54d9b60bef461b53b7df38e8f588ab2d7557475f0a8bbaebbc3c4b5e5ff0d | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/raw/accepted50-session.json` | 137d0e425152b8d95b00f4a821410fb0d9b031092bb5772e62c9b4405388f9ee | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/raw/accepted50-transitions.jsonl` | 77c559b278caed085b0521628f53e5ea27a29739a2c231d7b1c9a9f5406774c2 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/raw/base747-session.json` | b3cd7dfb2c0c0e0c9c5e6f64c708864c34103bd3586d9a7e2749190f29b779bf | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/raw/base747-transitions.jsonl` | c6eb28b527006b741760833afc17642e75045dbd30ae0d4d69e631be55142f16 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/raw/root51-session.json` | c054cf92a9e6bf39a260b2d66216ded3ff217a79178c8ebdfc5effc2ec9abd30 | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-integration/raw/root51-transitions.jsonl` | f59a698df2f52f0d7a5f8787277ec8cbc12d96023f31e35989033c8d49dff9cf | Git b4fd6733393be3221d0588a4119c2486f8fbfcb0 |
+| `.chough/artifacts/pr51-root-qualification/applied-metadata-peer.json` | 6fe408dba547e7b143a9f4508dcf6cbc3afe36be204d915cd50ca66f6dbade26 | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
+| `.chough/artifacts/pr51-root-qualification/final-case-1.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-case-1.stdout` | 8a8f944a84c9d287f193be7b5aa78d99cc5c784e50ffe1f04ed5dfdf92758e29 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-case-2.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-case-2.stdout` | ccab47fdb041fbc0b116c366e417bce4e6f916fdc2f02d6ca7c628d4b09ad7d9 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-case-3.stderr` | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-case-3.stdout` | 5ab6db93e3514786d937cd2aa403a019a52a3d7fc04360ca04a872c5f2dd308a | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-execution-plan.json` | 04e7332dcdd9fd118392cb789a48b1c85258e3c8ab49a8b1e8c002a09d6be57b | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-freshness-peer.json` | fe7608d20e1056056322b4dca36bda8af747e24c3f6a6f7fc681c2c5ae0efebf | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/final-qualification.json` | 5169326f7d826af8c0bed5d88b12fcc15f319b19789803a7667fbdac50b4c9fd | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
+| `.chough/artifacts/pr51-root-qualification/final-source-peer.json` | 3428153697d3e1bf7f8d013340d99da67d0d5598151ccfbe619f929396d0f678 | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
+| `.chough/artifacts/pr51-root-qualification/final-verify.log` | edc39bb75f65b4d58e859c6ea0cd08ca301dab4e970197459ff53649f331c259 | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
 | `.chough/artifacts/pr51-root-qualification/named-bound-after.json` | 5d4680b86c6b03879f3347b98eb43f5c832dfec65a8d650ebbdf693a821b2564 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
 | `.chough/artifacts/pr51-root-qualification/named-bound-after.log` | c97065b518c01aa511f4248613f1917d11e7f9880128764761492891257651a7 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
 | `.chough/artifacts/pr51-root-qualification/named-bound-before.json` | 9a1fe65b798ad74db9e840c7c9edc3671f409c38d27d3e2ee7809baa4276b345 | working tree |
 | `.chough/artifacts/pr51-root-qualification/named-bound-before.log` | b9f2b559adb0d166edcd57187a0a29163c35e587f1c384f2d92034886438ecf3 | working tree |
-| `.chough/artifacts/pr51-root-qualification/original-parent-inputs.json` | dfa746acd99bfabeeaea6b4989dd11e87cceae3f4c5a88c189a05a32a1381ef1 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/repair-check.log` | e1d0e9bbba996ad1f5e8bbd4cd42f6436cd19c4f9c0b66cba8808f5747b524d3 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/repair-fmt.log` | a52677d913bc4941ba8bff7c141323095206f62e51d627e409b5b0cced159a9b | Git 31119bebbff17573128e4c81920917d74eab4b11 |
-| `.chough/artifacts/pr51-root-qualification/repair-lint.log` | 34b36f97e29262999ea987ae07ee7344f593c8aee423352b3ce48024d7765ebd | Git 31119bebbff17573128e4c81920917d74eab4b11 |
+| `.chough/artifacts/pr51-root-qualification/original-parent-inputs.json` | dfa746acd99bfabeeaea6b4989dd11e87cceae3f4c5a88c189a05a32a1381ef1 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/repair-check.log` | e1d0e9bbba996ad1f5e8bbd4cd42f6436cd19c4f9c0b66cba8808f5747b524d3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/repair-fmt.log` | a52677d913bc4941ba8bff7c141323095206f62e51d627e409b5b0cced159a9b | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
+| `.chough/artifacts/pr51-root-qualification/repair-lint.log` | 34b36f97e29262999ea987ae07ee7344f593c8aee423352b3ce48024d7765ebd | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/repair-quality.json` | 3614ec1896f6628c5c8a2d3109a3047f49b15322fc8b52ceda37f089d48b2667 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
 | `.chough/artifacts/pr51-root-qualification/unfixed-source.diff` | db20804c4acc92b8697f3b9a719fd2b4c2d14f9cc31c0a5756b852ef5f066cb8 | working tree |
 | `.chough/artifacts/pr51-writer-atomicity/before/before.json` | dded784b54b0d2576a1f6a3495af9ab6dfc91b95d7809e0d3161eee71a081e04 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
@@ -159,6 +159,30 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
+- `.chough/artifacts/bug40-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/bug43-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
+- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
+- `.chough/artifacts/history-cycle-directory-history-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-cycle-directory-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-cycle-directory-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-apply/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/input-before-preview/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-idle-closure-after/source.diff`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-idle-closure-before/apply.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/apply.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/apply.json)
 - `.chough/artifacts/history-idle-closure-before/commands.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/commands.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/commands.json)
 - `.chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json)
@@ -177,6 +201,52 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-idle-closure-before/preview.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/preview.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/preview.json)
 - `.chough/artifacts/history-idle-closure-before/reproduce.py`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/reproduce.py](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/reproduce.py)
 - `.chough/artifacts/history-idle-closure-before/source.diff`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/source.diff](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/source.diff)
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/case-merge-choices.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/checkpoint-merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-owner-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/base.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/preservation.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-peer-history-fixes-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-peer-regressions/limitations.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-history-show.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-prune-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/after-merge-timing.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/baseline-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/baseline-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-after-prune-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-a-apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-before-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/branch-b-checkpoint.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/summary.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- `.chough/artifacts/history-post-prune-reference-after/target-original-event.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-history-show.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-history-show.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-history-show.json)
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-inventory.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-inventory.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-inventory.json)
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json)
@@ -189,19 +259,7 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json)
 - `.chough/artifacts/history-post-prune-reference-before/commands.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json)
 - `.chough/artifacts/history-post-prune-reference-before/merge-result.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json)
-- `.chough/artifacts/history-post-prune-reference-before/metadata.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/metadata.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/metadata.json)
-- `.chough/artifacts/history-post-prune-reference-before/reproduce.py`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/reproduce.py](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/reproduce.py)
-- `.chough/artifacts/history-post-prune-reference-before/summary.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/summary.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/summary.json)
-- `.chough/artifacts/history-post-prune-reference-before/target-original-event.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/target-original-event.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/target-original-event.json)
-- `.chough/artifacts/history-reference-boundary-final/metadata.json`: Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.head`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.head](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.head)
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.log`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.log](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.log)
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.metadata.json`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.metadata.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.metadata.json)
-- `.chough/artifacts/native-workflow-user-docs-before/baseline.patch`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.patch](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.patch)
-- `.chough/artifacts/pr51-writer-atomicity/before/red.log`: moved to [knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/red.log](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/red.log)
-- `.chough/artifacts/pr51-writer-atomicity/before/regression.patch`: moved to [knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/regression.patch](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/regression.patch)
-- `.chough/artifacts/pr51-writer-atomicity/before/result.json`: moved to [knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/result.json](../attachments/approved-delta-22437f46/knowledge/attachments/BUG-checkpoint-de329dbf/artifacts/pr51-writer-atomicity/before/result.json)
-- `.chough/artifacts/pr51-writer-atomicity/final-pair/result.json`: Git f01f1ee06f384a0317f1bbe8385c6f044f9b4307
+- 242 more are listed in .chough/pruned.jsonl
 
 ## Attachments
 

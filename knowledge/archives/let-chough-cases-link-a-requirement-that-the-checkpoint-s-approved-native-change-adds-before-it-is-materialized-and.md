@@ -50,10 +50,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-23 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+24 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-structural-5bb6149fb7cf310789e97f1c | passed (pruned) (by cycle time) | local-linux-x86_64 |  |
 | OBS-tc-cli-0080-404ad4c01591b575bff4e2bd | passed (by cycle time) | local-linux-x86_64 | TC-cli-0080 |
 | OBS-tc-cli-0082-190881f21199a094696b9404 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0082 |
 | OBS-tc-cli-0088-fc3481e15e7788b2aa92436b | passed (by cycle time) | local-linux-x86_64 | TC-cli-0088 |
@@ -93,4 +94,3 @@ verification records, the retention ledger and Git stay authoritative.
 - [artifacts/reporting-spec-split/blocks.py](../attachments/let-chough-8aa31215/artifacts/reporting-spec-split/blocks.py)
 - [artifacts/reporting-spec-split/failure-first-before-materialize.log](../attachments/let-chough-8aa31215/artifacts/reporting-spec-split/failure-first-before-materialize.log)
 - [evidence/OBS-structural-5bb6149fb7cf310789e97f1c.json](../attachments/let-chough-8aa31215/evidence/OBS-structural-5bb6149fb7cf310789e97f1c.json)
-- [pruned.jsonl](../attachments/let-chough-8aa31215/pruned.jsonl)

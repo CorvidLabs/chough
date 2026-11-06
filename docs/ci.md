@@ -3,8 +3,10 @@
 The CI workflow runs a first job, `Archive`, that every other job needs: if a pull
 request has any open SpecSync change under `.specsync/changes/`, Archive fails and no
 other job runs until the change is archived. After it, CI runs product tests and
-release builds on Ubuntu, macOS, and Windows, plus formatting, Clippy, HI, and strict
-100% SpecSync structural coverage. `CI gate fixtures` exercises native archive
+release builds on Ubuntu and macOS, plus formatting, Clippy, HI, and strict 100%
+SpecSync structural coverage. There is no Windows job: Chough supports macOS and
+Linux, and Windows through WSL 2 with Ubuntu, which the Ubuntu jobs cover as Linux
+(FLOW-17; see [Platforms](integrations.md#platforms) for what they do not cover). `CI gate fixtures` exercises native archive
 inspection in disposable Git repos. `SpecSync Archive` then checks that every native
 scope, including archived history, is authenticated before merge. Expect a draft PR
 with an open change to show Archive red and every other job skipped.
@@ -98,7 +100,6 @@ requiring these exact contexts:
 - `Archive`
 - `Product / ubuntu-latest`
 - `Product / macos-latest`
-- `Product / windows-latest`
 - `MSRV / 1.88.0`
 - `Fledge / HI / SpecSync`
 - `CI gate fixtures`

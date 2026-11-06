@@ -49,7 +49,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-7 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+8 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -60,6 +60,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-unrun-configured-commands-counted-3095ad0b82067184bb392ef8 | passed (by cycle time) | local-linux-aarch64 | TC-cli-unrun-configured-commands-counted |
 | OBS-tc-cli-verification-warning-changes-no-gate-db3f4125917b884186628c8c | passed (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-changes-no-gate |
 | OBS-tc-cli-verification-warning-within-next-bound-48635b8623fec511abe72c40 | passed (by cycle time) | local-linux-aarch64 | TC-cli-verification-warning-within-next-bound |
+| artifact:issue-100 | unknown (pruned) (by cycle time) | ? |  |
 
 ## Bugs
 
@@ -67,9 +68,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- none
+- `.chough/artifacts/issue-100/failure-first-on-main-91a1fdd.log`: moved to [artifacts/issue-100/failure-first-on-main-91a1fdd.log](../attachments/warn-when-the-e9265a8f/artifacts/issue-100/failure-first-on-main-91a1fdd.log)
 
 ## Attachments
 
 - [artifacts/issue-100/failure-first-on-main-91a1fdd.log](../attachments/warn-when-the-e9265a8f/artifacts/issue-100/failure-first-on-main-91a1fdd.log)
-- [pruned.jsonl](../attachments/warn-when-the-e9265a8f/pruned.jsonl)

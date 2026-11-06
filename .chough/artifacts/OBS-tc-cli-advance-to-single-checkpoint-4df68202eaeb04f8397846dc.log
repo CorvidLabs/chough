@@ -1,0 +1,29 @@
+--- stdout ---
+
+running 1 test
+test a_batched_advance_in_a_single_checkpoint_project ... FAILED
+
+failures:
+
+---- a_batched_advance_in_a_single_checkpoint_project stdout ----
+
+thread 'a_batched_advance_in_a_single_checkpoint_project' (160064746) panicked at tests/common/mod.rs:86:9:
+["stage", "advance", "--to", "accept"] failed: error: unexpected argument '--to' found
+
+Usage: chough stage advance [OPTIONS]
+
+For more information, try '--help'.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_batched_advance_in_a_single_checkpoint_project
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 1.66s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.24s
+     Running tests/advance_to.rs (target/debug/deps/advance_to-a29ab1c14712ad31)
+error: test failed, to rerun pass `--test advance_to`

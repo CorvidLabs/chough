@@ -1,0 +1,74 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-relay-closes-one-gate-with-four-values"
+title = "A relayed decision closes only its gate and keeps who decided, their words, where and the recording agent"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-13"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "src/stage.rs"]
+environments = ["local", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the relay test a_relayed_decision_closes_only_its_gate_and_keeps_the_four_values passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "a_relayed_decision_closes_only_its_gate_and_keeps_the_four_values"
+
+[[case]]
+id = "TC-cli-relay-refusals-recover"
+title = "Relay refusals save nothing and the recovery each names succeeds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs"]
+environments = ["local", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the relay test relay_refusals_save_nothing_and_their_recovery_succeeds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "relay_refusals_save_nothing_and_their_recovery_succeeds"
+
+[[case]]
+id = "TC-cli-relay-never-touches-native"
+title = "A relayed decision leaves SpecSync files unchanged and never opens a native gate"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-10"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "src/stage.rs"]
+environments = ["local", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the relay test a_relayed_decision_never_touches_native_state_or_its_gate passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "a_relayed_decision_never_touches_native_state_or_its_gate"
+
+[[case]]
+id = "TC-cli-relay-clear-records-none"
+title = "Withdrawing gates records no relay, and closing the only gate with a relay lets advance apply"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-3"]
+requirements = ["REQ-cli-050", "REQ-cli-030"]
+paths = ["src/checkpoint.rs", "src/stage.rs"]
+environments = ["local", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the relay test clearing_records_no_relay_and_a_relayed_close_lets_advance_apply passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "clearing_records_no_relay_and_a_relayed_close_lets_advance_apply"

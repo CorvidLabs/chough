@@ -45,11 +45,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-vault-archive-note-properties-13120cf549be60dcd5c3a757 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-archive-note-properties |
+| OBS-tc-cli-vault-intent-notes-6e82cb588007fbe32a8a2a8a | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-intent-notes |
 | OBS-tc-cli-vault-links-resolve-b9f6b0b9f29b9d26b3cbf33d | passed (by cycle time) | local-linux-aarch64 | TC-cli-vault-links-resolve |
+| OBS-tc-cli-vault-sub-criterion-ids-966dc28ae04274debbb7eab4 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-sub-criterion-ids |
 
 ## Bugs
 
@@ -61,4 +64,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- [pruned.jsonl](../attachments/list-hi-sub-38d511b3/pruned.jsonl)
+- none
