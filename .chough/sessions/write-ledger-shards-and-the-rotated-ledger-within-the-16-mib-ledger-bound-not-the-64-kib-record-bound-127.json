@@ -1,0 +1,38 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-356741cab6919b96ca3b61b6",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Write ledger shards and the rotated ledger within the 16 MiB ledger bound (#127 closeout)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127",
+  "references": {
+    "criteria": [
+      "KNOW-23"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Wait for Leif to approve, then write with the ledger bound"
+}

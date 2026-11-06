@@ -1374,3 +1374,41 @@ fn an_interrupted_rotation_leftover_is_read_once() {
         "a restored ID must not read as pruned: {shown}"
     );
 }
+
+/// #127 closeout: a real ledger is larger than the 64 KiB record bound, and so is a
+/// shard. Rotation writes both within the 16 MiB ledger bound instead (REQ-cli-049).
+#[test]
+fn a_rotation_larger_than_the_record_bound_still_rotates() {
+    let fixture = project("0");
+    let padding = "p".repeat(600);
+    let lines: Vec<String> = (0..300u64)
+        .map(|index| {
+            let mut entry: Value = serde_json::from_str(&ledger_line(
+                &format!("big-{index:03}"),
+                "a1",
+                1_000 - index,
+            ))
+            .unwrap();
+            entry["reason"] = json!(padding);
+            entry.to_string()
+        })
+        .collect();
+    fixture.write(".chough/pruned.jsonl", &(lines.join("\n") + "\n"));
+    fixture.commit("a ledger over the record bound");
+    set_checkpoint(&fixture, &[]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let rotation = &moved["applied"]["ledger_rotation"];
+    assert_eq!(rotation["status"], "rotated", "{rotation:#}");
+    let shard = fixture.read("knowledge/attachments/a1/pruned.jsonl");
+    let hot = fixture.read(".chough/pruned.jsonl");
+    assert!(
+        shard.len() > 65_536 && hot.len() > 65_536,
+        "{} {}",
+        shard.len(),
+        hot.len()
+    );
+    assert_eq!(
+        shard.lines().count() + hot.lines().count(),
+        300 + pruned(&moved["applied"]["librarian_trim"]).len()
+    );
+}
