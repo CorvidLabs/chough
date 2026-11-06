@@ -1,6 +1,6 @@
 ---
 id: chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17
-state: implementing
+state: archived
 type: feature
 base_commit: 1030252cb5ca2e2b45b736833013f8cd5dbabab0
 ---
