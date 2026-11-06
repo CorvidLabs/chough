@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-454 recorded; most recent:
+455 recorded; most recent:
 
+- OBS-product-test-af55b3e0d282e728bde7629e ProductTest Passed in local-linux-aarch64 at 3daef9eb3c1c
 - OBS-product-test-88bbe2aab8066fa7be63937f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
 - OBS-tc-cli-change-invalid-bound-recovery-70d66a01bb48f6d3e5686e69 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
 - OBS-tc-cli-change-sigterm-stops-specsync-1faa4a8c6c1fd6a4b1dadf28 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-change-steps-pass-through-e7c98b22680b15f295f2125f ProductTest Passed in local-macos-arm64 at ffeaaadc531f
 - OBS-tc-cli-change-steps-exact-arguments-a6ac0dd265ce055b985f7321 ProductTest Passed in local-macos-arm64 at ffeaaadc531f
 - OBS-tc-cli-change-invalid-bound-recovery-a9891ba2772692301e30692a ProductTest Failed in local-macos-arm64 at f4f2106ed5e5
-- OBS-tc-cli-change-sigterm-stops-specsync-23c702afc42f60c07e8e858c ProductTest Failed in local-macos-arm64 at 7037d082e874
 
 ## Briefs
 

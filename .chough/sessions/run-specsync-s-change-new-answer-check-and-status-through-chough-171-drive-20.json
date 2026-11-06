@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-b859867589afcb637a48a080",
-    "head": "EVT-712b730015f1a566bd4756c0",
+    "head": "EVT-c8bdc0a4c0af6ee6df34a578",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -35,7 +35,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20"
+  ],
   "run_consents": [],
-  "next_action": "After Leif's definition approval is recorded natively, advance to build and add the failing REQ-cli-057 tests in tests/change.rs first"
+  "next_action": "After Leif's implementation review is recorded natively, run specsync change ship with no commit between, close the gate with the relay, advance to done and push the archive tip"
 }
