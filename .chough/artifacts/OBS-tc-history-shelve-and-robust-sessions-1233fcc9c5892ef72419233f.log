@@ -1,0 +1,13 @@
+--- stdout ---
+
+running 3 tests
+test one_oversized_or_unreadable_session_does_not_break_the_others ... ok
+test shelving_an_oversized_legacy_checkpoint_lets_a_session_start ... ok
+test shelving_an_oversized_session_lets_work_continue ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.30s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/sessions.rs (target/debug/deps/sessions-87f16f70381f133d)

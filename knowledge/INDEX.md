@@ -95,8 +95,11 @@ Archived lesson bundles:
 
 ## Observations
 
-369 recorded; most recent:
+372 recorded; most recent:
 
+- OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
+- OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
+- OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
 - OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592 ProductTest Passed in local-linux-aarch64 at 43c10cbef323
 - OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
 - OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
@@ -104,9 +107,6 @@ Archived lesson bundles:
 - OBS-tc-cli-ledger-keeps-newest-and-moves-the-rest-5d279876a8ea8bfd6438b66f ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
 - OBS-tc-cli-open-bug-keeps-links-89538a43c3a4b93c529e6b4b ProductTest Passed in local-linux-aarch64 at a5246bd81940
 - OBS-tc-cli-closed-bug-fixture-moves-to-vault-cd1562f5273fe864dd88f48c ProductTest Passed in local-linux-aarch64 at a5246bd81940
-- OBS-tc-cli-closed-bug-key-items-move-to-vault-ed7a30c1fb6534c91d7288de ProductTest Passed in local-linux-aarch64 at a5246bd81940
-- OBS-tc-cli-archived-session-refs-protect-nothing-5436779791b5f92c5b6ee59c ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
-- OBS-tc-cli-done-drops-file-and-design-refs-7fd113db7423ebb35826babb ProductTest Passed in local-linux-aarch64 at 894d94a3d31e
 
 ## Briefs
 

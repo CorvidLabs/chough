@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-8dddb94f2aecb7d6178e8086",
-    "head": "EVT-1cc5d18a965917a3118f6df1",
+    "head": "EVT-114d73c32423c35703638e4d",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -31,10 +31,16 @@
   "decisions": [],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336",
+    "OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4",
+    "OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Wait for Leif to approve the scope, then implement"
 }
