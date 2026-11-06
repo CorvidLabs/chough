@@ -98,18 +98,18 @@ Archived lesson bundles:
 
 ## Observations
 
-391 recorded; most recent:
+397 recorded; most recent:
 
+- OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
+- OBS-tc-cli-advance-into-done-one-read-7d2639008a2107977c8265e2 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
+- OBS-tc-cli-advance-to-refusal-records-nothing-fd944e873b93ef839ce141ab ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
+- OBS-tc-cli-advance-to-no-prerequisite-261e0958051612d12157ff3e ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
+- OBS-tc-cli-advance-to-single-checkpoint-d770ce2faf0fe129f2f64021 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
+- OBS-tc-cli-advance-to-one-read-in-a-session-cee97305e88e3d1d60719b91 ProductTest Passed in local-macos-arm64 at 5eddcc7bc30b
 - OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 ProductTest Passed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-into-done-one-read-f8ea5a77dae08ca5de79257b ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-to-refusal-records-nothing-6499e7e9bbcda5476938e1d6 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
 - OBS-tc-cli-advance-to-no-prerequisite-a24525404050dd96ec0f95f8 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-single-checkpoint-4df68202eaeb04f8397846dc ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-cli-advance-to-one-read-in-a-session-fd54de11353f4dea531e3a92 ProductTest Failed in local-macos-arm64 at 6602bf5b1f07
-- OBS-tc-history-relay-invalid-payloads-736bae7a3a483a4d9a691e67 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-cli-relay-clear-records-none-b2d89d2ca948de1866c5b83b ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-cli-relay-never-touches-native-d782698f8446ac9d148f1bd4 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
-- OBS-tc-cli-relay-refusals-recover-b8da2ecf35c89b0c399b1e15 ProductTest Passed in local-linux-aarch64 at 98aa658d861b
 
 ## Briefs
 
