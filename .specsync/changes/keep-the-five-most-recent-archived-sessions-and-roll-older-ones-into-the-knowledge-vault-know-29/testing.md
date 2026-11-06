@@ -23,8 +23,8 @@ artifact: testing
 
 | Requirement | Evidence |
 |---|---|
-| REQ-history-010 | tests/reduce.rs `done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault`, `with_the_librarian_off_archived_sessions_stay` |
-| REQ-cli-050 | tests/reduce.rs `done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault`; tests/vault.rs `only_generated_knowledge_notes_merge_by_union` |
+| REQ-history-011 | tests/reduce.rs `done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault`, `with_the_librarian_off_archived_sessions_stay` |
+| REQ-cli-051 | tests/reduce.rs `done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault`; tests/vault.rs `only_generated_knowledge_notes_merge_by_union` |
 
 ## Lanes
 
