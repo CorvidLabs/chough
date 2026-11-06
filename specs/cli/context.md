@@ -513,3 +513,16 @@ transition log (60). Source: the replay for #111. Future use: give each parallel
 its own file (sessions, events, a cases file per change), union-merge append-only files,
 rebuild generated files and check them in CI, and give structured records a merge
 driver. Limits: SpecSync's own files (CorvidLabs/spec-sync#862).
+
+2026-11-05, Windows checks text out with CRLF (verified): a test that read
+`specs/cli/requirements.md`, replaced `\n` with spaces and split sentences on ". " passed on
+Linux and macOS, then failed on `Product / windows-latest`. There, sentences ending ".\r"
+never split. Source: hosted run 42153579452 on #131, fixed by the CRLF repair change.
+Future use: normalize `\r\n` to `\n` before parsing any repository text in a test, and
+check a CRLF copy too. Limits: tests that read checked-out text.
+
+2026-11-05, GitHub cannot use the union merge drivers (verified): a branch that merged
+cleanly locally, through `merge=union` on CHANGELOG.md and the generated vault notes,
+showed as conflicting on GitHub. corvid-agent requested changes, and CI did not run on the
+merge ref. Source: #130 at 3f8b85fd. Future use: whenever main moves, merge main into the
+branch locally before asking for review or a merge, then rebuild the vault. Limits: PRs.
