@@ -1243,6 +1243,7 @@ if [ -f ".stub-fail-$id" ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f ".stub-malformed-$id" ]; then echo 'not json {'; exit 0; fi
 if [ -f ".stub-hang-$id" ]; then sleep 60 & echo $! >>.stub-children; wait; fi
 if [ -f ".stub-sleep-$id" ]; then exec sleep 30; fi
+if [ -f ".stub-delay-$id" ]; then sleep "$(cat ".stub-delay-$id")"; fi
 if [ -f ".stub-status-$id" ]; then cat ".stub-status-$id"; exit 0; fi
 printf '{"change":{"id":"%s","created_at":100,"updated_at":200},"summary":{"state":"archived","approval_valid":true}}\n' "$id"
 "#,
@@ -1678,6 +1679,9 @@ fn a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown() {
 #[test]
 fn timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit() {
     let fixture = native_fixture();
+    // DRIVE-19 (#169): each run takes over a second, so the plain and traced runs always
+    // straddle a second boundary; the comparison must not depend on when they ran.
+    fixture.write(".stub-delay-cur-change", "1.1");
     // Reports end ongoing segments now, so compare runs made within one second.
     let mut matched = None;
     for _ in 0..5 {

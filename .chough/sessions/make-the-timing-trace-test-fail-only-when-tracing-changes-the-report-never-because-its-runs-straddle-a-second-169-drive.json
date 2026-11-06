@@ -1,0 +1,39 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-7cf02ecb9c7b4a5254a25381",
+    "head": "EVT-02ba2e817253390ba93daec1",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "chough#169: the timing trace test fails only when tracing changes the report (DRIVE-19)",
+  "intent_scope": "DRIVE-19",
+  "modules": [
+    "reporting"
+  ],
+  "stage": {
+    "current": "design",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "DRIVE-19 captured from Leif via the orc ('Capture both')",
+    "No runtime clock switch (issue #30): the fix is an exact clock-shift comparison in the test"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Await scope approval through the orc; then replace the retry loop"
+}
