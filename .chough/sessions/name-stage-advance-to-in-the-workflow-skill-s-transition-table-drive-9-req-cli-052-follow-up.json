@@ -24,7 +24,9 @@
     "requirements": [
       "REQ-cli-052"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-skill-names-advance-to"
+    ],
     "design": [],
     "files": []
   },
@@ -33,8 +35,12 @@
     "the orc (t18), deciding as Leif under his overnight delegation decided \"Scope decision of name-stage-advance-to-in-the-workflow-skill-s-transition-table-drive-9-req-cli-052-follow-up\": \"approval recorded as 0xLeif at 252659ac (overnight delegation). Build, verify, push, PR, 'ready for review'.\" (orc relay from t18 to ch-pr69 (t7z), 2026-11-06 early morning MST); recorded by ch-pr69 (Claude Code in t7z); a relayed claim, not authenticated"
   ],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
+  "completed": [
+    "Failing first at 4da25aa9: TC-cli-skill-names-advance-to failed (the 01f1d023 copy reads current, not known-outdated)"
+  ],
+  "observations": [
+    "OBS-tc-cli-skill-names-advance-to-ab1539c512f3e715bd040ee5"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
