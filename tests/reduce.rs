@@ -244,6 +244,123 @@ fn native_validity_reads_run_in_parallel() {
     );
 }
 
+/// Twelve cold archives c01 to c12 (finalized 150 to 40 days ago) and three hot ones
+/// (c13 to c15). Each cold archive lists two passing runs of its own case, the older of
+/// which is superseded, so the trim at done reads twelve archives' validity before and
+/// twelve after removal. The stub sleeps 1 s per status read and records how many run
+/// at once. The checkpoint is at accept on c15.
+fn many_cold_archives() -> Fixture {
+    let fixture = Fixture::new();
+    fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nmkdir -p .stub-running && mkdir .stub-running/$$ && ls .stub-running | wc -l >> .stub-concurrency\nsleep 1\nrmdir .stub-running/$$\nprintf '{\"summary\":{\"id\":\"%s\",\"state\":\"archived\",\"approval_valid\":true,\"correction_valid\":true,\"terminal_evidence\":{\"validity\":\"authenticated-history\"}},\"acceptance_entries\":[]}\\n' \"$3\"\n",
+    );
+    fixture.executable("bin/specsync");
+    fixture.hi_stand_in();
+    for n in 1..=15u64 {
+        let id = format!("c{n:02}");
+        let dir = format!(".specsync/archive/changes/2026-01-{n:02}-{id}");
+        let age = 160 - n * 10;
+        fixture.write(
+            &format!("{dir}/finalization.json"),
+            &format!(
+                "{{\"schema_version\": 2, \"change_id\": \"{id}\", \"timestamp\": {}, \"implementation_commit\": \"{}\"}}\n",
+                now() - age * DAY,
+                "1".repeat(40)
+            ),
+        );
+        let mut entries =
+            vec![json!({"path": "specs/cli/cli.spec.md", "kind": "file", "payload_digest": ZERO})];
+        if n <= 12 {
+            for run in [format!("old{n:02}"), format!("new{n:02}")] {
+                entries.push(json!({"path": format!(".chough/evidence/{run}.json"), "kind": "file", "payload_digest": ZERO}));
+            }
+        }
+        fixture.write(
+            &format!("{dir}/verification.json"),
+            &serde_json::to_string_pretty(&json!({
+                "commit": "2".repeat(40),
+                "passed": true,
+                "requirement_ids": ["REQ-cli-001"],
+                "acceptance_manifest": {"schema_version": 1, "entries": entries},
+            }))
+            .unwrap(),
+        );
+        fixture.write(
+            &format!("{dir}/change.md"),
+            &format!(
+                "---\nid: {id}\nstate: archived\nbase_commit: {}\n---\n\n# Title of {id}\n\n## Acceptance Criteria\n\n- {id} works\n",
+                "3".repeat(40)
+            ),
+        );
+    }
+    fixture.init();
+    for n in 1..=12u64 {
+        let age = 160 - n * 10;
+        obs(
+            &fixture,
+            &format!("old{n:02}"),
+            age + 3,
+            &format!("TC-{n:02}"),
+            "passed",
+        );
+        obs(
+            &fixture,
+            &format!("new{n:02}"),
+            age + 2,
+            &format!("TC-{n:02}"),
+            "passed",
+        );
+    }
+    fixture.commit("fixture");
+    set_checkpoint(&fixture, &[]);
+    // set_checkpoint names a5; this fixture's newest change is c15.
+    let path = fixture.root().join(".chough/session.json");
+    let mut session: Value =
+        serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+    session["native_change"] = json!("c15");
+    std::fs::write(
+        &path,
+        serde_json::to_string_pretty(&session).unwrap() + "\n",
+    )
+    .unwrap();
+    fixture
+}
+
+/// CH-M11 (audit): REQ-cli-033 reads archive validity at most 8 at once. With twelve
+/// affected archives, more than 8 reads would overlap if the ceiling were raised, on any
+/// host with more than eight cores; `validity_readers` in src/evidence.rs holds the
+/// ceiling on every host.
+#[test]
+fn at_most_eight_validity_reads_run_at_once() {
+    let fixture = many_cold_archives();
+    let moved = fixture.ok(&["stage", "advance"]);
+    let trim = &moved["applied"]["librarian_trim"];
+    assert_eq!(trim["status"], "trimmed", "{moved:#}");
+    let pruned = pruned(trim);
+    for n in 1..=12 {
+        assert!(
+            pruned.contains(&format!("old{n:02}")),
+            "old{n:02}: {trim:#}"
+        );
+        assert!(
+            !pruned.contains(&format!("new{n:02}")),
+            "new{n:02}: {trim:#}"
+        );
+    }
+    let most = fixture
+        .read(".stub-concurrency")
+        .lines()
+        .filter_map(|line| line.trim().parse::<u32>().ok())
+        .max()
+        .unwrap_or(0);
+    assert!(
+        (2..=8).contains(&most),
+        "{most} validity reads ran at once; REQ-cli-033 allows at most 8, and at least 2 overlap"
+    );
+}
+
 /// The trim on Chough's own repository (#108 closeout): two eligible sets shared one log,
 /// so removing the first left the log to the second, and the per-file re-check refused
 /// the whole trim. A set that gains a file is still safe to trim: only planned files go.

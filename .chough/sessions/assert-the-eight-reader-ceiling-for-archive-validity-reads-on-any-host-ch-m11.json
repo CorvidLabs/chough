@@ -1,0 +1,46 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-d80d2b5d49a05800d76753f4",
+    "head": "EVT-0d4502a6f65dd73dc51fdf02",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Assert REQ-cli-033's eight-reader ceiling for archive validity reads on any host (audit CH-M11, plan C5)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11",
+  "references": {
+    "criteria": [
+      "KNOW-10"
+    ],
+    "requirements": [
+      "REQ-cli-033"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Agent's reading, not a human decision: an end-to-end test alone cannot kill the mutant on hosts reporting 8 or fewer cores, so the plan adds a pure validity_readers function with a unit test; the ceiling stays 8 and the floor 2."
+  ],
+  "open_questions": [],
+  "completed": [
+    "Change package drafted; at_most_eight_validity_reads_run_at_once fails against the CH-M11 mutant (.clamp(2, 128): 12 reads at once on this 20-core Mac) and passes restored; native_validity_reads_run_in_parallel passes both ways"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope decision of assert-the-eight-reader-ceiling-for-archive-validity-reads-on-any-host-ch-m11"
+  ],
+  "run_consents": [],
+  "next_action": "Wait for Leif's scope decision through the orc; then add validity_readers with its unit test, materialize the REQ-cli-033 criterion, and run the mutation check on both tests"
+}
