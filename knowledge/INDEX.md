@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138 (active; `specsync change status give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -96,18 +96,18 @@ Archived lesson bundles:
 
 ## Observations
 
-376 recorded; most recent:
+389 recorded; most recent:
 
-- OBS-tc-cli-session-notes-union-90a6e1a6772009154dcfdce5 ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
-- OBS-tc-history-keep-five-archived-sessions-aff2f1f55648c8085ad10c9e ProductTest Passed in local-linux-aarch64 at cbeb5e70f409
-- OBS-tc-cli-native-check-not-passed-note-4df482e80586149e4a0c3dbc ProductTest Passed in local-macos-arm64 at e4e8371f9e8e
-- OBS-tc-cli-native-check-safe-verifying-8b455b7140c543c7009cea93 ProductTest Passed in local-macos-arm64 at e4e8371f9e8e
-- OBS-tc-history-shelve-and-robust-sessions-1233fcc9c5892ef72419233f ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-full-stress-shape-ffec4f41f1cbc310aa65b2f4 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-checkpoint-at-the-cap-c30eb577a8558b5d26ad4336 ProductTest Passed in local-linux-aarch64 at 9ce3cf486af5
-- OBS-tc-cli-one-librarian-default-de6a0737045b3857e01e7592 ProductTest Passed in local-linux-aarch64 at 43c10cbef323
-- OBS-tc-cli-0101-f06cb68a4e203d57fc7fd379 ProductTest Passed in local-linux-aarch64 at 2f804aabc7da
-- OBS-tc-cli-rotation-leftover-read-once-075a83421952b2deb06c02de ProductTest Passed in local-linux-aarch64 at 3b55b5d0381f
+- OBS-product-test-914b2391e3fbf93b4a7a8d94 ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-no-reset-drops-no-observation-4375674fc4309dbcaa7720ac ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-librarian-off-references-skipped-78c662772da0ad1678335bb3 ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-walkthrough-opens-new-project-a6255a1be6e806b186429fc5 ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-roadmap-claims-no-cold-start-pass-8f438197307c7964dc5f82cc ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-skipped-cold-start-not-a-pass-cd3d98c4de358380c172e437 ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-claimed-approvals-open-no-gate-e6df9aafec11a9035810789b ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-authority-before-approval-fbd5bf934b0f879a36fd1094 ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-bug-id-upgrade-note-416010ee81c8f8c006a70056 ProductTest Passed in local-macos-arm64 at b87a108798e4
+- OBS-tc-cli-one-checkpoint-store-no-aps-a847bd2418a95115590ef735 ProductTest Passed in local-macos-arm64 at b87a108798e4
 
 ## Briefs
 

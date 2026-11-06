@@ -6,6 +6,15 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The nine acceptance criteria the audit found with no assertion now have tests (#138).
+  REQ-cli-002 (lesson labels, no lesson store), REQ-cli-007 (one checkpoint store, no
+  APS), REQ-cli-012 (the bug-ID upgrade note), REQ-cli-029 (recorded authority, labels
+  never decide, a skipped cold start is never a pass), REQ-cli-031 (the walkthrough
+  opening), REQ-cli-045 (librarian off, no reset time) and REQ-reporting-003. For the
+  last, `sh examples/measure-report.sh OLD NEW ROOT [RUNS]` pairs two binaries on one
+  root and keeps native wait apart from local time. Each new assertion was shown to fail
+  under a targeted mutation. Behavior is unchanged.
+
 - REQ-cli-039 AC2 now says that a `verifying` change shows no native-check note only
   with handoff readiness `safe`; any other or missing readiness keeps a note, as the
   requirement's body and last criterion already said (#126, audit D10). Behavior is

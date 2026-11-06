@@ -34,7 +34,20 @@
       "REQ-cli-045",
       "REQ-reporting-003"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-lesson-labels-in-skill",
+      "TC-cli-no-lesson-store",
+      "TC-cli-one-checkpoint-store-no-aps",
+      "TC-cli-bug-id-upgrade-note",
+      "TC-cli-authority-before-approval",
+      "TC-cli-claimed-approvals-open-no-gate",
+      "TC-cli-skipped-cold-start-not-a-pass",
+      "TC-cli-roadmap-claims-no-cold-start-pass",
+      "TC-cli-walkthrough-opens-new-project",
+      "TC-cli-librarian-off-references-skipped",
+      "TC-cli-no-reset-drops-no-observation",
+      "TC-reporting-measure-report-pairs-binaries"
+    ],
     "design": [],
     "files": []
   },
@@ -45,12 +58,27 @@
   ],
   "open_questions": [],
   "completed": [
-    "C6 definition drafted with Leif's choices (both A); measure_report_pairs_two_binaries_on_one_root_and_keeps_native_wait_apart fails first (no script yet)"
+    "C6 definition drafted with Leif's choices (both A); measure_report_pairs_two_binaries_on_one_root_and_keeps_native_wait_apart fails first (no script yet)",
+    "examples/measure-report.sh and eleven more assertions for the nine criteria; 12 cases pass on macOS; mutation round recorded as OBS-product-test-914b2391e3fbf93b4a7a8d94 (11 of 11 caught)"
   ],
-  "observations": [],
+  "observations": [
+    "OBS-product-test-914b2391e3fbf93b4a7a8d94",
+    "OBS-tc-cli-authority-before-approval-fbd5bf934b0f879a36fd1094",
+    "OBS-tc-cli-bug-id-upgrade-note-416010ee81c8f8c006a70056",
+    "OBS-tc-cli-claimed-approvals-open-no-gate-e6df9aafec11a9035810789b",
+    "OBS-tc-cli-lesson-labels-in-skill-f56aae1735b81683065cb7da",
+    "OBS-tc-cli-librarian-off-references-skipped-78c662772da0ad1678335bb3",
+    "OBS-tc-cli-no-lesson-store-d377f20930cd989dae866fe0",
+    "OBS-tc-cli-no-reset-drops-no-observation-4375674fc4309dbcaa7720ac",
+    "OBS-tc-cli-one-checkpoint-store-no-aps-a847bd2418a95115590ef735",
+    "OBS-tc-cli-roadmap-claims-no-cold-start-pass-8f438197307c7964dc5f82cc",
+    "OBS-tc-cli-skipped-cold-start-not-a-pass-cd3d98c4de358380c172e437",
+    "OBS-tc-cli-walkthrough-opens-new-project-a6255a1be6e806b186429fc5",
+    "OBS-tc-reporting-measure-report-pairs-binaries-55ce02c72535d3475d27da9e"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Write examples/measure-report.sh and the eight other assertions with their mutations; move stages once the history fix is on main"
+  "next_action": "Once chough#141's fix is on main: merge main, move the session to accept with the review gate, change check --commit, verify on Linux, open the PR (Fixes #138), send ready for review"
 }

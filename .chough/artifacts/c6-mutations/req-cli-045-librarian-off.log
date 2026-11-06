@@ -1,0 +1,170 @@
+== mutation req-cli-045-librarian-off in src/stage.rs
+diff --git a/src/stage.rs b/src/stage.rs
+index fe5cd12f..8d3ad363 100644
+--- a/src/stage.rs
++++ b/src/stage.rs
+@@ -932,9 +932,6 @@ fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
+ /// on it.
+ fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value {
+     match crate::prefs::effective(root, "librarian") {
+-        Ok((value, _)) if value != "on" => {
+-            return json!({"status": "skipped", "reason": "the librarian is off"});
+-        }
+         Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
+         Ok(_) => {}
+     }
+
+== cargo test --locked --test reduce -- --exact with_the_librarian_off_done_leaves_the_references_and_reports_skipped
+exit 101
+--- stdout ---
+
+running 1 test
+test with_the_librarian_off_done_leaves_the_references_and_reports_skipped ... FAILED
+
+failures:
+
+---- with_the_librarian_off_done_leaves_the_references_and_reports_skipped stdout ----
+
+thread 'with_the_librarian_off_done_leaves_the_references_and_reports_skipped' (156060418) panicked at tests/reduce.rs:1545:5:
+assertion `left == right` failed: {
+  "applied": {
+    "checkpoint_references": {
+      "dropped": [
+        "r2"
+      ],
+      "dropped_design": [
+        "docs/design.md"
+      ],
+      "dropped_files": [
+        "src/main.rs"
+      ],
+      "status": "dropped"
+    },
+    "from": "accept",
+    "gate": "ungated:sdd-disabled",
+    "kind": "advance",
+    "ledger_rotation": {
+      "reason": "the librarian is off",
+      "status": "skipped"
+    },
+    "librarian_index": {
+      "reason": "the librarian is off",
+      "status": "skipped"
+    },
+    "librarian_trim": {
+      "reason": "the librarian is off",
+      "status": "skipped"
+    },
+    "session_rollup": {
+      "reason": "the librarian is off",
+      "status": "skipped"
+    },
+    "to": "done"
+  },
+  "authority": "Native SpecSync status decides lifecycle gates; Chough never records human approval or review.",
+  "awaiting_human": [],
+  "native_change": "a5",
+  "recent_transitions": [
+    {
+      "at_unix_seconds": 1792645748,
+      "from": "done",
+      "gate": null,
+      "kind": "reset",
+      "reason": "fixture cycle",
+      "refresh": [],
+      "revision": null,
+      "schema_version": 1,
+      "to": "plan"
+    },
+    {
+      "at_unix_seconds": 1793941748,
+      "from": "accept",
+      "gate": "ungated:sdd-disabled",
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "7d62c1cd2d4e3cb3cc357fadde9497e1a07541bb",
+      "schema_version": 1,
+      "to": "done"
+    }
+  ],
+  "schema_version": 1,
+  "stage": {
+    "callers": [],
+    "current": "done",
+    "iteration": 1,
+    "status": "active"
+  },
+  "stages": [
+    {
+      "kind": "main",
+      "name": "intent"
+    },
+    {
+      "kind": "conditional",
+      "name": "design"
+    },
+    {
+      "kind": "main",
+      "name": "plan"
+    },
+    {
+      "kind": "main",
+      "name": "build"
+    },
+    {
+      "kind": "main",
+      "name": "test"
+    },
+    {
+      "kind": "main",
+      "name": "accept"
+    },
+    {
+      "kind": "terminal",
+      "name": "done"
+    },
+    {
+      "kind": "optional",
+      "name": "release"
+    },
+    {
+      "kind": "side",
+      "name": "bugs"
+    },
+    {
+      "kind": "side",
+      "name": "validate"
+    },
+    {
+      "kind": "side",
+      "name": "librarian"
+    }
+  ],
+  "transitions_partial": false,
+  "valid_transitions": [
+    "chough stage enter release --reason <request>  [needs release consent or standing preference]",
+    "chough stage iterate --note <what changed>",
+    "chough stage back --to <intent|design|plan|build|test|accept> --reason <why>",
+    "chough stage reset [--to <stage>] --reason <why>",
+    "chough stage pause --reason <why>",
+    "chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]"
+  ]
+}
+  left: Object {"dropped": Array [String("r2")], "dropped_design": Array [String("docs/design.md")], "dropped_files": Array [String("src/main.rs")], "status": String("dropped")}
+ right: Object {"reason": String("the librarian is off"), "status": String("skipped")}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    with_the_librarian_off_done_leaves_the_references_and_reports_skipped
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 32 filtered out; finished in 1.36s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.57s
+     Running tests/reduce.rs (target/debug/deps/reduce-1ef8752329106b8f)
+error: test failed, to rerun pass `--test reduce`
+

@@ -1,0 +1,49 @@
+== mutation req-cli-029-missing-verdict in src/cases.rs
+diff --git a/src/cases.rs b/src/cases.rs
+index e252ce78..cbbf05e7 100644
+--- a/src/cases.rs
++++ b/src/cases.rs
+@@ -1250,7 +1250,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
+         );
+     }
+     ensure!(
+-        results.len() == case.expected.len(),
++        results.len() <= case.expected.len(),
+         "give a verdict for every expected outcome (1..={})",
+         case.expected.len()
+     );
+
+== cargo test --locked --test cases -- --exact a_skipped_cold_start_is_never_recorded_or_read_as_a_pass
+exit 101
+--- stdout ---
+
+running 1 test
+test a_skipped_cold_start_is_never_recorded_or_read_as_a_pass ... FAILED
+
+failures:
+
+---- a_skipped_cold_start_is_never_recorded_or_read_as_a_pass stdout ----
+
+thread 'a_skipped_cold_start_is_never_recorded_or_read_as_a_pass' (155935511) panicked at tests/common/mod.rs:97:9:
+["cases", "record", "TC-cli-0009", "--environment", "fresh-agent", "--method", "agent-assisted", "--summary", "The cold start was skipped after the first step", "--verdict", "1=pass"] unexpectedly succeeded: {
+  "outcome": "passed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "recorded": ".chough/evidence/OBS-tc-cli-0009-e71fbd8e04931893dac582b5.json",
+  "schema_version": 1
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_skipped_cold_start_is_never_recorded_or_read_as_a_pass
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 27 filtered out; finished in 2.30s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.01s
+     Running tests/cases.rs (target/debug/deps/cases-1e2e9bde7f93b716)
+error: test failed, to rerun pass `--test cases`
+
