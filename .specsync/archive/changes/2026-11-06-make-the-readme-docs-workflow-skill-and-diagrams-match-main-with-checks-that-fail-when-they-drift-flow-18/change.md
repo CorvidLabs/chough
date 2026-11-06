@@ -1,6 +1,6 @@
 ---
 id: make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18
-state: verifying
+state: archived
 type: documentation
 base_commit: 615b587b33a1ef3a569f9557e2782a6be3df2f0f
 ---
