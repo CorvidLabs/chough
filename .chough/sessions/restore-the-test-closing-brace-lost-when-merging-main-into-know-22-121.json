@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-6c0ac94de20b03bbed282833",
-    "head": "EVT-58c810cff08114f68bd25d4e",
+    "head": "EVT-a71cdffceceb8c34d2b67627",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,7 +32,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Native implementation review of this change by Leif (FLOW-10)"
+  ],
   "run_consents": [],
   "next_action": "Leif approves the definition and reviews the merge repair"
 }
