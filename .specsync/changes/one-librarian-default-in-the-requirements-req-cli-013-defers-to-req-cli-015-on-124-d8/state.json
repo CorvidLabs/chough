@@ -7,10 +7,11 @@
   "title": "One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8)",
   "description": "One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "8e0ab4392279cbbb1a4db08044305c450ae641b7",
   "created_at": 1793932765,
-  "updated_at": 1793932947,
+  "updated_at": 1793933029,
   "affected_specs": [
     "cli"
   ],

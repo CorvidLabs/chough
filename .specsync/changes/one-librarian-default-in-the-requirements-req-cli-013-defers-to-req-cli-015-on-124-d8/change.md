@@ -1,6 +1,6 @@
 ---
 id: one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 8e0ab4392279cbbb1a4db08044305c450ae641b7
 ---
