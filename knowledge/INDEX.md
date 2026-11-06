@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17 (active; `specsync change status chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,8 +99,10 @@ Archived lesson bundles:
 
 ## Observations
 
-441 recorded; most recent:
+443 recorded; most recent:
 
+- OBS-tc-history-doctor-fixes-session-debt-6b69ccc429d60b2cd04bd601 ProductTest Passed in local-linux-aarch64 at 298c8a775180
+- OBS-tc-cli-doctor-report-changes-nothing-8a051b3416c4c0d132e1c972 ProductTest Passed in local-linux-aarch64 at 298c8a775180
 - OBS-tc-cli-finished-session-not-counted-open-06d2a2309ec0ea5d0d5fdfee ProductTest Passed in local-linux-aarch64 at 28042787eb57
 - OBS-tc-history-finished-session-archived-without-native-read-d210b92c9016fb3fe328bf27 ProductTest Passed in local-linux-aarch64 at 28042787eb57
 - OBS-tc-history-session-close-with-reason-d61f0bc09ce6a873e1613697 ProductTest Passed in local-linux-aarch64 at fe653b315f36
@@ -109,8 +111,6 @@ Archived lesson bundles:
 - OBS-tc-history-roll-up-keeps-the-anchor-holder-4ce464a7dd1c557398aebc52 ProductTest Passed in local-linux-aarch64 at 1608e342729b
 - OBS-tc-history-changelog-111-under-0-4-0-51c2b5238ff8ac90bf33995d ProductTest Passed in local-macos-arm64 at 2a5e6008d349
 - OBS-tc-history-changelog-sessions-under-0-4-0-17d5a214eb7fd5ee0d365aa0 ProductTest Passed in local-macos-arm64 at 2a5e6008d349
-- OBS-tc-history-changelog-111-under-0-4-0-96f4c6ed9d193798a3d7205c ProductTest Passed in local-macos-arm64 at 54f7a782597a
-- OBS-tc-history-changelog-sessions-under-0-4-0-4fe7138779b4ed79b0a97ae4 ProductTest Passed in local-macos-arm64 at 54f7a782597a
 
 ## Briefs
 
