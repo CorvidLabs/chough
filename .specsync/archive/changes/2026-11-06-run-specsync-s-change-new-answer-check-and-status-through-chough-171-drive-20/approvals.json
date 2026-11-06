@@ -118,6 +118,13 @@
         "cli": "46a0744301e4c44835f727daac017b54dc9c45f761481fe352b2c7ef3708fff8"
       },
       "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794006209,
+      "digest": "08a6ea6d5be806fa25cdb30f6e98bdb7b90a895f51321afe7642508c1d955e2c",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20",
+  "implementation_commit": "e325d4fe57f52ec371b2888c435f4b2ded144886",
+  "implementation_tree": "e0fe9fc069ca97456f3f87dd7a15e0703b1d0a52",
+  "contract_digest": "51c3df283cbfeb54a83212bb135e75aa563c33fff2f669576deb1cc16aeafd7c",
+  "workspace_digest": "924778c151dcbcc53895f5390b95ec5dc8df292536161b111ecf2fc66b2dfa48",
+  "closing_digest": "08a6ea6d5be806fa25cdb30f6e98bdb7b90a895f51321afe7642508c1d955e2c",
+  "review_digest": "4581012955c9ee730b6e9858620f004750b7c510b6ea66dbd36422cf3b299dd2",
+  "finalization_digest": "0d637d2b39ba949ba99c379d59e73c07268c4f1e318fa359f5aab913a268cfbc",
+  "timestamp": 1794006209
+}
