@@ -7,11 +7,11 @@
   "title": "Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)",
   "description": "Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "73a7da5653312e907621c0165d0b5f903c22ff53",
   "created_at": 1793936816,
-  "updated_at": 1793937170,
+  "updated_at": 1793937732,
   "affected_specs": [
     "history",
     "cli"
