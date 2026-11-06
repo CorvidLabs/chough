@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The chough-workflow skill's transition table now names `chough stage advance --to
+  <stage>` (REQ-cli-052, DRIVE-9). Installed copies of `references/stages.md` from 0.1.0
+  to 0.4.0 report `known-outdated`, and `chough skill update` refreshes them.
 - An empty change directory left by a branch switch no longer counts as an open native
   change (#148). The knowledge index no longer lists it as active, which had made
   `library index --check` fail on a fresh clone, and the trim no longer refuses because
