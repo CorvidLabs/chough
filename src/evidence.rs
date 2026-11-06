@@ -1269,10 +1269,19 @@ fn change_id_ok(id: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
 }
 
-/// The paths a change's acceptance manifest lists, read with `specsync change status`.
-fn manifest(root: &Path, id: &str) -> Result<BTreeSet<String>, String> {
+/// A `specsync change status <id> --json` reply this command already read, as `(id,
+/// reply)`. A manifest read of that same change reuses it instead of reading again; it
+/// serves one command and is never written (REQ-cli-052).
+pub(super) type Prior<'a> = Option<(&'a str, &'a Value)>;
+
+/// The paths a change's acceptance manifest lists, read with `specsync change status`,
+/// or taken from `prior` when it is that change's reply.
+fn manifest(root: &Path, id: &str, prior: Prior<'_>) -> Result<BTreeSet<String>, String> {
     if !change_id_ok(id) {
         return Err(format!("unexpected native change ID {id:?}"));
+    }
+    if let Some((_, value)) = prior.filter(|(prior_id, _)| *prior_id == id) {
+        return manifest_paths(id, value);
     }
     let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
     let value = response.value.ok_or_else(|| {
@@ -1281,6 +1290,11 @@ fn manifest(root: &Path, id: &str) -> Result<BTreeSet<String>, String> {
             response.section.source, response.section.state, response.section.content
         )
     })?;
+    manifest_paths(id, &value)
+}
+
+/// The paths of the `acceptance_entries` in a change's status reply.
+fn manifest_paths(id: &str, value: &Value) -> Result<BTreeSet<String>, String> {
     let entries = value
         .get("acceptance_entries")
         .and_then(Value::as_array)
@@ -1324,7 +1338,7 @@ fn latest_archive(root: &Path) -> Result<Option<String>, String> {
     Ok(latest.map(|(_, _, id)| id))
 }
 
-fn native_manifests(root: &Path) -> Result<Native> {
+fn native_manifests(root: &Path, prior: Prior<'_>) -> Result<Native> {
     if !local_path(root, ".specsync/config.toml")?.is_file()
         && !local_path(root, ".specsync/config.json")?.is_file()
     {
@@ -1337,11 +1351,11 @@ fn native_manifests(root: &Path) -> Result<Native> {
     let read = || -> Result<Vec<(String, BTreeSet<String>)>, String> {
         let mut manifests = vec![];
         for id in change_dirs(root, ".specsync/changes")? {
-            let paths = manifest(root, &id)?;
+            let paths = manifest(root, &id, prior)?;
             manifests.push((format!("native active {id}"), paths));
         }
         if let Some(id) = latest_archive(root)? {
-            let paths = manifest(root, &id)?;
+            let paths = manifest(root, &id, prior)?;
             manifests.push((format!("native archive {id}"), paths));
         }
         Ok(manifests)
@@ -1381,7 +1395,7 @@ pub(super) fn retention_protection(root: &Path) -> Result<Vec<String>> {
     }
     let mut paths = BTreeSet::new();
     for id in ids {
-        paths.extend(manifest(root, &id).map_err(anyhow::Error::msg)?);
+        paths.extend(manifest(root, &id, None).map_err(anyhow::Error::msg)?);
     }
     Ok(paths.into_iter().collect())
 }
@@ -1494,7 +1508,7 @@ fn classify_with(root: &Path, at: u64, native: Option<Native>) -> Result<Classif
     let named_files = file_references(root)?;
     let native = match native {
         Some(native) => native,
-        None => native_manifests(root)?,
+        None => native_manifests(root, None)?,
     };
     let manifest_keys: Vec<(&String, BTreeSet<String>)> = native
         .manifests
@@ -2646,16 +2660,26 @@ fn one_line_bounded(text: &str) -> String {
         .collect()
 }
 
+/// Most archive validity reads that run at once (REQ-cli-033).
+const VALIDITY_READERS: usize = 8;
+
+/// Reader threads for `archives` validity reads on a host that reports `available`
+/// parallelism: at least 2 and at most [`VALIDITY_READERS`], and never more than there
+/// are archives (REQ-cli-033, audit CH-M11).
+fn validity_readers(available: usize, archives: usize) -> usize {
+    available.clamp(2, VALIDITY_READERS).min(archives.max(1))
+}
+
 /// Terminal evidence validity of each archive, as `specsync change status` reports it.
 /// Fails closed: an archive whose validity cannot be read is an error, never a value.
 fn validity(root: &Path, ids: &BTreeSet<String>) -> Result<BTreeMap<String, String>> {
     // Each read costs tens of seconds inside SpecSync (spec-sync#831), so they run in
     // parallel, at most 8 at once; errors are reported in ID order, not completion order.
     let ids: Vec<&String> = ids.iter().collect();
-    let workers = std::thread::available_parallelism()
-        .map_or(2, std::num::NonZeroUsize::get)
-        .clamp(2, 8)
-        .min(ids.len().max(1));
+    let workers = validity_readers(
+        std::thread::available_parallelism().map_or(2, std::num::NonZeroUsize::get),
+        ids.len(),
+    );
     let next = std::sync::atomic::AtomicUsize::new(0);
     let mut results: Vec<(usize, Result<String>)> = std::thread::scope(|scope| {
         let handles: Vec<_> = (0..workers)
@@ -2711,14 +2735,21 @@ pub(super) fn archive_summary(
     knowledge_dir: &str,
     authority: Option<&str>,
     write_entries: &dyn Fn(&Path) -> Result<()>,
+    prior: Prior<'_>,
 ) -> Result<Value> {
     let _budget = authority.map(|_| crate::history::maintenance_budget());
+    // With a reply already read for the change just archived, its manifest comes from
+    // that reply; every other manifest is read live (REQ-cli-052).
+    let manifests = match prior {
+        Some(_) => Some(native_manifests(root, prior)?),
+        None => None,
+    };
     let SummaryPlan {
         eligible,
         protected,
         uncommitted,
         native,
-    } = summary_plan(root, archives, None, knowledge_dir)?;
+    } = summary_plan(root, archives, manifests, knowledge_dir)?;
     let entry_path = |archive: &str| format!("{knowledge_dir}/archives/{archive}.md");
     let listed: Vec<Value> = eligible
         .iter()
@@ -3288,6 +3319,20 @@ fn rotate_ledger(root: &Path) -> Result<Value> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// CH-M11 (audit): at most 8 validity reads run at once whatever parallelism the host
+    /// reports, so a raised ceiling fails here on every host, not only on one with more
+    /// than eight cores (REQ-cli-033).
+    #[test]
+    fn at_most_eight_validity_readers_on_any_host() {
+        assert_eq!(validity_readers(128, 20), 8);
+        assert_eq!(validity_readers(9, 9), 8);
+        assert_eq!(validity_readers(8, 12), 8);
+        assert_eq!(validity_readers(4, 12), 4);
+        assert_eq!(validity_readers(1, 20), 2);
+        assert_eq!(validity_readers(20, 3), 3);
+        assert_eq!(validity_readers(4, 0), 1);
+    }
 
     #[test]
     fn a_hold_never_sits_in_the_removed_file_directory() {

@@ -4,6 +4,42 @@ Chough integrates native HI export, SpecSync change status and Git directly, and
 bound test commands only when a case is explicitly executed. Everything else below is
 guided by the skill or kept as a qualified, deferred or unavailable adapter.
 
+## Platforms
+
+Chough supports macOS and Linux. Windows is supported through WSL 2 with Ubuntu;
+native Windows is not supported (FLOW-17). SpecSync made the same choice: since its
+6.0 release it publishes only Linux and macOS binaries and points Windows users to WSL.
+
+| Platform | Status | What shows it |
+|---|---|---|
+| Linux (Ubuntu, x86_64) | Supported | Hosted CI: `Product / ubuntu-latest`, `MSRV / 1.88.0`, and `Fledge / HI / SpecSync`, whose `verify` lane runs the feature and bug exercise |
+| macOS | Supported | Hosted CI: `Product / macos-latest`; local development and the exercises on macOS arm64 |
+| Windows through WSL 2 with Ubuntu | Supported, as Linux | The Ubuntu jobs above; no job runs inside WSL |
+| Native Windows | Not supported | No CI job; the Windows-specific code that remains is not built or tested |
+
+What the Ubuntu jobs show for WSL 2: Ubuntu on WSL 2 runs a Linux kernel with the
+Ubuntu userland, so Chough and its tools built inside it are the same
+`x86_64-unknown-linux-gnu` programs the hosted jobs build and test. That includes the
+Linux stop handling (process groups, the child subreaper, `setsid` descendants). The
+supported setup installs Rust, Chough, HI, SpecSync and Fledge inside the
+distribution, and clones and works on its Linux file system (for example under `~`)
+with Ubuntu's Git.
+
+No job runs inside WSL, so these are not covered:
+
+- WSL 1, which has no Linux kernel;
+- a checkout on a Windows drive such as `/mnt/c`, where file modes need the DrvFs
+  `metadata` option and Git for Windows may write CRLF line endings;
+- Git for Windows or other Windows-side tools working on the same clone;
+- Windows on Arm, whose WSL target is `aarch64-unknown-linux-gnu`. The hosted jobs are
+  x86_64; Linux aarch64 has had local runs only.
+
+What Chough writes still checks out on Windows. Record names refuse Windows reserved
+names and characters, and vault attachment paths stay within 220 characters
+(REQ-cli-046), so a Windows clone of a repository that uses Chough works even though
+Chough does not run there. Where Chough compares digests or front matter it still
+reads CRLF checkouts, and those tests run on Linux and macOS.
+
 ## Hosts
 
 | Host | Project skill directory | Observed support |

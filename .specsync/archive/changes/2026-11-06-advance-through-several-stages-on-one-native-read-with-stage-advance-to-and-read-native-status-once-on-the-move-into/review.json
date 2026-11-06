@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "516dcfc2ce72ab70f1138914d2d182ebb1560227",
+  "contract_digest": "09dc280de95b454f8e75622863f71b905ce1f367b57b94266e8db42d736ec299",
+  "execution_digest": "83f6f40068562d0569b3ffb2542770e402ecb874b2f02036bbbd1c963a79e4d3",
+  "workspace_digest": "b1df4c05d38444d421e02b7a656d837614b5d985b72425c4718c478035f6a377",
+  "timestamp": 1793946563
+}

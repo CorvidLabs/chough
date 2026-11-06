@@ -273,13 +273,14 @@ Acceptance Criteria
 
 ### REQ-cli-030
 
-Open human gates hold forward moves. While the checkpoint's `awaiting_human` list is not empty, `chough stage advance` and `chough stage skip` SHALL be refused with `refused:awaiting-human` from every main stage and from release, before any native read; the refusal SHALL name at most 3 open gates, in checkpoint order, with the count of the rest, and SHALL say to record the human's decision and clear the gate with `chough checkpoint --clear-awaiting-human`, re-passing gates still waiting with `--awaiting-human`. No flag or reason SHALL bypass it. Iterate, back, reset, pause, resume and side-stage enter and return SHALL NOT be refused by it. Once the list is empty the same move SHALL be applied and gated as before. While a gate is open, the waiting next action in `chough next` and `chough status` SHALL also say that advance and skip are refused until it is cleared. Trace: FLOW-3, FLOW-5, FLOW-13, FLOW-2.
+Open human gates hold forward moves. While the checkpoint's `awaiting_human` list is not empty, `chough stage advance` and `chough stage skip` SHALL be refused with `refused:awaiting-human` from every main stage and from release, before any native read; the refusal SHALL name at most 3 open gates, in checkpoint order, with the count of the rest, and SHALL say to record the human's decision on a gate with `chough checkpoint --close-gate "<gate>" --decided-by "<who>" --words "<their words>" --where "<where>" --recorded-by "<agent>"` (REQ-cli-050), and to withdraw gates no human decision closes with `chough checkpoint --clear-awaiting-human`, re-passing gates still waiting with `--awaiting-human`. No flag or reason SHALL bypass it. Iterate, back, reset, pause, resume and side-stage enter and return SHALL NOT be refused by it. Once the list is empty the same move SHALL be applied and gated as before. While a gate is open, the waiting next action in `chough next` and `chough status` SHALL say not to decide it for the human, SHALL name `chough checkpoint --close-gate` for recording their decision, and SHALL say that advance and skip are refused until it is cleared. Trace: FLOW-3, FLOW-5, FLOW-13, FLOW-2, FLOW-16.
 
 Acceptance Criteria
-- With one open gate, advance and skip are refused with `refused:awaiting-human` at intent, design, plan with SDD disabled, and release; the stage and the transitions log are unchanged and the message names the gate and the clearing command.
+- With one open gate, advance and skip are refused with `refused:awaiting-human` at intent, design, plan with SDD disabled, and release; the stage and the transitions log are unchanged and the message names the gate, the `--close-gate` command and the clearing command.
 - With 5 open gates the message names the first 3 and says 2 more.
 - After `chough checkpoint --clear-awaiting-human` the same advance is applied with its usual gate label; back, iterate, pause and resume, and side-stage enter and return, still work with a gate open.
-- `chough next` and `chough status` give the same waiting action, which says advance and skip are refused until the gate is cleared.
+- After `chough checkpoint --close-gate` closes the only open gate with a relay, the same advance is applied with its usual gate label.
+- `chough next` and `chough status` give the same waiting action, which names `--close-gate` and says advance and skip are refused until the gate is cleared.
 
 ### REQ-cli-031
 
@@ -310,6 +311,7 @@ Acceptance Criteria
 - Of four routine runs of one case and environment listed only by a cold archive, the newest run and the newest failure stay and the other two are trimmed.
 - A record no archive lists, observed in a cold archive's cycle, is trimmed and ledgered with that archive and its knowledge entry, and that entry names it; a record in a hot archive's cycle, or observed after the newest archive, stays.
 - The native validity reads of the affected archives overlap.
+- With twelve affected archives, no more than 8 validity reads run at once, and the reader count is at most 8 whatever parallelism the host reports.
 
 ### REQ-cli-034
 
@@ -492,6 +494,19 @@ Acceptance Criteria
 - A leftover copy in `.chough/pruned.jsonl` of a shard line, after its restore, does not make the restored ID pruned again.
 - `git check-attr` reports `union` for an attachments folder's `pruned.jsonl`.
 
+### REQ-cli-050
+
+Relayed decision at a human gate. `chough checkpoint --close-gate <gate>` SHALL close the one open awaiting-human gate whose text is exactly `<gate>`, and SHALL require `--decided-by`, `--words`, `--where` and `--recorded-by`: who is said to have decided, their words verbatim, where and when they said it including any relay, and the agent recording it. It SHALL keep every other open gate open, append one `gate-closed` transition for that gate carrying `relayed_by` with those four values (REQ-history-010), and add one checkpoint decision `<decided_by> decided "<gate>": "<words>" (<where>); recorded by <recorded_by>; a relayed claim, not authenticated`. Its output SHALL carry the gate, the four values and the sentence `a relayed claim, not authenticated: it records who is said to have decided, not proof that they did`. Each refusal SHALL save nothing and write no transition: `refused:relay-incomplete` when any of the four is missing or blank, naming the missing flags and the complete command; `refused:relay-without-gate` when any of the four is given without `--close-gate`; `refused:gate-not-open` when no open gate has that exact text, naming `chough next`, which lists the open gates; and `refused:relay-too-long` when the decision would exceed 4096 bytes, saying to shorten `--words` or `--where`. `--close-gate` SHALL NOT be combined with `--clear-awaiting-human`, `--awaiting-human` or `--merge`. A relayed decision SHALL NOT write or change any SpecSync record and SHALL NOT satisfy or bypass any stage gate: reaching build, test, accept and done keeps reading native state. `--clear-awaiting-human` SHALL keep withdrawing every open gate with no relay and no decision. Chough SHALL NOT authenticate any of the four values. Trace: FLOW-16, FLOW-10, FLOW-13, FLOW-3.
+
+Acceptance Criteria
+- With gates A and B open, `--close-gate A` with the four values closes only A:
+  - B stays open, and advance is still refused with `refused:awaiting-human` naming B;
+  - one `gate-closed` event for A carries `relayed_by` with the four values byte for byte;
+  - the decision appears in `chough next` from a fresh process, and the output carries the boundary sentence.
+- A missing or blank value, a value without `--close-gate`, a gate that is not open and an over-long decision each refuse with the checkpoint and history unchanged, and the command each refusal names then succeeds.
+- With a native change in draft, closing its scope gate with a relay leaves every SpecSync file byte-identical, and advance to build is still refused by the native gate.
+- `--clear-awaiting-human` still closes every open gate and writes no `relayed_by` and no decision.
+
 ### REQ-cli-051
 
 Session notes. `chough library index` SHALL write `<library-dir>/sessions/<key>.md` for each session rolled into the vault by REQ-history-011, found at `<library-dir>/attachments/<folder>/sessions/<key>.json`. Each note SHALL have front matter giving `id` (`session/<key>`), `title` (the session's objective), `type: session`, `native_change`, `stage` and `tags`. It SHALL link the session's attachment and, when it exists, the native change's archive note. `library index --check` SHALL cover these notes, and the repository SHALL declare `knowledge/sessions/*.md merge=union`. Trace: KNOW-29, KNOW-14, DRIVE-12.
@@ -499,4 +514,23 @@ Session notes. `chough library index` SHALL write `<library-dir>/sessions/<key>.
 Acceptance Criteria
 - After a roll-up, `knowledge/sessions/<key>.md` names `session/<key>` and the session's objective and links `../attachments/<key>/sessions/<key>.json`, and `library index --check` passes.
 - `git check-attr` reports `union` for a session note.
+
+### REQ-cli-052
+
+Several forward moves on one native read, and one read into done. `chough stage advance --to <stage>` SHALL move forward through each main stage, from the current one up to `<stage>`, as consecutive advances. `<stage>` SHALL be a main stage after the current one, and any other value SHALL be refused. Every refusal of `stage advance` SHALL apply, including a stage that is not active, a side stage and an open human gate (REQ-cli-030). Before recording anything, the helper SHALL check every step as `stage advance` alone would check it: its destination's native prerequisite (REQ-cli-008) and, on leaving test, the blocking-bug and unlinked-failure refusals. All steps SHALL share one `specsync change status` read, made only when a step has a native prerequisite. A refused step SHALL refuse the whole command, naming that step with its label and detail. Then no transition SHALL be recorded and the checkpoint SHALL stay byte-identical. Otherwise the helper SHALL record one `advance` transition per step, in order, each with its own gate label and the given note. It SHALL report the steps in order in `applied.steps`, with `applied.from` as the starting stage, `applied.to` as the target and `applied.gate` as the last step's label. `stage advance` without `--to` SHALL be unchanged.
+
+On a move into done by `stage advance`, with or without `--to`, the trim of REQ-cli-041 SHALL take the change's acceptance manifest from the gate's `specsync change status` response for that change instead of reading it again. So the move into done SHALL make one native status read when no other native change is open or archived later and the trim removes nothing. Every other read SHALL stay live and keep its refusals: another change's manifest, and every validity probe around a removal. The reused response SHALL serve only that command and SHALL NOT persist. Trace: DRIVE-9, DRIVE-2, FLOW-2, LIFE-3.
+
+Acceptance Criteria
+- Under a per-change session (`chough session new`), with a counting SpecSync stub reporting an approved change at plan, `stage advance --to accept` exits 0 and runs `specsync change status` once. It records three advances (plan to build, build to test, test to accept) as event files in that session's cycle, reports them with their gate labels in `applied.steps`, and leaves the stage at accept. In a single-checkpoint project the same command appends the three to `.chough/transitions.jsonl`.
+- From intent, `stage advance --to plan` runs no native read and records two advances.
+- Each of these refusals makes at most one native read, records no transition, and leaves the session file and the history directory byte-identical:
+  - at build with an open acceptance-blocking bug, `--to accept` is refused naming `refused:blocking-bugs` and the test to accept step;
+  - at plan with the stub reporting draft, `--to test` is refused naming `refused:native-draft`;
+  - a target at or before the current stage, a side, optional or unknown stage name, and an open human gate are refused.
+- With the stub reporting an archived change with authenticated terminal evidence and an acceptance manifest, and the librarian on by default:
+  - `stage advance --to done` from test runs `specsync change status` exactly once and reports `librarian_trim`;
+  - `stage advance` from accept to done also runs it exactly once, where before this change it ran twice.
+- `stage advance` without `--to` records one transition, as before.
+- Every test of new behavior above fails against main before the implementation, and passes after it. The unchanged plain advance passes both times. `fledge lanes run verify` passes.
 

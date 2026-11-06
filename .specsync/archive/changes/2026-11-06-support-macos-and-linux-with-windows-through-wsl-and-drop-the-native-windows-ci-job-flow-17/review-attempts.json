@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "support-macos-and-linux-with-windows-through-wsl-and-drop-the-native-windows-ci-job-flow-17",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "1d28c61b5c12a5002e752476dab72f53a42178c1",
+      "contract_digest": "89b77e1244deb298552633c49b61257c1ed0e9329f57153d4abb53a4a1c7bb87",
+      "execution_digest": "a4d779484448d7bfc2792fb800c5afaa3c5801e852d52236e23060985843b2ab",
+      "workspace_digest": "eb60e7f7caa7ca74fc8d2b0a10b467b3de1c474f9125ec309d8af99751c887c3",
+      "timestamp": 1793941354
+    }
+  ]
+}

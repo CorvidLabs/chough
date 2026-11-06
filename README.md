@@ -178,18 +178,33 @@ rules.
 
 Native approvals and reviews remain in SpecSync. The current agent invokes those
 writers from actual human authority; the Rust helper reads native state for gates.
-Actor labels do not authenticate people, and a structural pass or exit code does
-not establish behavioral proof or human acceptance. Publication and deployment
+Approvals and reviews are recorded claims bound to their content, not authenticated
+identity: actor labels do not authenticate people, and a structural pass or exit code
+does not establish behavioral proof or human acceptance. When an agent records a
+human's decision at a gate, `chough checkpoint --close-gate` keeps who decided, their
+words, where and the recording agent as a relayed claim, never as a native approval. Publication and deployment
 keep their separate authorization and evidence requirements.
 
 ## Tested platforms
 
+Chough supports macOS and Linux. Windows is supported through WSL 2 with Ubuntu;
+native Windows is not supported, matching SpecSync, which publishes no Windows binary
+from 6.0.
+
 | Where | What runs |
 |---|---|
-| Hosted CI: Ubuntu, macOS, Windows | `cargo test` and a release build |
+| Hosted CI: Ubuntu, macOS | `cargo test` and a release build |
 | Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
 | Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
+
+On Windows, install Rust, Chough, HI, SpecSync and Fledge inside Ubuntu on WSL 2, and
+clone and work on its Linux file system (for example under `~`) with Ubuntu's Git.
+That is a Linux system: the hosted Ubuntu jobs build and test the same
+`x86_64-unknown-linux-gnu` target, and the `verify` lane there runs the feature and bug
+exercise. No job runs inside WSL, so WSL 1, a checkout on a Windows drive such as
+`/mnt/c`, Git for Windows and Windows on Arm are not covered. See
+[Platforms](docs/integrations.md#platforms).
 
 One 2026-11-01 Kimi Code CLI 0.41.0 run on macOS arm64 auto-discovered the `.agents`
 skill, built successfully and attempted a cold resume. It could not safely resume the
@@ -204,8 +219,9 @@ post-fix Kimi rerun. Other platforms may work but have not been exercised.
 
 ## Known limitations
 
-- On Windows, a bounded command's descendants whose parent has already exited cannot
-  be stopped; the run returns on time with an incomplete capture, never `passed`.
+- Native Windows is not supported (use WSL 2 with Ubuntu). The Windows-specific code
+  that remains, such as stopping a command's process tree with `taskkill`, is no
+  longer built or tested by CI.
 - Calls to Git (fingerprints and revisions) are not yet bounded in time or output.
 - SpecSync 6.1.1 and earlier do not flag an approved delta edited after approval;
   SpecSync 6.1.2 does

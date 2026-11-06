@@ -33,7 +33,7 @@ sequencing; it is not human acceptance or proof of delivery.
 | More hosts | Exercise Cursor, Gemini and Grok discovery and cold starts. One Kimi Code CLI 0.41.0 run on macOS arm64 passed `.agents` discovery but could not safely cold-resume because of BUG-0024's stale archived-resume action and BUG-0021's guidance gap. Google Antigravity has a separate unverified narrative report in closed PR #20 | Kimi run observed 2026-11-01, with no fresh post-fix rerun; Cursor, Gemini and Grok remain proposed |
 | Observation reuse | Recognize unchanged inputs at a descendant commit | Narrower content-identity form delivered by D-018 in PR #17; the ancestry check and separate reuse label stay unapproved ([NEXT_CHANGE.md](NEXT_CHANGE.md)) |
 | Native gate adapter | Reuse Trust where its policy fits | Proposed; needs degraded, failed, unavailable and baseline cases |
-| Checkpoint adapter | APS, if it gains Windows builds, file input, compare-and-set and closed schemas | Deferred (D-010) |
+| Checkpoint adapter | APS, if it gains file input, compare-and-set and closed schemas (Windows builds are no longer needed, D-022) | Deferred (D-010) |
 | Test runner adapter | Magpie for real-command targets with explicit assertions | Deferred until installed and qualified per mode |
 | Rune proof of concept | Optional cross-agent session bridge | Deferred; current-agent-first remains the model |
 | Monitoring sources | Project-native health and log adapters as cases | Proposed per project; no general health service assumed |

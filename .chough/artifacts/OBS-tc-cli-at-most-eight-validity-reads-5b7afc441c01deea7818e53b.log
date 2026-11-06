@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test at_most_eight_validity_reads_run_at_once ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 31 filtered out; finished in 8.00s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/reduce.rs (target/debug/deps/reduce-1ef8752329106b8f)

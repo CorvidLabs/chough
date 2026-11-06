@@ -98,6 +98,15 @@ Acceptance Criteria
 - An `inbox add` killed while writing its entry leaves no partial entry: `inbox list`, `status`, `next` and `evidence prune` still work, and the next checkpoint save removes the temporary file it left.
 - When an unfolded inbox entry cannot be read, `evidence prune --apply` refuses and removes nothing.
 
+### REQ-history-010
+
+Relayed decision on gate records. A `gate-closed` transition MAY carry `relayed_by` with exactly the keys `decided_by`, `words`, `where` and `recorded_by`, each a non-blank string of at most 4096 bytes (REQ-cli-050). The field SHALL be omitted when absent, so every other transition keeps its exact bytes, and SHALL be carried unchanged by the legacy transitions log and by immutable history events. A `relayed_by` with a missing, blank, over-long or unknown key, or on a transition of any other kind, SHALL be refused as an invalid transition payload. The record is a relayed claim: it does not authenticate who decided. Trace: FLOW-16, FLOW-13.
+
+Acceptance Criteria
+- A transition without `relayed_by` serializes byte-identically to before.
+- A relayed gate-closed transition written with history adopted, and one written to the legacy transitions log, are read back with the same four values.
+- An event whose `relayed_by` lacks a key, has a blank or over-long value or an unknown key, or sits on a `gate-opened` or stage transition, is refused as an invalid transition payload.
+
 ### REQ-history-011
 
 Archived session roll-up. When `chough stage advance` moves into done and its save succeeds, with the librarian on, after the trim of REQ-cli-041 and before the knowledge refresh of REQ-cli-043, the helper SHALL keep in `.chough/sessions/archive/` only the five most recent archived sessions. Recency SHALL be the finalization timestamp of the session's native change, newest first, then the key, the later key first. A session without a native change, or whose change has no readable finalization, SHALL count as the oldest. Each other archived session SHALL move byte for byte to `<library-dir>/attachments/<folder of its key>/sessions/<key>.json`, with the folder formed as in REQ-cli-046, and SHALL never replace a file. An attachment that already holds the same bytes SHALL be kept, and the source removed. One that holds different bytes SHALL leave the session in place and be reported. It SHALL report `applied.session_rollup` with status `rolled` and the moved keys, `unchanged`, `skipped` (librarian off), or `refused` with its reason, and SHALL NOT undo the move into done. A rolled session is no longer a retention reference source: its cycle is closed, and its native archive keeps what the change touched. `session list` SHALL NOT list it. Nothing SHALL be deleted from Git history. Trace: KNOW-29, DRIVE-13, KNOW-13.

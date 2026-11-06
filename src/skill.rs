@@ -43,6 +43,28 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Main ec830cf, release 0.4.0 for SKILL.md, plan.md and checkpoint.md; superseded
+    // by relayed decisions at gates (#123, D7).
+    (
+        "SKILL.md",
+        "733346e29c7a57461926a6c7d297face74fc291a2e5c7f17d4d57dcf3945ec99",
+    ),
+    (
+        "references/plan.md",
+        "1a0a324a83658a1466ee6fe295ccfe9e980275f7abca809ef2927e71fb912663",
+    ),
+    (
+        "references/accept.md",
+        "b9609ee86c0fb1c86edba9c76dad00a166be2c0329c7e920c92af551bbfeaa7f",
+    ),
+    (
+        "references/lifecycle.md",
+        "432b35393a7be32e7b5228a8afad6f9b40c3cd34c8d8ba889b6b597a17befe60",
+    ),
+    (
+        "references/checkpoint.md",
+        "370386488c8e5ff6c974ae9d3bd51998de31183868dfe48af44c0935a3019170",
+    ),
     // Release 0.4.0; superseded by the archive-first closeout (#122, D5).
     (
         "references/lifecycle.md",
