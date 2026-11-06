@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Generated bug notes (`knowledge/bugs/*.md`) now union-merge and are rebuilt like the
+  other generated knowledge notes, so parallel branches no longer conflict on them
+  (#128, REQ-cli-047, DRIVE-12).
+
 - Closed bugs release proof (KNOW-22, REQ-cli-048). In the librarian trim, a verified,
   duplicate or wont-fix bug no longer protects the observations it links. Its key items
   move into `knowledge/attachments/<bug>/` when they would otherwise be trimmed:
