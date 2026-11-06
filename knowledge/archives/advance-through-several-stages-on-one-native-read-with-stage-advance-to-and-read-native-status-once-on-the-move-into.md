@@ -73,7 +73,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-no-lesson-store-d377f20930cd989dae866fe0 | passed (by cycle time) | local-macos-arm64 | TC-cli-no-lesson-store |
 | OBS-tc-cli-no-reset-drops-no-observation-4375674fc4309dbcaa7720ac | passed (by cycle time) | local-macos-arm64 | TC-cli-no-reset-drops-no-observation |
 | OBS-tc-cli-one-checkpoint-store-no-aps-a847bd2418a95115590ef735 | passed (by cycle time) | local-macos-arm64 | TC-cli-one-checkpoint-store-no-aps |
-| OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 | passed (by cycle time) | local-macos-arm64 | TC-cli-plain-advance-unchanged |
+| OBS-tc-cli-plain-advance-unchanged-db6c44988218e03efc8c4361 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-plain-advance-unchanged |
 | OBS-tc-cli-plain-advance-unchanged-e30b6deab9e28069067a5293 | passed (by cycle time) | local-macos-arm64 | TC-cli-plain-advance-unchanged |
 | OBS-tc-cli-roadmap-claims-no-cold-start-pass-8f438197307c7964dc5f82cc | passed (by cycle time) | local-macos-arm64 | TC-cli-roadmap-claims-no-cold-start-pass |
 | OBS-tc-cli-skipped-cold-start-not-a-pass-cd3d98c4de358380c172e437 | passed (by cycle time) | local-macos-arm64 | TC-cli-skipped-cold-start-not-a-pass |

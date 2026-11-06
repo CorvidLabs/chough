@@ -80,4 +80,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138.json](../attachments/give-real-19970cfb/sessions/give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138.json)
