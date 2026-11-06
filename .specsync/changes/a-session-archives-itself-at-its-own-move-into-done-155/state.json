@@ -8,16 +8,18 @@
   "description": "A session archives itself at its own move into done (155)",
   "kind": "feature",
   "state": "draft",
-  "base_commit": "615b587b33a1ef3a569f9557e2782a6be3df2f0f",
-  "created_at": 1793973427,
-  "updated_at": 1793973489,
+  "base_commit": "b09682e0cbb62f08e9bc1ab52f335311a3da4b8e",
+  "created_at": 1793976131,
+  "updated_at": 1793976155,
   "affected_specs": [
-    "history"
+    "history",
+    "cli"
   ],
   "affected_paths": [
     "src/sessions.rs",
     "src/stage.rs",
     "tests/reduce.rs",
+    "tests/sessions.rs",
     "docs/cli.md",
     "skills/chough-workflow/references/checkpoint.md",
     ".agents/skills/chough-workflow/references/checkpoint.md",
@@ -26,7 +28,7 @@
   "no_spec_change": false,
   "no_spec_change_rationale": null,
   "acceptance_criteria": [
-    "Issue #155 option D (Leif, relayed by orc 2026-11-06), under DRIVE-13 and DRIVE-3, in REQ-history-006: the move into done archives the active session itself in its own change and clears the active pointer (applied.session_archive archived); a session with unfolded inbox entries stays open (kept_open); without sessions it reports skipped; next then refuses naming chough session new <key>, and a following session new archives nothing. The one-time sweep moves the done sessions open on main into the archive in this change. The three new tests fail first, no existing assertion changes, docs and the skill say so, and fledge lanes run verify passes on Linux."
+    "Issue #155 option D (Leif, relayed by orc 2026-11-06), under DRIVE-13 and DRIVE-3, in REQ-history-006: the move into done archives the active session itself in its own change and clears the active pointer (applied.session_archive archived); a session with unfolded inbox entries stays open (kept_open); a session with release authorized at done stays open for the release and archives itself at the move from release into done; without sessions it reports skipped; next then refuses naming chough session new <key>, and a following session new archives nothing. The one-time sweep moves the done sessions open on main into the archive in this change. The new tests fail first; the switch tests in tests/sessions.rs model a done session left open by an older version, with no assertion change, docs and the skill say so, and fledge lanes run verify passes on Linux."
   ],
   "selected_artifacts": [
     "context",

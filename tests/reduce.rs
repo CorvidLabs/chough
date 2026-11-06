@@ -1741,3 +1741,32 @@ fn the_move_into_done_skips_the_archive_without_sessions() {
     );
     assert!(fixture.exists(".chough/session.json"));
 }
+
+/// #155: when release is authorized at the move into done, the session stays open for
+/// it, and archives itself at the move from release into done.
+#[test]
+fn a_session_with_release_authorized_archives_itself_after_release() {
+    let fixture = project("0");
+    adopted_session(&fixture);
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "Human: release it",
+    ]);
+    let done = fixture.ok(&["stage", "advance"]);
+    let archive = &done["applied"]["session_archive"];
+    assert_eq!(archive["status"], "kept_open", "{done:#}");
+    assert!(fixture.exists(".chough/sessions/legacy.json"));
+    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    let released = fixture.ok(&["stage", "advance"]);
+    assert_eq!(released["applied"]["to"], "done", "{released:#}");
+    assert_eq!(
+        released["applied"]["session_archive"]["status"], "archived",
+        "{released:#}"
+    );
+    assert!(!fixture.exists(".chough/sessions/legacy.json"));
+    assert!(fixture.exists(".chough/sessions/archive/legacy.json"));
+    assert!(!fixture.exists(".chough/local/active-session"));
+}

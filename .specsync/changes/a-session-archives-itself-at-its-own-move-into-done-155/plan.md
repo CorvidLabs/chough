@@ -19,7 +19,7 @@ At a successful move into done, the session archives itself as the last done ste
 
 1. Write three failing tests in tests/reduce.rs (archived, kept open, skipped) and run them on Linux.
 2. Get scope approval through the orc.
-3. Add `sessions::archive_at_done` and call it last in the done steps, re-pinning the checkpoint to the archived file.
+3. Add `sessions::archive_at_done` (kept open while release is authorized) and call it last in the done steps, re-pinning the checkpoint to the archived file.
 4. Update docs/cli.md, the skill's checkpoint reference (both copies) and CHANGELOG.md.
 5. Add cases. Run `fledge lanes run verify` on Linux, then the native check last. Open the pull request.
 

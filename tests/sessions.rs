@@ -149,9 +149,7 @@ fn switching_archives_done_sessions() {
     let fixture = Fixture::new();
     sessions(&fixture);
     fixture.ok(&["session", "use", "alpha"]);
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
+    // Release is requested before done, so the session stays open for it (#155).
     fixture.ok(&[
         "consent",
         "grant",
@@ -159,8 +157,12 @@ fn switching_archives_done_sessions() {
         "--source",
         "Human: release alpha",
     ]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     fixture.ok(&["stage", "advance"]);
+    left_open(&fixture, "alpha");
     assert_eq!(
         json(&fixture, ".chough/sessions/alpha.json")["stage"]["current"],
         "done"
@@ -374,9 +376,7 @@ fn a_project_without_sessions_is_unchanged() {
 
 fn finish(fixture: &Fixture, key: &str) {
     fixture.ok(&["session", "use", key]);
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
+    // Release is requested before done, so the session stays open for it (#155).
     fixture.ok(&[
         "consent",
         "grant",
@@ -384,8 +384,25 @@ fn finish(fixture: &Fixture, key: &str) {
         "--source",
         "Human: release it",
     ]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     fixture.ok(&["stage", "advance"]);
+    left_open(fixture, key);
+}
+
+/// Since #155 a session archives itself at its move into done. A done session still
+/// open is one an older Chough left, or one merged in from another branch; this puts
+/// the session back where such a one sits, so the switch rules can be tested.
+fn left_open(fixture: &Fixture, key: &str) {
+    std::fs::rename(
+        fixture
+            .root()
+            .join(format!(".chough/sessions/archive/{key}.json")),
+        fixture.root().join(format!(".chough/sessions/{key}.json")),
+    )
+    .unwrap();
 }
 
 fn add_entry(fixture: &Fixture, key: &str, kind: &str, text: &str) -> String {
