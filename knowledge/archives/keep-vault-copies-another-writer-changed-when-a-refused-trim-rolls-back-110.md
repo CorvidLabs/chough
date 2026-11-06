@@ -61,4 +61,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.json](../attachments/keep-vault-511ec505/sessions/keep-vault-copies-another-writer-changed-when-a-refused-trim-rolls-back-110.json)

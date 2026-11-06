@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29",
+  "slug": "keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29",
+  "title": "Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)",
+  "description": "Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "73a7da5653312e907621c0165d0b5f903c22ff53",
+  "created_at": 1793936816,
+  "updated_at": 1793937734,
+  "affected_specs": [
+    "history",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/sessions.rs",
+    "src/vault.rs",
+    "src/library.rs",
+    "src/stage.rs",
+    "tests/reduce.rs",
+    "tests/vault.rs",
+    ".gitattributes",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": "KNOW-29 (Leif, Capture as written, 2026-11-05 20:08 MST): only the five most recent done sessions stay in .chough/sessions/archive; older ones roll into the vault as a summary note with attachments.",
+  "acceptance_criteria": [
+    "At done with the librarian on, only the five most recent archived sessions (by their native change finalization, then key; none counts oldest) stay in .chough/sessions/archive; older ones move byte for byte, never replacing a file, into knowledge/attachments/<folder>/sessions/<key>.json, reported as applied.session_rollup; library index writes knowledge/sessions/<key>.md linking each, union-merged; with the librarian off nothing moves. The new tests fail first and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "KNOW-29 (Leif, relayed by orc, Capture as written 2026-11-05 20:08 MST); queue order: after the 1 MiB cap (#133); no-replace rule; retention unchanged for open and archived sessions.",
+    "public_contract": "yes"
+  }
+}

@@ -68,4 +68,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.json](../attachments/done-drops-b0a2ef85/sessions/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.json)

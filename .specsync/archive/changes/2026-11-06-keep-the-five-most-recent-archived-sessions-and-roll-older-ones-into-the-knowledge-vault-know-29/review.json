@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "3be6c5e46362f610e5716de0036c66ed5f8b9f14",
+  "contract_digest": "771a62916c187714cddd82740d7879d95889ab5405bdc338082fa27064f9d91c",
+  "execution_digest": "bfc66e98b0612fb2c80d775778ad4368e7604f0dea16d1d7fd101d262e548071",
+  "workspace_digest": "2488d6da54f33c3e9d568b7de7fef0924fb1e8a2912004e65dd85e8253dd85e7",
+  "timestamp": 1793937725
+}
