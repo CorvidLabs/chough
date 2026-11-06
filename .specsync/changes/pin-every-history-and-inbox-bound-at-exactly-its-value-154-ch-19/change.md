@@ -1,6 +1,6 @@
 ---
 id: pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 64aa77e01d2763395d8af7566e62743ede37cc32
 ---
