@@ -19,8 +19,8 @@ records. Follow native status where it names a different next action.
    project lanes.
 3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
 4. Commit the source together with `.chough/`.
-5. Run `chough change check <id>`, which runs `specsync change check <id> --commit`
-   (stage new source files first).
+5. Run `chough change check <id>`, which runs SpecSync's `change check <id>` with
+   `--commit` (stage new source files first).
 6. Present to the human: what changed, the current verification, the relevant case
    observations with freshness, open bugs and limits, and what was not checked.
    Report product tests, structural checks, native lifecycle state, provenance and
@@ -52,21 +52,18 @@ acceptance source separately. The actor label does not create that decision:
 
 ```sh
 specsync change review <id> --reviewer "<agent-account>"
-specsync change ship <id>        # or: specsync change finalize <id>
+chough change ship <id> --close-gate "Implementation review of <id>" \
+  --decided-by "<who>" --words "<their exact words>" \
+  --where "<where and when, and who relayed it>" --recorded-by "<agent-account>"
 ```
 
-Do not commit between review and finalize. Only then close the gate with the actual
-acceptance source, recorded after archival so the verification window above holds:
-
-```sh
-chough checkpoint --close-gate "Implementation review of <id>" --decided-by "<who>" \
-  --words "<their exact words>" --where "<where and when, and who relayed it>" \
-  --recorded-by "<agent-account>"
-```
-
-It keeps who decided, their words, where and the recording agent as a relayed claim,
-not authenticated. Then run `chough stage advance`, which moves accept to done; it is
-refused until native state is `archived`.
+Do not commit between review and ship. `chough change ship` checks the session, the
+stage, the open gates and the relay before anything runs, then runs SpecSync's
+`change ship <id>` (which finalizes). After that it closes the gate with the
+actual acceptance source, recorded after archival so the verification window above
+holds, and moves accept to done. The gate keeps who decided, their words, where and the
+recording agent as a relayed claim, not authenticated. If a step after the ship is
+refused, the output says the change is shipped and names the command left to run.
 With the librarian on, the move into done
 also refreshes the knowledge directory; commit it with the checkpoint. Then push the
 archive commit, the checkpoint and the knowledge directory on the same pull request,

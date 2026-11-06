@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough change ship <id>` is the closeout after the human's review (#179, DRIVE-20,
+  REQ-cli-059). Given the review gate's relay (`--close-gate`, `--decided-by`, `--words`,
+  `--where`, `--recorded-by`), it checks the session, the stage, the open gates and the
+  relay before anything runs, then runs `specsync change ship <id>` unbounded with its
+  output passed through. After the ship it closes the review gate as a relayed claim and
+  moves the session to done. Each refusal names the command that recovers, and a step
+  refused after the ship says the change is shipped and names what is left. The
+  walkthrough and the skill's closeout now run `chough change new`, `check` and `ship`,
+  with review still `specsync change review`. The relay check `checkpoint --close-gate`
+  runs is shared, with its refusals unchanged.
 - `chough change new`, `answer`, `check` and `status` run SpecSync's own change steps
   (#171, DRIVE-20, REQ-cli-057), so an agent can drive a change through `chough` for
   them. `check` runs `specsync change check <id> --commit`, and the other three add

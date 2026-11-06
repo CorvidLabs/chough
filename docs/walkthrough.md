@@ -103,7 +103,7 @@ authority covers its concrete scope. When that authority is missing, it presents
 the decision and records the pending gate as shown here:
 
 ```sh
-specsync change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/ --json
+chough change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/
 chough checkpoint --native-change free-shipping-at-the-threshold \
   --awaiting-human "Scope approval of free-shipping-at-the-threshold"
 chough stage advance        # refused: refused:awaiting-human (refused:native-draft once cleared)
@@ -122,7 +122,7 @@ source remain separate, as does your later implementation acceptance.
 ## Build, focused tests and a bug
 
 ```sh
-specsync change check free-shipping-at-the-threshold --commit
+chough change check free-shipping-at-the-threshold
 chough stage advance                                   # build -> test
 chough cases select --requirement REQ-shipping-002 --path src/lib.rs
 chough cases run TC-shipping-0001 --environment local  # exit 3: failed (left: 499, right: 0)
@@ -152,14 +152,22 @@ chough next --environment local
 
 Before presenting, the agent records the gate (`chough checkpoint --awaiting-human
 "Implementation review of free-shipping-at-the-threshold"`), commits the source
-together with `.chough/`, runs `specsync change check free-shipping-at-the-threshold
---commit` and presents the work. Your implementation review is the decision; only
-after it does the agent run `specsync change review` and then `ship` or `finalize` on
-the same pull request, writing nothing to `.chough/` in between. Only then does it
-close the review gate with your decision as a relayed claim (`chough checkpoint
---close-gate "Implementation review of free-shipping-at-the-threshold" --decided-by
-"<you>" --words "<your words>" --where "<where and when>" --recorded-by
-"<agent-account>"`), run `chough stage advance` and commit. Pushing and observing CI
+together with `.chough/`, runs `chough change check free-shipping-at-the-threshold`
+and presents the work. Your implementation review is the decision. Only after it does
+the agent run `specsync change review`, and then, on the same pull request and with
+nothing written to `.chough/` in between, one command that ships, closes the review gate
+with your decision as a relayed claim and moves to done:
+
+```sh
+chough change ship free-shipping-at-the-threshold \
+  --close-gate "Implementation review of free-shipping-at-the-threshold" \
+  --decided-by "<you>" --words "<your words>" --where "<where and when>" \
+  --recorded-by "<agent-account>"
+```
+
+It checks the session, the stage and the relay before it runs SpecSync's `change ship`.
+If the move into done is refused after the ship, it says the change is shipped and
+names the command left to run. Then the agent commits. Pushing and observing CI
 come last, because the hosted Archive gate refuses while the change is open. See [the
 closeout order](lifecycle.md#acceptance-and-native-closeout). Release is a separate,
 optional request.
