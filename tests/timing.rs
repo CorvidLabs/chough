@@ -1243,6 +1243,7 @@ if [ -f ".stub-fail-$id" ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f ".stub-malformed-$id" ]; then echo 'not json {'; exit 0; fi
 if [ -f ".stub-hang-$id" ]; then sleep 60 & echo $! >>.stub-children; wait; fi
 if [ -f ".stub-sleep-$id" ]; then exec sleep 30; fi
+if [ -f ".stub-delay-$id" ]; then sleep "$(cat ".stub-delay-$id")"; fi
 if [ -f ".stub-status-$id" ]; then cat ".stub-status-$id"; exit 0; fi
 printf '{"change":{"id":"%s","created_at":100,"updated_at":200},"summary":{"state":"archived","approval_valid":true}}\n' "$id"
 "#,
@@ -1674,24 +1675,97 @@ fn a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown() {
     }
 }
 
+/// Whether `traced` equals `plain` except that times (`unix_seconds`/`utc`) and spans
+/// (`seconds`) may be later by exactly `shift` seconds, every other field equal; the
+/// first other difference is returned as a JSON path.
+fn differs_only_by_clock(
+    path: &str,
+    plain: &Value,
+    traced: &Value,
+    shift: u64,
+) -> Result<(), String> {
+    if plain == traced {
+        return Ok(());
+    }
+    let later = |key: &str,
+                 a: &serde_json::Map<String, Value>,
+                 b: &serde_json::Map<String, Value>| {
+        match (a[key].as_u64(), b[key].as_u64()) {
+            (Some(before), Some(after)) => before + shift == after,
+            _ => false,
+        }
+    };
+    match (plain, traced) {
+        (Value::Object(a), Value::Object(b)) => {
+            let keys =
+                |map: &serde_json::Map<String, Value>| map.keys().cloned().collect::<Vec<_>>();
+            if keys(a) != keys(b) {
+                return Err(format!("{path} (keys)"));
+            }
+            if a.contains_key("unix_seconds") && a.contains_key("utc") {
+                return if later("unix_seconds", a, b) && a["unknown"] == b["unknown"] {
+                    Ok(())
+                } else {
+                    Err(format!("{path}.unix_seconds"))
+                };
+            }
+            if a.contains_key("seconds") && a.contains_key("label") {
+                return if later("seconds", a, b)
+                    && a["label"] == b["label"]
+                    && a["reason"] == b["reason"]
+                {
+                    Ok(())
+                } else {
+                    Err(format!("{path}.seconds"))
+                };
+            }
+            for (key, value) in a {
+                differs_only_by_clock(&format!("{path}.{key}"), value, &b[key], shift)?;
+            }
+            Ok(())
+        }
+        (Value::Array(a), Value::Array(b)) if a.len() == b.len() => {
+            for (index, (x, y)) in a.iter().zip(b).enumerate() {
+                differs_only_by_clock(&format!("{path}[{index}]"), x, y, shift)?;
+            }
+            Ok(())
+        }
+        _ => Err(path.to_string()),
+    }
+}
+
 #[cfg(unix)]
 #[test]
 fn timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit() {
     let fixture = native_fixture();
-    // Reports end ongoing segments now, so compare runs made within one second.
-    let mut matched = None;
-    for _ in 0..5 {
-        stub_calls(&fixture);
-        let plain = run_env(&fixture, &["timing", "--json"], &[]);
-        let calls = stub_calls(&fixture).len();
-        let traced = run_env(&fixture, &["timing", "--json"], &[("CHOUGH_TRACE", "1")]);
-        stub_calls(&fixture);
-        if plain.stdout == traced.stdout {
-            matched = Some((plain, traced, calls));
-            break;
-        }
+    // DRIVE-19 (#169): each run takes over a second, so the plain and traced runs always
+    // straddle a second boundary; the comparison must not depend on when they ran.
+    fixture.write(".stub-delay-cur-change", "1.1");
+    stub_calls(&fixture);
+    let plain = run_env(&fixture, &["timing", "--json"], &[]);
+    let calls = stub_calls(&fixture).len();
+    let traced = run_env(&fixture, &["timing", "--json"], &[("CHOUGH_TRACE", "1")]);
+    stub_calls(&fixture);
+    // Reports end ongoing segments at their own `generated_at`. The traced report must
+    // equal the plain one except that every time and span that runs to now is later by
+    // exactly the gap between the two runs; nothing else may differ (DRIVE-19, #169).
+    let plain_report: Value = serde_json::from_slice(&plain.stdout).unwrap();
+    let traced_report: Value = serde_json::from_slice(&traced.stdout).unwrap();
+    let shift = traced_report["generated_at"]["unix_seconds"]
+        .as_u64()
+        .unwrap()
+        - plain_report["generated_at"]["unix_seconds"]
+            .as_u64()
+            .unwrap();
+    if let Err(path) = differs_only_by_clock("", &plain_report, &traced_report, shift) {
+        panic!("traced and untraced reports differ at {path} beyond a {shift}s clock shift");
     }
-    let (plain, traced, calls) = matched.expect("traced and untraced reports differ");
+    // The comparison is strict: a changed field, or a clock shift by any other amount,
+    // is a difference.
+    let mut changed = traced_report.clone();
+    changed["filters"]["cycle"] = json!("changed");
+    assert!(differs_only_by_clock("", &plain_report, &changed, shift).is_err());
+    assert!(differs_only_by_clock("", &plain_report, &traced_report, shift + 1).is_err());
     assert_eq!(plain.status.code(), traced.status.code());
     assert!(plain.stderr.is_empty(), "untraced stderr is unchanged");
     let lines: Vec<String> = String::from_utf8(traced.stderr)
