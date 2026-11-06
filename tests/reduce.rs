@@ -1678,6 +1678,8 @@ fn a_script_installed_while_an_old_write_handle_is_open_still_runs() {
 #[test]
 fn the_roll_up_keeps_the_session_that_holds_the_legacy_anchor() {
     let fixture = project("0");
+    // A legacy log, so adoption records a real legacy anchor in the adopting session.
+    fixture.write(".chough/transitions.jsonl", "");
     seven_archived_sessions(&fixture);
     let adopting: Value =
         serde_json::from_str(&fixture.read(".chough/sessions/legacy.json")).unwrap();
