@@ -1,0 +1,48 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-a7be57919d82da20c2f12fc1",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Advance through several stages on one native read (stage advance --to, DRIVE-9) and read native status once into done (DRIVE-2); the split of PR #69",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "advance-through-several-stages-on-one-native-read-with-stage-advance-to-and-read-native-status-once-on-the-move-into",
+  "references": {
+    "criteria": [
+      "DRIVE-9",
+      "DRIVE-2"
+    ],
+    "requirements": [
+      "REQ-cli-052"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "decided: split PR #69, a new small PR from main carries 'stage advance --to' (DRIVE-9) as one SpecSync change with failing-first tests under per-change sessions, and #69 closes only after both replacements are open, because Leif chose 'Split' (orc relay t18, 2026-11-05 21:51 MST)",
+    "decided: on the move into done the librarian reuses the gate's native read, so advance into done is 1 read (DRIVE-2), because Leif answered Q2 'Yes' (orc relay t18, 2026-11-05 21:52 MST)",
+    "rejected: porting #69's persistent archive-verdict cache here because the cache for next and status moves to kimi-perf32's #32 change (REQ-cli-053, DRIVE-15) under Leif's split; this change keeps every native read live and reuses one only within a command",
+    "decided: REQ-cli-052 for this change because REQ-cli-050 (ch-d7) and REQ-cli-051 (KNOW-29) are claimed and kimi-perf32 took REQ-cli-053; reported to orc"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Assessed #69 on main 73a7da56 with SpecSync 6.2.0 (scratch clones of Chough and Raven, interleaved A/B; numbers in the native change context)"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Complete the native change artifacts and the REQ-cli-052 delta, then send 'ready for approval' to orc t18 and wait for Leif's scope decision"
+}
