@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-finished-session-not-counted-open"
+title = "With no pointer, a session whose native change is archived on HEAD does not count toward several open sessions, with no native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-cli-037"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the pointerless finished-session test passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "--exact", "a_session_whose_native_change_is_archived_is_finished_without_a_native_read"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600

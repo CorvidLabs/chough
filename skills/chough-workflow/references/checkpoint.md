@@ -149,7 +149,9 @@ or move the existing checkpoint with `chough session adopt <key>`. A session arc
 itself at its move into done, in its own change, and the active pointer is cleared;
 then start the next one with `chough session new`. It stays open while its inbox has
 unfolded entries or release is authorized (ask for release before done). Do not stage
-another session's archive move. Subagents do not edit the
+another session's archive move. A session whose native change is already archived
+is finished too, and the next `session new` or `session use` archives it; close
+abandoned work with `chough session close <key> --reason <text>`. Subagents do not edit the
 session: they run `chough inbox add --session <key> --from <name> --kind
 observation|decision|completed|question --text <text>`, and the agent that owns the
 session runs `chough inbox fold`. Inbox entries never approve, review, consent, clear a
