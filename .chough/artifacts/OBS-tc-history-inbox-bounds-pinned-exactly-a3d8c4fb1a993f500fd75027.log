@@ -1,0 +1,13 @@
+--- stdout ---
+
+running 2 tests
+test an_inbox_entry_of_exactly_16_kib_is_read_and_one_byte_more_is_refused ... ok
+test an_inbox_holds_200_unfolded_entries_and_refuses_the_201st ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 30 filtered out; finished in 1.67s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/work/src)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.06s
+     Running tests/sessions.rs (target/debug/deps/sessions-87f16f70381f133d)
