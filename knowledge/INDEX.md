@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127 (active; `specsync change status write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127`)
 
 Archived changes (newest first; the newest 3 are hot):
 
