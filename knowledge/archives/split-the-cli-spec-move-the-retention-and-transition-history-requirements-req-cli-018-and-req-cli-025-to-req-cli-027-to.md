@@ -66,11 +66,10 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-24 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+22 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-structural-0ceefdd961ed75d53f1b3742 | passed (pruned) (by cycle time) | local-linux-x86_64 |  |
 | OBS-tc-history-0050-e2f7fb6260b9c1e33efff955 | passed (by cycle time) | local-linux-x86_64 | TC-history-0050 |
 | OBS-tc-history-0051-36287a1c1ee27b53f5e5ed6d | passed (by cycle time) | local-linux-x86_64 | TC-history-0051 |
 | OBS-tc-history-0052-bd3c30a79063f712ebd95029 | passed (by cycle time) | local-linux-x86_64 | TC-history-0052 |
@@ -92,7 +91,6 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-history-post-prune-reference-afa62c261a8ddb3016816d17 | passed (by cycle time) | local-linux-x86_64 | TC-history-post-prune-reference |
 | OBS-tc-history-retention-c450f7191a9e89e69c521e4a | passed (by cycle time) | local-linux-x86_64 | TC-history-retention |
 | OBS-tc-history-retention-revalidation-e66770734a192d4be574b9cf | passed (by cycle time) | local-linux-x86_64 | TC-history-retention-revalidation |
-| OBS-tc-history-split-keeps-requirement-wording-0f85c5fa642b0c61c2577206 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-history-split-keeps-requirement-wording |
 | OBS-tc-history-stale-receipt-age-1bde7d98d803fc1ffaa12992 | passed (by cycle time) | local-linux-x86_64 | TC-history-stale-receipt-age |
 
 ## Bugs
@@ -110,3 +108,4 @@ verification records, the retention ledger and Git stay authoritative.
 - [artifacts/cli-spec-split/blocks.py](../attachments/split-the-cli-88570080/artifacts/cli-spec-split/blocks.py)
 - [artifacts/cli-spec-split/failure-first-before-materialize.log](../attachments/split-the-cli-88570080/artifacts/cli-spec-split/failure-first-before-materialize.log)
 - [evidence/OBS-structural-0ceefdd961ed75d53f1b3742.json](../attachments/split-the-cli-88570080/evidence/OBS-structural-0ceefdd961ed75d53f1b3742.json)
+- [pruned.jsonl](../attachments/split-the-cli-88570080/pruned.jsonl)

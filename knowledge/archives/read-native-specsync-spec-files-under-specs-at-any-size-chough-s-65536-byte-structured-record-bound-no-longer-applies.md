@@ -51,11 +51,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| artifact:tc-cli-0132 | unknown (pruned) (by cycle time) | ? |  |
 
 ## Bugs
 
@@ -63,8 +60,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- `.chough/artifacts/tc-cli-0132/independent-review-5757616772.md`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
+- none
 
 ## Attachments
 
-- none
+- [pruned.jsonl](../attachments/read-native-73990521/pruned.jsonl)

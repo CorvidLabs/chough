@@ -52,8 +52,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-product-test-deeab5eb9295ffe50f291b9e | passed (by cycle time) | local-linux-aarch64 |  |
-| OBS-structural-b532801a6be2bb05fbc01858 | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-product-test-deeab5eb9295ffe50f291b9e | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
+| OBS-structural-b532801a6be2bb05fbc01858 | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-tc-cli-bug-merge-driver-2b27ad3b5858fa09b7b92b7e | passed (by cycle time) | local-linux-aarch64 | TC-cli-bug-merge-driver |
 | OBS-tc-cli-cases-split-per-change-c92088ca0501b51e0df039f7 | passed (by cycle time) | local-linux-aarch64 | TC-cli-cases-split-per-change |
 | OBS-tc-cli-knowledge-index-check-63c9738bb0bc132c8421cdef | passed (by cycle time) | local-linux-aarch64 | TC-cli-knowledge-index-check |
@@ -68,4 +68,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.json](../attachments/no-conflicting-85fd5a85/sessions/no-conflicting-files-per-change-case-files-a-knowledge-rebuild-check-and-a-bug-merge-driver-drive-12.json)

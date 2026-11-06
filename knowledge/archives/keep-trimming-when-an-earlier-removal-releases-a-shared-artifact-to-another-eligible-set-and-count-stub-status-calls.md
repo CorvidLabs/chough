@@ -45,12 +45,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-3 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-reduce-attributed-by-cycle-time-1198e495948f5f5742d9956c | passed (by cycle time) | local-linux-aarch64 | TC-cli-reduce-attributed-by-cycle-time |
-| OBS-tc-cli-reduce-shared-artifact-released-532820cadd76b87255af1384 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-reduce-shared-artifact-released |
 | OBS-tc-cli-reduce-superseded-runs-f048b3eb75f3c6ddbc342259 | passed (by cycle time) | local-linux-aarch64 | TC-cli-reduce-superseded-runs |
 
 ## Bugs
@@ -63,4 +62,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [pruned.jsonl](../attachments/keep-trimming-f534407e/pruned.jsonl)

@@ -45,14 +45,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-folded-inbox-question-in-next-6ba7f2bb72784ad17f373066 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-folded-inbox-question-in-next |
-| OBS-tc-cli-next-shows-open-questions-e0e2d02ccd995729ce44ce74 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-next-shows-open-questions |
-| OBS-tc-history-archived-session-listed-archived-4c905b8471e89e3ef4e171f2 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-archived-session-listed-archived |
-| OBS-tc-history-unrecorded-inbox-observation-warns-9ace138ec6bef9b0b5d73bba | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-history-unrecorded-inbox-observation-warns |
 
 ## Bugs
 
@@ -64,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [pruned.jsonl](../attachments/let-chough-b290bb86/pruned.jsonl)

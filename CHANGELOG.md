@@ -13,6 +13,35 @@ All notable changes to Chough are recorded here. The format follows
   grafted/alternate history, active changes and every mismatch go live. A timed-out
   prime writes no entry and keeps the existing deadline and descendant kill. The two
   exact snapshot digest passes now run concurrently without changing freshness.
+- History writes no longer refuse once the session that adopted the legacy history is
+  rolled into the vault (KNOW-29) or shelved (#141). The legacy anchor is now also
+  found in `.chough/sessions/shelved/` and in the vault's
+  `<library-dir>/attachments/*/sessions/`, with the same exact match, and a changed
+  legacy log is still refused.
+
+- REQ-cli-039 AC2 now says that a `verifying` change shows no native-check note only
+  with handoff readiness `safe`; any other or missing readiness keeps a note, as the
+  requirement's body and last criterion already said (#126, audit D10). Behavior is
+  unchanged.
+- Only the five most recent archived sessions stay in `.chough/sessions/archive/`
+  (KNOW-29, REQ-history-011). At each move into done, older ones move byte for byte into
+  `knowledge/attachments/<key>/sessions/<key>.json`, and each gets a generated summary
+  note at `knowledge/sessions/<key>.md` (REQ-cli-051). Nothing leaves Git history.
+
+- The checkpoint cap is now 1 MiB (1,048,576 bytes), up from 128 KiB, chosen from
+  measured use (DRIVE-14, REQ-cli-032):
+  - It is at least 10 times the largest per-change session and 4 times the largest
+    single checkpoint observed.
+  - At the cap, `next` and `status` measured 69 ms on macOS and 19 ms on Linux in
+    release.
+  - A test builds a checkpoint at exactly the cap and checks the budgets, and one byte
+    more is refused.
+  - REQ-cli-021's full 40/40/50 x 4 KiB stress shape now fits and is tested as written
+    (#125, audit D9).
+- New `chough session shelve <key>` (and `--legacy`) sets an oversized or unreadable
+  checkpoint aside, byte for byte, so work continues. One unreadable session no longer
+  breaks `session list`, `session new`, `session use` or another session's `next`;
+  `session list` reports it and names `shelve` (REQ-history-006).
 
 - REQ-cli-013 no longer gives the librarian an `off` default. It defers to REQ-cli-015,
   so the requirements state one librarian default, `on`, which is what the runtime

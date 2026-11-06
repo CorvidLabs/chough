@@ -45,14 +45,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-reduce-shared-artifact-released-2756f1650ab5eb23ee8ec4a6 | passed (by cycle time) | local-linux-aarch64 | TC-cli-reduce-shared-artifact-released |
-| OBS-tc-cli-vault-loose-artifacts-trimmed-474da4e40d6182199944c68f | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-loose-artifacts-trimmed |
-| OBS-tc-cli-vault-loose-file-protected-mid-apply-4bfe9381d60c5289785180d1 | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-loose-file-protected-mid-apply |
-| OBS-tc-cli-vault-loose-group-gains-released-file-4449f38c94d0f999085cff0b | passed (pruned) (by cycle time) | local-linux-aarch64 | TC-cli-vault-loose-group-gains-released-file |
 
 ## Bugs
 
@@ -64,4 +61,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [pruned.jsonl](../attachments/keep-trimming-a-a520ecd6/pruned.jsonl)

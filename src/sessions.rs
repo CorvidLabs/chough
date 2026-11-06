@@ -58,7 +58,6 @@ fn before_fold_save() {
 }
 
 /// Forgets this process's resolved session for `root`, as a fresh process would start.
-#[cfg(test)]
 fn unpin(root: &Path) {
     if let Some(map) = PINNED
         .lock()
@@ -79,6 +78,8 @@ fn pin(root: &Path, relative: &str) {
 
 pub(super) const DIR: &str = ".chough/sessions";
 const ARCHIVE: &str = ".chough/sessions/archive";
+/// Checkpoints set aside by `chough session shelve`, which only retention reads.
+const SHELVED: &str = ".chough/sessions/shelved";
 const LOCAL: &str = ".chough/local";
 const POINTER: &str = ".chough/local/active-session";
 const INBOX_LIMIT: u64 = 16_384;
@@ -105,6 +106,15 @@ pub(super) enum SessionCommand {
     Use { key: String },
     /// List open and archived sessions.
     List,
+    /// Move an oversized or unreadable checkpoint, unparsed, into `.chough/sessions/shelved/`.
+    Shelve {
+        /// The session to shelve.
+        #[arg(required_unless_present = "legacy", conflicts_with = "legacy")]
+        key: Option<String>,
+        /// Shelve the legacy `.chough/session.json` as `legacy`.
+        #[arg(long)]
+        legacy: bool,
+    },
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -294,6 +304,24 @@ pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
 /// those observations as `inbox of session <key>` (#98). Any session or entry that
 /// cannot be read is an error.
 pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
+    checkpoints(root, false)
+}
+
+/// Every checkpoint that can be read, for display only: a session that cannot be read
+/// is left out instead of failing the view (REQ-history-006, DRIVE-14); `session list`
+/// reports it. Retention keeps using the strict [`every_checkpoint`].
+pub(super) fn readable_checkpoints(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
+    checkpoints(root, true)
+}
+
+fn checkpoints(root: &Path, lenient: bool) -> Result<Vec<(String, Checkpoint)>> {
+    let read = |file: &str| -> Result<Option<Checkpoint>> {
+        match read_at(root, file) {
+            Ok(session) => Ok(Some(session)),
+            Err(_) if lenient => Ok(None),
+            Err(error) => Err(error),
+        }
+    };
     if !enabled(root)? {
         return Ok(match checkpoint::read_session(root)? {
             Session::V2(session) => vec![("checkpoint".into(), *session)],
@@ -309,13 +337,35 @@ pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>>
         } else {
             format!("session {key}")
         };
-        all.push((label, read_at(root, &file)?));
+        if let Some(session) = read(&file)? {
+            all.push((label, session));
+        }
     }
     for key in keys_in(root, ARCHIVE)? {
-        all.push((
-            format!("archived session {key}"),
-            read_at(root, &archive_file(&key))?,
-        ));
+        if let Some(session) = read(&archive_file(&key))? {
+            all.push((format!("archived session {key}"), session));
+        }
+    }
+    // A shelved checkpoint no longer drives work, but what it references stays
+    // protected: retention reads it within the 16 MiB ledger bound (DRIVE-14).
+    for key in keys_in(root, SHELVED)? {
+        if key.ends_with(".shelved") {
+            continue;
+        }
+        let file = format!("{SHELVED}/{key}.json");
+        let shelved = (|| -> Result<Checkpoint> {
+            let bytes = read_bounded_raw(&local_path(root, &file)?)?;
+            let text = String::from_utf8(bytes).with_context(|| format!("reading {file}"))?;
+            match checkpoint::parse(&text).with_context(|| format!("reading {file}"))? {
+                Session::V2(session) => Ok(*session),
+                Session::V1(_) => bail!("{file} uses schema 1"),
+            }
+        })();
+        match shelved {
+            Ok(session) => all.push((format!("shelved session {key}"), session)),
+            Err(_) if lenient => {}
+            Err(error) => return Err(error),
+        }
     }
     // Observations an unfolded inbox entry reports are what the session will hold once
     // it folds, so retention protects them now (#98, REQ-history-009).
@@ -455,11 +505,33 @@ fn publish_entry(root: &Path, file: &str, content: &str) -> Result<bool> {
 
 fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
     let content = read_bounded_record(&local_path(root, relative)?, checkpoint::SESSION_LIMIT)
-        .with_context(|| format!("reading {relative}"))?;
-    match checkpoint::parse(&content).with_context(|| format!("reading {relative}"))? {
+        .with_context(|| format!("reading {relative}"))
+        .with_context(|| shelve_hint(relative))?;
+    match checkpoint::parse(&content)
+        .with_context(|| format!("reading {relative}"))
+        .with_context(|| shelve_hint(relative))?
+    {
         Session::V2(session) => Ok(*session),
         Session::V1(_) => bail!("{relative} uses schema 1"),
     }
+}
+
+/// The recovery for a checkpoint that cannot be read (REQ-cli-032, DRIVE-14).
+pub(super) fn shelve_hint(relative: &str) -> String {
+    let command = if relative == checkpoint::SESSION {
+        "chough session shelve --legacy".to_string()
+    } else {
+        let key = relative
+            .rsplit('/')
+            .next()
+            .and_then(|name| name.strip_suffix(".json"))
+            .unwrap_or("<key>");
+        format!("chough session shelve {key}")
+    };
+    format!(
+        "{relative} cannot be read (the checkpoint cap is {} bytes); set it aside with `{command}`, then `chough session new <key>`",
+        checkpoint::SESSION_LIMIT
+    )
 }
 
 fn point(root: &Path, key: &str) -> Result<()> {
@@ -482,7 +554,11 @@ fn archive_done(root: &Path, keep: &str) -> Result<(Vec<String>, Vec<serde_json:
     let mut archived = vec![];
     let mut kept_open = vec![];
     for key in keys_in(root, DIR)? {
-        if key == keep || read_at(root, &session_file(&key))?.stage.current != "done" {
+        // An unreadable session is left where it is; `session list` reports it.
+        if key == keep
+            || !read_at(root, &session_file(&key))
+                .is_ok_and(|session| session.stage.current == "done")
+        {
             continue;
         }
         let count = unfolded(root, &key)?;
@@ -607,7 +683,20 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             for (dir, archived) in [(DIR, false), (ARCHIVE, true)] {
                 for key in keys_in(root, dir)? {
                     let file = format!("{dir}/{key}.json");
-                    let session = read_at(root, &file)?;
+                    let session = match read_at(root, &file) {
+                        Ok(session) => session,
+                        Err(error) => {
+                            sessions.push(json!({
+                                "key": key,
+                                "file": file,
+                                "readable": false,
+                                "reason": format!("{error:#}"),
+                                "recovery": format!("chough session shelve {key}"),
+                                "archived": archived,
+                            }));
+                            continue;
+                        }
+                    };
                     sessions.push(json!({
                         "key": key,
                         "file": file,
@@ -623,7 +712,165 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             }
             print_json(&json!({"schema_version":1,"active":current,"sessions":sessions}))
         }
+        SessionCommand::Shelve { key, legacy } => {
+            lock_project(root)?;
+            let (source, key) = if legacy {
+                (checkpoint::SESSION.to_string(), "legacy".to_string())
+            } else {
+                let key = key.context("name the session to shelve, or pass --legacy")?;
+                ensure_key(&key)?;
+                (session_file(&key), key)
+            };
+            shelve(root, &source, &key)
+        }
     }
+}
+
+/// Archived sessions kept in `.chough/sessions/archive/` (KNOW-29).
+const KEEP_ARCHIVED: usize = 5;
+
+/// REQ-history-011 (KNOW-29): at done, keep the five most recent archived sessions, by
+/// their native change's finalization and then key, and move older ones byte for byte
+/// into `<library-dir>/attachments/<folder>/sessions/<key>.json`. Never fails: the result
+/// is `rolled`, `unchanged`, `skipped` or `refused`.
+pub(super) fn roll_up_at_done(root: &Path) -> serde_json::Value {
+    match crate::prefs::effective(root, "librarian") {
+        Ok((value, _)) if value != "on" => {
+            return json!({"status": "skipped", "reason": "the librarian is off"});
+        }
+        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
+        Ok(_) => {}
+    }
+    roll_up(root)
+        .unwrap_or_else(|error| json!({"status": "refused", "reason": format!("{error:#}")}))
+}
+
+fn roll_up(root: &Path) -> Result<serde_json::Value> {
+    let (dir, _) = crate::prefs::effective(root, "library-dir")?;
+    let mut archived = vec![];
+    for key in keys_in(root, ARCHIVE)? {
+        // An archived session that cannot be read stays; `session list` reports it.
+        let finalized = read_at(root, &archive_file(&key))
+            .ok()
+            .and_then(|session| session.native_change)
+            .and_then(|change| crate::library::finalized_at(root, &change));
+        archived.push((finalized, key));
+    }
+    // Newest first: a later finalization, then a later key; none counts as oldest.
+    archived.sort_by(|left, right| right.cmp(left));
+    let mut moved = vec![];
+    let mut kept_back = vec![];
+    for (_, key) in archived.into_iter().skip(KEEP_ARCHIVED) {
+        let source = local_path(root, &archive_file(&key))?;
+        let target_relative = format!(
+            "{dir}/attachments/{}/sessions/{key}.json",
+            crate::attachments::attachment_folder(&key)
+        );
+        let target = local_path(root, &target_relative)?;
+        if target.exists() {
+            if fs::read(&target)? == fs::read(&source)? {
+                fs::remove_file(&source)?;
+                moved.push(key);
+            } else {
+                kept_back.push(json!({"key": key, "reason": format!("{target_relative} already holds different bytes; a move never overwrites")}));
+            }
+            continue;
+        }
+        if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::hard_link(&source, &target).with_context(|| format!("moving {key} into the vault"))?;
+        fs::remove_file(&source).with_context(|| format!("moving {key} into the vault"))?;
+        moved.push(key);
+    }
+    moved.sort();
+    Ok(if moved.is_empty() && kept_back.is_empty() {
+        json!({"status": "unchanged"})
+    } else {
+        json!({"status": "rolled", "moved": moved, "kept": kept_back})
+    })
+}
+
+/// Move `source` unparsed and byte for byte to `.chough/sessions/shelved/<key>.json`,
+/// never replacing a file, record why beside it, and clear the active pointer when it
+/// named this session (REQ-history-006, DRIVE-14).
+fn shelve(root: &Path, source: &str, key: &str) -> Result<()> {
+    use sha2::{Digest, Sha256};
+    let from = local_path(root, source)?;
+    ensure!(from.is_file(), "no {source} to shelve");
+    let bytes = read_bounded_raw(&from)?;
+    let target = format!("{SHELVED}/{key}.json");
+    let record = format!("{SHELVED}/{key}.shelved.json");
+    for file in [&target, &record] {
+        ensure!(
+            !local_path(root, file)?.exists(),
+            "{file} already exists; shelving never replaces a file"
+        );
+    }
+    fs::create_dir_all(local_path(root, SHELVED)?)?;
+    let sha256 = format!("{:x}", Sha256::digest(&bytes));
+    let readable = String::from_utf8(bytes.clone())
+        .ok()
+        .and_then(|text| checkpoint::parse(&text).ok())
+        .is_some()
+        && bytes.len() as u64 <= checkpoint::SESSION_LIMIT;
+    let reason = if bytes.len() as u64 > checkpoint::SESSION_LIMIT {
+        format!(
+            "over the checkpoint cap of {} bytes",
+            checkpoint::SESSION_LIMIT
+        )
+    } else if readable {
+        "set aside on request".to_string()
+    } else {
+        "not a readable checkpoint".to_string()
+    };
+    let note = json!({
+        "schema_version": 1,
+        "key": key,
+        "from": source,
+        "bytes": bytes.len(),
+        "sha256": sha256,
+        "cap": checkpoint::SESSION_LIMIT,
+        "reason": reason,
+        "shelved_at_unix_seconds": now()?,
+    });
+    ensure!(
+        write_new(
+            root,
+            &record,
+            &(serde_json::to_string_pretty(&note)? + "\n")
+        )?,
+        "{record} already exists; shelving never replaces a file"
+    );
+    let to = local_path(root, &target)?;
+    // A hard link refuses an existing target; then the source name goes.
+    fs::hard_link(&from, &to).with_context(|| format!("shelving {source}"))?;
+    fs::remove_file(&from).with_context(|| format!("shelving {source}"))?;
+    if pointer(root).ok().flatten().as_deref() == Some(key) {
+        let _ = fs::remove_file(local_path(root, POINTER)?);
+    }
+    unpin(root);
+    print_json(&json!({
+        "schema_version": 1,
+        "shelved": target,
+        "record": record,
+        "from": source,
+        "bytes": bytes.len(),
+        "cap": checkpoint::SESSION_LIMIT,
+        "reason": reason,
+        "next": "chough session new <key>",
+    }))
+}
+
+/// A checkpoint's raw bytes, within the 16 MiB ledger bound.
+fn read_bounded_raw(path: &Path) -> Result<Vec<u8>> {
+    let limit = 16 * 1_048_576;
+    ensure!(
+        fs::metadata(path)?.len() <= limit,
+        "{} exceeds {limit} bytes",
+        path.display()
+    );
+    Ok(fs::read(path)?)
 }
 
 fn random_id() -> Result<String> {

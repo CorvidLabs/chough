@@ -130,25 +130,25 @@ fn failed_attempt_value(view: &Value) -> Value {
 #[cfg(unix)]
 #[test]
 fn next_says_when_the_native_check_has_not_passed_for_this_tree() {
-    let fixture = project("implementing");
-    let next = fixture.ok(&["next", "--json"]);
-    let check = &next["native_check"];
-    assert_eq!(check["last_attempt"], Value::Null, "{next:#}");
-    assert_eq!(check["not_passed_for_tree"], true, "{next:#}");
-    let note = check["note"].as_str().unwrap_or_default();
-    assert!(
-        note.contains("no reason") && note.contains(&format!("specsync change check {CHANGE}")),
-        "{note:?}"
+    // REQ-cli-039 AC2 names both states (#126): each gets the same note, word for word,
+    // and the command that shows SpecSync's reason.
+    let expected = format!(
+        "The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); run `specsync change check {CHANGE}` to see it."
     );
-    let shown = text(&fixture);
-    assert!(
-        shown.contains("Native check: no attempt recorded"),
-        "{shown}"
-    );
-    assert!(
-        shown.contains(&format!("specsync change check {CHANGE}")),
-        "{shown}"
-    );
+    for state in ["approved", "implementing"] {
+        let fixture = project(state);
+        let next = fixture.ok(&["next", "--json"]);
+        let check = &next["native_check"];
+        assert_eq!(check["last_attempt"], Value::Null, "{state}: {next:#}");
+        assert_eq!(check["not_passed_for_tree"], true, "{state}: {next:#}");
+        assert_eq!(check["note"], expected.as_str(), "{state}: {next:#}");
+        let shown = text(&fixture);
+        assert!(
+            shown.contains("Native check: no attempt recorded"),
+            "{state}: {shown}"
+        );
+        assert!(shown.contains(&expected), "{state}: {shown}");
+    }
 
     // A verifying change whose last check SpecSync reports current gets no note; one
     // without readiness is covered by a_verifying_change_without_readiness_reports_freshness_unknown.
@@ -259,6 +259,56 @@ fn a_verifying_change_without_readiness_reports_freshness_unknown() {
         note.contains("unknown") && note.contains(&format!("specsync change check {CHANGE}")),
         "{note:?}"
     );
+}
+
+/// D10 (#126): REQ-cli-039's body says a bare `verifying` state never clears the
+/// not-passed statement, so its criteria must say the same. Every criterion clause that
+/// names the verifying state names its handoff readiness, and AC2, the approved or
+/// implementing criterion, says that readiness `safe` is what clears the note.
+#[test]
+fn req_cli_039_criteria_clear_the_note_only_for_safe_verifying_readiness() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("specs/cli/requirements.md");
+    let raw = std::fs::read_to_string(path).unwrap();
+    // A Windows checkout has CRLF line endings (#131), so check both forms.
+    for text in [
+        raw.replace("\r\n", "\n"),
+        raw.replace("\r\n", "\n").replace('\n', "\r\n"),
+    ] {
+        let criteria = criteria_of(&text, "REQ-cli-039");
+        assert_eq!(criteria.len(), 4, "{criteria:#?}");
+        let bare: Vec<&str> = criteria
+            .iter()
+            .flat_map(|criterion| criterion.split("; "))
+            .filter(|clause| clause.contains("verifying") && !clause.contains("readiness"))
+            .collect();
+        assert!(bare.is_empty(), "a bare verifying state: {bare:#?}");
+        let ac2 = criteria
+            .iter()
+            .find(|criterion| criterion.starts_with("With the change approved or implementing"))
+            .unwrap_or_else(|| panic!("no AC2: {criteria:#?}"));
+        assert!(
+            ac2.split("; ")
+                .any(|clause| clause.contains("verifying") && clause.contains("readiness `safe`")),
+            "AC2 does not say readiness `safe` clears the note: {ac2}"
+        );
+    }
+}
+
+/// The acceptance criteria of `requirement` in a requirements file, one string each.
+fn criteria_of(text: &str, requirement: &str) -> Vec<String> {
+    let text = text.replace("\r\n", "\n");
+    let section = text
+        .split("\n### ")
+        .find(|section| section.starts_with(&format!("{requirement}\n")))
+        .unwrap_or_else(|| panic!("no {requirement}"));
+    let (_, criteria) = section
+        .split_once("\nAcceptance Criteria\n")
+        .unwrap_or_else(|| panic!("{requirement} has no acceptance criteria"));
+    criteria
+        .lines()
+        .filter_map(|line| line.strip_prefix("- "))
+        .map(str::to_string)
+        .collect()
 }
 
 /// A failed attempt with no failing command says so instead of an empty list (#91 nit).

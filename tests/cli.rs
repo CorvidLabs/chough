@@ -282,10 +282,13 @@ fn invalid_modules_and_future_schemas_are_rejected() {
 fn oversized_records_fail_explicitly() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.write(".chough/session.json", &" ".repeat(131_073));
+    fixture.write(
+        ".chough/session.json",
+        &" ".repeat(common::CHECKPOINT_CAP + 1),
+    );
     let output = fixture.run(&["context", "--json"]);
     assert!(!output.status.success());
-    assert!(String::from_utf8_lossy(&output.stderr).contains("131072"));
+    assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
 
 fn session_padded_to(fixture: &Fixture, session: &Value, bytes: usize) -> String {
@@ -297,13 +300,13 @@ fn session_padded_to(fixture: &Fixture, session: &Value, bytes: usize) -> String
 }
 
 #[test]
-fn checkpoint_byte_bound_is_exactly_131072() {
+fn checkpoint_byte_bound_is_exactly_1048576() {
     let fixture = Fixture::new();
     fixture.init();
     let path = fixture.root().join(".chough/session.json");
     let session: Value = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
 
-    session_padded_to(&fixture, &session, 131_072);
+    session_padded_to(&fixture, &session, common::CHECKPOINT_CAP);
     let output = fixture.run(&["context", "--json"]);
     assert!(
         output.status.success(),
@@ -311,27 +314,29 @@ fn checkpoint_byte_bound_is_exactly_131072() {
         String::from_utf8_lossy(&output.stderr)
     );
 
-    let over = session_padded_to(&fixture, &session, 131_073);
+    let over = session_padded_to(&fixture, &session, common::CHECKPOINT_CAP + 1);
     let output = fixture.run(&["context", "--json"]);
     assert!(!output.status.success());
-    assert!(String::from_utf8_lossy(&output.stderr).contains("131072"));
+    assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
     assert_eq!(fs::read_to_string(&path).unwrap(), over);
 
     // A checkpoint whose content (not padding) exceeds the bound is refused too.
     let mut large = session.clone();
-    large["decisions"] = json!(
-        (0..40)
-            .map(|index| format!("decided: {index} {}", "d".repeat(3_400)))
-            .collect::<Vec<_>>()
-    );
-    assert!(serde_json::to_vec(&large).unwrap().len() > 131_072);
+    for list in ["decisions", "completed"] {
+        large[list] = json!(
+            (0..140)
+                .map(|index| format!("{list}: {index} {}", "d".repeat(4_000)))
+                .collect::<Vec<_>>()
+        );
+    }
+    assert!(serde_json::to_vec(&large).unwrap().len() > common::CHECKPOINT_CAP);
     fixture.write(
         ".chough/session.json",
         &serde_json::to_string(&large).unwrap(),
     );
     let output = fixture.run(&["context", "--json"]);
     assert!(!output.status.success());
-    assert!(String::from_utf8_lossy(&output.stderr).contains("131072"));
+    assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
 
 #[test]
@@ -438,16 +443,42 @@ fn checkpoint_capacity_fixture(history: &str) -> (Fixture, Value) {
 }
 
 fn fill_checkpoint_to_pretty_bytes(session: &mut Value, bytes: usize) {
-    let mut decisions = vec!["d".repeat(3_000); 43];
-    decisions.push(String::new());
-    session["decisions"] = json!(decisions);
-    let size = serde_json::to_string_pretty(session).unwrap().len() + 1;
-    assert!(size <= bytes && bytes - size <= 4_096);
-    session["decisions"][43] = json!("d".repeat(bytes - size));
-    assert_eq!(
-        serde_json::to_string_pretty(session).unwrap().len() + 1,
-        bytes
+    // Full-size entries across the text lists (each list holds at most 200), then one
+    // entry padded to land on exactly `bytes` pretty-printed plus a newline.
+    let lists = ["decisions", "completed", "open_questions", "blockers"];
+    let size = |session: &Value| serde_json::to_string_pretty(session).unwrap().len() + 1;
+    for list in lists {
+        session[list] = json!([]);
+    }
+    'fill: for list in lists {
+        // At most 190 per list, so a test that adds one more entry meets the byte
+        // bound, not the 200-entry list bound.
+        for _ in 0..190 {
+            if size(session) + 4_200 > bytes {
+                break 'fill;
+            }
+            session[list]
+                .as_array_mut()
+                .unwrap()
+                .push(json!("d".repeat(4_000)));
+        }
+    }
+    let last = lists
+        .iter()
+        .find(|list| session[**list].as_array().unwrap().len() < 190)
+        .unwrap();
+    session[*last]
+        .as_array_mut()
+        .unwrap()
+        .push(json!(String::new()));
+    let index = session[*last].as_array().unwrap().len() - 1;
+    let current = size(session);
+    assert!(
+        current <= bytes && bytes - current <= 4_096,
+        "{current} {bytes}"
     );
+    session[*last][index] = json!("d".repeat(bytes - current));
+    assert_eq!(size(session), bytes);
 }
 
 fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str], bound: &str) {
@@ -506,14 +537,16 @@ fn checkpoint_writer_observation_overflow_preserves_all_managed_records() {
 fn checkpoint_writer_byte_overflow_preserves_all_managed_records() {
     for history in ["empty", "selected", "legacy"] {
         let (fixture, mut session) = checkpoint_capacity_fixture(history);
-        fill_checkpoint_to_pretty_bytes(&mut session, 131_071);
+        fill_checkpoint_to_pretty_bytes(&mut session, common::CHECKPOINT_CAP - 1);
         let mut candidate = session.clone();
         candidate["decisions"].as_array_mut().unwrap().push(json!(
             "another decision that exceeds the serialized byte bound"
         ));
         candidate["awaiting_human"] = json!(["existing-one", "replacement"]);
-        assert!(serde_json::to_vec(&candidate).unwrap().len() <= 131_072);
-        assert!(serde_json::to_string_pretty(&candidate).unwrap().len() + 1 > 131_072);
+        assert!(serde_json::to_vec(&candidate).unwrap().len() <= common::CHECKPOINT_CAP);
+        assert!(
+            serde_json::to_string_pretty(&candidate).unwrap().len() + 1 > common::CHECKPOINT_CAP
+        );
         fixture.write(".chough/session.json", &session.to_string());
         assert_checkpoint_refusal_preserves_records(
             &fixture,
@@ -527,7 +560,7 @@ fn checkpoint_writer_byte_overflow_preserves_all_managed_records() {
                 "--awaiting-human",
                 "replacement",
             ],
-            "131072",
+            "1048576",
         );
     }
 }
@@ -536,7 +569,7 @@ fn checkpoint_writer_byte_overflow_preserves_all_managed_records() {
 fn checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events() {
     // An empty cursor only grows when the command actually records a gate event.
     let (fixture, mut session) = checkpoint_capacity_fixture("empty");
-    fill_checkpoint_to_pretty_bytes(&mut session, 131_072);
+    fill_checkpoint_to_pretty_bytes(&mut session, common::CHECKPOINT_CAP);
     fixture.write(".chough/session.json", &session.to_string());
     let next_action = session["next_action"].as_str().unwrap();
     let result = fixture.ok(&["checkpoint", "--next-action", next_action]);
@@ -545,10 +578,10 @@ fn checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events() {
         fs::read(fixture.root().join(".chough/session.json"))
             .unwrap()
             .len(),
-        131_072
+        common::CHECKPOINT_CAP
     );
 
-    for final_bytes in [131_072, 131_073] {
+    for final_bytes in [common::CHECKPOINT_CAP, common::CHECKPOINT_CAP + 1] {
         let (fixture, mut candidate) = checkpoint_capacity_fixture("empty");
         candidate["awaiting_human"] = json!(["existing-one", "replacement"]);
         candidate["history_cursor"]["head"] = json!("EVT-000000000000000000000000");
@@ -557,7 +590,7 @@ fn checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events() {
         initial["awaiting_human"] = json!(["existing-one", "existing-two"]);
         initial["history_cursor"]["head"] = Value::Null;
         let initial_bytes = serde_json::to_string_pretty(&initial).unwrap().len() + 1;
-        assert!(initial_bytes <= 131_072);
+        assert!(initial_bytes <= common::CHECKPOINT_CAP);
         fixture.write(".chough/session.json", &initial.to_string());
         let args = [
             "checkpoint",
@@ -567,8 +600,8 @@ fn checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events() {
             "--awaiting-human",
             "replacement",
         ];
-        if final_bytes > 131_072 {
-            assert_checkpoint_refusal_preserves_records(&fixture, &args, "131072");
+        if final_bytes > common::CHECKPOINT_CAP {
+            assert_checkpoint_refusal_preserves_records(&fixture, &args, "1048576");
             continue;
         }
         let result = fixture.ok(&args);
@@ -623,19 +656,14 @@ fn records_other_than_the_checkpoint_keep_the_65536_byte_bound() {
     assert!(String::from_utf8_lossy(&output.stderr).contains("65536"));
 }
 
+/// `init` validates the whole checkpoint before it writes anything. Since the 1 MiB cap
+/// (DRIVE-14), no command-line objective can serialize past the cap within the 128 KiB
+/// Linux per-argument limit, so the over-cap refusal is covered at the unit level by
+/// `checkpoint::tests::validation_refuses_a_checkpoint_over_the_cap`; here a module list
+/// over its bound proves that a refused `init` writes nothing.
 #[test]
 fn init_rejects_unreadable_session_sizes_before_writing() {
     let fixture = Fixture::new();
-    // JSON escapes each control character to six bytes. Keep the actual argument
-    // below Windows' process limit while still exceeding the serialized record cap.
-    let objective = "\u{0001}".repeat(22_000);
-    assert!(
-        !fixture
-            .run(&["init", "--objective", &objective])
-            .status
-            .success()
-    );
-    assert!(!fixture.root().join(".chough").exists());
     let mut arguments = vec!["init"];
     for _ in 0..17 {
         arguments.extend(["--module", "cli"]);

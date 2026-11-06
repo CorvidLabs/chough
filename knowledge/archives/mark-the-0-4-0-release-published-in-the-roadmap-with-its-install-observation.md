@@ -49,7 +49,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 | passed (by cycle time) | macos-arm64-cargo-1.95.0 |  |
+| OBS-installation-observation-eed34b5fe7378f8d4bf93fa4 | passed (pruned) (by cycle time) | macos-arm64-cargo-1.95.0 |  |
 
 ## Bugs
 
@@ -61,4 +61,6 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [artifacts/release-0.4.0/clean-install-macos-arm64.log](../attachments/mark-the-0-4-0-ec4cf279/artifacts/release-0.4.0/clean-install-macos-arm64.log)
+- [evidence/OBS-installation-observation-eed34b5fe7378f8d4bf93fa4.json](../attachments/mark-the-0-4-0-ec4cf279/evidence/OBS-installation-observation-eed34b5fe7378f8d4bf93fa4.json)
+- [sessions/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.json](../attachments/mark-the-0-4-0-ec4cf279/sessions/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.json)

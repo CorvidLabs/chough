@@ -53,11 +53,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| artifact:reporting-spec-split | unknown (pruned) (by cycle time) | ? |  |
 
 ## Bugs
 
@@ -65,8 +62,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- `.chough/artifacts/reporting-spec-split/__pycache__/blocks.cpython-313.pyc`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- none
 
 ## Attachments
 
-- none
+- [pruned.jsonl](../attachments/order-next-6b2cb7a4/pruned.jsonl)

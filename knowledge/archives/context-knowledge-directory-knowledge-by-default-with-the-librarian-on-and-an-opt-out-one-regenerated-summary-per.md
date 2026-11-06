@@ -68,110 +68,33 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-107 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20); 7 are not shown.
+23 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-0009-3ed8d9158ce4c2e514c9a2c3 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0009 |
-| OBS-tc-cli-0009-ab3a9166626b14e394e95f8c | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0009 |
-| OBS-tc-cli-0009-b069c798e5354fb3bb1bd82d | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0009 |
-| OBS-tc-cli-0009-f6150863e2e6e9ebf73cf834 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0009 |
-| OBS-tc-cli-0035-1367517021006bded5d0b8d8 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0035 |
 | OBS-tc-cli-0035-2a9b52362fe76c5b53198f09 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0035 |
-| OBS-tc-cli-0035-384c78cb966fabfa6a7f50bf | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0035 |
-| OBS-tc-cli-0035-527c2f7e8bc013a8a3f4ca5d | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0035 |
-| OBS-tc-cli-0035-5db70f3d92f62492e41f0dba | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0035 |
-| OBS-tc-cli-0036-4685007883cef943ac5bf8c1 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0036 |
 | OBS-tc-cli-0036-64978e5693e7d5cfe4426fe3 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0036 |
-| OBS-tc-cli-0036-c004fa76392c5766798f52a2 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0036 |
-| OBS-tc-cli-0036-c98d56e75b2963a51a735575 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0036 |
-| OBS-tc-cli-0036-d24b90236056a2108adae607 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0036 |
 | OBS-tc-cli-0093-0f1628926c6635ff795be3d4 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0093 |
-| OBS-tc-cli-0093-26feb8613e44ece4bcd30263 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0093 |
-| OBS-tc-cli-0093-945329c17010bba31f8e8b45 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0093 |
-| OBS-tc-cli-0093-bb24ffeebdd631f3299c9543 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0093 |
-| OBS-tc-cli-0094-59aa4b05faad338c53ebabe2 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0094 |
-| OBS-tc-cli-0094-5d1659e161bdf3141832065e | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0094 |
-| OBS-tc-cli-0094-85981234ccd7087118e2fc49 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0094 |
 | OBS-tc-cli-0094-f6ffc9cbd3b5f218378fee13 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0094 |
-| OBS-tc-cli-0095-93b0fcace1c88fb92f48ba2f | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0095 |
-| OBS-tc-cli-0095-a0820a34adca16e42cd6de39 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0095 |
-| OBS-tc-cli-0095-d946ed51c89328faee2f939c | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0095 |
 | OBS-tc-cli-0095-e245b4fb3d315d709a34aba5 | passed (by cycle time) | local-linux-x86_64 | TC-cli-0095 |
 | OBS-tc-cli-0101-6a75247decf106183d3497ee | passed (by cycle time) | local-linux-x86_64 | TC-cli-0101 |
-| OBS-tc-cli-0129-08c6e61ca8f7e0865500e390 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0129 |
-| OBS-tc-cli-0129-b02e534792e95c7c2cda92f8 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0129 |
-| OBS-tc-cli-0129-b3ac4638dccce96f0e2e9bb7 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-0129 |
-| OBS-tc-cli-0132-17c38625ba5484583682f70f | passed (pruned) (by cycle time) | repository-text | TC-cli-0132 |
-| OBS-tc-cli-0132-6b025b023ab4af885ceae705 | passed (pruned) (by cycle time) | repository-text | TC-cli-0132 |
-| OBS-tc-cli-0132-7133170065cd82d33b75fc0c | passed (pruned) (by cycle time) | repository-text | TC-cli-0132 |
-| OBS-tc-cli-archive-summary-apply-465a5ced86757278000c06b1 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
-| OBS-tc-cli-archive-summary-apply-4e665b795db0a452a23d0a8b | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
-| OBS-tc-cli-archive-summary-apply-66bed82fb1a5443eafa179ed | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
-| OBS-tc-cli-archive-summary-apply-82155e4bafc37db8c08ec58f | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
 | OBS-tc-cli-archive-summary-apply-da2c4d4c499db5883af24e36 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-apply |
 | OBS-tc-cli-archive-summary-changed-during-check-4ec903cfbb137a1de59061e9 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-changed-during-check |
-| OBS-tc-cli-archive-summary-changed-during-check-c626dc5e261b921add1afdc4 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-changed-during-check |
-| OBS-tc-cli-archive-summary-changed-during-check-cb0d00644c3c9dff8fa75073 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-changed-during-check |
-| OBS-tc-cli-archive-summary-changed-during-check-f257771731306eaa468a9b43 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-changed-during-check |
-| OBS-tc-cli-archive-summary-fails-closed-13fcf3c4eb2ed070ceb2bb86 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
-| OBS-tc-cli-archive-summary-fails-closed-1efde54edcea153ba5e0506c | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
-| OBS-tc-cli-archive-summary-fails-closed-1fdcf098947d1f78bf2c7330 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
-| OBS-tc-cli-archive-summary-fails-closed-7558f7a1a4c4c9819f3b30c3 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
 | OBS-tc-cli-archive-summary-fails-closed-d72b30ce4108e49415c5de7c | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-fails-closed |
-| OBS-tc-cli-archive-summary-no-clobber-restore-3220869c9b1ac8b90737f597 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-no-clobber-restore |
-| OBS-tc-cli-archive-summary-no-clobber-restore-b764771d79fa9ee660892b11 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-no-clobber-restore |
 | OBS-tc-cli-archive-summary-no-clobber-restore-d3e3077cf5248c787b717f92 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-no-clobber-restore |
-| OBS-tc-cli-archive-summary-preview-7a2965ffb5e1cd55a84c4200 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
-| OBS-tc-cli-archive-summary-preview-7c3c076ecddbadfe1f962fa6 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
-| OBS-tc-cli-archive-summary-preview-7ca6cc73e74550d741d35be4 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
-| OBS-tc-cli-archive-summary-preview-8d70acfb35fcf5f13d883721 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
 | OBS-tc-cli-archive-summary-preview-e67e6f03b322b7393cca7836 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-preview |
 | OBS-tc-cli-archive-summary-protection-before-each-removal-cd9e1a04f32a4ed60a941ef3 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-protection-before-each-removal |
-| OBS-tc-cli-archive-summary-protection-during-check-391412cff755ea5737a4e34c | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-protection-during-check |
 | OBS-tc-cli-archive-summary-protection-during-check-7588c7c1387b68b0bf072b69 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-protection-during-check |
-| OBS-tc-cli-archive-summary-protection-during-check-baa83cddf481b7c16e20d78a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-protection-during-check |
 | OBS-tc-cli-archive-summary-stale-holds-82de911df3bd950e12251de2 | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-stale-holds |
-| OBS-tc-cli-archive-summary-stale-holds-ae6f1230a1bc306437780218 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-stale-holds |
-| OBS-tc-cli-archive-summary-stale-holds-af6f23eeea8e863c0884fc2c | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-stale-holds |
-| OBS-tc-cli-archive-summary-unfiltered-head-compare-4222400569e288c51aa6f00b | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-unfiltered-head-compare |
 | OBS-tc-cli-archive-summary-unfiltered-head-compare-7232c7452c74d16660d1082a | passed (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-unfiltered-head-compare |
-| OBS-tc-cli-archive-summary-unfiltered-head-compare-d9066a385092e5a5979081c0 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-unfiltered-head-compare |
-| OBS-tc-cli-archive-summary-unfiltered-head-compare-ebf6da714dac1c9ea966919c | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-archive-summary-unfiltered-head-compare |
-| OBS-tc-cli-build-reference-from-main-known-outdated-259350e132b7653f28360841 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-build-reference-from-main-known-outdated |
-| OBS-tc-cli-build-reference-from-main-known-outdated-5dc5a70277cabae078e043d9 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-build-reference-from-main-known-outdated |
-| OBS-tc-cli-build-reference-from-main-known-outdated-bf9b30eaf92df4c34f1778f4 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-build-reference-from-main-known-outdated |
-| OBS-tc-cli-build-reference-from-main-known-outdated-f6a3555caac191d0785a4018 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-build-reference-from-main-known-outdated |
-| OBS-tc-cli-checkpoint-byte-bound-is-131072-25a75f5aea7450ebe37c7802 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-byte-bound-is-131072 |
-| OBS-tc-cli-checkpoint-byte-bound-is-131072-464f9d3da799c723017df706 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-byte-bound-is-131072 |
-| OBS-tc-cli-checkpoint-byte-bound-is-131072-6d4b9b6a2aec8a9a0aa5857b | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-byte-bound-is-131072 |
 | OBS-tc-cli-checkpoint-byte-bound-is-131072-e45a03be0566afedcd5e8674 | passed (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-byte-bound-is-131072 |
-| OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-7464463770617679090af886 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-merge-enforces-the-raised-bounds |
-| OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-a8d1b139f61565cfb232e5fe | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-merge-enforces-the-raised-bounds |
-| OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-b5fe0b763f165e65a7e21a03 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-merge-enforces-the-raised-bounds |
 | OBS-tc-cli-checkpoint-merge-enforces-the-raised-bounds-bbbba51616bb96662ecbf121 | passed (by cycle time) | local-linux-x86_64 | TC-cli-checkpoint-merge-enforces-the-raised-bounds |
-| OBS-tc-cli-knowledge-archive-entries-07fe67be8d01a410644eb428 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
-| OBS-tc-cli-knowledge-archive-entries-111732ca4323ff97f33977fe | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
 | OBS-tc-cli-knowledge-archive-entries-3e547c891bdd87505d33204c | passed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
-| OBS-tc-cli-knowledge-archive-entries-ceaf793cb805ca82e5863cdf | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
-| OBS-tc-cli-knowledge-archive-entries-f347e4fb75baa237ba5f9834 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-archive-entries |
-| OBS-tc-cli-knowledge-entries-bounded-2bdea46c307cae144e6a8971 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
-| OBS-tc-cli-knowledge-entries-bounded-379aec47d92f89965f92691e | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
-| OBS-tc-cli-knowledge-entries-bounded-51b136df67d6e1131788805f | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
-| OBS-tc-cli-knowledge-entries-bounded-a03dbf6f531ab6dcd2f3fd33 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
 | OBS-tc-cli-knowledge-entries-bounded-eb6e436460c6af0a8195b1f5 | passed (by cycle time) | local-linux-x86_64 | TC-cli-knowledge-entries-bounded |
-| OBS-tc-cli-librarian-default-on-knowledge-2fffc728277a81892fe0c9c4 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
-| OBS-tc-cli-librarian-default-on-knowledge-67de34fac86cd0f903bd7b9a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
 | OBS-tc-cli-librarian-default-on-knowledge-7535a6b430292ca1f5f25c6f | passed (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
-| OBS-tc-cli-librarian-default-on-knowledge-83615f14bffb47447a8b38ab | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
-| OBS-tc-cli-librarian-default-on-knowledge-9676933c1db920efc1e5c0e5 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-librarian-default-on-knowledge |
-| OBS-tc-cli-next-searches-large-context-md-7522268689ec5bb335d9c36e | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-next-searches-large-context-md |
 | OBS-tc-cli-observation-pointer-bound-is-400-59674733f4408c54905a3f36 | passed (by cycle time) | local-linux-x86_64 | TC-cli-observation-pointer-bound-is-400 |
-| OBS-tc-cli-observation-pointer-bound-is-400-b9590f584b460f57b7b52c2a | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-observation-pointer-bound-is-400 |
-| OBS-tc-cli-observation-pointer-bound-is-400-dafdc63a756eb8e18472c076 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-observation-pointer-bound-is-400 |
-| OBS-tc-cli-observation-pointer-bound-is-400-de31d5ca87a0e50afbeb57a9 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-observation-pointer-bound-is-400 |
-| OBS-tc-cli-slug-snapshot-allocation-2dac9525378acd49c66efe68 | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-slug-snapshot-allocation |
-| OBS-tc-cli-slug-snapshot-allocation-2db0d1374c9032b68f8d90ff | passed (pruned) (by cycle time) | local-linux-x86_64 | TC-cli-slug-snapshot-allocation |
+| OBS-tc-cli-slug-snapshot-allocation-c6398e982d7c93a9b8ad3032 | passed (by cycle time) | local-linux-x86_64 | TC-cli-slug-snapshot-allocation |
 
 ## Bugs
 
@@ -188,3 +111,4 @@ verification records, the retention ledger and Git stay authoritative.
 - [evidence/OBS-tc-cli-0132-6b025b023ab4af885ceae705.json](../attachments/context-2cfeff24/evidence/OBS-tc-cli-0132-6b025b023ab4af885ceae705.json)
 - [evidence/OBS-tc-cli-0132-7133170065cd82d33b75fc0c.json](../attachments/context-2cfeff24/evidence/OBS-tc-cli-0132-7133170065cd82d33b75fc0c.json)
 - [evidence/handoff-cold-start-frozen-pair-1.json](../attachments/context-2cfeff24/evidence/handoff-cold-start-frozen-pair-1.json)
+- [pruned.jsonl](../attachments/context-2cfeff24/pruned.jsonl)

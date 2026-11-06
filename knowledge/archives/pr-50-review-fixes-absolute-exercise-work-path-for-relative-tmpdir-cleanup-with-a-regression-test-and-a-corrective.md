@@ -52,11 +52,11 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/OBS-slug-validation-allocation-18b3c7409ad62ef510b47c92.log` | 66c97678f658caf414a92e6fa597b8962de7c7bcc1c6da18cd777b8fd8ab0eb9 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
 | `.chough/artifacts/OBS-tc-cli-0032-0d8c2b77cca109e7ccc7675e.log` | 2b8398a434d6c5e1823f324b246aa58d7ec037b0dfd8a8fbc95f8b1b8878aba7 | working tree |
 | `.chough/artifacts/OBS-tc-cli-0089-native-dedupe-final-c2d534c09d7edc762d00c77e.log` | 783e1cfa250461adacfc6ba6d57e5f829bcc4636de0df396ae722e5658d74875 | working tree |
-| `.chough/artifacts/OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21.log` | 749c15741c82c5270bc83dbb834ea7a45a98073097eb0f5a843df22419483a92 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-0089-native-dedupe-post-fix-a5c8722b67c67493adc39f21.log` | 749c15741c82c5270bc83dbb834ea7a45a98073097eb0f5a843df22419483a92 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
 | `.chough/artifacts/OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266.log` | 843ee5107e40f7800e9fb8430dbf0922574655dbd67863027c17b5f7ed2d1a0f | working tree |
-| `.chough/artifacts/OBS-tc-cli-0094-b36b0ba7e05a14833ddbe65f.log` | 9b6d1898286fa92bebaa2a2278ae28b0239c6b97319a1089eef692c36015b752 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-0094-b36b0ba7e05a14833ddbe65f.log` | 9b6d1898286fa92bebaa2a2278ae28b0239c6b97319a1089eef692c36015b752 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
 | `.chough/artifacts/OBS-tc-cli-0100-native-budget-final-2343eac9d11e7c633b0fee52.log` | 991ba3fc34fff53ec0b89b60944ee3bc3fac6b2304af604bfa167af55dd0e7de | working tree |
-| `.chough/artifacts/OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37.log` | 3b12f013b4e492aa22074ce72edda39c068dac7fff790677ea840bfe29a9bc43 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-0100-native-budget-post-fix-7015f657e20bfdef0f4edd37.log` | 3b12f013b4e492aa22074ce72edda39c068dac7fff790677ea840bfe29a9bc43 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
 | `.chough/artifacts/OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777.log` | 035263b7adb11b32b3a180903726df83b51732abc0f75139cc134dae9830b2d4 | working tree |
 | `.chough/artifacts/OBS-tc-cli-0120-76a960d09d62f9e548d773cf.log` | d2b234f1e42fc289ad8629ccc251c933163b7052c07dc56cc7db78137292b3d4 | working tree |
 | `.chough/artifacts/OBS-tc-cli-0120-a8f83f0b745b921305211bfd.log` | a9b72d3209cdb1499eb650c938912208fef7de615b40b19259df32ad147ab730 | working tree |
@@ -68,84 +68,84 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/OBS-tc-cli-0131-77a1de3784d43a441c697247.log` | c911fe6e459b98b58519c4448b98e7c8e8f6b8ef93092e5a82597dbd3ae78d4e | working tree |
 | `.chough/artifacts/OBS-tc-cli-a-later-not-run-keeps-an-unlinked-failure-refused-9fe14fa45436050117427a42.log` | 96d888abbc30f4d650a70422df50c6304b441f9eea11d8b78527c76981c61610 | working tree |
 | `.chough/artifacts/OBS-tc-cli-a-linking-bug-lifts-the-unlinked-failure-refusal-311ed531d2a1e8166b12e4a3.log` | 00d336fc942633cf3752c64c36e502d6017671b2d1d7fc111dcec32b2b03df9f | working tree |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-163aee4f748898deb7dee104.log` | 570c8c28227f8e2d30f92bf2d3adb20f105537dcf1b0ee9ac6278313b6f1e7de | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-2ca6ca560e4ba56392e2a4d2.log` | 650048110839b97beb3ecc168c59b0044a6e2b2e9778715f38e7670637d39af3 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-3c43792fa4793035ff7cb203.log` | 30eb1eae037c11b8c06d71e941511a635c889279529910d31e0e0cd3c918e82e | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe.log` | 9e715921ea0ccc149d9f8bb21bc001e4d1c7744f447f227c001f60ab0973498d | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-7308eea0a55781c8831ade51.log` | 6e3de0c8abc9fa094f6191026e0c5fd38f0e9b44c9745afa5d12e0c1104b2291 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-809454a22a0dcd22dac3987f.log` | 11c8984d48c7d863202e4eaff06c2acf57d3f9fd91007379090dad13b08e9572 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-9ee6d6d2e80829306188c6b7.log` | c14a2a36cadb6c2a32e7fbb8ae31b5b861860313c07f79c912db79307f110e8e | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-a7cd062c44c5685362a8adeb.log` | 81843f1b447a00c520b2b1f2a231298616d35645deb3260c002c4f4eb58e4e71 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-edf66796f0c8d203c9710485.log` | 4fe975a9883c7b618de563d91f491963a44c880e3fa6c1bb6cb362dc7e4f7d98 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-163aee4f748898deb7dee104.log` | 570c8c28227f8e2d30f92bf2d3adb20f105537dcf1b0ee9ac6278313b6f1e7de | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-2ca6ca560e4ba56392e2a4d2.log` | 650048110839b97beb3ecc168c59b0044a6e2b2e9778715f38e7670637d39af3 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-3c43792fa4793035ff7cb203.log` | 30eb1eae037c11b8c06d71e941511a635c889279529910d31e0e0cd3c918e82e | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-3c6ec4736753c2c3a26a1ebe.log` | 9e715921ea0ccc149d9f8bb21bc001e4d1c7744f447f227c001f60ab0973498d | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-7308eea0a55781c8831ade51.log` | 6e3de0c8abc9fa094f6191026e0c5fd38f0e9b44c9745afa5d12e0c1104b2291 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-809454a22a0dcd22dac3987f.log` | 11c8984d48c7d863202e4eaff06c2acf57d3f9fd91007379090dad13b08e9572 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-9ee6d6d2e80829306188c6b7.log` | c14a2a36cadb6c2a32e7fbb8ae31b5b861860313c07f79c912db79307f110e8e | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-a7cd062c44c5685362a8adeb.log` | 81843f1b447a00c520b2b1f2a231298616d35645deb3260c002c4f4eb58e4e71 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-agent-native-workflow-upgrade-edf66796f0c8d203c9710485.log` | 4fe975a9883c7b618de563d91f491963a44c880e3fa6c1bb6cb362dc7e4f7d98 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
 | `.chough/artifacts/OBS-tc-cli-bug-add-accepts-values-that-start-with-two-hyphens-916110763b00ec6ddf3afb73.log` | 41966757c0768cc0c293aaa6f22e4e931b6ebf1a25c0f1c296751ffa0bb5f605 | working tree |
 | `.chough/artifacts/OBS-tc-cli-exercise-cleanup-handles-a-relative-tmpdir-82a23fd7bb3322dcca50af6f.log` | 04134df8fb9ecd3adb685f7440fb262ffeec8e2ee50d39f171f572216a3f5626 | working tree |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-32e4febe27a214b7b4dd215f.log` | 8bf1e74eafa44ee90cf70c890711dd141ea20692d76035276068f82ede4609b7 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-40b0753b89cbc28fd20232fb.log` | 8eb6a76a051424d55856651905bbeac2767d00512a736f6c53c36621d043f9e3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-5027937230e8fc6b8f8fe026.log` | 2e8d05110786b1019af915c7e6d25d51e0884fdd78daf750d6fa603b36e5bb6a | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-55a07b5d3b7fcaeb73024f67.log` | 7205e22091a0ddfa7ef98749134d7fcb13d7369485e453a4092cba4c43e7814f | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-83ed480848ed05eed0f858b5.log` | 05debbfd4d2308a2d582d2cf31b7a0daf3e2b51aa96ba24e296fdaefc70e105f | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-8420defcd1420d1edccf6ccc.log` | 3d4f81c40890e6f6314080b359293b2dab9ecf9f0164a0c0101f77e0125aca28 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-9cf382f6111e3a638bd5c247.log` | e563208ea3ae61ed9d4261281f925f598a48de520250640228fbd2b95a0feaaf | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-bfa908357161a9b521969842.log` | 5f9158777a25af2fdfb70be7f9f82390b51fd343ac244ba9ac0e75e8befccaf3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-c4f32d29bd66502a82da2f41.log` | c1b9816e30f057d8895284ea65a3e91d95ebb68ec3482adce8115cbdfb013c0a | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-d475b0843a0ba7796e6c1ffb.log` | 55f7e5eb7eb30812b7383d9538cbdcfd90b4e4852bc1773122329a865a60db35 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-adoption-e92ef456df9bb306122e5c49.log` | 9e621e6837524779f6b82d86a4666af08bd5096a67ea85e4d7502f9714c10242 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-0ece96daf9b77de4c0ac676f.log` | 6af5c79f8c2194e13ed12338836ca2816e33c3f4a91a8c17e0e0569d4ae09143 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-3860fc0fb54445c84f9ae0a4.log` | 1427e465907c3866b07b4522c497bd3abcb58a7755157abe5caaf1e5cf459cd2 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-40e498cd99373968597f550e.log` | 04c7ed1e78d6cf3025caa2c453485fce64cdab50195799f162bcbc185a33399a | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-44d2e1926427388937d27ab5.log` | c83a30a378424db880f9a1d611af2c7f4743e29667bda6ba96cbb1211e6267fd | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-6ea4581992d26440dd2d81cb.log` | 3f700a6b18a29c4c5818ad620dfa5913fc8dc87ec7ce9740c0d53dbdb5650c22 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-720a18f13d4ea333e44d5565.log` | 7553423870f9e49a6a7706a1d238fc637cc8576d3a648e4a9207d5ca44d07430 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-781c22fe65091afac3bd216f.log` | ab8d1d39278537f8daad8b3fc1756841866e4f1693ac582f44b0bc06cf7fc9f8 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-853995519f1c7f03f4ce14c8.log` | a9d6ab4277c1c26da09ee9bee62e4fa364d91df19789f7342ace72e958fed509 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-8b1bdc05a3bcff11bb9e2104.log` | f9c0de2daf09d59eebfd90589feaa23ce2feaade861247081d4412b4aac4cb87 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-dd01913f7046f56559fbd7c0.log` | c4c1925d50120d933ee0cb1ed9d48020f8c5cd381779b025f298e38ddab39fff | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-bounds-fe9cb2e548297ac53c0d298a.log` | ebd4ee5ff9e507f129fa7f640264273d38ee73a6bb5b8cd7d1e88ea6dbc4e40d | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-branches-15c9c8c7fe078a02fc0a9952.log` | 96c0f070d5247abf26645b98bdced01a26f9d8f8de25f51e80dd885d0ed9363b | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-branches-1d4d6f604b568061203b425a.log` | be0e9c5d4952790c5bf06bcdbef3f39c05439c545908ed4bbaf424dd4aae5582 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-branches-3079fdbc2054b7f009bb2d99.log` | 1cd75915fb6e0926198c223fff6d1b27d3ecff664662d82e7e2d56797db5cccb | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-branches-37206f9c17257a14cea2d4bc.log` | 6f04cafe82c760116af3e5dfc6099a7caf93e6c16d7426d488acdd0af7ce2b17 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-branches-3f0c0e57694e462991c42e03.log` | 80204737ed973d421b399c335dabbdfe8fe3162e0974f2d1dff5d6f2cc6e4886 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-branches-711de045b9208f05174f4f6f.log` | d93f15864085a425e25f24092803fb125ba64bf9811544b415654c8a2a6c5947 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-branches-a583af0dc8d289a8bc85e974.log` | 81bf4020ffdec354e1a5e0f2035f1c2ed6a39c53634e0c21bb361edc72bee966 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-32e4febe27a214b7b4dd215f.log` | 8bf1e74eafa44ee90cf70c890711dd141ea20692d76035276068f82ede4609b7 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-40b0753b89cbc28fd20232fb.log` | 8eb6a76a051424d55856651905bbeac2767d00512a736f6c53c36621d043f9e3 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-5027937230e8fc6b8f8fe026.log` | 2e8d05110786b1019af915c7e6d25d51e0884fdd78daf750d6fa603b36e5bb6a | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-55a07b5d3b7fcaeb73024f67.log` | 7205e22091a0ddfa7ef98749134d7fcb13d7369485e453a4092cba4c43e7814f | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-83ed480848ed05eed0f858b5.log` | 05debbfd4d2308a2d582d2cf31b7a0daf3e2b51aa96ba24e296fdaefc70e105f | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-8420defcd1420d1edccf6ccc.log` | 3d4f81c40890e6f6314080b359293b2dab9ecf9f0164a0c0101f77e0125aca28 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-9cf382f6111e3a638bd5c247.log` | e563208ea3ae61ed9d4261281f925f598a48de520250640228fbd2b95a0feaaf | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-bfa908357161a9b521969842.log` | 5f9158777a25af2fdfb70be7f9f82390b51fd343ac244ba9ac0e75e8befccaf3 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-c4f32d29bd66502a82da2f41.log` | c1b9816e30f057d8895284ea65a3e91d95ebb68ec3482adce8115cbdfb013c0a | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-d475b0843a0ba7796e6c1ffb.log` | 55f7e5eb7eb30812b7383d9538cbdcfd90b4e4852bc1773122329a865a60db35 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-adoption-e92ef456df9bb306122e5c49.log` | 9e621e6837524779f6b82d86a4666af08bd5096a67ea85e4d7502f9714c10242 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-0ece96daf9b77de4c0ac676f.log` | 6af5c79f8c2194e13ed12338836ca2816e33c3f4a91a8c17e0e0569d4ae09143 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-3860fc0fb54445c84f9ae0a4.log` | 1427e465907c3866b07b4522c497bd3abcb58a7755157abe5caaf1e5cf459cd2 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-40e498cd99373968597f550e.log` | 04c7ed1e78d6cf3025caa2c453485fce64cdab50195799f162bcbc185a33399a | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-44d2e1926427388937d27ab5.log` | c83a30a378424db880f9a1d611af2c7f4743e29667bda6ba96cbb1211e6267fd | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-6ea4581992d26440dd2d81cb.log` | 3f700a6b18a29c4c5818ad620dfa5913fc8dc87ec7ce9740c0d53dbdb5650c22 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-720a18f13d4ea333e44d5565.log` | 7553423870f9e49a6a7706a1d238fc637cc8576d3a648e4a9207d5ca44d07430 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-781c22fe65091afac3bd216f.log` | ab8d1d39278537f8daad8b3fc1756841866e4f1693ac582f44b0bc06cf7fc9f8 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-853995519f1c7f03f4ce14c8.log` | a9d6ab4277c1c26da09ee9bee62e4fa364d91df19789f7342ace72e958fed509 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-8b1bdc05a3bcff11bb9e2104.log` | f9c0de2daf09d59eebfd90589feaa23ce2feaade861247081d4412b4aac4cb87 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-dd01913f7046f56559fbd7c0.log` | c4c1925d50120d933ee0cb1ed9d48020f8c5cd381779b025f298e38ddab39fff | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-bounds-fe9cb2e548297ac53c0d298a.log` | ebd4ee5ff9e507f129fa7f640264273d38ee73a6bb5b8cd7d1e88ea6dbc4e40d | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-15c9c8c7fe078a02fc0a9952.log` | 96c0f070d5247abf26645b98bdced01a26f9d8f8de25f51e80dd885d0ed9363b | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-1d4d6f604b568061203b425a.log` | be0e9c5d4952790c5bf06bcdbef3f39c05439c545908ed4bbaf424dd4aae5582 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-3079fdbc2054b7f009bb2d99.log` | 1cd75915fb6e0926198c223fff6d1b27d3ecff664662d82e7e2d56797db5cccb | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-37206f9c17257a14cea2d4bc.log` | 6f04cafe82c760116af3e5dfc6099a7caf93e6c16d7426d488acdd0af7ce2b17 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-3f0c0e57694e462991c42e03.log` | 80204737ed973d421b399c335dabbdfe8fe3162e0974f2d1dff5d6f2cc6e4886 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-711de045b9208f05174f4f6f.log` | d93f15864085a425e25f24092803fb125ba64bf9811544b415654c8a2a6c5947 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-a583af0dc8d289a8bc85e974.log` | 81bf4020ffdec354e1a5e0f2035f1c2ed6a39c53634e0c21bb361edc72bee966 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
 | `.chough/artifacts/OBS-tc-cli-history-branches-af8a1be077b88571650a8232.log` | 7a291e202d2832395fa92c9b4fd853019836b70323f2eb66b5928f30887bb8c4 | Git ebe90cadbccd3f656a642b38205f4c70f3e677ca |
-| `.chough/artifacts/OBS-tc-cli-history-branches-d7943501c417828e209b76c4.log` | d0d13a22bdf3f8f39bf8dda5734cb015faa15b38e5ae9d5f3e4a22bfaa2aafc0 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-history-branches-df08dbceeb00e4ad0a17e062.log` | 6d9f1dea0f7a2626846817512cad46da897d243c19d6f1a63d0779c8474f7eaf | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-branches-f96f12df60db99b954afff2c.log` | b6fef15419cfa03f624348c46ba364810464de100da51862bb49f65cb38df3fd | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-4df22e6050e16e7c819d319d.log` | 18e92c72ee79e39fa0c4dc2a3d8314d2c5fcd39bd2240d7c53cbc5b372b88a48 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-5f7301cffac64ea2405888de.log` | 5474da68323c90635ab245ee9fafa8adc847bb0b0ac6bd306476571c8ec7eae3 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-6cf7353fc9ca752e41894764.log` | e47e8259e48e50979ba5b258174cb93ba41732c5595ec6e8429b4580b5b944f9 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-6f261b86ad04520ad0f63891.log` | b5f63794d2362337a692c98a7d4d99242540f0eea9ca1b44b0fa5d4db52fe9be | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-cdec3993f9914bc67cefc3da.log` | 18c3eb86227d61754e5ffea33e77e1a7e065bb1ff9dbac88607c7cc4b2d3bd78 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-dc8af9fdb243d5221cdbdceb.log` | 5f2666ce71fc4bec7eb0dae622b936b6a8006d8de272f8000806a713d96196ab | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-faca2bfb0026c5c10065385b.log` | 11e2908223e8d2d0b2e77d27a3159058a46f40e39bf2a58881a06627f1fed592 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-19c5a63c59b224f9daf4718e.log` | d099348fd7bd63a2d4b4e2fa37a276dc3801af6dd82200ce6cad3bb14a02dae5 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-32b6b26c03afb916ea23c6b5.log` | 610fd0bda74d0348edda1f67b95790ec2b7e32a3c3813f636750dd8d9f7f05a9 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56.log` | e61e75eae5bdb0c3e4afe93da86c2c0f5c950a4f028aececa8950be0d84246c4 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-9cddd832da628693eae81ccd.log` | 5beeb2ad1931bd13f866d25126bba1a7bb3a8870fbbc26a7623ca85f09e30056 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-cee05ef5ee8517f7a3639614.log` | a3087780289db6771fe9fed332d8e0ab7d23341a207c274b3f292579c773ec6a | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-d9a06c26aa0da0cd8e6d0af9.log` | 2bd098462be62dd1a0e2e66479cb0d8d6adeb77e1a7792f239309589b2de47ca | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-e23c5439bb0746ed9a4a04d5.log` | 21150703c0179eeeed232d0daa0cd7eb83586af2cbfdd17c9241df55bcb2b759 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-060ab8ff82944a93753784db.log` | ed0fd1d16f5bea95c5559dc9232b72bd03dc89fc6a9aa86530a4b718698076d2 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-4f9244f4d002a56f2ef55abc.log` | 27f925aff84713106056c1ca29af8899f88ca9c03a8676faaaab43867fe8fc59 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-4fd40efecc92433cfdb1554c.log` | 8138403f6d1284dda8f18294c34f8a23c9b4c144bccc4f1125daf844f9dd15fd | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922.log` | 2127b67d8f20b640fe71716b9af5fc65d9fb7d2ac868157835526fc9a04d21ba | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-8833a779115997a69edaa6dd.log` | c777dcb6ef9cedca2b6184fdd8f9d19d91d1c5ddef0bac4da75a4adcc9199ec3 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-987e5358b4e94ac0a3bc089b.log` | 68827824efb0a694fb6be1a322da94b822dfa4436f3accc528d5858c8811f2f1 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-98c903ee915cdf531ac636da.log` | 5968050e83a824675628a16345017d93e19db9802e8fccbfa57545fd7974b18a | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-c40f36e941b14feeb466cead.log` | c0d66bc56ab0b6485f93480a56aea4cafb1093d0656357fa83a4772e9692fb8c | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-105b08a6aabfeee26e1c488d.log` | 36463e1b8872458e2e248e6471817847f7d29ef14de323d4c00c485287074331 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-226b4e8ec38dccfc2fa1b76f.log` | d2493b45a71429d2611f8b633c07ee1d2c415b270d8f35e26e026df1731fed03 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-687b0e103d68f14c173b3cb4.log` | f93ef2e505af011fb25f8c7679796b8bf34b275aabf893a59690572168dfef6a | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-9777c1521a8529bbc801e17f.log` | 7941f04b7eacd35a7727e74948c7399e3675d7c435c75eb229dbac853ed30488 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-c85bad9f9661b7fa157092e9.log` | 1d3d113dbfda9e8137720d5bbaae80b0ab9f36b72f7b87e6c588377745212e63 | Git 81cf984747225e59ac520dd3ce545fb63dfc882f |
-| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-e239c867bf12249ef9a834f8.log` | 70e4ebb912829938665a613f76a8177a2384fec44c7dd490fa113fa3b344f0d7 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-retention-0884ced5b5b7c5bc4964c170.log` | 77fd9058e1b1e82010be977769f864f290e5dbf7407c1bbc43f8a02ab4944447 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-retention-1e08823558599f0fbbb2bb78.log` | 0d58e37e078cc794bcc63d66ee1925489f8aede43894a094519c28a3211e1c33 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-retention-275895cd29df141785b95f80.log` | 22d2f27a58efe68da2de9d071eb0db8c1daf000aa846ec9cbf133ad126050c27 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-retention-27afde686711c10c3ffb4420.log` | ef66c8a3383102131ed670981ded5baf092773f9f09d47411c0c2f8e0a67fa3a | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
-| `.chough/artifacts/OBS-tc-cli-history-retention-5dec264cea1663509a5fbf11.log` | f70ddb6c710eee9c87b977d4cf565649db2fa87dd59223d777019fbaac584575 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
-| `.chough/artifacts/OBS-tc-cli-history-retention-87883da5845bf1a09ea09ce2.log` | a752e57047c2e054750f7cfe2098f8718906a3bd6cf9fc3af8ee6d861556a8b6 | Git 4f6a058f7bfdac40c5c8590207eee90a49505b4e |
+| `.chough/artifacts/OBS-tc-cli-history-branches-d7943501c417828e209b76c4.log` | d0d13a22bdf3f8f39bf8dda5734cb015faa15b38e5ae9d5f3e4a22bfaa2aafc0 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-df08dbceeb00e4ad0a17e062.log` | 6d9f1dea0f7a2626846817512cad46da897d243c19d6f1a63d0779c8474f7eaf | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-branches-f96f12df60db99b954afff2c.log` | b6fef15419cfa03f624348c46ba364810464de100da51862bb49f65cb38df3fd | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-4df22e6050e16e7c819d319d.log` | 18e92c72ee79e39fa0c4dc2a3d8314d2c5fcd39bd2240d7c53cbc5b372b88a48 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-5f7301cffac64ea2405888de.log` | 5474da68323c90635ab245ee9fafa8adc847bb0b0ac6bd306476571c8ec7eae3 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-6cf7353fc9ca752e41894764.log` | e47e8259e48e50979ba5b258174cb93ba41732c5595ec6e8429b4580b5b944f9 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-6f261b86ad04520ad0f63891.log` | b5f63794d2362337a692c98a7d4d99242540f0eea9ca1b44b0fa5d4db52fe9be | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-cdec3993f9914bc67cefc3da.log` | 18c3eb86227d61754e5ffea33e77e1a7e065bb1ff9dbac88607c7cc4b2d3bd78 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-dc8af9fdb243d5221cdbdceb.log` | 5f2666ce71fc4bec7eb0dae622b936b6a8006d8de272f8000806a713d96196ab | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-closing-reset-age-faca2bfb0026c5c10065385b.log` | 11e2908223e8d2d0b2e77d27a3159058a46f40e39bf2a58881a06627f1fed592 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-19c5a63c59b224f9daf4718e.log` | d099348fd7bd63a2d4b4e2fa37a276dc3801af6dd82200ce6cad3bb14a02dae5 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-32b6b26c03afb916ea23c6b5.log` | 610fd0bda74d0348edda1f67b95790ec2b7e32a3c3813f636750dd8d9f7f05a9 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56.log` | e61e75eae5bdb0c3e4afe93da86c2c0f5c950a4f028aececa8950be0d84246c4 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-9cddd832da628693eae81ccd.log` | 5beeb2ad1931bd13f866d25126bba1a7bb3a8870fbbc26a7623ca85f09e30056 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-cee05ef5ee8517f7a3639614.log` | a3087780289db6771fe9fed332d8e0ab7d23341a207c274b3f292579c773ec6a | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-d9a06c26aa0da0cd8e6d0af9.log` | 2bd098462be62dd1a0e2e66479cb0d8d6adeb77e1a7792f239309589b2de47ca | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-frozen-reference-aliases-e23c5439bb0746ed9a4a04d5.log` | 21150703c0179eeeed232d0daa0cd7eb83586af2cbfdd17c9241df55bcb2b759 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-060ab8ff82944a93753784db.log` | ed0fd1d16f5bea95c5559dc9232b72bd03dc89fc6a9aa86530a4b718698076d2 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-4f9244f4d002a56f2ef55abc.log` | 27f925aff84713106056c1ca29af8899f88ca9c03a8676faaaab43867fe8fc59 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-4fd40efecc92433cfdb1554c.log` | 8138403f6d1284dda8f18294c34f8a23c9b4c144bccc4f1125daf844f9dd15fd | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922.log` | 2127b67d8f20b640fe71716b9af5fc65d9fb7d2ac868157835526fc9a04d21ba | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-8833a779115997a69edaa6dd.log` | c777dcb6ef9cedca2b6184fdd8f9d19d91d1c5ddef0bac4da75a4adcc9199ec3 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-987e5358b4e94ac0a3bc089b.log` | 68827824efb0a694fb6be1a322da94b822dfa4436f3accc528d5858c8811f2f1 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-98c903ee915cdf531ac636da.log` | 5968050e83a824675628a16345017d93e19db9802e8fccbfa57545fd7974b18a | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-legacy-timing-bounds-c40f36e941b14feeb466cead.log` | c0d66bc56ab0b6485f93480a56aea4cafb1093d0656357fa83a4772e9692fb8c | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-105b08a6aabfeee26e1c488d.log` | 36463e1b8872458e2e248e6471817847f7d29ef14de323d4c00c485287074331 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-226b4e8ec38dccfc2fa1b76f.log` | d2493b45a71429d2611f8b633c07ee1d2c415b270d8f35e26e026df1731fed03 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-687b0e103d68f14c173b3cb4.log` | f93ef2e505af011fb25f8c7679796b8bf34b275aabf893a59690572168dfef6a | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-9777c1521a8529bbc801e17f.log` | 7941f04b7eacd35a7727e74948c7399e3675d7c435c75eb229dbac853ed30488 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-c85bad9f9661b7fa157092e9.log` | 1d3d113dbfda9e8137720d5bbaae80b0ab9f36b72f7b87e6c588377745212e63 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-post-prune-reference-e239c867bf12249ef9a834f8.log` | 70e4ebb912829938665a613f76a8177a2384fec44c7dd490fa113fa3b344f0d7 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-retention-0884ced5b5b7c5bc4964c170.log` | 77fd9058e1b1e82010be977769f864f290e5dbf7407c1bbc43f8a02ab4944447 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-retention-1e08823558599f0fbbb2bb78.log` | 0d58e37e078cc794bcc63d66ee1925489f8aede43894a094519c28a3211e1c33 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-retention-275895cd29df141785b95f80.log` | 22d2f27a58efe68da2de9d071eb0db8c1daf000aa846ec9cbf133ad126050c27 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-retention-27afde686711c10c3ffb4420.log` | ef66c8a3383102131ed670981ded5baf092773f9f09d47411c0c2f8e0a67fa3a | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-retention-5dec264cea1663509a5fbf11.log` | f70ddb6c710eee9c87b977d4cf565649db2fa87dd59223d777019fbaac584575 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
+| `.chough/artifacts/OBS-tc-cli-history-retention-87883da5845bf1a09ea09ce2.log` | a752e57047c2e054750f7cfe2098f8718906a3bd6cf9fc3af8ee6d861556a8b6 | Git 5b11aae4f14c63d3de6471273b2b84e85243927b |
 
 ## Observations
 
@@ -158,30 +158,6 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- `.chough/artifacts/bug40-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/bug43-verify.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/command-log.txt`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
-- `.chough/artifacts/handoff-cold-start/baseline-kimi-1/transcript.md`: Git 986f0ea71d613e963b3d887f486c95773ac6f51d
-- `.chough/artifacts/history-cycle-directory-history-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-cycle-directory-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-cycle-directory-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-apply/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-apply/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-17110faec1293141b94ad3f6/EVT-8655a5eb1ed9e9fc474b810d.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-37e6ed74685a097a53b4f3ca/EVT-48316db5d21b2a096bbcd8e1.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-57a530d35ee8548c4213db93/EVT-8dcd9a8acbd8bbaa2f125989.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-6c717eaf693b93efb56df768/EVT-04da5145853efba84d821645.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-preview/history/cycles/CYC-a8c537d69b651c870e9cb02a/EVT-ac2c6c7f373b9e7ec9e5a639.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/input-before-preview/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-idle-closure-after/source.diff`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-idle-closure-before/apply.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/apply.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/apply.json)
 - `.chough/artifacts/history-idle-closure-before/commands.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/commands.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/commands.json)
 - `.chough/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/input-before-apply/history/cycles/CYC-02dbcca797e5fcc2a895835c/EVT-108b42ce27ac3ad45fed3c81.json)
@@ -200,52 +176,6 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-idle-closure-before/preview.json`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/preview.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/preview.json)
 - `.chough/artifacts/history-idle-closure-before/reproduce.py`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/reproduce.py](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/reproduce.py)
 - `.chough/artifacts/history-idle-closure-before/source.diff`: moved to [knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/source.diff](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-recently-89b211f3/artifacts/history-idle-closure-before/source.diff)
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/base/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/base-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/case-merge-choices.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/checkpoint-merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/cases/cli.cases.toml`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/session.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs/.chough/transitions.jsonl`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-CHANGELOG.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-cli.spec.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr43/theirs-owner-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr45/base.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours-merged.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr45/ours.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr45/preservation.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs-selected.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-main-integration-inputs/through-pr45/theirs.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-peer-regressions/chough-idle-closure-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-peer-regressions/chough-peer-history-fixes-suite.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-after.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-peer-regressions/chough-post-prune-reference-regression-before.log`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-peer-regressions/limitations.md`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/after-merge-history-show.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/after-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/after-merge-prune-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/after-merge-timing.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/baseline-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/baseline-preview.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/branch-a-after-prune-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/branch-a-apply.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/branch-b-before-merge-inventory.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/branch-b-checkpoint.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/commands.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/merge-result.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/metadata.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/summary.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
-- `.chough/artifacts/history-post-prune-reference-after/target-original-event.json`: Git b4fd6733393be3221d0588a4119c2486f8fbfcb0
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-history-show.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-history-show.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-history-show.json)
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-inventory.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-inventory.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-inventory.json)
 - `.chough/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/after-merge-prune-preview.json)
@@ -258,7 +188,15 @@ verification records, the retention ledger and Git stay authoritative.
 - `.chough/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/branch-b-checkpoint.json)
 - `.chough/artifacts/history-post-prune-reference-before/commands.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/commands.json)
 - `.chough/artifacts/history-post-prune-reference-before/merge-result.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/merge-result.json)
-- 44 more are listed in .chough/pruned.jsonl
+- `.chough/artifacts/history-post-prune-reference-before/metadata.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/metadata.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/metadata.json)
+- `.chough/artifacts/history-post-prune-reference-before/reproduce.py`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/reproduce.py](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/reproduce.py)
+- `.chough/artifacts/history-post-prune-reference-before/summary.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/summary.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/summary.json)
+- `.chough/artifacts/history-post-prune-reference-before/target-original-event.json`: moved to [knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/target-original-event.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-history-43b24b0a/artifacts/history-post-prune-reference-before/target-original-event.json)
+- `.chough/artifacts/history-reference-boundary-final/metadata.json`: Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148
+- `.chough/artifacts/native-workflow-user-docs-before/baseline.head`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.head](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.head)
+- `.chough/artifacts/native-workflow-user-docs-before/baseline.log`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.log](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.log)
+- `.chough/artifacts/native-workflow-user-docs-before/baseline.metadata.json`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.metadata.json](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.metadata.json)
+- `.chough/artifacts/native-workflow-user-docs-before/baseline.patch`: moved to [knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.patch](../attachments/pr-50-review-e6fb3f03/knowledge/attachments/BUG-user-ae7616f6/artifacts/native-workflow-user-docs-before/baseline.patch)
 
 ## Attachments
 
