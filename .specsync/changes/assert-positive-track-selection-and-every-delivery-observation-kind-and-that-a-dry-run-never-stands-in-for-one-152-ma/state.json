@@ -7,10 +7,10 @@
   "title": "Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02)",
   "description": "Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "64aa77e01d2763395d8af7566e62743ede37cc32",
   "created_at": 1793948400,
-  "updated_at": 1793948670,
+  "updated_at": 1793970826,
   "affected_specs": [
     "cli"
   ],

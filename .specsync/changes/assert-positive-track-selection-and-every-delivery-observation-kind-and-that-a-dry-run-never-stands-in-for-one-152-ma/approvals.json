@@ -1,4 +1,45 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793970826,
+      "digest": "eab25d231ac62299ebb3edd7bfcc2304169056030a314f776e4c9cc72eb5c677",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "assert-positive-track-selection-and-every-delivery-observation-kind-and-that-a-dry-run-never-stands-in-for-one-152-ma",
+        "title": "Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02)",
+        "description": "Assert positive track selection and every delivery-observation kind, and that a dry run never stands in for one (152, MA-01, MA-02)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "tests/cases.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-014 gains a criterion: publication, installation, deployment and live-health observations are each accepted and reported with their own kind and kept as key-item proof (protected by kind, moved into the vault when cold), while a dry run's kind is never a protection and a superseded dry run is trimmed with no vault copy. Tests assert positive copy-localization selection (REQ-cli-010), every delivery kind recorded and reported as itself with a dry run as a dry run (REQ-cli-014, REQ-cli-017), and the retention distinction for each kind. Each new test fails under a recorded targeted mutation that the existing tests let pass; no runtime change. fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #152 (audit MA-01, MA-02; REPORT.md 95% list, Cases/evidence row); the orc's overnight assignment for Leif (2026-11-06): tests and contract only, failing tests first, mutation check, approval queued for Leif. Lesson 2026-11-05: normalize CRLF before parsing repository text in a test. KNOW-19: non-routine sets are key items that move into the vault.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "251a56d9a76128d2564d45c6f4eb672956a239e2ace44f317d212a94aa34d70b"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-014": "46e1df6f0e6c1920fa3b9db4fa209b068b1c27ae0677ca9b275d6877d5575709"
+      }
+    }
+  ],
   "reopenings": []
 }
