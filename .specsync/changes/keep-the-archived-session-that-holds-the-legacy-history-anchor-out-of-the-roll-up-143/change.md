@@ -1,6 +1,6 @@
 ---
 id: keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143
-state: draft
+state: approved
 type: bug_fix
 base_commit: f35f721ae0049cd6247119b6ff1085108fa4494f
 ---

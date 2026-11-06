@@ -1,4 +1,47 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793973752,
+      "digest": "fd5d5355119883fd923d9ad067e22440df079f97161f042999335c883d8c7768",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143",
+        "title": "Keep the archived session that holds the legacy history anchor out of the roll-up (143)",
+        "description": "Keep the archived session that holds the legacy history anchor out of the roll-up (143)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "hi/knowledge.md",
+          "src/sessions.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "KNOW-29 as amended by Leif on 2026-11-06 (HI captured in hi/knowledge.md) and REQ-history-011: the archived session whose history cursor holds the legacy anchor is never rolled into the vault and does not count toward the five; with seven archived sessions where only the one that would roll first holds the anchor, the move into done keeps it and the five newest others and rolls only the remaining one. The KNOW-29 fixture models a single anchor holder; the new test fails first, no other assertion changes, docs/cli.md says so, and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-29 amended by Leif (relayed by orc, 2026-11-06, 'Amend KNOW-29' with this wording); issue #143 option A; #141 keeps adopted_anchor reading rolled and shelved sessions for anchors already in the vault; the no-replace and byte-for-byte rules of REQ-history-011 are kept.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "7b265b5ab7d5ac04816c4e9d95f832e41c3157dee27cbdc7fabe97b9bd0492fe"
+      },
+      "approved_delta_bases": {
+        "history: REQUIREMENT REQ-history-011": "d354b115e5287cadeb0167d7e4b30903b364a61baba6257b074842ffe6ba5dee"
+      }
+    }
+  ],
   "reopenings": []
 }
