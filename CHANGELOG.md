@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The timing trace test no longer fails when its two runs straddle a second (#169,
+  DRIVE-19). It runs each report once and requires them to be equal except for the
+  exact clock shift between the runs, instead of retrying for a byte-equal pair.
 - `chough doctor` finds and fixes the Chough debt that stops a fresh worktree from
   entering Chough (DRIVE-17): finished sessions left open, a legacy
   `.chough/session.json` to adopt, a stale active pointer, and awaiting-human gates on
