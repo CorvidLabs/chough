@@ -3,12 +3,12 @@ module = "history"
 
 [[case]]
 id = "TC-history-finished-session-archived-without-native-read"
-title = "A session whose native change is archived on HEAD is finished: switches archive it and it never counts toward several open, with no native read"
+title = "A session whose native change is archived on HEAD is finished, and session new and use archive it unchanged, with no native read"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-16"]
-requirements = ["REQ-history-006", "REQ-cli-037"]
+requirements = ["REQ-history-006"]
 paths = ["src/sessions.rs", "tests/sessions.rs"]
 environments = ["local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]

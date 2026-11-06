@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 2 tests
+test session_close_refuses_a_session_with_unfolded_inbox_entries ... ok
+test session_close_archives_abandoned_work_with_its_reason ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 0.03s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/sessions.rs (target/debug/deps/sessions-87f16f70381f133d)
