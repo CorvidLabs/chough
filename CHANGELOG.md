@@ -6,6 +6,16 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Closed bugs release proof (KNOW-22, REQ-cli-048). In the librarian trim, a verified,
+  duplicate or wont-fix bug no longer protects the observations it links. Its key items
+  move into `knowledge/attachments/<bug>/` when they would otherwise be trimmed:
+  - the earliest linked failure, with its artifacts;
+  - for a verified bug, the first pass after it;
+  - its fixture under `.chough/`.
+
+  The other linked runs are trimmed when cold. `knowledge/bugs/<id>.md` links what
+  moved. Open bugs, and `chough evidence prune`, keep every link.
+
 - The `SpecSync Archive` shards now split the PR history walk as well as archive
   authentication (#105, DRIVE-10). Shard K inventories every fourth PR revision from
   position K and refuses a change omitted from any of them, so a long pull request no

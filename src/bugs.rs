@@ -1016,6 +1016,39 @@ pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<Str
         .collect())
 }
 
+/// Whether a bug status is closed: verified, duplicate or wont-fix.
+pub(super) fn is_closed_status(status: &str) -> bool {
+    CLOSED.contains(&status)
+}
+
+/// A closed bug (verified, duplicate or wont-fix) as retention and the vault see it
+/// (KNOW-22): every observation it links in link order, and its fixture.
+pub(super) struct ClosedBug {
+    pub(super) id: String,
+    pub(super) title: String,
+    pub(super) status: String,
+    pub(super) linked: Vec<String>,
+    pub(super) fixture: Option<String>,
+}
+
+/// Every closed bug, by ID.
+pub(super) fn closed_links(root: &Path) -> Result<Vec<ClosedBug>> {
+    let mut closed: Vec<ClosedBug> = observation_references(root)?
+        .into_iter()
+        .zip(load_all(root)?)
+        .filter(|(_, bug)| !bug.is_open())
+        .map(|((_, linked), bug)| ClosedBug {
+            id: bug.id,
+            title: bug.title,
+            status: bug.status,
+            linked,
+            fixture: bug.fixture,
+        })
+        .collect();
+    closed.sort_by(|left, right| left.id.cmp(&right.id));
+    Ok(closed)
+}
+
 /// Each bug's fixture path, whatever its status, labeled `<bug-id> <status>`.
 pub(super) fn fixture_references(root: &Path) -> Result<Vec<(String, String)>> {
     Ok(load_all(root)?
