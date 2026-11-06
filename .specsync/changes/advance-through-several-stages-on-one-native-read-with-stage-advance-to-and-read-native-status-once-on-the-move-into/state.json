@@ -7,10 +7,10 @@
   "title": "Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2)",
   "description": "Advance through several stages on one native read with stage advance --to, and read native status once on the move into done (DRIVE-9, DRIVE-2)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "260ecc949ea01214f4bec43b30ea4226ce8fae59",
   "created_at": 1793941000,
-  "updated_at": 1793941323,
+  "updated_at": 1793941920,
   "affected_specs": [
     "cli"
   ],

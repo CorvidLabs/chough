@@ -33,16 +33,18 @@
     "decided: split PR #69, a new small PR from main carries 'stage advance --to' (DRIVE-9) as one SpecSync change with failing-first tests under per-change sessions, and #69 closes only after both replacements are open, because Leif chose 'Split' (orc relay t18, 2026-11-05 21:51 MST)",
     "decided: on the move into done the librarian reuses the gate's native read, so advance into done is 1 read (DRIVE-2), because Leif answered Q2 'Yes' (orc relay t18, 2026-11-05 21:52 MST)",
     "rejected: porting #69's persistent archive-verdict cache here because the cache for next and status moves to kimi-perf32's #32 change (REQ-cli-053, DRIVE-15) under Leif's split; this change keeps every native read live and reuses one only within a command",
-    "decided: REQ-cli-052 for this change because REQ-cli-050 (ch-d7) and REQ-cli-051 (KNOW-29) are claimed and kimi-perf32 took REQ-cli-053; reported to orc"
+    "decided: REQ-cli-052 for this change because REQ-cli-050 (ch-d7) and REQ-cli-051 (KNOW-29) are claimed and kimi-perf32 took REQ-cli-053; reported to orc",
+    "decided: the scope of this change is approved, because Leif said 'Approve' (orc relay t18, 2026-11-05 22:12 MST); the orc recorded the native definition approval as 0xLeif at 4730661c"
   ],
   "open_questions": [],
   "completed": [
-    "Assessed #69 on main 73a7da56 with SpecSync 6.2.0 (scratch clones of Chough and Raven, interleaved A/B; numbers in the native change context)"
+    "Assessed #69 on main 73a7da56 with SpecSync 6.2.0 (scratch clones of Chough and Raven, interleaved A/B; numbers in the native change context)",
+    "Drafted tests/advance_to.rs (uncommitted) and ran it against main 260ecc94: 5 of 6 fail first as expected (--to unknown; into done made 2 native reads, expected 1), a_plain_advance_is_unchanged passes; output kept in the session scratchpad"
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Complete the native change artifacts and the REQ-cli-052 delta, then send 'ready for approval' to orc t18 and wait for Leif's scope decision"
+  "next_action": "After chough#141's fix (#142) merges: merge origin/main, run chough library index, advance the session to build, commit tests/advance_to.rs failing first, then implement REQ-cli-052"
 }
