@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-linux-image-from-ci-pins-7553ec1c8fafef747b7a69fe",
+  "criteria": [
+    "DRIVE-22"
+  ],
+  "requirements": [
+    "REQ-cli-058"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "Ran cargo test --locked --test linux_image for TC-cli-linux-image-from-ci-pins: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-linux-image-from-ci-pins-7553ec1c8fafef747b7a69fe.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-linux-image-from-ci-pins-7553ec1c8fafef747b7a69fe.log": "94426669631e15e8f6e61d118ec31cefab4409324550ed33fb54a84aa2d83948"
+  },
+  "observed_at_unix_seconds": 1794006902,
+  "snapshot": {
+    "revision": "5b0b44217021baad1ca331126bfa8ccc2fa09598",
+    "dirty": false,
+    "fingerprint": "cbbf5455ac38b3956fc0a04e21b1fb326752dd98f12c26e8551d8735b250c25a",
+    "content": "48819c7a12d0ffa97a10cc653dea48857a676988449e12cebf05bd1a033c82fe"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-linux-image-from-ci-pins",
+      "digest": "5f3b12802e6c9e02f3f4cf8e0b199e1227c74043b017d764bc469775c15be3dd"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "linux_image"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
