@@ -1,4 +1,41 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793929776,
+      "digest": "96007e63abaa18e4aa3fbeb846300186542e22daf2956ea1d7cff10ab3926977",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "union-merge-the-generated-bug-notes-128",
+        "title": "Union-merge the generated bug notes (128)",
+        "description": "Union-merge the generated bug notes (128)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".gitattributes",
+          "CHANGELOG.md",
+          "tests/vault.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fix within REQ-cli-047 and DRIVE-12: the bug notes KNOW-22 generates were left out of the union-merge rules; no requirement text changes.",
+        "acceptance_criteria": [
+          "git check-attr reports merge=union for knowledge/bugs/<id>.md while attachments, snapshots, briefs and the README stay non-union; the test fails first and fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #128; REQ-cli-047 and DRIVE-12; Leif: Yes, small separate fix after KNOW-23 (2026-11-05, via the orc).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
