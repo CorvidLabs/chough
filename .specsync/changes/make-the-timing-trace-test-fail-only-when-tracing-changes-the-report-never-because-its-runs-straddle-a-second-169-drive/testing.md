@@ -14,3 +14,5 @@ artifact: testing
 - `fledge lanes run verify` passes on Linux.
 
 The test checks REQ-reporting-002's reworded criterion: identical except for the clock, with each time and span that runs to now later by exactly the gap between the two runs.
+
+`tests/spec_split.rs` pins a digest of each requirement moved in the reporting split. REQ-reporting-002's digest is updated to the reworded text, with a comment naming this change, as #77 did for its modified requirement. The guard still catches any change that is not approved.
