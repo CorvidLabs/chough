@@ -120,6 +120,26 @@ All notable changes to Chough are recorded here. The format follows
   staging file, then hard-linked into place, so a failed copy removes only its staging
   file. A rollback removes a copy only while it still holds the bytes and mode written,
   and names any copy it kept.
+- Sessions per objective or native change (#77, REQ-cli-037, REQ-history-006): `chough
+  session new <key>` creates `.chough/sessions/<key>.json` with its own history
+  cycle, `session adopt` moves an existing checkpoint there byte for byte, `session
+  use` and an untracked pointer pick the active session, and switching archives done
+  sessions unchanged (a done session with unfolded inbox entries stays open, and
+  `session list` shows each session's unfolded count). Subagents append create-only
+  entries with `chough inbox add`, and `chough inbox fold` adds them to the active
+  session after checking every entry and target first. Branches that record work
+  in different sessions merge without conflict; `checkpoint --merge` still merges two
+  edits of the same session. Each command saves to the session it resolved when it
+  started, even if another process switches sessions meanwhile, and evidence
+  retention protects what every open and archived session references, refusing when
+  one cannot be read. Without `.chough/sessions/` nothing changes. Older Chough
+  binaries do not know sessions mode, so upgrade every agent before adopting. `session new
+  --module` accepts the same SpecSync module IDs as `init`, such as `chat.service`.
+- A session started with `chough session new` in a project that adopted its legacy
+  transition log now writes events (#111, REQ-history-006). Its first transition used to
+  refuse with "legacy history anchor changed", so a new session in an adopted project
+  could not record a transition. The new session's history stays its own, the legacy log
+  keeps its bytes, and a change to that log still refuses writes in every session.
 - Parallel pull requests no longer conflict in files Chough writes (REQ-cli-047,
   DRIVE-12). Each change can add its cases in its own
   `.chough/cases/<module>.<part>.cases.toml`. `chough library index --check` fails
@@ -314,21 +334,6 @@ All notable changes to Chough are recorded here. The format follows
   lists backfilled moves separately, marks the segments they bound and keeps those
   stages out of estimates. Older Chough binaries refuse a transition log that holds a
   backfilled record, so upgrade every agent on a project before using it.
-- Sessions per objective or native change (REQ-cli-037, REQ-history-006): `chough
-  session new <key>` creates `.chough/sessions/<key>.json` with its own history
-  cycle, `session adopt` moves an existing checkpoint there byte for byte, `session
-  use` and an untracked pointer pick the active session, and switching archives done
-  sessions unchanged (a done session with unfolded inbox entries stays open, and
-  `session list` shows each session's unfolded count). Subagents append create-only
-  entries with `chough inbox add`, and `chough inbox fold` adds them to the active
-  session after checking every entry and target first. Branches that record work
-  in different sessions merge without conflict; `checkpoint --merge` still merges two
-  edits of the same session. Each command saves to the session it resolved when it
-  started, even if another process switches sessions meanwhile, and evidence
-  retention protects what every open and archived session references, refusing when
-  one cannot be read. Without `.chough/sessions/` nothing changes. Older Chough
-  binaries do not know sessions mode, so upgrade every agent before adopting. `session new
-  --module` accepts the same SpecSync module IDs as `init`, such as `chat.service`.
 
 - Checkpoint writers in parallel in one clone no longer lose updates (#62): commands
   that change `.chough/session.json` take an exclusive lock (an empty file in the
