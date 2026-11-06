@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 103
+archived_changes: 104
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-103 archived changes, newest first.
+104 archived changes, newest first.
 
+- [read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows](../archives/read-requirements-with-crlf-line-endings-in-the-librarian-default-test-131-windows.md) Read requirements with CRLF line endings in the librarian-default test (131 Windows)
 - [one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8](../archives/one-librarian-default-in-the-requirements-req-cli-013-defers-to-req-cli-015-on-124-d8.md) One librarian default in the requirements: REQ-cli-013 defers to REQ-cli-015, on (124, D8)
 - [teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5](../archives/teach-archive-first-closeout-verify-human-review-native-review-finalize-then-push-and-observe-ci-122-d5.md) Teach archive-first closeout: verify, human review, native review, finalize, then push and observe CI (122, D5)
 - [write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127](../archives/write-ledger-shards-and-the-rotated-ledger-within-the-16-mib-ledger-bound-not-the-64-kib-record-bound-127.md) Write ledger shards and the rotated ledger within the 16 MiB ledger bound, not the 64 KiB record bound (127)
@@ -42,5 +43,4 @@ this note only links them.
 - [closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22](../archives/closed-bugs-release-proof-key-items-move-into-the-vault-under-the-bug-and-the-rest-is-trimmed-when-cold-know-22.md) Closed bugs release proof: key items move into the vault under the bug and the rest is trimmed when cold (KNOW-22)
 - [done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21](../archives/done-drops-every-file-and-design-reference-and-archived-sessions-hold-no-proof-by-them-know-21.md) Done drops every file and design reference, and archived sessions hold no proof by them (KNOW-21)
 - [spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105](../archives/spread-the-specsync-archive-history-walk-across-the-ci-shards-so-a-long-pr-fits-the-ten-minute-limit-105.md) Spread the SpecSync Archive history walk across the CI shards so a long PR fits the ten-minute limit (105)
-- [mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation](../archives/mark-the-0-4-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.4.0 release published in the roadmap with its install observation
-- 93 more on the [timeline](../timeline.md)
+- 94 more on the [timeline](../timeline.md)
