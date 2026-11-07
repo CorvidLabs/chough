@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The prototype template keeps hidden state panels hidden whatever display rules a
+  project adds (#58, FLOW-4). Its `styles.css` gains `[hidden] { display: none
+  !important; }`, so a rule such as `.surface section { display: grid }` no longer shows
+  every state at once. An unedited `styles.css` from 0.1.0 to 0.4.0 updates as
+  known-outdated.
 - Right after `chough stage advance` into done, `chough library index --check` passes with
   no command in between (#191, KNOW-4, REQ-cli-043, REQ-cli-051). A session rolled into
   the vault now links its change's archive note even when the same move builds that note,

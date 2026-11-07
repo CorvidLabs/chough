@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58",
+  "implementation_commit": "95e9aeecda2c2c8657c49b6f90330335a1e30392",
+  "implementation_tree": "05e47c87933215e619321dd069240737d8dc9291",
+  "contract_digest": "0b27585e8d100e80315ab815c462f233bdc30ca2ae856737b48b0bf39ad284d4",
+  "workspace_digest": "148dea96de1ac0f9d81e395c641e95a8bf1eac39ee2449ef279a8a528a6dffe1",
+  "closing_digest": "fb394d88c1dc0a871495c29627b7d9ce984a45003c5d7f757d405b91871bcc76",
+  "review_digest": "56df92b37a20d232aeb75682b9a33b614cd0057b1026985dc411d39af32f56ec",
+  "finalization_digest": "edc3e4706f9a2b621ec26f06f97f0e5bb007391896658c6175a4503f6ec36a68",
+  "timestamp": 1794022981
+}
