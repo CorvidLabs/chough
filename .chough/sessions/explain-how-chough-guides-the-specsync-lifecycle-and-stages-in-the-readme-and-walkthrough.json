@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-e78d6761ce34c979eccb75c4",
-    "head": "EVT-f27a19990d4962c326eec4ab",
+    "head": "EVT-6c4fa26f9d758c97858dd8b3",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "intent",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -31,16 +31,15 @@
   "decisions": [
     "Reuse existing HI criteria FLOW-18 (docs say what main does), FLOW-13 and LIFE-3 (fresh-agent resume): no new HI or REQ IDs; Leif's request is a documentation clarification of existing behavior, not new product behavior.",
     "Scope is docs-only: README.md, docs/walkthrough.md, docs/lifecycle.md; docs/cli.md stays the command catalog; the authoritative skill text is already accurate and is not rewritten; no helper, runtime, stage, retention or SpecSync changes.",
-    "Rejected: describing the archive-stage proposal (ch-archive-stage.md) as current behavior; it stays a separate unapproved proposal."
+    "Rejected: describing the archive-stage proposal (ch-archive-stage.md) as current behavior; it stays a separate unapproved proposal.",
+    "Leif decided \"Scope approval for the documentation change explain-how-chough-guides-the-specsync-lifecycle-and-stages-in-the-readme-and-walkthrough\": \"approve\" (direct Leif reply to orc t19f one-item three-file Chough docs scope question, 2026-11-07; native approval recorded by orc-t19f as 0xLeif at 7184636180a2b866d8da7329eccd5083a253ef29 (hc t1h7, receipt _audits/handoffs/orc-ch-guide-scope-2026-11-07.log)); recorded by k-ch-guide; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Scope approval for the documentation change explain-how-chough-guides-the-specsync-lifecycle-and-stages-in-the-readme-and-walkthrough"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
 }
