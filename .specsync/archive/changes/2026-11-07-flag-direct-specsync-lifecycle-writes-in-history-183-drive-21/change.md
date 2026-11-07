@@ -1,6 +1,6 @@
 ---
 id: flag-direct-specsync-lifecycle-writes-in-history-183-drive-21
-state: implementing
+state: archived
 type: feature
 base_commit: 0a20d934a08a5c92a14ca6b0016dfb520daa0815
 ---

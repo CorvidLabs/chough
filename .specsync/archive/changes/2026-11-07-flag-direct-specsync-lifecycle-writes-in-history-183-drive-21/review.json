@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "flag-direct-specsync-lifecycle-writes-in-history-183-drive-21",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "cb19ebe72eb18515b508f40a95a89fde3a81faa7",
+  "contract_digest": "c464553e87bd5816ca3b894f95a92e4279568b2d931fa0f620d6cbb45ac7b259",
+  "execution_digest": "befdf9030c9ecd10c985a06f81ec64b8e5705d213c4ed988a019e8259402c7ff",
+  "workspace_digest": "ef5720192374130ddd929946b47f3a3137a6e4dc885f180a7b14ebe42784379f",
+  "timestamp": 1794014832
+}
