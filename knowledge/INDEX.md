@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 151
+archived_changes: 152
 tags:
   - chough/index
 ---
@@ -43,21 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58 (active; `specsync change status keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](archives/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.md) Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58) (hot)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) (hot)
 - [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) (hot)
-- [make-archived-next-and-status-fast-within-explicit-warm-budgets](archives/make-archived-next-and-status-fast-within-explicit-warm-budgets.md) Make archived next and status fast within explicit warm budgets (hot)
+- [make-archived-next-and-status-fast-within-explicit-warm-budgets](archives/make-archived-next-and-status-fast-within-explicit-warm-budgets.md) Make archived next and status fast within explicit warm budgets (cold)
 - [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md) Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22) (cold)
 - [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) (cold)
 - [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18) (cold)
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) (cold)
 - [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (cold)
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18) (cold)
-- [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) (cold)
-- All 151 archived changes, by month: [timeline.md](timeline.md)
+- All 152 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](../.specsync/archive/changes/2026-11-07-keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58/lesson-bundle.md)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../.specsync/archive/changes/2026-11-07-flag-direct-specsync-lifecycle-writes-in-history-183-drive-21/lesson-bundle.md)
 - [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../.specsync/archive/changes/2026-11-07-chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20/lesson-bundle.md)
 - [make-archived-next-and-status-fast-within-explicit-warm-budgets](../.specsync/archive/changes/2026-11-06-make-archived-next-and-status-fast-within-explicit-warm-budgets/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../.specsync/archive/changes/2026-11-06-a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18/lesson-bundle.md)
 - [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../.specsync/archive/changes/2026-11-06-make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive/lesson-bundle.md)
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](../.specsync/archive/changes/2026-11-06-make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18/lesson-bundle.md)
-- [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../.specsync/archive/changes/2026-11-06-chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-519 recorded; most recent:
+511 recorded; most recent:
 
 - OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384 ProductTest Passed in local-macos-arm64 at 0d0233a082a9
 - OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74 ProductTest Passed in local-macos-arm64 at 0d0233a082a9
