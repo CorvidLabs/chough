@@ -99,20 +99,10 @@ Archived lesson bundles:
 
 ## Observations
 
-507 recorded; most recent:
+527 recorded; most recent:
 
 - OBS-structural-e0b6507696e1eb822326d465 Structural Passed in local-linux-aarch64 at 2c3cd209c5cd
 - OBS-dry-run-ea811aa23f1848e4afafdbae DryRun Passed in local-linux-aarch64 at 2c3cd209c5cd
-- OBS-structural-d609d7d731efad7e2db11df1 Structural Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archived-report-reuse-20f0b488f31ec8fa7fbbff14 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-snapshot-worker-identity-5eaeb6789f2e89031c77c344 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archive-cache-invalidation-c6967565fd883fbf3ec5a0c3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archived-report-reuse-59382721b25cc6f8e1ab97ce ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7 ProductTest Failed in local-macos-arm64 at cfa2d1042225
-525 recorded; most recent:
-
 - OBS-tc-cli-change-walkthrough-runs-chough-eeab06073c51349b7b6ecf79 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
 - OBS-tc-cli-change-ship-outlives-read-bound-63957ecaa5867c7baa0ff452 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
 - OBS-tc-cli-change-ship-names-remaining-step-4dab9573dc57469f2f0cacfb ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
@@ -121,8 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-b8b96571c25ed80fcdfcd791 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
 - OBS-product-test-43953badfa0bdb247decd5d4 ProductTest Passed in local-macos-arm64 at da37b4a73515
 - OBS-tc-cli-change-walkthrough-runs-chough-dc9b4b427e025a35a068c618 ProductTest Passed in local-macos-arm64 at da37b4a73515
-- OBS-tc-cli-change-ship-outlives-read-bound-bb6a80a50486f991edc7efbb ProductTest Passed in local-macos-arm64 at da37b4a73515
-- OBS-tc-cli-change-ship-names-remaining-step-327e6e5541f57979ac03b8ff ProductTest Passed in local-macos-arm64 at da37b4a73515
 
 ## Briefs
 
