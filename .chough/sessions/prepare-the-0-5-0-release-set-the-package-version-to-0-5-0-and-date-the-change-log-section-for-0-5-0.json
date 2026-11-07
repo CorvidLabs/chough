@@ -31,7 +31,9 @@
   "completed": [],
   "observations": [
     "OBS-dry-run-ea811aa23f1848e4afafdbae",
-    "OBS-structural-e0b6507696e1eb822326d465"
+    "OBS-structural-e0b6507696e1eb822326d465",
+    "OBS-dry-run-7a3fb4d187037a2efae55ac9",
+    "OBS-structural-00139f76b41cb62e23cf99b8"
   ],
   "bugs": [],
   "blockers": [],
