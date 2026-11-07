@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 131
+archived_changes: 132
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-131 archived changes, newest first.
+132 archived changes, newest first.
 
+- [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4)
 - [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](../archives/prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0.md) Prepare the 0.5.0 release: set the package version to 0.5.0 and date the change log section for 0.5.0
 - [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)
@@ -42,5 +43,4 @@ this note only links them.
 - [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](../archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)
 - [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](../archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18)
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18)
-- [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](../archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18)
-- 121 more on the [timeline](../timeline.md)
+- 122 more on the [timeline](../timeline.md)
