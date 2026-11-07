@@ -1988,3 +1988,46 @@ fn an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change() {
     assert!(refused.contains("really-open"), "{refused}");
     assert!(!refused.contains("left-behind"), "{refused}");
 }
+
+#[cfg(unix)]
+#[test]
+fn evidence_prune_restores_partial_removal() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let fixture = project();
+    for (id, age) in [("keep-a", 20), ("keep-b", 21), ("keep-c", 22)] {
+        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
+    }
+    let log = ".chough/artifacts/partial.log";
+    write_obs(
+        &fixture,
+        &Obs::run("partial", "TC-a", "passed", 40).with_log(log, "uncommitted original\n"),
+    );
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: preserve partial prune evidence",
+    ]);
+    let record = ".chough/evidence/partial.json";
+    let original_record = fixture.read(record);
+    fs::set_permissions(fixture.root().join(log), fs::Permissions::from_mode(0o640)).unwrap();
+    let evidence = fixture.root().join(".chough/evidence");
+    fs::set_permissions(&evidence, fs::Permissions::from_mode(0o555)).unwrap();
+    let refused = fixture.fails(&["evidence", "prune", "--apply"]);
+    fs::set_permissions(&evidence, fs::Permissions::from_mode(0o755)).unwrap();
+
+    assert!(refused.contains("restored"), "{refused}");
+    assert_eq!(fixture.read(record), original_record);
+    assert_eq!(fixture.read(log), "uncommitted original\n");
+    let mode = fs::metadata(fixture.root().join(log))
+        .unwrap()
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o777, 0o640);
+    let ledger = fixture.read(".chough/pruned.jsonl");
+    assert!(ledger.contains("\"event\":\"restored\""), "{ledger}");
+    assert!(ledger.contains("partial"), "{ledger}");
+    assert!(!fixture.exists(".chough/removing"));
+}

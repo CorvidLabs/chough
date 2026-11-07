@@ -1760,6 +1760,29 @@ fn policy(authority: Option<&str>) -> Value {
     })
 }
 
+#[cfg(test)]
+thread_local! {
+    static PRUNE_AFTER_REMOVE: std::cell::RefCell<Option<Box<dyn FnMut(&str)>>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(test)]
+fn after_prune_remove(relative: &str) {
+    PRUNE_AFTER_REMOVE.with(|slot| {
+        if let Some(hook) = slot.borrow_mut().as_mut() {
+            hook(relative);
+        }
+    });
+}
+
+#[cfg(test)]
+fn with_prune_after_remove<T>(hook: impl FnMut(&str) + 'static, run: impl FnOnce() -> T) -> T {
+    PRUNE_AFTER_REMOVE.with(|slot| *slot.borrow_mut() = Some(Box::new(hook)));
+    let result = run();
+    PRUNE_AFTER_REMOVE.with(|slot| *slot.borrow_mut() = None);
+    result
+}
+
 /// Classify, and with an authority remove eligible sets, appending each to the ledger.
 fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
     let _budget = authority.map(|_| crate::history::maintenance_budget());
@@ -1866,6 +1889,8 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
                     "artifact changed during cleanup; remaining files retained"
                 );
                 remove_if_present(root, artifact).context("partial evidence cleanup; observation retained and ledger explains attempted removals")?;
+                #[cfg(test)]
+                after_prune_remove(artifact);
             }
             ensure!(
                 crate::history::protection_fingerprint(root)? == protection
@@ -1875,6 +1900,8 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
             remove_if_present(root, &record_path).context(
                 "partial evidence cleanup; inspect the existing record and retention ledger",
             )?;
+            #[cfg(test)]
+            after_prune_remove(&record_path);
             pruned.push(evidence.id.clone());
         }
     }
@@ -3572,5 +3599,181 @@ mod tests {
         assert_eq!(identity::random_draws(), 1);
         assert_eq!(fs::read(existing).unwrap(), b"existing bytes\n");
         assert_eq!(fs::read_dir(directory).unwrap().count(), 1);
+    }
+
+    fn routine_with_artifacts(root: &Path, id: &str, age_days: u64, artifacts: &[(&str, &str)]) {
+        let mut evidence = observation(id.into());
+        evidence.method = Some("automated".into());
+        evidence.cases = vec![CaseRef {
+            id: "TC-a".into(),
+            digest: "0".repeat(64),
+        }];
+        evidence.observed_at_unix_seconds = now().unwrap() - age_days * DAY_SECONDS;
+        for (path, content) in artifacts {
+            let destination = root.join(path);
+            fs::create_dir_all(destination.parent().unwrap()).unwrap();
+            fs::write(destination, content).unwrap();
+            evidence.artifacts.push((*path).into());
+            evidence
+                .artifact_fingerprints
+                .insert((*path).into(), digest_bytes(content.as_bytes()));
+        }
+        record(root, &evidence).unwrap();
+    }
+
+    fn prune_fixture(entries: &[(&str, &[(&str, &str)])]) -> tempfile::TempDir {
+        let root = tempfile::tempdir().unwrap();
+        crate::checkpoint::save_checkpoint(
+            root.path(),
+            &crate::checkpoint::new_checkpoint("Prune fixture".into(), String::new(), vec![]),
+        )
+        .unwrap();
+        for (id, age) in [("keep-a", 20), ("keep-b", 21), ("keep-c", 22)] {
+            routine_with_artifacts(root.path(), id, age, &[]);
+        }
+        for (index, (id, artifacts)) in entries.iter().enumerate() {
+            routine_with_artifacts(root.path(), id, 40 + index as u64, artifacts);
+        }
+        root
+    }
+
+    fn protect(root: &Path, id: &str) {
+        let path = root.join(".chough/bugs/BUG-0001.json");
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let bug = json!({
+            "schema_version": 1,
+            "id": "BUG-0001",
+            "title": "Race",
+            "symptom": "A new reference appears",
+            "trigger": "Prune runs",
+            "expected": "The observation is protected",
+            "actual": "The observation is protected",
+            "environment": "local",
+            "observations": [id],
+            "impact": "Proof must remain",
+            "classification": "product-defect",
+            "scope": "in-scope",
+            "status": "open",
+            "regression_baseline": null,
+            "source": "test",
+            "created_at_unix_seconds": 1,
+            "updated_at_unix_seconds": 1,
+        });
+        fs::write(path, serde_json::to_string_pretty(&bug).unwrap()).unwrap();
+    }
+
+    #[test]
+    fn prune_protection_race_restores_removed_bytes() {
+        let first = ".chough/artifacts/race-a.log";
+        let second = ".chough/artifacts/race-b.log";
+        let root = prune_fixture(&[("target", &[(first, "first\n"), (second, "second\n")])]);
+        let record = ".chough/evidence/target.json";
+        let original = fs::read(root.path().join(record)).unwrap();
+        let injected = root.path().to_path_buf();
+        let result = with_prune_after_remove(
+            move |removed| {
+                if removed == first {
+                    protect(&injected, "target");
+                }
+            },
+            || retention(root.path(), Some("fixture authority")),
+        );
+        let error = result.unwrap_err();
+        assert!(format!("{error:#}").contains("restored"), "{error:#}");
+        assert_eq!(fs::read(root.path().join(record)).unwrap(), original);
+        assert_eq!(
+            fs::read_to_string(root.path().join(first)).unwrap(),
+            "first\n"
+        );
+        assert_eq!(
+            fs::read_to_string(root.path().join(second)).unwrap(),
+            "second\n"
+        );
+        assert!(root.path().join(".chough/bugs/BUG-0001.json").is_file());
+        let ledger = fs::read_to_string(root.path().join(LEDGER)).unwrap();
+        assert!(ledger.contains("\"event\":\"restored\""), "{ledger}");
+        assert!(ledger.contains("target"), "{ledger}");
+        assert!(!root.path().join(HOLD_DIR).exists());
+    }
+
+    #[test]
+    fn prune_restores_earlier_sets_when_a_later_set_becomes_protected() {
+        let first = ".chough/artifacts/first-set.log";
+        let second = ".chough/artifacts/second-set.log";
+        let root = prune_fixture(&[
+            ("target-a", &[(first, "first set\n")]),
+            ("target-b", &[(second, "second set\n")]),
+        ]);
+        let injected = root.path().to_path_buf();
+        let result = with_prune_after_remove(
+            move |removed| {
+                if removed == ".chough/evidence/target-a.json" {
+                    protect(&injected, "target-b");
+                }
+            },
+            || retention(root.path(), Some("fixture authority")),
+        );
+        let error = result.unwrap_err();
+        assert!(format!("{error:#}").contains("restored"), "{error:#}");
+        for id in ["target-a", "target-b"] {
+            assert!(
+                root.path()
+                    .join(format!(".chough/evidence/{id}.json"))
+                    .is_file(),
+                "{id}"
+            );
+        }
+        assert_eq!(
+            fs::read_to_string(root.path().join(first)).unwrap(),
+            "first set\n"
+        );
+        assert_eq!(
+            fs::read_to_string(root.path().join(second)).unwrap(),
+            "second set\n"
+        );
+        let ledger = fs::read_to_string(root.path().join(LEDGER)).unwrap();
+        assert!(ledger.contains("\"event\":\"restored\""), "{ledger}");
+        assert!(ledger.contains("target-a"), "{ledger}");
+        assert!(!root.path().join(HOLD_DIR).exists());
+    }
+
+    #[test]
+    fn prune_restore_preserves_recreated_file_and_uncommitted_original() {
+        let first = ".chough/artifacts/conflict-a.log";
+        let second = ".chough/artifacts/conflict-b.log";
+        let root = prune_fixture(&[("target", &[(first, "original\n"), (second, "other\n")])]);
+        let injected = root.path().to_path_buf();
+        let result = with_prune_after_remove(
+            move |removed| {
+                if removed == first {
+                    fs::write(injected.join(first), "recreated\n").unwrap();
+                    protect(&injected, "target");
+                }
+            },
+            || retention(root.path(), Some("fixture authority")),
+        );
+        let error = result.unwrap_err();
+        assert_eq!(
+            fs::read_to_string(root.path().join(first)).unwrap(),
+            "recreated\n"
+        );
+        let hold = hold_path(first);
+        assert_eq!(
+            fs::read_to_string(root.path().join(&hold)).unwrap(),
+            "original\n"
+        );
+        assert!(format!("{error:#}").contains(&hold), "{error:#}");
+        assert!(
+            !format!("{error:#}").contains("recoverable from Git HEAD"),
+            "{error:#}"
+        );
+        assert_eq!(
+            fs::read_to_string(root.path().join(second)).unwrap(),
+            "other\n"
+        );
+        assert!(root.path().join(".chough/evidence/target.json").is_file());
+        let ledger = fs::read_to_string(root.path().join(LEDGER)).unwrap();
+        assert!(ledger.contains("\"event\":\"restored\""), "{ledger}");
+        assert!(ledger.contains("target"), "{ledger}");
     }
 }

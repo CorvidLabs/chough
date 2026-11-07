@@ -1,0 +1,22 @@
+   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-pr65)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.48s
+     Running unittests src/main.rs (target/debug/deps/chough-3771ef72516bb8a1)
+
+running 1 test
+test evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected ... FAILED
+
+failures:
+
+---- evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected stdout ----
+
+thread 'evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected' (499330811) panicked at src/evidence.rs:3716:28:
+called `Result::unwrap_err()` on an `Ok` value: Object {"applied": Bool(true), "authority": String("fixture authority"), "eligible": Array [Object {"age_days": Number(40), "bytes": Number(1060), "cases": Array [String("TC-a")], "environment": String("local"), "files": Array [String(".chough/evidence/target-a.json"), String(".chough/artifacts/first-set.log")], "id": String("target-a"), "outcome": String("passed"), "reason": String("routine automated run older than 14 days outside every protected set (checkpoint, bugs, native manifests, newest 3 and newest failure per case and environment, validation failures and first and last passes)")}, Object {"age_days": Number(41), "bytes": Number(1063), "cases": Array [String("TC-a")], "environment": String("local"), "files": Array [String(".chough/evidence/target-b.json"), String(".chough/artifacts/second-set.log")], "id": String("target-b"), "outcome": String("passed"), "reason": String("routine automated run older than 14 days outside every protected set (checkpoint, bugs, native manifests, newest 3 and newest failure per case and environment, validation failures and first and last passes)")}], "ledger": String(".chough/pruned.jsonl"), "native": Object {"detail": String("No native SpecSync configuration; no native manifest protects a set."), "state": String("not-configured")}, "note": String("Files are removed from the working tree only; committed bytes stay recoverable from Git history. Native archives, ignore rules and history are never changed."), "policy": Object {"authority": String("fixture authority"), "keep_newest": Number(3), "keep_newest_failure": Bool(true), "min_age_days": Number(14), "name": String("chough-retention/1"), "warn_bytes": Number(52428800)}, "protected": Array [Object {"age_days": Number(20), "cases": Array [String("TC-a")], "environment": String("local"), "id": String("keep-a"), "outcome": String("passed"), "reasons": Array [String("newest")]}, Object {"age_days": Number(21), "cases": Array [String("TC-a")], "environment": String("local"), "id": String("keep-b"), "outcome": String("passed"), "reasons": Array [String("newest")]}, Object {"age_days": Number(22), "cases": Array [String("TC-a")], "environment": String("local"), "id": String("keep-c"), "outcome": String("passed"), "reasons": Array [String("newest")]}], "pruned": Array [String("target-a")], "schema_version": Number(1), "skipped": Array [Object {"id": String("target-b"), "reason": String("protection or shared artifact references changed")}], "totals": Object {"eligible": Number(2), "evidence_bytes": Number(4817), "protected": Number(3), "reclaimable_bytes": Number(2123), "sets": Number(5)}, "warning": Null}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 69 filtered out; finished in 0.19s
+
+error: test failed, to rerun pass `--bin chough`
