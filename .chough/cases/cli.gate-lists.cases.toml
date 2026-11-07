@@ -72,3 +72,21 @@ expected = ["the gates test a_verifying_gate_is_refused_and_closes_through_ship_
 adapter = "cargo-test"
 test_target = "gates"
 test = "a_verifying_gate_is_refused_and_closes_through_ship_with_the_list"
+
+[[case]]
+id = "TC-cli-gate-record-other-session-refused"
+title = "A listed gate of another open session is refused naming chough session use, which then lets it be recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the gates test a_gate_of_another_open_session_is_refused_naming_session_use passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_gate_of_another_open_session_is_refused_naming_session_use"

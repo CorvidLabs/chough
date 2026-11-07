@@ -449,3 +449,32 @@ fn the_change_log_names_the_oldest_chough_that_reads_summary_digests() {
         "the entry names no oldest reader: {entry}"
     );
 }
+
+#[test]
+fn a_gate_of_another_open_session_is_refused_naming_session_use() {
+    let fixture = project(&[SCOPE]);
+    // A second session becomes active; the first stays open with its gate.
+    fixture.ok(&["session", "new", "other-g2", "--objective", "Other work"]);
+    let listed = list(&fixture);
+    let gate = listed["gates"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|gate| gate["gate"] == SCOPE)
+        .unwrap()
+        .clone();
+    assert_eq!(gate["session"], KEY);
+    let number = gate["number"].to_string();
+    let list_id = listed["list"].as_str().unwrap().to_string();
+    let before = records(fixture.root());
+    let error = fixture.fails(&record(&list_id, &number, "yes"));
+    assert!(
+        error.contains(&format!("`chough session use {KEY}`")),
+        "{error}"
+    );
+    assert_eq!(records(fixture.root()), before, "something was written");
+    // The recovery it names succeeds.
+    fixture.ok(&["session", "use", KEY]);
+    fixture.ok(&record(&list_id, &number, "yes"));
+    assert_eq!(session(&fixture)["awaiting_human"], json!([]));
+}
