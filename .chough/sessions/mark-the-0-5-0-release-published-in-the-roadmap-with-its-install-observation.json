@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bd1c0595ba435c201d6ca0dc",
-    "head": null,
+    "head": "EVT-f174ff25a05d0bcbfce11389",
     "legacy": null
   },
   "schema_version": 2,
@@ -36,7 +36,9 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Intent and scope approval of mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation"
+  ],
   "run_consents": [],
-  "next_action": "Complete the native documentation definition and request scope approval from the orc."
+  "next_action": "Wait for the orc's intent and scope decision at the committed definition."
 }
