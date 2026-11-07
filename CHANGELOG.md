@@ -16,6 +16,13 @@ All notable changes to Chough are recorded here. The format follows
   walkthrough and the skill's closeout now run `chough change new`, `check` and `ship`,
   with review still `specsync change review`. The relay check `checkpoint --close-gate`
   runs is shared, with its refusals unchanged.
+- Archived `next` and `status` reports can reuse SpecSync's authenticated verdict for
+  identical archive/native/Git inputs instead of repeating the slow native read
+  (REQ-cli-053, DRIVE-15, #32). The read state is `cached`; only those reports reuse it,
+  and stage moves, timing, retention and verification stay live. Shallow/replaced/
+  grafted/alternate history, active changes and every mismatch go live. A timed-out
+  prime writes no entry and keeps the existing deadline and descendant kill. The two
+  exact snapshot digest passes now run concurrently without changing freshness.
 - The Linux test images are rebuilt from the repository with one command (#177,
   DRIVE-22). `fledge run linux-image` builds `chough-linux:1` to `:3` from
   `tools/linux/`, taking the specsync, fledge and human-intent versions from the CI

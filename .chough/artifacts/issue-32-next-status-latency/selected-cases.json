@@ -1,0 +1,2940 @@
+{
+  "affected": {
+    "criteria": [
+      "DRIVE-15"
+    ],
+    "paths": [
+      "src/native.rs",
+      "src/evidence.rs",
+      "tests/native.rs"
+    ],
+    "requirements": [
+      "REQ-cli-053"
+    ],
+    "tracks": []
+  },
+  "note": "Functional cases linked to the affected scope are always selected; unselected cases are not retested by default.",
+  "omitted": [
+    {
+      "id": "TC-cli-0103",
+      "reason": "copy-localization track not requested as relevant to this change",
+      "track": "copy-localization"
+    },
+    {
+      "id": "TC-cli-0038",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0039",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0040",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0041",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0042",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0043",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0044",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0045",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0046",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0047",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0048",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0049",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0062",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0063",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0064",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0065",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0066",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0080",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0082",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0088",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0089",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0100",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0075",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0090",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0091",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0092",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0096",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0097",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0098",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0099",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0110",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0112",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0113",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "copy-localization"
+    },
+    {
+      "id": "TC-cli-0114",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0105",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0106",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0120",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0121",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0122",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0123",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0124",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0125",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0126",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0127",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0129",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0130",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0131",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-0132",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-slug-validation-allocation",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-slug-snapshot-allocation",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-slug-case-compatibility",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-skill-asks-for-the-handoff-before-the-first-edit",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-agent-native-workflow-upgrade",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-native-workflow-bundle-consistency",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-leaving-test-refuses-an-unlinked-failed-case",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-skill-orders-the-change-check-before-new-requirement-cases",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-bug-add-accepts-values-that-start-with-two-hyphens",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-native-next-action-is-not-repeated-in-the-next-line",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-exercise-cleanup-handles-a-relative-tmpdir",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-sdd-off-names-specsync-change-adopt",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-same-second-runs-in-two-git-roots-stay-distinct",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-checkpoint-byte-bound-is-131072",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-observation-pointer-bound-is-400",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-checkpoint-merge-enforces-the-raised-bounds",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-delta-guard-refusals-name-the-agent-actor",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-knowledge-entries-bounded",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-claude-host-shares-agents-copy",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-legacy-claude-copy-removed-only-explicitly",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-build-reference-from-main-known-outdated",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-next-searches-large-context-md",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-writers-share-the-project-lock-across-tmpdir",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-checkpoint-lock-in-project-ignored",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-adopt-race-writers-save-or-refuse",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-next-shows-open-questions",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-folded-inbox-question-in-next",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-done-trims-cold-proof-by-default",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-retention-manual-opts-out-at-done",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-open-change-keeps-proof-at-done",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-recorded-retention-off-not-trimmed-at-done",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-archived-change-md-over-record-bound",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-sdd-policy-over-record-bound",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-display-cut-points-to-source",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-skill-bounds-never-justify-native-edits",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-stop-reaches-setsid-descendant",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-stop-reaches-orphaned-descendant",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-stop-test-leaves-other-runs-alone",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-git-grace-kill-reported",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-failed-head-revision-reported",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-failed-native-exit-in-plain-words",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-native-killed-by-signal-says-so",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-next-shows-failed-native-attempt",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-next-says-native-check-not-passed",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-unreadable-native-attempts-unknown",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-verifying-tree-moved-not-passed",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-only-specsync-native-commands-reported",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-unrun-configured-commands-counted",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-no-warning-when-project-command-runs",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-test-stage-points-to-test-evidence",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-verification-warning-changes-no-gate",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-verification-warning-within-next-bound",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-init-builds-knowledge",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-init-preserves-knowledge",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-init-unbounded-knowledge-refused",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-done-refreshes-knowledge-after-trim",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-done-refreshes-knowledge-untrimmed",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-librarian-off-no-knowledge-at-done",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-front-matter-on-every-note",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-archive-note-properties",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-module-notes",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-intent-notes",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-rules-note",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-links-resolve",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-regenerates-identically",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-sub-criterion-ids",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-trace-and-family-forms",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-inline-trace-crlf-comments",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-readme-upgrade",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-vault-crlf-readme-unmatched-backtick",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-checkpoint-at-the-cap",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-full-stress-shape",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-done-drops-file-and-design-refs",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-knowledge-index-bounded-timeline",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-one-librarian-default",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-native-check-safe-verifying",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-native-check-not-passed-note",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-cases-split-per-change",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-knowledge-index-check",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-bug-merge-driver",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-session-notes-union",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-cli-union-only-generated-notes",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-legacy-timing-bounds",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-frozen-reference-aliases",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-closing-reset-age",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-post-prune-reference",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-stale-receipt-age",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-split-keeps-requirement-wording",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-inbox-add-never-stranded-by-archive",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-retention-protects-inbox-observations",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-inbox-add-killed-leaves-no-partial-entry",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-retention-refuses-unreadable-inbox-entry",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-session-use-waits-for-stage-advance",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-vanished-session-leaves-no-event",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-saved-event-survives-a-move",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-no-sessions-local-holds-only-lock",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-sessions-local-holds-pointer-and-lock",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-archived-session-listed-archived",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-unrecorded-inbox-observation-warns",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-session-after-legacy-adoption",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-shelve-and-robust-sessions",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-history-keep-five-archived-sessions",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0080",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0081",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0082",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0083",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0084",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0085",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0086",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0087",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0088",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0089",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-0100",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-split-keeps-requirement-wording",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    },
+    {
+      "id": "TC-reporting-approval-ledger-over-record-bound",
+      "reason": "not linked to the affected criteria, requirements or paths",
+      "track": "functional"
+    }
+  ],
+  "required_lane": null,
+  "schema_version": 1,
+  "selected": [
+    {
+      "criteria": [
+        "KNOW-10",
+        "KNOW-19"
+      ],
+      "digest": "c8f0f1e0634006eddd13143b598552b5d6c955131354207b9e62c3c41321c7d6",
+      "file": ".chough/cases/cli.attachment-rollback.cases.toml",
+      "id": "TC-cli-rollback-keeps-changed-vault-copies",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A refused apply keeps vault copies another writer changed",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4",
+        "LIFE-6"
+      ],
+      "digest": "3a8103b80cdb935658cc3d6b67dd53d1b03e1ce7c6b4608bb1828c5816dabcad",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0001",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-001"
+      ],
+      "status": "active",
+      "title": "Init preserves user files and installs the skill",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "3853cee0aca7eda3b552cfafa85ae21a0ae5ec9b160165f43e5b64d8241c2457",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0002",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-002"
+      ],
+      "status": "active",
+      "title": "Context is deterministic and prefers native lessons",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "60a8304dfa6c9722f8fe09c5a138f3a9bdb085fc477d55487e83a7ef067d9365",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0003",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-003"
+      ],
+      "status": "active",
+      "title": "Missing native tools stay unknown",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-7"
+      ],
+      "digest": "f7afcd94f3a88574f44f5acf783e6570ddadc121f5c02125d37c4e8ba75e0870",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0004",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-003"
+      ],
+      "status": "active",
+      "title": "Non-JSON native output is not lifecycle state",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "9d3628168f9ef30d6659bf018944f38c44554e88ab69528c47a109a6c35130cb",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0005",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Observations bind inputs and environment without acceptance",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2"
+      ],
+      "digest": "d0f27524493db78d90f10f6e3c7f0e7d4eb72c6db6dd0aa784cc016ecd7b2094",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0006",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Untracked inputs stale observations",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2"
+      ],
+      "digest": "a304c655e3fb31c76c2b1593ec533707bfa738b0fcf9349d21c19d11fb09fdd2",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0007",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Executable-bit changes stale observations",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2"
+      ],
+      "digest": "4c1efdd1286878850ac4eb97de4189b8204871d68c7c5f6425d55e90ac9cb8d5",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0008",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Artifacts are bound independently",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-1",
+        "LIFE-5"
+      ],
+      "digest": "c6e18ed8ffb72fac1ee13e8a0b3bc2d8d806db93d19c5d4cee238b84e009a1b7",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0009",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005"
+      ],
+      "status": "active",
+      "title": "Invalid traceability and escaped artifacts are rejected",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4"
+      ],
+      "digest": "6acb629fe38e8602bcb5b6119f09fbac7ba47f83022380c708479b21d44967de",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0010",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Symlink write escape is rejected",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "4afdf48bbc1f3df45899f78b19c42f76bae6d54767d7fd449f3c0bb25f7cceef",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0011",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Aggregate context budget is explicit",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "dd6a225689bfb44ac34edfcaa8972331f9496a7bd188b2417f8175475bcbf471",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0012",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Oversized records fail explicitly",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-4"
+      ],
+      "digest": "b80d70a70bf028af5339a62e91fed0e4a840777435c8656631d0e193b308b083",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0013",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Oversized init input is refused before writing",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3"
+      ],
+      "digest": "fbd4995e95f5ef5a64b595aa30269e6a806510cf62dc386669cdc9042e4900b2",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0014",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-006"
+      ],
+      "status": "active",
+      "title": "Invalid modules and future schemas are rejected",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13"
+      ],
+      "digest": "9d0a70612d1f1fc0ee3cc020b1b0ea6faffab56a5f8162d5a191f39f4c81da1c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0015",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Init writes a schema 2 checkpoint at intent",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "LIFE-3"
+      ],
+      "digest": "dc760ed6100b6c91bb737d6b7fc49c17e68cebc6780be718e9bb242abdacbf56",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0016",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Migration is explicit and keeps schema 1 bytes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13"
+      ],
+      "digest": "52e0e9fa15511eac414de63f623a1c883743c70f659f71b404c884e955e9eaff",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0017",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-007"
+      ],
+      "status": "active",
+      "title": "Checkpoint round-trips across processes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2"
+      ],
+      "digest": "c6cd216eb7ba2b5d5d3b786be3916bba264d16f24bf774d95dc0885f9d3c51f6",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0018",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Every transition kind keeps history",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2",
+        "FLOW-1"
+      ],
+      "digest": "819b779a4fca0dce077f616969df8ed44f82e511687d08107e7dd3f8f2c04712",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0019",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Helper stages match the stage contract",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-5",
+        "FLOW-10"
+      ],
+      "digest": "c0e1bd3828a1d2ba2dbc1cf2bca037e1bc87734168af002795efa5570ef1f810",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0020",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "Native state gates build and closing",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-3",
+        "FLOW-5",
+        "FLOW-13"
+      ],
+      "digest": "900ce7adddcd30112f09fdf9c8fe486024cfc55cd6ae12af8d9bc6f1561fae75",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-open-human-gates-refuse-advance-and-skip",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-030"
+      ],
+      "status": "active",
+      "title": "Open human gates refuse advance and skip",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2",
+        "FLOW-13"
+      ],
+      "digest": "5daf3a235e10e0ccf140ae1ed2a65841700b4b518ce41cd54483fcaa554c46b8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-open-human-gates-leave-other-moves-and-agree-in-next",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-030"
+      ],
+      "status": "active",
+      "title": "Open human gates leave other moves and agree in next and status",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9",
+        "FLOW-11"
+      ],
+      "digest": "7f4b58b5d89ecfcde63d03c82d5fb50daf905ee46257a761b4e8ae93ebf1de20",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0021",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-013",
+        "REQ-cli-014"
+      ],
+      "status": "active",
+      "title": "Validate and release need authorization",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "eb5fc83805614a33ed9bf060768fe51f402a6bac8d2b1e7979254a1f35e3cb4a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0022",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Bad definitions are refused with their location",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "f549f8b21703eb3144187d0e084ddc5670f292a14ab5aab4e7714d0af84e5931",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0023",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Case identity survives reordering",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "c1966a20adf20339d19dc63fb495a25d70a1974112df1a8ee655e60039289c6b",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0024",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "Case links are validated against native records",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-6"
+      ],
+      "digest": "f0899dd4ed225b7b5b853cb5711948e8bd8c7d5355d650a31848cc163b14042c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0025",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-010"
+      ],
+      "status": "active",
+      "title": "Selection is focused on affected scope and tracks",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "b1cedd144331576c33b4fffe72b8f6823c3a9c63a51b3c0ace9cd1300ccaa63c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0026",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-017"
+      ],
+      "status": "active",
+      "title": "Failures and vacuous runs are recorded honestly",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7"
+      ],
+      "digest": "8bb3220178d038283251e99a94a8cec750d44c58881219da02be5781e39e2170",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0027",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011"
+      ],
+      "status": "active",
+      "title": "Manual records need every verdict",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-11",
+        "LIFE-7"
+      ],
+      "digest": "6ecc56b8c56841a28adf71294124a18648ccbe542816c1f3830f537410f4cf61",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0028",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-017",
+        "REQ-cli-014"
+      ],
+      "status": "active",
+      "title": "Delivery kinds and dry runs stay distinct",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8"
+      ],
+      "digest": "17e873396849332f80bcbbfcb5d239d33caa6b7daad477db999b29dad46f92db",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0029",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "Out-of-scope bugs stay visible without changing scope",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8"
+      ],
+      "digest": "f03ece95a477f0e367e440886a5327c8488df3ff8075d7552464c80e1a845b1a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0030",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "Reproduced bugs are deduplicated and keep evidence",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8",
+        "LIFE-5"
+      ],
+      "digest": "43604aeec294f7180b9cc7b0060b2be7fe29f0f025d5198e4b74196e1990c9c3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0031",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "Regression needs an earlier passing ancestor",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-8",
+        "FLOW-2"
+      ],
+      "digest": "2f48b81fb4bdb8165ee6b17d52e635224ea3eea1f3be6db273a9a9f0cb8e1b23",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0032",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012",
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "A blocking bug sends work back to build",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9"
+      ],
+      "digest": "6f5f908393363c9e9e5a7d578334b2d5987159d8cdb4e62e71d9d31e163c1a44",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0033",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-013"
+      ],
+      "status": "active",
+      "title": "Standing preferences stay separate from consent",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-9"
+      ],
+      "digest": "858b5abb91d702c4c43af3d0acc5e41f4c52e07b81f6bd4c6e52ab71f6529d42",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0034",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-013"
+      ],
+      "status": "active",
+      "title": "Repeated validation needs authority and honors stop",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-12"
+      ],
+      "digest": "9717527f70bd8176af97a37e354243d818c43e86212adf4fa3c136868e4741cf",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0035",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-015"
+      ],
+      "status": "active",
+      "title": "Librarian snapshots originals and indexes open bugs",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-12"
+      ],
+      "digest": "57f25325003542d0e6560599e8c1bd121ff72be7d63c23793db8053ea68c67a8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0036",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-015"
+      ],
+      "status": "active",
+      "title": "Snapshotting a symlink is refused",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-1"
+      ],
+      "digest": "bc4a585cc7f16f841b4b86815e785e3b9ac99c9a5ce4b698d34b708278b0d94f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0037",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-016"
+      ],
+      "status": "active",
+      "title": "Skills install per host and keep edits",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-2",
+        "FLOW-6",
+        "FLOW-7",
+        "FLOW-8"
+      ],
+      "digest": "1e7f2b1b7f7233a259067382e7643decc69e0385d2d7a6383c5a6958fc42eb9f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0101",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-008",
+        "REQ-cli-010",
+        "REQ-cli-011",
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "The feature-and-bug exercise passes end to end",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "FLOW-1",
+        "FLOW-9",
+        "FLOW-10"
+      ],
+      "digest": "31013730387868ca96100d9765db556e8810ca67ea6d565bd22ea9865495028f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0102",
+      "method": "agent-assisted",
+      "requirements": [
+        "REQ-cli-007",
+        "REQ-cli-008"
+      ],
+      "status": "active",
+      "title": "A fresh agent resumes from project files alone",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "fc36d61afbab826b82895994e59876a6d7bc702b3627d3d0b571df6eebf1970c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0104",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "A case run records its run time and the timing report shows it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "ae0a214ac7ea18f81c98ced40f22340666a1b039f1532c3a539fdcaef2e9c7ac",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0067",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Committing only Chough records or an empty commit keeps an observation current",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "5f73ff87c94ac173fe495b26f673966d6a350f24b5ba74d7fac9a86ac6ae8075",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0068",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Committing edits already present when observed keeps an observation current",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "6c737d65a07bae2ee3a6544cfcb6604b45d303c47f93ee97aebe7fbcbf8bfca8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0069",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Any fingerprinted content change stales an observation",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "ee73ffc1f6e8e74e66ad008bf152fa4d3915eba2162bcda3225ca83008d1e449",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0070",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "SpecSync bookkeeping writes keep an observation current",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "4962cc13c0e60f9435898d5e0f9a0f0007f7117d63ed9999e1763b5c085eb99c",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0071",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Edits to a native change's scope stale an observation",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-6",
+        "LIFE-7"
+      ],
+      "digest": "c2adbaa8ca6e791306a83469076acdcd4f307544303cec8738c3535ca47076af",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0072",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004"
+      ],
+      "status": "active",
+      "title": "Archiving a change keeps an observation current until an artifact changes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "9e6a6dc2156be99c5c1634f2d29d390b0f1cc51aab691242195ece316ad58869",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0073",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-004",
+        "REQ-cli-017"
+      ],
+      "status": "active",
+      "title": "Observations without a content identity, or in schema 1, stay stale after a commit",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7"
+      ],
+      "digest": "cddec2d484d0dc69057661018116dd433e00770ddb178cb35c2d4be4f88a3962",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0074",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-017"
+      ],
+      "status": "active",
+      "title": "A malformed content identity is refused",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "5e0b685158277684219c9dfd3502b338659e6090ed8209006d48f7a5eb272546",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0076",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A pass observed before the latest failure does not verify a bug",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "5c39b812f2e7776b2bb2c5f78ee4421cd0340bdd2b7280d1fc9cda1908798cb9",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0077",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A pass observed after the latest failure verifies a bug",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "ef231f853a0ff684cd29c91bf8a98371fad92c9e01b7b3c13519309ffa1be516",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0078",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A pass in the same second as the failure does not verify a bug",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-5"
+      ],
+      "digest": "1a2705054f562dfed2ed941e734c627144dd5010aff4f5a7606aa32cdced39a3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0079",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-012"
+      ],
+      "status": "active",
+      "title": "A bug without a linked failure cannot be verified",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-5"
+      ],
+      "digest": "0209056257b64c5ffd5778f62a8a66c247a21980718d72503fac20729151086f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0093",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005",
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "A requirement of another module names the cases file that binds it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-5"
+      ],
+      "digest": "058cef64fdff2d9ed0f88b66cc5503eaf63caaf73b195df6fc6485238ef273b2",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0094",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005",
+        "REQ-cli-009"
+      ],
+      "status": "active",
+      "title": "An unresolved requirement is refused with the check-first hint",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-5"
+      ],
+      "digest": "29576106777169522575eefd635795acd028a70b27be5ab37b962f3edfce93f5",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0095",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-005"
+      ],
+      "status": "active",
+      "title": "Evidence add names the contract for another module's requirement",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-9"
+      ],
+      "digest": "e5a30d962f907cc1b763f9a5b65e444e24165b36f38ca6a15256845a99ddbd19",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0111",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-019"
+      ],
+      "status": "active",
+      "title": "The full suite passes with the declared minimum Rust version",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "FLOW-13"
+      ],
+      "digest": "f155bc8b97c150d895fb9389250e6bfc09f7a2163875649be437203d2aaaecbc",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0128",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "The next view names the latest failed observation by recorded time with the bugs that link it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-13",
+        "LIFE-3",
+        "LIFE-1"
+      ],
+      "digest": "821aedfc92e545217bc64e51ca897c29cede365795c89dacdcf2f397c93c668e",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-0133",
+      "method": "manual",
+      "requirements": [
+        "REQ-cli-021"
+      ],
+      "status": "active",
+      "title": "A fresh agent on another host resumes the seeded handoff repository and passes the frozen rubric",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-2"
+      ],
+      "digest": "b4c964639a94224b07de6ece9176357291fd784205072a5d3cd899925320eb9f",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-slug-observation-allocation",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-011",
+        "REQ-cli-017",
+        "REQ-cli-023"
+      ],
+      "status": "active",
+      "title": "Independent roots and identical repeated runs allocate distinct observations",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "FLOW-7",
+        "LIFE-2"
+      ],
+      "digest": "0a559e4647d3fb410bd47718d55643b8120cedcb1d8043acd6c986ed8613f06d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-independently-added-records-merge-cleanly",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-023"
+      ],
+      "status": "active",
+      "title": "Records added independently on two branches merge without conflict, replacement or duplicate identity",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-1",
+        "KNOW-5"
+      ],
+      "digest": "d31d4fec5a25ef0a00679b5da036f2d993503f705b04b830c18fef004737c00b",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-librarian-default-on-knowledge",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-015"
+      ],
+      "status": "active",
+      "title": "The librarian is on by default in knowledge/ and the opt-out is recorded",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-2",
+        "KNOW-3",
+        "KNOW-4",
+        "KNOW-6",
+        "KNOW-12"
+      ],
+      "digest": "d205fd6daa3b6f65f018321d4c7313c484a56ee7934cb9f31a415aea73bc1b37",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-knowledge-archive-entries",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-015"
+      ],
+      "status": "active",
+      "title": "Knowledge entries summarize each archive deterministically with a lessons index and the earlier library folder",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-7",
+        "KNOW-8",
+        "KNOW-11"
+      ],
+      "digest": "f63ee9d4739133b41a0e1e8d6cc1828a7bb0a81b734343fa05a0407f2c896663",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-preview",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "The archive summary preview lists cold-archive proof and keeps every protection",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-7",
+        "KNOW-9",
+        "KNOW-10",
+        "KNOW-11"
+      ],
+      "digest": "638ddac54adcb19fb67cec8d0327faf8763d9b71d495c967db890b33c10a062d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-apply",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "The archive summary apply is authorized, ledgered and restored on a validity change",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-9",
+        "KNOW-10"
+      ],
+      "digest": "9ba7e8ec5f48fd58443204cd6a330f5741ea90aafb896a708b6b078b514c1a01",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-fails-closed",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "The archive summary apply fails closed without native validity and rolls back a partial removal",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-7",
+        "KNOW-9"
+      ],
+      "digest": "eb682436b7863b5d6d84b2d0e89f82c3acc63d1114ca806b24297d02aa5f7120",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-changed-during-check",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "The archive summary apply refuses and keeps the bytes when a file changes during the native validity check",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-7"
+      ],
+      "digest": "bf70e5ae36411aec29333c30f55f439e57fe4d730a9dec6c5ee44905d76de7f8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-unfiltered-head-compare",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "Under core.autocrlf a CRLF file that differs from HEAD byte for byte is held back, not eligible",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-8"
+      ],
+      "digest": "b877e7d37d6b1a6580547be8dd8704b4b0730bc156fdfb184cf785d502d43ea3",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-protection-during-check",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "The archive summary apply refuses when a protection appears during the native validity check",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-8"
+      ],
+      "digest": "fd6e2f5ee3cc30666b235066f19a3ba577075d0e1ba197f53b2f74cc43e6d20d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-protection-before-each-removal",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "The archive summary apply re-checks protections right before each removal and keeps the files when one appears after the validity check",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-7",
+        "KNOW-10"
+      ],
+      "digest": "9e9a6bc9e03ece0d8f3d933c305c24662c3e27da85b07c04e9c2a638d09ca060",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-no-clobber-restore",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "An archive summary rollback keeps a file recreated during the apply instead of overwriting it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-9"
+      ],
+      "digest": "4d96ff27954465f613363d3b61f97da9b9b24e2a38e8e422dabb63ddbd8678e9",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archive-summary-stale-holds",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "A stale removal hold never breaks status and blocks the next apply until resolved",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-11"
+      ],
+      "digest": "55e8e623839190e040b25407c152f03ad01c986df8393db2fa68c21b40bbc630",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-spec-files-read-at-any-size",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-034"
+      ],
+      "status": "active",
+      "title": "A requirements companion over 4 MiB is read at any size; ownership is still checked",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-15",
+        "LIFE-6"
+      ],
+      "digest": "74336dd0e71f5b4e85d6a2835992611685497ef6ab1dbd70ca2da9cb4caba4da",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-hi-export-over-16-kib-validates",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-042"
+      ],
+      "status": "active",
+      "title": "Criteria validate against a HI family export over 16 KiB; a retired criterion is still refused",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-15"
+      ],
+      "digest": "06ce91e684a2d073f2f60dedba7ff239da4f59f48ca06f4268631eac2ab7320d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-archived-finalization-over-record-bound",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-042"
+      ],
+      "status": "active",
+      "title": "Retention reads an archived finalization.json over 64 KiB",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-17"
+      ],
+      "digest": "2bfe5523e0e88d12806cd783469dab05919816e267d49a2a215628d583286938",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-reduce-superseded-runs",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "Superseded runs of a cold change are trimmed, keeping the newest run and the newest failure",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-20"
+      ],
+      "digest": "930f85987287c4eddee59067c3845de3b72f75837cf50245e8c4462f58b507bc",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-reduce-attributed-by-cycle-time",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "Unlisted proof is attributed to its change by cycle time",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-16"
+      ],
+      "digest": "5a3398c427c4e045b847c6ed3c9e95888b8e9cddb3208405817262aff0ed4794",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-reduce-done-drops-closed-cycle-refs",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-045"
+      ],
+      "status": "active",
+      "title": "Done drops checkpoint references from closed cycles",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-10",
+        "DRIVE-10"
+      ],
+      "digest": "aa87a64763cdca34451179f273d41e8d9ff7d16a0948c366265ae65c4e52283b",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-reduce-parallel-validity",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "Native validity reads run in parallel",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-10",
+        "KNOW-17"
+      ],
+      "digest": "3d5846068d8ab61aabf6217416cdb55916fdc1d6ea1110dd5a35c5881083c2f1",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-reduce-shared-artifact-released",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-033"
+      ],
+      "status": "active",
+      "title": "A shared artifact released by an earlier removal does not stop the trim",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-16"
+      ],
+      "digest": "d8bde17511e574ae25ed6211276c16dbab327f748a20148f138df4f36fcb5a2e",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-reduce-unreadable-reference-kept",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-045"
+      ],
+      "status": "active",
+      "title": "An unreadable record keeps its checkpoint reference and refuses the closed-cycle drop",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-18",
+        "KNOW-20"
+      ],
+      "digest": "cd62449a094ebcd56443669944c29661a4487cf249db876b449e1d527e88c35d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-loose-artifacts-trimmed",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "Loose artifacts of a cold change are trimmed; current or bug-held ones stay",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-18"
+      ],
+      "digest": "a16a04346fcbf41129f443a7533f577475a51611a63ce18bd404384db24bc445",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-closed-bug-releases-fixture",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A closed bug releases its loose fixture",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-19"
+      ],
+      "digest": "dc955baf59c0bc9a7dce5f974471261571dab163c9bec4c2f99eeaa0c68e0f6a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-key-items-move",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "Key items of a cold change move into the vault",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-10",
+        "KNOW-18"
+      ],
+      "digest": "efe1a72a39f8ad387872d600f4faf7fd41231cdce850b04326f4ba94843a714a",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-loose-group-gains-released-file",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A loose artifact group that gains a file released by an earlier removal is still trimmed",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-10",
+        "KNOW-18"
+      ],
+      "digest": "0122bfbfeba24e54a0463f40ad07880fc9f1b7c0fc9ed695a8e2b682d0283c77",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-loose-file-protected-mid-apply",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A planned loose file protected during the apply refuses the trim and restores it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-19"
+      ],
+      "digest": "bc4be3a27ae0c291862c9fad8f79d670649af7f962978edd19d17eb8baeeac4d",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-long-archive-short-folder",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "Key items of a long archive ID move under a short, stable attachments folder",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-19",
+        "KNOW-10"
+      ],
+      "digest": "45a9cb140182c321b2edcc3d66c76c6a04c2827d28276ed789aceeaa0ce7d847",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-attachment-path-bound",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A key item whose attachment path would pass 220 characters stays, protected",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-19"
+      ],
+      "digest": "bbb1ba30e832b23f693d33b250914946fd880d6893d66e692e33632c28a49af8",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-moved-key-item-mode",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A key item moved into the vault keeps its mode",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-10"
+      ],
+      "digest": "e747f9424cb89090b81b24643d84e37bbd2aa4bc96d2c9ddbadb889019f7d665",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-restore-keeps-mode",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A refused apply restores removed files with their modes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-19",
+        "KNOW-10"
+      ],
+      "digest": "5fef10450249c97397886c21e465ee548e6ac7deff5f191941e54add1163e787",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-occupied-attachment-kept",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "An attachment that already holds other bytes keeps both files and its set",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-19",
+        "KNOW-10"
+      ],
+      "digest": "934ea42cf011129822eccfd95174437681ed33c8722f6c85f07c514d40eb9c49",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-attachment-written-mid-apply",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "An attachment written during the apply refuses it and both files are kept",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-19",
+        "KNOW-10"
+      ],
+      "digest": "38ccd8a701276fc5b89dd4e8c949c5c34bd9294f68bb8ffd28a17d95991fd803",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-identical-attachment-survives-restore",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "An identical attachment already in place survives a refused apply",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-18"
+      ],
+      "digest": "2c99236503836d04fb43e93c574cae3822fedd724ddbf3dbe5f0f54982299dea",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-open-bug-folder-fixture",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "An open bug whose fixture is a folder protects the files inside it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-18",
+        "KNOW-16"
+      ],
+      "digest": "315ddf46627b86ddc120a42de8a30d24d619eeda4a7fdb5e370b0804d95b6402",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-checkpoint-folder-reference",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A checkpoint folder reference protects the loose files and observation sets inside it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-18",
+        "KNOW-20"
+      ],
+      "digest": "f6a4e448c9a2fb8630b38dc3453d00b8c0b27ef5ca4fbf417f01dd6ff9a04ee6",
+      "file": ".chough/cases/cli.cases.toml",
+      "id": "TC-cli-vault-mixed-age-folder-stays",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A loose folder with a cold-listed file and a current file stays whole",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-22",
+        "KNOW-19"
+      ],
+      "digest": "d89f255ba4518aba1b9099d306de0d9c6849b918914771df1efc63edfa3b353c",
+      "file": ".chough/cases/cli.closed-bugs-release-proof.cases.toml",
+      "id": "TC-cli-closed-bug-key-items-move-to-vault",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-048"
+      ],
+      "status": "active",
+      "title": "A closed bug's key items move into the vault under the bug and its other runs are trimmed",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-22",
+        "KNOW-18"
+      ],
+      "digest": "2ab054f4f5649fc2a8622b064037c63f4f81d15fd1195f925f6fdd4ba4a038b8",
+      "file": ".chough/cases/cli.closed-bugs-release-proof.cases.toml",
+      "id": "TC-cli-closed-bug-fixture-moves-to-vault",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-048"
+      ],
+      "status": "active",
+      "title": "A closed bug's fixture under .chough moves into the vault under the bug",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-22"
+      ],
+      "digest": "3f2f70e0ffce93702b6de5b9b98275138dfbce41846f5e9a7230c1feabbda6a8",
+      "file": ".chough/cases/cli.closed-bugs-release-proof.cases.toml",
+      "id": "TC-cli-open-bug-keeps-links",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-048"
+      ],
+      "status": "active",
+      "title": "An open bug keeps every observation it links",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-21"
+      ],
+      "digest": "69cf997734abaf2930ed5ec51883ffd84f72bf727ef0f22193f9f3ad2f2be2ab",
+      "file": ".chough/cases/cli.closed-cycle-file-refs.cases.toml",
+      "id": "TC-cli-archived-session-refs-protect-nothing",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-045"
+      ],
+      "status": "active",
+      "title": "An archived session's file and design references protect no proof",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-23"
+      ],
+      "digest": "b49f23b1a6e3173419d729133e3a3ba8f6fc2c470cd4d1f7d8b781850507090c",
+      "file": ".chough/cases/cli.ledger-rotation.cases.toml",
+      "id": "TC-cli-ledger-keeps-newest-and-moves-the-rest",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-049"
+      ],
+      "status": "active",
+      "title": "At done the ledger keeps its newest 100 entries and moves older summarized ones into the vault",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-23"
+      ],
+      "digest": "48c7e5d0b1cfdb9268d1a6a9f36aea8053cb7243e2233fab9371d15e3f410076",
+      "file": ".chough/cases/cli.ledger-rotation.cases.toml",
+      "id": "TC-cli-moved-ledger-entries-are-read",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-049"
+      ],
+      "status": "active",
+      "title": "Moved ledger entries are still read by labels, bug views and notes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-23"
+      ],
+      "digest": "dd8dda2e3f452cf9539e4d592eef608a31b89975946c518865d73104b2048dbb",
+      "file": ".chough/cases/cli.ledger-rotation.cases.toml",
+      "id": "TC-cli-rotation-leftover-read-once",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-049"
+      ],
+      "status": "active",
+      "title": "An interrupted rotation's leftover line is read once",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "DRIVE-15",
+        "DRIVE-2",
+        "LIFE-3",
+        "LIFE-7"
+      ],
+      "digest": "a7e515d39d4c7f118dfc374c016bab8061faafc6640d768e9cb683d04335e1a1",
+      "file": ".chough/cases/cli.next-status-latency.cases.toml",
+      "id": "TC-cli-archived-report-reuse",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-053"
+      ],
+      "status": "active",
+      "title": "Warm archived reports reuse SpecSync's verdict while every lifecycle read stays live",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "DRIVE-15",
+        "DRIVE-2",
+        "LIFE-7"
+      ],
+      "digest": "25b538b6805b1209eb7c181bb11ba3731d2e877cc85abd77e175db5a4256c06a",
+      "file": ".chough/cases/cli.next-status-latency.cases.toml",
+      "id": "TC-cli-archive-cache-invalidation",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-053"
+      ],
+      "status": "active",
+      "title": "Every cache identity mismatch or untrusted entry forces a live native read",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "DRIVE-15",
+        "DRIVE-2",
+        "LIFE-7"
+      ],
+      "digest": "733e65ee61a0af0a69b1b62d5ab1f08e27ad6dfafdf92ec647d4d5234d28af59",
+      "file": ".chough/cases/cli.next-status-latency.cases.toml",
+      "id": "TC-cli-archive-cache-timeout",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-053"
+      ],
+      "status": "active",
+      "title": "A timed-out prime writes nothing, kills native children and retries cold",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "DRIVE-15",
+        "LIFE-3",
+        "LIFE-6"
+      ],
+      "digest": "5aa8127e34076938fa3a54b64e2a8eb6444d6966106f46af6cd95de9fd69af2b",
+      "file": ".chough/cases/cli.next-status-latency.cases.toml",
+      "id": "TC-cli-snapshot-worker-identity",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-053"
+      ],
+      "status": "active",
+      "title": "Concurrent snapshot workers preserve exact identities and change front-matter rules",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "DRIVE-15",
+        "DRIVE-2",
+        "LIFE-7"
+      ],
+      "digest": "74c5e86c830c2f021be2bcb4d8f12bba871e3539e0f2bbf5a1020756cbdc06d8",
+      "file": ".chough/cases/cli.next-status-latency.cases.toml",
+      "id": "TC-cli-specsync-symlink-reuse",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-053"
+      ],
+      "status": "active",
+      "title": "A symlinked SpecSync executable is keyed by its exact resolved bytes and path",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "KNOW-10",
+        "KNOW-19"
+      ],
+      "digest": "89906c5eb725aafadfd235095153191f8cf1b26b4e7f55c798bda9ad238e225e",
+      "file": ".chough/cases/cli.staged-vault-copies.cases.toml",
+      "id": "TC-cli-failed-copy-keeps-other-writer",
+      "method": "automated",
+      "requirements": [
+        "REQ-cli-046"
+      ],
+      "status": "active",
+      "title": "A failed vault copy never deletes another writer's bytes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "8584f62cfb599623ea75188bbd525af8ecdd09232f6c6257ff6307c2730e5b12",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0050",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Preview lists sets with reasons and bytes and changes nothing",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "79043be70836eda71f9eea2ef3816b12a65d926a483df09c28ecad622bab16d3",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0051",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Every protection reason is named",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "b6b6b0976a7a4cc1da466abecdf8dd9cc4d36b57bfbb70aeb6914b8049298796",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0052",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Newest runs count per case and environment",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "af75dd3cccb36e4670ac7fc566d917a4172abf8851f278681d189b793db70fa4",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0053",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Apply needs consent or the standing preference and appends the ledger",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "ea23b9764badc8db694a8a97f12c7ae55c624f1ef7c46ebcf5275e82e0f68cfd",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0054",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Removed and missing observations are labeled and never count",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "0481024ac9b622cacdd73c7cc00af66cae7fd3d08575c69696c5963706adc879",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0055",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "A validation run keeps its counts after its middle passes are pruned",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "49915c1d78e638db23b5540c018f6959a618c26a6366b282a2115b57b070685b",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0056",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Native manifests protect their sets and a failed read protects everything",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "cd7a6f8247b9d27b044a3eb367a96702b15d696b01e556598070d3ba4fc99fd2",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0057",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Automatic pruning follows case runs only when retention is auto",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "c39da8ebe3c58786ecc8553a2d54e542450cc0a98a4a073f857d4e6c6d0d80ec",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0058",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "A multi case record counts in the group of every case",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "c75cc031f74beab7f1223fe7136bf61d28509fcd67242f8e3fd020c4711cf5ad",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0059",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "One artifact spelled two ways is shared and kept",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "10954b1c94fe82e11b0609982b029d493346ed8209f5b96cc5c788e414a1786e",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0060",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Bug fixtures and checkpoint paths protect the sets they name",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-8"
+      ],
+      "digest": "99fa6de71835b200392d8d62e4c4fd014273db7dbe3faee9faabdf6904e0a495",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-0061",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-001"
+      ],
+      "status": "active",
+      "title": "Bug show labels note observations once",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-3",
+        "LIFE-7"
+      ],
+      "digest": "429b8d124fe816f7bd0edbc42db017105c670e8a6599296bb665f2387640ba06",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-adoption",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-002"
+      ],
+      "status": "active",
+      "title": "Explicit history adoption preserves legacy bytes",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "LIFE-7"
+      ],
+      "digest": "60329621745081284da57b2bcc8007349d5fda3b52b8c2da7abfa8a71bda3c2f",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-branches",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-002"
+      ],
+      "status": "active",
+      "title": "Independent branch events survive with explicit checkpoint selection",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "LIFE-8",
+        "LIFE-10"
+      ],
+      "digest": "71a7163bad98539983dbe3dcd87d28a153f4b17eea3b0e5c16f7e61618529583",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-bounds",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-003"
+      ],
+      "status": "active",
+      "title": "History event, cycle, recent and maintenance limits are exercised",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-7",
+        "LIFE-8"
+      ],
+      "digest": "a506523ac0762ff2837963c1ca59b1c2f5cc4faba9000a0416dc9df4da97c5cb",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-retention",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-003"
+      ],
+      "status": "active",
+      "title": "History retention revalidates new protection and preserves proof",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-2",
+        "LIFE-7",
+        "LIFE-8"
+      ],
+      "digest": "ca5985b9e451df01418c2ee4269535fd891534e96e70a85ab36a660beeda85aa",
+      "file": ".chough/cases/history.cases.toml",
+      "id": "TC-history-retention-revalidation",
+      "method": "automated",
+      "requirements": [
+        "REQ-history-004"
+      ],
+      "status": "active",
+      "title": "Evidence cleanup retains changed missing and newly referenced proof",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-10"
+      ],
+      "digest": "491551ea2183cc3ae1489ca37e45dd135eb7eb27479333169f242d1eb5a7a013",
+      "file": ".chough/cases/reporting.cases.toml",
+      "id": "TC-reporting-0104",
+      "method": "automated",
+      "requirements": [
+        "REQ-reporting-001"
+      ],
+      "status": "active",
+      "title": "A case run records its run time and the timing report shows it",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "LIFE-7",
+        "LIFE-10",
+        "FLOW-13"
+      ],
+      "digest": "e94fe79659657c15f7afd60241b45c1f2cc882b79ba08beca17f7c06ec46fda7",
+      "file": ".chough/cases/reporting.cases.toml",
+      "id": "TC-reporting-case-read-budget",
+      "method": "automated",
+      "requirements": [
+        "REQ-reporting-003"
+      ],
+      "status": "active",
+      "title": "Report requests share one case suite across observation and reference checks",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "LIFE-7",
+        "LIFE-10",
+        "FLOW-13"
+      ],
+      "digest": "3d03d32a107c7b228b414170c6ad94722e5e5465f61cb65095693f0f8f919b63",
+      "file": ".chough/cases/reporting.cases.toml",
+      "id": "TC-reporting-read-invalidation",
+      "method": "automated",
+      "requirements": [
+        "REQ-reporting-003"
+      ],
+      "status": "active",
+      "title": "New report requests revalidate case source artifact environment and native inputs",
+      "track": "functional"
+    },
+    {
+      "criteria": [
+        "LIFE-3",
+        "LIFE-7",
+        "LIFE-10",
+        "FLOW-13"
+      ],
+      "digest": "16b8cb3d4c079675e11953b5f7929833a3370e0ea29352f655abff1738673982",
+      "file": ".chough/cases/reporting.cases.toml",
+      "id": "TC-reporting-trace-parity",
+      "method": "automated",
+      "requirements": [
+        "REQ-reporting-003"
+      ],
+      "status": "active",
+      "title": "Report traces preserve stdout errors records and exit results",
+      "track": "functional"
+    }
+  ]
+}

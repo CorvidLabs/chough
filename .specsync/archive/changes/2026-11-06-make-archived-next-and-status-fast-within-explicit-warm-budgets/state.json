@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+  "slug": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+  "title": "Make archived next and status fast within explicit warm budgets",
+  "description": "Make archived next and status fast within explicit warm budgets",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "e99dc7961323e5c4e2aff1a2cf13333b0c47037e",
+  "created_at": 1793936770,
+  "updated_at": 1794009235,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/native.rs",
+    "src/main.rs",
+    "src/stage.rs",
+    "src/evidence.rs",
+    "tests/native.rs",
+    "tests/next.rs",
+    "tests/evidence.rs",
+    "tests/common/mod.rs",
+    "docs/cli.md",
+    "docs/FRD.md",
+    "hi/drive.md",
+    "CHANGELOG.md",
+    "specs/cli/cli.spec.md",
+    "specs/cli/testing.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "On this macOS arm64 Chough checkout with 121 archives, a release build of next and status for a session naming an archived change each finishes at or below 2000 ms at p95 and 3000 ms for every run across 10 warm runs after one successful priming run. A valid warm archive entry makes zero SpecSync status calls; cold or invalid entries make one live bounded read and preserve observed, failed, timed-out and unknown states. Only a completed authenticated read primes an entry; a timed-out prime writes no entry, leaves no native descendants, and causes another bounded cold attempt rather than a warm claim. Every stage transition, timing report, retention decision and native verification keeps its live authoritative read and existing gate, output and timeout bounds. Cache invalidation covers archive bytes and Git identity, the resolved SpecSync binary and version, native policy/configuration/baseline, and shallow/replace/graft history inputs. Snapshot optimizations preserve byte-identical legacy and content fingerprints and observation freshness. Failing-first regressions, before/after real measurements and fledge lanes run verify are recorded."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "DRIVE-2 permits committed archive reads or a digest-keyed cache but requires native state to keep deciding gates. specs/cli/context.md records that per-archive native status is expensive and that PR 69 omitted Git history inputs. Keep the existing native timeout, output, evidence and lifecycle bounds; do not edit checkpoint or session storage, do not create a second native authority, and preserve PR 133's overlapping edits when main is merged.",
+    "public_contract": "yes"
+  }
+}

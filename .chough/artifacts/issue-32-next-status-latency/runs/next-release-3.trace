@@ -1,0 +1,14 @@
+chough-trace: native state=observed elapsed_ms=46 command=specsync change status --json
+chough-trace: phase next.assess elapsed_ms=60
+chough-trace: phase snapshot.git-enumeration elapsed_ms=669
+chough-trace: phase snapshot.hash elapsed_ms=1913
+chough-trace: phase snapshot.git-status elapsed_ms=1073
+chough-trace: phase case-suite elapsed_ms=3
+chough-trace: phase next.references elapsed_ms=107
+chough-trace: phase evidence.load elapsed_ms=283
+chough-trace: phase next.render elapsed_ms=0
+chough-trace: phase freshness.artifacts elapsed_ms=55
+chough-trace: case-suite loads=1 lookups=62 unique_ids=57
+real 4.20
+user 0.22
+sys 0.87

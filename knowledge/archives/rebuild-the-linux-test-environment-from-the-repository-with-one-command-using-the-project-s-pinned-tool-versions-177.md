@@ -48,15 +48,24 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-1 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+9 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-archive-cache-invalidation-c6967565fd883fbf3ec5a0c3 | passed (by cycle time) | local-macos-arm64 | TC-cli-archive-cache-invalidation |
+| OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a | passed (by cycle time) | local-macos-arm64 | TC-cli-archive-cache-timeout |
+| OBS-tc-cli-archived-report-reuse-20f0b488f31ec8fa7fbbff14 | passed (by cycle time) | local-macos-arm64 | TC-cli-archived-report-reuse |
+| OBS-tc-cli-archived-report-reuse-59382721b25cc6f8e1ab97ce | passed (by cycle time) | local-macos-arm64 | TC-cli-archived-report-reuse |
+| OBS-tc-cli-archived-report-reuse-caa35ad0d8067f0b20169c34 | failed (by cycle time) | local-macos-arm64 | TC-cli-archived-report-reuse, TC-cli-archive-cache-invalidation, TC-cli-archive-cache-timeout |
 | OBS-tc-cli-linux-image-from-ci-pins-7553ec1c8fafef747b7a69fe | passed (by cycle time) | local-linux-aarch64 | TC-cli-linux-image-from-ci-pins |
+| OBS-tc-cli-snapshot-worker-identity-5eaeb6789f2e89031c77c344 | passed (by cycle time) | local-macos-arm64 | TC-cli-snapshot-worker-identity |
+| OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3 | passed (by cycle time) | local-macos-arm64 | TC-cli-specsync-symlink-reuse |
+| OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7 | failed (by cycle time) | local-macos-arm64 | TC-cli-specsync-symlink-reuse |
 
 ## Bugs
 
-- none
+- BUG-archived-reports-lack-bounded-authenticated-reuse-0536fdd42da0bab4c25202cf verified (references OBS-tc-cli-archived-report-reuse-caa35ad0d8067f0b20169c34, OBS-tc-cli-archived-report-reuse-59382721b25cc6f8e1ab97ce, OBS-tc-cli-archive-cache-invalidation-c6967565fd883fbf3ec5a0c3, OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a)
+- BUG-specsync-symlink-cache-key-uses-unresolved-path-9205c0afb5fb77ec63d04630 verified (references OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7, OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3)
 
 ## Loose artifacts
 

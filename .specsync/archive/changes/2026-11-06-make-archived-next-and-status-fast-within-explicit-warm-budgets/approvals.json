@@ -1,0 +1,124 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1793941222,
+      "digest": "fbe2dd3e67eedfb17e949fafd5bd74e704aa6a36fac0dc172ecabfd4a3429d6d",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+        "title": "Make archived next and status fast within explicit warm budgets",
+        "description": "Make archived next and status fast within explicit warm budgets",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/native.rs",
+          "src/stage.rs",
+          "tests/common/mod.rs",
+          "tests/evidence.rs",
+          "tests/native.rs",
+          "tests/next.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "On this macOS arm64 Chough checkout with 121 archives, a release build of next and status for a session naming an archived change each finishes at or below 2000 ms at p95 and 3000 ms for every run across 10 warm runs after one successful priming run. A valid warm archive entry makes zero SpecSync status calls; cold or invalid entries make one live bounded read and preserve observed, failed, timed-out and unknown states. Only a completed authenticated read primes an entry; a timed-out prime writes no entry, leaves no native descendants, and causes another bounded cold attempt rather than a warm claim. Every stage transition, timing report, retention decision and native verification keeps its live authoritative read and existing gate, output and timeout bounds. Cache invalidation covers archive bytes and Git identity, the resolved SpecSync binary and version, native policy/configuration/baseline, and shallow/replace/graft history inputs. Snapshot optimizations preserve byte-identical legacy and content fingerprints and observation freshness. Failing-first regressions, before/after real measurements and fledge lanes run verify are recorded."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "DRIVE-2 permits committed archive reads or a digest-keyed cache but requires native state to keep deciding gates. specs/cli/context.md records that per-archive native status is expensive and that PR 69 omitted Git history inputs. Keep the existing native timeout, output, evidence and lifecycle bounds; do not edit checkpoint or session storage, do not create a second native authority, and preserve PR 133's overlapping edits when main is merged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "f0a120fbbfcd5ed5ab9b4e6a12f40805e482960e7729eefa7cbef19b8b939887"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794005317,
+      "digest": "2a07b6eebe9917330e9178f0f537a6a509cfc584d4e208580e44f3daf436c005",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+        "title": "Make archived next and status fast within explicit warm budgets",
+        "description": "Make archived next and status fast within explicit warm budgets",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/testing.md",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/native.rs",
+          "src/stage.rs",
+          "tests/common/mod.rs",
+          "tests/evidence.rs",
+          "tests/native.rs",
+          "tests/next.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "On this macOS arm64 Chough checkout with 121 archives, a release build of next and status for a session naming an archived change each finishes at or below 2000 ms at p95 and 3000 ms for every run across 10 warm runs after one successful priming run. A valid warm archive entry makes zero SpecSync status calls; cold or invalid entries make one live bounded read and preserve observed, failed, timed-out and unknown states. Only a completed authenticated read primes an entry; a timed-out prime writes no entry, leaves no native descendants, and causes another bounded cold attempt rather than a warm claim. Every stage transition, timing report, retention decision and native verification keeps its live authoritative read and existing gate, output and timeout bounds. Cache invalidation covers archive bytes and Git identity, the resolved SpecSync binary and version, native policy/configuration/baseline, and shallow/replace/graft history inputs. Snapshot optimizations preserve byte-identical legacy and content fingerprints and observation freshness. Failing-first regressions, before/after real measurements and fledge lanes run verify are recorded."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "DRIVE-2 permits committed archive reads or a digest-keyed cache but requires native state to keep deciding gates. specs/cli/context.md records that per-archive native status is expensive and that PR 69 omitted Git history inputs. Keep the existing native timeout, output, evidence and lifecycle bounds; do not edit checkpoint or session storage, do not create a second native authority, and preserve PR 133's overlapping edits when main is merged.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "f0a120fbbfcd5ed5ab9b4e6a12f40805e482960e7729eefa7cbef19b8b939887"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794009209,
+      "digest": "0e15fa27fcdc6db8799702d2b76d0dfb54536cce9ff8857111fa00149f0432c7",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "make-archived-next-and-status-fast-within-explicit-warm-budgets",
+      "actor": "0xLeif",
+      "reason": "Add the companion paths specs/cli/cli.spec.md and specs/cli/testing.md to affected_paths; they already carry the approved REQ-cli-053. No behavior change. (Leif approved, 2026-11-06 morning.)",
+      "timestamp": 1793970927,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": false,
+      "applied_modules": [
+        "cli"
+      ]
+    }
+  ]
+}

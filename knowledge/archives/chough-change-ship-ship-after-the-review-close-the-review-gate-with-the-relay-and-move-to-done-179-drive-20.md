@@ -46,29 +46,15 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-20 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+6 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-product-test-43953badfa0bdb247decd5d4 | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-tc-cli-change-ship-checks-before-running-850fd2b5156999ca3757ed47 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-checks-before-running |
-| OBS-tc-cli-change-ship-checks-before-running-a1285806eaa44873ff77349c | failed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-checks-before-running |
 | OBS-tc-cli-change-ship-checks-before-running-b9525101163d73b8ba5a3738 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-checks-before-running |
-| OBS-tc-cli-change-ship-checks-before-running-c14a4660777723bfb60f4498 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-checks-before-running |
-| OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-7696aff038e3442e9225ef43 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-closes-gate-and-moves-to-done |
 | OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-b8b96571c25ed80fcdfcd791 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-closes-gate-and-moves-to-done |
-| OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-c02b6b130c4b64cc5f9a9e85 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-closes-gate-and-moves-to-done |
-| OBS-tc-cli-change-ship-names-remaining-step-327e6e5541f57979ac03b8ff | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-names-remaining-step |
 | OBS-tc-cli-change-ship-names-remaining-step-4dab9573dc57469f2f0cacfb | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-names-remaining-step |
-| OBS-tc-cli-change-ship-names-remaining-step-9d58101db8dc293b5ff2f97d | failed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-names-remaining-step |
 | OBS-tc-cli-change-ship-outlives-read-bound-63957ecaa5867c7baa0ff452 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-outlives-read-bound |
-| OBS-tc-cli-change-ship-outlives-read-bound-6474718972663d4b81bef563 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-outlives-read-bound |
-| OBS-tc-cli-change-ship-outlives-read-bound-bb6a80a50486f991edc7efbb | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-outlives-read-bound |
-| OBS-tc-cli-change-ship-refusal-passes-through-35ba56b399a6c0153517e135 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-refusal-passes-through |
-| OBS-tc-cli-change-ship-refusal-passes-through-79995b81cd057ee17b9cbd03 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-refusal-passes-through |
 | OBS-tc-cli-change-ship-refusal-passes-through-b81f1986cced1d35cc1c2489 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-refusal-passes-through |
-| OBS-tc-cli-change-walkthrough-runs-chough-932d8c05ae5a9f2dff43dd49 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-walkthrough-runs-chough |
-| OBS-tc-cli-change-walkthrough-runs-chough-dc9b4b427e025a35a068c618 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-walkthrough-runs-chough |
 | OBS-tc-cli-change-walkthrough-runs-chough-eeab06073c51349b7b6ecf79 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-walkthrough-runs-chough |
 
 ## Bugs
