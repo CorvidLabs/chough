@@ -68,7 +68,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-change-steps-exact-arguments-d8842b8ef670bdc102e6227d | failed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-exact-arguments |
 | OBS-tc-cli-change-steps-pass-through-8b387a2f06ba2494c9c37cd5 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-pass-through |
 | OBS-tc-cli-change-steps-pass-through-e7c98b22680b15f295f2125f | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-steps-pass-through |
-| OBS-tc-cli-change-steps-write-nothing-2bbdc4de3ce2ea8a4a5a72ca | failed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-write-nothing |
+| OBS-tc-cli-change-steps-write-nothing-2bbdc4de3ce2ea8a4a5a72ca | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-steps-write-nothing |
 | OBS-tc-cli-change-steps-write-nothing-eca6338eb5cb73067e391c7f | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-steps-write-nothing |
 | OBS-tc-cli-cli-command-table-matches-help-1921598bd0a22b35ad1a230f | failed (by cycle time) | local-macos-arm64 | TC-cli-cli-command-table-matches-help |
 | OBS-tc-cli-cli-command-table-matches-help-4bb9fc6a4f11994c45c7d052 | passed (by cycle time) | local-macos-arm64 | TC-cli-cli-command-table-matches-help |
@@ -94,4 +94,5 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [artifacts/OBS-tc-cli-change-steps-write-nothing-2bbdc4de3ce2ea8a4a5a72ca.log](../attachments/make-the-timing-2982a0d4/artifacts/OBS-tc-cli-change-steps-write-nothing-2bbdc4de3ce2ea8a4a5a72ca.log)
+- [sessions/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.json](../attachments/make-the-timing-2982a0d4/sessions/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.json)

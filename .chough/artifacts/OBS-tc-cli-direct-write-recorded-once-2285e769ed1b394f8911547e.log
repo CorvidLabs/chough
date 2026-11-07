@@ -1,0 +1,26 @@
+--- stdout ---
+
+running 1 test
+test a_direct_lifecycle_write_is_recorded_once_with_the_next_stage_move ... FAILED
+
+failures:
+
+---- a_direct_lifecycle_write_is_recorded_once_with_the_next_stage_move stdout ----
+
+thread 'a_direct_lifecycle_write_is_recorded_once_with_the_next_stage_move' (442094820) panicked at tests/direct_writes.rs:126:5:
+assertion `left == right` failed: []
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_direct_lifecycle_write_is_recorded_once_with_the_next_stage_move
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 1.06s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/direct_writes.rs (target/debug/deps/direct_writes-02b50d73c1d8a1cb)
+error: test failed, to rerun pass `--test direct_writes`

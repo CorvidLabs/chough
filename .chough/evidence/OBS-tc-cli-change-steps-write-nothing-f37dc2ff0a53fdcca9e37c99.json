@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-steps-write-nothing-f37dc2ff0a53fdcca9e37c99",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact no_change_command_writes_a_tracked_file_under_dot_chough for TC-cli-change-steps-write-nothing: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-steps-write-nothing-f37dc2ff0a53fdcca9e37c99.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-steps-write-nothing-f37dc2ff0a53fdcca9e37c99.log": "4506ec259b59500ef921b259d21c4586cc6a7cb0a775a4d88da6c636fa7c6d9d"
+  },
+  "observed_at_unix_seconds": 1794011610,
+  "snapshot": {
+    "revision": "dad339ed70b1cff2ee1accfef0f9d1ae0545ad01",
+    "dirty": false,
+    "fingerprint": "fb6e265e8b82a9323511badf34343509a3ec7a7141e631b459a7724df4d6646a",
+    "content": "a25cd4c817e63b0a40e39d5cf33c0e53d624a4f0fb395c4246e36d3fc6541a34"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-steps-write-nothing",
+      "digest": "64d6375ed9c08d6dd2a1b4b2edf5675d299139bb9769ebb4a9ac75a77a84301d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "no_change_command_writes_a_tracked_file_under_dot_chough"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

@@ -92,6 +92,10 @@ chough change ship <id> --close-gate "Implementation review of <id>" \
   --recorded-by "<agent-account>"
 ```
 
+Direct `specsync` lifecycle calls (here, approve and review) still work. The next
+stage move records them as `direct-native-write` history events, so the need can be
+seen (DRIVE-21).
+
 Use the project agent account for the native record and retain the actual human
 acceptance source separately, with the relay `chough change ship` records; the actor label
 does not supply that acceptance, and the native review is a recorded claim bound to

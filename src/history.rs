@@ -314,11 +314,11 @@ fn validate_payload(transition: &stage::Transition) -> Result<()> {
         stage::STAGE_KINDS.contains(&transition.kind.as_str())
             || matches!(
                 transition.kind.as_str(),
-                stage::GATE_OPENED | stage::GATE_CLOSED
+                stage::GATE_OPENED | stage::GATE_CLOSED | stage::DIRECT_WRITE
             ),
         "unknown transition kind"
     );
-    stage::validate_relay(transition)
+    stage::validate_records(transition)
 }
 
 fn anchor(root: &Path) -> Result<Option<Anchor>> {
@@ -452,11 +452,11 @@ fn parse_event(bytes: &[u8], cycle: &str, id: &str) -> Result<Event> {
         stage::STAGE_KINDS.contains(&event.transition.kind.as_str())
             || matches!(
                 event.transition.kind.as_str(),
-                stage::GATE_OPENED | stage::GATE_CLOSED
+                stage::GATE_OPENED | stage::GATE_CLOSED | stage::DIRECT_WRITE
             ),
         "unknown transition kind at {path}"
     );
-    stage::validate_relay(&event.transition).with_context(|| format!("at {path}"))?;
+    stage::validate_records(&event.transition).with_context(|| format!("at {path}"))?;
     Ok(event)
 }
 
@@ -1756,6 +1756,7 @@ mod tests {
             refresh: vec![],
             backfill: None,
             relayed_by: None,
+            direct_write: None,
         }
     }
 

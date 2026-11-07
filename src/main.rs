@@ -4,6 +4,7 @@ mod cases;
 mod change;
 mod checkpoint;
 mod context;
+mod direct_writes;
 mod doctor;
 mod evidence;
 mod history;
@@ -485,6 +486,10 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "session_next_action": session.next_action(),
         "next_valid_action": assessment.action.action,
         "checkpoint": stage_report,
+        "direct_writes": direct_writes::view(root, match session {
+            Session::V2(checkpoint) => checkpoint.native_change.as_deref(),
+            Session::V1(_) => None,
+        }),
         "transition_history": assessment.history,
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
@@ -802,6 +807,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
         "native_check": native_check::view(root, change.as_deref(), summary)?,
+        "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         "next_valid_action": {
@@ -943,6 +949,9 @@ fn next_text(view: &Value) -> String {
             text(&gate["label"])
         ));
         lines.push(format!("  {}", text(&gate["detail"])));
+    }
+    if let Some(line) = direct_writes::next_line(&view["direct_writes"]) {
+        lines.push(line);
     }
     for (key, title) in [
         ("awaiting_human", "Human gates"),

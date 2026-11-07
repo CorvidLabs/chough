@@ -192,12 +192,24 @@ fn specsync_output_and_exit_code_pass_through_byte_for_byte() {
 }
 
 #[test]
-fn no_change_command_writes_under_dot_chough() {
+fn no_change_command_writes_a_tracked_file_under_dot_chough() {
+    // REQ-cli-057 as modified by REQ-cli-060: no tracked file under `.chough/` changes,
+    // and under `.chough/local/` a step writes only its change's direct-write baseline.
     let fixture = fixture();
     fixture.init();
+    // A checkpoint save, as in any project past init: the writer's lock creates the
+    // `.gitignore` that keeps `.chough/local/` untracked.
+    fixture.ok(&["checkpoint", "--next-action", "Run the change steps"]);
     fixture.write(".stub-out", "{}\n");
-    let before = dot_chough(fixture.root());
-    assert!(!before.is_empty(), "the fixture has a checkpoint");
+    let split = |files: BTreeMap<String, Vec<u8>>| {
+        let (local, tracked): (BTreeMap<_, _>, BTreeMap<_, _>) = files
+            .into_iter()
+            .partition(|(name, _)| name.starts_with(".chough/local/"));
+        (tracked, local)
+    };
+    let (tracked_before, local_before) = split(dot_chough(fixture.root()));
+    assert!(!tracked_before.is_empty(), "the fixture has a checkpoint");
+    let baseline = ".chough/local/native-writes/free-shipping.json";
     for code in ["0", "1"] {
         fixture.write(".stub-exit", code);
         for (chough, specsync) in steps() {
@@ -205,13 +217,24 @@ fn no_change_command_writes_under_dot_chough() {
             run_env(&fixture, &chough, &[]);
             // The step ran, so an unchanged .chough/ is not just a refusal.
             assert_eq!(argv(&fixture), specsync, "{chough:?} did not run SpecSync");
+            let (tracked, local) = split(dot_chough(fixture.root()));
             assert_eq!(
-                dot_chough(fixture.root()),
-                before,
-                "{chough:?} changed .chough/ (exit {code})"
+                tracked, tracked_before,
+                "{chough:?} changed a tracked file under .chough/ (exit {code})"
             );
+            for (name, bytes) in &local {
+                assert!(
+                    local_before.get(name) == Some(bytes) || name == baseline,
+                    "{chough:?} wrote {name} under .chough/local/ (exit {code})"
+                );
+            }
         }
     }
+    // `answer` and `check` name the change, so its baseline now exists.
+    assert!(
+        fixture.exists(baseline),
+        "no direct-write baseline after chough's own steps"
+    );
 }
 
 #[test]

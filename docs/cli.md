@@ -716,6 +716,35 @@ check --commit` and finalize, so the review gate can only close after the ship.
 Approve and review, and the plain `specsync change check <id>` that materializes a
 delta without committing, are still run with `specsync` directly.
 
+## Direct lifecycle writes
+
+Agents may still run `specsync` lifecycle commands directly, and they still work. Chough
+notes each such write in history, so the need for it can be seen and removed (DRIVE-21,
+REQ-cli-060, REQ-history-013).
+
+- **What is watched:** for the active session's native change, the lifecycle records
+  SpecSync writes in `.specsync/changes/<id>/`. These are `state.json`,
+  `approvals.json`, `review.json`, `review-attempts.json`, `verification.json` and
+  `verification-attempts.json`. Authored artifacts such as `context.md`, the plan and
+  the deltas are not watched.
+- **The baseline:** `.chough/local/native-writes/<id>.json` holds each record's SHA-256
+  and the change's state. It is untracked, and written only once `.chough/local/` is
+  ignored. `chough change new`, `answer`, `check` and `ship` update it after their
+  SpecSync step, so Chough's own steps are never flagged. A difference they find before
+  their step stays pending.
+- **Recording:** the next successful `chough stage` move records each pending write and
+  any current difference as a `direct-native-write` event before its own event. The
+  event has `from` and `to` set to the stage left, and `direct_write` holds `change`,
+  `files` (each a `path` with `change` added, changed or removed), `before_state` and
+  `after_state`. With no baseline, the first move only sets one. Nothing is recorded
+  outside a stage move, so the window between `change check --commit` and finalize
+  gains no write.
+- **Views:** `chough next` prints `Direct lifecycle writes: N not yet recorded (…)`,
+  and `chough status` adds `direct_writes` (`baseline`, `pending`). Neither writes
+  anything.
+- **Compatibility:** Chough builds before 0.5.0 refuse a history holding the event
+  ("unknown transition kind").
+
 ## Execution bounds
 
 Case bindings and native reads (`specsync change status`, `hi export`) run through

@@ -1,0 +1,48 @@
+--- stdout ---
+
+running 1 test
+test next_and_status_show_a_pending_write_and_change_nothing ... FAILED
+
+failures:
+
+---- next_and_status_show_a_pending_write_and_change_nothing stdout ----
+
+thread 'next_and_status_show_a_pending_write_and_change_nothing' (442121823) panicked at tests/direct_writes.rs:197:28:
+next names no direct write:
+Objective: Watch d1
+Stage: intent (active, iteration 2)
+Native change: d1: approved (read observed; approval_valid true, correction_valid true, terminal evidence authenticated-history)
+  Native next action: next
+  Approved deltas: no semantic deltas (no_spec_change)
+Native check: no attempt recorded
+  The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); run `specsync change check d1` to see it.
+Next: Continue intent: Read scoped intent and native status, then choose the next action within the authorized scope.
+  Why: No gate, human decision or blocking bug stops the current stage; this is the checkpoint's next action.
+Gate: none for the next stage
+Human gates: none
+Blockers: none
+Open questions: none
+Blocking bugs: none (0 other open; chough bug list)
+Observations needing attention: none
+  0 referenced current, 0 unreferenced.
+Decisions: none
+Last failure: none
+Lesson sources: none (no modules in the checkpoint)
+Knowledge index: not built; run `chough library init` to create knowledge/
+Archived lesson bundles: none
+Environment: local
+Full view: chough status
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    next_and_status_show_a_pending_write_and_change_nothing
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.79s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running tests/direct_writes.rs (target/debug/deps/direct_writes-02b50d73c1d8a1cb)
+error: test failed, to rerun pass `--test direct_writes`

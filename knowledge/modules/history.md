@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 5
-archived_changes: 22
+archived_changes: 23
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched history
 
-22 archived changes, newest first.
+23 archived changes, newest first.
 
+- [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)
 - [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
@@ -42,5 +43,4 @@ this note only links them.
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
 - [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
 - [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)
-- [fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files](../archives/fold-the-lessons-of-the-109-and-111-fixes-into-the-cli-and-history-lesson-files.md) Fold the lessons of the 109 and 111 fixes into the cli and history lesson files
-- 12 more on the [timeline](../timeline.md)
+- 13 more on the [timeline](../timeline.md)

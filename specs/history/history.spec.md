@@ -1,6 +1,6 @@
 ---
 module: history
-version: 14
+version: 15
 status: active
 files:
   - src/history.rs
@@ -95,3 +95,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 13 | 2026-11-06 | a-session-archives-itself-at-its-own-move-into-done-155: A session archives itself at its own move into done (155) |
 | 13 | 2026-11-06 | a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16: A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) |
 | 14 | 2026-11-06 | chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17: Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) |
+| 15 | 2026-11-07 | flag-direct-specsync-lifecycle-writes-in-history-183-drive-21: Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) |
