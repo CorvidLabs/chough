@@ -80,6 +80,26 @@
         "REQ-cli-060",
         "REQ-history-013"
       ]
+    },
+    {
+      "timestamp": 1794012803,
+      "commit": "b5a76c97b208a2df3bec63340e38de06fe203be2",
+      "contract_digest": "c464553e87bd5816ca3b894f95a92e4279568b2d931fa0f620d6cbb45ac7b259",
+      "execution_digest": "befdf9030c9ecd10c985a06f81ec64b8e5705d213c4ed988a019e8259402c7ff",
+      "workspace_digest": "ef5720192374130ddd929946b47f3a3137a6e4dc885f180a7b14ebe42784379f",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-057",
+        "REQ-cli-060",
+        "REQ-history-013"
+      ]
     }
   ]
 }
