@@ -45,12 +45,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-dry-run-7a3fb4d187037a2efae55ac9 | passed (by cycle time) | local-linux-aarch64 |  |
-| OBS-structural-00139f76b41cb62e23cf99b8 | passed (by cycle time) | local-linux-aarch64 |  |
 
 ## Bugs
 

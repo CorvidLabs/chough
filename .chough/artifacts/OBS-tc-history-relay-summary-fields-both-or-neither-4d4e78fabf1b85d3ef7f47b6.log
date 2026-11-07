@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test relay_summary_fields_are_both_or_neither ... FAILED
+
+failures:
+
+---- relay_summary_fields_are_both_or_neither stdout ----
+
+thread 'relay_summary_fields_are_both_or_neither' (459350888) panicked at tests/common/mod.rs:91:9:
+["stage", "show"] failed: Error: invalid transition record: unknown field `list`, expected one of `decided_by`, `words`, `where`, `recorded_by` at line 1 column 150
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    relay_summary_fields_are_both_or_neither
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.81s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/gates.rs (target/debug/deps/gates-112e6fb6cb66b3ed)
+error: test failed, to rerun pass `--test gates`
