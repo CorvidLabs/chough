@@ -57,17 +57,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-7 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-product-test-3df243412063021fb3800669 | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
-| OBS-tc-cli-change-new-no-spec-change-bbd11d05c3e46d1472148d6a | passed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
-| OBS-tc-cli-change-new-no-spec-change-e1285c99ba1f66e98847fcfb | failed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
-| OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 | passed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
-| OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 | passed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
-| OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc | failed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 
 ## Bugs
 
