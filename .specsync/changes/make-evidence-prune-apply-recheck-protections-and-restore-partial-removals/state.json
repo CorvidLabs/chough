@@ -7,11 +7,10 @@
   "title": "Make evidence prune --apply recheck protections and restore partial removals",
   "description": "Make evidence prune --apply recheck protections and restore partial removals",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "draft",
   "base_commit": "455cb643cd91a9c804afdf5566e3889abf1bde49",
   "created_at": 1794019871,
-  "updated_at": 1794023213,
+  "updated_at": 1794034281,
   "affected_specs": [
     "history",
     "cli"
@@ -26,7 +25,8 @@
     "docs/FRD.md",
     "docs/cli.md",
     "CHANGELOG.md",
-    ".chough/cases/history.prune-race.cases.toml"
+    ".chough/cases/history.prune-race.cases.toml",
+    "tests/spec_split.rs"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,

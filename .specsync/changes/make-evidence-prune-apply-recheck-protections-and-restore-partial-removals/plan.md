@@ -24,7 +24,7 @@ Add deterministic regressions before the fix. A test-only fault seam in the crat
 1. Add the four focused regressions and their per-change case definitions. Run them against the unfixed tree and preserve the actual failure-first commands, assertions and logs; create or link local bugs before implementation.
 2. Implement prepared removals, stale-hold refusal, byte-checked deletion, rollback and restored events in `src/evidence.rs` without changing the archive path.
 3. Update REQ-history-004 and the CLI Purpose, their testing companions and contract histories, the FRD summary, retention documentation, cases and the Unreleased changelog.
-4. Run the focused tests and cases, full Fledge verify on macOS, and the repository's Linux verify in Docker. Record only observed outcomes.
+4. After the scope amendment is reapproved, refresh only the existing REQ-history-004 pin in `tests/spec_split.rs` to the SHA-256 of the exact approved body; keep every assertion and other pin unchanged. Run the focused tests and cases, full Fledge verify on macOS, and the repository's Linux verify in Docker. Record only observed outcomes.
 5. Merge current origin/main before PR and merge, resolve only this change's conflicts, rebuild the knowledge index if required, and request implementation review at the final archive tip.
 
 One agent owns all affected files; no subagent is needed.

@@ -18,3 +18,9 @@ The installed Chough 0.4.0 lacks the `change` command group. Lifecycle commands 
 Role review found no new product or accessibility decision. QA added an earlier-set rollback scenario so a failure after one complete set cannot leave that set pruned. Engineering and architecture confirmed the create-only recovery hold is necessary for uncommitted evidence and that no archive refactor or native read belongs here.
 
 Scope approval was recorded by the orc as 0xLeif at `80fbe1df895f78d8db8fa33daba54914bcad80aa`. Failure-first regressions were committed at `3ad9df48933b880836c812c06369d00b9369e918`, and their failed observations and local bugs at `55cb7fa5`. Implementation is now underway; implementation review remains a human gate through the orc.
+
+## Scope amendment pending human reapproval
+
+Orc t19f directed a send-back after the declared Linux verify on `7febd53a86d1a007565ff38638b41abd760c123f` failed `moved_requirements_keep_their_wording_under_their_new_ids`. The original approved scope omitted `tests/spec_split.rs`, which pins the exact REQ-history-004 body. The amendment adds only that path; the two approved semantic deltas, requirements, acceptance behavior and existing paths stay unchanged. No HI or REQ ID is added. Native send-back uses the agent actor `sol-ch65` with the honest dependency reason; the original approval remains historical and reapproval is required.
+
+After reapproval only, replace the REQ-history-004 pin `128c08a8a763ba404099891f17da8c28e53da365375a44decfd8755c78208fd2` with `d807b65dc985f3d8971b83fcb6c1e1cc4615beb80ca30dee2ca595e847acf0d2`, computed as SHA-256 of the trimmed approved requirement body. Keep the assertion, ID mapping and every other pin unchanged. The implementation pin is intentionally unchanged at this scope gate. Failure receipt: `.chough/artifacts/issue-65-prune-race/finish/linux-verify-before-pin.log`, `OBS-product-test-f87bec1f3802297bc62bebe7`.

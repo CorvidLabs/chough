@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
-    "head": "EVT-35604a326d9c6e73dcd5e1e1",
+    "head": "EVT-cb47b400dc923a1f0f252430",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,10 +9,10 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "build",
+    "current": "plan",
     "status": "active",
     "callers": [],
-    "iteration": 1
+    "iteration": 2
   },
   "native_change": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
   "references": {
@@ -58,7 +58,8 @@
     "Failing tests: 3ad9df48933b880836c812c06369d00b9369e918; all four direct regressions failed for the intended behavior and their failed cases are linked to local bugs",
     "All four prune regressions passed after implementation; 10 evidence unit, 30 evidence integration and 25 history tests passed, and both local bugs are verified",
     "Failure first: prune_restore_permissions_preserve_replacement_identity ran 1 test, failed mode assertion 0640 versus 0600 before the restore publication fix; receipt restore-identity-before.log",
-    "Failing tests: bf57eb259b17a2ed5634b5ef62f4b1520f8bdd93; rollback replacement chmod changes 0600 to 0640, linked to existing partial-removal bug"
+    "Failing tests: bf57eb259b17a2ed5634b5ef62f4b1520f8bdd93; rollback replacement chmod changes 0600 to 0640, linked to existing partial-removal bug",
+    "Focused rollback tests pass after private publication; baseline and all three mutation checks verified. Linux full verify failed the omitted strict split pin; macOS full verify interrupted for scope amendment. No full platform lane passed."
   ],
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
@@ -69,14 +70,22 @@
     "OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f",
     "OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05",
     "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078",
-    "OBS-product-test-972af92fbd4cb64f5dd3094a"
+    "OBS-product-test-972af92fbd4cb64f5dd3094a",
+    "OBS-product-test-51a832506d132b756faaf82a",
+    "OBS-product-test-f87bec1f3802297bc62bebe7",
+    "OBS-product-test-cf146b8281569e3b55420c53",
+    "OBS-product-test-8596f4c916b301c4ec8853cd",
+    "OBS-structural-b66cb4a28fd68f089b2a01b3"
   ],
   "bugs": [
     "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",
-    "BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07"
+    "BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07",
+    "BUG-approved-prune-requirement-delta-leaves-split-digest-stale-51af3f652531624b8e771636"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope reapproval of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: add tests/spec_split.rs only"
+  ],
   "run_consents": [],
-  "next_action": "Run native change verification, full Fledge lanes on macOS and Linux, then integrate origin/main before PR"
+  "next_action": "Wait for Leif scope reapproval through orc t19f; then refresh only the approved REQ-history-004 split pin, rerun focused cases and both pinned platform lanes, finish evidence before final change check, and open one PR for human implementation review"
 }

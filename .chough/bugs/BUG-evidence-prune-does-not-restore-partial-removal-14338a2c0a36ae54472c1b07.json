@@ -26,12 +26,13 @@
   "observations": [
     "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d",
     "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078",
-    "OBS-product-test-972af92fbd4cb64f5dd3094a"
+    "OBS-product-test-972af92fbd4cb64f5dd3094a",
+    "OBS-product-test-51a832506d132b756faaf82a"
   ],
   "impact": "A refused apply destroys uncommitted evidence",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -50,8 +51,15 @@
       "observations": [
         "OBS-product-test-972af92fbd4cb64f5dd3094a"
       ]
+    },
+    {
+      "at_unix_seconds": 1794034276,
+      "text": "status: open -> verified. Private staged restoration passes the deterministic replacement inode/mode/bytes regression and full focused evidence/history suites; original failing chmod receipt is preserved. Full lanes remain separate and not passed.",
+      "observations": [
+        "OBS-product-test-51a832506d132b756faaf82a"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794021913,
-  "updated_at_unix_seconds": 1794033849
+  "updated_at_unix_seconds": 1794034276
 }

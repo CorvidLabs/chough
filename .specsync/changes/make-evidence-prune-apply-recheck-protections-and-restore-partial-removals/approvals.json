@@ -51,5 +51,40 @@
       }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+      "actor": "sol-ch65",
+      "reason": "Orc t19f instructed a concrete scope amendment: add only tests/spec_split.rs for the exact digest of the already-approved REQ-history-004 body. Declared Linux verify fails the old strict pin; approved acceptance behavior and both semantic deltas remain unchanged. This is an agent send-back, not human reapproval or implementation review.",
+      "timestamp": 1794034281,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "history",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-history-004",
+          "content": "Conservative evidence cleanup. Evidence retention SHALL keep the existing eligibility thresholds, protection semantics and ledger entry shape, rebuild protection at apply and revalidate candidate identity and safe paths immediately before removal. Changed, missing, shared, newly referenced or unsafe files SHALL be retained or refused with explicit outcomes. Immediately before every artifact and observation removal, apply SHALL recheck the protection fingerprint and SHALL remove through a byte-checked hold rather than a direct unlink. After a set's ledger line, a later check or removal failure SHALL restore every earlier removal with create-new writes and original permissions, without replacing a file recreated meanwhile. Original bytes that cannot be restored SHALL be retained under `.chough/removing/` and named in the refusal; apply SHALL NOT assume Git HEAD contains them. A `restored` event with the existing ledger shape SHALL be appended for each ledgered set, and the failed apply SHALL NOT be reported as completed pruning. Interrupted cleanup SHALL distinguish present content, recorded removal and unavailable history. It SHALL preserve the active checkpoint, migration backup, historical retained proof, native archives and every artifact still referenced by another observation. Trace: LIFE-2, LIFE-7, LIFE-8, FLOW-7, FLOW-13.\n\nAcceptance Criteria\n- Adding a checkpoint, bug, case or native protection reference after preview protects the relevant observation/cycle when apply runs.\n- Shared artifacts remain present and byte-identical; missing/changed candidates, malformed sources, path traversal and symlinks cannot broaden deletion or be reported as a successful complete cleanup.\n- Fault injection around publication/removal yields an actionable partial outcome and leaves active state and protected bytes intact. No existing observation, artifact fingerprint or evidence-ledger schema is rewritten.\n- A protection appearing between two removals stops the apply and restores every earlier removal byte-for-byte with original permissions, including every completely removed earlier set; a later artifact or observation removal failure does the same and appends the existing `restored` event for each ledgered set.\n- A file recreated during rollback is kept as written, the original uncommitted bytes are preserved in a named create-only hold under `.chough/removing/`, the refusal names every unrestored path and hold, and successful apply output and existing eligibility, authorization, bounds and ledger behavior remain unchanged.",
+          "previous_content": "Conservative evidence cleanup. Evidence retention SHALL keep the existing eligibility thresholds, protection semantics and ledger entry shape, rebuild protection at apply and revalidate candidate identity and safe paths immediately before removal. Changed, missing, shared, newly referenced or unsafe files SHALL be retained or refused with explicit outcomes. Interrupted cleanup SHALL distinguish present content, recorded removal and unavailable history. It SHALL preserve the active checkpoint, migration backup, historical retained proof, native archives and every artifact still referenced by another observation. Trace: LIFE-2, LIFE-7, LIFE-8, FLOW-7, FLOW-13.\n\nAcceptance Criteria\n- Adding a checkpoint, bug, case or native protection reference after preview protects the relevant observation/cycle when apply runs.\n- Shared artifacts remain present and byte-identical; missing/changed candidates, malformed sources, path traversal and symlinks cannot broaden deletion or be reported as a successful complete cleanup.\n- Fault injection around publication/removal yields an actionable partial outcome and leaves active state and protected bytes intact. No existing observation, artifact fingerprint or evidence-ledger schema is rewritten."
+        },
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "section",
+          "key": "Purpose",
+          "content": "Provide the optional local helper for Chough's current-agent workflow. It installs\nthe workflow skill for supported hosts without replacing user files, keeps one\ncanonical checkpoint of the current stage, scope, decisions, preferences and human\ngates, routes stage transitions within native lifecycle gates, assembles bounded\nfocused context, validates test definitions and runs explicitly invoked automated\ncases, keeps a local bug backlog, supports an optional project-local librarian, and\nrecords observations tied to repository content and environment. Evidence-prune\napply rechecks protections immediately before removal and restores partial\nremovals without weakening retention guarantees. See requirements.md and\ndocs/FRD.md.",
+          "previous_content": "Provide the optional local helper for Chough's current-agent workflow. It installs\nthe workflow skill for supported hosts without replacing user files, keeps one\ncanonical checkpoint of the current stage, scope, decisions, preferences and human\ngates, routes stage transitions within native lifecycle gates, assembles bounded\nfocused context, validates test definitions and runs explicitly invoked automated\ncases, keeps a local bug backlog, supports an optional project-local librarian, and\nrecords observations tied to repository content and environment. See\nrequirements.md and docs/FRD.md."
+        }
+      ],
+      "applied_modules": [
+        "history",
+        "cli"
+      ]
+    }
+  ]
 }
