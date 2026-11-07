@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-ship-refusal-passes-through-35ba56b399a6c0153517e135",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact a_specsync_ship_refusal_passes_through_and_records_nothing for TC-cli-change-ship-refusal-passes-through: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-ship-refusal-passes-through-35ba56b399a6c0153517e135.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-ship-refusal-passes-through-35ba56b399a6c0153517e135.log": "d50b36d16fd593ea03a48fb129990941bd65173ffea0160067c63eba5b7d3f49"
+  },
+  "observed_at_unix_seconds": 1794008487,
+  "snapshot": {
+    "revision": "da37b4a735154f15a70a88883578261b81be63fc",
+    "dirty": false,
+    "fingerprint": "1427140252ae58303c22897425fa31585be35e0b06301fc3a05b05c962a14faa",
+    "content": "751204cd78929dea035314aa718c43bbae7fb6cf614cb1794bd34dbd7ea65f00"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-ship-refusal-passes-through",
+      "digest": "8d36a2db3675681d9e15f929006412212e49feddbe3a17a7cca9f19a154df5c8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "a_specsync_ship_refusal_passes_through_and_records_nothing"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

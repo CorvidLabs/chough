@@ -16,8 +16,8 @@ result and genuine decisions still needed, then perform authorized recovery step
 ```text
 new → interview → artifacts and delta → one human scope approval → implement →
 check (when requirements change) → cases run → gate → commit with .chough/ →
-check --commit → present → human implementation review → review → ship/finalize →
-close gate (--close-gate), stage advance → commit → push, then CI on the archived tip → merge
+check --commit → present → human implementation review → review → chough change ship
+(ship, close gate, done) → commit → push, then CI on the archived tip → merge
 ```
 
 Between `check --commit` and finalize, nothing writes to `.chough/` and nothing is
@@ -87,11 +87,13 @@ evidence:
 
 ```sh
 specsync change review <id> --reviewer "<agent-account>"
-specsync change ship <id>
+chough change ship <id> --close-gate "Implementation review of <id>" \
+  --decided-by "<who>" --words "<their words>" --where "<where>" \
+  --recorded-by "<agent-account>"
 ```
 
 Use the project agent account for the native record and retain the actual human
-acceptance source separately, with `chough checkpoint --close-gate`; the actor label
+acceptance source separately, with the relay `chough change ship` records; the actor label
 does not supply that acceptance, and the native review is a recorded claim bound to
 the reviewed content, not proof of who reviewed. The
 reviewer may be the scope approver. Do not commit between review and ship or

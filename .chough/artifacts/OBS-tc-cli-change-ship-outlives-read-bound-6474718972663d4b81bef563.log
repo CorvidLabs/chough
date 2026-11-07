@@ -1,0 +1,29 @@
+--- stdout ---
+
+running 1 test
+test ship_outlives_the_native_read_bound ... FAILED
+
+failures:
+
+---- ship_outlives_the_native_read_bound stdout ----
+
+thread 'ship_outlives_the_native_read_bound' (421472456) panicked at tests/change.rs:673:5:
+ship was stopped by the read bound: error: unrecognized subcommand 'ship'
+
+Usage: chough change [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    ship_outlives_the_native_read_bound
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 1.97s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/change.rs (target/debug/deps/change-c1495f4ded81b8f7)
+error: test failed, to rerun pass `--test change`

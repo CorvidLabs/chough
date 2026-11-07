@@ -37,7 +37,7 @@ their JSON.
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
 | `session new\|adopt\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--adopt-as KEY]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
-| `change new\|answer\|check\|status` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged. See [SpecSync change steps](#specsync-change-steps). |
+| `change new\|answer\|check\|status\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ship` checks first, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
 
 ## Backfilled moves
 
@@ -665,8 +665,8 @@ A rerun after an interrupted fold adds nothing twice.
 
 ## SpecSync change steps
 
-`chough change` runs four SpecSync agent steps for you, so an agent can drive a change
-through `chough` alone (REQ-cli-057, DRIVE-20):
+`chough change` runs SpecSync's agent steps for you, so an agent can drive a change
+through `chough` alone (REQ-cli-057, REQ-cli-059, DRIVE-20):
 
 | Command | Runs |
 |---|---|
@@ -690,8 +690,31 @@ nothing and writes nothing under `.chough/`.
 - When `specsync` cannot be started, the step refuses with exit 1 and runs nothing,
   naming `cargo install --locked specsync@6.2.0` and the step to run again.
 
-Approve, review, ship and finalize, and the plain `specsync change check <id>` that
-materializes a delta without committing, are still run with `specsync` directly.
+### Ship
+
+`chough change ship <id> [--close-gate <gate> --decided-by <who> --words <words>
+--where <where> --recorded-by <agent>]` is the closeout after the human's review
+(REQ-cli-059). It runs in three steps:
+
+1. Before anything runs, with nothing written, it refuses unless the active session's
+   native change is `<id>` and its stage is accept, and unless every open human gate is
+   the one `--close-gate` names. The relay values are checked as `chough checkpoint
+   --close-gate` checks them. Each refusal names the command that recovers: the full
+   ship command with the relay, `chough stage advance --to accept`, `chough checkpoint
+   --native-change <id>`, or `chough checkpoint --close-gate` for another open gate.
+2. It runs `specsync change ship <id>` in `--root` with no time bound, and passes
+   SpecSync's output through. A SpecSync refusal ends here with its exit code, and
+   nothing is written.
+3. After a successful ship, it runs `chough checkpoint --close-gate …` with the relay
+   (a relayed claim) and then `chough stage advance --to done`, printing each report
+   after SpecSync's output. If either is refused, it exits 1, says the change is
+   shipped and names the remaining commands.
+
+The relay goes with the ship because nothing may write `.chough/` between `change
+check --commit` and finalize, so the review gate can only close after the ship.
+
+Approve and review, and the plain `specsync change check <id>` that materializes a
+delta without committing, are still run with `specsync` directly.
 
 ## Execution bounds
 

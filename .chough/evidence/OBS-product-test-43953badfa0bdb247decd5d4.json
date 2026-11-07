@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-43953badfa0bdb247decd5d4",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "#179 mutation round on da37b4a7: 7 targeted mutations of chough change ship in src/change.rs (skip the stage check; skip the gate check; close the gate before ship; skip the close; skip the done move; exit 0 after a refused step; apply the native read bound to ship), each applied by run_mutations.py and restored; each made at least one tests/change.rs test fail on an assertion with no compile error; src was clean afterwards",
+  "artifacts": [
+    ".chough/artifacts/change-ship-mutations/bound-applies-to-ship.log",
+    ".chough/artifacts/change-ship-mutations/close-gate-before-ship.log",
+    ".chough/artifacts/change-ship-mutations/exit-zero-after-refused-step.log",
+    ".chough/artifacts/change-ship-mutations/run_mutations.py",
+    ".chough/artifacts/change-ship-mutations/skip-close.log",
+    ".chough/artifacts/change-ship-mutations/skip-done-move.log",
+    ".chough/artifacts/change-ship-mutations/skip-gate-check.log",
+    ".chough/artifacts/change-ship-mutations/skip-stage-check.log",
+    ".chough/artifacts/change-ship-mutations/summary.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/change-ship-mutations/bound-applies-to-ship.log": "fef597fd6f001d005f69b7d9eac4b793ad6bbb730992de05b47a5f6c212e3788",
+    ".chough/artifacts/change-ship-mutations/close-gate-before-ship.log": "eba8f211d41b7f576e2674ca53b203fbf4125a7d14d460261eb4ff84c108f3ab",
+    ".chough/artifacts/change-ship-mutations/exit-zero-after-refused-step.log": "37236f644d77db4cbfe1ba729d75501611039da4f6dc2ddaa192ac312b3431c6",
+    ".chough/artifacts/change-ship-mutations/run_mutations.py": "59af69bd2bfa3fc4ad4441ec76c5c4a4829ecc8375e2c51318da90eacc3263e9",
+    ".chough/artifacts/change-ship-mutations/skip-close.log": "37f93106d2326361a0a105752d11dbb19a155c12e1f8d818376e3d456fbf66c9",
+    ".chough/artifacts/change-ship-mutations/skip-done-move.log": "c5392568c3240678f1d81212f5f6142da5d1466b61032af448140155870ce525",
+    ".chough/artifacts/change-ship-mutations/skip-gate-check.log": "314c68dba56d3ba5da5142127b4cd174b0dd37183ab38d7d7906bb8986d2b9e0",
+    ".chough/artifacts/change-ship-mutations/skip-stage-check.log": "2d4a4cfbd7bc74a83b6fde4e24fb883417ac53d52768c5d9f404d8346eb2fab5",
+    ".chough/artifacts/change-ship-mutations/summary.txt": "0f0f38c7506350d5756fa1829cc7d59933b61ab60560350a323eaa5fcfc82e1e"
+  },
+  "observed_at_unix_seconds": 1794008625,
+  "snapshot": {
+    "revision": "da37b4a735154f15a70a88883578261b81be63fc",
+    "dirty": false,
+    "fingerprint": "1427140252ae58303c22897425fa31585be35e0b06301fc3a05b05c962a14faa",
+    "content": "751204cd78929dea035314aa718c43bbae7fb6cf614cb1794bd34dbd7ea65f00"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "mutations were applied by exact string replacement, not by a mutation tool",
+    "the walkthrough test is shown real by its recorded failure before the docs moved, not by a mutant"
+  ]
+}

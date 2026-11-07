@@ -1,0 +1,8 @@
+#179 mutation round on da37b4a7 (src/change.rs, ship), 7 of 7 caught, each by an assertion (no compile errors):
+skip-stage-check: caught by ship_refuses
+skip-gate-check: caught by ship_refuses
+close-gate-before-ship: caught by ship_refuses, refusal_passes_through, closes_gate_and_moves_to_done, outlives_read_bound
+skip-close: caught by ship_refuses, names_remaining_step, closes_gate_and_moves_to_done, outlives_read_bound
+skip-done-move: caught by closes_gate_and_moves_to_done, ship_refuses, names_remaining_step, outlives_read_bound
+exit-zero-after-refused-step: caught by names_remaining_step
+bound-applies-to-ship: caught by outlives_read_bound
