@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20 (active; `specsync change status chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20`)
 
 Archived changes (newest first; the newest 3 are hot):
 
