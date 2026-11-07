@@ -537,9 +537,9 @@ every command uses `.chough/session.json` exactly as before.
   with unfolded inbox entries refuse with nothing changed; fold the entries first
   with `chough session use <key>` and `chough inbox fold`.
 - At a successful move into done, the active session archives itself, last among the
-  done steps and in its own change, and the active pointer is cleared (#155,
-  REQ-history-006, DRIVE-13). It is reported as `applied.session_archive`: `archived`
-  with the key; `kept_open` while the inbox has unfolded entries or release is
+  done steps that change a record and in its own change, and the active pointer is
+  cleared (#155, REQ-history-006, DRIVE-13). It is reported as `applied.session_archive`:
+  `archived` with the key; `kept_open` while the inbox has unfolded entries or release is
   authorized (release is entered from done, so ask for it before done; the move from
   release into done archives it); or `skipped` without sessions. Afterwards `next`
   and `status` refuse, naming `chough session new <key>`. A done session merged to
@@ -1146,7 +1146,10 @@ After the trim, the same move regenerates the knowledge directory, creating
 just archived and any proof just trimmed are summarized, even in a project that never
 ran `library init` (REQ-cli-043). It is reported as `applied.librarian_index` with
 status `refreshed` and the index path, `skipped` with the librarian off, or `refused`
-with its reason, and it never undoes the move. Commit the directory with the checkpoint.
+with its reason, and it never undoes the move. When the ledger rotation or the session's
+self-archive then changes what the directory is generated from, the move regenerates it
+once more after the self-archive and reports that last pass, so `chough library index
+--check` passes right after done (#191, KNOW-4). Commit the directory with the checkpoint.
 It is generated, so after a merge conflict inside it, regenerate with
 `chough library index`.
 

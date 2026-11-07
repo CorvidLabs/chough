@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Right after `chough stage advance` into done, `chough library index --check` passes with
+  no command in between (#191, KNOW-4, REQ-cli-043, REQ-cli-051). A session rolled into
+  the vault now links its change's archive note even when the same move builds that note,
+  so a first build and a rebuild give the same bytes. When the change's archive lists the
+  session file that archives itself at done, the move regenerates the directory once more
+  after that self-archive, so the entry places the file in Git. Before, `done` reported
+  `librarian_index: refreshed` and the check then failed until `chough library index` ran.
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,
   REQ-history-013). For the active session's native change, Chough watches the lifecycle
   records SpecSync writes: `state.json`, `approvals.json`, `review.json`,
