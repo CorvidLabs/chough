@@ -260,6 +260,11 @@ fn read_transitions(root: &Path, session: &Session, all: bool) -> Result<Transit
             unreadable += 1;
             continue;
         };
+        // A direct lifecycle write (REQ-history-013, REQ-reporting-001) is a known kind
+        // that starts or ends no segment: skipped, never counted as unrecognised.
+        if kind == stage::DIRECT_WRITE {
+            continue;
+        }
         if !stage::STAGE_KINDS.contains(&kind.as_str())
             && kind != stage::GATE_OPENED
             && kind != stage::GATE_CLOSED

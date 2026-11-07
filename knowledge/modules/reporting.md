@@ -5,7 +5,7 @@ type: module
 modules:
   - reporting
 lessons: 0
-archived_changes: 4
+archived_changes: 5
 tags:
   - chough/module
   - module/reporting
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched reporting
 
-4 archived changes, newest first.
+5 archived changes, newest first.
 
+- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
 - [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)
 - [give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138](../archives/give-real-assertions-to-the-nine-criteria-the-audit-found-with-no-selected-assertion-138.md) Give real assertions to the nine criteria the audit found with no selected assertion (138)
 - [read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an](../archives/read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an.md) Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100)

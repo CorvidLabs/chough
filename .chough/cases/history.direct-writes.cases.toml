@@ -36,3 +36,21 @@ expected = ["the direct_writes test the_change_log_names_the_oldest_chough_that_
 adapter = "cargo-test"
 test_target = "direct_writes"
 test = "the_change_log_names_the_oldest_chough_that_reads_direct_write_events"
+
+[[case]]
+id = "TC-history-timing-skips-direct-writes"
+title = "chough timing reads a history holding a direct-native-write event as complete"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-history-013"]
+paths = ["src/timing.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test timing_skips_direct_write_events_without_marking_the_report_partial passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "timing_skips_direct_write_events_without_marking_the_report_partial"

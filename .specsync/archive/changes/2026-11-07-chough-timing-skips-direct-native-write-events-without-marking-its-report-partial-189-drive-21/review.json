@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "50fba3bd3555bf954cd51779f4d2705e1baf3297",
+  "contract_digest": "d9db3cf3b7d93763cd77b409172e337d7be06a571bb09617330f532539fac4e0",
+  "execution_digest": "9e4f9a246b39bc982cf4e7c483ed82046a7e21bc6d90b07cb6d92fb2eff5c11b",
+  "workspace_digest": "0ecec7de135fefd9cc578f74f1e22fb7cc7f085b6aa516aa0659d87338ea1989",
+  "timestamp": 1794024352
+}

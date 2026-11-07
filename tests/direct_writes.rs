@@ -321,3 +321,44 @@ fn the_change_log_names_the_oldest_chough_that_reads_direct_write_events() {
         "the entry does not say older builds refuse it: {entry}"
     );
 }
+
+/// #189: a `direct-native-write` event is a known kind that starts or ends no stage
+/// segment, so `chough timing` skips it without calling the report partial.
+#[test]
+fn timing_skips_direct_write_events_without_marking_the_report_partial() {
+    let fixture = project();
+    iterate(&fixture, "first sight");
+    fixture.write(
+        &format!("{DIR}/approvals.json"),
+        "{\"approvals\":[{\"gate\":\"definition\",\"actor\":\"SYNTHETIC-direct\",\"approved_delta_digests\":{}}],\"reopenings\":[]}\n",
+    );
+    iterate(&fixture, "after a direct approval");
+    assert_eq!(direct_writes(&fixture).len(), 1, "no direct write recorded");
+    let report = fixture.ok(&["timing", "--json"]);
+    let text = report.to_string();
+    assert!(
+        !text.contains("unrecognised kinds"),
+        "timing called the report partial for a direct write: {report:#}"
+    );
+    fn find<'a>(value: &'a Value, key: &str, found: &mut Vec<&'a Value>) {
+        match value {
+            Value::Object(map) => {
+                for (name, inner) in map {
+                    if name == key {
+                        found.push(inner);
+                    }
+                    find(inner, key, found);
+                }
+            }
+            Value::Array(items) => items.iter().for_each(|item| find(item, key, found)),
+            _ => {}
+        }
+    }
+    let mut found = vec![];
+    find(&report, "unrecognised_kinds", &mut found);
+    assert!(
+        !found.is_empty(),
+        "timing reports no unrecognised_kinds count: {report:#}"
+    );
+    assert!(found.iter().all(|count| **count == json!(0)), "{found:?}");
+}

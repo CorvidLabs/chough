@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 76
+version: 77
 status: active
 files:
   - src/main.rs
@@ -307,3 +307,4 @@ provider, runtime or hosted service.
 | 75 | 2026-11-07 | flag-direct-specsync-lifecycle-writes-in-history-183-drive-21: Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) |
 | 76 | 2026-11-07 | chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20: Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20) |
 | 77 | 2026-11-07 | after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes: After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) |
+| 78 | 2026-11-07 | chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21: chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) |

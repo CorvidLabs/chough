@@ -33,6 +33,12 @@ pub(super) enum ChangeCommand {
         specs: Vec<String>,
         #[arg(long = "path")]
         paths: Vec<String>,
+        /// Declare that canonical specs do not change; needs --rationale.
+        #[arg(long, requires = "rationale")]
+        no_spec_change: bool,
+        /// Why no canonical spec changes.
+        #[arg(long, requires = "no_spec_change", allow_hyphen_values = true)]
+        rationale: Option<String>,
     },
     /// Run `specsync change answer <id> <question> <answer> --json`.
     Answer {
@@ -86,6 +92,8 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             kind,
             specs,
             paths,
+            no_spec_change,
+            rationale,
         } => {
             let mut arguments = vec!["change".to_string(), "new".into(), description];
             if let Some(kind) = kind {
@@ -96,6 +104,12 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             }
             for path in paths {
                 arguments.extend(["--path".into(), path]);
+            }
+            if no_spec_change {
+                arguments.push("--no-spec-change".into());
+            }
+            if let Some(rationale) = rationale {
+                arguments.extend(["--rationale".into(), rationale]);
             }
             arguments.push("--json".into());
             ("new", arguments, false)

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
+  "implementation_commit": "50fba3bd3555bf954cd51779f4d2705e1baf3297",
+  "implementation_tree": "43d3d496877310eb122f46c978c2fa404be87c7b",
+  "contract_digest": "d9db3cf3b7d93763cd77b409172e337d7be06a571bb09617330f532539fac4e0",
+  "workspace_digest": "0ecec7de135fefd9cc578f74f1e22fb7cc7f085b6aa516aa0659d87338ea1989",
+  "closing_digest": "971cfebc3752dd88b223d6b7818630719a67b4167403c6b9472b0541e87d391a",
+  "review_digest": "e8f9912e258a4247c9d086307519299c3c56ea1ecc5dedb9b41972c912281daa",
+  "finalization_digest": "ccb479d7fb0066923e925550e7171a1e93ed25cc40d2a8d34a0720d57c93b01c",
+  "timestamp": 1794024611
+}

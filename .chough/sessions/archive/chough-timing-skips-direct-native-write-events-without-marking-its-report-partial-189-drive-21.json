@@ -1,0 +1,55 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-03b83c36dea2bb2df76ef9b7",
+    "head": "EVT-c0a93c2c1ab42e20c902c175",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "chough timing skips direct-native-write events without marking its report partial (#189, DRIVE-21)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "history"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
+  "references": {
+    "criteria": [
+      "DRIVE-21",
+      "DRIVE-20"
+    ],
+    "requirements": [
+      "REQ-history-013",
+      "REQ-cli-057"
+    ],
+    "cases": [
+      "TC-history-timing-skips-direct-writes",
+      "TC-cli-change-new-no-spec-change"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Regression from #183 (#186): timing counted the valid direct-native-write kind as unrecognised and marked its report partial; fix in DRIVE-21's scope by treating it as a known non-segment kind; REQ-history-013 modified to say so",
+    "Folded in at the orc's request: chough change new gains --no-spec-change and --rationale (found by ch-docs-accuracy); REQ-cli-057 modified; tests in tests/change.rs fail first",
+    "Leif (0xLeif) decided \"Definition approval of chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21\": \"approved #189\" (orc tab, 2026-11-07, relayed by orc t18; native approval recorded as 0xLeif by the orc at 0635c835 (after the reporting module was added)); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated",
+    "Leif decided \"Implementation review of chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21\": \"Yes to all 3 (Recommended)\" (Moshi question from orc t18, 2026-11-06); recorded by glm-finish; a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Refreshed both #189 cases on the merged PR head; both passed"
+  ],
+  "observations": [
+    "OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027",
+    "OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "After the orc records Leif's review at the final verified tip, run chough change ship with the recorded pass verdict; no commit between review and ship"
+}

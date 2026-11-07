@@ -6,6 +6,15 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough timing` no longer marks its report partial for `direct-native-write` events
+  (#189, REQ-history-013, REQ-reporting-001). Since #183 it counted that valid kind as
+  unrecognised. It is now skipped as part of no stage segment, as gate records are.
+  Kinds that really are unknown still mark the report partial. Builds before 0.5.0
+  still refuse a history holding the event;
+  the oldest Chough that reads such a history is still 0.5.0.
+- `chough change new` takes `--no-spec-change` and `--rationale` and passes them to
+  `specsync change new` (#189, REQ-cli-057). `--no-spec-change` without `--rationale`
+  is refused before SpecSync runs.
 - The prototype template keeps hidden state panels hidden whatever display rules a
   project adds (#58, FLOW-4). Its `styles.css` gains `[hidden] { display: none
   !important; }`, so a rule such as `.surface section { display: grid }` no longer shows

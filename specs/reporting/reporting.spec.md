@@ -1,6 +1,6 @@
 ---
 module: reporting
-version: 4
+version: 5
 status: active
 files:
   - src/timing.rs
@@ -82,3 +82,4 @@ transition events. Git and SpecSync supply revisions and native lifecycle times.
 | 2 | 2026-11-04 | split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new: Split the cli spec: move the timing and reporting requirements REQ-cli-020, REQ-cli-024 and REQ-cli-028 to a new reporting module as REQ-reporting-001 to REQ-reporting-003 with wording unchanged and a documented ID mapping, so the cli requirements companion stays under the 65536-byte record bound |
 | 3 | 2026-11-04 | read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an: Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100) |
 | 4 | 2026-11-06 | make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive: Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) |
+| 5 | 2026-11-07 | chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21: chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) |

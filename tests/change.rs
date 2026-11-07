@@ -862,3 +862,69 @@ fn the_walkthrough_and_closeout_run_chough_change() {
     let walkthrough = fs::read_to_string(root.join("docs/walkthrough.md")).unwrap();
     assert!(walkthrough.contains("chough change new"));
 }
+
+/// #189 (REQ-cli-057 as modified): `chough change new` passes `--no-spec-change` and
+/// its `--rationale` through, and refuses the first without the second before SpecSync
+/// runs.
+#[test]
+fn change_new_passes_no_spec_change_with_its_rationale() {
+    let fixture = fixture();
+    let output = run_env(
+        &fixture,
+        &[
+            "change",
+            "new",
+            "Docs only",
+            "--spec",
+            "cli",
+            "--no-spec-change",
+            "--rationale",
+            "Only the README changes",
+        ],
+        &[],
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        argv(&fixture),
+        [
+            "change",
+            "new",
+            "Docs only",
+            "--spec",
+            "cli",
+            "--no-spec-change",
+            "--rationale",
+            "Only the README changes",
+            "--json"
+        ]
+    );
+    // Without a rationale it is refused before SpecSync runs, naming --rationale.
+    fs::remove_file(fixture.root().join(".stub-argv")).unwrap();
+    let refused = run_env(
+        &fixture,
+        &["change", "new", "Docs only", "--no-spec-change"],
+        &[],
+    );
+    assert!(!refused.status.success());
+    assert!(!fixture.exists(".stub-argv"), "SpecSync ran");
+    let error = String::from_utf8_lossy(&refused.stderr);
+    assert!(error.contains("--rationale"), "{error}");
+    // The command it names succeeds.
+    let retried = run_env(
+        &fixture,
+        &[
+            "change",
+            "new",
+            "Docs only",
+            "--no-spec-change",
+            "--rationale",
+            "Only the README changes",
+        ],
+        &[],
+    );
+    assert!(retried.status.success());
+}
