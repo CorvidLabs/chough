@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-bd1c0595ba435c201d6ca0dc",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Mark the 0.5.0 release published in the roadmap with its install observation",
+  "intent_scope": "",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Release step 9 is limited to the 0.5.0 ROADMAP row and its installation observation; no contract or HI change (Leif's worker instruction, 2026-11-06)."
+  ],
+  "open_questions": [],
+  "completed": [
+    "Clean install observed on macOS arm64; native documentation definition completed."
+  ],
+  "observations": [
+    "OBS-installation-observation-48008674b01d6e137c95d956"
+  ],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Complete the native documentation definition and request scope approval from the orc."
+}
