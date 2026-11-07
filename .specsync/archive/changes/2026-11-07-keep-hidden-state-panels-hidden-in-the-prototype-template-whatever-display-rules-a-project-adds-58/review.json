@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "95e9aeecda2c2c8657c49b6f90330335a1e30392",
+  "contract_digest": "0b27585e8d100e80315ab815c462f233bdc30ca2ae856737b48b0bf39ad284d4",
+  "execution_digest": "ae2167364d523bdde72784bc17995a5f11c847bdc46823d4b39e5fdcd003b442",
+  "workspace_digest": "148dea96de1ac0f9d81e395c641e95a8bf1eac39ee2449ef279a8a528a6dffe1",
+  "timestamp": 1794022377
+}

@@ -16,6 +16,7 @@ criteria:
   - KNOW-13
   - KNOW-14
   - KNOW-29
+  - KNOW-4
 base_commit: "73a7da5653312e907621c0165d0b5f903c22ff53"
 implementation_commit: "3be6c5e46362f610e5716de0036c66ed5f8b9f14"
 verification_commit: "3be6c5e46362f610e5716de0036c66ed5f8b9f14"
@@ -34,7 +35,7 @@ verification records, the retention ledger and Git stay authoritative.
 - Status: cold (hot = the 3 most recently finalized archived changes)
 - Finalized: 2026-11-06T04:02:12Z
 - Modules: [history](../modules/history.md), [cli](../modules/cli.md)
-- Criteria: [DRIVE-12](../intent/drive.md), [DRIVE-13](../intent/drive.md), [KNOW-13](../intent/knowledge.md), [KNOW-14](../intent/knowledge.md), [KNOW-29](../intent/knowledge.md)
+- Criteria: [DRIVE-12](../intent/drive.md), [DRIVE-13](../intent/drive.md), [KNOW-13](../intent/knowledge.md), [KNOW-14](../intent/knowledge.md), [KNOW-29](../intent/knowledge.md), [KNOW-4](../intent/knowledge.md)
 - Base commit: 73a7da5653312e907621c0165d0b5f903c22ff53
 - Implementation commit: 3be6c5e46362f610e5716de0036c66ed5f8b9f14
 - Verification commit: 3be6c5e46362f610e5716de0036c66ed5f8b9f14
