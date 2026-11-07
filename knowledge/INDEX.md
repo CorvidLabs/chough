@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 148
+archived_changes: 149
 tags:
   - chough/index
 ---
@@ -43,21 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20 (active; `specsync change status chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) (hot)
 - [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md) Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22) (hot)
 - [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) (hot)
-- [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18) (hot)
+- [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18) (cold)
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) (cold)
 - [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (cold)
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18) (cold)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) (cold)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (cold)
 - [a-session-archives-itself-at-its-own-move-into-done-155](archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155) (cold)
-- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143) (cold)
-- All 148 archived changes, by month: [timeline.md](timeline.md)
+- All 149 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../.specsync/archive/changes/2026-11-07-chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20/lesson-bundle.md)
 - [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../.specsync/archive/changes/2026-11-06-rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177/lesson-bundle.md)
 - [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](../.specsync/archive/changes/2026-11-06-run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20/lesson-bundle.md)
 - [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](../.specsync/archive/changes/2026-11-06-name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../.specsync/archive/changes/2026-11-06-chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17/lesson-bundle.md)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../.specsync/archive/changes/2026-11-06-a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16/lesson-bundle.md)
 - [a-session-archives-itself-at-its-own-move-into-done-155](../.specsync/archive/changes/2026-11-06-a-session-archives-itself-at-its-own-move-into-done-155/lesson-bundle.md)
-- [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../.specsync/archive/changes/2026-11-06-keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-517 recorded; most recent:
+516 recorded; most recent:
 
 - OBS-tc-cli-change-walkthrough-runs-chough-eeab06073c51349b7b6ecf79 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
 - OBS-tc-cli-change-ship-outlives-read-bound-63957ecaa5867c7baa0ff452 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
