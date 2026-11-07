@@ -52,11 +52,13 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-16 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+18 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-dry-run-7a3fb4d187037a2efae55ac9 | passed (by cycle time) | local-linux-aarch64 |  |
 | OBS-product-test-1e38299188b5d2c640dd711a | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-structural-00139f76b41cb62e23cf99b8 | passed (by cycle time) | local-linux-aarch64 |  |
 | OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14 | failed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
 | OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1 | failed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
 | OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 | passed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
