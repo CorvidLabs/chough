@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "BUG-kill-zero-reports-a-killed-unreaped-zombie-alive-187-fd5176ab33fee38ff313ffc8",
+  "title": "kill-zero reports a killed unreaped zombie alive 187",
+  "symptom": "The native process liveness probe reports a killed, unreaped child as alive",
+  "trigger": "A child is SIGKILLed and its parent has not waited for it yet",
+  "expected": "The probe treats a zombie as not alive while still detecting a running child",
+  "actual": "kill -0 succeeds and the regression fails",
+  "criteria": [
+    "DRIVE-19"
+  ],
+  "requirements": [
+    "REQ-cli-053"
+  ],
+  "cases": [
+    "TC-cli-killed-unreaped-child-not-alive"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "599ff184c3a42d94ce6728eaa0f9bb17cd5b19ea",
+  "steps": [
+    "Spawn sleep 60 and confirm the helper detects it",
+    "SIGKILL the child without waiting, then probe it and reap it before asserting"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7"
+  ],
+  "impact": "The timing, native and change tests can falsely report a surviving process under load (#187).",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #187 and deterministic regression at 599ff184",
+  "notes": [],
+  "created_at_unix_seconds": 1794022689,
+  "updated_at_unix_seconds": 1794022689
+}

@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-2a24ae32010db7e92e9a70fb",
-    "head": "EVT-7b71b41ac8261015d131c8fe",
+    "head": "EVT-bc6f0ea348b412e7ad771f73",
     "legacy": null
   },
   "schema_version": 2,
@@ -27,7 +27,12 @@
       "REQ-cli-059",
       "REQ-reporting-002"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-killed-unreaped-child-not-alive",
+      "TC-cli-timed-out-prime-kills-native-process",
+      "TC-cli-sigterm-stops-native-process",
+      "TC-reporting-timed-out-native-read-kills-descendants"
+    ],
     "design": [],
     "files": []
   },
@@ -35,11 +40,17 @@
     "Agent scope from Leif's handoff: use one test-only zombie-aware liveness helper for #187; reject product stop_tree changes because the descendant was already killed. Leave #132 open without code changes because it did not reproduce."
   ],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
-  "bugs": [],
+  "completed": [
+    "Failing tests: 599ff184c3a42d94ce6728eaa0f9bb17cd5b19ea"
+  ],
+  "observations": [
+    "OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7"
+  ],
+  "bugs": [
+    "BUG-kill-zero-reports-a-killed-unreaped-zombie-alive-187-fd5176ab33fee38ff313ffc8"
+  ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Complete the native test-only definition and request orc scope approval."
+  "next_action": "Implement the bounded zombie-aware common::alive helper."
 }

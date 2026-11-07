@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test a_killed_unreaped_child_is_not_alive_but_a_running_child_is ... FAILED
+
+failures:
+
+---- a_killed_unreaped_child_is_not_alive_but_a_running_child_is stdout ----
+
+thread 'a_killed_unreaped_child_is_not_alive_but_a_running_child_is' (503172486) panicked at tests/native.rs:310:5:
+killed, unreaped child 24205 still reads as alive
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_killed_unreaped_child_is_not_alive_but_a_running_child_is
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.15s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.39s
+     Running tests/native.rs (target/debug/deps/native-a8cfd83d382dacba)
+error: test failed, to rerun pass `--test native`
