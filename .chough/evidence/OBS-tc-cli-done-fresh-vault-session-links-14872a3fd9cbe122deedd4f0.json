@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0",
+  "criteria": [
+    "KNOW-4",
+    "KNOW-29"
+  ],
+  "requirements": [
+    "REQ-cli-051"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact a_session_rolled_into_a_fresh_vault_links_its_archive_note_and_the_check_passes for TC-cli-done-fresh-vault-session-links: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0.log": "e99acf9cfba385a425e0d167871fb3ec8d6029c90a47ff9e182028483898d89b"
+  },
+  "observed_at_unix_seconds": 1794020349,
+  "snapshot": {
+    "revision": "ebeb882ac4ef9ea1d713f1a2356d8d03a586580b",
+    "dirty": false,
+    "fingerprint": "7982d667d3a60ab23317a50ec8f1f2f60f2859630bfb9eb4d093423eb934b536",
+    "content": "3b3dcc5e2086f5ae807d07e6884893b8ad203a1e71f206c798ced0096475b549"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-done-fresh-vault-session-links",
+      "digest": "6f1648c4cdb88551dad3f0703e7ef905bb4308497a33241b76fcfd692b545b71"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "a_session_rolled_into_a_fresh_vault_links_its_archive_note_and_the_check_passes"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 7
+}

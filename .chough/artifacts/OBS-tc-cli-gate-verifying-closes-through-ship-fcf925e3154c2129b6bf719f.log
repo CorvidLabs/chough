@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_verifying_gate_is_refused_and_closes_through_ship_with_the_list ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 5.38s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/gates.rs (target/debug/deps/gates-112e6fb6cb66b3ed)

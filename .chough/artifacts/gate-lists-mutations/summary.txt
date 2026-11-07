@@ -1,0 +1,7 @@
+#184 mutation round on 6046cf52 (src/gates.rs, src/stage.rs), 6 of 6 caught, each by an assertion:
+skip-digest-check: caught by gate_record_refuses
+skip-listed-number-check: caught by gate_record_refuses, one_reply
+close-every-listed-gate: caught by one_reply
+drop-summary-digest: caught by one_reply
+allow-verifying-gate: caught by verifying_gate_closes_through_ship
+one-relay-field-alone: caught by relay_summary_fields_both_or_neither

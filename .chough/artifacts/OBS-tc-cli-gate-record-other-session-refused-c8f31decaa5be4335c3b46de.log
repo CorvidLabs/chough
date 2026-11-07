@@ -1,0 +1,30 @@
+--- stdout ---
+
+running 1 test
+test a_gate_of_another_open_session_is_refused_naming_session_use ... FAILED
+
+failures:
+
+---- a_gate_of_another_open_session_is_refused_naming_session_use stdout ----
+
+thread 'a_gate_of_another_open_session_is_refused_naming_session_use' (460312722) panicked at tests/common/mod.rs:91:9:
+["gate", "list", "--json"] failed: error: unrecognized subcommand 'gate'
+
+Usage: chough [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_gate_of_another_open_session_is_refused_naming_session_use
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 1.34s
+
+
+--- stderr ---
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456-gates)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.78s
+     Running tests/gates.rs (target/debug/deps/gates-112e6fb6cb66b3ed)
+error: test failed, to rerun pass `--test gates`
