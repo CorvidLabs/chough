@@ -37,6 +37,15 @@ pub(super) fn remove_checkpoint_lock(root: &Path) {
     }
 }
 
+#[cfg(unix)]
+pub(super) fn alive(pid: &str) -> bool {
+    Command::new("kill")
+        .args(["-0", pid])
+        .stderr(std::process::Stdio::null())
+        .status()
+        .is_ok_and(|status| status.success())
+}
+
 impl Fixture {
     pub(super) fn new() -> Self {
         let fixture = Self(tempfile::tempdir().unwrap());

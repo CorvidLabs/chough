@@ -287,6 +287,31 @@ fn a_live_reply_cannot_supply_the_cached_proof_marker() {
 
 #[cfg(unix)]
 #[test]
+fn a_killed_unreaped_child_is_not_alive_but_a_running_child_is() {
+    let mut child = std::process::Command::new("sleep")
+        .arg("60")
+        .spawn()
+        .unwrap();
+    let pid = child.id().to_string();
+    let running = common::alive(&pid);
+    let killed = std::process::Command::new("kill")
+        .args(["-9", &pid])
+        .status()
+        .unwrap();
+    let zombie = common::alive(&pid);
+    if killed.success() {
+        child.wait().unwrap();
+    } else {
+        let _ = child.kill();
+        let _ = child.wait();
+    }
+    assert!(killed.success(), "failed to kill child {pid}");
+    assert!(running, "running child {pid} was not detected");
+    assert!(!zombie, "killed, unreaped child {pid} still reads as alive");
+}
+
+#[cfg(unix)]
+#[test]
 fn a_timed_out_prime_writes_nothing_kills_children_and_retries_cold() {
     let fixture = archived();
     fixture.write(".stub-sleep", "5\n");
