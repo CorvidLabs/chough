@@ -30,7 +30,7 @@ const MOVED: [(&str, &str, &str); 4] = [
     (
         "REQ-cli-027",
         "REQ-history-004",
-        "128c08a8a763ba404099891f17da8c28e53da365375a44decfd8755c78208fd2",
+        "d807b65dc985f3d8971b83fcb6c1e1cc4615beb80ca30dee2ca595e847acf0d2",
     ),
 ];
 

@@ -92,7 +92,6 @@ Archived lesson bundles:
 - BUG-0022 Initial host tools do not match CI versions (open, out-of-scope, reproduced)
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
-- BUG-approved-prune-requirement-delta-leaves-split-digest-stale-51af3f652531624b8e771636 Approved prune requirement delta leaves split digest stale (open, blocking, reproduced)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
@@ -100,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-560 recorded; most recent:
+565 recorded; most recent:
 
+- OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
+- OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
+- OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
+- OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
+- OBS-product-test-1a8d3cd9e2fff7f17314bd35 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
 - OBS-structural-b66cb4a28fd68f089b2a01b3 Structural NotRun in local-macos-arm64 at 7febd53a86d1
 - OBS-product-test-8596f4c916b301c4ec8853cd ProductTest Passed in local-macos-arm64 at 7febd53a86d1
 - OBS-product-test-cf146b8281569e3b55420c53 ProductTest NotRun in local-macos-arm64 at 7febd53a86d1
 - OBS-product-test-f87bec1f3802297bc62bebe7 ProductTest Failed in local-linux-aarch64 at 7febd53a86d1
 - OBS-product-test-51a832506d132b756faaf82a ProductTest Passed in local-macos-arm64 at 7febd53a86d1
-- OBS-product-test-972af92fbd4cb64f5dd3094a ProductTest Failed in local-macos-arm64 at d9d7b12695b5
-- OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
-- OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
-- OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078 ProductTest Passed in local-macos-arm64 at 55cb7fa5662f
-- OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05 ProductTest Passed in local-macos-arm64 at 55cb7fa5662f
 
 ## Briefs
 

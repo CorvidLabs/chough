@@ -18,17 +18,26 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-product-test-f87bec1f3802297bc62bebe7"
+    "OBS-product-test-f87bec1f3802297bc62bebe7",
+    "OBS-product-test-1a8d3cd9e2fff7f17314bd35"
   ],
   "impact": "Not yet assessed.",
   "classification": "evidence-gap",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Declared Linux verification at 7febd53a86d1a007565ff38638b41abd760c123f; scope amendment directed by orc t19f",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794063325,
+      "text": "status: open -> verified. Leif scope reapproval was recorded by orc t19f at 4ef6b8e29913077a6f557d1371a930540e02884b. Only the approved digest literal changed; all four strict spec_split tests now pass under pinned tools, with the failure receipt retained.",
+      "observations": [
+        "OBS-product-test-1a8d3cd9e2fff7f17314bd35"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794034276,
-  "updated_at_unix_seconds": 1794034276
+  "updated_at_unix_seconds": 1794063325
 }

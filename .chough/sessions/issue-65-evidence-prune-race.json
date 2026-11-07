@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
-    "head": "EVT-cb47b400dc923a1f0f252430",
+    "head": "EVT-414c9e05f04e2746bfca99de",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,10 +9,10 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "plan",
+    "current": "test",
     "status": "active",
     "callers": [],
-    "iteration": 2
+    "iteration": 1
   },
   "native_change": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
   "references": {
@@ -48,7 +48,8 @@
     "agent: existing LIFE-8, LIFE-2 and LIFE-7 already cover #65 because they require proof protection and honest removed-versus-passed states, so no new HI criterion is needed",
     "rejected: changing retention eligibility, protections, bounds, output schemas or authorization because #65 is a bounded race and rollback bug fix under REQ-history-004",
     "rejected: refactoring the proven library archive path because the small fix can reuse remove_verified and the existing restored event shape without changing archive behavior",
-    "Leif decided \"Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"Yes to all 3\" (Moshi question from orc t18, 2026-11-06; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated"
+    "Leif decided \"Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"Yes to all 3\" (Moshi question from orc t18, 2026-11-06; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated",
+    "Leif decided \"Scope reapproval of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: add tests/spec_split.rs only\": \"Yes\" (Direct chat reply to orc t19f three-gate batch, 2026-11-07); recorded by sol-ch65; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -59,7 +60,8 @@
     "All four prune regressions passed after implementation; 10 evidence unit, 30 evidence integration and 25 history tests passed, and both local bugs are verified",
     "Failure first: prune_restore_permissions_preserve_replacement_identity ran 1 test, failed mode assertion 0640 versus 0600 before the restore publication fix; receipt restore-identity-before.log",
     "Failing tests: bf57eb259b17a2ed5634b5ef62f4b1520f8bdd93; rollback replacement chmod changes 0600 to 0640, linked to existing partial-removal bug",
-    "Focused rollback tests pass after private publication; baseline and all three mutation checks verified. Linux full verify failed the omitted strict split pin; macOS full verify interrupted for scope amendment. No full platform lane passed."
+    "Focused rollback tests pass after private publication; baseline and all three mutation checks verified. Linux full verify failed the omitted strict split pin; macOS full verify interrupted for scope amendment. No full platform lane passed.",
+    "Pinned focused checks passed: build; 4 strict split regressions; 11 evidence unit, 30 evidence integration and 25 history tests; all case definitions valid; the four approved #65 cases passed including replacement inode/mode/bytes."
   ],
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
@@ -75,7 +77,12 @@
     "OBS-product-test-f87bec1f3802297bc62bebe7",
     "OBS-product-test-cf146b8281569e3b55420c53",
     "OBS-product-test-8596f4c916b301c4ec8853cd",
-    "OBS-structural-b66cb4a28fd68f089b2a01b3"
+    "OBS-structural-b66cb4a28fd68f089b2a01b3",
+    "OBS-product-test-1a8d3cd9e2fff7f17314bd35",
+    "OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb",
+    "OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3",
+    "OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820"
   ],
   "bugs": [
     "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",
@@ -83,9 +90,7 @@
     "BUG-approved-prune-requirement-delta-leaves-split-digest-stale-51af3f652531624b8e771636"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Scope reapproval of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: add tests/spec_split.rs only"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for Leif scope reapproval through orc t19f; then refresh only the approved REQ-history-004 split pin, rerun focused cases and both pinned platform lanes, finish evidence before final change check, and open one PR for human implementation review"
+  "next_action": "Run complete pinned macOS verify and declared Linux verify, then record their actual outcomes and finish the implementation-review gate before the final native change check"
 }

@@ -9,10 +9,10 @@ artifact: tasks
 - [x] Implement stale-hold refusal, prepared byte-checked removals, immediate protection rechecks, rollback and restored ledger events in `src/evidence.rs`.
 - [x] Update REQ-history-004 and the CLI Purpose, testing and contract companions, FRD and CLI documentation, and the Unreleased changelog.
 
-- [ ] After scope reapproval, refresh only the REQ-history-004 digest in `tests/spec_split.rs` to the exact approved body and retain the strict assertion.
+- [x] After scope reapproval, refresh only the REQ-history-004 digest in `tests/spec_split.rs` to the exact approved body and retain the strict assertion.
 
 Verification: complete the focused tests and cases, full Fledge verify on macOS and Linux in Docker, and record only observed outcomes in Chough evidence and this change's native verification records.
 
 Human gates: scope approval was recorded by the orc as 0xLeif at `80fbe1df895f78d8db8fa33daba54914bcad80aa`. Implementation review remains a human gate through the orc. Running and recording the Chough cases is specified in `testing.md`, not listed as task checkboxes here. Integrate origin/main before PR and merge, then archive and deliver through the orc.
 
-Scope amendment: adding only `tests/spec_split.rs` awaits Leif reapproval through orc t19f. The prior approval at `80fbe1df895f78d8db8fa33daba54914bcad80aa` is historical after agent send-back; no implementation review has happened.
+Scope amendment: Leif replied "Yes" to the listed three-gate batch on 2026-11-07; orc t19f recorded native reapproval at `4ef6b8e29913077a6f557d1371a930540e02884b`, including `tests/spec_split.rs`. The worker relayed only the matching Chough gate and refreshed only the approved digest. No implementation review has happened.

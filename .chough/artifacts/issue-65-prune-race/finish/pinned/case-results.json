@@ -1,0 +1,38 @@
+[
+  {
+    "case": "TC-history-prune-protection-race",
+    "observation": "OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb",
+    "outcome": "passed",
+    "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+    "retention": null,
+    "schema_version": 1,
+    "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_protection_race_restores_removed_bytes for TC-history-prune-protection-race: passed (exit 0)."
+  },
+  {
+    "case": "TC-history-prune-restores-partial-removal",
+    "observation": "OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3",
+    "outcome": "passed",
+    "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+    "retention": null,
+    "schema_version": 1,
+    "summary": "Ran cargo test --locked --test evidence -- --exact evidence_prune_restores_partial_removal for TC-history-prune-restores-partial-removal: passed (exit 0)."
+  },
+  {
+    "case": "TC-history-prune-restores-earlier-sets",
+    "observation": "OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da",
+    "outcome": "passed",
+    "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+    "retention": null,
+    "schema_version": 1,
+    "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected for TC-history-prune-restores-earlier-sets: passed (exit 0)."
+  },
+  {
+    "case": "TC-history-prune-restore-preserves-recreated-file",
+    "observation": "OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820",
+    "outcome": "passed",
+    "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+    "retention": null,
+    "schema_version": 1,
+    "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original for TC-history-prune-restore-preserves-recreated-file: passed (exit 0)."
+  }
+]

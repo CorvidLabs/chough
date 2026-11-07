@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original for TC-history-prune-restore-preserves-recreated-file: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820.log": "18c337ea19d0371a8ddf99c78345403b4588d0b147710828b5f5b68b747f179b"
+  },
+  "observed_at_unix_seconds": 1794063293,
+  "snapshot": {
+    "revision": "4ef6b8e29913077a6f557d1371a930540e02884b",
+    "dirty": true,
+    "fingerprint": "12a33db26ebbc61c9def3ad34a65b52b6325e4952d4bbca18dfbb4a0711463b4",
+    "content": "7357063ec647a2c8493d700dc99e2ebaa99d0f01043e3bd400bdacef867bc44e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-prune-restore-preserves-recreated-file",
+      "digest": "76355e1278f22f81d35d5f85c718e29fe9383839cec1a2ceb403279df2252a85"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--bin",
+    "chough",
+    "--",
+    "--exact",
+    "evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

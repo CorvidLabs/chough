@@ -49,6 +49,57 @@
         "cli: SPEC SECTION Purpose": "a3da79be055cde097fca454df5440cbe585413f8b55ee2f363f0b1c2eb0750ce",
         "history: REQUIREMENT REQ-history-004": "ea40bbd0535f389c24b0a700d7f05a3828505fea7fc45244b136bad2fabd65db"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794062921,
+      "digest": "74b4a6eaba4230360b7641a3d9b9b79d9a98cf0bbb3f0544d88556ec408bb170",
+      "note": "Leif replied \"Yes\" to orc t19f three-gate batch on 2026-11-07, then said \"Can we also merge PRs and all?\". This records ONLY the listed #65 scope reapproval at full HEAD 4ef6b8e29913077a6f557d1371a930540e02884b: add tests/spec_split.rs for the strict REQ-history-004 digest refresh. Existing acceptance criteria and semantic deltas are unchanged. This is not #65 implementation acceptance. Recorded by orc t19f from the direct human chat reply.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+        "title": "Make evidence prune --apply recheck protections and restore partial removals",
+        "description": "Make evidence prune --apply recheck protections and restore partial removals",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.prune-race.cases.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "specs/history/testing.md",
+          "src/evidence.rs",
+          "tests/evidence.rs",
+          "tests/spec_split.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A protection appearing between removals stops the apply and restores every earlier removal byte-for-byte without overwriting a recreated file; a later artifact or observation removal failure also restores earlier removals and appends the existing restored ledger event; successful pruning keeps its current eligibility, authorization, ledger and JSON behavior, and existing history remains readable"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "REQ-history-001 and REQ-history-004 keep eligibility, protection, ledger and bound behavior unchanged; specs/history/context.md says evidence retention lives in src/evidence.rs and warns against adding native reads to closeout; #55 supplies remove_verified and restored-event prior art",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "a1775e1cf4adb1520cb6b4369833daea111da2ff7695688ee923e93591a9a513",
+        "history": "3002c2a6fecafab9e83afa17cf498927df070c595b7cd79b77356cc78df8d6e5"
+      },
+      "approved_delta_bases": {
+        "cli: SPEC SECTION Purpose": "a3da79be055cde097fca454df5440cbe585413f8b55ee2f363f0b1c2eb0750ce",
+        "history: REQUIREMENT REQ-history-004": "ea40bbd0535f389c24b0a700d7f05a3828505fea7fc45244b136bad2fabd65db"
+      }
     }
   ],
   "reopenings": [],
