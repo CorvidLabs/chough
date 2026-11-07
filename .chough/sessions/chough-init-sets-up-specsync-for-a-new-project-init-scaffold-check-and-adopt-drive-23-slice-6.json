@@ -1,0 +1,41 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-2cf7256a28f1e87ddf186677",
+    "head": "EVT-b516192f79c77de0c61efc86",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "chough init sets up SpecSync for a new project (DRIVE-23, slice 6)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "DRIVE-23 captured as drafted from Leif's 'Capture + build' (relayed by the orc); slice 6 of Chough drives SpecSync",
+    "A new project means a named module and neither .specsync/ nor specs/, so fixtures and existing projects keep today's init; setup runs before Chough's own writes; rejected: authored spec content, an opt-out flag, setting up projects that have specs/ without .specsync/"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Definition approval of chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6"
+  ],
+  "run_consents": [],
+  "next_action": "After approval, close the gate, advance to build, add src/setup.rs and list it in the cli spec, then record the cases"
+}

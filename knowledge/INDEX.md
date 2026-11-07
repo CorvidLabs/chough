@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6 (active; `specsync change status chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6`)
 
 Archived changes (newest first; the newest 3 are hot):
 

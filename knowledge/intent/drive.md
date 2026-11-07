@@ -27,6 +27,7 @@ criteria:
   - DRIVE-20
   - DRIVE-21
   - DRIVE-22
+  - DRIVE-23
 tags:
   - chough/intent
 ---
@@ -61,3 +62,4 @@ archived changes whose requirements trace it.
 - **DRIVE-20**: none yet
 - **DRIVE-21**: [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md)
 - **DRIVE-22**: [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md)
+- **DRIVE-23**: none yet
