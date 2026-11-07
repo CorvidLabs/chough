@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0 (active; `specsync change status prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,8 +99,10 @@ Archived lesson bundles:
 
 ## Observations
 
-505 recorded; most recent:
+507 recorded; most recent:
 
+- OBS-structural-e0b6507696e1eb822326d465 Structural Passed in local-linux-aarch64 at 2c3cd209c5cd
+- OBS-dry-run-ea811aa23f1848e4afafdbae DryRun Passed in local-linux-aarch64 at 2c3cd209c5cd
 - OBS-structural-d609d7d731efad7e2db11df1 Structural Passed in local-macos-arm64 at cfa2d1042225
 - OBS-tc-cli-archived-report-reuse-20f0b488f31ec8fa7fbbff14 ProductTest Passed in local-macos-arm64 at cfa2d1042225
 - OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
@@ -109,8 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-archive-cache-invalidation-c6967565fd883fbf3ec5a0c3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
 - OBS-tc-cli-archived-report-reuse-59382721b25cc6f8e1ab97ce ProductTest Passed in local-macos-arm64 at cfa2d1042225
 - OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7 ProductTest Failed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archived-report-reuse-caa35ad0d8067f0b20169c34 ProductTest Failed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-linux-image-from-ci-pins-7553ec1c8fafef747b7a69fe ProductTest Passed in local-linux-aarch64 at 5b0b44217021
 
 ## Briefs
 
