@@ -1,0 +1,47 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-dc99b91d3d555917325dc55e",
+    "head": "EVT-5fcf408f805572d4dc5d685c",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the directory is regenerated after the session archives itself (#191, KNOW-4)",
+  "intent_scope": "KNOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes",
+  "references": {
+    "criteria": [
+      "KNOW-4",
+      "KNOW-29"
+    ],
+    "requirements": [
+      "REQ-cli-043",
+      "REQ-cli-049",
+      "REQ-cli-051"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Trace #191 (review F1) to the approved KNOW-4 (regenerating from the same sources gives identical bytes); no new HI criterion: Leif's burn-down (relayed by orc t18, 2026-11-06) asks for every Chough issue fixed with HI first, trace or draft"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Native approval of after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes (#191), relayed by the orc t18"
+  ],
+  "run_consents": [],
+  "next_action": "After approval: failing tests in tests/reduce.rs first, then the vault.rs, library.rs and stage.rs fix"
+}
