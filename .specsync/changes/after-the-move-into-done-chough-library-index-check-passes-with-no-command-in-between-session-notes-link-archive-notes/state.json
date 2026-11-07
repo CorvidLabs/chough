@@ -7,10 +7,10 @@
   "title": "After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4)",
   "description": "After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8",
   "created_at": 1794018936,
-  "updated_at": 1794018997,
+  "updated_at": 1794019407,
   "affected_specs": [
     "cli"
   ],

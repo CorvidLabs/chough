@@ -1,4 +1,50 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794019407,
+      "digest": "7e1a4390255d85cc14b8639f16b89882618570d8be1dbf6848d8599b7e0c9993",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes",
+        "title": "After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4)",
+        "description": "After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/library.rs",
+          "src/stage.rs",
+          "src/vault.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-043, REQ-cli-049 and REQ-cli-051 (modified): right after chough stage advance into done, with no command in between, chough library index --check passes. (1) A session rolled into a vault that held no archive note for its change before that move links its change's archive note, because whether the link is written depends only on the archive notes the same build writes, never on notes already in the directory (KNOW-4). (2) When the change's archive lists the session file that archives itself at done, the directory is regenerated once more after that self-archive, so the archive note places the file in Git; applied.librarian_index reports the last regeneration. Two tests in tests/reduce.rs fail first on main f41e7ab4 and pass after; the spec-sync reproduction in #191 passes the check; docs/cli.md describes the order and the change log names #191."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-23 safeguard kept: the ledger rotation still runs after the knowledge refresh and keeps entries whose archive has no note, so this change adds a regeneration after the session archives itself rather than moving the refresh after the rotation. REQ-history-006 order unchanged (trim, roll-up, refresh, rotation, session archive); only a final regeneration follows. No gate reads the directory; a refusal never undoes the move into done.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "c8d3cc0966dd9e04c17e1e377208cb8930633dee8f2564069aa4bb24d40b0abf"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-043": "400fad2047d6ca41885d4e12d00d0fd90e6302f0c3a9c9e2f007e0fea238c475",
+        "cli: REQUIREMENT REQ-cli-049": "2a79f920dfbd951db68b47ae72b7c377186dac7275834138bfe687c358f50640",
+        "cli: REQUIREMENT REQ-cli-051": "0534d227941dc312454cc0ce523883cd70968156c06437d41bbeebd5bd6112cf"
+      }
+    }
+  ],
   "reopenings": []
 }
