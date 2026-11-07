@@ -7,10 +7,11 @@
   "title": "Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18)",
   "description": "Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18)",
   "kind": "documentation",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "e2d20dad504ee21fd304150632a21aa71d074d37",
   "created_at": 1794089631,
-  "updated_at": 1794092435,
+  "updated_at": 1794094066,
   "affected_specs": [
     "cli"
   ],

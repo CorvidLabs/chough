@@ -1,6 +1,6 @@
 ---
 id: explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18
-state: approved
+state: implementing
 type: documentation
 base_commit: e2d20dad504ee21fd304150632a21aa71d074d37
 ---
