@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8",
   "created_at": 1794018585,
-  "updated_at": 1794018616,
+  "updated_at": 1794018673,
   "affected_specs": [
     "history"
   ],
@@ -27,8 +27,14 @@
   "selected_artifacts": [
     "context",
     "testing",
-    "tasks"
+    "tasks",
+    "requirements",
+    "docs"
   ],
   "dependencies": [],
-  "answers": {}
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #189, regression from #183 (#186, DRIVE-21): timing must not count the valid direct-native-write kind (REQ-history-013) as unrecognised. Truly unknown kinds still mark the report partial. Rule: failing test first; a mutation shows the test real. Lesson: run the spec coverage check locally before Linux verify.",
+    "public_contract": "yes"
+  }
 }
