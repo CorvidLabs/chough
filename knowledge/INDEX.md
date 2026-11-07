@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-528 recorded; most recent:
+533 recorded; most recent:
 
+- OBS-tc-cli-direct-write-before-ship-442aca5dbaf8e2567267c6c2 ProductTest Failed in local-macos-arm64 at 2d571c5de52b
+- OBS-tc-cli-direct-write-shown-not-written-6a00eba080d6440fc9a0b34a ProductTest Failed in local-macos-arm64 at 2d571c5de52b
+- OBS-tc-cli-direct-write-first-sight-588d19992c7314d37d3102c8 ProductTest Failed in local-macos-arm64 at 2d571c5de52b
+- OBS-tc-cli-chough-steps-not-flagged-967d02b7e7a10c43108cb481 ProductTest Failed in local-macos-arm64 at 2d571c5de52b
+- OBS-tc-cli-direct-write-recorded-once-2285e769ed1b394f8911547e ProductTest Failed in local-macos-arm64 at 2d571c5de52b
 - OBS-tc-cli-change-steps-write-nothing-f37dc2ff0a53fdcca9e37c99 ProductTest Failed in local-macos-arm64 at dad339ed70b1
 - OBS-tc-history-direct-write-oldest-reader-named-4106f4de5309f65552065566 ProductTest Failed in local-macos-arm64 at dad339ed70b1
 - OBS-tc-history-direct-write-field-only-on-its-kind-a147bb788fb72e1c3b3e4b75 ProductTest Failed in local-macos-arm64 at dad339ed70b1
 - OBS-tc-cli-change-walkthrough-runs-chough-eeab06073c51349b7b6ecf79 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
 - OBS-tc-cli-change-ship-outlives-read-bound-63957ecaa5867c7baa0ff452 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-names-remaining-step-4dab9573dc57469f2f0cacfb ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-checks-before-running-b9525101163d73b8ba5a3738 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-refusal-passes-through-b81f1986cced1d35cc1c2489 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-b8b96571c25ed80fcdfcd791 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-product-test-43953badfa0bdb247decd5d4 ProductTest Passed in local-macos-arm64 at da37b4a73515
 
 ## Briefs
 
