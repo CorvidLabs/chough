@@ -139,7 +139,7 @@ fn list(fixture: &Fixture) -> Value {
     fixture.ok(&["gate", "list", "--json"])
 }
 
-fn relay<'a>(words: &'a str) -> Vec<&'a str> {
+fn relay(words: &str) -> Vec<&str> {
     vec![
         "--decided-by",
         "SYNTHETIC-human",
