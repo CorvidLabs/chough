@@ -37,7 +37,7 @@ The full existing evidence, history, retention and archive suites must pass with
 
 ## Full verification
 
-With HI 0.8.0 and SpecSync 6.2.0, using Fledge 1.8.0 where available (the current local binary is 1.7.2 and any difference is reported):
+With HI 0.8.0 and SpecSync 6.2.0, using Fledge 1.8.0 (the finishing worker verified all three installed pins):
 
 ```sh
 fledge run fmt
@@ -52,3 +52,7 @@ The Linux command uses the repository-defined Docker images and pinned toolchain
 ## Evidence boundaries
 
 A structural pass, an exit code, an actor label or a restored event alone is not behavioral proof or human acceptance. Each race test must prove its hook ran. Every rollback assertion checks exact bytes and permissions, non-replacement of recreated files, recovery holds and ledger meaning. Scope approval, native verification, implementation review, archive and merge remain separate records.
+
+## Finish regression: restore publication identity
+
+The existing recreated-file case also runs `prune_restore_permissions_preserve_replacement_identity` on Unix. The deterministic hook replaces the public destination after rollback prepares bytes and before it sets the mode. It asserts the second writer keeps exact bytes, mode 0600 and inode, and the original uncommitted bytes survive in the named recovery hold. On the unfixed implementation, the test ran once and failed because rollback changed mode 0600 to 0640; see `.chough/artifacts/issue-65-prune-race/finish/restore-identity-before.log` and `OBS-product-test-972af92fbd4cb64f5dd3094a`. The failing test commit is `bf57eb259b17a2ed5634b5ef62f4b1520f8bdd93`. The fix reuses private staging and create-only hard-link publication; it never chmods or deletes a shared public destination during restoration.

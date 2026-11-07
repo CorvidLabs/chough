@@ -57,7 +57,8 @@
     "Added cli ownership with a minimal Purpose delta for src/evidence.rs; a disposable worktree probe accepted the cli and history deltas with approval_valid true, and the probe and its non-human approval record were removed",
     "Failing tests: 3ad9df48933b880836c812c06369d00b9369e918; all four direct regressions failed for the intended behavior and their failed cases are linked to local bugs",
     "All four prune regressions passed after implementation; 10 evidence unit, 30 evidence integration and 25 history tests passed, and both local bugs are verified",
-    "Failure first: prune_restore_permissions_preserve_replacement_identity ran 1 test, failed mode assertion 0640 versus 0600 before the restore publication fix; receipt restore-identity-before.log"
+    "Failure first: prune_restore_permissions_preserve_replacement_identity ran 1 test, failed mode assertion 0640 versus 0600 before the restore publication fix; receipt restore-identity-before.log",
+    "Failing tests: bf57eb259b17a2ed5634b5ef62f4b1520f8bdd93; rollback replacement chmod changes 0600 to 0640, linked to existing partial-removal bug"
   ],
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",

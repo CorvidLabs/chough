@@ -7,7 +7,7 @@ artifact: plan
 
 ## Approach
 
-Keep the fix in `src/evidence.rs`. Refuse an apply when `.chough/removing/` already holds a file, prepare each candidate's exact bytes and permissions before its ledger write, recheck protections immediately before each removal, and replace direct unlinks with the existing `remove_verified`. Track successful removals. On any later failure, restore them with create-new writes, preserve recreated files and retain unrestorable original bytes in the hold directory, then append the existing `restored` ledger event and fail with an actionable error.
+Keep the fix in `src/evidence.rs`. Refuse an apply when `.chough/removing/` already holds a file, prepare each candidate's exact bytes and permissions before its ledger write, recheck protections immediately before each removal, and replace direct unlinks with the existing `remove_verified`. Track successful removals. On any later failure, restore them with privately finished copies and create-only hard links, preserve recreated files and retain unrestorable original bytes in the hold directory, then append the existing `restored` ledger event and fail with an actionable error.
 
 Add deterministic regressions before the fix. A test-only fault seam in the crate controls the interleaving for a newly appearing protection and a recreated-file rollback conflict; no runtime flag or environment variable is added. An integration regression uses a read-only evidence directory to make the observation removal fail after artifact removal through the real CLI.
 
@@ -33,7 +33,7 @@ Estimate: small. The main uncertainty is proving exact race interleavings and ro
 
 ## Risks
 
-- A rollback could overwrite a concurrently recreated file or lose uncommitted original bytes. Create-new restoration and a create-only recovery hold prevent both; the conflict regression proves the behavior.
+- A rollback could overwrite a concurrently recreated file or lose uncommitted original bytes. Private staging, create-only publication and a create-only recovery hold prevent both; the conflict regression proves the behavior.
 - A restored event could make a partial rollback look complete. The refusal names every unrestored path and recovery hold; tests inspect files and ledger labels rather than only the event.
 - Test-only fault injection could alter production behavior. The seam is `#[cfg(test)]` only, and integration coverage exercises the real CLI without it.
 - Reusing hold logic could change archive behavior. The archive implementation is not edited; its existing tests remain a regression check.

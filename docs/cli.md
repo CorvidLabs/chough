@@ -1115,8 +1115,9 @@ artifact digests, record digest, removed files, reason, policy and authority, HE
 pruning and the pruning time. Each removal rechecks the protection fingerprint and
 moves the file into `.chough/removing/`, where its exact bytes are compared before
 deletion. If a later check or removal fails, earlier removals are restored with
-create-new writes and their original permissions, and a `restored` event is appended
-for each ledgered set. A file recreated meanwhile is never replaced. Its original
+private copies finished with their original permissions and published by create-only
+hard links, and a `restored` event is appended for each ledgered set. A file recreated
+meanwhile keeps its bytes, permissions and identity. Its original
 bytes are preserved in a named create-only hold under `.chough/removing/`, because an
 eligible observation need not be committed at HEAD; the refusal names every unrestored
 path and hold. An earlier recovery hold blocks the next apply until it is inspected.

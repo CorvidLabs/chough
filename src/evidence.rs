@@ -1969,40 +1969,30 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
             let mut problems = vec![];
             for (relative, bytes, permissions) in held.iter().rev() {
                 let path = local_path(root, relative)?;
-                let restored = (|| -> std::io::Result<()> {
-                    use std::io::Write;
+                let restored = (|| -> Result<Placed> {
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent)?;
                     }
-                    let mut target = fs::OpenOptions::new()
-                        .write(true)
-                        .create_new(true)
-                        .open(&path)?;
-                    target.write_all(bytes)?;
-                    #[cfg(test)]
-                    PRUNE_BEFORE_RESTORE_MODE.with(|slot| {
-                        if let Some(hook) = slot.borrow_mut().as_mut() {
-                            hook(&path);
-                        }
-                    });
-                    fs::set_permissions(&path, permissions.clone())
+                    // Finish bytes and mode privately, then publish without replacement.
+                    // A second writer's public destination is never chmodded or deleted.
+                    place_copy(&path, bytes, |staged| {
+                        #[cfg(test)]
+                        PRUNE_BEFORE_RESTORE_MODE.with(|slot| {
+                            if let Some(hook) = slot.borrow_mut().as_mut() {
+                                hook(&path);
+                            }
+                        });
+                        fs::set_permissions(staged, permissions.clone())
+                    })
                 })();
                 match restored {
-                    Ok(()) => {}
-                    Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                        problems.push(preserve_prune_recovery(
-                            root,
-                            relative,
-                            bytes,
-                            "a file was recreated there meanwhile",
-                        ));
-                    }
+                    Ok(_) => {}
                     Err(error) => {
                         problems.push(preserve_prune_recovery(
                             root,
                             relative,
                             bytes,
-                            &format!("restore failed: {error}"),
+                            &format!("restore failed: {error:#}"),
                         ));
                     }
                 }
@@ -3894,6 +3884,10 @@ mod tests {
         let ledger = fs::read_to_string(root.path().join(LEDGER)).unwrap();
         assert!(ledger.contains("\"event\":\"restored\""), "{ledger}");
         assert!(ledger.contains("target"), "{ledger}");
+
+        // The case binding also covers a replacement at the restore publication boundary.
+        #[cfg(unix)]
+        prune_restore_permissions_preserve_replacement_identity();
     }
 
     #[cfg(unix)]
