@@ -93,6 +93,12 @@ fn project(gates: &[&str]) -> Fixture {
         &format!("{DIR}/state.json"),
         &json!({"id": ID, "title": "Free shipping at the threshold", "state": "approved", "base_commit": base}).to_string(),
     );
+    // The change's delta adds REQ-cli-001, which both cases link; nothing links their
+    // observations to the session (redefined tests source, option A).
+    fixture.write(
+        &format!("{DIR}/deltas/cli.md"),
+        "## ADDED\n\n### REQUIREMENT REQ-cli-001\n\nPreserve files.\n",
+    );
     fixture.write(
         &format!("{DIR}/plan.md"),
         "# Plan\n\n## Approach\n\nx\n\n## Risks\n\n- A rounding edge at exactly fifty dollars.\n\n## Constraints consulted\n\nnone\n",
