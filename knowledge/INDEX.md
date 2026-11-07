@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation (active; `specsync change status mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-527 recorded; most recent:
+528 recorded; most recent:
 
+- OBS-installation-observation-48008674b01d6e137c95d956 InstallationObservation Passed in macos-arm64-cargo-1.99.0 at 86ae8dda94ab
 - OBS-product-test-1e38299188b5d2c640dd711a ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-history-summary-digest-oldest-reader-named-a5a71364f80d5bf7aea96be8 ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-history-relay-summary-fields-both-or-neither-02cb69215806d8a77707d34b ProductTest Passed in local-macos-arm64 at 6046cf529a30
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-gate-record-listed-gates-only-c118c5b8a9d9cc06f799c868 ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14 ProductTest Failed in local-macos-arm64 at a0bf05d7e391
-- OBS-tc-cli-gate-record-other-session-refused-c8f31decaa5be4335c3b46de ProductTest Failed in local-macos-arm64 at 21c84754336d
 
 ## Briefs
 
