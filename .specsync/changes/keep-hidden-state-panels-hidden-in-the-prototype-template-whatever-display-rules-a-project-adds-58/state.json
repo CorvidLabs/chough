@@ -7,10 +7,10 @@
   "title": "Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58)",
   "description": "Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8",
   "created_at": 1794018412,
-  "updated_at": 1794018446,
+  "updated_at": 1794018698,
   "affected_specs": [
     "cli"
   ],

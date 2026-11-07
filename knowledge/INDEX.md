@@ -93,15 +93,16 @@ Archived lesson bundles:
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
-- BUG-prototype-template-shows-every-state-panel-when-a-project-sets-display-073394402cc923c41c0b501c Prototype template shows every state panel when a project sets display on the state sections (#58) (open, in-scope, reproduced)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 - BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
 
 ## Observations
 
-517 recorded; most recent:
+519 recorded; most recent:
 
+- OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384 ProductTest Passed in local-macos-arm64 at 0d0233a082a9
+- OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74 ProductTest Passed in local-macos-arm64 at 0d0233a082a9
 - OBS-tc-cli-prototype-styles-0-4-0-known-outdated-73623b3db9dfcb5ff747c4b0 ProductTest Failed in local-macos-arm64 at f41e7ab4c638
 - OBS-tc-cli-prototype-hidden-panels-stay-hidden-f84e099781900ebb1a85f512 ProductTest Failed in local-macos-arm64 at f41e7ab4c638
 - OBS-product-test-d15ac3501f3fd5a9d6eb6325 ProductTest Passed in local-macos-arm64 at 317595212a05
@@ -110,8 +111,6 @@ Archived lesson bundles:
 - OBS-tc-history-direct-write-field-only-on-its-kind-f02be75f99e38e3aa4c8342e ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-cli-direct-write-before-ship-fe571d078f3198c22b65087f ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-cli-direct-write-shown-not-written-4a69cd09a5baf6ad90007603 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-first-sight-5668fa870a289846a58c64b7 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-chough-steps-not-flagged-e099c77fe660f71880fef91f ProductTest Passed in local-macos-arm64 at 317595212a05
 
 ## Briefs
 

@@ -1,6 +1,6 @@
 ---
 id: keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58
-state: draft
+state: approved
 type: bug_fix
 base_commit: f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8
 ---

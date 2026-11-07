@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The prototype template keeps hidden state panels hidden whatever display rules a
+  project adds (#58, FLOW-4). Its `styles.css` gains `[hidden] { display: none
+  !important; }`, so a rule such as `.surface section { display: grid }` no longer shows
+  every state at once. An unedited `styles.css` from 0.1.0 to 0.4.0 updates as
+  known-outdated.
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,
   REQ-history-013). For the active session's native change, Chough watches the lifecycle
   records SpecSync writes: `state.json`, `approvals.json`, `review.json`,

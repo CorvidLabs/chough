@@ -17,12 +17,14 @@
   "fixture": null,
   "observations": [
     "OBS-tc-cli-prototype-hidden-panels-stay-hidden-f84e099781900ebb1a85f512",
-    "OBS-tc-cli-prototype-styles-0-4-0-known-outdated-73623b3db9dfcb5ff747c4b0"
+    "OBS-tc-cli-prototype-styles-0-4-0-known-outdated-73623b3db9dfcb5ff747c4b0",
+    "OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384",
+    "OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -34,8 +36,22 @@
       "observations": [
         "OBS-tc-cli-prototype-styles-0-4-0-known-outdated-73623b3db9dfcb5ff747c4b0"
       ]
+    },
+    {
+      "at_unix_seconds": 1794018789,
+      "text": "Additional evidence.",
+      "observations": [
+        "OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794018789,
+      "text": "status: open -> verified",
+      "observations": [
+        "OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794018557,
-  "updated_at_unix_seconds": 1794018573
+  "updated_at_unix_seconds": 1794018789
 }

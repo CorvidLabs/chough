@@ -357,6 +357,12 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/lifecycle.md",
         "9f989fd4b2a9a9b1edd7288a6385a12e4dcaeba324e14ad5308c68233e2d1644",
     ),
+    // Releases 0.1.0 to 0.4.0, unchanged since #2 through main f41e7ab4; superseded by
+    // the `[hidden]` guard that keeps the prototype's state panels hidden (#58, FLOW-4).
+    (
+        "templates/prototype/styles.css",
+        "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.
