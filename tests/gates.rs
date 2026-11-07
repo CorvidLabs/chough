@@ -103,7 +103,9 @@ fn project(gates: &[&str]) -> Fixture {
         &format!("{DIR}/plan.md"),
         "# Plan\n\n## Approach\n\nx\n\n## Risks\n\n- A rounding edge at exactly fifty dollars.\n\n## Constraints consulted\n\nnone\n",
     );
-    fixture.write("src/input.txt", "first version\nsecond line\nthird line\n");
+    // The product change, larger than any one of Chough's own records in the diff.
+    let body: String = (1..=60).map(|line| format!("line {line}\n")).collect();
+    fixture.write("src/input.txt", &body);
     for (case, outcome) in [("TC-cli-g1-pass", "passed"), ("TC-cli-g1-fail", "failed")] {
         fixture.ok(&[
             "evidence",
