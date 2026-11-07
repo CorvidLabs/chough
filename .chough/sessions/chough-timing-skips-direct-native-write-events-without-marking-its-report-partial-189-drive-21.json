@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-03b83c36dea2bb2df76ef9b7",
-    "head": "EVT-1d2a9260a2d974b3553510c3",
+    "head": "EVT-7f3fa7c9057e030cf247fb45",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "history"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,16 +26,15 @@
   },
   "decisions": [
     "Regression from #183 (#186): timing counted the valid direct-native-write kind as unrecognised and marked its report partial; fix in DRIVE-21's scope by treating it as a known non-segment kind; REQ-history-013 modified to say so",
-    "Folded in at the orc's request: chough change new gains --no-spec-change and --rationale (found by ch-docs-accuracy); REQ-cli-057 modified; tests in tests/change.rs fail first"
+    "Folded in at the orc's request: chough change new gains --no-spec-change and --rationale (found by ch-docs-accuracy); REQ-cli-057 modified; tests in tests/change.rs fail first",
+    "Leif (0xLeif) decided \"Definition approval of chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21\": \"approved #189\" (orc tab, 2026-11-07, relayed by orc t18; native approval recorded as 0xLeif by the orc at 0635c835 (after the reporting module was added)); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Definition approval of chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "After Leif's approval is recorded natively, close the gate, advance to build, skip DIRECT_WRITE in timing's kind filter, record the case"
 }

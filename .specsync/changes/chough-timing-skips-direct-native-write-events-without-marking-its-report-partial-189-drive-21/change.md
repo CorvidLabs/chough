@@ -1,15 +1,15 @@
 ---
 id: chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21
-state: draft
+state: approved
 type: bug_fix
 base_commit: f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8
 ---
 
-# Chough timing skips direct-native-write events without marking its report partial (189, DRIVE-21)
+# chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
 
 ## Intent
 
-chough timing skips direct-native-write events without marking its report partial (189, DRIVE-21)
+chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
 
 ## Affected Canonical Specs
 
