@@ -10,6 +10,7 @@ files:
   - src/context.rs
   - src/doctor.rs
   - src/change.rs
+  - src/direct_writes.rs
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
@@ -36,6 +37,7 @@ files:
   - tests/subdirectory.rs
   - tests/doctor.rs
   - tests/change.rs
+  - tests/direct_writes.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
   - tests/fixtures/workflow-at-825a380-lifecycle.md
   - tests/fixtures/workflow-at-edbc3c1-lifecycle.md
