@@ -100,6 +100,13 @@
         "cli: SPEC SECTION Purpose": "a3da79be055cde097fca454df5440cbe585413f8b55ee2f363f0b1c2eb0750ce",
         "history: REQUIREMENT REQ-history-004": "ea40bbd0535f389c24b0a700d7f05a3828505fea7fc45244b136bad2fabd65db"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794066668,
+      "digest": "34bd35083084093c750c7105fea39f8d3a520a36a05b2e6c18d581c95fe60684",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

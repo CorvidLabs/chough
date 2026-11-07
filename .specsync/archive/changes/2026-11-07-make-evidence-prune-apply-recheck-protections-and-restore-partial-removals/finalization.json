@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+  "implementation_commit": "8a9a1a3c030a6a5b18cbe98958b8a413aa5d2a01",
+  "implementation_tree": "2d4f3c3fc4b1f66fdb9a8aee0ee7881d86e82e91",
+  "contract_digest": "74b4a6eaba4230360b7641a3d9b9b79d9a98cf0bbb3f0544d88556ec408bb170",
+  "workspace_digest": "69f75e223e9a9fae343e0487b42d70da3f15add405e05c59bd6827e7259721f1",
+  "closing_digest": "34bd35083084093c750c7105fea39f8d3a520a36a05b2e6c18d581c95fe60684",
+  "review_digest": "10105100d93579008a3d4dd90a12ee2ced62b31bdf45aa07174fde1455890695",
+  "finalization_digest": "882742d5578ae3dd820911cdcc5e6684682f9011bd5ec3c9831a03795de28601",
+  "timestamp": 1794066669
+}
