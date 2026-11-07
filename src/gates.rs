@@ -642,8 +642,6 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn only_twelve_lowercase_hex_digits_name_a_list() {
         assert!(crate::stage::lowercase_hex("0123456789ab", 12));
