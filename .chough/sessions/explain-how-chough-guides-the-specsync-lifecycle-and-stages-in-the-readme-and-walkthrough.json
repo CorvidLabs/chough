@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-e78d6761ce34c979eccb75c4",
-    "head": "EVT-6c4fa26f9d758c97858dd8b3",
+    "head": "EVT-a89561dafa08376716022d87",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -39,7 +39,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18"
+  ],
   "run_consents": [],
   "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
 }
