@@ -1,0 +1,48 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-90341f9a961c8442e66835c2",
+    "head": "EVT-1d59f666d568f8bc3c290a3f",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Return the observation ID from cases record and evidence add, and the case ID from cases record (issue 60)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "return-the-observation-id-from-cases-record-and-evidence-add-issue-60",
+  "references": {
+    "criteria": [
+      "FLOW-7",
+      "FLOW-18",
+      "LIFE-4"
+    ],
+    "requirements": [
+      "REQ-cli-011",
+      "REQ-cli-017",
+      "REQ-cli-023"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "decided: reuse existing FLOW-7, FLOW-18 and LIFE-4 with REQ-cli-011, REQ-cli-017 and REQ-cli-023; no new HI or REQ ID is needed because issue 60 only exposes existing observation and case IDs, and broader envelope changes are rejected as out of scope"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope approval of return-the-observation-id-from-cases-record-and-evidence-add-issue-60"
+  ],
+  "run_consents": [],
+  "next_action": "Human scope approval of return-the-observation-id-from-cases-record-and-evidence-add-issue-60; no implementation before orc-codex records approval"
+}
