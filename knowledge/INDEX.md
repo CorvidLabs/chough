@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-528 recorded; most recent:
+529 recorded; most recent:
 
+- OBS-product-test-c727fa6d2f004d10b1d511f8 ProductTest Passed in linux-aarch64-docker-chough-linux-1-2-3 at 792bd3de73ef
 - OBS-installation-observation-48008674b01d6e137c95d956 InstallationObservation Passed in macos-arm64-cargo-1.99.0 at 86ae8dda94ab
 - OBS-product-test-1e38299188b5d2c640dd711a ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-history-summary-digest-oldest-reader-named-a5a71364f80d5bf7aea96be8 ProductTest Passed in local-macos-arm64 at 6046cf529a30
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-gate-record-refusals-recover-f746cea63f6f5b9127aa00ed ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-record-listed-gates-only-c118c5b8a9d9cc06f799c868 ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 ProductTest Passed in local-macos-arm64 at 6046cf529a30
-- OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14 ProductTest Failed in local-macos-arm64 at a0bf05d7e391
 
 ## Briefs
 
