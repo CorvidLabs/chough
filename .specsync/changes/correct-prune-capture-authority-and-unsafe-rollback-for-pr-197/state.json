@@ -7,10 +7,10 @@
   "title": "Correct prune capture authority and unsafe rollback for PR 197",
   "description": "Correct prune capture authority and unsafe rollback for PR 197",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "1fc4c67b59f05097cab4cafa446aa58198f8ee56",
   "created_at": 1794068549,
-  "updated_at": 1794068697,
+  "updated_at": 1794070617,
   "affected_specs": [
     "cli",
     "history"

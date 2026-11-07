@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-513106a919495dc23f745860",
-    "head": "EVT-cd10118db3cb2f0c9a884375",
+    "head": "EVT-c84c933a5012aa43a4d20fc7",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -41,7 +41,9 @@
   "decisions": [
     "Existing LIFE-2/7/8 and REQ-history-004 express the corrective intent; no new HI/REQ IDs. Public failure cases are clarified through CLI Purpose/history Error Cases; requirement bodies and split digest stay unchanged.",
     "Rejected reusing the old acceptance or editing/reopening its archive: corrected code needs this new scope and a fresh exact-head implementation review through orc t19f.",
-    "Only corrective definition/intent bookkeeping is authorized before scope approval; real production, contracts and test/case files stay at the accepted archive head."
+    "Only corrective definition/intent bookkeeping is authorized before scope approval; real production, contracts and test/case files stay at the accepted archive head.",
+    "Leif decided \"Scope decision of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197\": \"Yes to all\" (direct Leif chat reply to orc t19f ONE-item #197 corrective scope question on 2026-11-07; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated",
+    "Leif scope approval recorded natively by orc-t19f at c763d13d41edae6ec09c76b10333189118e1e668; approval_valid and correction_valid true. This authorizes the six corrective paths only, not corrected implementation acceptance."
   ],
   "open_questions": [],
   "completed": [
@@ -50,9 +52,7 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Scope decision of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for Leif exact-head scope approval recorded by orc t19f; then land red tests, fix only the two P1s, qualify and present fresh implementation review on the existing PR 197"
+  "next_action": "Commit approval and own checkpoint; land and execute real red regressions before either production fix"
 }
