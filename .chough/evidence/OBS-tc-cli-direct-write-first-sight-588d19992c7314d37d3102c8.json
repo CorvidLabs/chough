@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-direct-write-first-sight-588d19992c7314d37d3102c8",
+  "criteria": [
+    "DRIVE-21"
+  ],
+  "requirements": [
+    "REQ-cli-060"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test direct_writes -- --exact first_sight_sets_a_baseline_and_flags_nothing for TC-cli-direct-write-first-sight: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-direct-write-first-sight-588d19992c7314d37d3102c8.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-direct-write-first-sight-588d19992c7314d37d3102c8.log": "e0a6eb41d3dce0aaba562140a5951b336de1a29b92b59bfbf4e3557fcb145c78"
+  },
+  "observed_at_unix_seconds": 1794011686,
+  "snapshot": {
+    "revision": "2d571c5de52b9c83e4e994d94a435b7506c28179",
+    "dirty": false,
+    "fingerprint": "92d11b519aedd1750016104788c6eed7cf2d794aba5ead8256ad1979ee2b4f27",
+    "content": "d64e2132ed41fa74e32b07bdbdf4a04620e592afb97556ef9144d6c8cc3f96d3"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-direct-write-first-sight",
+      "digest": "de1936814e08e9e9d33309a14ed71b7aebe95cbae2f27ea386237d80f9d136a2"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "direct_writes",
+    "--",
+    "--exact",
+    "first_sight_sets_a_baseline_and_flags_nothing"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

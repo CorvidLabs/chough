@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "flag-direct-specsync-lifecycle-writes-in-history-183-drive-21",
+  "implementation_commit": "cb19ebe72eb18515b508f40a95a89fde3a81faa7",
+  "implementation_tree": "10c13484ecb235bed2343bdc03d5513b3723cb8d",
+  "contract_digest": "c464553e87bd5816ca3b894f95a92e4279568b2d931fa0f620d6cbb45ac7b259",
+  "workspace_digest": "ef5720192374130ddd929946b47f3a3137a6e4dc885f180a7b14ebe42784379f",
+  "closing_digest": "af65f6f2bd00c978c5ba1ce434bb0d98f842c1d7ce6f0e973c16b4bc1652bba2",
+  "review_digest": "c768203861322fd0145748dbdfb9aba534651d78af18e08c5160d41cab9e98ab",
+  "finalization_digest": "a469ec72d2f1742737c899c59760352c046599088e517ccaa1492c08d87aa261",
+  "timestamp": 1794014911
+}

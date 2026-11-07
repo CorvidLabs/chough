@@ -1,0 +1,43 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-9714e2f0c9044b1ccccc108a",
+    "head": "EVT-c4bdeacc34c6e3845754f1be",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Flag direct SpecSync lifecycle writes in history (#183, DRIVE-21 slice 3)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "flag-direct-specsync-lifecycle-writes-in-history-183-drive-21",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Slice 3 of the approved order (Leif, relayed by the orc): DRIVE-21, direct lifecycle writes recorded in history; the release note names the oldest Chough that reads the event (orc's ask)",
+    "Findings wait for a successful stage move (history is written there anyway), because nothing may write .chough/ between check --commit and finalize; next and status only show them",
+    "Modifies REQ-cli-057 so change steps may write their untracked baseline under .chough/local/; rejected: recording from next or status, watching authored artifacts or other changes, refusing on a finding",
+    "Leif (0xLeif) decided \"Definition approval of flag-direct-specsync-lifecycle-writes-in-history-183-drive-21\": \"approved slice 3; land it before the 0.5.0 cut so 0.5.0 reads the new event\" (orc tab, 2026-11-07, relayed by orc t18; native definition approval recorded as 0xLeif by the orc at 4928d196 (digest c464553e)); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Implementation review of flag-direct-specsync-lifecycle-writes-in-history-183-drive-21\": \"pass\" (GitHub review of #186 at cb19ebe7, relayed by orc t18 on 2026-11-07; native review recorded as 0xLeif by the orc); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "After Leif's implementation review is recorded natively, run chough change ship flag-direct-specsync-lifecycle-writes-in-history-183-drive-21 with the review relay (no commit between), commit and push the archive tip, then tell t27 so the 0.5.0 prep can merge"
+}

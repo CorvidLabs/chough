@@ -63,13 +63,13 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9 | failed (by cycle time) | local-macos-arm64 | TC-cli-closeout-closes-review-gate |
-| OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932 | passed (by cycle time) | local-macos-arm64 | TC-cli-doc-links-resolve |
+| OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9 | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-closeout-closes-review-gate |
+| OBS-tc-cli-doc-links-resolve-a914604eb66262d26986c932 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-doc-links-resolve |
 | OBS-tc-cli-docs-name-pinned-versions-2909e52082ea849ecbdd5980 | failed (by cycle time) | local-macos-arm64 | TC-cli-docs-name-pinned-versions |
-| OBS-tc-cli-documented-flags-exist-c93c273024940d8058480e32 | passed (by cycle time) | local-macos-arm64 | TC-cli-documented-flags-exist |
+| OBS-tc-cli-documented-flags-exist-c93c273024940d8058480e32 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-documented-flags-exist |
 | OBS-tc-cli-documented-merge-drivers-match-a6a7136235f460d66b8cd4c5 | failed (by cycle time) | local-macos-arm64 | TC-cli-documented-merge-drivers-match |
 | OBS-tc-cli-inline-diagrams-match-sources-a2caa50c479ca76178fd5488 | failed (by cycle time) | local-macos-arm64 | TC-cli-inline-diagrams-match-sources |
-| OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c | failed (by cycle time) | local-macos-arm64 | TC-cli-readme-helper-table-covers-help |
+| OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-readme-helper-table-covers-help |
 | OBS-tc-cli-readme-verify-list-matches-fledge-34c4416330af263a86df70bb | failed (by cycle time) | local-macos-arm64 | TC-cli-readme-verify-list-matches-fledge |
 | OBS-tc-cli-skill-615b587b-known-outdated-1022470cf6daf1cd3999060a | failed (by cycle time) | local-macos-arm64 | TC-cli-skill-615b587b-known-outdated |
 | OBS-tc-cli-stage-diagram-matches-the-helper-8d60c622b0c484760515ef72 | failed (by cycle time) | local-macos-arm64 | TC-cli-stage-diagram-matches-the-helper |
@@ -86,4 +86,6 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
+- [artifacts/OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9.log](../attachments/a-session-45f989be/artifacts/OBS-tc-cli-closeout-closes-review-gate-f701d940bd72712557fae2f9.log)
+- [artifacts/OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c.log](../attachments/a-session-45f989be/artifacts/OBS-tc-cli-readme-helper-table-covers-help-e3e1ed19fd5068c522abfa4c.log)
 - [sessions/a-session-archives-itself-at-its-own-move-into-done-155.json](../attachments/a-session-45f989be/sessions/a-session-archives-itself-at-its-own-move-into-done-155.json)

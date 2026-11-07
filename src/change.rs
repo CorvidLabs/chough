@@ -130,6 +130,13 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
     }
 }
 
+/// The change a write step names: the ID argument of `answer` and `check`.
+fn named_change<'a>(step: &str, arguments: &'a [String]) -> Option<&'a str> {
+    matches!(step, "answer" | "check")
+        .then(|| arguments.get(2).map(String::as_str))
+        .flatten()
+}
+
 /// The `chough change status` command a retry runs, as typed.
 fn rerun(step: &str, arguments: &[String]) -> String {
     let mut command = format!("chough change {step}");
@@ -152,10 +159,29 @@ fn not_started(step: &str, error: &io::Error) -> anyhow::Error {
 /// A write step: never stopped by the native read bound. A stop signal to Chough still
 /// stops SpecSync and its descendants (FLOW-14).
 fn write(root: &Path, step: &str, arguments: &[String]) -> Result<i32> {
+    // REQ-cli-060: what the records were before this step, against the baseline.
+    let before = named_change(step, arguments)
+        .and_then(|change| crate::direct_writes::before_step(root, change));
     let mut command = Command::new(SPECSYNC);
     command.args(arguments).current_dir(root);
     let output =
         records::run_owned(&mut command, None).map_err(|error| not_started(step, &error))?;
+    // The step was Chough's, whatever its exit: the baseline follows it. A failed
+    // baseline write is not reported here, so SpecSync's bytes stay unchanged.
+    if let Some(before) = before {
+        let _ = crate::direct_writes::after_step(root, before);
+    } else if step == "new"
+        && let Some(change) = serde_json::from_slice::<serde_json::Value>(&output.stdout)
+            .ok()
+            .and_then(|value| {
+                value
+                    .pointer("/change/id")
+                    .and_then(|id| id.as_str())
+                    .map(String::from)
+            })
+    {
+        let _ = crate::direct_writes::created(root, &change);
+    }
     pass_through(&output.stdout, &output.stderr)?;
     Ok(exit_code(output.status.code(), signal(&output.status)))
 }
@@ -265,10 +291,15 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         }
     })?;
 
+    // REQ-cli-060: a direct write before the ship stays pending for the move into done.
+    let before = crate::direct_writes::before_step(root, id);
     let mut command = Command::new(SPECSYNC);
     command.args(["change", "ship", id]).current_dir(root);
     let output =
         records::run_owned(&mut command, None).map_err(|error| not_started("ship", &error))?;
+    if let Some(before) = before {
+        let _ = crate::direct_writes::after_step(root, before);
+    }
     pass_through(&output.stdout, &output.stderr)?;
     let code = exit_code(output.status.code(), signal(&output.status));
     if code != 0 {
