@@ -5,4 +5,5 @@ artifact: docs
 
 # Docs
 
-<!-- TODO: complete this artifact or remove it from selected_artifacts before approval. -->
+- `CHANGELOG.md`: one Unreleased line citing #189. `chough timing` no longer marks its report partial for `direct-native-write` events.
+- `docs/cli.md` is unchanged: its timing section does not list the kinds it skips.
