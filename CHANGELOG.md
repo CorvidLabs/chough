@@ -6,6 +6,22 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,
+  REQ-history-013). For the active session's native change, Chough watches the lifecycle
+  records SpecSync writes: `state.json`, `approvals.json`, `review.json`,
+  `review-attempts.json`, `verification.json` and `verification-attempts.json`. It
+  compares them with an untracked baseline in `.chough/local/native-writes/`, which
+  `chough change new`, `answer`, `check` and `ship` keep current, so Chough's own steps
+  are never flagged. Any other change is recorded once, as a `direct-native-write` event
+  naming each file added, changed or removed and the state before and after, with the
+  next successful stage move. Nothing is recorded between `change check --commit` and
+  finalize. `chough next` and `chough status` show pending writes and write nothing. A
+  finding never refuses a command. Direct `specsync` calls still work; until approve and
+  review move into Chough, they are what this shows. REQ-cli-057 now lets the change
+  steps write that one baseline file. Older builds refuse a history holding a
+  `direct-native-write` event ("unknown transition kind"), so
+  the oldest Chough that reads such a history is 0.5.0, the first release with this
+  change. Chough 0.4.0 does not read it.
 - `chough change ship <id>` is the closeout after the human's review (#179, DRIVE-20,
   REQ-cli-059). Given the review gate's relay (`--close-gate`, `--decided-by`, `--words`,
   `--where`, `--recorded-by`), it checks the session, the stage, the open gates and the
