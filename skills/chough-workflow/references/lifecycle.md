@@ -92,6 +92,9 @@ chough change ship <id> --close-gate "Implementation review of <id>" \
   --recorded-by "<agent-account>"
 ```
 
+Show the human the gates being decided with `chough gate list`. Each has a one-screen
+summary and its digest, and one reply covers only listed gates (`chough gate record`).
+
 Direct `specsync` lifecycle calls (here, approve and review) still work. The next
 stage move records them as `direct-native-write` history events, so the need can be
 seen (DRIVE-21).
