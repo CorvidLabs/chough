@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 5
-archived_changes: 23
+archived_changes: 25
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,10 @@ this note only links them.
 
 ## Archived changes that touched history
 
-23 archived changes, newest first.
+25 archived changes, newest first.
 
+- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
+- [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)
@@ -41,6 +43,4 @@ this note only links them.
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19)
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)
 - [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
-- [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md) Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29)
-- [size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each](../archives/size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each.md) Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125)
-- 13 more on the [timeline](../timeline.md)
+- 15 more on the [timeline](../timeline.md)

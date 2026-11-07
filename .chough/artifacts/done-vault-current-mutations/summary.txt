@@ -1,0 +1,5 @@
+#191 mutation round on e3de86c1 plus the strengthened fresh-vault test (src/vault.rs, src/stage.rs), 3 of 3 caught, each by an assertion (no compile errors):
+link-from-disk: caught by a_session_rolled_into_a_fresh_vault_links_its_archive_note_and_the_check_passes
+no-final-regeneration: caught by done_leaves_the_vault_current_when_the_archive_lists_the_self_archiving_session
+regenerate-only-on-rotation: caught by done_leaves_the_vault_current_when_the_archive_lists_the_self_archiving_session
+A first round, before the one-build check was added to the fresh-vault test, let link-from-disk survive: the final regeneration rebuilt over the notes the first pass wrote, which hid the on-disk check.

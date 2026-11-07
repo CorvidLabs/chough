@@ -1,0 +1,87 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794029459,
+      "digest": "9d89655fcfd636a3ac07639661dc18291407cc5adbb1483596b2b29dc88c739e",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording",
+        "title": "Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording",
+        "description": "Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording",
+        "kind": "bug_fix",
+        "affected_specs": [],
+        "affected_paths": [
+          "tests/spec_split.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "The 189 delta (PR #192) reworded REQ-reporting-001 — direct-native-write events (REQ-history-013) start or end no segment and are not an unrecognised kind — but missed updating the pinned digest in tests/spec_split.rs, so CI failed in the MSRV, Product and Fledge jobs; test-only fix, canonical specs unchanged.",
+        "acceptance_criteria": [
+          "cargo test --locked --test spec_split passes with the pinned digest matching the materialized REQ-reporting-001 wording, and PR #192's full CI is green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794031317,
+      "digest": "9d89655fcfd636a3ac07639661dc18291407cc5adbb1483596b2b29dc88c739e",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording",
+        "title": "Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording",
+        "description": "Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording",
+        "kind": "bug_fix",
+        "affected_specs": [],
+        "affected_paths": [
+          "tests/spec_split.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "The 189 delta (PR #192) reworded REQ-reporting-001 — direct-native-write events (REQ-history-013) start or end no segment and are not an unrecognised kind — but missed updating the pinned digest in tests/spec_split.rs, so CI failed in the MSRV, Product and Fledge jobs; test-only fix, canonical specs unchanged.",
+        "acceptance_criteria": [
+          "cargo test --locked --test spec_split passes with the pinned digest matching the materialized REQ-reporting-001 wording, and PR #192's full CI is green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794031464,
+      "digest": "99c851ba3cd880adeb323dfd7d9948faccfec333de7db5fd6a2ae277a7c812db",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording",
+      "actor": "Leif",
+      "reason": "tasks.md lists 'Full CI green on PR #192' as a task, but CI only runs after ship and push, so it can never be ticked at check time and check refuses; the CI expectation stays in change.md's acceptance criteria and testing.md, and only that task bullet is removed (Leif chose the send-back route via orc t18, 2026-11-06)",
+      "timestamp": 1794031276,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": false
+    }
+  ]
+}

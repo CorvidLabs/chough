@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test timing_skips_direct_write_events_without_marking_the_report_partial ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 2.22s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.83s
+     Running tests/direct_writes.rs (target/debug/deps/direct_writes-15bf2776f8ac98f1)

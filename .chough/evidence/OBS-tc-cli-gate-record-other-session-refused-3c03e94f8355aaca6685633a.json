@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-gate-record-other-session-refused-3c03e94f8355aaca6685633a",
+  "criteria": [
+    "FLOW-20"
+  ],
+  "requirements": [
+    "REQ-cli-061"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test gates -- --exact a_gate_of_another_open_session_is_refused_naming_session_use for TC-cli-gate-record-other-session-refused: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-gate-record-other-session-refused-3c03e94f8355aaca6685633a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-gate-record-other-session-refused-3c03e94f8355aaca6685633a.log": "326799589d72e2557c961d8a2d3ed13d0ac8a688da30af5e8ff501c551ae7270"
+  },
+  "observed_at_unix_seconds": 1794016589,
+  "snapshot": {
+    "revision": "6046cf529a30cea1c3ae13df25ac611e49598c23",
+    "dirty": false,
+    "fingerprint": "696e935b8112aa896a5c1b2d530ee83dd592af3fba14a5fa8875e08d07e8f5a0",
+    "content": "a44d62520a51299915961eeccaee0c517efad930d40190ac7583074a8f2b3dfe"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-gate-record-other-session-refused",
+      "digest": "ac4209cff90b1eca289f2f8b166e4253a4bfb383286574a08bfe5e6a13811d6b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "gates",
+    "--",
+    "--exact",
+    "a_gate_of_another_open_session_is_refused_naming_session_use"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 4
+}

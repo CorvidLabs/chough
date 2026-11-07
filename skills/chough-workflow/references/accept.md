@@ -57,6 +57,12 @@ chough change ship <id> --close-gate "Implementation review of <id>" \
   --where "<where and when, and who relayed it>" --recorded-by "<agent-account>"
 ```
 
+To present several gates at once, run `chough gate list`. It numbers them, each with
+a one-screen summary and its digest. Record the human's one reply with `chough gate
+record <list> --gates <n>,… --decided-by … --words … --where … --recorded-by …`. For the
+review gate of a change that is verifying, pass `--list <list> --gate <n>` to
+`chough change ship` instead of `--close-gate`.
+
 Do not commit between review and ship. `chough change ship` checks the session, the
 stage, the open gates and the relay before anything runs, then runs SpecSync's
 `change ship <id>` (which finalizes). After that it closes the gate with the

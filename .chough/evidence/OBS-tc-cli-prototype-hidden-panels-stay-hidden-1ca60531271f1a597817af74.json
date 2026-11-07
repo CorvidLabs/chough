@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74",
+  "criteria": [
+    "FLOW-4"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test package -- --exact the_prototype_template_keeps_hidden_state_panels_hidden for TC-cli-prototype-hidden-panels-stay-hidden: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74.log": "01478642bfd3e14fd947136d18577d3b3cce101ab9a9de963b070813ab078d41"
+  },
+  "observed_at_unix_seconds": 1794018769,
+  "snapshot": {
+    "revision": "0d0233a082a9b181ac8aee5f44f2cac7a85df8d5",
+    "dirty": true,
+    "fingerprint": "4c7eb729bdf31c2d9eaa5ede98f180d64868fc53d84a246bf34a58b438447d11",
+    "content": "8843444283725b49613a3f4143f993c9ec719d0d23aa7f70e08c5cd33cc9a35f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-prototype-hidden-panels-stay-hidden",
+      "digest": "5133db4628cfdddda84c9adfe39edc120a4c71b2fd20fb559031935c5ab7c966"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "package",
+    "--",
+    "--exact",
+    "the_prototype_template_keeps_hidden_state_panels_hidden"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

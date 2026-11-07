@@ -33,6 +33,12 @@ pub(super) enum ChangeCommand {
         specs: Vec<String>,
         #[arg(long = "path")]
         paths: Vec<String>,
+        /// Declare that canonical specs do not change; needs --rationale.
+        #[arg(long, requires = "rationale")]
+        no_spec_change: bool,
+        /// Why no canonical spec changes.
+        #[arg(long, requires = "no_spec_change", allow_hyphen_values = true)]
+        rationale: Option<String>,
     },
     /// Run `specsync change answer <id> <question> <answer> --json`.
     Answer {
@@ -55,8 +61,15 @@ pub(super) enum ChangeCommand {
 pub(super) struct ShipArgs {
     id: String,
     /// The open gate the relay closes after the ship, by its exact text.
-    #[arg(long)]
+    #[arg(long, conflicts_with = "list")]
     close_gate: Option<String>,
+    /// A `chough gate list` list holding the gate, in place of --close-gate
+    /// (REQ-cli-061); the relay then keeps that gate's summary digest.
+    #[arg(long, requires = "gate")]
+    list: Option<String>,
+    /// The gate's number on --list.
+    #[arg(long, requires = "list")]
+    gate: Option<usize>,
     /// Who decided the gate.
     #[arg(long)]
     decided_by: Option<String>,
@@ -79,6 +92,8 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             kind,
             specs,
             paths,
+            no_spec_change,
+            rationale,
         } => {
             let mut arguments = vec!["change".to_string(), "new".into(), description];
             if let Some(kind) = kind {
@@ -89,6 +104,12 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             }
             for path in paths {
                 arguments.extend(["--path".into(), path]);
+            }
+            if no_spec_change {
+                arguments.push("--no-spec-change".into());
+            }
+            if let Some(rationale) = rationale {
+                arguments.extend(["--rationale".into(), rationale]);
             }
             arguments.push("--json".into());
             ("new", arguments, false)
@@ -224,6 +245,19 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
             "chough change ship {id} --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\""
         )
     };
+    // REQ-cli-059 (modified): --list and --gate name a listed gate, whose summary must
+    // still have its listed digest, before anything runs.
+    let listed = match (&args.list, args.gate) {
+        (Some(list), Some(number)) => Some((
+            list.clone(),
+            crate::gates::check_listed(root, list, number)?,
+        )),
+        _ => None,
+    };
+    let close_gate = listed
+        .as_ref()
+        .map(|(_, listed)| listed.gate.clone())
+        .or_else(|| args.close_gate.clone());
     let session = crate::checkpoint::read_session(root)?.to_value()?;
     match session["native_change"].as_str() {
         None => bail!(
@@ -249,7 +283,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 .collect()
         })
         .unwrap_or_default();
-    let named = args.close_gate.as_deref();
+    let named = close_gate.as_deref();
     if let Some(other) = open.iter().find(|gate| Some(gate.as_str()) != named) {
         if named.is_some_and(|named| open.iter().any(|gate| gate == named)) {
             bail!(
@@ -327,7 +361,17 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 relay.place,
                 "--recorded-by".into(),
                 relay.recorded_by,
-            ],
+            ]
+            .into_iter()
+            .chain(listed.iter().flat_map(|(list, listed)| {
+                [
+                    "--summary-digest".to_string(),
+                    listed.digest.clone(),
+                    "--list".to_string(),
+                    list.clone(),
+                ]
+            }))
+            .collect(),
         ));
     }
     steps.push((

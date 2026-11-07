@@ -1,7 +1,0 @@
-#183 mutation round on 31759521 (src/direct_writes.rs, src/stage.rs), 6 of 6 caught, each by an assertion (no compile errors):
-skip-pre-step-diff: caught by chough_change_steps_not_flagged, direct_write_before_ship
-skip-post-step-baseline: caught by chough_change_steps_not_flagged, direct_write_before_ship
-record-from-next: caught by next_and_status_show_and_change_nothing
-drop-pending-at-move: caught by direct_write_before_ship, chough_change_steps_not_flagged
-flag-at-first-sight: caught by 5 tests incl. first_sight_sets_a_baseline
-direct-write-on-any-kind: caught by direct_write_field_on_another_kind

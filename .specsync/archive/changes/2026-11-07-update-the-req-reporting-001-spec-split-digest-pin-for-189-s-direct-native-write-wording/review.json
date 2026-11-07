@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "582ce2ae655e5a6acc9127f1845974d6e854ad64",
+  "contract_digest": "9d89655fcfd636a3ac07639661dc18291407cc5adbb1483596b2b29dc88c739e",
+  "execution_digest": "aa02c6af8df6d904a57bac1b14d2c7211ed3c7dfcc9e08c4f429a29399db475c",
+  "workspace_digest": "d01559bae1c241be09bed29ed2205388d4989af1e0723a458306eab356ee8e28",
+  "timestamp": 1794031387
+}

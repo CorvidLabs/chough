@@ -147,9 +147,18 @@ Direct-write events. A `direct-native-write` event SHALL have `from` and `to` eq
 - `files`, each with its `path` under `.specsync/changes/<id>/` and `change`, which is `added`, `changed` or `removed`;
 - `before_state` and `after_state`, the change's state from `state.json`, or `null` when it is absent.
 
-No other event SHALL carry `direct_write`, and other records SHALL keep their bytes. Chough builds before this requirement refuse a history holding the event ("unknown transition kind"), so the change log SHALL name the first release that contains it as the oldest Chough that reads it. Trace: DRIVE-21.
+No other event SHALL carry `direct_write`, and other records SHALL keep their bytes. Readers of history that count unknown kinds, such as `chough timing`, SHALL treat it as a known kind that starts or ends no stage segment. Chough builds before this requirement refuse a history holding the event ("unknown transition kind"), so the change log SHALL name the first release that contains it as the oldest Chough that reads it. Trace: DRIVE-21.
 
 Acceptance Criteria
 - A recorded `direct-native-write` event passes history validation, and a `direct_write` object on any other kind is refused as an invalid payload.
+- `chough timing` reads a history holding a `direct-native-write` event as complete: it skips the event as part of no stage segment, reports no unrecognised kind for it, and does not mark the report partial.
 - The change log's entry for this change names the event and the oldest Chough release that reads it.
+
+### REQ-history-014
+
+Summary digests on relays. A `relayed_by` record (REQ-history-010) MAY carry `summary_digest`, 64 lowercase hex digits, and `list`, 12 lowercase hex digits, both or neither. A record with only one of them, or with a malformed value, SHALL be refused as an invalid payload. Records without them SHALL keep their bytes. Chough builds before this requirement refuse a relay holding them (unknown field), so the change log SHALL name the first release that contains it as the oldest Chough that reads it. Trace: FLOW-19, FLOW-20.
+
+Acceptance Criteria
+- A relay with both fields reads back; a relay with one of them, or with a malformed value, is refused as an invalid transition.
+- The change log's entry for this change names `summary_digest` and the oldest Chough release that reads it.
 

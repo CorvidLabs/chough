@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-3df243412063021fb3800669",
+  "criteria": [
+    "DRIVE-21"
+  ],
+  "requirements": [
+    "REQ-history-013"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "#189 mutation round on 4f940c4d: counting direct-native-write as unrecognised again fails the timing test; dropping --rationale from the argv fails the change test; sources restored",
+  "artifacts": [
+    ".chough/artifacts/timing-direct-writes-mutations/count-direct-write-as-unrecognised.log",
+    ".chough/artifacts/timing-direct-writes-mutations/drop-rationale-from-argv.log",
+    ".chough/artifacts/timing-direct-writes-mutations/run_mutations.py",
+    ".chough/artifacts/timing-direct-writes-mutations/summary.txt"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/timing-direct-writes-mutations/count-direct-write-as-unrecognised.log": "3e2bce23b25adaf79fefc4192b09c748389e93c8fc6792162ea2dd33ceb5dee0",
+    ".chough/artifacts/timing-direct-writes-mutations/drop-rationale-from-argv.log": "9be51c79cdef757b57171842c00b586221fbd9d6a5bfeed075c8be3dca3d9c95",
+    ".chough/artifacts/timing-direct-writes-mutations/run_mutations.py": "59041000e10a08b70fc3a4128324e73b96554c78e175ce4e39f9eaf2e26beda4",
+    ".chough/artifacts/timing-direct-writes-mutations/summary.txt": "63c834815190367a3bfc0feb3ec3c53b81bfcf3b3c86a9cde36418433d205d76"
+  },
+  "observed_at_unix_seconds": 1794020343,
+  "snapshot": {
+    "revision": "4f940c4d89d7fa49db38fd29ff06b1f80d200c35",
+    "dirty": true,
+    "fingerprint": "25353dbf282337489a19310b264c4afead13fdc5c4514831cd97bda21d54aaf2",
+    "content": "a9309e8166e6b08c62d55a135cd30797d4bf3e6ce6f0bf5a34bd80fcdf1b6b93"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "mutations were applied by exact string replacement"
+  ]
+}

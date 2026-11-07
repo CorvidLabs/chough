@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 152
+archived_changes: 158
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
-- [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](archives/prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0.md) Prepare the 0.5.0 release: set the package version to 0.5.0 and date the change log section for 0.5.0 (hot)
-- [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) (hot)
-- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) (hot)
+- [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](archives/update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording.md) Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording (hot)
+- [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation (hot)
+- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) (hot)
+- [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) (cold)
+- [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](archives/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.md) Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58) (cold)
+- [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](archives/prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0.md) Prepare the 0.5.0 release: set the package version to 0.5.0 and date the change log section for 0.5.0 (cold)
+- [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20) (cold)
+- [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) (cold)
+- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) (cold)
 - [make-archived-next-and-status-fast-within-explicit-warm-budgets](archives/make-archived-next-and-status-fast-within-explicit-warm-budgets.md) Make archived next and status fast within explicit warm budgets (cold)
-- [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md) Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22) (cold)
-- [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) (cold)
-- [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18) (cold)
-- [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) (cold)
-- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (cold)
-- [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18) (cold)
-- All 152 archived changes, by month: [timeline.md](timeline.md)
+- All 158 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,16 +71,16 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](../.specsync/archive/changes/2026-11-07-update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording/lesson-bundle.md)
+- [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-07-mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md)
+- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../.specsync/archive/changes/2026-11-07-chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21/lesson-bundle.md)
+- [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../.specsync/archive/changes/2026-11-07-after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes/lesson-bundle.md)
+- [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](../.specsync/archive/changes/2026-11-07-keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58/lesson-bundle.md)
 - [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](../.specsync/archive/changes/2026-11-07-prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0/lesson-bundle.md)
+- [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../.specsync/archive/changes/2026-11-07-chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20/lesson-bundle.md)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../.specsync/archive/changes/2026-11-07-flag-direct-specsync-lifecycle-writes-in-history-183-drive-21/lesson-bundle.md)
 - [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../.specsync/archive/changes/2026-11-07-chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20/lesson-bundle.md)
 - [make-archived-next-and-status-fast-within-explicit-warm-budgets](../.specsync/archive/changes/2026-11-06-make-archived-next-and-status-fast-within-explicit-warm-budgets/lesson-bundle.md)
-- [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../.specsync/archive/changes/2026-11-06-rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177/lesson-bundle.md)
-- [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](../.specsync/archive/changes/2026-11-06-run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20/lesson-bundle.md)
-- [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](../.specsync/archive/changes/2026-11-06-name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18/lesson-bundle.md)
-- [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../.specsync/archive/changes/2026-11-06-a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18/lesson-bundle.md)
-- [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../.specsync/archive/changes/2026-11-06-make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive/lesson-bundle.md)
-- [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](../.specsync/archive/changes/2026-11-06-make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-511 recorded; most recent:
+546 recorded; most recent:
 
-- OBS-structural-00139f76b41cb62e23cf99b8 Structural Passed in local-linux-aarch64 at 2e1fd6371d3f
-- OBS-dry-run-7a3fb4d187037a2efae55ac9 DryRun Passed in local-linux-aarch64 at 2e1fd6371d3f
-- OBS-product-test-d15ac3501f3fd5a9d6eb6325 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-change-steps-write-nothing-62fe15cbc95b9f266c0c477d ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-history-direct-write-oldest-reader-named-7c07242c743ffd775a9119a2 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-history-direct-write-field-only-on-its-kind-f02be75f99e38e3aa4c8342e ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-before-ship-fe571d078f3198c22b65087f ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-shown-not-written-4a69cd09a5baf6ad90007603 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-first-sight-5668fa870a289846a58c64b7 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-chough-steps-not-flagged-e099c77fe660f71880fef91f ProductTest Passed in local-macos-arm64 at 317595212a05
+- OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
+- OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
+- OBS-product-test-c727fa6d2f004d10b1d511f8 ProductTest Passed in linux-aarch64-docker-chough-linux-1-2-3 at 792bd3de73ef
+- OBS-installation-observation-48008674b01d6e137c95d956 InstallationObservation Passed in macos-arm64-cargo-1.99.0 at 86ae8dda94ab
+- OBS-tc-cli-done-self-archive-vault-current-331d20867fbcf8d90f3a0d36 ProductTest Passed in local-macos-arm64 at 112c9530c33f
+- OBS-tc-cli-done-fresh-vault-session-links-0af8035af974b33d4913d80d ProductTest Passed in local-macos-arm64 at 112c9530c33f
+- OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 ProductTest Passed in local-macos-arm64 at ebeb882ac4ef
+- OBS-product-test-3df243412063021fb3800669 ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
+- OBS-tc-cli-change-new-no-spec-change-bbd11d05c3e46d1472148d6a ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
+- OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
 
 ## Briefs
 

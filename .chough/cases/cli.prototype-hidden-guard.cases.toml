@@ -1,0 +1,38 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-prototype-hidden-panels-stay-hidden"
+title = "The prototype template's styles.css keeps hidden state panels hidden whatever display rules a project adds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-4"]
+requirements = ["REQ-cli-019"]
+paths = ["skills/chough-workflow/templates/prototype/styles.css", "skills/chough-workflow/templates/prototype/index.html", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::the_prototype_template_keeps_hidden_state_panels_hidden passes: styles.css has `[hidden] { display: none !important; }` (#58)"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "the_prototype_template_keeps_hidden_state_panels_hidden"
+
+[[case]]
+id = "TC-cli-prototype-styles-0-4-0-known-outdated"
+title = "styles.css as releases 0.1.0 to 0.4.0 shipped it reads known-outdated and updates; an edited copy stays"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-4", "LIFE-9"]
+requirements = ["REQ-cli-019"]
+paths = ["src/skill.rs", "skills/chough-workflow/templates/prototype/styles.css", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::the_prototype_styles_from_releases_0_1_0_to_0_4_0_are_known_outdated_and_edited_copies_stay passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "the_prototype_styles_from_releases_0_1_0_to_0_4_0_are_known_outdated_and_edited_copies_stay"

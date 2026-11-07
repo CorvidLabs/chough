@@ -1,0 +1,61 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794019215,
+      "digest": "d9db3cf3b7d93763cd77b409172e337d7be06a571bb09617330f532539fac4e0",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
+        "title": "chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)",
+        "description": "chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "reporting"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/change.rs",
+          "src/timing.rs",
+          "tests/change.rs",
+          "tests/direct_writes.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-history-013 (modified): chough timing reads a history holding a direct-native-write event as complete, skipping it as part of no stage segment, with no unrecognised kind and no partial mark; truly unknown kinds still mark the report partial. The new test in tests/direct_writes.rs fails first, a mutation that counts the kind again fails it, and fledge run linux-verify passes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Issue #189, regression from #183 (#186, DRIVE-21): timing must not count the valid direct-native-write kind (REQ-history-013) as unrecognised. Truly unknown kinds still mark the report partial. Rule: failing test first; a mutation shows the test real. Lesson: run the spec coverage check locally before Linux verify.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2b0366211b24476828815382003e8c8b12cfeccbd5222efa98507267dfcbef1a",
+        "history": "83cae7d9d4006f11d0d926d8a60bd3934a2684f65c94d3a63fabe4662bc25c4b",
+        "reporting": "8c32a79f7ce1f67db6d05333aa3b6bf52e130d0171d0098c1b991ae97c00289e"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-057": "fc0bd72a1dd458fdf1f3a05a4172d632bac40d39037f6c1442eb2a36cc235807",
+        "history: REQUIREMENT REQ-history-013": "6f80924c044f8b314bae93f752dd0514ae903da56424a3c09536aff1b12dc27e",
+        "reporting: REQUIREMENT REQ-reporting-001": "7c23e40daff75c840a7990ababd2aefb9dd05af8ab792c2c7d066082d4e1d5b5"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794024611,
+      "digest": "971cfebc3752dd88b223d6b7818630719a67b4167403c6b9472b0541e87d391a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

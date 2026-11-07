@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
+  "slug": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
+  "title": "chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)",
+  "description": "chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8",
+  "created_at": 1794018585,
+  "updated_at": 1794024617,
+  "affected_specs": [
+    "cli",
+    "history",
+    "reporting"
+  ],
+  "affected_paths": [
+    "docs/cli.md",
+    "tests/change.rs",
+    "src/change.rs",
+    "src/timing.rs",
+    "tests/direct_writes.rs",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "REQ-history-013 (modified): chough timing reads a history holding a direct-native-write event as complete, skipping it as part of no stage segment, with no unrecognised kind and no partial mark; truly unknown kinds still mark the report partial. The new test in tests/direct_writes.rs fails first, a mutation that counts the kind again fails it, and fledge run linux-verify passes."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #189, regression from #183 (#186, DRIVE-21): timing must not count the valid direct-native-write kind (REQ-history-013) as unrecognised. Truly unknown kinds still mark the report partial. Rule: failing test first; a mutation shows the test real. Lesson: run the spec coverage check locally before Linux verify.",
+    "public_contract": "yes"
+  }
+}

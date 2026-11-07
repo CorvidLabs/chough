@@ -149,6 +149,20 @@ pub(super) struct RelayedBy {
     #[serde(rename = "where")]
     pub(super) place: String,
     pub(super) recorded_by: String,
+    /// The digest of the one-screen summary the decision was given on, with the list
+    /// it came from (REQ-history-014); both or neither.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) summary_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) list: Option<String>,
+}
+
+/// Whether `value` is exactly `length` lowercase hex digits.
+pub(super) fn lowercase_hex(value: &str, length: usize) -> bool {
+    value.len() == length
+        && value
+            .bytes()
+            .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
 }
 
 /// The bound of each relay value, the checkpoint text bound.
@@ -181,6 +195,16 @@ pub(super) fn validate_relay(transition: &Transition) -> Result<()> {
             !value.trim().is_empty() && value.len() <= RELAY_TEXT_LIMIT,
             "invalid transition payload: relayed_by.{key} must be non-blank and at most {RELAY_TEXT_LIMIT} bytes"
         );
+    }
+    match (&relay.summary_digest, &relay.list) {
+        (None, None) => {}
+        (Some(digest), Some(list)) => ensure!(
+            lowercase_hex(digest, 64) && lowercase_hex(list, 12),
+            "invalid transition payload: relayed_by.summary_digest must be 64 and relayed_by.list 12 lowercase hex digits"
+        ),
+        _ => anyhow::bail!(
+            "invalid transition payload: relayed_by.summary_digest and relayed_by.list go together"
+        ),
     }
     Ok(())
 }
@@ -2334,10 +2358,19 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         applied["librarian_index"] = crate::library::refresh_at_done(root);
         // REQ-cli-049 (KNOW-23): last, rotate the retention ledger into the vault.
         applied["ledger_rotation"] = crate::evidence::rotate_at_done(root);
-        // REQ-history-006 (DRIVE-13, #155): last, the session archives itself in its own
-        // change and the active pointer is cleared; never undoes the move either.
+        // REQ-history-006 (DRIVE-13, #155): last among the steps that change a record, the
+        // session archives itself in its own change and the active pointer is cleared;
+        // never undoes the move either.
         let from = applied["from"].as_str().unwrap_or_default().to_string();
         applied["session_archive"] = crate::sessions::archive_at_done(root, &session, &from);
+        // REQ-cli-043 (KNOW-4, #191): the rotation and the self-archive change what the
+        // directory is generated from, so regenerate once more and report that pass.
+        if applied["librarian_index"]["status"] == "refreshed"
+            && (applied["ledger_rotation"]["status"] == "rotated"
+                || applied["session_archive"]["status"] == "archived")
+        {
+            applied["librarian_index"] = crate::library::refresh_at_done(root);
+        }
     }
     report(root, &session, applied)
 }

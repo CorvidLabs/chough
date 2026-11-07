@@ -38,7 +38,10 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
     (
         "REQ-cli-020",
         "REQ-reporting-001",
-        "d39174e678c7eb096fed525ea38af402163b9a348e29243bb4a94c6b2d91846c",
+        // Modified by native change chough-timing-skips-direct-native-write-events-without-
+        // marking-its-report-partial-189-drive-21 (#189): direct-native-write events
+        // (REQ-history-013) start or end no segment and are not an unrecognised kind.
+        "f10aaac5200dc31c8f976df83b11486f2a19a632c7737a9ad0b78352eebd0c3b",
     ),
     (
         "REQ-cli-024",

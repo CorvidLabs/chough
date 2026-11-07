@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc",
+  "criteria": [
+    "DRIVE-21"
+  ],
+  "requirements": [
+    "REQ-history-013"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test direct_writes -- --exact timing_skips_direct_write_events_without_marking_the_report_partial for TC-history-timing-skips-direct-writes: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc.log": "7ddd7232f9506f3807a04964e0b05536406f12b14b5ead2c0c6752b318622f44"
+  },
+  "observed_at_unix_seconds": 1794019365,
+  "snapshot": {
+    "revision": "0635c8355f9847fdfd469032b5fe5cd27aca2efb",
+    "dirty": true,
+    "fingerprint": "90a7614477bec5c21994a51173e730dd9b331bc463cbd6a03170575df5b88c8d",
+    "content": "018f53b031aa25f883bf063f1f9bede0df0803d99649293c222d026ac8f66749"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-timing-skips-direct-writes",
+      "digest": "2e91fdcbb43294670574df198751dfd1148852ca4007e9c80d594a8e04d249b3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "direct_writes",
+    "--",
+    "--exact",
+    "timing_skips_direct_write_events_without_marking_the_report_partial"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 3
+}

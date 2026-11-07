@@ -762,8 +762,14 @@ pub(super) fn bug_notes(root: &Path, dir: &str) -> Result<Vec<(String, String)>>
 
 /// `sessions/<key>.md` for each session rolled into the vault (REQ-cli-051, KNOW-29),
 /// found at `attachments/<folder>/sessions/<key>.json`: a summary that links the session
-/// and its native change's archive note. A session that cannot be read is left out.
-pub(super) fn session_notes(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
+/// and, when `archived` holds its native change, that change's archive note. `archived`
+/// is the set of archive notes the same build writes, so the link never depends on notes
+/// already in the directory (KNOW-4, #191). A session that cannot be read is left out.
+pub(super) fn session_notes(
+    root: &Path,
+    dir: &str,
+    archived: &std::collections::BTreeSet<&str>,
+) -> Result<Vec<(String, String)>> {
     let mut found = vec![];
     let base = local_path(root, &format!("{dir}/attachments"))?;
     if base.is_dir() {
@@ -798,7 +804,7 @@ pub(super) fn session_notes(root: &Path, dir: &str) -> Result<Vec<(String, Strin
         let change = session.native_change.clone();
         let change_link = change
             .as_deref()
-            .filter(|change| exists(root, &format!("{dir}/archives/{change}.md")))
+            .filter(|change| archived.contains(change))
             .map(|change| format!("- Native change: [{change}](../archives/{change}.md)\n"))
             .unwrap_or_default();
         let props = front_matter(&[

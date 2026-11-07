@@ -37,6 +37,7 @@ their JSON.
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
 | `session new\|adopt\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--adopt-as KEY]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
+| `gate list\|record` | Numbers the open human gates, each with a one-screen summary and its digest, and records one relayed reply for listed gates only. See [Gate lists](#gate-lists). |
 | `change new\|answer\|check\|status\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ship` checks first, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
 
 ## Backfilled moves
@@ -537,9 +538,9 @@ every command uses `.chough/session.json` exactly as before.
   with unfolded inbox entries refuse with nothing changed; fold the entries first
   with `chough session use <key>` and `chough inbox fold`.
 - At a successful move into done, the active session archives itself, last among the
-  done steps and in its own change, and the active pointer is cleared (#155,
-  REQ-history-006, DRIVE-13). It is reported as `applied.session_archive`: `archived`
-  with the key; `kept_open` while the inbox has unfolded entries or release is
+  done steps that change a record and in its own change, and the active pointer is
+  cleared (#155, REQ-history-006, DRIVE-13). It is reported as `applied.session_archive`:
+  `archived` with the key; `kept_open` while the inbox has unfolded entries or release is
   authorized (release is entered from done, so ask for it before done; the move from
   release into done archives it); or `skipped` without sessions. Afterwards `next`
   and `status` refuse, naming `chough session new <key>`. A done session merged to
@@ -670,7 +671,7 @@ through `chough` alone (REQ-cli-057, REQ-cli-059, DRIVE-20):
 
 | Command | Runs |
 |---|---|
-| `chough change new <description> [--kind K] [--spec S]... [--path P]...` | `specsync change new <description> [--kind K] [--spec S]... [--path P]... --json` |
+| `chough change new <description> [--kind K] [--spec S]... [--path P]... [--no-spec-change --rationale R]` | `specsync change new <description> [--kind K] [--spec S]... [--path P]... [--no-spec-change --rationale R] --json` |
 | `chough change answer <id> <question> <answer>` | `specsync change answer <id> <question> <answer> --json` |
 | `chough change check <id>` | `specsync change check <id> --commit` |
 | `chough change status [<id>]` | `specsync change status [<id>] --json` |
@@ -713,8 +714,47 @@ nothing and writes nothing under `.chough/`.
 The relay goes with the ship because nothing may write `.chough/` between `change
 check --commit` and finalize, so the review gate can only close after the ship.
 
+`--list <list> --gate <n>` may stand in for `--close-gate <gate>`. The gate is then
+number `<n>` of a `chough gate list` list, and its summary must still have its listed
+digest, or the ship refuses before anything runs, naming `chough gate list`. The closed
+gate's relay keeps that digest and the list (REQ-history-014).
+
 Approve and review, and the plain `specsync change check <id>` that materializes a
 delta without committing, are still run with `specsync` directly.
+
+## Gate lists
+
+`chough gate list [--json]` numbers every open human gate of every open session from 1
+(REQ-cli-061, FLOW-19, FLOW-20). Each gate gets a one-screen summary of at most 24 lines
+and 4,096 bytes, with:
+
+- what changed: the files, insertions and deletions since the change's `base_commit`
+  (from its `state.json`), and the five files with the most changed lines;
+- the tests: how many cases passed, failed and were not run, by the latest observation
+  of each case that links a requirement the change's deltas add or modify (or that the
+  session's observations name), with the failing case IDs;
+- the risks: the first 8 lines of the change's `plan.md` section "Risks";
+- a diff link: a GitHub compare URL when `origin` is on GitHub, otherwise
+  `git diff <base>..<HEAD>`.
+
+Each summary's digest is the SHA-256 of its text. The list is saved untracked as
+`.chough/local/gate-lists/<list>.json`, where `<list>` is the first 12 hex digits of its
+SHA-256. Listing makes no native read and writes no tracked file.
+
+`chough gate record <list> --gates <n>[,<n>…] --decided-by <who> --words <words>
+--where <where> --recorded-by <agent>` is one reply for several listed gates. It closes
+each one as `chough checkpoint --close-gate` would, and each relay keeps the same words,
+its own `summary_digest` and the `list`. It closes all of them or none. Before writing
+anything, it refuses and names the recovery for:
+
+- an unknown list, a number not on it, a gate no longer open, or a summary that changed
+  since it was listed: run `chough gate list`;
+- a gate of another open session: `chough session use <key>`;
+- a gate whose change is verifying: `chough change ship <id> --list <list> --gate <n>`
+  with the relay, because nothing may write `.chough/` before the ship.
+
+Older builds refuse a relay holding `summary_digest` and `list`, so the oldest Chough
+that reads such a history is 0.6.0.
 
 ## Direct lifecycle writes
 
@@ -1154,7 +1194,10 @@ After the trim, the same move regenerates the knowledge directory, creating
 just archived and any proof just trimmed are summarized, even in a project that never
 ran `library init` (REQ-cli-043). It is reported as `applied.librarian_index` with
 status `refreshed` and the index path, `skipped` with the librarian off, or `refused`
-with its reason, and it never undoes the move. Commit the directory with the checkpoint.
+with its reason, and it never undoes the move. When the ledger rotation or the session's
+self-archive then changes what the directory is generated from, the move regenerates it
+once more after the self-archive and reports that last pass, so `chough library index
+--check` passes right after done (#191, KNOW-4). Commit the directory with the checkpoint.
 It is generated, so after a merge conflict inside it, regenerate with
 `chough library index`.
 

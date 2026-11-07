@@ -13,6 +13,43 @@ All notable changes to Chough are recorded here. The format follows
   existing `restored` ledger event without changing successful output or retention
   eligibility.
 
+- `chough timing` no longer marks its report partial for `direct-native-write` events
+  (#189, REQ-history-013, REQ-reporting-001). Since #183 it counted that valid kind as
+  unrecognised. It is now skipped as part of no stage segment, as gate records are.
+  Kinds that really are unknown still mark the report partial. Builds before 0.5.0
+  still refuse a history holding the event;
+  the oldest Chough that reads such a history is still 0.5.0.
+- `chough change new` takes `--no-spec-change` and `--rationale` and passes them to
+  `specsync change new` (#189, REQ-cli-057). `--no-spec-change` without `--rationale`
+  is refused before SpecSync runs.
+- The prototype template keeps hidden state panels hidden whatever display rules a
+  project adds (#58, FLOW-4). Its `styles.css` gains `[hidden] { display: none
+  !important; }`, so a rule such as `.surface section { display: grid }` no longer shows
+  every state at once. An unedited `styles.css` from 0.1.0 to 0.4.0 updates as
+  known-outdated.
+- Right after `chough stage advance` into done, `chough library index --check` passes with
+  no command in between (#191, KNOW-4, REQ-cli-043, REQ-cli-051). A session rolled into
+  the vault now links its change's archive note even when the same move builds that note,
+  so a first build and a rebuild give the same bytes. When the change's archive lists the
+  session file that archives itself at done, the move regenerates the directory once more
+  after that self-archive, so the entry places the file in Git. Before, `done` reported
+  `librarian_index: refreshed` and the check then failed until `chough library index` ran.
+- `chough gate list` and `chough gate record` show the human what each gate decides
+  and take one reply for listed gates only (#184, FLOW-19, FLOW-20, REQ-cli-061,
+  REQ-history-014). `gate list` numbers every open human gate, each with a one-screen
+  summary and the SHA-256 digest of that summary. The summary covers what changed since
+  the change's base commit, the tests, the plan's risks and a diff link. The tests are
+  the latest observation of each case that links a requirement the change's deltas add
+  or modify. It reads files and Git only, and saves the list untracked in
+  `.chough/local/gate-lists/`. `gate record <list> --gates 1,3` with the four relay
+  values closes exactly those gates, each relay keeping the same words, its own
+  `summary_digest` and the `list`. It closes all of them or none. It refuses an unknown
+  list, an unlisted number, a gate no longer open, a summary changed since listing, a
+  gate of another open session, or a change that is verifying; each refusal names its
+  recovery. `chough change ship` takes `--list` and `--gate` in place of `--close-gate`.
+  Older builds refuse a relay holding `summary_digest` (unknown field), so
+  the oldest Chough that reads such a history is 0.6.0, the first release with this
+  change. 0.5.0 does not read it.
 ## [0.5.0] - 2026-11-06
 
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,

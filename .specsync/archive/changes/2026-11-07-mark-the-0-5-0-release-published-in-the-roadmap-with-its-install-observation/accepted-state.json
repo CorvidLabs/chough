@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation",
+  "slug": "mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation",
+  "title": "Mark the 0.5.0 release published in the roadmap with its install observation",
+  "description": "Mark the 0.5.0 release published in the roadmap with its install observation",
+  "kind": "documentation",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "86ae8dda94aba981094e92d5395dc085ebe65dbd",
+  "created_at": 1794020673,
+  "updated_at": 1794026190,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "docs/ROADMAP.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Documentation of a completed release; no contract changes.",
+  "acceptance_criteria": [
+    "docs/ROADMAP.md has a 0.5.0 release row naming the v0.5.0 tag at 455cb643, release prep PR #185, crates.io chough 0.5.0, the GitHub release and the clean install result, and the clean install is recorded as an installation observation; fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif authorized the 0.5.0 release steps through the orc and explicitly assigned this worker release step 9: one small docs PR for the ROADMAP row. Scope is docs/ROADMAP.md plus native lifecycle and the clean-install observation; no contract, HI, tag, publish, release or deployment change.",
+    "public_contract": "no"
+  }
+}

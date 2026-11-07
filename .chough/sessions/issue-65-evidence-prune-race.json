@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
-    "head": "EVT-2d100435e30e3bd8eedf026e",
+    "head": "EVT-2051bbf610e22302993bc90e",
     "legacy": null
   },
   "schema_version": 2,
@@ -47,7 +47,8 @@
   "decisions": [
     "agent: existing LIFE-8, LIFE-2 and LIFE-7 already cover #65 because they require proof protection and honest removed-versus-passed states, so no new HI criterion is needed",
     "rejected: changing retention eligibility, protections, bounds, output schemas or authorization because #65 is a bounded race and rollback bug fix under REQ-history-004",
-    "rejected: refactoring the proven library archive path because the small fix can reuse remove_verified and the existing restored event shape without changing archive behavior"
+    "rejected: refactoring the proven library archive path because the small fix can reuse remove_verified and the existing restored event shape without changing archive behavior",
+    "Leif decided \"Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"Yes to all 3\" (Moshi question from orc t18, 2026-11-06; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -72,9 +73,7 @@
     "BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Run native change verification, full Fledge lanes on macOS and Linux, then integrate origin/main before PR"
 }
