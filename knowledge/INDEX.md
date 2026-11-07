@@ -92,6 +92,7 @@ Archived lesson bundles:
 - BUG-0022 Initial host tools do not match CI versions (open, out-of-scope, reproduced)
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
+- BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79 Full macOS lane checkpoint writer lock timeout (open, out-of-scope, reproduced-and-later-passed)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
@@ -99,8 +100,11 @@ Archived lesson bundles:
 
 ## Observations
 
-582 recorded; most recent:
+585 recorded; most recent:
 
+- OBS-product-test-c667d4756cf1c183202f8b02 ProductTest Passed in local-linux-aarch64 at 3b9d008d6c48
+- OBS-product-test-4f7d63e468288e44cfd85c88 ProductTest Passed in local-macos-arm64 at 3b9d008d6c48
+- OBS-product-test-80b95a49cc2ba0705ed1b2fb ProductTest Failed in local-macos-arm64 at 3b9d008d6c48
 - OBS-product-test-97bec39c043841e26288e181 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 - OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 - OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a ProductTest Passed in local-macos-arm64 at 6748c3d30a00
@@ -108,9 +112,6 @@ Archived lesson bundles:
 - OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 - OBS-product-test-e1797a0960e7bd92560cca96 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 - OBS-tc-history-prune-unsafe-restore-continuation-c9640fdb1cd9bf652847ac4b ProductTest Passed in local-macos-arm64 at 6748c3d30a00
-- OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a ProductTest Passed in local-macos-arm64 at 6748c3d30a00
-- OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181 ProductTest Failed in local-macos-arm64 at 8f7574956f2f
-- OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac ProductTest Failed in local-macos-arm64 at 8f7574956f2f
 
 ## Briefs
 

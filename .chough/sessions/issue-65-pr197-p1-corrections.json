@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-513106a919495dc23f745860",
-    "head": "EVT-b23bce03a5e68253765e3a93",
+    "head": "EVT-11dd9a34457b5dd5ee943583",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -56,7 +56,9 @@
   "completed": [
     "Disposable base 1fc4c67b59f05097cab4cafa446aa58198f8ee56 reproduced both P1s: capture filter 1 executed failure; unsafe rollback filter 2 executed failures (file and ancestor symlinks). Actual argv, raw hashes and compact receipts are in native research.md.",
     "Failing tests: 8f7574956f2f8b8789022e68d6a02e9ef0567062; both exact case bindings executed cargo exit101 (capture 1 failed, unsafe symlink 2 failed)",
-    "Both P1 red cases now pass at 6748c3d30a005e46abe468fc00eb43900eda374f; focused unit14/evidence30/history25/split4; independent capture/unsafe mutants fail 1/2 tests. Prior focused OBS prose counts corrected by OBS-product-test-97bec39c043841e26288e181"
+    "Both P1 red cases now pass at 6748c3d30a005e46abe468fc00eb43900eda374f; focused unit14/evidence30/history25/split4; independent capture/unsafe mutants fail 1/2 tests. Prior focused OBS prose counts corrected by OBS-product-test-97bec39c043841e26288e181",
+    "Full frozen qualification at 3b9d008d6c48399f8ac4f7c62dee9fcb1b9cc4e9: Linux600/Mac596 tests and all10steps passed; initial Mac lock timeout retained in OBS-product-test-80b95a49cc2ba0705ed1b2fb, local BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79; cause unverified; no test/timeout changes.",
+    "Preservation check: 4412 historical Chough/archive/policy/split files match 1fc4c67b59f05097cab4cafa446aa58198f8ee56; predecessor archive/acceptance unchanged."
   ],
   "observations": [
     "OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac",
@@ -67,14 +69,20 @@
     "OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca",
     "OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977",
     "OBS-tc-history-prune-restores-partial-removal-09fafb2ff58f01d7100b5ae4",
-    "OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a"
+    "OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a",
+    "OBS-product-test-80b95a49cc2ba0705ed1b2fb",
+    "OBS-product-test-4f7d63e468288e44cfd85c88",
+    "OBS-product-test-c667d4756cf1c183202f8b02"
   ],
   "bugs": [
     "BUG-prune-capture-accepts-replacement-bytes-as-deletion-authority-cdfb288128633d57b0c29089",
-    "BUG-prune-rollback-aborts-on-recreated-symlink-paths-b187eee3aee864159e01358c"
+    "BUG-prune-rollback-aborts-on-recreated-symlink-paths-b187eee3aee864159e01358c",
+    "BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197"
+  ],
   "run_consents": [],
-  "next_action": "Materialize the two approved deltas, refresh knowledge and commit before native verification and frozen full macOS/Linux lanes"
+  "next_action": "Await Leif fresh exact-head corrected implementation review via orc t19f after final native check and push. No commit or .chough/knowledge/contract writes after that check; root alone records human review; do not archive, merge or release."
 }

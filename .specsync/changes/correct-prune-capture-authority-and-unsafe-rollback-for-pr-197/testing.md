@@ -42,3 +42,35 @@ Run all evidence unit tests, tests/evidence.rs and tests/history.rs; keep all pr
 Use Fledge 1.8.0, HI 0.8.0 and SpecSync 6.2.0, with the branch-built helper. Put `/Users/leif/.cargo/bin` first in hc terminals. Run project macOS `fledge lanes run verify`, declared `fledge run linux-verify`, strict spec check, `specsync change audit --strict`, normal pre-push and knowledge checks on committed inputs. Record actual failures and passes. All bookkeeping must precede the final native check, and full lanes need current native verification with no intervening input changes. Trust is currently unavailable; do not adopt it under this scope.
 
 Present a fresh exact-head implementation gate for corrected code on #197. No approval/review probe, worker review, self-acceptance or merge. Existing acceptance is historical. Preserve the original archive and all sibling proof. Root records actual human decisions and owns the #994 → #999 → #197 merge queue.
+
+
+## Executed corrective qualification
+
+Real failure-first commit: `8f7574956f2f8b8789022e68d6a02e9ef0567062`.
+The exact capture binding failed exit101 (both first/later scenarios deleted writer
+bytes); the unsafe binding failed exit101 in both symlink variants (no recovery
+hold, earlier restoration or restored accounting). Raw failed OBS logs are retained.
+Correction commit: `6748c3d30a005e46abe468fc00eb43900eda374f`. The same bindings
+passed; all four previous #65 cases passed unchanged. Focused evidence unit14,
+evidence integration30, history25 and spec_split4 passed. The corrected focused
+summary supersedes an earlier retained prose count error; JSON counts were accurate.
+Independent disposable mutants removing captured-byte authority or reintroducing
+the outer restoration-path escape fail the one/two target tests respectively;
+baseline3 passed. Raw mutation failures and a compact executed summary are retained.
+
+Full frozen qualification: `3b9d008d6c48399f8ac4f7c62dee9fcb1b9cc4e9`.
+Pinned Linux passed all10steps/600 tests. Sequential macOS passed all10steps/596
+tests. The first concurrent macOS attempt failed the existing parallel checkpoint
+writer test at its unchanged30s lock bound. Its isolated retry passed1/1 in1.20s
+and the full sequential lane passed at identical inputs; cause remains unverified,
+tracked locally outside the two P1 behaviors. No timeout/assertion was changed.
+See `.chough/artifacts/sol-ch65-corrective-full-summary.json` for exact argv,
+exits, SHA256 receipts, limits and the raw initial failure/diagnostic artifact paths.
+
+The preservation check compared4412 existing Chough/archive/policy/split files to
+`1fc4c67b59f05097cab4cafa446aa58198f8ee56`: none changed. The approved six
+product/contract/case paths are the complete corrective product diff. Final
+checkpoint/knowledge/evidence writes precede the last native check; source,
+contracts, case definitions and assertions must match this full-tested tip exactly.
+Fresh corrected exact-head implementation review, successor archive, final hosted
+CI and conversation resolution remain later gates. No old acceptance is reused.
