@@ -1765,8 +1765,13 @@ fn policy(authority: Option<&str>) -> Value {
 type PruneAfterRemove = Box<dyn FnMut(&str)>;
 
 #[cfg(test)]
+type PruneBeforeRestoreMode = Box<dyn FnMut(&Path)>;
+
+#[cfg(test)]
 thread_local! {
     static PRUNE_AFTER_REMOVE: std::cell::RefCell<Option<PruneAfterRemove>> =
+        const { std::cell::RefCell::new(None) };
+    static PRUNE_BEFORE_RESTORE_MODE: std::cell::RefCell<Option<PruneBeforeRestoreMode>> =
         const { std::cell::RefCell::new(None) };
 }
 
@@ -1974,6 +1979,12 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
                         .create_new(true)
                         .open(&path)?;
                     target.write_all(bytes)?;
+                    #[cfg(test)]
+                    PRUNE_BEFORE_RESTORE_MODE.with(|slot| {
+                        if let Some(hook) = slot.borrow_mut().as_mut() {
+                            hook(&path);
+                        }
+                    });
                     fs::set_permissions(&path, permissions.clone())
                 })();
                 match restored {
@@ -3883,5 +3894,56 @@ mod tests {
         let ledger = fs::read_to_string(root.path().join(LEDGER)).unwrap();
         assert!(ledger.contains("\"event\":\"restored\""), "{ledger}");
         assert!(ledger.contains("target"), "{ledger}");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn prune_restore_permissions_preserve_replacement_identity() {
+        use std::os::unix::fs::{MetadataExt, PermissionsExt};
+        use std::sync::{Arc, Mutex};
+
+        let first = ".chough/artifacts/mode-race-a.log";
+        let second = ".chough/artifacts/mode-race-b.log";
+        let root = prune_fixture(&[("target", &[(first, "original\n"), (second, "other\n")])]);
+        fs::set_permissions(root.path().join(first), fs::Permissions::from_mode(0o640)).unwrap();
+        let replacement_inode = Arc::new(Mutex::new(None));
+        let observed_inode = replacement_inode.clone();
+        let destination = root.path().join(first);
+        PRUNE_BEFORE_RESTORE_MODE.with(|slot| {
+            *slot.borrow_mut() = Some(Box::new(move |path| {
+                if path == destination {
+                    // Replace the public destination after rollback writes but before
+                    // it sets the mode. Keep its inode allocated to make identity exact.
+                    if path.exists() {
+                        fs::rename(path, path.with_extension("displaced")).unwrap();
+                    }
+                    fs::write(path, "second writer\n").unwrap();
+                    fs::set_permissions(path, fs::Permissions::from_mode(0o600)).unwrap();
+                    *observed_inode.lock().unwrap() = Some(fs::metadata(path).unwrap().ino());
+                }
+            }));
+        });
+        let injected = root.path().to_path_buf();
+        let result = with_prune_after_remove(
+            move |removed| {
+                if removed == first {
+                    protect(&injected, "target");
+                }
+            },
+            || retention(root.path(), Some("fixture authority")),
+        );
+        PRUNE_BEFORE_RESTORE_MODE.with(|slot| *slot.borrow_mut() = None);
+        let error = result.unwrap_err();
+        let metadata = fs::metadata(root.path().join(first)).unwrap();
+        assert_eq!(metadata.mode() & 0o777, 0o600, "second writer mode changed");
+        assert_eq!(Some(metadata.ino()), *replacement_inode.lock().unwrap());
+        assert_eq!(
+            fs::read(root.path().join(first)).unwrap(),
+            b"second writer\n"
+        );
+        let hold = hold_path(first);
+        assert_eq!(fs::read(root.path().join(&hold)).unwrap(), b"original\n");
+        assert!(format!("{error:#}").contains(&hold), "{error:#}");
+        assert_eq!(fs::read(root.path().join(second)).unwrap(), b"other\n");
     }
 }

@@ -25,12 +25,13 @@
   "fixture": ".chough/artifacts/issue-65-prune-race/before/partial-removal.log",
   "observations": [
     "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d",
-    "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078"
+    "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078",
+    "OBS-product-test-972af92fbd4cb64f5dd3094a"
   ],
   "impact": "A refused apply destroys uncommitted evidence",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "verified",
+  "status": "open",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -42,8 +43,15 @@
       "observations": [
         "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078"
       ]
+    },
+    {
+      "at_unix_seconds": 1794033849,
+      "text": "status: verified -> open. Finish review found an in-scope restore publication race: after create_new/write, a concurrent replacement receives the original chmod. Deterministic failure checks replacement mode, inode and bytes plus preserved original recovery bytes.",
+      "observations": [
+        "OBS-product-test-972af92fbd4cb64f5dd3094a"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794021913,
-  "updated_at_unix_seconds": 1794022574
+  "updated_at_unix_seconds": 1794033849
 }

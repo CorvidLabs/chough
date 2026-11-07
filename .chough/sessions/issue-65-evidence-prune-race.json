@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
-    "head": "EVT-2051bbf610e22302993bc90e",
+    "head": "EVT-35604a326d9c6e73dcd5e1e1",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "plan",
+    "current": "build",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -56,7 +56,8 @@
     "Completed the #65 native draft with four deterministic failure-first regressions, byte-checked removal, create-new rollback and uncommitted-byte recovery holds; SpecSync reports artifacts_complete true",
     "Added cli ownership with a minimal Purpose delta for src/evidence.rs; a disposable worktree probe accepted the cli and history deltas with approval_valid true, and the probe and its non-human approval record were removed",
     "Failing tests: 3ad9df48933b880836c812c06369d00b9369e918; all four direct regressions failed for the intended behavior and their failed cases are linked to local bugs",
-    "All four prune regressions passed after implementation; 10 evidence unit, 30 evidence integration and 25 history tests passed, and both local bugs are verified"
+    "All four prune regressions passed after implementation; 10 evidence unit, 30 evidence integration and 25 history tests passed, and both local bugs are verified",
+    "Failure first: prune_restore_permissions_preserve_replacement_identity ran 1 test, failed mode assertion 0640 versus 0600 before the restore publication fix; receipt restore-identity-before.log"
   ],
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
@@ -66,7 +67,8 @@
     "OBS-tc-history-prune-protection-race-831610f271a785164c912a6e",
     "OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f",
     "OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05",
-    "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078"
+    "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078",
+    "OBS-product-test-972af92fbd4cb64f5dd3094a"
   ],
   "bugs": [
     "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",

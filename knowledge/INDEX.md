@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- make-evidence-prune-apply-recheck-protections-and-restore-partial-removals (active; `specsync change status make-evidence-prune-apply-recheck-protections-and-restore-partial-removals`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-546 recorded; most recent:
+554 recorded; most recent:
 
 - OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
 - OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
+- OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078 ProductTest Passed in local-macos-arm64 at 55cb7fa5662f
+- OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05 ProductTest Passed in local-macos-arm64 at 55cb7fa5662f
+- OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f ProductTest Passed in local-macos-arm64 at 55cb7fa5662f
+- OBS-tc-history-prune-protection-race-831610f271a785164c912a6e ProductTest Passed in local-macos-arm64 at 55cb7fa5662f
 - OBS-product-test-c727fa6d2f004d10b1d511f8 ProductTest Passed in linux-aarch64-docker-chough-linux-1-2-3 at 792bd3de73ef
-- OBS-installation-observation-48008674b01d6e137c95d956 InstallationObservation Passed in macos-arm64-cargo-1.99.0 at 86ae8dda94ab
-- OBS-tc-cli-done-self-archive-vault-current-331d20867fbcf8d90f3a0d36 ProductTest Passed in local-macos-arm64 at 112c9530c33f
-- OBS-tc-cli-done-fresh-vault-session-links-0af8035af974b33d4913d80d ProductTest Passed in local-macos-arm64 at 112c9530c33f
-- OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 ProductTest Passed in local-macos-arm64 at ebeb882ac4ef
-- OBS-product-test-3df243412063021fb3800669 ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
-- OBS-tc-cli-change-new-no-spec-change-bbd11d05c3e46d1472148d6a ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
-- OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
+- OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d ProductTest Failed in local-macos-arm64 at 3ad9df48933b
+- OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7 ProductTest Failed in local-macos-arm64 at 3ad9df48933b
+- OBS-tc-history-prune-restores-earlier-sets-bba515e3dbd42cea1399e660 ProductTest Failed in local-macos-arm64 at 3ad9df48933b
 
 ## Briefs
 
