@@ -1,0 +1,45 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-2a24ae32010db7e92e9a70fb",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Make native process test probes zombie-aware and record the #132 reproduction limit (DRIVE-19)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli",
+    "reporting"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit",
+  "references": {
+    "criteria": [
+      "DRIVE-19"
+    ],
+    "requirements": [
+      "REQ-cli-053",
+      "REQ-cli-059",
+      "REQ-reporting-002"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Agent scope from Leif's handoff: use one test-only zombie-aware liveness helper for #187; reject product stop_tree changes because the descendant was already killed. Leave #132 open without code changes because it did not reproduce."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Complete the native test-only definition and request orc scope approval."
+}
