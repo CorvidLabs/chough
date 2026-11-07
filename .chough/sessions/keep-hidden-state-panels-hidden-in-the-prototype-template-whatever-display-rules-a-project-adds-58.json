@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-7997cc73d25c6e25f0371161",
-    "head": "EVT-350fb7b20d39aca630f06a65",
+    "head": "EVT-8d9bb371c9bc2e371f44667b",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "build",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -41,13 +41,17 @@
     "Leif (0xLeif) decided \"Scope approval of keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58\": \"approved\" (orc tab, 2026-11-07, relayed by orc (hc t18) to ch-docs-accuracy as 'Leif approved #58' (orc's wording; Leif's own words were not quoted); orc recorded the native definition approval as 0xLeif at 0d0233a0); recorded by claude (ch-docs-accuracy); a relayed claim, not authenticated"
   ],
   "open_questions": [],
-  "completed": [],
+  "completed": [
+    "Fix: [hidden] guard in both styles.css copies and the 0.1.0 to 0.4.0 styles.css digest in KNOWN_PREVIOUS (#58); both tests failed first at 0d0233a0 and pass; cargo test 575 passed"
+  ],
   "observations": [],
   "bugs": [
     "BUG-prototype-template-shows-every-state-panel-when-a-project-sets-display-073394402cc923c41c0b501c"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58"
+  ],
   "run_consents": [],
-  "next_action": "Add the [hidden] guard and the KNOWN_PREVIOUS row, rerun the cases, verify, PR, ready for review"
+  "next_action": "After Leif's review (recorded by orc): chough change ship with the review relay, then audit --strict and pre-push, push, CI, merge pinned"
 }
