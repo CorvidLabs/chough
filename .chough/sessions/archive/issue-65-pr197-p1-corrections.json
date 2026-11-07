@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-513106a919495dc23f745860",
-    "head": "EVT-11dd9a34457b5dd5ee943583",
+    "head": "EVT-6cd7af69caec292a16549295",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -36,21 +36,15 @@
       "TC-history-prune-restores-earlier-sets"
     ],
     "design": [],
-    "files": [
-      "src/evidence.rs",
-      "specs/cli/cli.spec.md",
-      "specs/history/history.spec.md",
-      "specs/history/testing.md",
-      "specs/history/context.md",
-      ".chough/cases/history.pr197-p1.cases.toml"
-    ]
+    "files": []
   },
   "decisions": [
     "Existing LIFE-2/7/8 and REQ-history-004 express the corrective intent; no new HI/REQ IDs. Public failure cases are clarified through CLI Purpose/history Error Cases; requirement bodies and split digest stay unchanged.",
     "Rejected reusing the old acceptance or editing/reopening its archive: corrected code needs this new scope and a fresh exact-head implementation review through orc t19f.",
     "Only corrective definition/intent bookkeeping is authorized before scope approval; real production, contracts and test/case files stay at the accepted archive head.",
     "Leif decided \"Scope decision of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197\": \"Yes to all\" (direct Leif chat reply to orc t19f ONE-item #197 corrective scope question on 2026-11-07; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated",
-    "Leif scope approval recorded natively by orc-t19f at c763d13d41edae6ec09c76b10333189118e1e668; approval_valid and correction_valid true. This authorizes the six corrective paths only, not corrected implementation acceptance."
+    "Leif scope approval recorded natively by orc-t19f at c763d13d41edae6ec09c76b10333189118e1e668; approval_valid and correction_valid true. This authorizes the six corrective paths only, not corrected implementation acceptance.",
+    "Leif decided \"Implementation review of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197\": \"approve\" (Direct Leif reply to orc t19f ONE-item fresh corrected #197 implementation acceptance question on 2026-11-07; existing decision relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -80,9 +74,7 @@
     "BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Await Leif fresh exact-head corrected implementation review via orc t19f after final native check and push. No commit or .chough/knowledge/contract writes after that check; root alone records human review; do not archive, merge or release."
 }
