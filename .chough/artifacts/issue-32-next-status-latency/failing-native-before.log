@@ -1,0 +1,59 @@
+▶️ Running task: test
+   Compiling once_cell v1.21.4
+   Compiling fastrand v2.5.0
+   Compiling tempfile v3.27.0
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-perf32)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.84s
+     Running tests/native.rs (target/debug/deps/native-1ef32f46c050f248)
+
+running 6 tests
+test a_live_reply_cannot_supply_the_cached_proof_marker ... FAILED
+test warm_reports_reuse_but_every_lifecycle_read_stays_live ... FAILED
+test every_cache_identity_mismatch_or_untrusted_entry_goes_live ... FAILED
+kill: 17918: No such process
+test snapshot_identities_and_change_front_matter_rules_stay_exact ... ok
+test a_timed_out_prime_writes_nothing_kills_children_and_retries_cold ... FAILED
+test only_self_contained_authenticated_archives_can_prime ... ok
+
+failures:
+
+---- a_live_reply_cannot_supply_the_cached_proof_marker stdout ----
+
+thread 'a_live_reply_cannot_supply_the_cached_proof_marker' (154970377) panicked at tests/native.rs:81:5:
+assertion `left == right` failed: live response was not recorded
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- warm_reports_reuse_but_every_lifecycle_read_stays_live stdout ----
+
+thread 'warm_reports_reuse_but_every_lifecycle_read_stays_live' (154970382) panicked at tests/native.rs:81:5:
+assertion `left == right` failed: live response was not recorded
+  left: 0
+ right: 1
+
+---- every_cache_identity_mismatch_or_untrusted_entry_goes_live stdout ----
+
+thread 'every_cache_identity_mismatch_or_untrusted_entry_goes_live' (154970379) panicked at tests/native.rs:81:5:
+assertion `left == right` failed: live response was not recorded
+  left: 0
+ right: 1
+
+---- a_timed_out_prime_writes_nothing_kills_children_and_retries_cold stdout ----
+
+thread 'a_timed_out_prime_writes_nothing_kills_children_and_retries_cold' (154970378) panicked at tests/native.rs:81:5:
+assertion `left == right` failed: live response was not recorded
+  left: 0
+ right: 1
+
+
+failures:
+    a_live_reply_cannot_supply_the_cached_proof_marker
+    a_timed_out_prime_writes_nothing_kills_children_and_retries_cold
+    every_cache_identity_mismatch_or_untrusted_entry_goes_live
+    warm_reports_reuse_but_every_lifecycle_read_stays_live
+
+test result: FAILED. 2 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.73s
+
+error: test failed, to rerun pass `--test native`
+error: Task 'test' failed with exit code 101

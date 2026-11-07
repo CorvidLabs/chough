@@ -276,6 +276,27 @@ requires a real decision, and native checks and separate implementation acceptan
 and delivery authority remain intact. Safe skill upgrades preserve edited copies.
 Trace: FLOW-1, FLOW-2, FLOW-5, FLOW-13, LIFE-1, LIFE-6, LIFE-7.
 
+
+## REQ-cli-053: Responsive archived reports
+
+For DRIVE-2 and DRIVE-15, `next` and `status` may reuse SpecSync's own
+`authenticated-history` response for an unchanged archived change, but only for those
+read-only reports. Active changes and every stage transition, timing report, retention
+decision and native verification stay live. Cache identity covers the archive, native
+binary/configuration/baselines and Git history state; shallow, replace, graft and
+alternate-object configurations always go live. Failures and timeouts never become
+authenticated, and a timed-out prime writes no entry and leaves no native descendants.
+
+On the measured 121-archive macOS arm64 repository, ten warm release runs of each
+command after one successful prime must have p95 at or below 2000 ms and every run at
+or below 3000 ms. Snapshot hashing may run its two exact ordered digest passes
+concurrently, with byte-identical identities and observation freshness. No persistent
+evidence-fingerprint cache, second native authority, weaker gate, larger timeout or
+cached active state is included.
+
+Trace: DRIVE-2, DRIVE-15, LIFE-3, LIFE-6, LIFE-7, FLOW-2. Contract:
+[CLI](../specs/cli/cli.spec.md).
+
 ## Supported platforms (FLOW-17)
 
 Status: derived by the agent from FLOW-17 for the intent decision; not human wording.

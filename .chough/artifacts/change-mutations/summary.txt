@@ -1,9 +1,0 @@
-#171 mutation round on ffeaaadc (src/change.rs), 8 of 8 caught, each by an assertion (no compile errors):
-drop-commit: caught by exact_arguments, write_nothing, missing_specsync
-status-drops-json: caught by exact_arguments, invalid_bound, write_nothing, missing_specsync
-swap-streams: caught by pass_through, check_outlives
-exit-zero: caught by pass_through
-bound-applies-to-check: caught by check_outlives, missing_specsync
-status-unbounded: caught by check_outlives
-no-working-directory: caught by exact_arguments, check_outlives, pass_through, write_nothing, missing_specsync, sigterm
-invalid-bound-defaults: caught by invalid_bound

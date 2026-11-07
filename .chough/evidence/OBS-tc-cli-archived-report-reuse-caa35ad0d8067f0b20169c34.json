@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-archived-report-reuse-caa35ad0d8067f0b20169c34",
+  "criteria": [
+    "DRIVE-15",
+    "DRIVE-2"
+  ],
+  "requirements": [
+    "REQ-cli-053"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Preserved failing-first receipt from commit 1f94916d9a1c7b0c017b528838b9137e973cfa85: warm reuse, invalidation, anti-spoof and timeout regressions failed before the cache implementation; two controls passed. This is a historical record, not a fresh execution.",
+  "artifacts": [
+    ".chough/artifacts/issue-32-next-status-latency/failing-native-before.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-32-next-status-latency/failing-native-before.log": "f6c8e42e11af68cd19d61a40d20ad81e4a26ce1a6dbf9d33ed19b9b011d75916"
+  },
+  "observed_at_unix_seconds": 1794007073,
+  "snapshot": {
+    "revision": "cfa2d10422259d677e9e6f28ae49e7380628de78",
+    "dirty": false,
+    "fingerprint": "a08a0833968f79ea8f807c05dc4bd84fc4b37f90896a500f7b1a22fb7c031bb2",
+    "content": "d9381ff305c9a69260e3adee50f95ee7a92fbc834d6f621a6ef70e9d66e0cc5f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-archived-report-reuse",
+      "digest": "a7e515d39d4c7f118dfc374c016bab8061faafc6640d768e9cb683d04335e1a1"
+    },
+    {
+      "id": "TC-cli-archive-cache-invalidation",
+      "digest": "25b538b6805b1209eb7c181bb11ba3731d2e877cc85abd77e175db5a4256c06a"
+    },
+    {
+      "id": "TC-cli-archive-cache-timeout",
+      "digest": "733e65ee61a0af0a69b1b62d5ab1f08e27ad6dfafdf92ec647d4d5234d28af59"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "Recorded after requirement materialization from the retained log; the failing run itself predates the implementation."
+  ]
+}

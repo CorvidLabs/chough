@@ -344,37 +344,55 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
             files.insert(name);
         }
     }
-    // The legacy fingerprint keeps its exact byte stream, so records without a content
-    // identity compare as before.
-    let mut legacy = Sha256::new();
-    legacy.update(revision.as_bytes());
     // (domain, key, path, change.md): change artifacts are a separate key domain, so no
     // ordinary path can collide with one.
     let mut entries = vec![];
-    for name in files {
-        if let Some(parent) = Path::new(name)
-            .parent()
-            .filter(|parent| !parent.as_os_str().is_empty())
-        {
-            local_path(root, parent.to_str().context("non-UTF-8 source parent")?)?;
-        }
-        legacy.update((name.len() as u64).to_le_bytes());
-        legacy.update(name.as_bytes());
-        if !hash_input(&mut legacy, root, name, None, false)? {
-            legacy.update(b"missing");
-        }
+    for name in &files {
         match fingerprint_key(name) {
             Key::Skip => {}
-            Key::Path(key) => entries.push((0_u8, key, name, false)),
-            Key::Change { key, change_md } => entries.push((1_u8, key, name, change_md)),
+            Key::Path(key) => entries.push((0_u8, key, name.to_string(), false)),
+            Key::Change { key, change_md } => {
+                entries.push((1_u8, key, name.to_string(), change_md))
+            }
         }
     }
     entries.sort();
-    let mut content = Sha256::new();
-    for (domain, key, name, change_md) in &entries {
-        // An absent tracked path contributes nothing, as after its deletion is committed.
-        hash_input(&mut content, root, name, Some((*domain, key)), *change_md)?;
-    }
+    let (legacy, content) = std::thread::scope(|scope| -> Result<(String, String)> {
+        let legacy = scope.spawn(|| -> Result<String> {
+            // The legacy fingerprint keeps its exact byte stream for older records.
+            let mut legacy = Sha256::new();
+            legacy.update(revision.as_bytes());
+            for name in files {
+                if let Some(parent) = Path::new(&name)
+                    .parent()
+                    .filter(|parent| !parent.as_os_str().is_empty())
+                {
+                    local_path(root, parent.to_str().context("non-UTF-8 source parent")?)?;
+                }
+                legacy.update((name.len() as u64).to_le_bytes());
+                legacy.update(name.as_bytes());
+                if !hash_input(&mut legacy, root, name, None, false)? {
+                    legacy.update(b"missing");
+                }
+            }
+            Ok(format!("{:x}", legacy.finalize()))
+        });
+        let content = scope.spawn(|| -> Result<String> {
+            let mut content = Sha256::new();
+            for (domain, key, name, change_md) in &entries {
+                // An absent tracked path contributes nothing, as after its deletion is committed.
+                hash_input(&mut content, root, name, Some((*domain, key)), *change_md)?;
+            }
+            Ok(format!("{:x}", content.finalize()))
+        });
+        let legacy = legacy
+            .join()
+            .map_err(|_| anyhow::anyhow!("legacy fingerprint worker panicked"))??;
+        let content = content
+            .join()
+            .map_err(|_| anyhow::anyhow!("content fingerprint worker panicked"))??;
+        Ok((legacy, content))
+    })?;
     crate::records::trace_phase("snapshot.hash", phase);
     let phase = Instant::now();
     let dirty_output = if prefix.is_empty() {
@@ -395,8 +413,8 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     Ok(Snapshot {
         revision,
         dirty,
-        fingerprint: format!("{:x}", legacy.finalize()),
-        content: Some(format!("{:x}", content.finalize())),
+        fingerprint: legacy,
+        content: Some(content),
     })
 }
 
