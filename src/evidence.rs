@@ -1762,8 +1762,11 @@ fn policy(authority: Option<&str>) -> Value {
 }
 
 #[cfg(test)]
+type PruneAfterRemove = Box<dyn FnMut(&str)>;
+
+#[cfg(test)]
 thread_local! {
-    static PRUNE_AFTER_REMOVE: std::cell::RefCell<Option<Box<dyn FnMut(&str)>>> =
+    static PRUNE_AFTER_REMOVE: std::cell::RefCell<Option<PruneAfterRemove>> =
         const { std::cell::RefCell::new(None) };
 }
 
