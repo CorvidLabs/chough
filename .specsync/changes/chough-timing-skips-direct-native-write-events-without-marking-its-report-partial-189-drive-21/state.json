@@ -4,17 +4,21 @@
   "workflow_origin_version": 2,
   "id": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
   "slug": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
-  "title": "Chough timing skips direct-native-write events without marking its report partial (189, DRIVE-21)",
-  "description": "chough timing skips direct-native-write events without marking its report partial (189, DRIVE-21)",
+  "title": "chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)",
+  "description": "chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)",
   "kind": "bug_fix",
   "state": "draft",
   "base_commit": "f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8",
   "created_at": 1794018585,
   "updated_at": 1794018673,
   "affected_specs": [
+    "cli",
     "history"
   ],
   "affected_paths": [
+    "docs/cli.md",
+    "tests/change.rs",
+    "src/change.rs",
     "src/timing.rs",
     "tests/direct_writes.rs",
     "CHANGELOG.md"

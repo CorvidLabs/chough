@@ -13,4 +13,5 @@ So any history holding a valid `direct-native-write` event (REQ-history-013) now
 
 - **The fix is small and in scope for DRIVE-21.** Timing treats `stage::DIRECT_WRITE` as a known kind that starts or ends no stage segment, as the gate kinds already are. Other unknown kinds are still counted and still mark the report partial.
 - **REQ-history-013 is modified** to say so, with a criterion that `chough timing` reads such a history as complete.
+- **Folded in at the orc's request (2026-11-07):** ch-docs-accuracy found that `chough change new` cannot pass `--no-spec-change`, so a no-spec change still needed a direct `specsync change new`. `chough change new` gains `--no-spec-change` and `--rationale`. REQ-cli-057 is modified for them, and `--no-spec-change` without `--rationale` is refused before SpecSync runs.
 - **Ruled out:** showing direct writes in timing's output. Timing reports durations, and direct writes are not segments.

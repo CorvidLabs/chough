@@ -25,7 +25,8 @@
     "files": []
   },
   "decisions": [
-    "Regression from #183 (#186): timing counted the valid direct-native-write kind as unrecognised and marked its report partial; fix in DRIVE-21's scope by treating it as a known non-segment kind; REQ-history-013 modified to say so"
+    "Regression from #183 (#186): timing counted the valid direct-native-write kind as unrecognised and marked its report partial; fix in DRIVE-21's scope by treating it as a known non-segment kind; REQ-history-013 modified to say so",
+    "Folded in at the orc's request: chough change new gains --no-spec-change and --rationale (found by ch-docs-accuracy); REQ-cli-057 modified; tests in tests/change.rs fail first"
   ],
   "open_questions": [],
   "completed": [],

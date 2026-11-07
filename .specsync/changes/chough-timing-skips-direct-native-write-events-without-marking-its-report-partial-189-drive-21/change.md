@@ -13,6 +13,7 @@ chough timing skips direct-native-write events without marking its report partia
 
 ## Affected Canonical Specs
 
+- `cli`
 - `history`
 
 ## Acceptance Criteria

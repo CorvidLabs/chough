@@ -7,7 +7,9 @@ artifact: tasks
 
 - [ ] Add `timing_skips_direct_write_events_without_marking_the_report_partial` in `tests/direct_writes.rs`. It fails first: the report is partial with one unrecognised kind.
 - [ ] Skip `stage::DIRECT_WRITE` in `src/timing.rs`'s kind filter, without counting it.
-- [ ] Add a CHANGELOG line.
+- [ ] Add `change_new_passes_no_spec_change_with_its_rationale` in `tests/change.rs`. It fails first, because the options don't exist.
+- [ ] Add `--no-spec-change` and `--rationale` to `chough change new` in `src/change.rs`, and the options to docs/cli.md.
+- [ ] Add CHANGELOG lines for both.
 
 After `specsync change check` materializes the delta, not task boxes:
 - record the case;
