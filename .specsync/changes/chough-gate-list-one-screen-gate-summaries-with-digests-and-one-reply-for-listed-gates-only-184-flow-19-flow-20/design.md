@@ -10,7 +10,7 @@ artifact: design
   - `Gate: <gate>`
   - `Change: <id> — <title> (<state>)`
   - `What changed: <files> files, +<ins> −<del> since <base8>`, then up to five `  <path> +a −d` lines (from `git diff --numstat <base>..HEAD`);
-  - `Tests: <p> passed, <f> failed, <n> not run`, plus `Failing: <ids>` (the latest observation of each case the session's observations name);
+  - `Tests: <p> passed, <f> failed, <n> not run`, plus `Failing: <ids>`. The cases are those in `.chough/cases/*.cases.toml` whose `requirements` include a `REQUIREMENT` heading in the change's `deltas/*.md`, plus any case the session's observations name. Each one's latest observation comes from `.chough/evidence/`, by `observed_at_unix_seconds`.
   - `Risks:` and the first 8 lines of `plan.md`'s Risks section, or `none recorded`;
   - `Diff: <url or command>`.
 

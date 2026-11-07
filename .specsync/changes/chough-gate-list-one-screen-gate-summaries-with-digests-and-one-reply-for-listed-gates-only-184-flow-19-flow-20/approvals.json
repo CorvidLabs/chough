@@ -58,5 +58,18 @@
       }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20",
+      "actor": "0xLeif",
+      "reason": "Leif chose A: source the summary's tests from the cases linked to the change's delta requirements (plus any the session's observations name), so the one-screen summary isn't 0/0/0 when tests exist (FLOW-19)",
+      "timestamp": 1794015880,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": false
+    }
+  ]
 }

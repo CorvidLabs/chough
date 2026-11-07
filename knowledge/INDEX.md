@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-521 recorded; most recent:
+522 recorded; most recent:
 
+- OBS-tc-cli-gate-record-other-session-refused-c8f31decaa5be4335c3b46de ProductTest Failed in local-macos-arm64 at 21c84754336d
 - OBS-tc-history-summary-digest-oldest-reader-named-a2685f7eae1f23035efb5b4f ProductTest Failed in local-macos-arm64 at 6018e8b40a17
 - OBS-tc-history-relay-summary-fields-both-or-neither-4d4e78fabf1b85d3ef7f47b6 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
 - OBS-tc-cli-gate-verifying-closes-through-ship-fcce7be02c953165f63c72b7 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-product-test-d15ac3501f3fd5a9d6eb6325 ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-cli-change-steps-write-nothing-62fe15cbc95b9f266c0c477d ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-history-direct-write-oldest-reader-named-7c07242c743ffd775a9119a2 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-history-direct-write-field-only-on-its-kind-f02be75f99e38e3aa4c8342e ProductTest Passed in local-macos-arm64 at 317595212a05
 
 ## Briefs
 

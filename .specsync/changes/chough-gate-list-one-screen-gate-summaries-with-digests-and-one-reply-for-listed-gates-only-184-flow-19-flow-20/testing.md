@@ -5,7 +5,7 @@ artifact: testing
 
 # Testing
 
-New tests in `tests/gates.rs`. The fixture is a Git project with a session for change `g1`. The session's `state.json` holds a title and a `base_commit`, `plan.md` has a Risks section, there are a passing and a failing observation, and gates are open.
+New tests in `tests/gates.rs`. The fixture is a Git project with a session for change `g1`. The session's `state.json` holds a title and a `base_commit`. A delta adds REQ-cli-001, `plan.md` has a Risks section, and a passing and a failing observation exist for two cases that link REQ-cli-001; nothing links them to the session. Gates are open. One more test covers a listed gate of another open session.
 
 - `gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest`: the numbers; the summary's parts (changed files, tests with the failing case, risks, the diff command); at most 24 lines; the digest is the SHA-256 of the text; the list file exists; no tracked file changes.
 - `one_reply_closes_only_the_listed_gates_each_with_its_own_digest`: with three gates open, recording numbers 1 and 3 closes both with the same words and their own digests; gate 2 stays open.

@@ -4,7 +4,7 @@
 
 Gate lists. `chough gate list [--json]` SHALL number every open human gate of every open session in the project from 1. It SHALL give each a one-screen summary of at most 24 lines and 4,096 bytes, with:
 - what changed: the files, insertions and deletions since the change's `base_commit` (from its `state.json`), naming the five files with the most changed lines;
-- the tests: how many cases passed, failed and were not run, by the latest observation of each case that the session's observations name, with the failing case IDs;
+- the tests: how many cases passed, failed and were not run, by the latest observation of each case that links a requirement the change's deltas add or modify, or that the session's observations name, with the failing case IDs;
 - the risks: the first 8 lines of the change's `plan.md` section "Risks", or "none recorded";
 - a diff link: the GitHub compare URL from the base to HEAD when `origin` is a GitHub remote, otherwise `git diff <base>..<HEAD>`.
 

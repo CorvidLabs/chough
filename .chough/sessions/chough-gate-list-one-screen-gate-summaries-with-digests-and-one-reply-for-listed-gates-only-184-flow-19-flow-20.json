@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-c1641aee9f4255fab1a58911",
-    "head": "EVT-9fb2c80abd230c5399b2e27a",
+    "head": "EVT-2a5a4dd3d94e766d18ba3c61",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "build",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -36,7 +36,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Definition re-approval of chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20 (tests source redefined)"
+  ],
   "run_consents": [],
-  "next_action": "After Leif's definition approval is recorded natively, close the gate with the relay, advance to build, add the cases and implement src/gates.rs"
+  "next_action": "After the re-approval is recorded natively, close the gate, advance to build, implement the delta-linked tests source, merge main (0.5.0), and write the CHANGELOG entry naming 0.6.0"
 }
