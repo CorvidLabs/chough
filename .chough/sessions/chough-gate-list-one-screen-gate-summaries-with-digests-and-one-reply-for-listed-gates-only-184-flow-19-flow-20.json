@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-c1641aee9f4255fab1a58911",
-    "head": "EVT-2a5a4dd3d94e766d18ba3c61",
+    "head": "EVT-4ba2eb446d9ed850672d6b84",
     "legacy": null
   },
   "schema_version": 2,
@@ -29,16 +29,15 @@
     "Slice 4 of the approved order (Leif, relayed by the orc): FLOW-19 and FLOW-20 in Chough's own gate records; native records wait for slice 5 (SpecSync 6.3.0 with #900)",
     "Summaries come from files and Git only (no native read); the list is untracked; a verifying change's review gate closes through chough change ship --list --gate, never in the verification window",
     "Rejected: lists across repositories (orc), push notifications, tracked summaries, recording without the four relay values",
-    "Leif (0xLeif) decided \"Definition approval of chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20\": \"approved slice 4\" (orc tab, 2026-11-07, relayed by orc t18; native definition approval recorded as 0xLeif by the orc at 5a84e33e (digest 38bc6fed)); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
+    "Leif (0xLeif) decided \"Definition approval of chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20\": \"approved slice 4\" (orc tab, 2026-11-07, relayed by orc t18; native definition approval recorded as 0xLeif by the orc at 5a84e33e (digest 38bc6fed)); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Definition re-approval of chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20 (tests source redefined)\": \"option A\" (orc tab, 2026-11-07, relayed by orc t18; send-back and re-approval recorded natively as 0xLeif by the orc at 80a4f0a2); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Definition re-approval of chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20 (tests source redefined)"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "After the re-approval is recorded natively, close the gate, advance to build, implement the delta-linked tests source, merge main (0.5.0), and write the CHANGELOG entry naming 0.6.0"
 }
