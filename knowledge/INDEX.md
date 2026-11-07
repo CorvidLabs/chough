@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18 (active; `specsync change status explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18`)
 
 Archived changes (newest first; the newest 3 are hot):
 

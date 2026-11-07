@@ -39,6 +39,15 @@ History is append-only; going back lists what to refresh and, after native
 approval, points to native reapproval for changes to intent, contract, acceptance
 criteria or scope.
 
+No stage advances itself: the agent moves the workflow with `chough stage …`, and
+every move meets the native gate of the stage it lands on. `chough next` recommends
+the focused next action but executes nothing; there is no unattended runner.
+Routine build, test and stage movement inside an approved scope is the agent's work
+under the recorded authorization, not a new permission question per tool call. Of
+the `chough change` wrappers, `new`, `answer`, `check` and `status` pass SpecSync's
+output through unchanged and write nothing under `.chough/`; only `ship` also
+closes the review gate and moves the session to done.
+
 Human decisions sit at natural points, not at every step: the intent as a whole,
 the rendered design with its companion, one native scope approval, and the
 implementation review at acceptance. Agents synthesize review findings before
