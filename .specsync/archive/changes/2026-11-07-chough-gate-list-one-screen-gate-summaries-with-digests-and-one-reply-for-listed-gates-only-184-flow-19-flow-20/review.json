@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "882e4f6bc0337f3d2a36c20031fdf6b7341d1933",
+  "contract_digest": "38bc6fedc8b61f10df39e8369aef5308d6be0f31b044c0272cf255984565949e",
+  "execution_digest": "d4dbeb21accaceeebd1c8ad6e267e31e325ad442fbf9a776611e0b70cab3b412",
+  "workspace_digest": "bed183f9149f8079b85a188fabfa5fbcb427caafcdc4bca823e17fdd3cfbdca2",
+  "timestamp": 1794018063
+}
