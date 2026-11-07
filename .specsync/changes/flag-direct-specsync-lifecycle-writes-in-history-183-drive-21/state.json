@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "flag-direct-specsync-lifecycle-writes-in-history-183-drive-21",
+  "slug": "flag-direct-specsync-lifecycle-writes-in-history-183-drive-21",
+  "title": "Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)",
+  "description": "Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "0a20d934a08a5c92a14ca6b0016dfb520daa0815",
+  "created_at": 1794011049,
+  "updated_at": 1794011127,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/direct_writes.rs",
+    "src/stage.rs",
+    "src/history.rs",
+    "src/change.rs",
+    "src/main.rs",
+    "src/checkpoint.rs",
+    "src/skill.rs",
+    "tests/direct_writes.rs",
+    "tests/change.rs",
+    "tests/package.rs",
+    "tests/docs.rs",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    "skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "REQ-cli-060 and REQ-history-013 (new) and REQ-cli-057 (modified): a lifecycle record of the active session's change written outside Chough is recorded once as a direct-native-write history event, with its files and states, at the next successful stage move; Chough's own change steps are never flagged because they update an untracked baseline; first sight flags nothing; next and status show pending writes and change nothing; nothing is recorded in the check-to-finalize window; a finding never refuses. The change log names the oldest Chough that reads the event. Seven tests in tests/direct_writes.rs and the modified change-steps test fail first, each mutant in testing.md fails one, and fledge run linux-verify passes."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Issue #183, slice 3 of Chough drives SpecSync; slice order approved by Leif (relayed by the orc). DRIVE-21; DRIVE-4 (nothing written between check --commit and finalize, so findings wait for a stage move); DRIVE-2 (no new native read); DRIVE-12 (append-only events). Modifies REQ-cli-057 for the untracked baseline only. History compatibility: older Chough refuses the new kind, and the change log names the oldest reader. IDs REQ-cli-060 and REQ-history-013, announced to t27. Lesson: merge main before review and rebuild the vault.",
+    "public_contract": "yes"
+  }
+}

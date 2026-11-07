@@ -1,0 +1,43 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-9714e2f0c9044b1ccccc108a",
+    "head": "EVT-ec1b8d6d67f1d1ade8176691",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Flag direct SpecSync lifecycle writes in history (#183, DRIVE-21 slice 3)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "flag-direct-specsync-lifecycle-writes-in-history-183-drive-21",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Slice 3 of the approved order (Leif, relayed by the orc): DRIVE-21, direct lifecycle writes recorded in history; the release note names the oldest Chough that reads the event (orc's ask)",
+    "Findings wait for a successful stage move (history is written there anyway), because nothing may write .chough/ between check --commit and finalize; next and status only show them",
+    "Modifies REQ-cli-057 so change steps may write their untracked baseline under .chough/local/; rejected: recording from next or status, watching authored artifacts or other changes, refusing on a finding"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Definition approval of flag-direct-specsync-lifecycle-writes-in-history-183-drive-21"
+  ],
+  "run_consents": [],
+  "next_action": "After Leif's definition approval is recorded natively, close the gate with the relay, advance to build, add the cases and implement src/direct_writes.rs"
+}

@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- flag-direct-specsync-lifecycle-writes-in-history-183-drive-21 (active; `specsync change status flag-direct-specsync-lifecycle-writes-in-history-183-drive-21`)
 
 Archived changes (newest first; the newest 3 are hot):
 
