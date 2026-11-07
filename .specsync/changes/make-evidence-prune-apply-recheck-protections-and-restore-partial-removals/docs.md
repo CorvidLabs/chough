@@ -8,6 +8,7 @@ artifact: docs
 - `specs/history/requirements.md`: materialize the modified REQ-history-004 and its new rollback acceptance criteria.
 - `specs/history/testing.md`: bind the four per-change cases to the deterministic race, same-set and earlier-set rollback, and recreated-file regressions.
 - `specs/history/history.spec.md`: add this change to the contract history and increment its version without renumbering existing rows.
+- `specs/cli/cli.spec.md`: materialize the minimal Purpose delta for the implementation path owned by `cli` and add the same change to its contract history; no CLI requirement changes.
 - `docs/FRD.md`: summarize immediate protection rechecks, byte-checked removal and honest rollback under REQ-history-004.
 - `docs/cli.md`: document stale-hold refusal, restored events, create-new rollback and recovery holds for uncommitted bytes in the Retention section.
 - `.chough/cases/history.prune-race.cases.toml`: add only this change's cases with curated stable IDs and existing module/requirement links.

@@ -12,7 +12,8 @@
   "created_at": 1794019871,
   "updated_at": 1794019988,
   "affected_specs": [
-    "history"
+    "history",
+    "cli"
   ],
   "affected_paths": [
     "src/evidence.rs",
@@ -20,6 +21,7 @@
     "specs/history/requirements.md",
     "specs/history/testing.md",
     "specs/history/history.spec.md",
+    "specs/cli/cli.spec.md",
     "docs/FRD.md",
     "docs/cli.md",
     "CHANGELOG.md",

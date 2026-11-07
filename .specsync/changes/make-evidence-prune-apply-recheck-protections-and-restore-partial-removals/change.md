@@ -14,6 +14,7 @@ Make evidence prune --apply recheck protections and restore partial removals
 ## Affected Canonical Specs
 
 - `history`
+- `cli`
 
 ## Acceptance Criteria
 

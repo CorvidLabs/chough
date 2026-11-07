@@ -16,4 +16,6 @@ The requirement continues to preserve the existing eligibility thresholds, prote
 - A `restored` event uses the existing ledger shape for each ledgered set, so readers do not report the failed apply as completed pruning.
 - Successful apply output and all existing protections, bounds and authorization remain unchanged.
 
+The `cli` delta modifies only the module Purpose to acknowledge the failure-handling behavior implemented in `src/evidence.rs`; it adds no requirement ID and leaves every CLI requirement unchanged.
+
 No new requirement ID is needed.

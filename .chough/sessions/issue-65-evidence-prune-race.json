@@ -35,7 +35,8 @@
       "docs/FRD.md",
       "docs/cli.md",
       "CHANGELOG.md",
-      ".chough/cases/history.prune-race.cases.toml"
+      ".chough/cases/history.prune-race.cases.toml",
+      "specs/cli/cli.spec.md"
     ]
   },
   "decisions": [
@@ -46,7 +47,8 @@
   "open_questions": [],
   "completed": [
     "Confirmed on origin/main 455cb643 that evidence prune still deletes directly without rollback, while library archive supplies remove_verified and restored ledger events; existing LIFE-8 covers the requested behavior",
-    "Completed the #65 native draft with four deterministic failure-first regressions, byte-checked removal, create-new rollback and uncommitted-byte recovery holds; SpecSync reports artifacts_complete true"
+    "Completed the #65 native draft with four deterministic failure-first regressions, byte-checked removal, create-new rollback and uncommitted-byte recovery holds; SpecSync reports artifacts_complete true",
+    "Added cli ownership with a minimal Purpose delta for src/evidence.rs; a disposable worktree probe accepted the cli and history deltas with approval_valid true, and the probe and its non-human approval record were removed"
   ],
   "observations": [],
   "bugs": [],
