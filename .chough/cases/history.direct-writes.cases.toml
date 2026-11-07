@@ -1,0 +1,128 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-direct-write-recorded-once"
+title = "A lifecycle record changed outside Chough is recorded once with the next stage move"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-cli-060", "REQ-history-013"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test a_direct_lifecycle_write_is_recorded_once_with_the_next_stage_move passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_lifecycle_write_is_recorded_once_with_the_next_stage_move"
+
+[[case]]
+id = "TC-history-chough-steps-not-flagged"
+title = "Chough's own change steps are not flagged, while a direct write before one still is"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-cli-060"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test chough_change_steps_are_not_flagged_but_an_earlier_direct_write_is passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "chough_change_steps_are_not_flagged_but_an_earlier_direct_write_is"
+
+[[case]]
+id = "TC-history-direct-write-first-sight"
+title = "First sight sets a baseline and flags nothing; a later write is recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-cli-060"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test first_sight_sets_a_baseline_and_flags_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "first_sight_sets_a_baseline_and_flags_nothing"
+
+[[case]]
+id = "TC-history-direct-write-shown-not-written"
+title = "next and status show a pending direct write and change nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-cli-060"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test next_and_status_show_a_pending_write_and_change_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "next_and_status_show_a_pending_write_and_change_nothing"
+
+[[case]]
+id = "TC-history-direct-write-before-ship"
+title = "A direct write before chough change ship is recorded at the move into done"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-cli-060"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test a_direct_write_before_ship_is_recorded_at_the_done_move passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_write_before_ship_is_recorded_at_the_done_move"
+
+[[case]]
+id = "TC-history-direct-write-field-only-on-its-kind"
+title = "A direct_write object on another event kind is an invalid payload"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-history-013"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test a_direct_write_field_on_another_kind_is_an_invalid_payload passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_write_field_on_another_kind_is_an_invalid_payload"
+
+[[case]]
+id = "TC-history-direct-write-oldest-reader-named"
+title = "The change log names the oldest Chough that reads direct-native-write events"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-history-013"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the direct_writes test the_change_log_names_the_oldest_chough_that_reads_direct_write_events passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "the_change_log_names_the_oldest_chough_that_reads_direct_write_events"
