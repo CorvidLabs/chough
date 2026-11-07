@@ -5,11 +5,11 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Add the two tests in `tests/reduce.rs` and their cases. They fail first on main f41e7ab4.
-- [ ] Link session notes from the build's archive set (`src/vault.rs`, `src/library.rs`).
-- [ ] Regenerate after the session archives itself when a later step changed a source (`src/stage.rs`).
-- [ ] Update `docs/cli.md` and the CHANGELOG.
-- [ ] Modify REQ-cli-043, REQ-cli-049 and REQ-cli-051 (materialized from the deltas).
+- [x] Add the two tests in `tests/reduce.rs` and their cases. They fail first on main f41e7ab4.
+- [x] Link session notes from the build's archive set (`src/vault.rs`, `src/library.rs`).
+- [x] Regenerate after the session archives itself when a later step changed a source (`src/stage.rs`).
+- [x] Update `docs/cli.md` and the CHANGELOG.
+- [x] Modify REQ-cli-043, REQ-cli-049 and REQ-cli-051 (materialized from the deltas).
 
 After `specsync change check` materializes the deltas, not task boxes:
 - record the cases' failing-first and passing observations;

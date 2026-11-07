@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 75
+version: 76
 status: active
 files:
   - src/main.rs
@@ -303,3 +303,4 @@ provider, runtime or hosted service.
 | 73 | 2026-11-06 | make-archived-next-and-status-fast-within-explicit-warm-budgets: Make archived next and status fast within explicit warm budgets (32, DRIVE-15) |
 | 74 | 2026-11-06 | chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20: Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) |
 | 75 | 2026-11-07 | flag-direct-specsync-lifecycle-writes-in-history-183-drive-21: Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) |
+| 76 | 2026-11-07 | after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes: After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) |
