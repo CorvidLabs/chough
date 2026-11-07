@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-direct-write-field-only-on-its-kind-f02be75f99e38e3aa4c8342e",
+  "criteria": [
+    "DRIVE-21"
+  ],
+  "requirements": [
+    "REQ-history-013"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test direct_writes -- --exact a_direct_write_field_on_another_kind_is_an_invalid_payload for TC-history-direct-write-field-only-on-its-kind: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-direct-write-field-only-on-its-kind-f02be75f99e38e3aa4c8342e.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-direct-write-field-only-on-its-kind-f02be75f99e38e3aa4c8342e.log": "28f229440059069c0d9b2c3a5d8b000f215aeb4fd9970a2fd8afd8e62dabbe67"
+  },
+  "observed_at_unix_seconds": 1794012126,
+  "snapshot": {
+    "revision": "317595212a052e876b5dfedc7898c712aa63bf24",
+    "dirty": false,
+    "fingerprint": "9f99fa6c2d2d957ab7b3e5a6f8cb81ee7cebf8ccc7c32486f329695a6a7cc18e",
+    "content": "9fea0fc95f7dfd301cfee2a1e04612891bc322f656b66a17f707d821470039a5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-direct-write-field-only-on-its-kind",
+      "digest": "e7c62aecf7357563363c54914024dc1fe4ea8f03a630eb00132743edb8d74462"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "direct_writes",
+    "--",
+    "--exact",
+    "a_direct_write_field_on_another_kind_is_an_invalid_payload"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

@@ -56,7 +56,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-change-sigterm-stops-specsync-954f09784932db762fbad2dc | passed (by cycle time) | local-macos-arm64 | TC-cli-change-sigterm-stops-specsync |
 | OBS-tc-cli-change-steps-exact-arguments-b45af62e9645ac2b19daaf8a | passed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-exact-arguments |
 | OBS-tc-cli-change-steps-pass-through-ff1601248ad19f8e292363ca | passed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-pass-through |
-| OBS-tc-cli-change-steps-write-nothing-faff94c566bb9f21d3f4658b | passed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-write-nothing |
+| OBS-tc-cli-change-steps-write-nothing-faff94c566bb9f21d3f4658b | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-steps-write-nothing |
 
 ## Bugs
 

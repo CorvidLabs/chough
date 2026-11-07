@@ -1,0 +1,54 @@
+
+running 13 tests
+test the_walkthrough_and_closeout_run_chough_change ... ok
+test change_new_answer_check_and_status_run_specsync_with_exact_arguments ... ok
+test sigterm_to_change_check_stops_specsync ... ok
+test an_invalid_native_bound_refuses_status_naming_a_valid_retry ... ok
+test specsync_output_and_exit_code_pass_through_byte_for_byte ... ok
+test a_specsync_ship_refusal_passes_through_and_records_nothing ... ok
+test a_missing_specsync_refuses_naming_install_and_the_step_to_rerun ... ok
+test ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done ... ok
+test no_change_command_writes_a_tracked_file_under_dot_chough ... ok
+test a_refused_done_move_after_ship_names_the_remaining_step ... ok
+test ship_outlives_the_native_read_bound ... ok
+test check_outlives_the_native_bound_while_status_refuses_past_it ... ok
+test ship_refuses_before_running_without_the_relay_or_outside_accept ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.47s
+
+
+running 7 tests
+test the_change_log_names_the_oldest_chough_that_reads_direct_write_events ... ok
+test a_direct_write_field_on_another_kind_is_an_invalid_payload ... ok
+test chough_change_steps_are_not_flagged_but_an_earlier_direct_write_is ... ok
+test a_direct_write_before_ship_is_recorded_at_the_done_move ... ok
+test a_direct_lifecycle_write_is_recorded_once_with_the_next_stage_move ... ok
+test next_and_status_show_a_pending_write_and_change_nothing ... FAILED
+test first_sight_sets_a_baseline_and_flags_nothing ... ok
+
+failures:
+
+---- next_and_status_show_a_pending_write_and_change_nothing stdout ----
+
+thread 'next_and_status_show_a_pending_write_and_change_nothing' (445356294) panicked at tests/direct_writes.rs:200:5:
+assertion `left == right` failed: {
+  "baseline": true,
+  "pending": []
+}
+  left: Null
+ right: Array [Object {"change": String("added"), "path": String("review.json")}]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    next_and_status_show_a_pending_write_and_change_nothing
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.09s
+
+   Compiling chough v0.4.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-c456-drive)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.42s
+     Running tests/change.rs (target/debug/deps/change-c1495f4ded81b8f7)
+     Running tests/direct_writes.rs (target/debug/deps/direct_writes-02b50d73c1d8a1cb)
+error: test failed, to rerun pass `--test direct_writes`
+error: 1 target failed:
+    `--test direct_writes`

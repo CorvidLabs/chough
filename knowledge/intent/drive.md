@@ -59,5 +59,5 @@ archived changes whose requirements trace it.
 - **DRIVE-18**: [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](../archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md)
 - **DRIVE-19**: none yet
 - **DRIVE-20**: none yet
-- **DRIVE-21**: none yet
+- **DRIVE-21**: [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md)
 - **DRIVE-22**: [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md)

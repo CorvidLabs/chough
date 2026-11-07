@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_direct_write_field_on_another_kind_is_an_invalid_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.75s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/direct_writes.rs (target/debug/deps/direct_writes-02b50d73c1d8a1cb)

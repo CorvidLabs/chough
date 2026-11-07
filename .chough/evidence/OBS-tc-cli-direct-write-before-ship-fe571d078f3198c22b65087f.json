@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-direct-write-before-ship-fe571d078f3198c22b65087f",
+  "criteria": [
+    "DRIVE-21"
+  ],
+  "requirements": [
+    "REQ-cli-060"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test direct_writes -- --exact a_direct_write_before_ship_is_recorded_at_the_done_move for TC-cli-direct-write-before-ship: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-direct-write-before-ship-fe571d078f3198c22b65087f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-direct-write-before-ship-fe571d078f3198c22b65087f.log": "4ab7cb74f999d987ad06f9402655137a8fa3a9c60ee7702630ca42aeefe39199"
+  },
+  "observed_at_unix_seconds": 1794012122,
+  "snapshot": {
+    "revision": "317595212a052e876b5dfedc7898c712aa63bf24",
+    "dirty": false,
+    "fingerprint": "9f99fa6c2d2d957ab7b3e5a6f8cb81ee7cebf8ccc7c32486f329695a6a7cc18e",
+    "content": "9fea0fc95f7dfd301cfee2a1e04612891bc322f656b66a17f707d821470039a5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-direct-write-before-ship",
+      "digest": "349c4ee2566e4bc19432751defca9cef5de75b0bb87f8b5cc49f538bccc77e07"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "direct_writes",
+    "--",
+    "--exact",
+    "a_direct_write_before_ship_is_recorded_at_the_done_move"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

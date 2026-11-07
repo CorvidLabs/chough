@@ -39,7 +39,7 @@ test = "specsync_output_and_exit_code_pass_through_byte_for_byte"
 
 [[case]]
 id = "TC-cli-change-steps-write-nothing"
-title = "No chough change step writes under .chough/"
+title = "No chough change step writes a tracked file under .chough/, and under .chough/local/ only its direct-write baseline"
 status = "active"
 track = "functional"
 method = "automated"
@@ -48,12 +48,12 @@ requirements = ["REQ-cli-057"]
 paths = ["src/change.rs", "tests/change.rs"]
 environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the change test no_change_command_writes_under_dot_chough passes"]
+expected = ["the change test no_change_command_writes_a_tracked_file_under_dot_chough passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "change"
-test = "no_change_command_writes_under_dot_chough"
+test = "no_change_command_writes_a_tracked_file_under_dot_chough"
 
 [[case]]
 id = "TC-cli-change-check-outlives-read-bound"
