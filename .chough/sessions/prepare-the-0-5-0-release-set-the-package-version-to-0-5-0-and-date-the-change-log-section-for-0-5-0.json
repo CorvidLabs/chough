@@ -29,7 +29,10 @@
   ],
   "open_questions": [],
   "completed": [],
-  "observations": [],
+  "observations": [
+    "OBS-dry-run-ea811aa23f1848e4afafdbae",
+    "OBS-structural-e0b6507696e1eb822326d465"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
