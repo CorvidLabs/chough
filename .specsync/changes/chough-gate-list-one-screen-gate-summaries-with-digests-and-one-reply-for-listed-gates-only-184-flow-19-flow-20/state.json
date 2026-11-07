@@ -7,10 +7,10 @@
   "title": "Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)",
   "description": "chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "0a20d934a08a5c92a14ca6b0016dfb520daa0815",
   "created_at": 1794011512,
-  "updated_at": 1794014339,
+  "updated_at": 1794014913,
   "affected_specs": [
     "cli",
     "history"
