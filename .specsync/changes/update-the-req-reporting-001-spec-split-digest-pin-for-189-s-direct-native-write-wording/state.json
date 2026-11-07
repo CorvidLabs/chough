@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "a3c7a590ad6fcbe3c6950fe8eb7297353f821716",
   "created_at": 1794026416,
-  "updated_at": 1794026434,
+  "updated_at": 1794031276,
   "affected_specs": [],
   "affected_paths": [
     "tests/spec_split.rs"
