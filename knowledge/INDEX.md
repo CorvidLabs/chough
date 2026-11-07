@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-522 recorded; most recent:
+531 recorded; most recent:
 
+- OBS-product-test-1e38299188b5d2c640dd711a ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-history-summary-digest-oldest-reader-named-a5a71364f80d5bf7aea96be8 ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-history-relay-summary-fields-both-or-neither-02cb69215806d8a77707d34b ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-cli-gate-record-other-session-refused-3c03e94f8355aaca6685633a ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-cli-gate-verifying-closes-through-ship-fcf925e3154c2129b6bf719f ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-cli-gate-record-refusals-recover-f746cea63f6f5b9127aa00ed ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-cli-gate-record-listed-gates-only-c118c5b8a9d9cc06f799c868 ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14 ProductTest Failed in local-macos-arm64 at a0bf05d7e391
 - OBS-tc-cli-gate-record-other-session-refused-c8f31decaa5be4335c3b46de ProductTest Failed in local-macos-arm64 at 21c84754336d
-- OBS-tc-history-summary-digest-oldest-reader-named-a2685f7eae1f23035efb5b4f ProductTest Failed in local-macos-arm64 at 6018e8b40a17
-- OBS-tc-history-relay-summary-fields-both-or-neither-4d4e78fabf1b85d3ef7f47b6 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
-- OBS-tc-cli-gate-verifying-closes-through-ship-fcce7be02c953165f63c72b7 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
-- OBS-tc-cli-gate-record-refusals-recover-f5c47e1344ca2112bcb73cde ProductTest Failed in local-macos-arm64 at 6018e8b40a17
-- OBS-tc-cli-gate-record-listed-gates-only-0db9e135e9f5b7e58d72eb3e ProductTest Failed in local-macos-arm64 at 6018e8b40a17
-- OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
-- OBS-product-test-d15ac3501f3fd5a9d6eb6325 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-change-steps-write-nothing-62fe15cbc95b9f266c0c477d ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-history-direct-write-oldest-reader-named-7c07242c743ffd775a9119a2 ProductTest Passed in local-macos-arm64 at 317595212a05
 
 ## Briefs
 
