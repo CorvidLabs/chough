@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- correct-prune-capture-authority-and-unsafe-rollback-for-pr-197 (active; `specsync change status correct-prune-capture-authority-and-unsafe-rollback-for-pr-197`)
 
 Archived changes (newest first; the newest 3 are hot):
 

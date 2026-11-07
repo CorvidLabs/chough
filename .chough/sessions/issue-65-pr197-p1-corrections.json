@@ -1,0 +1,58 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-513106a919495dc23f745860",
+    "head": "EVT-cd10118db3cb2f0c9a884375",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Correct both P1 capture-authority and unsafe-rollback defects in issue 65 / PR 197 without changing retention policy or old acceptance history",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "correct-prune-capture-authority-and-unsafe-rollback-for-pr-197",
+  "references": {
+    "criteria": [
+      "LIFE-2",
+      "LIFE-7",
+      "LIFE-8"
+    ],
+    "requirements": [
+      "REQ-history-004"
+    ],
+    "cases": [],
+    "design": [],
+    "files": [
+      "src/evidence.rs",
+      "specs/cli/cli.spec.md",
+      "specs/history/history.spec.md",
+      "specs/history/testing.md",
+      "specs/history/context.md",
+      ".chough/cases/history.pr197-p1.cases.toml"
+    ]
+  },
+  "decisions": [
+    "Existing LIFE-2/7/8 and REQ-history-004 express the corrective intent; no new HI/REQ IDs. Public failure cases are clarified through CLI Purpose/history Error Cases; requirement bodies and split digest stay unchanged.",
+    "Rejected reusing the old acceptance or editing/reopening its archive: corrected code needs this new scope and a fresh exact-head implementation review through orc t19f.",
+    "Only corrective definition/intent bookkeeping is authorized before scope approval; real production, contracts and test/case files stay at the accepted archive head."
+  ],
+  "open_questions": [],
+  "completed": [
+    "Disposable base 1fc4c67b59f05097cab4cafa446aa58198f8ee56 reproduced both P1s: capture filter 1 executed failure; unsafe rollback filter 2 executed failures (file and ancestor symlinks). Actual argv, raw hashes and compact receipts are in native research.md."
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope decision of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197"
+  ],
+  "run_consents": [],
+  "next_action": "Wait for Leif exact-head scope approval recorded by orc t19f; then land red tests, fix only the two P1s, qualify and present fresh implementation review on the existing PR 197"
+}
