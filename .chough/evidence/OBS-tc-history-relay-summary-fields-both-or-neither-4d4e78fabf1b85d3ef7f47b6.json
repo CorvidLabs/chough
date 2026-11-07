@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-relay-summary-fields-both-or-neither-4d4e78fabf1b85d3ef7f47b6",
+  "criteria": [
+    "FLOW-19"
+  ],
+  "requirements": [
+    "REQ-history-014"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test gates -- --exact relay_summary_fields_are_both_or_neither for TC-history-relay-summary-fields-both-or-neither: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-relay-summary-fields-both-or-neither-4d4e78fabf1b85d3ef7f47b6.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-relay-summary-fields-both-or-neither-4d4e78fabf1b85d3ef7f47b6.log": "f7eff8901c48a5edad3e26d0f3be806cb123ff021a642ef5730b5f970449086b"
+  },
+  "observed_at_unix_seconds": 1794015491,
+  "snapshot": {
+    "revision": "6018e8b40a170190123f69cc9cda23f8d6cf0795",
+    "dirty": false,
+    "fingerprint": "c9e981d025af7770d31d4906e885d75058c0e22a957875d1045571fd6f150761",
+    "content": "74668e070bdcf9fe3d71b66eb27d901be381fc91e0d8c52e1faad21d4832e3bc"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-relay-summary-fields-both-or-neither",
+      "digest": "58d18f2d51daa42c763e6cf21d490ab64ef392bf0abe9ce3a5b9e17c2b3d8375"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "gates",
+    "--",
+    "--exact",
+    "relay_summary_fields_are_both_or_neither"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

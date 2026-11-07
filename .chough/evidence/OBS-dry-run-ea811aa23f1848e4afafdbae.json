@@ -1,0 +1,27 @@
+{
+  "schema_version": 2,
+  "id": "OBS-dry-run-ea811aa23f1848e4afafdbae",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-001"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "dry-run",
+  "outcome": "passed",
+  "environment": "local-linux-aarch64",
+  "summary": "cargo publish --dry-run --locked for chough v0.5.0 packaged, verified and stopped before upload; crates.io lists 0.4.0 as the newest version and 0xLeif as the only owner.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1794010350,
+  "snapshot": {
+    "revision": "2c3cd209c5cd094512a90567db42ee128d9c654c",
+    "dirty": false,
+    "fingerprint": "a7a70b5d78e50f7bf3ff034ef31d9560b1f558e666dff3aee850e2b1fa3695ff",
+    "content": "78f6b88a029ace695247192df57078e1164f79d7ff9e177a36cab7388382c3bb"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment"
+}

@@ -1,0 +1,36 @@
+--- stdout ---
+
+running 1 test
+test gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest ... FAILED
+
+failures:
+
+---- gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest stdout ----
+
+thread 'gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest' (464214104) panicked at tests/gates.rs:259:9:
+the summary lacks "src/input.txt":
+Gate: Scope approval of g1
+Change: g1 — Free shipping at the threshold (approved)
+What changed: 8 files, +92 −2 since 9e57e82b
+  .chough/evidence/OBS-tc-cli-g1-fail-1c6ce13927f1b7ccda51e4d6.json +33 −0
+  .chough/evidence/OBS-tc-cli-g1-pass-77e08516d824cae45baf12b8.json +33 −0
+  .specsync/changes/g1/plan.md +13 −0
+  .chough/sessions/gates-g1.json +4 −2
+  .specsync/changes/g1/deltas/cli.md +5 −0
+Tests: 0 passed, 0 failed, 0 not run
+Risks:
+  - A rounding edge at exactly fifty dollars.
+Diff: git diff 9e57e82b6e5278884d16d409f916ff86978a9cfb..edaa4cacd8e0f5d3045ded2d4175241fa666e65e
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 3.59s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/gates.rs (target/debug/deps/gates-112e6fb6cb66b3ed)
+error: test failed, to rerun pass `--test gates`

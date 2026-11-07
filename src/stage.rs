@@ -149,6 +149,20 @@ pub(super) struct RelayedBy {
     #[serde(rename = "where")]
     pub(super) place: String,
     pub(super) recorded_by: String,
+    /// The digest of the one-screen summary the decision was given on, with the list
+    /// it came from (REQ-history-014); both or neither.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) summary_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) list: Option<String>,
+}
+
+/// Whether `value` is exactly `length` lowercase hex digits.
+pub(super) fn lowercase_hex(value: &str, length: usize) -> bool {
+    value.len() == length
+        && value
+            .bytes()
+            .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
 }
 
 /// The bound of each relay value, the checkpoint text bound.
@@ -181,6 +195,16 @@ pub(super) fn validate_relay(transition: &Transition) -> Result<()> {
             !value.trim().is_empty() && value.len() <= RELAY_TEXT_LIMIT,
             "invalid transition payload: relayed_by.{key} must be non-blank and at most {RELAY_TEXT_LIMIT} bytes"
         );
+    }
+    match (&relay.summary_digest, &relay.list) {
+        (None, None) => {}
+        (Some(digest), Some(list)) => ensure!(
+            lowercase_hex(digest, 64) && lowercase_hex(list, 12),
+            "invalid transition payload: relayed_by.summary_digest must be 64 and relayed_by.list 12 lowercase hex digits"
+        ),
+        _ => anyhow::bail!(
+            "invalid transition payload: relayed_by.summary_digest and relayed_by.list go together"
+        ),
     }
     Ok(())
 }

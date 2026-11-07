@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test gate_record_refuses_unknown_unlisted_closed_or_changed_gates_with_nothing_written ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 5.64s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.37s
+     Running tests/gates.rs (target/debug/deps/gates-112e6fb6cb66b3ed)

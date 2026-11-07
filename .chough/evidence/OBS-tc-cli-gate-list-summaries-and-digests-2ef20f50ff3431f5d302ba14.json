@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14",
+  "criteria": [
+    "FLOW-19",
+    "FLOW-20"
+  ],
+  "requirements": [
+    "REQ-cli-061"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test gates -- --exact gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest for TC-cli-gate-list-summaries-and-digests: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14.log": "14ce1ae04b68c8edc671b82bbd819435b4cb583a16bbdd6947e113bacde0f02d"
+  },
+  "observed_at_unix_seconds": 1794016181,
+  "snapshot": {
+    "revision": "a0bf05d7e391f11ec9fba5273e40b7250a9dc16d",
+    "dirty": false,
+    "fingerprint": "7e052216ec754500e9205a2055ece1b48487f903909a65d923ae7d6e252bd184",
+    "content": "5cbc6fca983b8b09f0b6bd7e9345679e7a355264c7384b511a471fab1e7ede1c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-gate-list-summaries-and-digests",
+      "digest": "f3a213f89085c686500407263eab8ba026693dd0f032a84f5c17b6a1f8f31c9e"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "gates",
+    "--",
+    "--exact",
+    "gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 3
+}
