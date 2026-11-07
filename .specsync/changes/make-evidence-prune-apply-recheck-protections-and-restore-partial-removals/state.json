@@ -7,10 +7,11 @@
   "title": "Make evidence prune --apply recheck protections and restore partial removals",
   "description": "Make evidence prune --apply recheck protections and restore partial removals",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "455cb643cd91a9c804afdf5566e3889abf1bde49",
   "created_at": 1794019871,
-  "updated_at": 1794062921,
+  "updated_at": 1794063665,
   "affected_specs": [
     "history",
     "cli"
