@@ -1,6 +1,6 @@
 ---
 id: chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21
-state: implementing
+state: archived
 type: bug_fix
 base_commit: f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8
 ---
