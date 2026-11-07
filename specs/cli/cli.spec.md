@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 75
+version: 76
 status: active
 files:
   - src/main.rs
@@ -64,8 +64,10 @@ canonical checkpoint of the current stage, scope, decisions, preferences and hum
 gates, routes stage transitions within native lifecycle gates, assembles bounded
 focused context, validates test definitions and runs explicitly invoked automated
 cases, keeps a local bug backlog, supports an optional project-local librarian, and
-records observations tied to repository content and environment. See
-requirements.md and docs/FRD.md.
+records observations tied to repository content and environment. Evidence-prune
+apply rechecks protections immediately before removal and restores partial
+removals without weakening retention guarantees. See requirements.md and
+docs/FRD.md.
 
 ## Public API
 
@@ -303,3 +305,4 @@ provider, runtime or hosted service.
 | 73 | 2026-11-06 | make-archived-next-and-status-fast-within-explicit-warm-budgets: Make archived next and status fast within explicit warm budgets (32, DRIVE-15) |
 | 74 | 2026-11-06 | chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20: Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) |
 | 75 | 2026-11-07 | flag-direct-specsync-lifecycle-writes-in-history-183-drive-21: Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) |
+| 76 | 2026-11-07 | make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: Make evidence prune --apply recheck protections and restore partial removals (65) |

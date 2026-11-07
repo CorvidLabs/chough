@@ -24,17 +24,26 @@
   ],
   "fixture": ".chough/artifacts/issue-65-prune-race/before/partial-removal.log",
   "observations": [
-    "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d"
+    "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d",
+    "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078"
   ],
   "impact": "A refused apply destroys uncommitted evidence",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Issue #65 failure-first test at 3ad9df48",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794022574,
+      "text": "status: open -> verified. The real CLI regression now restores exact bytes and permissions and leaves no hold",
+      "observations": [
+        "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794021913,
-  "updated_at_unix_seconds": 1794021913
+  "updated_at_unix_seconds": 1794022574
 }

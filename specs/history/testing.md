@@ -25,6 +25,10 @@ REQ-history-002 to REQ-history-004 (formerly REQ-cli-025 to REQ-cli-027) are exe
 | TC-history-bounds | One bound test executes exact event, cycle, recent-read and maintenance count/byte fixtures |
 | TC-history-retention | Read-only preview, authorized apply and newly protected cycle references |
 | TC-history-retention-revalidation | Changed, missing and newly referenced evidence/artifacts are retained |
+| TC-history-prune-protection-race | A protection appearing between removals restores every removed byte and preserves the new reference |
+| TC-history-prune-restores-partial-removal | Real CLI observation-removal failure restores artifacts with exact bytes and permissions |
+| TC-history-prune-restores-earlier-sets | A later protected set rolls back every completely removed earlier set |
+| TC-history-prune-restore-preserves-recreated-file | Rollback keeps recreated files and preserves uncommitted original bytes in a named hold |
 
 The full Rust suites add unknown legacy payloads, migration, random/collision refusal, failed checkpoint saves and orphan visibility, unsafe/malformed receipts, interrupted cleanup/resume, separate timing tips, and real Git retention alongside another branch's new proof. Package regressions independently hash the prior checkpoint reference and preserve owner edits during skill updates. The mandatory Fledge verify lane also checks existing behavior, native structure, traceability and the real CLI exercise. Observations and current IDs live in the Chough checkpoint and evidence records; this plan does not invent a passing grade or hosted result. No cold-start rerun, real-project adoption or live cleanup is part of this qualification.
 

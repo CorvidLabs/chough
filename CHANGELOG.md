@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough evidence prune --apply` now rechecks protections immediately before each
+  byte-checked removal and restores earlier removals when a later check or removal
+  fails (#65, REQ-history-004). Rollback preserves recreated files and original
+  permissions, keeps uncommitted bytes in named recovery holds, and appends the
+  existing `restored` ledger event without changing successful output or retention
+  eligibility.
+
 ## [0.5.0] - 2026-11-06
 
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,

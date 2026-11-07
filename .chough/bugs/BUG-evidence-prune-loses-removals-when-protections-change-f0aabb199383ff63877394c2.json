@@ -28,17 +28,30 @@
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
     "OBS-tc-history-prune-restores-earlier-sets-bba515e3dbd42cea1399e660",
-    "OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7"
+    "OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7",
+    "OBS-tc-history-prune-protection-race-831610f271a785164c912a6e",
+    "OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05"
   ],
   "impact": "Newly protected proof is lost from the working tree",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Issue #65 failure-first tests at 3ad9df48",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794022573,
+      "text": "status: open -> verified. All three race and rollback regressions now pass after the original failures",
+      "observations": [
+        "OBS-tc-history-prune-protection-race-831610f271a785164c912a6e",
+        "OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f",
+        "OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794021913,
-  "updated_at_unix_seconds": 1794021913
+  "updated_at_unix_seconds": 1794022573
 }

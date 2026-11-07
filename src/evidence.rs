@@ -7,6 +7,7 @@ use crate::identity;
 use crate::records::{
     append_line, bounded, file_digest, head_revision, is_digest, local_path, native_json, now,
     print_json, read_native_text, read_record, read_spec_file, record_names, valid_name, write_new,
+    write_new_bytes,
 };
 use crate::records::{digest_bytes, valid_module_name, valid_reference_id};
 use crate::{bugs, prefs, validate};
@@ -1783,6 +1784,26 @@ fn with_prune_after_remove<T>(hook: impl FnMut(&str) + 'static, run: impl FnOnce
     result
 }
 
+fn preserve_prune_recovery(root: &Path, relative: &str, bytes: &[u8], reason: &str) -> String {
+    let hold = hold_path(relative);
+    let preserved = (|| -> Result<()> {
+        let created = write_new_bytes(root, &hold, bytes)?;
+        if !created {
+            ensure!(
+                fs::read(local_path(root, &hold)?)? == bytes,
+                "existing recovery hold has different bytes"
+            );
+        }
+        Ok(())
+    })();
+    match preserved {
+        Ok(()) => format!("{relative} was not restored ({reason}); original bytes kept at {hold}"),
+        Err(error) => format!(
+            "{relative} was not restored ({reason}); original bytes could not be kept at {hold}: {error:#}"
+        ),
+    }
+}
+
 /// Classify, and with an authority remove eligible sets, appending each to the ledger.
 fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
     let _budget = authority.map(|_| crate::history::maintenance_budget());
@@ -1827,82 +1848,175 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
     let mut pruned = vec![];
     let mut skipped = vec![];
     if let Some(authority) = authority {
+        let holds = stale_holds(root)?;
+        ensure!(
+            holds.is_empty(),
+            "an earlier apply left files in {HOLD_DIR} ({}); inspect them and move each back or delete it before applying again",
+            holds.join(", ")
+        );
         let head = head_revision(root);
-        for set in classification
-            .sets
-            .iter()
-            .filter(|set| set.reasons.is_empty())
-        {
-            let evidence = &set.evidence;
-            let fresh = classify(root, now()?)?;
-            if !fresh.sets.iter().any(|current| {
-                current.evidence.id == evidence.id
-                    && current.reasons.is_empty()
-                    && current.removable == set.removable
-            }) {
-                skipped.push(json!({"id":evidence.id,"reason":"protection or shared artifact references changed"}));
-                continue;
+        let mut held = vec![];
+        let mut recorded = vec![];
+        let removal: Result<()> = (|| {
+            for set in classification
+                .sets
+                .iter()
+                .filter(|set| set.reasons.is_empty())
+            {
+                let evidence = &set.evidence;
+                let fresh = classify(root, now()?)?;
+                if !fresh.sets.iter().any(|current| {
+                    current.evidence.id == evidence.id
+                        && current.reasons.is_empty()
+                        && current.removable == set.removable
+                }) {
+                    if recorded.is_empty() {
+                        skipped.push(json!({"id":evidence.id,"reason":"protection or shared artifact references changed"}));
+                        continue;
+                    }
+                    bail!(
+                        "protection or shared artifact references changed before {}; earlier removals must be restored",
+                        evidence.id
+                    );
+                }
+                let mut candidate_changed = false;
+                for (artifact, expected) in &evidence.artifact_fingerprints {
+                    if !file_digest(root, artifact).is_ok_and(|actual| actual == *expected) {
+                        candidate_changed = true;
+                        break;
+                    }
+                }
+                if candidate_changed {
+                    if recorded.is_empty() {
+                        skipped.push(json!({"id":evidence.id,"reason":"artifact is changed, missing or unsafe; observation retained"}));
+                        continue;
+                    }
+                    bail!(
+                        "artifact changed, missing or unsafe before {}; earlier removals must be restored",
+                        evidence.id
+                    );
+                }
+                let protection = crate::history::protection_fingerprint(root)?;
+                let record_path = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
+                let record_digest = file_digest(root, &record_path)?;
+                let record_bytes = fs::read(local_path(root, &record_path)?)?;
+                let record_permissions =
+                    fs::symlink_metadata(local_path(root, &record_path)?)?.permissions();
+                let mut artifacts = vec![];
+                for artifact in &set.removable {
+                    let path = local_path(root, artifact)?;
+                    artifacts.push((
+                        artifact.clone(),
+                        fs::read(&path)?,
+                        fs::symlink_metadata(&path)?.permissions(),
+                    ));
+                }
+                let mut removed = vec![record_path.clone()];
+                removed.extend(set.removable.iter().cloned());
+                let entry = json!({
+                    "schema_version": 1,
+                    "id": evidence.id,
+                    "cases": case_ids(evidence),
+                    "environment": evidence.environment,
+                    "outcome": evidence.outcome,
+                    "kind": evidence.kind,
+                    "revision": evidence.snapshot.revision,
+                    "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
+                    "artifacts": evidence.artifact_fingerprints,
+                    "record_digest": record_digest,
+                    "removed": removed,
+                    "reason": ELIGIBLE_REASON,
+                    "policy": policy(Some(authority)),
+                    "head": head,
+                    "pruned_at_unix_seconds": at,
+                });
+                // The ledger line comes first, so a removal is never unexplained.
+                append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
+                recorded.push(evidence.id.clone());
+                for (artifact, bytes, permissions) in artifacts {
+                    ensure!(
+                        crate::history::protection_fingerprint(root)? == protection,
+                        "references changed during cleanup; remaining files retained; inspect the partial ledger entry for {}",
+                        evidence.id
+                    );
+                    remove_verified(root, &artifact, &bytes)?;
+                    held.push((artifact.clone(), bytes, permissions));
+                    #[cfg(test)]
+                    after_prune_remove(&artifact);
+                }
+                ensure!(
+                    crate::history::protection_fingerprint(root)? == protection
+                        && file_digest(root, &record_path)? == record_digest,
+                    "observation or protection changed during cleanup; remaining files retained"
+                );
+                remove_verified(root, &record_path, &record_bytes)?;
+                held.push((record_path.clone(), record_bytes, record_permissions));
+                #[cfg(test)]
+                after_prune_remove(&record_path);
+                pruned.push(evidence.id.clone());
             }
-            let mut candidate_changed = false;
-            for (artifact, expected) in &evidence.artifact_fingerprints {
-                if !file_digest(root, artifact).is_ok_and(|actual| actual == *expected) {
-                    candidate_changed = true;
-                    break;
+            Ok(())
+        })();
+        if let Err(failure) = removal {
+            let mut problems = vec![];
+            for (relative, bytes, permissions) in held.iter().rev() {
+                let path = local_path(root, relative)?;
+                let restored = (|| -> std::io::Result<()> {
+                    use std::io::Write;
+                    if let Some(parent) = path.parent() {
+                        fs::create_dir_all(parent)?;
+                    }
+                    let mut target = fs::OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .open(&path)?;
+                    target.write_all(bytes)?;
+                    fs::set_permissions(&path, permissions.clone())
+                })();
+                match restored {
+                    Ok(()) => {}
+                    Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                        problems.push(preserve_prune_recovery(
+                            root,
+                            relative,
+                            bytes,
+                            "a file was recreated there meanwhile",
+                        ));
+                    }
+                    Err(error) => {
+                        problems.push(preserve_prune_recovery(
+                            root,
+                            relative,
+                            bytes,
+                            &format!("restore failed: {error}"),
+                        ));
+                    }
                 }
             }
-            if candidate_changed {
-                skipped.push(json!({"id":evidence.id,"reason":"artifact is changed, missing or unsafe; observation retained"}));
-                continue;
+            let _ = fs::remove_dir(local_path(root, HOLD_DIR)?);
+            let reason = if problems.is_empty() {
+                format!("{failure:#}")
+            } else {
+                format!("{failure:#}; {}", problems.join("; "))
+            };
+            for id in &recorded {
+                append_line(
+                    root,
+                    LEDGER,
+                    &serde_json::to_string(&json!({
+                        "schema_version": 1,
+                        "event": "restored",
+                        "id": id,
+                        "reason": reason,
+                        "restored_at_unix_seconds": now()?,
+                    }))?,
+                )?;
             }
-            let protection = crate::history::protection_fingerprint(root)?;
-            let record_path = format!("{EVIDENCE_DIR}/{}.json", evidence.id);
-            let record_digest = file_digest(root, &record_path)?;
-            let mut removed = vec![record_path.clone()];
-            removed.extend(set.removable.iter().cloned());
-            let entry = json!({
-                "schema_version": 1,
-                "id": evidence.id,
-                "cases": case_ids(evidence),
-                "environment": evidence.environment,
-                "outcome": evidence.outcome,
-                "kind": evidence.kind,
-                "revision": evidence.snapshot.revision,
-                "observed_at_unix_seconds": evidence.observed_at_unix_seconds,
-                "artifacts": evidence.artifact_fingerprints,
-                "record_digest": record_digest,
-                "removed": removed,
-                "reason": ELIGIBLE_REASON,
-                "policy": policy(Some(authority)),
-                "head": head,
-                "pruned_at_unix_seconds": at,
-            });
-            // The ledger line comes first, so a removal is never unexplained.
-            append_line(root, LEDGER, &serde_json::to_string(&entry)?)?;
-            for artifact in &set.removable {
-                ensure!(
-                    crate::history::protection_fingerprint(root)? == protection,
-                    "references changed during cleanup; remaining files retained; inspect the partial ledger entry for {}",
-                    evidence.id
-                );
-                ensure!(
-                    file_digest(root, artifact)? == evidence.artifact_fingerprints[artifact],
-                    "artifact changed during cleanup; remaining files retained"
-                );
-                remove_if_present(root, artifact).context("partial evidence cleanup; observation retained and ledger explains attempted removals")?;
-                #[cfg(test)]
-                after_prune_remove(artifact);
-            }
-            ensure!(
-                crate::history::protection_fingerprint(root)? == protection
-                    && file_digest(root, &record_path)? == record_digest,
-                "observation or protection changed during cleanup; remaining files retained"
+            bail!(
+                "{reason}; restored {} of {} files and recorded the restore in {LEDGER}",
+                held.len().saturating_sub(problems.len()),
+                held.len()
             );
-            remove_if_present(root, &record_path).context(
-                "partial evidence cleanup; inspect the existing record and retention ledger",
-            )?;
-            #[cfg(test)]
-            after_prune_remove(&record_path);
-            pruned.push(evidence.id.clone());
         }
     }
     Ok(json!({
@@ -3206,15 +3320,6 @@ pub(super) fn retention_authority(root: &Path, command: &str) -> Result<String> 
                 "{command} is not authorized (retention = {value}, {origin}). Preview first, then ask the human; record their answer with `chough consent grant retention --source <their words>`"
             )
         }
-    }
-}
-
-fn remove_if_present(root: &Path, relative: &str) -> Result<()> {
-    match fs::remove_file(local_path(root, relative)?) {
-        Err(error) if error.kind() != std::io::ErrorKind::NotFound => {
-            Err(error).with_context(|| format!("removing {relative}"))
-        }
-        _ => Ok(()),
     }
 }
 

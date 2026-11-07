@@ -17,4 +17,4 @@ The installed Chough 0.4.0 lacks the `change` command group. Lifecycle commands 
 
 Role review found no new product or accessibility decision. QA added an earlier-set rollback scenario so a failure after one complete set cannot leave that set pruned. Engineering and architecture confirmed the create-only recovery hold is necessary for uncommitted evidence and that no archive refactor or native read belongs here.
 
-Scope approval and implementation review remain human gates through the orc. No implementation has been approved or performed.
+Scope approval was recorded by the orc as 0xLeif at `80fbe1df895f78d8db8fa33daba54914bcad80aa`. Failure-first regressions were committed at `3ad9df48933b880836c812c06369d00b9369e918`, and their failed observations and local bugs at `55cb7fa5`. Implementation is now underway; implementation review remains a human gate through the orc.
