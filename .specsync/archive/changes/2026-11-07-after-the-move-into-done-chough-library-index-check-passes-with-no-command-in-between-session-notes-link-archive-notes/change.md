@@ -1,6 +1,6 @@
 ---
 id: after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes
-state: implementing
+state: archived
 type: bug_fix
 base_commit: f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8
 ---
