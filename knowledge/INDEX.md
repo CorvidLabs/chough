@@ -93,15 +93,16 @@ Archived lesson bundles:
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
-- BUG-reapproved-prune-inputs-lack-current-native-verification-b5e5ca5c85f4d7672d2d43f1 Reapproved prune inputs lack current native verification (open, blocking, reproduced)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 - BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
 
 ## Observations
 
-570 recorded; most recent:
+572 recorded; most recent:
 
+- OBS-product-test-766be385e3010d3b004a21f6 ProductTest Passed in local-linux-aarch64 at 8d5bcf430921
+- OBS-product-test-177ef9b1ad9bc144d0b26aa4 ProductTest Passed in local-macos-arm64 at 8d5bcf430921
 - OBS-structural-ec5e908e555a15be59cc7e27 Structural Failed in local-macos-arm64 at 9ebacabe170e
 - OBS-structural-01fdbe567f85ef177eeea144 Structural Failed in local-linux-aarch64 at 9ebacabe170e
 - OBS-structural-4bb245473772e0d89afd2868 Structural Passed in local-macos-arm64 at 3e1198b4cea0
@@ -110,8 +111,6 @@ Archived lesson bundles:
 - OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
 - OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
 - OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
-- OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
-- OBS-product-test-1a8d3cd9e2fff7f17314bd35 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
 
 ## Briefs
 

@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-177ef9b1ad9bc144d0b26aa4",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Complete pinned macos verify lane passed all 10 steps at frozen commit 8d5bcf430921bf14c8557214354f1928f2358cc3: 593 product tests; formatting/lint, intent, strict specs with 100% coverage, native audit, case definitions, knowledge, real CLI exercise and build. No workspace writes occurred during either platform run.",
+  "artifacts": [
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/macos-verify-passed.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/macos-verify-passed.log": "84ed3f4465fb8e4941d51c10922d433e6861ce196faea5aa3cb33022d235baa2"
+  },
+  "observed_at_unix_seconds": 1794064455,
+  "snapshot": {
+    "revision": "8d5bcf430921bf14c8557214354f1928f2358cc3",
+    "dirty": false,
+    "fingerprint": "b3644db117ef8b1f8b1442c33be8958ef0a22cc81616e8c420a4cc74df8591a8",
+    "content": "e7ee35372197946f77f0ab0be149f6769b5c14768ed2cf881715441f85004e62"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Local platform verification; hosted product CI and human implementation acceptance remain pending"
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
-    "head": "EVT-414c9e05f04e2746bfca99de",
+    "head": "EVT-8ab9e9cbb7f58647de768932",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -49,7 +49,8 @@
     "rejected: changing retention eligibility, protections, bounds, output schemas or authorization because #65 is a bounded race and rollback bug fix under REQ-history-004",
     "rejected: refactoring the proven library archive path because the small fix can reuse remove_verified and the existing restored event shape without changing archive behavior",
     "Leif decided \"Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"Yes to all 3\" (Moshi question from orc t18, 2026-11-06; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated",
-    "Leif decided \"Scope reapproval of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: add tests/spec_split.rs only\": \"Yes\" (Direct chat reply to orc t19f three-gate batch, 2026-11-07); recorded by sol-ch65; a relayed claim, not authenticated"
+    "Leif decided \"Scope reapproval of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: add tests/spec_split.rs only\": \"Yes\" (Direct chat reply to orc t19f three-gate batch, 2026-11-07); recorded by sol-ch65; a relayed claim, not authenticated",
+    "Agent clarification: the frozen platform runs had no edits to tracked or non-ignored verification inputs, and Git stayed clean; builds and tools still wrote their ignored output/cache files."
   ],
   "open_questions": [],
   "completed": [
@@ -64,7 +65,8 @@
     "Pinned focused checks passed: build; 4 strict split regressions; 11 evidence unit, 30 evidence integration and 25 history tests; all case definitions valid; the four approved #65 cases passed including replacement inode/mode/bytes.",
     "Pinned product suites passed: macOS 593 tests and Linux 597 tests, both with strict spec checks at 100% coverage. Both complete lanes failed lifecycle audit step 6 before the reapproved native check; failure receipts preserved.",
     "Native verification after reapproval resolved the audit coverage gap; strict audit, pre-push and knowledge passed with source/test/spec/docs unchanged from b4b4dae7208570d63b613a0d5e638e42aa975e3a. Rerun both full lanes before implementation review.",
-    "Both reruns at 9ebacabe170eee2cf7009c2d181d3093da73ae6d passed product/spec but failed stale native verification because recovery bookkeeping followed the preparatory check. All failures retained. Next check must follow all metadata/index writes; then freeze all inputs through full lanes."
+    "Both reruns at 9ebacabe170eee2cf7009c2d181d3093da73ae6d passed product/spec but failed stale native verification because recovery bookkeeping followed the preparatory check. All failures retained. Next check must follow all metadata/index writes; then freeze all inputs through full lanes.",
+    "Full pinned macOS verify (593 product tests, all 10 steps) and Linux verify (597 product tests, all 10 steps) passed at 8d5bcf430921bf14c8557214354f1928f2358cc3. No source/spec/docs/test changes after b4b4dae7208570d63b613a0d5e638e42aa975e3a. All prior failures preserved; Trust unavailable and optional scope probe not run as directed."
   ],
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
@@ -90,7 +92,9 @@
     "OBS-structural-1b635c037853e3ce2f70d10b",
     "OBS-structural-4bb245473772e0d89afd2868",
     "OBS-structural-01fdbe567f85ef177eeea144",
-    "OBS-structural-ec5e908e555a15be59cc7e27"
+    "OBS-structural-ec5e908e555a15be59cc7e27",
+    "OBS-product-test-177ef9b1ad9bc144d0b26aa4",
+    "OBS-product-test-766be385e3010d3b004a21f6"
   ],
   "bugs": [
     "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",
@@ -99,7 +103,9 @@
     "BUG-reapproved-prune-inputs-lack-current-native-verification-b5e5ca5c85f4d7672d2d43f1"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals"
+  ],
   "run_consents": [],
-  "next_action": "Run the authorized preparatory native change check to establish scoped verification after reapproval, diagnose the audit gap honestly, then rerun affected gates and finish the final evidence/checkpoint before the final native recheck"
+  "next_action": "Leif implementation review through orc t19f of the one #65 PR at the final native-checked head; no worker approval/review/ship/merge. All evidence and gate writes are complete before the final change check."
 }

@@ -22,12 +22,14 @@
     "OBS-structural-1b635c037853e3ce2f70d10b",
     "OBS-structural-4bb245473772e0d89afd2868",
     "OBS-structural-01fdbe567f85ef177eeea144",
-    "OBS-structural-ec5e908e555a15be59cc7e27"
+    "OBS-structural-ec5e908e555a15be59cc7e27",
+    "OBS-product-test-177ef9b1ad9bc144d0b26aa4",
+    "OBS-product-test-766be385e3010d3b004a21f6"
   ],
   "impact": "Not yet assessed.",
   "classification": "evidence-gap",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -47,8 +49,16 @@
         "OBS-structural-01fdbe567f85ef177eeea144",
         "OBS-structural-ec5e908e555a15be59cc7e27"
       ]
+    },
+    {
+      "at_unix_seconds": 1794064459,
+      "text": "status: open -> verified. After all diagnostics were committed, the next native check and strict audit passed at 8d5bcf430921bf14c8557214354f1928f2358cc3. Both full pinned lanes then passed all 10 steps on that exact frozen tree. All earlier audit/uncovered/stale failures remain intact.",
+      "observations": [
+        "OBS-product-test-177ef9b1ad9bc144d0b26aa4",
+        "OBS-product-test-766be385e3010d3b004a21f6"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794063629,
-  "updated_at_unix_seconds": 1794064080
+  "updated_at_unix_seconds": 1794064459
 }
