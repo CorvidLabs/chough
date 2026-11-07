@@ -56,10 +56,12 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-7 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+9 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-installation-observation-48008674b01d6e137c95d956 | passed (by cycle time) | macos-arm64-cargo-1.99.0 |  |
+| OBS-product-test-c727fa6d2f004d10b1d511f8 | passed (by cycle time) | linux-aarch64-docker-chough-linux-1-2-3 |  |
 | OBS-tc-cli-done-fresh-vault-session-links-0af8035af974b33d4913d80d | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
 | OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
 | OBS-tc-cli-done-fresh-vault-session-links-5da6111b58cba9d10d899644 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
