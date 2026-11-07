@@ -63,7 +63,8 @@
     "Focused rollback tests pass after private publication; baseline and all three mutation checks verified. Linux full verify failed the omitted strict split pin; macOS full verify interrupted for scope amendment. No full platform lane passed.",
     "Pinned focused checks passed: build; 4 strict split regressions; 11 evidence unit, 30 evidence integration and 25 history tests; all case definitions valid; the four approved #65 cases passed including replacement inode/mode/bytes.",
     "Pinned product suites passed: macOS 593 tests and Linux 597 tests, both with strict spec checks at 100% coverage. Both complete lanes failed lifecycle audit step 6 before the reapproved native check; failure receipts preserved.",
-    "Native verification after reapproval resolved the audit coverage gap; strict audit, pre-push and knowledge passed with source/test/spec/docs unchanged from b4b4dae7208570d63b613a0d5e638e42aa975e3a. Rerun both full lanes before implementation review."
+    "Native verification after reapproval resolved the audit coverage gap; strict audit, pre-push and knowledge passed with source/test/spec/docs unchanged from b4b4dae7208570d63b613a0d5e638e42aa975e3a. Rerun both full lanes before implementation review.",
+    "Both reruns at 9ebacabe170eee2cf7009c2d181d3093da73ae6d passed product/spec but failed stale native verification because recovery bookkeeping followed the preparatory check. All failures retained. Next check must follow all metadata/index writes; then freeze all inputs through full lanes."
   ],
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
@@ -87,7 +88,9 @@
     "OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820",
     "OBS-structural-0569129fb63cffe3aa2b53bf",
     "OBS-structural-1b635c037853e3ce2f70d10b",
-    "OBS-structural-4bb245473772e0d89afd2868"
+    "OBS-structural-4bb245473772e0d89afd2868",
+    "OBS-structural-01fdbe567f85ef177eeea144",
+    "OBS-structural-ec5e908e555a15be59cc7e27"
   ],
   "bugs": [
     "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",

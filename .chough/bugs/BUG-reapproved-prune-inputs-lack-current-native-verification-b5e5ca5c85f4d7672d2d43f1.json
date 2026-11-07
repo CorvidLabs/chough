@@ -20,12 +20,14 @@
   "observations": [
     "OBS-structural-0569129fb63cffe3aa2b53bf",
     "OBS-structural-1b635c037853e3ce2f70d10b",
-    "OBS-structural-4bb245473772e0d89afd2868"
+    "OBS-structural-4bb245473772e0d89afd2868",
+    "OBS-structural-01fdbe567f85ef177eeea144",
+    "OBS-structural-ec5e908e555a15be59cc7e27"
   ],
   "impact": "Not yet assessed.",
   "classification": "evidence-gap",
   "scope": "blocking",
-  "status": "verified",
+  "status": "open",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -37,8 +39,16 @@
       "observations": [
         "OBS-structural-4bb245473772e0d89afd2868"
       ]
+    },
+    {
+      "at_unix_seconds": 1794064080,
+      "text": "status: verified -> open. Recovery bookkeeping after the preparatory check staled its digest. Both full reruns passed product/spec but failed audit for stale verification. Freeze all inputs after next check; no source or gate policy changes.",
+      "observations": [
+        "OBS-structural-01fdbe567f85ef177eeea144",
+        "OBS-structural-ec5e908e555a15be59cc7e27"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794063629,
-  "updated_at_unix_seconds": 1794063765
+  "updated_at_unix_seconds": 1794064080
 }
