@@ -1,6 +1,6 @@
 ---
 id: make-evidence-prune-apply-recheck-protections-and-restore-partial-removals
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 455cb643cd91a9c804afdf5566e3889abf1bde49
 ---
