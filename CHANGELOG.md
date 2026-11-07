@@ -6,6 +6,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-06
+
 - Archived `next` and `status` reports can reuse SpecSync's authenticated verdict for
   identical archive/native/Git inputs instead of repeating the slow native read
   (REQ-cli-053, DRIVE-15, #32). The read state is `cached`; only those reports reuse it,
@@ -707,6 +709,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.5.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.5.0
 [0.4.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.4.0
 [0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0
 [0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
