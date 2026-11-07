@@ -1,0 +1,54 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-7997cc73d25c6e25f0371161",
+    "head": "EVT-f57bbf28536f58b39daa3059",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58)",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58",
+  "references": {
+    "criteria": [
+      "FLOW-4",
+      "LIFE-9"
+    ],
+    "requirements": [
+      "REQ-cli-019"
+    ],
+    "cases": [
+      "TC-cli-prototype-hidden-panels-stay-hidden",
+      "TC-cli-prototype-styles-0-4-0-known-outdated"
+    ],
+    "design": [],
+    "files": [
+      "skills/chough-workflow/templates/prototype/styles.css",
+      "src/skill.rs",
+      "tests/package.rs"
+    ]
+  },
+  "decisions": [
+    "decided: the change is created with specsync change new --no-spec-change directly because chough change new passes no --no-spec-change or --rationale; Chough notes the direct write (REQ-cli-060)"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [
+    "BUG-prototype-template-shows-every-state-panel-when-a-project-sets-display-073394402cc923c41c0b501c"
+  ],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope approval of keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58"
+  ],
+  "run_consents": [],
+  "next_action": "Send 'ready for approval keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58 at <commit>' to orc and wait for Leif's relayed scope approval"
+}

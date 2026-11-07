@@ -3743,3 +3743,124 @@ fn the_pre_history_checkpoint_reference_updates_only_when_unedited() {
     chough(root, &["skill", "update"]);
     assert_eq!(fs::read_to_string(&path).unwrap(), edited);
 }
+
+/// #58, FLOW-4: the prototype's state switcher sets `hidden` on the state sections. The
+/// browser's own `display: none` for `[hidden]` loses to any project rule that sets
+/// `display` on those sections, which shows every state at once, so the template's
+/// styles.css keeps hidden panels hidden itself.
+#[test]
+fn the_prototype_template_keeps_hidden_state_panels_hidden() {
+    let template = manifest_dir().join("skills/chough-workflow/templates/prototype");
+    let html = fs::read_to_string(template.join("index.html")).unwrap();
+    assert!(
+        html.contains("panel.hidden ="),
+        "templates/prototype/index.html switches state panels with `hidden`"
+    );
+    let css = fs::read_to_string(template.join("styles.css"))
+        .unwrap()
+        .replace("\r\n", "\n");
+    let guarded = css.split('}').any(|rule| {
+        let Some((selector, body)) = rule.split_once('{') else {
+            return false;
+        };
+        let selector = selector.rsplit("*/").next().unwrap().trim();
+        selector == "[hidden]"
+            && body.split(';').any(|declaration| {
+                declaration.split_whitespace().collect::<Vec<_>>()
+                    == ["display:", "none", "!important"]
+            })
+    });
+    assert!(
+        guarded,
+        "templates/prototype/styles.css has no `[hidden] {{ display: none !important; }}` rule"
+    );
+}
+
+/// #58: styles.css as releases 0.1.0 to 0.4.0 shipped it reads known-outdated and
+/// `skill update` replaces it; an edited copy stays edited and is kept.
+#[test]
+fn the_prototype_styles_from_releases_0_1_0_to_0_4_0_are_known_outdated_and_edited_copies_stay() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let file = "templates/prototype/styles.css";
+    let installed = root.join(".agents/skills/chough-workflow").join(file);
+    // The known digest is of LF bytes; a Windows checkout may have converted them.
+    let old = PROTOTYPE_STYLES_AT_0_4_0.replace("\r\n", "\n");
+    assert_eq!(
+        format!("{:x}", Sha256::digest(old.as_bytes())),
+        "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239"
+    );
+    fs::write(&installed, &old).unwrap();
+    let status = chough(root, &["skill", "status"]);
+    assert_eq!(skill_state(&status, file)["state"], "known-outdated");
+    chough(root, &["skill", "update"]);
+    let status = chough(root, &["skill", "status"]);
+    for bundled in bundle_files() {
+        assert_eq!(
+            skill_state(&status, &bundled)["state"],
+            "current",
+            "{bundled}"
+        );
+    }
+
+    let edited = format!("{old}\n.local-note {{ color: inherit; }}\n");
+    fs::write(&installed, &edited).unwrap();
+    let status = chough(root, &["skill", "status"]);
+    assert_eq!(skill_state(&status, file)["state"], "edited");
+    chough(root, &["skill", "update"]);
+    assert_eq!(fs::read_to_string(&installed).unwrap(), edited);
+}
+
+const PROTOTYPE_STYLES_AT_0_4_0: &str = r##"/* Build on project tokens. The fallbacks below only keep the template readable
+   when no token file is linked; replace them with the project's tokens. */
+:root {
+  --proto-ink: var(--ink, #15181b);
+  --proto-paper: var(--paper, #faf9f6);
+  --proto-surface: var(--surface, #ffffff);
+  --proto-accent: var(--sheen, #0e6f66);
+  --proto-danger: var(--danger, #b3261e);
+  --proto-hairline: var(--hairline, rgba(21, 24, 27, 0.12));
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-display, system-ui, sans-serif);
+  background: var(--proto-paper);
+  color: var(--proto-ink);
+  line-height: 1.5;
+}
+
+.prototype-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px dashed var(--proto-hairline);
+  font-size: 0.875rem;
+}
+
+.prototype-controls button[aria-pressed="true"] { outline: 2px solid var(--proto-accent); }
+
+.surface {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: var(--proto-surface);
+  border: 1px solid var(--proto-hairline);
+  border-radius: 0.5rem;
+}
+
+.error { color: var(--proto-danger); }
+
+a { color: var(--proto-accent); }
+
+:focus-visible { outline: 3px solid var(--proto-accent); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+  .surface { margin: 0; border-radius: 0; border-left: 0; border-right: 0; }
+}
+"##;
