@@ -1,0 +1,38 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-prune-capture-byte-authority"
+title = "Captured replacement bytes survive and earlier removals roll back"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
+requirements = ["REQ-history-004"]
+paths = ["src/evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["Captured replacement bytes survive and earlier removals roll back"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "evidence::tests::pr197_captured_replacement_bytes_survive", "--", "--nocapture"]
+expect_output = ["test evidence::tests::pr197_captured_replacement_bytes_survive ... ok", "test result: ok. 1 passed"]
+
+[[case]]
+id = "TC-history-prune-unsafe-restore-continuation"
+title = "Unsafe symlink destinations retain writer identity while all other restores continue"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
+requirements = ["REQ-history-004"]
+paths = ["src/evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["Unsafe symlink destinations retain writer identity while all other restores continue"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "evidence::tests::pr197_unsafe_restore_", "--", "--nocapture"]
+expect_output = ["test evidence::tests::pr197_unsafe_restore_file_symlink ... ok", "test evidence::tests::pr197_unsafe_restore_ancestor_symlink ... ok", "test result: ok. 2 passed"]

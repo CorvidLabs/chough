@@ -1771,6 +1771,8 @@ type PruneBeforeRestoreMode = Box<dyn FnMut(&Path)>;
 thread_local! {
     static PRUNE_AFTER_REMOVE: std::cell::RefCell<Option<PruneAfterRemove>> =
         const { std::cell::RefCell::new(None) };
+    static PR197_BEFORE_CAPTURE: std::cell::RefCell<Option<PruneAfterRemove>> =
+        const { std::cell::RefCell::new(None) };
     static PRUNE_BEFORE_RESTORE_MODE: std::cell::RefCell<Option<PruneBeforeRestoreMode>> =
         const { std::cell::RefCell::new(None) };
 }
@@ -1912,6 +1914,12 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
                     fs::symlink_metadata(local_path(root, &record_path)?)?.permissions();
                 let mut artifacts = vec![];
                 for artifact in &set.removable {
+                    #[cfg(test)]
+                    PR197_BEFORE_CAPTURE.with(|slot| {
+                        if let Some(hook) = slot.borrow_mut().as_mut() {
+                            hook(artifact);
+                        }
+                    });
                     let path = local_path(root, artifact)?;
                     artifacts.push((
                         artifact.clone(),
@@ -3939,5 +3947,221 @@ mod tests {
         assert_eq!(fs::read(root.path().join(&hold)).unwrap(), b"original\n");
         assert!(format!("{error:#}").contains(&hold), "{error:#}");
         assert_eq!(fs::read(root.path().join(second)).unwrap(), b"other\n");
+    }
+
+    #[test]
+    fn pr197_captured_replacement_bytes_survive() {
+        use std::cell::Cell;
+        use std::rc::Rc;
+        let artifact = ".chough/artifacts/pr197-capture.log";
+        let first = ".chough/artifacts/pr197-capture-earlier.log";
+        let mut runs = vec![];
+        // Execute both boundaries before asserting, so a red run exercises earlier removals too.
+        for with_earlier in [false, true] {
+            let root = if with_earlier {
+                prune_fixture(&[
+                    ("target-a", &[(first, "earlier original\n")]),
+                    ("target-b", &[(artifact, "eligible original\n")]),
+                ])
+            } else {
+                prune_fixture(&[("target-b", &[(artifact, "eligible original\n")])])
+            };
+            #[cfg(unix)]
+            if with_earlier {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(root.path().join(first), fs::Permissions::from_mode(0o640))
+                    .unwrap();
+            }
+            let earlier_record = with_earlier
+                .then(|| fs::read(root.path().join(".chough/evidence/target-a.json")).unwrap());
+            let injected = root.path().to_path_buf();
+            let fired = Rc::new(Cell::new(false));
+            let hook_fired = fired.clone();
+            PR197_BEFORE_CAPTURE.with(|slot| {
+                *slot.borrow_mut() = Some(Box::new(move |path| {
+                    if path == artifact {
+                        fs::write(injected.join(path), b"second writer\n").unwrap();
+                        hook_fired.set(true);
+                    }
+                }));
+            });
+            let result = retention(root.path(), Some("fixture authority"));
+            PR197_BEFORE_CAPTURE.with(|slot| *slot.borrow_mut() = None);
+            let pruned = result.as_ref().map(|value| value["pruned"].clone());
+            eprintln!(
+                "capture probe: earlier={with_earlier}; hook={}; pruned={pruned:?}; writer_exists={}; earlier_exists={}",
+                fired.get(),
+                root.path().join(artifact).exists(),
+                root.path().join(first).exists()
+            );
+            runs.push((root, fired, result, earlier_record));
+        }
+        for (root, fired, result, earlier_record) in runs {
+            assert!(fired.get(), "capture boundary hook did not run");
+            assert_eq!(
+                fs::read(root.path().join(artifact)).ok().as_deref(),
+                Some(b"second writer\n".as_slice()),
+                "changed writer bytes must survive capture/removal"
+            );
+            assert!(root.path().join(".chough/evidence/target-b.json").is_file());
+            if let Some(record) = earlier_record {
+                assert_eq!(
+                    fs::read(root.path().join(first)).unwrap(),
+                    b"earlier original\n"
+                );
+                assert_eq!(
+                    fs::read(root.path().join(".chough/evidence/target-a.json")).unwrap(),
+                    record
+                );
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::PermissionsExt;
+                    assert_eq!(
+                        fs::metadata(root.path().join(first))
+                            .unwrap()
+                            .permissions()
+                            .mode()
+                            & 0o777,
+                        0o640
+                    );
+                }
+            }
+            if let Ok(output) = result {
+                assert!(
+                    !output["pruned"]
+                        .as_array()
+                        .unwrap()
+                        .contains(&json!("target-b"))
+                );
+            }
+        }
+    }
+
+    #[cfg(unix)]
+    fn pr197_unsafe_restore_fixture(ancestor: bool) {
+        use std::cell::Cell;
+        use std::os::unix::fs::{MetadataExt, PermissionsExt, symlink};
+        use std::rc::Rc;
+        let first = ".chough/artifacts/pr197-first.log";
+        let unsafe_file = ".chough/artifacts/pr197-unsafe/b.log";
+        let later = ".chough/artifacts/pr197-unsafe/c.log";
+        let root = prune_fixture(&[
+            ("target-a", &[(first, "earlier original\n")]),
+            (
+                "target-b",
+                &[
+                    (unsafe_file, "unsafe original\n"),
+                    (later, "later original\n"),
+                ],
+            ),
+        ]);
+        fs::set_permissions(root.path().join(first), fs::Permissions::from_mode(0o640)).unwrap();
+        let original_record = fs::read(root.path().join(".chough/evidence/target-a.json")).unwrap();
+        let injected = root.path().to_path_buf();
+        let fired = Rc::new(Cell::new(false));
+        let hook_fired = fired.clone();
+        let inode = Rc::new(Cell::new(0));
+        let hook_inode = inode.clone();
+        let result = with_prune_after_remove(
+            move |removed| {
+                if removed == unsafe_file {
+                    if ancestor {
+                        let writer_dir = injected.join("writer-directory");
+                        fs::create_dir_all(&writer_dir).unwrap();
+                        fs::write(writer_dir.join("sentinel"), b"writer sentinel\n").unwrap();
+                        fs::rename(
+                            injected.join(".chough/artifacts/pr197-unsafe"),
+                            injected.join("original-parent"),
+                        )
+                        .unwrap();
+                        symlink(&writer_dir, injected.join(".chough/artifacts/pr197-unsafe"))
+                            .unwrap();
+                        hook_inode.set(
+                            fs::symlink_metadata(injected.join(".chough/artifacts/pr197-unsafe"))
+                                .unwrap()
+                                .ino(),
+                        );
+                    } else {
+                        let writer = injected.join("writer-file");
+                        fs::write(&writer, b"writer sentinel\n").unwrap();
+                        symlink(&writer, injected.join(unsafe_file)).unwrap();
+                        hook_inode.set(
+                            fs::symlink_metadata(injected.join(unsafe_file))
+                                .unwrap()
+                                .ino(),
+                        );
+                    }
+                    hook_fired.set(true);
+                    protect(&injected, "target-b");
+                }
+            },
+            || retention(root.path(), Some("fixture authority")),
+        );
+        let error = result.unwrap_err();
+        assert!(fired.get(), "unsafe rollback hook did not run");
+        let link = if ancestor {
+            root.path().join(".chough/artifacts/pr197-unsafe")
+        } else {
+            root.path().join(unsafe_file)
+        };
+        let metadata = fs::symlink_metadata(&link).unwrap();
+        assert!(metadata.file_type().is_symlink());
+        assert_eq!(
+            metadata.ino(),
+            inode.get(),
+            "second-writer symlink identity changed"
+        );
+        let sentinel = if ancestor {
+            root.path().join("writer-directory/sentinel")
+        } else {
+            root.path().join("writer-file")
+        };
+        assert_eq!(fs::read(sentinel).unwrap(), b"writer sentinel\n");
+        let hold = hold_path(unsafe_file);
+        let ledger = fs::read_to_string(root.path().join(LEDGER)).unwrap();
+        let restored = ledger
+            .lines()
+            .filter(|line| serde_json::from_str::<Value>(line).unwrap()["event"] == "restored")
+            .count();
+        eprintln!(
+            "unsafe restore probe: ancestor={ancestor}; hook=true; hold_exists={}; earlier_artifact={}; earlier_record={}; restored_events={restored}; error={error:#}",
+            root.path().join(&hold).exists(),
+            root.path().join(first).exists(),
+            root.path().join(".chough/evidence/target-a.json").exists()
+        );
+        assert_eq!(
+            fs::read(root.path().join(&hold)).ok().as_deref(),
+            Some(b"unsafe original\n".as_slice()),
+            "unsafe destination must preserve original bytes in the safe hold"
+        );
+        assert_eq!(
+            fs::read(root.path().join(first)).unwrap(),
+            b"earlier original\n"
+        );
+        assert_eq!(
+            fs::metadata(root.path().join(first))
+                .unwrap()
+                .permissions()
+                .mode()
+                & 0o777,
+            0o640
+        );
+        assert_eq!(
+            fs::read(root.path().join(".chough/evidence/target-a.json")).unwrap(),
+            original_record
+        );
+        assert_eq!(restored, 2, "every ledgered set needs restored accounting");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn pr197_unsafe_restore_file_symlink() {
+        pr197_unsafe_restore_fixture(false);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn pr197_unsafe_restore_ancestor_symlink() {
+        pr197_unsafe_restore_fixture(true);
     }
 }
