@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-513106a919495dc23f745860",
-    "head": "EVT-c84c933a5012aa43a4d20fc7",
+    "head": "EVT-b23bce03a5e68253765e3a93",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -29,7 +29,11 @@
     ],
     "cases": [
       "TC-history-prune-capture-byte-authority",
-      "TC-history-prune-unsafe-restore-continuation"
+      "TC-history-prune-unsafe-restore-continuation",
+      "TC-history-prune-protection-race",
+      "TC-history-prune-restore-preserves-recreated-file",
+      "TC-history-prune-restores-partial-removal",
+      "TC-history-prune-restores-earlier-sets"
     ],
     "design": [],
     "files": [
@@ -51,11 +55,19 @@
   "open_questions": [],
   "completed": [
     "Disposable base 1fc4c67b59f05097cab4cafa446aa58198f8ee56 reproduced both P1s: capture filter 1 executed failure; unsafe rollback filter 2 executed failures (file and ancestor symlinks). Actual argv, raw hashes and compact receipts are in native research.md.",
-    "Failing tests: 8f7574956f2f8b8789022e68d6a02e9ef0567062; both exact case bindings executed cargo exit101 (capture 1 failed, unsafe symlink 2 failed)"
+    "Failing tests: 8f7574956f2f8b8789022e68d6a02e9ef0567062; both exact case bindings executed cargo exit101 (capture 1 failed, unsafe symlink 2 failed)",
+    "Both P1 red cases now pass at 6748c3d30a005e46abe468fc00eb43900eda374f; focused unit14/evidence30/history25/split4; independent capture/unsafe mutants fail 1/2 tests. Prior focused OBS prose counts corrected by OBS-product-test-97bec39c043841e26288e181"
   ],
   "observations": [
     "OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac",
-    "OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181"
+    "OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181",
+    "OBS-product-test-97bec39c043841e26288e181",
+    "OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a",
+    "OBS-tc-history-prune-unsafe-restore-continuation-c9640fdb1cd9bf652847ac4b",
+    "OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977",
+    "OBS-tc-history-prune-restores-partial-removal-09fafb2ff58f01d7100b5ae4",
+    "OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a"
   ],
   "bugs": [
     "BUG-prune-capture-accepts-replacement-bytes-as-deletion-authority-cdfb288128633d57b0c29089",
@@ -64,5 +76,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Apply approved captured-digest validation and per-file unsafe rollback recovery, then rerun same cases"
+  "next_action": "Materialize the two approved deltas, refresh knowledge and commit before native verification and frozen full macOS/Linux lanes"
 }

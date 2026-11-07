@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-572 recorded; most recent:
+582 recorded; most recent:
 
-- OBS-product-test-766be385e3010d3b004a21f6 ProductTest Passed in local-linux-aarch64 at 8d5bcf430921
-- OBS-product-test-177ef9b1ad9bc144d0b26aa4 ProductTest Passed in local-macos-arm64 at 8d5bcf430921
-- OBS-structural-ec5e908e555a15be59cc7e27 Structural Failed in local-macos-arm64 at 9ebacabe170e
-- OBS-structural-01fdbe567f85ef177eeea144 Structural Failed in local-linux-aarch64 at 9ebacabe170e
-- OBS-structural-4bb245473772e0d89afd2868 Structural Passed in local-macos-arm64 at 3e1198b4cea0
-- OBS-structural-1b635c037853e3ce2f70d10b Structural Failed in local-macos-arm64 at b4b4dae72085
-- OBS-structural-0569129fb63cffe3aa2b53bf Structural Failed in local-linux-aarch64 at b4b4dae72085
-- OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
-- OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
-- OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
+- OBS-product-test-97bec39c043841e26288e181 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-restores-partial-removal-09fafb2ff58f01d7100b5ae4 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-product-test-e1797a0960e7bd92560cca96 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-unsafe-restore-continuation-c9640fdb1cd9bf652847ac4b ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181 ProductTest Failed in local-macos-arm64 at 8f7574956f2f
+- OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac ProductTest Failed in local-macos-arm64 at 8f7574956f2f
 
 ## Briefs
 

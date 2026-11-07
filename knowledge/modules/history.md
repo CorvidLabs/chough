@@ -4,7 +4,7 @@ title: "Module history"
 type: module
 modules:
   - history
-lessons: 5
+lessons: 6
 archived_changes: 26
 tags:
   - chough/module
@@ -26,7 +26,7 @@ this note only links them.
 
 ## Lessons
 
-5 lessons recorded in the `## Lessons` section of
+6 lessons recorded in the `## Lessons` section of
 [specs/history/context.md](../../specs/history/context.md); the lessons stay there.
 
 ## Archived changes that touched history

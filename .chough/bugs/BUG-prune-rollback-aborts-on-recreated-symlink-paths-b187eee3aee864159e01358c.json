@@ -20,17 +20,26 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181"
+    "OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181",
+    "OBS-tc-history-prune-unsafe-restore-continuation-c9640fdb1cd9bf652847ac4b"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "PR 197 discussion_r4502629890",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794071348,
+      "text": "status: open -> verified. Same two red symlink variants now pass; restoring outer path-validation escape causes both to fail; full lanes and fresh human acceptance still pending.",
+      "observations": [
+        "OBS-tc-history-prune-unsafe-restore-continuation-c9640fdb1cd9bf652847ac4b"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794071150,
-  "updated_at_unix_seconds": 1794071150
+  "updated_at_unix_seconds": 1794071348
 }

@@ -20,17 +20,26 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac"
+    "OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac",
+    "OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a"
   ],
   "impact": "Not yet assessed.",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "PR 197 discussion_r4502629883",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794071348,
+      "text": "status: open -> verified. Same committed red case now passes; mutation removing captured-byte identity comparison fails the test; full lanes and fresh human acceptance still pending.",
+      "observations": [
+        "OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794071150,
-  "updated_at_unix_seconds": 1794071150
+  "updated_at_unix_seconds": 1794071348
 }
