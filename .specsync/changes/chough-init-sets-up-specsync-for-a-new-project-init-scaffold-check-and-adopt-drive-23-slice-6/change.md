@@ -1,6 +1,6 @@
 ---
 id: chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6
-state: draft
+state: approved
 type: feature
 base_commit: f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8
 ---

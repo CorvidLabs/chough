@@ -7,10 +7,10 @@
   "title": "Chough init sets up SpecSync for a new project: init, scaffold, check and adopt (DRIVE-23, slice 6)",
   "description": "chough init sets up SpecSync for a new project: init, scaffold, check and adopt (DRIVE-23, slice 6)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "f41e7ab4c6380698783c1e98a4c6cf2fa96c1ff8",
   "created_at": 1794019018,
-  "updated_at": 1794019113,
+  "updated_at": 1794019606,
   "affected_specs": [
     "cli"
   ],

@@ -1,4 +1,52 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794019606,
+      "digest": "01fc19a3c18ce5b27979994694ff9e385c6207638ca40882d1c61ca59ef58ed6",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6",
+        "title": "Chough init sets up SpecSync for a new project: init, scaffold, check and adopt (DRIVE-23, slice 6)",
+        "description": "chough init sets up SpecSync for a new project: init, scaffold, check and adopt (DRIVE-23, slice 6)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "README.md",
+          "docs/cli.md",
+          "docs/walkthrough.md",
+          "hi/drive.md",
+          "specs/cli/cli.spec.md",
+          "src/main.rs",
+          "src/setup.rs",
+          "src/skill.rs",
+          "tests/docs.rs",
+          "tests/package.rs",
+          "tests/setup.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-062 (new): chough init with at least one --module, in a project with neither .specsync/ nor specs/, runs specsync init, scaffold per module, check and change adopt before its own writes, reporting each under specsync_setup; otherwise it runs none and says why; a failed step or a missing specsync refuses with nothing of Chough's written, naming the steps left (or the install command) and the same chough init, which a test runs. The walkthrough's new-project section uses chough init --module. Five tests in tests/setup.rs fail first, each mutant in testing.md fails one, and fledge run linux-verify passes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-23 (captured from Leif's 'Capture + build', relayed by the orc 2026-11-07), slice 6 of Chough drives SpecSync; DRIVE-20. A new project means a named module and neither .specsync/ nor specs/, so fixtures and existing projects keep today's init. Order probed with SpecSync 6.2.0 in a scratch project. REQ-cli-062 (061 is #188's). Rule: a refusal names a recovery and a test runs it. Lesson: list new source files in the owning spec after approval, and run the spec coverage check locally before Linux verify.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "8ed0cec572555109d27660d299c31d6772cfee6b4f86d01d0d97c8ce0f78e27d"
+      },
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }

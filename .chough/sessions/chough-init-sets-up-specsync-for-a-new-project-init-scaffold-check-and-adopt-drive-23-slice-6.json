@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-2cf7256a28f1e87ddf186677",
-    "head": "EVT-b516192f79c77de0c61efc86",
+    "head": "EVT-69304b8b4204156b049dada4",
     "legacy": null
   },
   "schema_version": 2,
@@ -26,16 +26,15 @@
   },
   "decisions": [
     "DRIVE-23 captured as drafted from Leif's 'Capture + build' (relayed by the orc); slice 6 of Chough drives SpecSync",
-    "A new project means a named module and neither .specsync/ nor specs/, so fixtures and existing projects keep today's init; setup runs before Chough's own writes; rejected: authored spec content, an opt-out flag, setting up projects that have specs/ without .specsync/"
+    "A new project means a named module and neither .specsync/ nor specs/, so fixtures and existing projects keep today's init; setup runs before Chough's own writes; rejected: authored spec content, an opt-out flag, setting up projects that have specs/ without .specsync/",
+    "Leif (0xLeif) decided \"Definition approval of chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6\": \"approved slice 6 (DRIVE-23)\" (orc tab, 2026-11-07, relayed by orc t18; native approval recorded as 0xLeif by the orc at 06c37f5b); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [],
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Definition approval of chough-init-sets-up-specsync-for-a-new-project-init-scaffold-check-and-adopt-drive-23-slice-6"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "After approval, close the gate, advance to build, add src/setup.rs and list it in the cli spec, then record the cases"
+  "next_action": "Handed off before build: advance to build, add src/setup.rs (then list it and tests/setup.rs in specs/cli/cli.spec.md), hook init in src/main.rs, update the walkthrough, README, docs/cli.md and CHANGELOG (under [Unreleased]), and record the five tests/setup.rs cases failing first, then passing"
 }
