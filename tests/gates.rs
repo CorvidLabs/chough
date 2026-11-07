@@ -175,7 +175,8 @@ fn closed_relays(fixture: &Fixture) -> BTreeMap<String, Value> {
             let transition = &value["transition"];
             if transition["kind"] == "gate-closed" && !transition["relayed_by"].is_null() {
                 found.insert(
-                    transition["gate"].as_str().unwrap().to_string(),
+                    // Gate records keep the gate text as their reason.
+                    transition["reason"].as_str().unwrap().to_string(),
                     transition["relayed_by"].clone(),
                 );
             }

@@ -855,6 +855,13 @@ pub(super) struct CheckpointArgs {
     /// The agent recording the decision.
     #[arg(long, allow_hyphen_values = true)]
     recorded_by: Option<String>,
+    /// The listed summary's digest the decision was given on (REQ-history-014), for
+    /// `chough gate record` and `chough change ship --list`.
+    #[arg(long, hide = true, requires_all = ["close_gate", "list"])]
+    summary_digest: Option<String>,
+    /// The gate list the summary came from (REQ-history-014).
+    #[arg(long, hide = true, requires_all = ["close_gate", "summary_digest"])]
+    list: Option<String>,
     #[arg(long = "criterion")]
     criteria: Vec<String>,
     #[arg(long = "requirement")]
@@ -978,6 +985,8 @@ pub(super) fn check_relay(
         words: text(1),
         place: text(2),
         recorded_by: text(3),
+        summary_digest: None,
+        list: None,
     };
     let decision = format!(
         "{} decided \"{gate}\": \"{}\" ({}); recorded by {}; a relayed claim, not authenticated",
@@ -1096,7 +1105,27 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         return merge_checkpoints(&operands);
     }
     let mut session = read_checkpoint(root)?;
-    let relayed = relayed_decision(&session, &args)?;
+    let mut relayed = relayed_decision(&session, &args)?;
+    if let Some((_, relay, _)) = relayed.as_mut() {
+        relay.summary_digest = args.summary_digest.clone();
+        relay.list = args.list.clone();
+        let probe = stage::Transition {
+            schema_version: 1,
+            at_unix_seconds: 0,
+            kind: stage::GATE_CLOSED.into(),
+            from: "intent".into(),
+            to: "intent".into(),
+            reason: None,
+            gate: None,
+            revision: None,
+            refresh: vec![],
+            backfill: None,
+            relayed_by: Some(relay.clone()),
+            direct_write: None,
+        };
+        stage::validate_relay(&probe)
+            .context("the summary digest and list are not a valid pair; nothing was saved")?;
+    }
     let mut changed = false;
     if let Some(objective) = args.objective {
         ensure_text("objective", &objective)?;
