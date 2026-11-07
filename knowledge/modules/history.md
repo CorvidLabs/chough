@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 5
-archived_changes: 25
+archived_changes: 26
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched history
 
-25 archived changes, newest first.
+26 archived changes, newest first.
 
+- [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
 - [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)
@@ -42,5 +43,4 @@ this note only links them.
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143)
 - [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19)
 - [find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1](../archives/find-the-legacy-history-anchor-in-sessions-rolled-into-the-vault-or-shelved-141-p1.md) Find the legacy history anchor in sessions rolled into the vault or shelved (141, P1)
-- [record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7](../archives/record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7.md) Record relayed human decisions at gates as claims, not authentication (123, D7)
-- 15 more on the [timeline](../timeline.md)
+- 16 more on the [timeline](../timeline.md)

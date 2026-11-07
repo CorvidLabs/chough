@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 135
+archived_changes: 136
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-135 archived changes, newest first.
+136 archived changes, newest first.
 
+- [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
 - [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4)
@@ -42,5 +43,4 @@ this note only links them.
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)
 - [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20)
 - [make-archived-next-and-status-fast-within-explicit-warm-budgets](../archives/make-archived-next-and-status-fast-within-explicit-warm-budgets.md) Make archived next and status fast within explicit warm budgets
-- [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md) Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22)
-- 125 more on the [timeline](../timeline.md)
+- 126 more on the [timeline](../timeline.md)

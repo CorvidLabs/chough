@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
-    "head": "EVT-8ab9e9cbb7f58647de768932",
+    "head": "EVT-e5eb91a49726020537905e5b",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -31,18 +31,7 @@
       "TC-history-prune-restore-preserves-recreated-file"
     ],
     "design": [],
-    "files": [
-      "src/evidence.rs",
-      "tests/evidence.rs",
-      "specs/history/requirements.md",
-      "specs/history/testing.md",
-      "specs/history/history.spec.md",
-      "docs/FRD.md",
-      "docs/cli.md",
-      "CHANGELOG.md",
-      ".chough/cases/history.prune-race.cases.toml",
-      "specs/cli/cli.spec.md"
-    ]
+    "files": []
   },
   "decisions": [
     "agent: existing LIFE-8, LIFE-2 and LIFE-7 already cover #65 because they require proof protection and honest removed-versus-passed states, so no new HI criterion is needed",
@@ -50,7 +39,8 @@
     "rejected: refactoring the proven library archive path because the small fix can reuse remove_verified and the existing restored event shape without changing archive behavior",
     "Leif decided \"Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"Yes to all 3\" (Moshi question from orc t18, 2026-11-06; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated",
     "Leif decided \"Scope reapproval of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: add tests/spec_split.rs only\": \"Yes\" (Direct chat reply to orc t19f three-gate batch, 2026-11-07); recorded by sol-ch65; a relayed claim, not authenticated",
-    "Agent clarification: the frozen platform runs had no edits to tracked or non-ignored verification inputs, and Git stayed clean; builds and tools still wrote their ignored output/cache files."
+    "Agent clarification: the frozen platform runs had no edits to tracked or non-ignored verification inputs, and Git stayed clean; builds and tools still wrote their ignored output/cache files.",
+    "Leif decided \"Implementation review of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"yes\" (Direct Leif reply to orc t19f ONE-item #65/#197 implementation acceptance gate, 2026-11-07); recorded by sol-ch65; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -103,9 +93,7 @@
     "BUG-reapproved-prune-inputs-lack-current-native-verification-b5e5ca5c85f4d7672d2d43f1"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Leif implementation review through orc t19f of the one #65 PR at the final native-checked head; no worker approval/review/ship/merge. All evidence and gate writes are complete before the final change check."
 }
