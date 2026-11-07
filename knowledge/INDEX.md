@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes (active; `specsync change status after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-527 recorded; most recent:
+532 recorded; most recent:
 
+- OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 ProductTest Passed in local-macos-arm64 at ebeb882ac4ef
+- OBS-tc-cli-done-self-archive-vault-current-12d5b0b1d0d6f4333ede75ff ProductTest Passed in local-macos-arm64 at 2466ef4e0120
+- OBS-tc-cli-done-fresh-vault-session-links-5da6111b58cba9d10d899644 ProductTest Passed in local-macos-arm64 at 2466ef4e0120
+- OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325 ProductTest Failed in local-macos-arm64 at 5ba8791bc693
+- OBS-tc-cli-done-fresh-vault-session-links-b41c1e34e052180510f040aa ProductTest Failed in local-macos-arm64 at 5ba8791bc693
 - OBS-product-test-1e38299188b5d2c640dd711a ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-history-summary-digest-oldest-reader-named-a5a71364f80d5bf7aea96be8 ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-history-relay-summary-fields-both-or-neither-02cb69215806d8a77707d34b ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-record-other-session-refused-3c03e94f8355aaca6685633a ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-verifying-closes-through-ship-fcf925e3154c2129b6bf719f ProductTest Passed in local-macos-arm64 at 6046cf529a30
-- OBS-tc-cli-gate-record-refusals-recover-f746cea63f6f5b9127aa00ed ProductTest Passed in local-macos-arm64 at 6046cf529a30
-- OBS-tc-cli-gate-record-listed-gates-only-c118c5b8a9d9cc06f799c868 ProductTest Passed in local-macos-arm64 at 6046cf529a30
-- OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 ProductTest Passed in local-macos-arm64 at 6046cf529a30
-- OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14 ProductTest Failed in local-macos-arm64 at a0bf05d7e391
-- OBS-tc-cli-gate-record-other-session-refused-c8f31decaa5be4335c3b46de ProductTest Failed in local-macos-arm64 at 21c84754336d
 
 ## Briefs
 
