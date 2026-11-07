@@ -93,15 +93,15 @@ Archived lesson bundles:
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
-- BUG-reapproved-prune-inputs-lack-current-native-verification-b5e5ca5c85f4d7672d2d43f1 Reapproved prune inputs lack current native verification (open, blocking, reproduced)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 - BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
 
 ## Observations
 
-567 recorded; most recent:
+568 recorded; most recent:
 
+- OBS-structural-4bb245473772e0d89afd2868 Structural Passed in local-macos-arm64 at 3e1198b4cea0
 - OBS-structural-1b635c037853e3ce2f70d10b Structural Failed in local-macos-arm64 at b4b4dae72085
 - OBS-structural-0569129fb63cffe3aa2b53bf Structural Failed in local-linux-aarch64 at b4b4dae72085
 - OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
@@ -111,7 +111,6 @@ Archived lesson bundles:
 - OBS-product-test-1a8d3cd9e2fff7f17314bd35 ProductTest Passed in local-macos-arm64 at 4ef6b8e29913
 - OBS-structural-b66cb4a28fd68f089b2a01b3 Structural NotRun in local-macos-arm64 at 7febd53a86d1
 - OBS-product-test-8596f4c916b301c4ec8853cd ProductTest Passed in local-macos-arm64 at 7febd53a86d1
-- OBS-product-test-cf146b8281569e3b55420c53 ProductTest NotRun in local-macos-arm64 at 7febd53a86d1
 
 ## Briefs
 

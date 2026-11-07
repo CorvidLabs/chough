@@ -19,17 +19,26 @@
   "fixture": null,
   "observations": [
     "OBS-structural-0569129fb63cffe3aa2b53bf",
-    "OBS-structural-1b635c037853e3ce2f70d10b"
+    "OBS-structural-1b635c037853e3ce2f70d10b",
+    "OBS-structural-4bb245473772e0d89afd2868"
   ],
   "impact": "Not yet assessed.",
   "classification": "evidence-gap",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "Pinned lanes after approved one-line digest refresh, before current native check",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794063765,
+      "text": "status: open -> verified. The authorized preparatory native check established current scoped verification; strict audit, declared pre-push and knowledge checks passed afterward. Both original failed full lanes are retained; no source changes were needed.",
+      "observations": [
+        "OBS-structural-4bb245473772e0d89afd2868"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794063629,
-  "updated_at_unix_seconds": 1794063629
+  "updated_at_unix_seconds": 1794063765
 }
