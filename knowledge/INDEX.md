@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-515 recorded; most recent:
+521 recorded; most recent:
 
+- OBS-tc-history-summary-digest-oldest-reader-named-a2685f7eae1f23035efb5b4f ProductTest Failed in local-macos-arm64 at 6018e8b40a17
+- OBS-tc-history-relay-summary-fields-both-or-neither-4d4e78fabf1b85d3ef7f47b6 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
+- OBS-tc-cli-gate-verifying-closes-through-ship-fcce7be02c953165f63c72b7 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
+- OBS-tc-cli-gate-record-refusals-recover-f5c47e1344ca2112bcb73cde ProductTest Failed in local-macos-arm64 at 6018e8b40a17
+- OBS-tc-cli-gate-record-listed-gates-only-0db9e135e9f5b7e58d72eb3e ProductTest Failed in local-macos-arm64 at 6018e8b40a17
+- OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1 ProductTest Failed in local-macos-arm64 at 6018e8b40a17
 - OBS-product-test-d15ac3501f3fd5a9d6eb6325 ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-cli-change-steps-write-nothing-62fe15cbc95b9f266c0c477d ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-history-direct-write-oldest-reader-named-7c07242c743ffd775a9119a2 ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-history-direct-write-field-only-on-its-kind-f02be75f99e38e3aa4c8342e ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-before-ship-fe571d078f3198c22b65087f ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-shown-not-written-4a69cd09a5baf6ad90007603 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-first-sight-5668fa870a289846a58c64b7 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-chough-steps-not-flagged-e099c77fe660f71880fef91f ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-recorded-once-a5ca51aeef9cdd146f420ff5 ProductTest Passed in local-macos-arm64 at 317595212a05
-- OBS-tc-cli-direct-write-before-ship-442aca5dbaf8e2567267c6c2 ProductTest Failed in local-macos-arm64 at 2d571c5de52b
 
 ## Briefs
 

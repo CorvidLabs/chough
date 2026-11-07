@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-gate-verifying-closes-through-ship-fcce7be02c953165f63c72b7",
+  "criteria": [
+    "FLOW-19"
+  ],
+  "requirements": [
+    "REQ-cli-061",
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test gates -- --exact a_verifying_gate_is_refused_and_closes_through_ship_with_the_list for TC-cli-gate-verifying-closes-through-ship: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-gate-verifying-closes-through-ship-fcce7be02c953165f63c72b7.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-gate-verifying-closes-through-ship-fcce7be02c953165f63c72b7.log": "301f944afd26d11f28f187901fb9d5c01ca81509782d29e92b7ddd80a4f71b45"
+  },
+  "observed_at_unix_seconds": 1794015485,
+  "snapshot": {
+    "revision": "6018e8b40a170190123f69cc9cda23f8d6cf0795",
+    "dirty": false,
+    "fingerprint": "c9e981d025af7770d31d4906e885d75058c0e22a957875d1045571fd6f150761",
+    "content": "74668e070bdcf9fe3d71b66eb27d901be381fc91e0d8c52e1faad21d4832e3bc"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-gate-verifying-closes-through-ship",
+      "digest": "ba36ecaa9c05dd04422c1a3056d42f1e533137f0ac1598c2d1408a47fe5f0dcd"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "gates",
+    "--",
+    "--exact",
+    "a_verifying_gate_is_refused_and_closes_through_ship_with_the_list"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}
