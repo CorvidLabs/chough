@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9714e2f0c9044b1ccccc108a",
-    "head": "EVT-32c371f9bd62f260276a7c29",
+    "head": "EVT-f382ea9c337091e0f62aeaae",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -36,7 +36,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of flag-direct-specsync-lifecycle-writes-in-history-183-drive-21"
+  ],
   "run_consents": [],
-  "next_action": "After Leif's definition approval is recorded natively, close the gate with the relay, advance to build, add the cases and implement src/direct_writes.rs"
+  "next_action": "After Leif's implementation review is recorded natively, run chough change ship flag-direct-specsync-lifecycle-writes-in-history-183-drive-21 with the review relay (no commit between), commit and push the archive tip, then tell t27 so the 0.5.0 prep can merge"
 }
