@@ -15,6 +15,7 @@ artifact: testing
 | Requirement | Evidence |
 |---|---|
 | REQ-history-013 (modified) | tests/direct_writes.rs |
+| REQ-reporting-001 (modified) | tests/direct_writes.rs (the timing test) |
 
 ## Lanes
 

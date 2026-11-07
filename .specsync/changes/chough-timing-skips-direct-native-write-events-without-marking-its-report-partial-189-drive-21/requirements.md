@@ -11,4 +11,6 @@ MODIFIED REQ-history-013 (see `deltas/history.md`):
 
 MODIFIED REQ-cli-057 (see `deltas/cli.md`): `chough change new` passes `--no-spec-change` and `--rationale` through, and refuses the first without the second.
 
+MODIFIED REQ-reporting-001 (see `deltas/reporting.md`): `direct-native-write` events start or end no segment, as gate records do, and are not counted as an unrecognised kind. `src/timing.rs` belongs to the reporting module.
+
 Trace: DRIVE-21, DRIVE-20.

@@ -13,7 +13,8 @@
   "updated_at": 1794018673,
   "affected_specs": [
     "cli",
-    "history"
+    "history",
+    "reporting"
   ],
   "affected_paths": [
     "docs/cli.md",
