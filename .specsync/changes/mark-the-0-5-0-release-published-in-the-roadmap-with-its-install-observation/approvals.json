@@ -35,5 +35,18 @@
       "approved_delta_bases": {}
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation",
+      "actor": "orc (t18)",
+      "reason": "The worker recorded native approval with agent actor kimi (k-chough). Orc t18 directed send-back: only the orc records Leif's approval after his OK.",
+      "timestamp": 1794021290,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "canonical_applied": false
+    }
+  ]
 }

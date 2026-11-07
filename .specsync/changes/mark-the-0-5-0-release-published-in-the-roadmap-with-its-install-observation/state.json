@@ -7,10 +7,10 @@
   "title": "Mark the 0.5.0 release published in the roadmap with its install observation",
   "description": "Mark the 0.5.0 release published in the roadmap with its install observation",
   "kind": "documentation",
-  "state": "approved",
+  "state": "draft",
   "base_commit": "86ae8dda94aba981094e92d5395dc085ebe65dbd",
   "created_at": 1794020673,
-  "updated_at": 1794021105,
+  "updated_at": 1794021290,
   "affected_specs": [
     "cli"
   ],
