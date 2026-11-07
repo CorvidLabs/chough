@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 149
+archived_changes: 150
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) (hot)
 - [make-archived-next-and-status-fast-within-explicit-warm-budgets](archives/make-archived-next-and-status-fast-within-explicit-warm-budgets.md) Make archived next and status fast within explicit warm budgets (hot)
 - [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md) Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22) (hot)
-- [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) (hot)
+- [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) (cold)
 - [name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18](archives/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.md) Name bug merge in the CLI reference's command table, with a check that the table matches --help (#173, FLOW-18) (cold)
 - [a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18](archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md) A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) (cold)
 - [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) (cold)
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](archives/make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18.md) Make the README, docs, workflow skill and diagrams match main, with checks that fail when they drift (FLOW-18) (cold)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17) (cold)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16) (cold)
-- [a-session-archives-itself-at-its-own-move-into-done-155](archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155) (cold)
-- All 149 archived changes, by month: [timeline.md](timeline.md)
+- All 150 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../.specsync/archive/changes/2026-11-07-chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20/lesson-bundle.md)
 - [make-archived-next-and-status-fast-within-explicit-warm-budgets](../.specsync/archive/changes/2026-11-06-make-archived-next-and-status-fast-within-explicit-warm-budgets/lesson-bundle.md)
 - [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../.specsync/archive/changes/2026-11-06-rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177/lesson-bundle.md)
 - [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](../.specsync/archive/changes/2026-11-06-run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18](../.specsync/archive/changes/2026-11-06-make-the-readme-docs-workflow-skill-and-diagrams-match-main-with-checks-that-fail-when-they-drift-flow-18/lesson-bundle.md)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../.specsync/archive/changes/2026-11-06-chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17/lesson-bundle.md)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../.specsync/archive/changes/2026-11-06-a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16/lesson-bundle.md)
-- [a-session-archives-itself-at-its-own-move-into-done-155](../.specsync/archive/changes/2026-11-06-a-session-archives-itself-at-its-own-move-into-done-155/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-505 recorded; most recent:
+525 recorded; most recent:
 
-- OBS-structural-d609d7d731efad7e2db11df1 Structural Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archived-report-reuse-20f0b488f31ec8fa7fbbff14 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-snapshot-worker-identity-5eaeb6789f2e89031c77c344 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archive-cache-timeout-85b73aed0ef8a3686b5ba33a ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archive-cache-invalidation-c6967565fd883fbf3ec5a0c3 ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archived-report-reuse-59382721b25cc6f8e1ab97ce ProductTest Passed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7 ProductTest Failed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-archived-report-reuse-caa35ad0d8067f0b20169c34 ProductTest Failed in local-macos-arm64 at cfa2d1042225
-- OBS-tc-cli-linux-image-from-ci-pins-7553ec1c8fafef747b7a69fe ProductTest Passed in local-linux-aarch64 at 5b0b44217021
+- OBS-tc-cli-change-walkthrough-runs-chough-eeab06073c51349b7b6ecf79 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-outlives-read-bound-63957ecaa5867c7baa0ff452 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-names-remaining-step-4dab9573dc57469f2f0cacfb ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-checks-before-running-b9525101163d73b8ba5a3738 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-refusal-passes-through-b81f1986cced1d35cc1c2489 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-b8b96571c25ed80fcdfcd791 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
+- OBS-product-test-43953badfa0bdb247decd5d4 ProductTest Passed in local-macos-arm64 at da37b4a73515
+- OBS-tc-cli-change-walkthrough-runs-chough-dc9b4b427e025a35a068c618 ProductTest Passed in local-macos-arm64 at da37b4a73515
+- OBS-tc-cli-change-ship-outlives-read-bound-bb6a80a50486f991edc7efbb ProductTest Passed in local-macos-arm64 at da37b4a73515
+- OBS-tc-cli-change-ship-names-remaining-step-327e6e5541f57979ac03b8ff ProductTest Passed in local-macos-arm64 at da37b4a73515
 
 ## Briefs
 

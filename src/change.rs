@@ -1,7 +1,10 @@
 //! SpecSync change steps through Chough (REQ-cli-057, DRIVE-20): `chough change new`,
 //! `answer`, `check` and `status` run the matching SpecSync step in the project root
 //! and pass its standard output, standard error and exit code through unchanged.
-//! Nothing under `.chough/` is read or written.
+//! Nothing under `.chough/` is read or written. `chough change ship` (REQ-cli-059)
+//! checks the session, its stage, its open gates and the review relay first, ships,
+//! and then closes the review gate and moves the session to done with Chough's own
+//! commands.
 
 use crate::records::{self, Limits};
 use anyhow::{Result, bail};
@@ -41,6 +44,31 @@ pub(super) enum ChangeCommand {
     Check { id: String },
     /// Run `specsync change status [<id>] --json` within the native read bound.
     Status { id: Option<String> },
+    /// Check first, run `specsync change ship <id>`, then close the review gate with its
+    /// relay and move the session to done (REQ-cli-059).
+    Ship(Box<ShipArgs>),
+}
+
+/// `chough change ship`: the change, and the relay of the human decision that closes
+/// its open review gate after the ship.
+#[derive(clap::Args)]
+pub(super) struct ShipArgs {
+    id: String,
+    /// The open gate the relay closes after the ship, by its exact text.
+    #[arg(long)]
+    close_gate: Option<String>,
+    /// Who decided the gate.
+    #[arg(long)]
+    decided_by: Option<String>,
+    /// Their exact words.
+    #[arg(long)]
+    words: Option<String>,
+    /// Where and when they said them, and who relayed them.
+    #[arg(long = "where")]
+    place: Option<String>,
+    /// The agent recording the decision.
+    #[arg(long)]
+    recorded_by: Option<String>,
 }
 
 /// Run one step and return the exit code to end with.
@@ -86,6 +114,7 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             vec!["change".into(), "check".into(), id, "--commit".into()],
             false,
         ),
+        ChangeCommand::Ship(args) => return ship(root, *args),
         ChangeCommand::Status { id } => {
             let mut arguments = vec!["change".to_string(), "status".into()];
             arguments.extend(id);
@@ -157,6 +186,147 @@ fn status(root: &Path, arguments: &[String], rerun: &str) -> Result<i32> {
     }
     pass_through(&output.stdout, &output.stderr)?;
     Ok(exit_code(output.exit_code, output.signal))
+}
+
+/// `chough change ship` (REQ-cli-059): every check first, with nothing run or written;
+/// then the ship; then the gate close and the move into done, each as Chough's own
+/// command.
+fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
+    let id = &args.id;
+    let relay_command = |gate: &str| {
+        format!(
+            "chough change ship {id} --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\""
+        )
+    };
+    let session = crate::checkpoint::read_session(root)?.to_value()?;
+    match session["native_change"].as_str() {
+        None => bail!(
+            "refused:no-native-change: the active session records no native change, so nothing ran.\nRun `chough checkpoint --native-change {id}`, then `chough change ship {id}` again."
+        ),
+        Some(other) if other != id => bail!(
+            "refused:other-change: the active session's native change is {other}, not {id}, so nothing ran.\nRun `chough change ship {other}` to ship it, or `chough session use <key>` to make {id}'s session active."
+        ),
+        Some(_) => {}
+    }
+    let stage = session["stage"]["current"].as_str().unwrap_or_default();
+    if stage != "accept" {
+        bail!(
+            "refused:not-at-accept: ship runs at accept, and the active session is at {stage}, so nothing ran.\nRun `chough stage advance --to accept`, then `chough change ship {id}` again."
+        );
+    }
+    let open: Vec<String> = session["awaiting_human"]
+        .as_array()
+        .map(|gates| {
+            gates
+                .iter()
+                .filter_map(|gate| gate.as_str().map(String::from))
+                .collect()
+        })
+        .unwrap_or_default();
+    let named = args.close_gate.as_deref();
+    if let Some(other) = open.iter().find(|gate| Some(gate.as_str()) != named) {
+        if named.is_some_and(|named| open.iter().any(|gate| gate == named)) {
+            bail!(
+                "refused:other-gates-open: ship closes only the gate it names, and gate \"{other}\" is open too, so nothing ran.\nDecide it first with `chough checkpoint --close-gate \"{other}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`, then run `chough change ship {id}` with the review relay again."
+            );
+        }
+        bail!(
+            "refused:gate-open: gate \"{other}\" is open, and ship closes it after shipping only with its relay, so nothing ran.\nRun `{}`.",
+            relay_command(other)
+        );
+    }
+    let values = [
+        ("--decided-by", args.decided_by.as_deref()),
+        ("--words", args.words.as_deref()),
+        ("--where", args.place.as_deref()),
+        ("--recorded-by", args.recorded_by.as_deref()),
+    ];
+    let relayed = crate::checkpoint::check_relay(&open, named, values).map_err(|problem| {
+        use crate::checkpoint::RelayProblem;
+        match problem {
+            RelayProblem::WithoutGate(given) => anyhow::anyhow!(
+                "refused:relay-without-gate: {} describe a human's decision at a gate, and no gate is open, so nothing ran.\nRun `chough change ship {id}` without them.",
+                given.join(", ")
+            ),
+            RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
+                "refused:relay-incomplete: closing gate \"{gate}\" after the ship needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing ran.\nRun `{}`.",
+                missing.join(", "),
+                if missing.len() == 1 { "is" } else { "are" },
+                relay_command(&gate)
+            ),
+            RelayProblem::NotOpen(gate) => anyhow::anyhow!(
+                "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id}` without --close-gate and the relay."
+            ),
+            RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
+                "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing ran.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `{}`.",
+                crate::stage::RELAY_TEXT_LIMIT,
+                relay_command(&gate)
+            ),
+        }
+    })?;
+
+    let mut command = Command::new(SPECSYNC);
+    command.args(["change", "ship", id]).current_dir(root);
+    let output =
+        records::run_owned(&mut command, None).map_err(|error| not_started("ship", &error))?;
+    pass_through(&output.stdout, &output.stderr)?;
+    let code = exit_code(output.status.code(), signal(&output.status));
+    if code != 0 {
+        return Ok(code);
+    }
+
+    // After a successful ship: Chough's own commands, so their checks and records are
+    // exactly those of `chough checkpoint --close-gate` and `chough stage advance`.
+    let mut steps: Vec<(String, Vec<String>)> = vec![];
+    if let Some((gate, relay, _)) = relayed {
+        steps.push((
+            format!(
+                "chough checkpoint --close-gate \"{gate}\" --decided-by \"{}\" --words \"{}\" --where \"{}\" --recorded-by \"{}\"",
+                relay.decided_by, relay.words, relay.place, relay.recorded_by
+            ),
+            vec![
+                "checkpoint".into(),
+                "--close-gate".into(),
+                gate,
+                "--decided-by".into(),
+                relay.decided_by,
+                "--words".into(),
+                relay.words,
+                "--where".into(),
+                relay.place,
+                "--recorded-by".into(),
+                relay.recorded_by,
+            ],
+        ));
+    }
+    steps.push((
+        "chough stage advance --to done".into(),
+        ["stage", "advance", "--to", "done"]
+            .map(String::from)
+            .to_vec(),
+    ));
+    let chough = std::env::current_exe()?;
+    for (index, (shown, arguments)) in steps.iter().enumerate() {
+        let mut command = Command::new(&chough);
+        command
+            .arg("--root")
+            .arg(root)
+            .args(arguments)
+            .current_dir(root);
+        let output = records::run_owned(&mut command, None)?;
+        pass_through(&output.stdout, &output.stderr)?;
+        if !output.status.success() {
+            let remaining: Vec<&str> = steps[index..]
+                .iter()
+                .map(|(shown, _)| shown.as_str())
+                .collect();
+            bail!(
+                "specsync change ship {id} succeeded, so the change is shipped; `{shown}` was refused. Run `{}`.",
+                remaining.join("`, then `")
+            );
+        }
+    }
+    Ok(0)
 }
 
 /// The native read bound: 120 s unless the variable names a whole number of seconds

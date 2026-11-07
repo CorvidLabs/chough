@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 73
+version: 74
 status: active
 files:
   - src/main.rs
@@ -299,3 +299,4 @@ provider, runtime or hosted service.
 | 71 | 2026-11-06 | run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20: Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) |
 | 72 | 2026-11-06 | rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177: Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22) |
 | 73 | 2026-11-06 | make-archived-next-and-status-fast-within-explicit-warm-budgets: Make archived next and status fast within explicit warm budgets (32, DRIVE-15) |
+| 74 | 2026-11-06 | chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20: Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) |

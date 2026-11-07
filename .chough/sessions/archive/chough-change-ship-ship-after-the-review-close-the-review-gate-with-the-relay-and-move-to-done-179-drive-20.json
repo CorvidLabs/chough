@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-e74ffdb1544c6de7bd6fefd9",
+    "head": "EVT-f9058687b35c66821c3d7f84",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "chough change ship: ship after the review, close the review gate with the relay, and move to done (#179, DRIVE-20 slice 2)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Slice 2 of the approved order (Leif, relayed by the orc): chough change ship, plus the walkthrough's direct calls (option A from #174's re-approval); REQ-cli-059 (058 is #177's)",
+    "The relay goes with ship: nothing may write .chough/ between check and finalize, so the review gate closes after ship, and the relay is checked in full before ship",
+    "Rejected: closing the gate before ship, a separate chough change finalize, library index inside ship, and rewriting stage advance or checkpoint (the follow-up steps run Chough's own commands)",
+    "Leif (0xLeif) decided \"Definition approval of chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20\": \"approved slice 2\" (orc tab, 2026-11-06, relayed by orc t18; native definition approval recorded as 0xLeif by the orc at 302f0ebc (digest a0061d73)); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Implementation review of chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20\": \"pass\" (GitHub review of #182 at cf6d1837, relayed by orc t18 on 2026-11-07; native review recorded as 0xLeif by the orc); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "After Leif's implementation review is recorded natively, run chough change ship chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20 with the review relay (no commit between), commit and push the archive tip"
+}

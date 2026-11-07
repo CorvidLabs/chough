@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-change-walkthrough-runs-chough-932d8c05ae5a9f2dff43dd49",
+  "criteria": [
+    "DRIVE-20"
+  ],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact the_walkthrough_and_closeout_run_chough_change for TC-cli-change-walkthrough-runs-chough: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-change-walkthrough-runs-chough-932d8c05ae5a9f2dff43dd49.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-change-walkthrough-runs-chough-932d8c05ae5a9f2dff43dd49.log": "f4f8aaabee94101f159adf8f5e285e8547182b852e3719b2121633407fd4035f"
+  },
+  "observed_at_unix_seconds": 1794008121,
+  "snapshot": {
+    "revision": "6b20a31d9b63194994117a540b1e93a8f04415d1",
+    "dirty": false,
+    "fingerprint": "5e72b24b674857923dce417a4e3888f3a64393c123e28cf7a8fe82e9d38f2e00",
+    "content": "4908111be67c1bb6168704d3d6bd6b304777bafaecbbf9b1cce29eb8a8bb9509"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-change-walkthrough-runs-chough",
+      "digest": "8c42f6c7ffbe39557ea88c9ca38d790f1c11257c3735146d77710e036cde0fbe"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "the_walkthrough_and_closeout_run_chough_change"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

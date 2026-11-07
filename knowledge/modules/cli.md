@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 127
+archived_changes: 128
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-127 archived changes, newest first.
+128 archived changes, newest first.
 
+- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20)
 - [make-archived-next-and-status-fast-within-explicit-warm-budgets](../archives/make-archived-next-and-status-fast-within-explicit-warm-budgets.md) Make archived next and status fast within explicit warm budgets
 - [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md) Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22)
 - [run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20](../archives/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.md) Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20)
@@ -42,5 +43,4 @@ this note only links them.
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)
 - [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
-- [an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148](../archives/an-empty-change-directory-left-by-a-branch-switch-is-not-an-open-native-change-148.md) An empty change directory left by a branch switch is not an open native change (148)
-- 117 more on the [timeline](../timeline.md)
+- 118 more on the [timeline](../timeline.md)

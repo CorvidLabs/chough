@@ -925,69 +925,100 @@ fn ensure_native_change_known(root: &Path, change: &str) -> Result<()> {
 /// What every relayed decision says of itself (REQ-cli-050).
 pub(super) const RELAY_PROVENANCE: &str = "a relayed claim, not authenticated: it records who is said to have decided, not proof that they did";
 
-/// The gate, relay and decision `--close-gate` records, checked before anything is
-/// read from SpecSync or written (REQ-cli-050). Every refusal saves nothing.
-fn relayed_decision(
-    session: &Checkpoint,
-    args: &CheckpointArgs,
-) -> Result<Option<(String, stage::RelayedBy, String)>> {
-    let values = [
-        ("--decided-by", &args.decided_by),
-        ("--words", &args.words),
-        ("--where", &args.place),
-        ("--recorded-by", &args.recorded_by),
-    ];
-    let Some(gate) = &args.close_gate else {
+/// Why a relayed decision cannot be recorded. Each caller words the refusal with its
+/// own command to run again (REQ-cli-050, REQ-cli-059).
+pub(super) enum RelayProblem {
+    /// Relay values were given without a gate: the flags given.
+    WithoutGate(Vec<&'static str>),
+    /// The gate, and the flags that are missing or blank.
+    Incomplete(String, Vec<&'static str>),
+    /// No open gate has this exact text.
+    NotOpen(String),
+    /// The gate, and the length in bytes the decision would have.
+    TooLong(String, usize),
+}
+
+/// A relayed decision: the gate it closes, the relay and the decision text.
+pub(super) type Relayed = (String, stage::RelayedBy, String);
+
+/// The gate, relay and decision a `--close-gate` relay records, checked against the
+/// `open` gates before anything is read from SpecSync or written (REQ-cli-050).
+/// `values` are the four flags with their values, in the order of
+/// [`stage::RelayedBy::fields`].
+pub(super) fn check_relay(
+    open: &[String],
+    gate: Option<&str>,
+    values: [(&'static str, Option<&str>); 4],
+) -> std::result::Result<Option<Relayed>, RelayProblem> {
+    let Some(gate) = gate else {
         let given: Vec<&str> = values
             .iter()
             .filter(|(_, value)| value.is_some())
             .map(|(flag, _)| *flag)
             .collect();
         if !given.is_empty() {
-            bail!(
-                "refused:relay-without-gate: {} describe a human's decision at a gate, so they need --close-gate with that gate's exact text; nothing was saved.\nRun `chough next` to list the open gates, then `{}` with one of them.",
-                given.join(", "),
-                stage::CLOSE_GATE_COMMAND
-            );
+            return Err(RelayProblem::WithoutGate(given));
         }
         return Ok(None);
     };
     let missing: Vec<&str> = values
         .iter()
-        .filter(|(_, value)| value.as_ref().is_none_or(|value| value.trim().is_empty()))
+        .filter(|(_, value)| value.is_none_or(|value| value.trim().is_empty()))
         .map(|(flag, _)| *flag)
         .collect();
     if !missing.is_empty() {
-        bail!(
-            "refused:relay-incomplete: closing gate \"{gate}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
-            missing.join(", "),
-            if missing.len() == 1 { "is" } else { "are" }
-        );
+        return Err(RelayProblem::Incomplete(gate.into(), missing));
     }
-    if !session.awaiting_human.contains(gate) {
-        bail!(
-            "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.\nRun `chough next` to list the open gates, then close one by its exact text."
-        );
+    if !open.iter().any(|open| open == gate) {
+        return Err(RelayProblem::NotOpen(gate.into()));
     }
-    let text = |value: &Option<String>| value.clone().unwrap_or_default();
+    let text = |index: usize| values[index].1.unwrap_or_default().to_string();
     let relay = stage::RelayedBy {
-        decided_by: text(&args.decided_by),
-        words: text(&args.words),
-        place: text(&args.place),
-        recorded_by: text(&args.recorded_by),
+        decided_by: text(0),
+        words: text(1),
+        place: text(2),
+        recorded_by: text(3),
     };
     let decision = format!(
         "{} decided \"{gate}\": \"{}\" ({}); recorded by {}; a relayed claim, not authenticated",
         relay.decided_by, relay.words, relay.place, relay.recorded_by
     );
     if decision.len() > stage::RELAY_TEXT_LIMIT {
-        bail!(
-            "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
-            decision.len(),
-            stage::RELAY_TEXT_LIMIT
-        );
+        return Err(RelayProblem::TooLong(gate.into(), decision.len()));
     }
-    Ok(Some((gate.clone(), relay, decision)))
+    Ok(Some((gate.into(), relay, decision)))
+}
+
+/// The gate, relay and decision `--close-gate` records, checked before anything is
+/// read from SpecSync or written (REQ-cli-050). Every refusal saves nothing.
+fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Option<Relayed>> {
+    let values = [
+        ("--decided-by", args.decided_by.as_deref()),
+        ("--words", args.words.as_deref()),
+        ("--where", args.place.as_deref()),
+        ("--recorded-by", args.recorded_by.as_deref()),
+    ];
+    check_relay(&session.awaiting_human, args.close_gate.as_deref(), values).map_err(|problem| {
+        match problem {
+            RelayProblem::WithoutGate(given) => anyhow::anyhow!(
+                "refused:relay-without-gate: {} describe a human's decision at a gate, so they need --close-gate with that gate's exact text; nothing was saved.\nRun `chough next` to list the open gates, then `{}` with one of them.",
+                given.join(", "),
+                stage::CLOSE_GATE_COMMAND
+            ),
+            RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
+                "refused:relay-incomplete: closing gate \"{gate}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                missing.join(", "),
+                if missing.len() == 1 { "is" } else { "are" }
+            ),
+            RelayProblem::NotOpen(gate) => anyhow::anyhow!(
+                "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.\nRun `chough next` to list the open gates, then close one by its exact text."
+            ),
+            RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
+                "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
+                stage::RELAY_TEXT_LIMIT
+            ),
+        }
+    })
 }
 
 /// Save `session` with a gate-closed event for each of `cleared` and a gate-opened

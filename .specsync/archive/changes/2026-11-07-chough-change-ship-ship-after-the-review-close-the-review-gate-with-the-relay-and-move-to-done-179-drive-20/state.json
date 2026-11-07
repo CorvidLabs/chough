@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20",
+  "slug": "chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20",
+  "title": "Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20)",
+  "description": "chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20)",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "852605831643d975411015c58cc0f9a2919d0568",
+  "created_at": 1794007717,
+  "updated_at": 1794010315,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/change.rs",
+    "src/checkpoint.rs",
+    "src/main.rs",
+    "src/skill.rs",
+    "tests/change.rs",
+    "tests/package.rs",
+    "tests/docs.rs",
+    "docs/cli.md",
+    "docs/walkthrough.md",
+    "docs/lifecycle.md",
+    "README.md",
+    "CHANGELOG.md",
+    "skills/chough-workflow/references/accept.md",
+    "skills/chough-workflow/references/lifecycle.md",
+    "skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/references/accept.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/stages.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "REQ-cli-059 (new): chough change ship <id> with the review gate's relay checks the session, stage, open gates and relay before anything runs (each refusal names a recovery that a test runs), runs specsync change ship <id> unbounded with its output and refusals passed through, then closes the gate as a relayed claim and moves the session to done; a refused step after a successful ship exits 1, says shipped and names the remaining command, which a test runs. The walkthrough and the skill's closeout run chough change new, check and ship, with review still specsync change review. Six tests in tests/change.rs fail first, each mutant in testing.md fails one of them, and fledge lanes run verify passes on Linux."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Issue #179, slice 2 of Chough drives SpecSync; slice order approved by Leif (relayed by the orc, 2026-11-06), with option A from #174's re-approval moving the walkthrough's direct calls here. DRIVE-20; DRIVE-2 (the done move keeps one native read); DRIVE-4 (nothing writes .chough/ between check and finalize, so the gate closes after ship); FLOW-14; FLOW-16 as amended and FLOW-10 (only the given relayed decision is recorded). REQ-cli-050 and REQ-cli-052 unchanged; REQ-cli-059 is this change's, REQ-cli-058 is #177's. Rule: a refusal names a recovery command and a test runs it. Lesson: merge main before review and rebuild the vault.",
+    "public_contract": "yes"
+  }
+}

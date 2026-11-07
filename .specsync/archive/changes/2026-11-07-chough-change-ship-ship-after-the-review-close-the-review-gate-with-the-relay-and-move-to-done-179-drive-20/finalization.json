@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20",
+  "implementation_commit": "cf6d1837618d4d017449053eb6de5a35b05736d0",
+  "implementation_tree": "62bb3ce3e540d50f35e136c0cd0f3a1940cf62de",
+  "contract_digest": "a0061d73a6ea9aab8812c8a2dbf6f7787bb0c2e8f2046cc1b2adfd9c6bc5cd47",
+  "workspace_digest": "204a64f772a28505ae5a49131e1a655906f750186ff47502ae75c42d1b9c64b1",
+  "closing_digest": "3ddaac3e8a62d76f5bb7dad9220ad075c2ed095792ba7426cadf80b7670ce74f",
+  "review_digest": "1818acab6757576438e83b1adeef39f6d7b8c0cfdafbfc89bab2dc600c11e7e4",
+  "finalization_digest": "486b007c93599d3ae6cb1510a34865909afdfd8b16bd63bba40ccea7a0cf02e8",
+  "timestamp": 1794010311
+}

@@ -1,0 +1,110 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-change-ship-closes-gate-and-moves-to-done"
+title = "chough change ship with the review relay ships, closes the gate as a relayed claim and moves to done"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-16"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/checkpoint.rs", "tests/change.rs", "docs/walkthrough.md", "skills/chough-workflow/references/accept.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done"
+
+[[case]]
+id = "TC-cli-change-ship-refusal-passes-through"
+title = "A SpecSync ship refusal passes through chough change ship and nothing is recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/checkpoint.rs", "tests/change.rs", "docs/walkthrough.md", "skills/chough-workflow/references/accept.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test a_specsync_ship_refusal_passes_through_and_records_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "a_specsync_ship_refusal_passes_through_and_records_nothing"
+
+[[case]]
+id = "TC-cli-change-ship-checks-before-running"
+title = "chough change ship refuses before running without the relay or outside accept, and each named recovery succeeds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-16"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/checkpoint.rs", "tests/change.rs", "docs/walkthrough.md", "skills/chough-workflow/references/accept.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test ship_refuses_before_running_without_the_relay_or_outside_accept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_refuses_before_running_without_the_relay_or_outside_accept"
+
+[[case]]
+id = "TC-cli-change-ship-names-remaining-step"
+title = "A refused move into done after a successful ship names the remaining step, which then succeeds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/checkpoint.rs", "tests/change.rs", "docs/walkthrough.md", "skills/chough-workflow/references/accept.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test a_refused_done_move_after_ship_names_the_remaining_step passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "a_refused_done_move_after_ship_names_the_remaining_step"
+
+[[case]]
+id = "TC-cli-change-ship-outlives-read-bound"
+title = "chough change ship completes after the native read bound has passed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/checkpoint.rs", "tests/change.rs", "docs/walkthrough.md", "skills/chough-workflow/references/accept.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test ship_outlives_the_native_read_bound passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_outlives_the_native_read_bound"
+
+[[case]]
+id = "TC-cli-change-walkthrough-runs-chough"
+title = "The walkthrough and the closeout run chough change new, check and ship, with review still direct"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/checkpoint.rs", "tests/change.rs", "docs/walkthrough.md", "skills/chough-workflow/references/accept.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test the_walkthrough_and_closeout_run_chough_change passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "the_walkthrough_and_closeout_run_chough_change"

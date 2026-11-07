@@ -84,10 +84,10 @@ The order before the review is: when the delta adds or modifies requirements, ru
 gate with `chough checkpoint --awaiting-human`; commit the source together with
 `.chough/`; `chough change check <id>` (SpecSync's `change check <id> --commit`); present
 the work. After the human
-decision come `specsync change review`, then `ship` or `finalize`, and only then
-closing the review gate with the human's relayed decision (`chough checkpoint
---close-gate "<gate>" --decided-by ... --words ... --where ... --recorded-by ...`) and
-`chough stage advance`. Between the check and finalize, nothing
+decision come `specsync change review`, then `chough change ship <id> --close-gate
+"<gate>" --decided-by ... --words ... --where ... --recorded-by ...`. That command ships
+(SpecSync's `ship`, which finalizes), and only then closes the review gate with the
+human's relayed decision and moves the session to done. Between the check and finalize, nothing
 writes to `.chough/` and nothing is committed. The closeout is archive-first: the
 hosted Archive gate refuses while a native change is open, so only after finalize and
 the done move do you commit, then push and observe hosted CI at the archived tip
@@ -108,8 +108,8 @@ any Chough write in that window forces another `change check`.
 approved delta and records
 targeted structural verification; it does not run product tests and refuses while
 tasks are unchecked. The human implementation review happens after verification and
-before archive; the native `review` record follows a real decision only. Then `ship`
-or `finalize` archives on the same pull request without an intervening commit.
+before archive; the native `review` record follows a real decision only. Then
+`chough change ship` archives on the same pull request without an intervening commit.
 Every move that lands on done needs native state `archived` with authenticated
 terminal evidence: `chough stage advance` or `stage skip` from accept, `stage advance`
 or `stage skip` from release, `stage reset --to done`, and `stage return` to a caller
