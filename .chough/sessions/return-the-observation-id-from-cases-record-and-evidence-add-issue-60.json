@@ -33,7 +33,8 @@
     "files": []
   },
   "decisions": [
-    "decided: reuse existing FLOW-7, FLOW-18 and LIFE-4 with REQ-cli-011, REQ-cli-017 and REQ-cli-023; no new HI or REQ ID is needed because issue 60 only exposes existing observation and case IDs, and broader envelope changes are rejected as out of scope"
+    "decided: reuse existing FLOW-7, FLOW-18 and LIFE-4 with REQ-cli-011, REQ-cli-017 and REQ-cli-023; no new HI or REQ ID is needed because issue 60 only exposes existing observation and case IDs, and broader envelope changes are rejected as out of scope",
+    "decided: after native refusal of the no-spec scope and no approval, preserve Leif's accepted #60 behavior and AC and amend existing REQ-cli-011 and REQ-cli-017 in one cli delta; no new HI or REQ IDs, no implementation or test assertions in the amendment"
   ],
   "open_questions": [],
   "completed": [],
@@ -44,5 +45,5 @@
     "Scope approval of return-the-observation-id-from-cases-record-and-evidence-add-issue-60"
   ],
   "run_consents": [],
-  "next_action": "Human scope approval of return-the-observation-id-from-cases-record-and-evidence-add-issue-60; no implementation before orc-codex records approval"
+  "next_action": "Human re-approval of amended return-the-observation-id-from-cases-record-and-evidence-add-issue-60; no implementation before orc-codex records approval"
 }

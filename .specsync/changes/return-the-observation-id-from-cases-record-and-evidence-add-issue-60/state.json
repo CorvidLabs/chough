@@ -22,8 +22,6 @@
     "CHANGELOG.md",
     "knowledge/"
   ],
-  "no_spec_change": true,
-  "no_spec_change_rationale": "REQ-cli-011, REQ-cli-017 and REQ-cli-023 already define honest case recording and stable observation identities. This bug fix only returns the existing case and observation IDs in successful JSON output; it does not change requirements, stored records, existing keys, exit codes or ID allocation.",
   "acceptance_criteria": [
     "On base 5ff54dd7, new focused tests fail because cases record omits case and observation and evidence add omits observation. After the fix, cases record returns case equal to the requested case ID and observation equal to both the recorded file stem and stored record id; evidence add returns observation with the same equality. Existing keys, record bytes apart from ordinary ID allocation, exit codes and stored schemas remain unchanged; docs/cli.md names the returned keys, the focused cases and full Fledge verify lane pass locally."
   ],
@@ -36,6 +34,7 @@
     "docs"
   ],
   "dependencies": [],
+  "no_spec_change": false,
   "answers": {
     "architecture_risk": "no",
     "constraints": "FLOW-7 keeps case definitions separate from observations; FLOW-18 requires docs/cli.md to match current behavior; LIFE-4 covers the small CLI workflow. Issue 60 bounds this to additive case/observation keys only: preserve existing keys, exit codes, stored records and schemas; exclude bug-output and stage-refusal envelope changes. Write failing regressions first, use a change-specific cases file, run strict audit before every push, and do not tag, release, publish or deploy.",

@@ -7,6 +7,11 @@ artifact: design
 
 ## Approach
 
+Amend REQ-cli-011 and REQ-cli-017 through one `cli` delta, using the existing
+IDs and preserving every existing sentence and acceptance criterion while adding
+the two additive response contracts. Do not change REQ-cli-023 or allocate a new
+HI or requirement ID.
+
 In `record_manual`, add the existing `id` as `case` and the allocated or explicit
 `observation` as `observation` to the JSON value it already returns. In
 `evidence::add`, add the stored record's existing `id` as `observation` to its
