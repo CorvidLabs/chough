@@ -1,6 +1,6 @@
 ---
 id: chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20
-state: draft
+state: approved
 type: feature
 base_commit: 0a20d934a08a5c92a14ca6b0016dfb520daa0815
 ---

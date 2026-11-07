@@ -56,6 +56,63 @@
       "approved_delta_bases": {
         "cli: REQUIREMENT REQ-cli-059": "05f31b4e7f2fdbd7db6318db68ac0bce181a5a148eb6b97640001d42fd342ae9"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794016119,
+      "digest": "38bc6fedc8b61f10df39e8369aef5308d6be0f31b044c0272cf255984565949e",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20",
+        "title": "Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)",
+        "description": "chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/accept.md",
+          ".agents/skills/chough-workflow/references/lifecycle.md",
+          "CHANGELOG.md",
+          "README.md",
+          "docs/cli.md",
+          "skills/chough-workflow/references/accept.md",
+          "skills/chough-workflow/references/lifecycle.md",
+          "src/change.rs",
+          "src/checkpoint.rs",
+          "src/gates.rs",
+          "src/history.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "tests/change.rs",
+          "tests/docs.rs",
+          "tests/gates.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "REQ-cli-061 and REQ-history-014 (new), REQ-cli-059 (modified): chough gate list numbers every open human gate with a one-screen summary (what changed since the change's base, the tests, the risks, a diff link) and its SHA-256 digest, saved untracked, with no native read; chough gate record closes only listed gates with one relay, each keeping its own summary digest and the list, all or none, refusing an unknown list, an unlisted number, a closed gate, a changed summary, or a verifying change (each naming a recovery a test runs); chough change ship takes --list and --gate for the review gate. The change log names the oldest Chough that reads summary digests. Six tests in tests/gates.rs fail first, each mutant in testing.md fails one, and fledge run linux-verify passes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Issue #184, slice 4 of Chough drives SpecSync; slice order approved by Leif (relayed by the orc). FLOW-19 and FLOW-20 (answers 2 and 3), FLOW-16 as amended and FLOW-10; DRIVE-2 (no native read), DRIVE-4 (the review gate closes through ship, not in the verification window), DRIVE-12. Modifies REQ-cli-059 for --list/--gate. History compatibility: older Chough refuses the new relay fields, and the change log names the oldest reader. IDs REQ-cli-061 and REQ-history-014 confirmed free with t27. Native records are slice 5 (SpecSync 6.3.0 with #900). Lesson: run the spec coverage check locally before Linux verify.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "1c75239fec22e68624aa14043a7e716a2c079562ce2f75ee55ce7ee7b4ca7ad9",
+        "history": "42d36caa65f30f0afbcde9602321413d40c7170e1651e4b348edda0bf1b037b0"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-059": "05f31b4e7f2fdbd7db6318db68ac0bce181a5a148eb6b97640001d42fd342ae9"
+      }
     }
   ],
   "reopenings": [],
