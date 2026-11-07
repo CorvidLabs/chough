@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "BUG-reapproved-prune-inputs-lack-current-native-verification-b5e5ca5c85f4d7672d2d43f1",
+  "title": "Reapproved prune inputs lack current native verification",
+  "symptom": "Both pinned verify lanes pass product tests and strict specs but lifecycle audit reports approved paths uncovered",
+  "trigger": "Run the full pinned verify lanes at b4b4dae7208570d63b613a0d5e638e42aa975e3a before the reapproved native change check",
+  "expected": "The valid reapproved change supplies current native scoped verification for its declared source and spec paths",
+  "actual": "Linux audit names src/evidence.rs and tests/evidence.rs; macOS also names both spec contracts, history requirements/testing, and tests/spec_split.rs. Native status remains approved with next action change check.",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "cases": [],
+  "environment": "macos-arm64-and-linux-aarch64",
+  "revision": "b4b4dae7208570d63b613a0d5e638e42aa975e3a",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-structural-0569129fb63cffe3aa2b53bf",
+    "OBS-structural-1b635c037853e3ce2f70d10b"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "evidence-gap",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Pinned lanes after approved one-line digest refresh, before current native check",
+  "notes": [],
+  "created_at_unix_seconds": 1794063629,
+  "updated_at_unix_seconds": 1794063629
+}

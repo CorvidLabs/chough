@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-0569129fb63cffe3aa2b53bf",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "failed",
+  "environment": "local-linux-aarch64",
+  "summary": "Pinned Linux verify at b4b4dae7208570d63b613a0d5e638e42aa975e3a passed the complete product suite and strict spec check, then failed lifecycle audit step 6: src/evidence.rs and tests/evidence.rs reported uncovered despite valid approved scope. Native next action remains change check since reapproval.",
+  "artifacts": [
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/linux-before-current-check.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/linux-before-current-check.log": "c661c7de6e18bb98b1b9db257e1c3acaa3f6aa3315f25e11587f9888061a352e"
+  },
+  "observed_at_unix_seconds": 1794063605,
+  "snapshot": {
+    "revision": "b4b4dae7208570d63b613a0d5e638e42aa975e3a",
+    "dirty": false,
+    "fingerprint": "38c23b545c55e7fc478a12698ce145e2c0b3d52e703f253fd77156ede7b99504",
+    "content": "324e9aaa8a63ba86fb6cb31608a5c5e08962a9011615ba239e32bba746b7718d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated"
+}

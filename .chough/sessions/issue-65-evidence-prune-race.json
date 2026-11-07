@@ -61,7 +61,8 @@
     "Failure first: prune_restore_permissions_preserve_replacement_identity ran 1 test, failed mode assertion 0640 versus 0600 before the restore publication fix; receipt restore-identity-before.log",
     "Failing tests: bf57eb259b17a2ed5634b5ef62f4b1520f8bdd93; rollback replacement chmod changes 0600 to 0640, linked to existing partial-removal bug",
     "Focused rollback tests pass after private publication; baseline and all three mutation checks verified. Linux full verify failed the omitted strict split pin; macOS full verify interrupted for scope amendment. No full platform lane passed.",
-    "Pinned focused checks passed: build; 4 strict split regressions; 11 evidence unit, 30 evidence integration and 25 history tests; all case definitions valid; the four approved #65 cases passed including replacement inode/mode/bytes."
+    "Pinned focused checks passed: build; 4 strict split regressions; 11 evidence unit, 30 evidence integration and 25 history tests; all case definitions valid; the four approved #65 cases passed including replacement inode/mode/bytes.",
+    "Pinned product suites passed: macOS 593 tests and Linux 597 tests, both with strict spec checks at 100% coverage. Both complete lanes failed lifecycle audit step 6 before the reapproved native check; failure receipts preserved."
   ],
   "observations": [
     "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
@@ -82,15 +83,18 @@
     "OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb",
     "OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3",
     "OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da",
-    "OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820"
+    "OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820",
+    "OBS-structural-0569129fb63cffe3aa2b53bf",
+    "OBS-structural-1b635c037853e3ce2f70d10b"
   ],
   "bugs": [
     "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",
     "BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07",
-    "BUG-approved-prune-requirement-delta-leaves-split-digest-stale-51af3f652531624b8e771636"
+    "BUG-approved-prune-requirement-delta-leaves-split-digest-stale-51af3f652531624b8e771636",
+    "BUG-reapproved-prune-inputs-lack-current-native-verification-b5e5ca5c85f4d7672d2d43f1"
   ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Run complete pinned macOS verify and declared Linux verify, then record their actual outcomes and finish the implementation-review gate before the final native change check"
+  "next_action": "Run the authorized preparatory native change check to establish scoped verification after reapproval, diagnose the audit gap honestly, then rerun affected gates and finish the final evidence/checkpoint before the final native recheck"
 }
