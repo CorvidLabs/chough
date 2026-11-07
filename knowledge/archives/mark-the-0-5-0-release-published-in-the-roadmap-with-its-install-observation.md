@@ -45,12 +45,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-2 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
-
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-installation-observation-48008674b01d6e137c95d956 | passed (by cycle time) | macos-arm64-cargo-1.99.0 |  |
-| OBS-product-test-c727fa6d2f004d10b1d511f8 | passed (by cycle time) | linux-aarch64-docker-chough-linux-1-2-3 |  |
 
 ## Bugs
 
