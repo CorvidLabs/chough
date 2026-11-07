@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bd1c0595ba435c201d6ca0dc",
-    "head": "EVT-f174ff25a05d0bcbfce11389",
+    "head": "EVT-83d527b115652e5504f7d99a",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "intent",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -25,20 +25,20 @@
     "files": []
   },
   "decisions": [
-    "Release step 9 is limited to the 0.5.0 ROADMAP row and its installation observation; no contract or HI change (Leif's worker instruction, 2026-11-06)."
+    "Release step 9 is limited to the 0.5.0 ROADMAP row and its installation observation; no contract or HI change (Leif's worker instruction, 2026-11-06).",
+    "Leif decided \"Intent and scope approval of mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation\": \"Yes to all 3\" (Herdr orc t18 approval prompt, 2026-11-06; relayed by orc t18 and observed by k-chough); recorded by kimi (k-chough); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
-    "Clean install observed on macOS arm64; native documentation definition completed."
+    "Clean install observed on macOS arm64; native documentation definition completed.",
+    "Added the 0.5.0 ROADMAP release row; cargo test --test docs passed 11 tests on macOS arm64."
   ],
   "observations": [
     "OBS-installation-observation-48008674b01d6e137c95d956"
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Intent and scope approval of mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Wait for the orc's intent and scope decision at the committed definition."
+  "next_action": "Run the required Linux verify lane and record its result."
 }

@@ -7,18 +7,18 @@
   "title": "Mark the 0.5.0 release published in the roadmap with its install observation",
   "description": "Mark the 0.5.0 release published in the roadmap with its install observation",
   "kind": "documentation",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "86ae8dda94aba981094e92d5395dc085ebe65dbd",
   "created_at": 1794020673,
-  "updated_at": 1794020758,
+  "updated_at": 1794021105,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
     "docs/ROADMAP.md"
   ],
-  "no_spec_change": false,
-  "no_spec_change_rationale": null,
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Documentation of a completed release; no contract changes.",
   "acceptance_criteria": [
     "docs/ROADMAP.md has a 0.5.0 release row naming the v0.5.0 tag at 455cb643, release prep PR #185, crates.io chough 0.5.0, the GitHub release and the clean install result, and the clean install is recorded as an installation observation; fledge lanes run verify passes on Linux."
   ],

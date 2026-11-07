@@ -1,4 +1,39 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "kimi (k-chough)",
+      "timestamp": 1794021105,
+      "digest": "16009e1ee44da4424c455647156d56671b78ca6b6557822ccbf4e362120dc135",
+      "note": "Human authority: Leif answered 'Yes to all 3' in orc t18's prompt approving this change at 94dd34218d9c4a5b2ad2bc0cf9fa6524a8ebdeb1. Scope: one ROADMAP 0.5.0 row plus the clean-install observation; no spec or HI change.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation",
+        "title": "Mark the 0.5.0 release published in the roadmap with its install observation",
+        "description": "Mark the 0.5.0 release published in the roadmap with its install observation",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/ROADMAP.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Documentation of a completed release; no contract changes.",
+        "acceptance_criteria": [
+          "docs/ROADMAP.md has a 0.5.0 release row naming the v0.5.0 tag at 455cb643, release prep PR #185, crates.io chough 0.5.0, the GitHub release and the clean install result, and the clean install is recorded as an installation observation; fledge lanes run verify passes on Linux."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif authorized the 0.5.0 release steps through the orc and explicitly assigned this worker release step 9: one small docs PR for the ROADMAP row. Scope is docs/ROADMAP.md plus native lifecycle and the clean-install observation; no contract, HI, tag, publish, release or deployment change.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
