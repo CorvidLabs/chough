@@ -1921,9 +1921,15 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
                         }
                     });
                     let path = local_path(root, artifact)?;
+                    let bytes = fs::read(&path)?;
+                    ensure!(
+                        evidence.artifact_fingerprints.get(artifact) == Some(&digest_bytes(&bytes)),
+                        "artifact {artifact} changed while capturing {}; earlier removals must be restored",
+                        evidence.id
+                    );
                     artifacts.push((
                         artifact.clone(),
-                        fs::read(&path)?,
+                        bytes,
                         fs::symlink_metadata(&path)?.permissions(),
                     ));
                 }
@@ -1976,8 +1982,8 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
         if let Err(failure) = removal {
             let mut problems = vec![];
             for (relative, bytes, permissions) in held.iter().rev() {
-                let path = local_path(root, relative)?;
                 let restored = (|| -> Result<Placed> {
+                    let path = local_path(root, relative)?;
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent)?;
                     }
@@ -2005,7 +2011,9 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
                     }
                 }
             }
-            let _ = fs::remove_dir(local_path(root, HOLD_DIR)?);
+            if let Ok(hold_dir) = local_path(root, HOLD_DIR) {
+                let _ = fs::remove_dir(hold_dir);
+            }
             let reason = if problems.is_empty() {
                 format!("{failure:#}")
             } else {

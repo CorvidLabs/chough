@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "BUG-prune-rollback-aborts-on-recreated-symlink-paths-b187eee3aee864159e01358c",
+  "title": "Prune rollback aborts on recreated symlink paths",
+  "symptom": "Unsafe rollback path aborts safe hold, earlier restoration and ledger accounting",
+  "trigger": "Recreate removed file or ancestor as symlink before rollback",
+  "expected": "Keep symlink identity and target; hold originals; attempt earlier restores and record both sets",
+  "actual": "Both variants kept writer but lost recovery hold and earlier files; zero restored events; cargo exit 101",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "cases": [
+    "TC-history-prune-unsafe-restore-continuation"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "8f7574956f2f8b8789022e68d6a02e9ef0567062",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "PR 197 discussion_r4502629890",
+  "notes": [],
+  "created_at_unix_seconds": 1794071150,
+  "updated_at_unix_seconds": 1794071150
+}

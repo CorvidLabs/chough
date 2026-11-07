@@ -27,7 +27,10 @@
     "requirements": [
       "REQ-history-004"
     ],
-    "cases": [],
+    "cases": [
+      "TC-history-prune-capture-byte-authority",
+      "TC-history-prune-unsafe-restore-continuation"
+    ],
     "design": [],
     "files": [
       "src/evidence.rs",
@@ -47,12 +50,19 @@
   ],
   "open_questions": [],
   "completed": [
-    "Disposable base 1fc4c67b59f05097cab4cafa446aa58198f8ee56 reproduced both P1s: capture filter 1 executed failure; unsafe rollback filter 2 executed failures (file and ancestor symlinks). Actual argv, raw hashes and compact receipts are in native research.md."
+    "Disposable base 1fc4c67b59f05097cab4cafa446aa58198f8ee56 reproduced both P1s: capture filter 1 executed failure; unsafe rollback filter 2 executed failures (file and ancestor symlinks). Actual argv, raw hashes and compact receipts are in native research.md.",
+    "Failing tests: 8f7574956f2f8b8789022e68d6a02e9ef0567062; both exact case bindings executed cargo exit101 (capture 1 failed, unsafe symlink 2 failed)"
   ],
-  "observations": [],
-  "bugs": [],
+  "observations": [
+    "OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac",
+    "OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181"
+  ],
+  "bugs": [
+    "BUG-prune-capture-accepts-replacement-bytes-as-deletion-authority-cdfb288128633d57b0c29089",
+    "BUG-prune-rollback-aborts-on-recreated-symlink-paths-b187eee3aee864159e01358c"
+  ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Commit approval and own checkpoint; land and execute real red regressions before either production fix"
+  "next_action": "Apply approved captured-digest validation and per-file unsafe rollback recovery, then rerun same cases"
 }

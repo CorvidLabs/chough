@@ -74,3 +74,17 @@ next: check, review, finalize, then check the other. Limits: SpecSync 6.1.2.
 show` ran for more than 10 minutes, calling `specsync change status` for one archive
 after another. Source: #111's adoption run, stopped by hand. Future use: don't call it
 in scripts or lanes until it is profiled (#32). Limits: one repository, 98 archives.
+
+
+2026-11-07, capture and rollback boundaries (verified failure): PR #197's original
+race tests passed but did not cover replacement between digest validation and byte
+capture, or a symlink introduced at a removed file/ancestor before rollback. Three
+real regressions at 8f7574956f2f8b8789022e68d6a02e9ef0567062 failed with cargo exit
+101: both capture scenarios deleted writer bytes; both symlink variants aborted
+without recovery holds, earlier restoration or restored ledger events. Source:
+TC-history-prune-capture-byte-authority and TC-history-prune-unsafe-restore-continuation
+failed observations in this successor session. Future use: validate the bytes
+actually captured against eligible identity, and handle each restoration-path
+failure inside its own recovery attempt so unsafe destinations cannot skip other
+files or ledger accounting. Limits: deterministic local filesystem interleavings;
+these receipts do not prove arbitrary concurrent-writer safety or human acceptance.
