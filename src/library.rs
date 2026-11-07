@@ -797,7 +797,8 @@ fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
     notes.extend(crate::vault::intent_notes(dir, &intent, &touches));
     notes.push(crate::vault::rules_note(root, dir)?);
     notes.extend(crate::vault::bug_notes(root, dir)?);
-    notes.extend(crate::vault::session_notes(root, dir)?);
+    let archived = found.iter().map(|archive| archive.id.as_str()).collect();
+    notes.extend(crate::vault::session_notes(root, dir, &archived)?);
     for (relative, content) in &notes {
         ensure!(
             content.len() <= ENTRY_LIMIT,

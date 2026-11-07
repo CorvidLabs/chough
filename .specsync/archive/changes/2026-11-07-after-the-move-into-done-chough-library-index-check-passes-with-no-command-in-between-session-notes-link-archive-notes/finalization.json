@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes",
+  "implementation_commit": "12dd018b750323d06319edcddf62a2bbc3c45be1",
+  "implementation_tree": "710e410975894ae94481fa22c13f0c2831a2542c",
+  "contract_digest": "7e1a4390255d85cc14b8639f16b89882618570d8be1dbf6848d8599b7e0c9993",
+  "workspace_digest": "e1dd1316559717131bbe2d78108b477cd474b68f30426860cef14e0c9e688f97",
+  "closing_digest": "b5785ba351fc4b2949d15783ab456b35be36ceb967722681ba6893f0ef937916",
+  "review_digest": "006bc59b489f25716aaea65043502ba7515dcef683947c9dacd76c913022e4ef",
+  "finalization_digest": "9239cd777e2e11875907b16c241e4edbf1b5dc813f3acb7e85de15a70497561c",
+  "timestamp": 1794023143
+}

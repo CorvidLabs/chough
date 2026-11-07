@@ -1603,6 +1603,102 @@ fn done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vaul
     fixture.ok(&["session", "list"]);
 }
 
+/// #191 (KNOW-4, REQ-cli-051): a session rolled into a vault built by the same move links
+/// its change's archive note, so the move into done leaves the directory as its sources
+/// generate, with no command in between.
+#[test]
+fn a_session_rolled_into_a_fresh_vault_links_its_archive_note_and_the_check_passes() {
+    let fixture = project("0");
+    seven_archived_sessions(&fixture);
+    // As in a fresh clone of a project that does not commit its vault, with no trim
+    // building the vault first (#191 reproduced with the trim refused).
+    std::fs::remove_dir_all(fixture.root().join("knowledge")).unwrap();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "retention",
+        "manual",
+        "--source",
+        "Human: keep proof",
+    ]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let applied = &moved["applied"];
+    assert_eq!(
+        applied["librarian_trim"]["status"], "skipped",
+        "{applied:#}"
+    );
+    assert_eq!(
+        applied["session_rollup"]["moved"],
+        json!(["s0", "s6"]),
+        "{applied:#}"
+    );
+    assert_eq!(
+        applied["librarian_index"]["status"], "refreshed",
+        "{applied:#}"
+    );
+    let note = fixture.read("knowledge/sessions/s0.md");
+    assert!(
+        note.contains("- Native change: [a1](../archives/a1.md)\n"),
+        "{note}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
+    // One build over a vault that holds the rolled sessions but no notes gives what a
+    // rebuild gives (KNOW-4): the link never depends on notes already on disk.
+    for generated in ["archives", "sessions"] {
+        std::fs::remove_dir_all(fixture.root().join("knowledge").join(generated)).unwrap();
+    }
+    fixture.ok(&["library", "index"]);
+    let note = fixture.read("knowledge/sessions/s0.md");
+    assert!(
+        note.contains("- Native change: [a1](../archives/a1.md)\n"),
+        "{note}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// #191 (KNOW-4, REQ-cli-043): when the change's archive lists the session file that
+/// archives itself at done, the move regenerates after that step, so the change's entry
+/// places the file in Git and `library index --check` passes with no command in between.
+#[test]
+fn done_leaves_the_vault_current_when_the_archive_lists_the_self_archiving_session() {
+    let fixture = project("0");
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    let manifest = ".specsync/archive/changes/2026-05-01-a5/verification.json";
+    let mut verification: Value = serde_json::from_str(&fixture.read(manifest)).unwrap();
+    verification["acceptance_manifest"]["entries"]
+        .as_array_mut()
+        .unwrap()
+        .push(
+            json!({"path": ".chough/sessions/legacy.json", "kind": "file", "payload_digest": ZERO}),
+        );
+    fixture.write(
+        manifest,
+        &(serde_json::to_string_pretty(&verification).unwrap() + "\n"),
+    );
+    fixture.commit("a5 lists the session that will archive itself");
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "index", "--check"]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    let applied = &moved["applied"];
+    assert_eq!(
+        applied["session_archive"]["status"], "archived",
+        "{applied:#}"
+    );
+    assert_eq!(
+        applied["librarian_index"]["status"], "refreshed",
+        "{applied:#}"
+    );
+    assert!(!fixture.exists(".chough/sessions/legacy.json"));
+    fixture.ok(&["library", "index", "--check"]);
+    let note = fixture.read("knowledge/archives/a5.md");
+    let row = note
+        .lines()
+        .find(|line| line.starts_with("| `.chough/sessions/legacy.json` |"))
+        .unwrap_or_else(|| panic!("no row for the session file: {note}"));
+    assert!(row.contains("| Git "), "{row}");
+}
+
 /// KNOW-29: with the librarian off, no session moves.
 #[test]
 fn with_the_librarian_off_archived_sessions_stay() {

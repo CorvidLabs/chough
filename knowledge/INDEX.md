@@ -48,6 +48,7 @@ Active:
 Archived changes (newest first; the newest 3 are hot):
 
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation (hot)
+- [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) (hot)
 - [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](archives/prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0.md) Prepare the 0.5.0 release: set the package version to 0.5.0 and date the change log section for 0.5.0 (hot)
 - [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20) (hot)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) (cold)
@@ -72,6 +73,7 @@ Module lesson sources:
 Archived lesson bundles:
 
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-07-mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md)
+- [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../.specsync/archive/changes/2026-11-07-after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes/lesson-bundle.md)
 - [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](../.specsync/archive/changes/2026-11-07-prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0/lesson-bundle.md)
 - [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../.specsync/archive/changes/2026-11-07-chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20/lesson-bundle.md)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../.specsync/archive/changes/2026-11-07-flag-direct-specsync-lifecycle-writes-in-history-183-drive-21/lesson-bundle.md)
@@ -111,6 +113,18 @@ Archived lesson bundles:
 - OBS-tc-cli-gate-record-refusals-recover-f746cea63f6f5b9127aa00ed ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-record-listed-gates-only-c118c5b8a9d9cc06f799c868 ProductTest Passed in local-macos-arm64 at 6046cf529a30
 - OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 ProductTest Passed in local-macos-arm64 at 6046cf529a30
+533 recorded; most recent:
+
+- OBS-tc-cli-done-self-archive-vault-current-331d20867fbcf8d90f3a0d36 ProductTest Passed in local-macos-arm64 at 112c9530c33f
+- OBS-tc-cli-done-fresh-vault-session-links-0af8035af974b33d4913d80d ProductTest Passed in local-macos-arm64 at 112c9530c33f
+- OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 ProductTest Passed in local-macos-arm64 at ebeb882ac4ef
+- OBS-tc-cli-done-self-archive-vault-current-12d5b0b1d0d6f4333ede75ff ProductTest Passed in local-macos-arm64 at 2466ef4e0120
+- OBS-tc-cli-done-fresh-vault-session-links-5da6111b58cba9d10d899644 ProductTest Passed in local-macos-arm64 at 2466ef4e0120
+- OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325 ProductTest Failed in local-macos-arm64 at 5ba8791bc693
+- OBS-tc-cli-done-fresh-vault-session-links-b41c1e34e052180510f040aa ProductTest Failed in local-macos-arm64 at 5ba8791bc693
+- OBS-product-test-1e38299188b5d2c640dd711a ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-history-summary-digest-oldest-reader-named-a5a71364f80d5bf7aea96be8 ProductTest Passed in local-macos-arm64 at 6046cf529a30
+- OBS-tc-history-relay-summary-fields-both-or-neither-02cb69215806d8a77707d34b ProductTest Passed in local-macos-arm64 at 6046cf529a30
 
 ## Briefs
 

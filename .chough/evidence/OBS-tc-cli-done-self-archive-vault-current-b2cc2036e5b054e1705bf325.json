@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325",
+  "criteria": [
+    "KNOW-4"
+  ],
+  "requirements": [
+    "REQ-cli-043"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact done_leaves_the_vault_current_when_the_archive_lists_the_self_archiving_session for TC-cli-done-self-archive-vault-current: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325.log": "42186979b95f8f24a1936d2298c4648dc5507493d2989da456d699bcd5d3beae"
+  },
+  "observed_at_unix_seconds": 1794019561,
+  "snapshot": {
+    "revision": "5ba8791bc693f7d8bccfb6a4f7cdfd94afba03ff",
+    "dirty": false,
+    "fingerprint": "4c0344d54a0137eb8129f034cfc5bb18b6d7f654bd238b2a0025f0ecf47f479c",
+    "content": "22e6536218e371d4bf91ef0ee762b56cc2b82f302153ea0e1306c2a41172a26e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-done-self-archive-vault-current",
+      "digest": "ee0b4ce4bc3591868a9588fda5520215e2f80c752652bf1899109ae99fe3929c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "done_leaves_the_vault_current_when_the_archive_lists_the_self_archiving_session"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 6
+}
