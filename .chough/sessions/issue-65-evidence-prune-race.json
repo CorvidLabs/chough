@@ -1,0 +1,59 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
+    "head": "EVT-2d100435e30e3bd8eedf026e",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Make evidence prune --apply fail closed and restore partial removals (#65)",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+  "references": {
+    "criteria": [
+      "LIFE-8",
+      "LIFE-2",
+      "LIFE-7"
+    ],
+    "requirements": [
+      "REQ-history-004"
+    ],
+    "cases": [],
+    "design": [],
+    "files": [
+      "src/evidence.rs",
+      "tests/evidence.rs",
+      "specs/history/requirements.md",
+      "specs/history/testing.md",
+      "specs/history/history.spec.md",
+      "docs/FRD.md",
+      "docs/cli.md",
+      "CHANGELOG.md",
+      ".chough/cases/history.prune-race.cases.toml"
+    ]
+  },
+  "decisions": [
+    "agent: existing LIFE-8, LIFE-2 and LIFE-7 already cover #65 because they require proof protection and honest removed-versus-passed states, so no new HI criterion is needed",
+    "rejected: changing retention eligibility, protections, bounds, output schemas or authorization because #65 is a bounded race and rollback bug fix under REQ-history-004",
+    "rejected: refactoring the proven library archive path because the small fix can reuse remove_verified and the existing restored event shape without changing archive behavior"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Confirmed on origin/main 455cb643 that evidence prune still deletes directly without rollback, while library archive supplies remove_verified and restored ledger events; existing LIFE-8 covers the requested behavior",
+    "Completed the #65 native draft with four deterministic failure-first regressions, byte-checked removal, create-new rollback and uncommitted-byte recovery holds; SpecSync reports artifacts_complete true"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals"
+  ],
+  "run_consents": [],
+  "next_action": "Wait for the orc to relay scope approval; after approval, add the four failing regressions before changing retention behavior"
+}
