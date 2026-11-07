@@ -1642,6 +1642,18 @@ fn a_session_rolled_into_a_fresh_vault_links_its_archive_note_and_the_check_pass
         "{note}"
     );
     fixture.ok(&["library", "index", "--check"]);
+    // One build over a vault that holds the rolled sessions but no notes gives what a
+    // rebuild gives (KNOW-4): the link never depends on notes already on disk.
+    for generated in ["archives", "sessions"] {
+        std::fs::remove_dir_all(fixture.root().join("knowledge").join(generated)).unwrap();
+    }
+    fixture.ok(&["library", "index"]);
+    let note = fixture.read("knowledge/sessions/s0.md");
+    assert!(
+        note.contains("- Native change: [a1](../archives/a1.md)\n"),
+        "{note}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
 }
 
 /// #191 (KNOW-4, REQ-cli-043): when the change's archive lists the session file that
