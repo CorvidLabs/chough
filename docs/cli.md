@@ -670,7 +670,7 @@ through `chough` alone (REQ-cli-057, REQ-cli-059, DRIVE-20):
 
 | Command | Runs |
 |---|---|
-| `chough change new <description> [--kind K] [--spec S]... [--path P]...` | `specsync change new <description> [--kind K] [--spec S]... [--path P]... --json` |
+| `chough change new <description> [--kind K] [--spec S]... [--path P]... [--no-spec-change --rationale R]` | `specsync change new <description> [--kind K] [--spec S]... [--path P]... [--no-spec-change --rationale R] --json` |
 | `chough change answer <id> <question> <answer>` | `specsync change answer <id> <question> <answer> --json` |
 | `chough change check <id>` | `specsync change check <id> --commit` |
 | `chough change status [<id>]` | `specsync change status [<id>] --json` |

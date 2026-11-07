@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough timing` no longer marks its report partial for `direct-native-write` events
+  (#189, REQ-history-013, REQ-reporting-001). Since #183 it counted that valid kind as
+  unrecognised. It is now skipped as part of no stage segment, as gate records are.
+  Kinds that really are unknown still mark the report partial.
+- `chough change new` takes `--no-spec-change` and `--rationale` and passes them to
+  `specsync change new` (#189, REQ-cli-057). `--no-spec-change` without `--rationale`
+  is refused before SpecSync runs.
 ## [0.5.0] - 2026-11-06
 
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,
