@@ -1,0 +1,182 @@
+{
+  "timestamp": 1794072084,
+  "commit": "9d4dc227ad12cdc0831ef8afe4a14ad6dc28c44d",
+  "contract_digest": "64514640039ea1f68632b73de7b519a1dde5542fde4dbbf562b2a7c61e3b8150",
+  "execution_digest": "027fe9927b9cfb0c260be475c87d3c6ad915211ebf76e4f81f0a94911b8c0157",
+  "workspace_digest": "f8c3ab35ef4e74291e06a76f4c4b4328a226b942147854fe3e01eea4428a3122",
+  "acceptance_input_digest": "43dcd41bcec4a8a2e92267720f7966a8a316478bf2a2714ba23329a576a9bae0",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".chough/cases/history.pr197-p1.cases.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e92763baf09e7e49d97551f2dfe0c03aa609752f3438e784fdfe5a4bc5e34b33",
+        "entry_digest": "5701d0b05c128ff1d9e68dbac0b2191e0152e130e28d7b50b1c06c2ab99782a7",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "517791f21f80a66066573803de75548ce42d29fdf81937817631f2078c8ecbcb",
+        "entry_digest": "1f78f6f941447ea0e1d5bb23bfaecaf18df578d61dc186d980a1539cea549d45",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "69fed1d5b256add9e9c5100a808563449bfbd581d5e361682872e57783b187c4",
+        "entry_digest": "2e3f154c835dfa36f1ba2a391b87434b142e869603bcf481fac7b8b49797a600",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b985579a811edb2a6bc0e0c910b3f740ecddbe3c9bbe13889df3189be5cbcf71",
+        "entry_digest": "f443b79834aa52dc9bf3ae6c1b2ab31250d78580365f5f65241823cb752e1d0e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c7dec532257e1119e1f168666a533459c509a352fe0abdfa124393ee489f74b6",
+        "entry_digest": "05a3cf76362dbb2576b1c8086e15092b70e0cdc68f98a9b688804ae6c9714451",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/history/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c7be0cc159d8fdada8b3809c60f684f35fc5b02f3f981e48ec8f19129267269a",
+        "entry_digest": "6bbb61dd11242efaedd04fb704cfc25fc4e4ae8e407f76a756753e21b8748519",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/history.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c9e03868d1ca0c88944dc886e0c9150c1e87def6ce2839012900f1b92705acfc",
+        "entry_digest": "6174378e524a3a50f9dd07db4aafacbf0f34fbfddcc836c20687fdc63cfb5b33",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "857c5b71291bcdd909a0a6f1943a6479c5ff71968e3f41876c4b0c3d8d8e34d3",
+        "entry_digest": "2300457bd6158383472c719262f3251ec7a24d54d955a93facd35e61f47a0884",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "41aad80a94e9d05a23d84110df7715c8e1c64f6ec7ef2d722ff7fb4f5d313fce",
+        "entry_digest": "87fc1481fa94ca7470b7d65139992638f9b6f6bc84d2173429aee6f3f57a3ee4",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "74de30567f1314c8cbc76d737d358d2d8868e120277c783c92c4415e8c986d25",
+        "entry_digest": "f16ed18f718ccef0ad477842feea6fdaef0a63a067eb4b174a727c8109133df0",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "src/evidence.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7c3872726a5408d81ea66205cfedc40217ddc4852611b3cc930d833153a38ed8",
+        "entry_digest": "751e9bfd690e630f6a6acc1feedd8aa5846a5312cc2dc2fce5a667be5db785b3",
+        "owners": [
+          "cli"
+        ]
+      }
+    ]
+  },
+  "semantic_succession": {
+    "schema_version": 1,
+    "tuples": [
+      {
+        "predecessor_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+        "path": "specs/cli/cli.spec.md",
+        "module": "cli",
+        "predecessor_entry_digest": "6d433447a6765b21e95a45e3e4d05fdbb3f6f3abfe3b39a3eb139dd449f93641",
+        "successor_entry_digest": "1f78f6f941447ea0e1d5bb23bfaecaf18df578d61dc186d980a1539cea549d45"
+      },
+      {
+        "predecessor_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+        "path": "specs/history/context.md",
+        "module": "history",
+        "predecessor_entry_digest": "8de920d2cc713c67eb56daaf635e350d7f27eee6d58fb472e5ac017508924f0e",
+        "successor_entry_digest": "6bbb61dd11242efaedd04fb704cfc25fc4e4ae8e407f76a756753e21b8748519"
+      },
+      {
+        "predecessor_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+        "path": "specs/history/history.spec.md",
+        "module": "history",
+        "predecessor_entry_digest": "d6c7d1d73c45fc14f6e2b5dfd37f974a93e363b612ff9666f0cbb9654bc665cd",
+        "successor_entry_digest": "6174378e524a3a50f9dd07db4aafacbf0f34fbfddcc836c20687fdc63cfb5b33"
+      },
+      {
+        "predecessor_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+        "path": "specs/history/testing.md",
+        "module": "history",
+        "predecessor_entry_digest": "97b2c8ecf3ece8bad3b28ad055de6a47bfb06be5e81b680f2a1a06e2863c0a12",
+        "successor_entry_digest": "f16ed18f718ccef0ad477842feea6fdaef0a63a067eb4b174a727c8109133df0"
+      },
+      {
+        "predecessor_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+        "path": "src/evidence.rs",
+        "module": "cli",
+        "predecessor_entry_digest": "7c3d799d9387c73dba9b39e12e94d3a7c2e9ecbf7f3d208f0ea589e02f70a084",
+        "successor_entry_digest": "751e9bfd690e630f6a6acc1feedd8aa5846a5312cc2dc2fce5a667be5db785b3"
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli --spec history",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

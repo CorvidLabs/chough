@@ -1,0 +1,91 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794070617,
+      "digest": "64514640039ea1f68632b73de7b519a1dde5542fde4dbbf562b2a7c61e3b8150",
+      "note": "Leif directly replied exactly \"Yes to all\" to orc t19f one-item #197 corrective scope gate on 2026-11-07 at full HEAD c763d13d41edae6ec09c76b10333189118e1e668. Scope: protect bytes changed between eligibility validation and capture, safely preserve originals and restore earlier sets when rollback encounters file or ancestor symlinks. Approves the six declared paths and aligned cli/history deltas, preserving existing policies, bounds, schemas, HI/REQ IDs and immutable archives. This is ONLY successor definition/scope approval, not acceptance of any corrected implementation or merge. Corrected code requires fresh exact-head implementation review. Recorded by orc t19f from the direct human chat reply; prior archived acceptance remains historical.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "correct-prune-capture-authority-and-unsafe-rollback-for-pr-197",
+        "title": "Correct prune capture authority and unsafe rollback for PR 197",
+        "description": "Correct prune capture authority and unsafe rollback for PR 197",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.pr197-p1.cases.toml",
+          "specs/cli/cli.spec.md",
+          "specs/history/context.md",
+          "specs/history/history.spec.md",
+          "specs/history/testing.md",
+          "src/evidence.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "An artifact changed between eligible-digest validation and byte capture is never treated as deletion authority: retain or refuse it and restore any earlier removals; a removed destination or ancestor recreated as a symlink keeps its identity and target untouched while original bytes survive in a named safe hold, all other held files are attempted, and restored events account for every ledgered set; existing eligibility, protections, authorization, bounds, successful output and ledger schemas and all historical archives remain unchanged."
+        ],
+        "dependencies": [
+          "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals"
+        ],
+        "supersedes": [
+          {
+            "predecessor_id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+            "obligations": [
+              {
+                "path": "specs/cli/cli.spec.md",
+                "module": "cli",
+                "predecessor_entry_digest": "6d433447a6765b21e95a45e3e4d05fdbb3f6f3abfe3b39a3eb139dd449f93641"
+              },
+              {
+                "path": "specs/history/context.md",
+                "module": "history",
+                "predecessor_entry_digest": "8de920d2cc713c67eb56daaf635e350d7f27eee6d58fb472e5ac017508924f0e"
+              },
+              {
+                "path": "specs/history/history.spec.md",
+                "module": "history",
+                "predecessor_entry_digest": "d6c7d1d73c45fc14f6e2b5dfd37f974a93e363b612ff9666f0cbb9654bc665cd"
+              },
+              {
+                "path": "specs/history/testing.md",
+                "module": "history",
+                "predecessor_entry_digest": "97b2c8ecf3ece8bad3b28ad055de6a47bfb06be5e81b680f2a1a06e2863c0a12"
+              },
+              {
+                "path": "src/evidence.rs",
+                "module": "cli",
+                "predecessor_entry_digest": "7c3d799d9387c73dba9b39e12e94d3a7c2e9ecbf7f3d208f0ea589e02f70a084"
+              }
+            ]
+          }
+        ],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Preserve predecessor archive make-evidence-prune-apply-recheck-protections-and-restore-partial-removals and its human acceptance unchanged. Existing LIFE-2, LIFE-7, LIFE-8 and REQ-history-004 govern both fixes. Declare cli for src/evidence.rs and history for failure-case/testing/context ownership. Clarify CLI Purpose and history Error Cases only; keep the requirement body, strict split digest, policy, schemas and existing assertions unchanged. Scope is both P1 threads on issue 65 / PR 197 only. Red tests stay disposable until Leif scope approval; no approval/review probe, new issue, agent, PR or release.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "9292b404476fb361fd7646489c53cf381285224dcc3e9cb460f912dc4ec1011c",
+        "history": "20a14887d18d9529961a878fa2ac5a034fd9c5f63553310b295af469e60ec3f6"
+      },
+      "approved_delta_bases": {
+        "cli: SPEC SECTION Purpose": "7d81d8e60fe38d526a51bb7fb2ca6d11cb77780633d8202a2640b19841f24e42",
+        "history: SPEC SECTION Error Cases": "7b8a68535754c013299aed1ba1e7ee7508a5fc4ed576ff936bdfea5dee337380"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794072692,
+      "digest": "4a3bb3273edb0bfcb3cac6e8e678e0a62bd22468a516d03ecb040f06b29b8772",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

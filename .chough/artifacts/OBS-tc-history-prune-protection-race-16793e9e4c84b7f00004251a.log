@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test evidence::tests::prune_protection_race_restores_removed_bytes ... FAILED
+
+failures:
+
+---- evidence::tests::prune_protection_race_restores_removed_bytes stdout ----
+
+thread 'evidence::tests::prune_protection_race_restores_removed_bytes' (499677393) panicked at src/evidence.rs:3682:9:
+references changed during cleanup; remaining files retained; inspect the partial ledger entry for target
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    evidence::tests::prune_protection_race_restores_removed_bytes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 69 filtered out; finished in 0.26s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running unittests src/main.rs (target/debug/deps/chough-3771ef72516bb8a1)
+error: test failed, to rerun pass `--bin chough`

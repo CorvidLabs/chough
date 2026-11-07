@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-4f7d63e468288e44cfd85c88",
+  "criteria": [
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Sequential full verify at 3b9d008d6c48399f8ac4f7c62dee9fcb1b9cc4e9: all10steps exit0, 596 product tests passed. Isolated prior failed checkpoint test passed exit0/1test in1.20s with unchanged timeout/assertions. Initial failure retained.",
+  "artifacts": [
+    ".chough/artifacts/sol-ch65-corrective-full-summary.json",
+    ".chough/artifacts/sol-ch65-corrective-checkpoint-diagnostic.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/sol-ch65-corrective-checkpoint-diagnostic.log": "97da695b9691372e36913cccd34f7b0fde2a3e3a6fe8e0ede8a823a79adc1f84",
+    ".chough/artifacts/sol-ch65-corrective-full-summary.json": "96f1605b631bc82d798a4de1a4719096bd26abac194d5dce0dbb59cc48719c1e"
+  },
+  "observed_at_unix_seconds": 1794071982,
+  "snapshot": {
+    "revision": "3b9d008d6c48399f8ac4f7c62dee9fcb1b9cc4e9",
+    "dirty": false,
+    "fingerprint": "ca95bd20923d5543421ca127986f19692cb7fd807793ff686553448c43035acb",
+    "content": "92f2383e07014789609a16a6d4944473a925a62695daa8440da9f3fe33ac06c1"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "track": "functional"
+}

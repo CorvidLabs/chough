@@ -1,0 +1,99 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-172f0d8dc914e2a6b26f05a2",
+    "head": "EVT-e5eb91a49726020537905e5b",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Make evidence prune --apply fail closed and restore partial removals (#65)",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+  "references": {
+    "criteria": [
+      "LIFE-8",
+      "LIFE-2",
+      "LIFE-7"
+    ],
+    "requirements": [
+      "REQ-history-004"
+    ],
+    "cases": [
+      "TC-history-prune-protection-race",
+      "TC-history-prune-restores-partial-removal",
+      "TC-history-prune-restores-earlier-sets",
+      "TC-history-prune-restore-preserves-recreated-file"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "agent: existing LIFE-8, LIFE-2 and LIFE-7 already cover #65 because they require proof protection and honest removed-versus-passed states, so no new HI criterion is needed",
+    "rejected: changing retention eligibility, protections, bounds, output schemas or authorization because #65 is a bounded race and rollback bug fix under REQ-history-004",
+    "rejected: refactoring the proven library archive path because the small fix can reuse remove_verified and the existing restored event shape without changing archive behavior",
+    "Leif decided \"Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"Yes to all 3\" (Moshi question from orc t18, 2026-11-06; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated",
+    "Leif decided \"Scope reapproval of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: add tests/spec_split.rs only\": \"Yes\" (Direct chat reply to orc t19f three-gate batch, 2026-11-07); recorded by sol-ch65; a relayed claim, not authenticated",
+    "Agent clarification: the frozen platform runs had no edits to tracked or non-ignored verification inputs, and Git stayed clean; builds and tools still wrote their ignored output/cache files.",
+    "Leif decided \"Implementation review of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals\": \"yes\" (Direct Leif reply to orc t19f ONE-item #65/#197 implementation acceptance gate, 2026-11-07); recorded by sol-ch65; a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Confirmed on origin/main 455cb643 that evidence prune still deletes directly without rollback, while library archive supplies remove_verified and restored ledger events; existing LIFE-8 covers the requested behavior",
+    "Completed the #65 native draft with four deterministic failure-first regressions, byte-checked removal, create-new rollback and uncommitted-byte recovery holds; SpecSync reports artifacts_complete true",
+    "Added cli ownership with a minimal Purpose delta for src/evidence.rs; a disposable worktree probe accepted the cli and history deltas with approval_valid true, and the probe and its non-human approval record were removed",
+    "Failing tests: 3ad9df48933b880836c812c06369d00b9369e918; all four direct regressions failed for the intended behavior and their failed cases are linked to local bugs",
+    "All four prune regressions passed after implementation; 10 evidence unit, 30 evidence integration and 25 history tests passed, and both local bugs are verified",
+    "Failure first: prune_restore_permissions_preserve_replacement_identity ran 1 test, failed mode assertion 0640 versus 0600 before the restore publication fix; receipt restore-identity-before.log",
+    "Failing tests: bf57eb259b17a2ed5634b5ef62f4b1520f8bdd93; rollback replacement chmod changes 0600 to 0640, linked to existing partial-removal bug",
+    "Focused rollback tests pass after private publication; baseline and all three mutation checks verified. Linux full verify failed the omitted strict split pin; macOS full verify interrupted for scope amendment. No full platform lane passed.",
+    "Pinned focused checks passed: build; 4 strict split regressions; 11 evidence unit, 30 evidence integration and 25 history tests; all case definitions valid; the four approved #65 cases passed including replacement inode/mode/bytes.",
+    "Pinned product suites passed: macOS 593 tests and Linux 597 tests, both with strict spec checks at 100% coverage. Both complete lanes failed lifecycle audit step 6 before the reapproved native check; failure receipts preserved.",
+    "Native verification after reapproval resolved the audit coverage gap; strict audit, pre-push and knowledge passed with source/test/spec/docs unchanged from b4b4dae7208570d63b613a0d5e638e42aa975e3a. Rerun both full lanes before implementation review.",
+    "Both reruns at 9ebacabe170eee2cf7009c2d181d3093da73ae6d passed product/spec but failed stale native verification because recovery bookkeeping followed the preparatory check. All failures retained. Next check must follow all metadata/index writes; then freeze all inputs through full lanes.",
+    "Full pinned macOS verify (593 product tests, all 10 steps) and Linux verify (597 product tests, all 10 steps) passed at 8d5bcf430921bf14c8557214354f1928f2358cc3. No source/spec/docs/test changes after b4b4dae7208570d63b613a0d5e638e42aa975e3a. All prior failures preserved; Trust unavailable and optional scope probe not run as directed."
+  ],
+  "observations": [
+    "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
+    "OBS-tc-history-prune-restores-earlier-sets-bba515e3dbd42cea1399e660",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7",
+    "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d",
+    "OBS-tc-history-prune-protection-race-831610f271a785164c912a6e",
+    "OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05",
+    "OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078",
+    "OBS-product-test-972af92fbd4cb64f5dd3094a",
+    "OBS-product-test-51a832506d132b756faaf82a",
+    "OBS-product-test-f87bec1f3802297bc62bebe7",
+    "OBS-product-test-cf146b8281569e3b55420c53",
+    "OBS-product-test-8596f4c916b301c4ec8853cd",
+    "OBS-structural-b66cb4a28fd68f089b2a01b3",
+    "OBS-product-test-1a8d3cd9e2fff7f17314bd35",
+    "OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb",
+    "OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3",
+    "OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820",
+    "OBS-structural-0569129fb63cffe3aa2b53bf",
+    "OBS-structural-1b635c037853e3ce2f70d10b",
+    "OBS-structural-4bb245473772e0d89afd2868",
+    "OBS-structural-01fdbe567f85ef177eeea144",
+    "OBS-structural-ec5e908e555a15be59cc7e27",
+    "OBS-product-test-177ef9b1ad9bc144d0b26aa4",
+    "OBS-product-test-766be385e3010d3b004a21f6"
+  ],
+  "bugs": [
+    "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",
+    "BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07",
+    "BUG-approved-prune-requirement-delta-leaves-split-digest-stale-51af3f652531624b8e771636",
+    "BUG-reapproved-prune-inputs-lack-current-native-verification-b5e5ca5c85f4d7672d2d43f1"
+  ],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Leif implementation review through orc t19f of the one #65 PR at the final native-checked head; no worker approval/review/ship/merge. All evidence and gate writes are complete before the final change check."
+}

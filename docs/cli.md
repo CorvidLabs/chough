@@ -1112,9 +1112,18 @@ report the result in a `retention` field; a failure there is reported, and the r
 outcome stands. Before each set is removed, one JSON line is appended to
 `.chough/pruned.jsonl`: ID, cases, environment, outcome, kind, revision, observed time,
 artifact digests, record digest, removed files, reason, policy and authority, HEAD at
-pruning and the pruning time. Files leave the working tree only; committed bytes stay
-in Git history, and native archives and ignore rules are untouched. The ledger is read
-up to 16 MiB; an unreadable ledger leaves absent observations `unavailable`.
+pruning and the pruning time. Each removal rechecks the protection fingerprint and
+moves the file into `.chough/removing/`, where its exact bytes are compared before
+deletion. If a later check or removal fails, earlier removals are restored with
+private copies finished with their original permissions and published by create-only
+hard links, and a `restored` event is appended for each ledgered set. A file recreated
+meanwhile keeps its bytes, permissions and identity. Its original
+bytes are preserved in a named create-only hold under `.chough/removing/`, because an
+eligible observation need not be committed at HEAD; the refusal names every unrestored
+path and hold. An earlier recovery hold blocks the next apply until it is inspected.
+Files leave the working tree only; committed bytes stay in Git history, and native
+archives and ignore rules are untouched. The ledger is read up to 16 MiB; an
+unreadable ledger leaves absent observations `unavailable`.
 
 Referenced observations carry a label in `status` (`observation_references` and each
 entry in `observations`), `next` (the referenced ones that are not current, in

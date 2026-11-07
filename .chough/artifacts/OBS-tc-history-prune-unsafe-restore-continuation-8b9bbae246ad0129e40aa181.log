@@ -1,0 +1,32 @@
+--- stdout ---
+
+running 2 tests
+test evidence::tests::pr197_unsafe_restore_ancestor_symlink ... FAILED
+test evidence::tests::pr197_unsafe_restore_file_symlink ... FAILED
+
+failures:
+
+failures:
+    evidence::tests::pr197_unsafe_restore_ancestor_symlink
+    evidence::tests::pr197_unsafe_restore_file_symlink
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 73 filtered out; finished in 0.05s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running unittests src/main.rs (target/debug/deps/chough-0ccce38d2fdfcb4e)
+unsafe restore probe: ancestor=true; hook=true; hold_exists=false; earlier_artifact=false; earlier_record=false; restored_events=0; error=symlink is not an allowed source: /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/.tmpmjNd3o/.chough/artifacts/pr197-unsafe
+
+thread 'evidence::tests::pr197_unsafe_restore_ancestor_symlink' (542493039) panicked at src/evidence.rs:4132:9:
+assertion `left == right` failed: unsafe destination must preserve original bytes in the safe hold
+  left: None
+ right: Some([117, 110, 115, 97, 102, 101, 32, 111, 114, 105, 103, 105, 110, 97, 108, 10])
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+unsafe restore probe: ancestor=false; hook=true; hold_exists=false; earlier_artifact=false; earlier_record=false; restored_events=0; error=symlink is not an allowed source: /var/folders/5k/616qy7sj28l0d53k4c6w_4x00000gn/T/.tmpCznXWA/.chough/artifacts/pr197-unsafe/b.log
+
+thread 'evidence::tests::pr197_unsafe_restore_file_symlink' (542493040) panicked at src/evidence.rs:4132:9:
+assertion `left == right` failed: unsafe destination must preserve original bytes in the safe hold
+  left: None
+ right: Some([117, 110, 115, 97, 102, 101, 32, 111, 114, 105, 103, 105, 110, 97, 108, 10])
+error: test failed, to rerun pass `--bin chough`

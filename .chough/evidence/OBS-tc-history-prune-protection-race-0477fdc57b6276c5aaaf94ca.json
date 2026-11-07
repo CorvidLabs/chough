@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_protection_race_restores_removed_bytes for TC-history-prune-protection-race: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca.log": "7e8840d0fb410170816e092b7bedc9943204f7b7752d1bf76bae4d1c472b2aab"
+  },
+  "observed_at_unix_seconds": 1794071320,
+  "snapshot": {
+    "revision": "6748c3d30a005e46abe468fc00eb43900eda374f",
+    "dirty": false,
+    "fingerprint": "e4bcb14001b27d442cda7730b05c0591f9fc31c8de986625bb4d719d5e6f62fa",
+    "content": "e71b8b6ed7758d1321609e1f534c702307429f0664fc85405e469508db66a807"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-prune-protection-race",
+      "digest": "763949fbada75217dc6f170254ae8a0313bff28996820116e8b9097159f1df00"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--bin",
+    "chough",
+    "--",
+    "--exact",
+    "evidence::tests::prune_protection_race_restores_removed_bytes"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

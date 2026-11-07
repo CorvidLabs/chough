@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test evidence_prune_restores_partial_removal ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 29 filtered out; finished in 0.65s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/evidence.rs (target/debug/deps/evidence-2cd5b1436a5ab64c)

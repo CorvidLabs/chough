@@ -1,0 +1,62 @@
+3e1198b4cea01fdbbbb6904a58dce94529dfc29e
+Auditing active changes (1)…
+✓ audit passed (1 active)
+▶️ Lane: pre-push — Fast local gate before pushing
+  ▶️ Running task: fmt
+  ✔ Step 1 done (669ms)
+  ▶️ Running task: check
+    Checking chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-pr65)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.60s
+  ✔ Step 2 done (4.638s)
+  ▶️ Running task: intent
+{
+  "notes": [],
+  "files": 4,
+  "criteria": 87,
+  "retired": 0,
+  "families": [
+    "DRIVE",
+    "FLOW",
+    "KNOW",
+    "LIFE"
+  ],
+  "problems": []
+}
+  ✔ Step 3 done (12ms)
+  ▶️ Running task: spec
+
+specs/cli/cli.spec.md
+  ✓ Frontmatter valid
+  ✓ All source files exist
+  ✓ All required sections present
+  ✓ 14/14 exports documented
+  ✓ All dependency specs exist
+
+specs/history/history.spec.md
+  ✓ Frontmatter valid
+  ✓ All source files exist
+  ✓ All required sections present
+  ✓ All dependency specs exist
+
+specs/reporting/reporting.spec.md
+  ✓ Frontmatter valid
+  ✓ All source files exist
+  ✓ All required sections present
+  ✓ All dependency specs exist
+
+3 specs checked: 3 passed, 0 warning(s), 0 failed
+File coverage: 25/25 (100%)
+LOC coverage:  26095/26095 (100%)
+  ✔ Step 4 done (97ms)
+  ▶️ Running task: audit
+Auditing active changes (1)…
+✓ audit passed (1 active)
+  ✔ Step 5 done (4.161s)
+✅ Lane pre-push completed (5 steps in 9.579s)
+▶️ Running task: knowledge
+{
+  "current": true,
+  "index": "knowledge/INDEX.md",
+  "schema_version": 1
+}
+✅ knowledge (1.4s)

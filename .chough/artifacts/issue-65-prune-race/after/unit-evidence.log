@@ -1,0 +1,17 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.16s
+     Running unittests src/main.rs (target/debug/deps/chough-3771ef72516bb8a1)
+
+running 10 tests
+test evidence::tests::a_hold_never_sits_in_the_removed_file_directory ... ok
+test evidence::tests::at_most_eight_validity_readers_on_any_host ... ok
+test evidence::tests::a_random_source_failure_preserves_the_existing_record_tree ... ok
+test evidence::tests::put_back_never_replaces_a_file_written_meanwhile ... ok
+test evidence::tests::a_forced_observation_collision_preserves_bytes_without_another_random_draw ... ok
+test evidence::tests::a_failed_copy_never_deletes_another_writers_bytes ... ok
+test evidence::tests::remove_verified_puts_changed_bytes_back_and_leaves_no_hold ... ok
+test evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected ... ok
+test evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original ... ok
+test evidence::tests::prune_protection_race_restores_removed_bytes ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 60 filtered out; finished in 0.30s
+

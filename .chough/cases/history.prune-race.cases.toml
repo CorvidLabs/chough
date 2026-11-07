@@ -1,0 +1,74 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-prune-protection-race"
+title = "A protection appearing between prune removals restores every removed byte"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8", "LIFE-2", "LIFE-7"]
+requirements = ["REQ-history-004"]
+paths = ["src/evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the unit test prune_protection_race_restores_removed_bytes passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "evidence::tests::prune_protection_race_restores_removed_bytes"]
+expect_output = ["test evidence::tests::prune_protection_race_restores_removed_bytes ... ok", "test result: ok. 1 passed"]
+
+[[case]]
+id = "TC-history-prune-restores-partial-removal"
+title = "A failed observation removal restores artifacts through the real CLI"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8", "LIFE-2", "LIFE-7"]
+requirements = ["REQ-history-004"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integration test evidence_prune_restores_partial_removal passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "evidence", "--", "--exact", "evidence_prune_restores_partial_removal"]
+expect_output = ["test evidence_prune_restores_partial_removal ... ok", "test result: ok. 1 passed"]
+
+[[case]]
+id = "TC-history-prune-restores-earlier-sets"
+title = "A later protected set rolls back every earlier pruned set"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8", "LIFE-2", "LIFE-7"]
+requirements = ["REQ-history-004"]
+paths = ["src/evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the unit test prune_restores_earlier_sets_when_a_later_set_becomes_protected passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected"]
+expect_output = ["test evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected ... ok", "test result: ok. 1 passed"]
+
+[[case]]
+id = "TC-history-prune-restore-preserves-recreated-file"
+title = "Rollback preserves recreated files and uncommitted original bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8", "LIFE-2", "LIFE-7"]
+requirements = ["REQ-history-004"]
+paths = ["src/evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the unit test prune_restore_preserves_recreated_file_and_uncommitted_original passes, including replacement bytes, permissions and inode at restore publication"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original"]
+expect_output = ["test evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original ... ok", "test result: ok. 1 passed"]

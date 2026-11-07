@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+  "slug": "make-evidence-prune-apply-recheck-protections-and-restore-partial-removals",
+  "title": "Make evidence prune --apply recheck protections and restore partial removals",
+  "description": "Make evidence prune --apply recheck protections and restore partial removals",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "455cb643cd91a9c804afdf5566e3889abf1bde49",
+  "created_at": 1794019871,
+  "updated_at": 1794066674,
+  "affected_specs": [
+    "history",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/evidence.rs",
+    "specs/history/requirements.md",
+    "specs/history/testing.md",
+    "specs/history/history.spec.md",
+    "specs/cli/cli.spec.md",
+    "docs/FRD.md",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    ".chough/cases/history.prune-race.cases.toml",
+    "tests/spec_split.rs"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A protection appearing between removals stops the apply and restores every earlier removal byte-for-byte without overwriting a recreated file; a later artifact or observation removal failure also restores earlier removals and appends the existing restored ledger event; successful pruning keeps its current eligibility, authorization, ledger and JSON behavior, and existing history remains readable"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "REQ-history-001 and REQ-history-004 keep eligibility, protection, ledger and bound behavior unchanged; specs/history/context.md says evidence retention lives in src/evidence.rs and warns against adding native reads to closeout; #55 supplies remove_verified and restored-event prior art",
+    "public_contract": "yes"
+  }
+}

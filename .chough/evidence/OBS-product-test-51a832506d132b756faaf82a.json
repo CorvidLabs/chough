@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-51a832506d132b756faaf82a",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Focused finish run exited 0: 11 evidence unit tests including restore replacement inode/mode/bytes, 30 evidence integration tests, 25 history tests, fmt and lint. Herdr login shell used Homebrew Rust 1.99.0/Fledge 1.7.2; final pinned toolchain lane remains required.",
+  "artifacts": [
+    ".chough/artifacts/issue-65-prune-race/finish/focused.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-65-prune-race/finish/focused.log": "4b12c34bd9de93c92ff70a60079698990083ea086de2abdff75f7b1a402e958d"
+  },
+  "observed_at_unix_seconds": 1794034246,
+  "snapshot": {
+    "revision": "7febd53a86d1a007565ff38638b41abd760c123f",
+    "dirty": true,
+    "fingerprint": "eea4908dab7a850d251ff5ca3de5e4f649790504c7f1dcd6936f5b7a04e2bec6",
+    "content": "4c668870ced52a9c7a062d91efe5eab149c877b1b996c41748c2cf558353ab87"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Not a complete platform lane or human acceptance; final pinned checks pending"
+  ]
+}

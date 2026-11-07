@@ -25,6 +25,12 @@ REQ-history-002 to REQ-history-004 (formerly REQ-cli-025 to REQ-cli-027) are exe
 | TC-history-bounds | One bound test executes exact event, cycle, recent-read and maintenance count/byte fixtures |
 | TC-history-retention | Read-only preview, authorized apply and newly protected cycle references |
 | TC-history-retention-revalidation | Changed, missing and newly referenced evidence/artifacts are retained |
+| TC-history-prune-protection-race | A protection appearing between removals restores every removed byte and preserves the new reference |
+| TC-history-prune-restores-partial-removal | Real CLI observation-removal failure restores artifacts with exact bytes and permissions |
+| TC-history-prune-restores-earlier-sets | A later protected set rolls back every completely removed earlier set |
+| TC-history-prune-restore-preserves-recreated-file | Rollback keeps recreated files and preserves uncommitted original bytes in a named hold |
+| TC-history-prune-capture-byte-authority | Replacement bytes captured after eligibility validation survive; earlier completed sets restore bytes, records and modes |
+| TC-history-prune-unsafe-restore-continuation | File/ancestor symlinks retain writer inode/target; originals survive in a named hold, earlier restores continue and every ledgered set gets restored accounting |
 
 The full Rust suites add unknown legacy payloads, migration, random/collision refusal, failed checkpoint saves and orphan visibility, unsafe/malformed receipts, interrupted cleanup/resume, separate timing tips, and real Git retention alongside another branch's new proof. Package regressions independently hash the prior checkpoint reference and preserve owner edits during skill updates. The mandatory Fledge verify lane also checks existing behavior, native structure, traceability and the real CLI exercise. Observations and current IDs live in the Chough checkpoint and evidence records; this plan does not invent a passing grade or hosted result. No cold-start rerun, real-project adoption or live cleanup is part of this qualification.
 
@@ -38,3 +44,15 @@ TC-history-0061; TC-cli-history-adoption, -branches, -bounds, -retention,
 -post-prune-reference and -stale-receipt-age are TC-history-adoption and so on; and
 TC-cli-retention-revalidation is TC-history-retention-revalidation. Earlier
 observations and bug records keep the old IDs as history.
+
+## PR #197 corrective boundaries
+
+The two new cases live in `.chough/cases/history.pr197-p1.cases.toml`. Their
+executable failure-first regressions are in src/evidence.rs, alongside the prior
+race and private-mode tests. The capture test exercises both a first candidate
+and a later candidate after an earlier set was completely removed. The unsafe
+restore binding executes both final-file and ancestor symlink variants and checks
+writer inode/target, recovery bytes, earlier record/artifact permissions and two
+restored ledger events. The same bindings must pass after correction; controlled
+mutations independently remove each correction to verify the assertions detect it.
+The old archive/review remain historical; corrected code needs fresh acceptance.

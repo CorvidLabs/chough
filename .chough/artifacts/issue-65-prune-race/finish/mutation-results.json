@@ -1,0 +1,78 @@
+{
+  "revision": "7febd53a86d1a007565ff38638b41abd760c123f",
+  "fixture": "/private/tmp/sol-ch65-mutations-crju8qhk",
+  "results": [
+    {
+      "name": "baseline",
+      "exit_code": 0,
+      "ran": true,
+      "expected_failure": false,
+      "verified": true,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--bin",
+        "chough",
+        "evidence::tests::prune_",
+        "--",
+        "--nocapture"
+      ],
+      "log": "/private/tmp/sol-ch65-mutation-baseline.log"
+    },
+    {
+      "name": "ignore-protection-changes",
+      "exit_code": 101,
+      "ran": true,
+      "expected_failure": true,
+      "verified": true,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--bin",
+        "chough",
+        "evidence::tests::prune_protection_race_restores_removed_bytes",
+        "--",
+        "--nocapture"
+      ],
+      "log": "/private/tmp/sol-ch65-mutation-ignore-protection-changes.log"
+    },
+    {
+      "name": "skip-rollback",
+      "exit_code": 101,
+      "ran": true,
+      "expected_failure": true,
+      "verified": true,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--bin",
+        "chough",
+        "evidence::tests::prune_protection_race_restores_removed_bytes",
+        "--",
+        "--nocapture"
+      ],
+      "log": "/private/tmp/sol-ch65-mutation-skip-rollback.log"
+    },
+    {
+      "name": "public-restore-chmod",
+      "exit_code": 101,
+      "ran": true,
+      "expected_failure": true,
+      "verified": true,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--bin",
+        "chough",
+        "evidence::tests::prune_restore_permissions_preserve_replacement_identity",
+        "--",
+        "--nocapture"
+      ],
+      "log": "/private/tmp/sol-ch65-mutation-public-restore-chmod.log"
+    }
+  ]
+}

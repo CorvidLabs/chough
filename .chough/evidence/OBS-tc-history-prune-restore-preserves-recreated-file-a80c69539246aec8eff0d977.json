@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original for TC-history-prune-restore-preserves-recreated-file: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977.log": "b4cc565107721363d0dc525918279b08da26a5af588633b0c28536001786adf4"
+  },
+  "observed_at_unix_seconds": 1794071327,
+  "snapshot": {
+    "revision": "6748c3d30a005e46abe468fc00eb43900eda374f",
+    "dirty": false,
+    "fingerprint": "e4bcb14001b27d442cda7730b05c0591f9fc31c8de986625bb4d719d5e6f62fa",
+    "content": "e71b8b6ed7758d1321609e1f534c702307429f0664fc85405e469508db66a807"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-prune-restore-preserves-recreated-file",
+      "digest": "76355e1278f22f81d35d5f85c718e29fe9383839cec1a2ceb403279df2252a85"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--bin",
+    "chough",
+    "--",
+    "--exact",
+    "evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

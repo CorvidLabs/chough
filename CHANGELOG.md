@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough evidence prune --apply` now rechecks protections immediately before each
+  byte-checked removal and restores earlier removals when a later check or removal
+  fails (#65, REQ-history-004). Rollback preserves recreated files and original
+  permissions, keeps uncommitted bytes in named recovery holds, and appends the
+  existing `restored` ledger event without changing successful output or retention
+  eligibility.
+
 - `chough timing` no longer marks its report partial for `direct-native-write` events
   (#189, REQ-history-013, REQ-reporting-001). Since #183 it counted that valid kind as
   unrecognised. It is now skipped as part of no stage segment, as gate records are.

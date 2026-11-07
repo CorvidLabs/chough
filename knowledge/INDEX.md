@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 158
+archived_changes: 160
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (hot)
+- [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals (hot)
 - [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](archives/update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording.md) Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording (hot)
-- [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation (hot)
-- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) (hot)
+- [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation (cold)
+- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) (cold)
 - [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) (cold)
 - [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](archives/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.md) Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58) (cold)
 - [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](archives/prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0.md) Prepare the 0.5.0 release: set the package version to 0.5.0 and date the change log section for 0.5.0 (cold)
 - [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20) (cold)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) (cold)
-- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20) (cold)
-- [make-archived-next-and-status-fast-within-explicit-warm-budgets](archives/make-archived-next-and-status-fast-within-explicit-warm-budgets.md) Make archived next and status fast within explicit warm budgets (cold)
-- All 158 archived changes, by month: [timeline.md](timeline.md)
+- All 160 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,8 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
+- [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../.specsync/archive/changes/2026-11-07-make-evidence-prune-apply-recheck-protections-and-restore-partial-removals/lesson-bundle.md)
 - [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](../.specsync/archive/changes/2026-11-07-update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording/lesson-bundle.md)
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-07-mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md)
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../.specsync/archive/changes/2026-11-07-chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21/lesson-bundle.md)
@@ -79,8 +81,6 @@ Archived lesson bundles:
 - [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](../.specsync/archive/changes/2026-11-07-prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0/lesson-bundle.md)
 - [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../.specsync/archive/changes/2026-11-07-chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20/lesson-bundle.md)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../.specsync/archive/changes/2026-11-07-flag-direct-specsync-lifecycle-writes-in-history-183-drive-21/lesson-bundle.md)
-- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../.specsync/archive/changes/2026-11-07-chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20/lesson-bundle.md)
-- [make-archived-next-and-status-fast-within-explicit-warm-budgets](../.specsync/archive/changes/2026-11-06-make-archived-next-and-status-fast-within-explicit-warm-budgets/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -92,6 +92,7 @@ Archived lesson bundles:
 - BUG-0022 Initial host tools do not match CI versions (open, out-of-scope, reproduced)
 - BUG-0023 Cold-start next and status output is difficult to scan (open, out-of-scope, reproduced)
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
+- BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79 Full macOS lane checkpoint writer lock timeout (open, out-of-scope, reproduced-and-later-passed)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
@@ -99,18 +100,18 @@ Archived lesson bundles:
 
 ## Observations
 
-546 recorded; most recent:
+585 recorded; most recent:
 
-- OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
-- OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 ProductTest Passed in local-macos-arm64 at 7e5e942677d2
-- OBS-product-test-c727fa6d2f004d10b1d511f8 ProductTest Passed in linux-aarch64-docker-chough-linux-1-2-3 at 792bd3de73ef
-- OBS-installation-observation-48008674b01d6e137c95d956 InstallationObservation Passed in macos-arm64-cargo-1.99.0 at 86ae8dda94ab
-- OBS-tc-cli-done-self-archive-vault-current-331d20867fbcf8d90f3a0d36 ProductTest Passed in local-macos-arm64 at 112c9530c33f
-- OBS-tc-cli-done-fresh-vault-session-links-0af8035af974b33d4913d80d ProductTest Passed in local-macos-arm64 at 112c9530c33f
-- OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 ProductTest Passed in local-macos-arm64 at ebeb882ac4ef
-- OBS-product-test-3df243412063021fb3800669 ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
-- OBS-tc-cli-change-new-no-spec-change-bbd11d05c3e46d1472148d6a ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
-- OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 ProductTest Passed in local-macos-arm64 at 4f940c4d89d7
+- OBS-product-test-c667d4756cf1c183202f8b02 ProductTest Passed in local-linux-aarch64 at 3b9d008d6c48
+- OBS-product-test-4f7d63e468288e44cfd85c88 ProductTest Passed in local-macos-arm64 at 3b9d008d6c48
+- OBS-product-test-80b95a49cc2ba0705ed1b2fb ProductTest Failed in local-macos-arm64 at 3b9d008d6c48
+- OBS-product-test-97bec39c043841e26288e181 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-restores-partial-removal-09fafb2ff58f01d7100b5ae4 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-product-test-e1797a0960e7bd92560cca96 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
+- OBS-tc-history-prune-unsafe-restore-continuation-c9640fdb1cd9bf652847ac4b ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 
 ## Briefs
 

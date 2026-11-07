@@ -1,6 +1,6 @@
 ---
 module: history
-version: 17
+version: 19
 status: active
 files:
   - src/history.rs
@@ -70,6 +70,8 @@ Then a bounded receipt is written before deletion and protected cycles remain
 | Changed candidate | A candidate file changed, vanished or became referenced after preview | Retain or refuse it with an explicit outcome |
 | Bound exceeded | An event, cycle, traversal or scan exceeds its bound | Refuse before checkpoint mutation, or report partial history |
 | Anchor mismatch | The adopted legacy anchor no longer matches | Refuse new writes |
+| Captured artifact identity changed | Bytes captured after eligibility validation do not match the eligible artifact digest | Refuse before this set's ledger write/removal; retain the replacement and restore any earlier removals |
+| Unsafe restoration destination | A removed path or ancestor is recreated as a symlink | Keep its identity and target untouched; preserve original bytes in a safe named hold, continue remaining held-file restores and record honest restored accounting for every ledgered set |
 
 ## Dependencies
 
@@ -98,3 +100,5 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 15 | 2026-11-07 | flag-direct-specsync-lifecycle-writes-in-history-183-drive-21: Flag direct SpecSync lifecycle writes in history (183, DRIVE-21) |
 | 16 | 2026-11-07 | chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20: Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20) |
 | 17 | 2026-11-07 | chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21: chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) |
+| 18 | 2026-11-07 | make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: Make evidence prune --apply recheck protections and restore partial removals (65) |
+| 19 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |

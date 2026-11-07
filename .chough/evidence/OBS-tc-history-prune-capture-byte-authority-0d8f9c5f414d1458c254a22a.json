@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-7",
+    "LIFE-8"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --bin chough evidence::tests::pr197_captured_replacement_bytes_survive -- --nocapture for TC-history-prune-capture-byte-authority: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a.log": "01806fb141cafb6d2df44a90fcd48ef37de96637dd1a29a6c7ddc1def0848a24"
+  },
+  "observed_at_unix_seconds": 1794071235,
+  "snapshot": {
+    "revision": "6748c3d30a005e46abe468fc00eb43900eda374f",
+    "dirty": false,
+    "fingerprint": "e4bcb14001b27d442cda7730b05c0591f9fc31c8de986625bb4d719d5e6f62fa",
+    "content": "e71b8b6ed7758d1321609e1f534c702307429f0664fc85405e469508db66a807"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-prune-capture-byte-authority",
+      "digest": "7daf701f1a779f5139332e20511f3e5f5fc18b2bd9f52d23d64269ddd16fc8b3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--bin",
+    "chough",
+    "evidence::tests::pr197_captured_replacement_bytes_survive",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

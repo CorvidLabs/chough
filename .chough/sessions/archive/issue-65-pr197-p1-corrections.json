@@ -1,0 +1,80 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-513106a919495dc23f745860",
+    "head": "EVT-6cd7af69caec292a16549295",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Correct both P1 capture-authority and unsafe-rollback defects in issue 65 / PR 197 without changing retention policy or old acceptance history",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "correct-prune-capture-authority-and-unsafe-rollback-for-pr-197",
+  "references": {
+    "criteria": [
+      "LIFE-2",
+      "LIFE-7",
+      "LIFE-8"
+    ],
+    "requirements": [
+      "REQ-history-004"
+    ],
+    "cases": [
+      "TC-history-prune-capture-byte-authority",
+      "TC-history-prune-unsafe-restore-continuation",
+      "TC-history-prune-protection-race",
+      "TC-history-prune-restore-preserves-recreated-file",
+      "TC-history-prune-restores-partial-removal",
+      "TC-history-prune-restores-earlier-sets"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Existing LIFE-2/7/8 and REQ-history-004 express the corrective intent; no new HI/REQ IDs. Public failure cases are clarified through CLI Purpose/history Error Cases; requirement bodies and split digest stay unchanged.",
+    "Rejected reusing the old acceptance or editing/reopening its archive: corrected code needs this new scope and a fresh exact-head implementation review through orc t19f.",
+    "Only corrective definition/intent bookkeeping is authorized before scope approval; real production, contracts and test/case files stay at the accepted archive head.",
+    "Leif decided \"Scope decision of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197\": \"Yes to all\" (direct Leif chat reply to orc t19f ONE-item #197 corrective scope question on 2026-11-07; existing approval relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated",
+    "Leif scope approval recorded natively by orc-t19f at c763d13d41edae6ec09c76b10333189118e1e668; approval_valid and correction_valid true. This authorizes the six corrective paths only, not corrected implementation acceptance.",
+    "Leif decided \"Implementation review of correct-prune-capture-authority-and-unsafe-rollback-for-pr-197\": \"approve\" (Direct Leif reply to orc t19f ONE-item fresh corrected #197 implementation acceptance question on 2026-11-07; existing decision relayed by orc t19f); recorded by sol-ch65; a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Disposable base 1fc4c67b59f05097cab4cafa446aa58198f8ee56 reproduced both P1s: capture filter 1 executed failure; unsafe rollback filter 2 executed failures (file and ancestor symlinks). Actual argv, raw hashes and compact receipts are in native research.md.",
+    "Failing tests: 8f7574956f2f8b8789022e68d6a02e9ef0567062; both exact case bindings executed cargo exit101 (capture 1 failed, unsafe symlink 2 failed)",
+    "Both P1 red cases now pass at 6748c3d30a005e46abe468fc00eb43900eda374f; focused unit14/evidence30/history25/split4; independent capture/unsafe mutants fail 1/2 tests. Prior focused OBS prose counts corrected by OBS-product-test-97bec39c043841e26288e181",
+    "Full frozen qualification at 3b9d008d6c48399f8ac4f7c62dee9fcb1b9cc4e9: Linux600/Mac596 tests and all10steps passed; initial Mac lock timeout retained in OBS-product-test-80b95a49cc2ba0705ed1b2fb, local BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79; cause unverified; no test/timeout changes.",
+    "Preservation check: 4412 historical Chough/archive/policy/split files match 1fc4c67b59f05097cab4cafa446aa58198f8ee56; predecessor archive/acceptance unchanged."
+  ],
+  "observations": [
+    "OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac",
+    "OBS-tc-history-prune-unsafe-restore-continuation-8b9bbae246ad0129e40aa181",
+    "OBS-product-test-97bec39c043841e26288e181",
+    "OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a",
+    "OBS-tc-history-prune-unsafe-restore-continuation-c9640fdb1cd9bf652847ac4b",
+    "OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977",
+    "OBS-tc-history-prune-restores-partial-removal-09fafb2ff58f01d7100b5ae4",
+    "OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a",
+    "OBS-product-test-80b95a49cc2ba0705ed1b2fb",
+    "OBS-product-test-4f7d63e468288e44cfd85c88",
+    "OBS-product-test-c667d4756cf1c183202f8b02"
+  ],
+  "bugs": [
+    "BUG-prune-capture-accepts-replacement-bytes-as-deletion-authority-cdfb288128633d57b0c29089",
+    "BUG-prune-rollback-aborts-on-recreated-symlink-paths-b187eee3aee864159e01358c",
+    "BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79"
+  ],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Await Leif fresh exact-head corrected implementation review via orc t19f after final native check and push. No commit or .chough/knowledge/contract writes after that check; root alone records human review; do not archive, merge or release."
+}

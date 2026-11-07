@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-8596f4c916b301c4ec8853cd",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Isolated checkout of 7febd53a86d1a007565ff38638b41abd760c123f with a private target directory: baseline passed; ignore-protection-changes, skip-rollback and public-restore-chmod mutants each executed and failed the targeted assertion (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/issue-65-prune-race/finish/mutation-results.json",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-baseline.log",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-ignore-protection-changes.log",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-skip-rollback.log",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-public-restore-chmod.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-65-prune-race/finish/mutation-results.json": "991735fedfad4f6425453e473ccb843cb36f91dcebe4843967ec658096676a62",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-baseline.log": "1f67d56bc0716da96a75a407ea3e6c7c3f5b3157e4f3e7c989c99c1c2ba29bfe",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-ignore-protection-changes.log": "7d9f50407ff9f31e39203977ecacf3bae8a3a689c62a3fc38f8ae1f845647f83",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-public-restore-chmod.log": "f6b214f33897d2393a6ca5e4fa1c16e695b4b0b11236a9dd28bcf689774f0481",
+    ".chough/artifacts/issue-65-prune-race/finish/sol-ch65-mutation-skip-rollback.log": "83a7a57ebcb4fedd909523167148f6ea13ea3cbdcd190e0f94ab44318aa4af49"
+  },
+  "observed_at_unix_seconds": 1794034314,
+  "snapshot": {
+    "revision": "7febd53a86d1a007565ff38638b41abd760c123f",
+    "dirty": true,
+    "fingerprint": "480713e617ace5ff2d6b10f8ae8e8aa84b7172feb0865979c3801d3bc4ae6def",
+    "content": "4eeca7ff6091ae9e15821b3dc13d75fc2ba8476f22a95e27fd9a34d09c04b07b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Targeted mutation checks; full platform lanes remain separate"
+  ]
+}

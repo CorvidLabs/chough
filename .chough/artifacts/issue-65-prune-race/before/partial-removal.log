@@ -1,0 +1,27 @@
+   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-pr65)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.16s
+     Running tests/evidence.rs (target/debug/deps/evidence-959615feba7516c4)
+
+running 1 test
+test evidence_prune_restores_partial_removal ... FAILED
+
+failures:
+
+---- evidence_prune_restores_partial_removal stdout ----
+
+thread 'evidence_prune_restores_partial_removal' (499240103) panicked at tests/evidence.rs:2021:5:
+Error: partial evidence cleanup; inspect the existing record and retention ledger
+
+Caused by:
+    0: removing .chough/evidence/partial.json
+    1: Permission denied (os error 13)
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    evidence_prune_restores_partial_removal
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 29 filtered out; finished in 1.70s
+
+error: test failed, to rerun pass `--test evidence`

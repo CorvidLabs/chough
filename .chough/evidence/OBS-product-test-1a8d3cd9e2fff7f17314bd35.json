@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-1a8d3cd9e2fff7f17314bd35",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Pinned focused validation: Fledge 1.8.0, HI 0.8.0, SpecSync 6.2.0, Rust 1.95.0. Build, all 4 spec_split tests, 11 evidence unit tests, 30 evidence integration tests, 25 history tests and global case-definition validation passed. The formerly failing strict REQ-history-004 assertion now passes with the exact approved digest.",
+  "artifacts": [
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/focused.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/focused.log": "9dc22d60f02451b332ba4c856bd41f10b7e2a0211707384932c7bf882c123009"
+  },
+  "observed_at_unix_seconds": 1794063284,
+  "snapshot": {
+    "revision": "4ef6b8e29913077a6f557d1371a930540e02884b",
+    "dirty": true,
+    "fingerprint": "12a33db26ebbc61c9def3ad34a65b52b6325e4952d4bbca18dfbb4a0711463b4",
+    "content": "7357063ec647a2c8493d700dc99e2ebaa99d0f01043e3bd400bdacef867bc44e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "limitations": [
+    "Focused checks only; full platform lanes are separate"
+  ]
+}

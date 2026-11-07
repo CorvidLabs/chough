@@ -1,0 +1,95 @@
+   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-pr65)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.84s
+     Running unittests src/main.rs (target/debug/deps/chough-3771ef72516bb8a1)
+
+running 11 tests
+test evidence::tests::at_most_eight_validity_readers_on_any_host ... ok
+test evidence::tests::a_random_source_failure_preserves_the_existing_record_tree ... ok
+test evidence::tests::a_hold_never_sits_in_the_removed_file_directory ... ok
+test evidence::tests::put_back_never_replaces_a_file_written_meanwhile ... ok
+test evidence::tests::a_forced_observation_collision_preserves_bytes_without_another_random_draw ... ok
+test evidence::tests::remove_verified_puts_changed_bytes_back_and_leaves_no_hold ... ok
+test evidence::tests::a_failed_copy_never_deletes_another_writers_bytes ... ok
+test evidence::tests::prune_protection_race_restores_removed_bytes ... ok
+test evidence::tests::prune_restore_permissions_preserve_replacement_identity ... ok
+test evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original ... ok
+test evidence::tests::prune_restores_earlier_sets_when_a_later_set_becomes_protected ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 61 filtered out; finished in 0.07s
+
+   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-pr65)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.91s
+     Running tests/evidence.rs (target/debug/deps/evidence-959615feba7516c4)
+
+running 30 tests
+test every_protection_reason_is_named ... ok
+test evidence_prune_restores_partial_removal ... ok
+test a_multi_case_record_counts_in_the_group_of_every_case ... ok
+test bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name ... ok
+test bug_show_labels_note_observations_once ... ok
+test a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned ... ok
+test automatic_pruning_follows_case_runs_only_when_retention_is_auto ... ok
+test newest_runs_count_per_case_and_environment ... ok
+test preview_lists_sets_with_reasons_and_bytes_and_changes_nothing ... ok
+test archive_summary_previews_cold_archive_proof_and_keeps_protections ... ok
+test one_artifact_spelled_two_ways_is_shared_and_kept ... ok
+test archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check ... ok
+test apply_needs_consent_or_the_standing_preference_and_appends_the_ledger ... ok
+test retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read ... ok
+test retention_protects_observations_named_by_unfolded_inbox_entries ... ok
+test retention_protects_what_inactive_and_archived_sessions_reference ... ok
+test retention_revalidation_keeps_changed_missing_and_newly_referenced_proof ... ok
+test removed_and_missing_observations_are_labeled_and_never_count ... ok
+test archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf ... ok
+test archive_summary_restore_keeps_a_file_recreated_during_the_apply ... ok
+test archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check ... ok
+test a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply ... ok
+test knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing ... ok
+test archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal ... ok
+test archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change ... ok
+test an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change ... ok
+test knowledge_entries_summarize_each_archive_deterministically ... ok
+test native_manifests_protect_their_sets_and_a_failed_read_protects_everything ... ok
+test archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check ... ok
+test a_refused_apply_keeps_vault_copies_another_writer_changed ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.10s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/history.rs (target/debug/deps/history-599c6d058352d37b)
+
+running 25 tests
+test adoption_refuses_future_legacy_payloads_without_changing_any_record ... ok
+test new_projects_use_a_cursor_in_the_single_checkpoint ... ok
+test changing_the_legacy_anchor_refuses_writes_without_advancing_state ... ok
+test adoption_preview_preserves_legacy_bytes_and_apply_is_explicit ... ok
+test malformed_receipts_leave_missing_history_unavailable ... ok
+test full_timing_keeps_unselected_tips_out_of_selected_stage_spans ... ok
+test a_failed_checkpoint_save_leaves_an_unselected_orphan_and_preserves_active_state ... ok
+test missing_parents_are_explicit_in_guidance_and_timing ... ok
+test schema_one_migration_and_adoption_preserve_the_original_backup ... ok
+test recent_guidance_does_not_scan_unselected_files_and_maintenance_refuses_symlinks ... ok
+test cycle_retention_is_read_only_until_authorized_and_revalidates_new_references ... ok
+test directory_references_protect_cycles_across_case_and_separator_aliases ... ok
+test stale_receipt_age_cannot_override_a_recent_selected_closure ... ok
+test new_protection_prevents_resuming_an_interrupted_plan ... ok
+test interrupted_cleanup_resumes_only_the_identical_receipted_plan ... ok
+test idle_cycle_age_uses_the_selected_closure_and_receipts_record_it ... ok
+test recent_traversal_stops_at_exactly_512_kib ... ok
+test unsafe_or_changed_receipts_cannot_broaden_deletion ... ok
+test real_git_branch_events_survive_while_checkpoint_selection_remains_explicit ... ok
+test a_receipt_of_exactly_1_mib_is_read_and_one_byte_more_is_refused ... ok
+test a_cycle_of_exactly_16_mib_is_full_and_one_byte_more_is_over_its_bound ... ok
+test real_git_retention_integrates_with_another_branch_new_evidence_and_events ... ok
+test frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply ... ok
+test real_git_post_prune_references_report_unavailable_until_exact_restoration ... ok
+test history_bounds_cover_all_resource_limits ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.22s
+
+▶️ Running task: fmt
+✅ fmt (0.8s)
+▶️ Running task: lint
+    Checking chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-pr65)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.01s
+✅ lint (5.1s)

@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-01fdbe567f85ef177eeea144",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "failed",
+  "environment": "local-linux-aarch64",
+  "summary": "Linux full rerun at 9ebacabe170eee2cf7009c2d181d3093da73ae6d passed product tests and strict specs, then audit rejected stale native verification. The recovery evidence/index commit after the preparatory check invalidated the verification digest; no product source changed. Retain all receipts and freeze all inputs after the next check.",
+  "artifacts": [
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/linux-metadata-stale.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-65-prune-race/finish/pinned/linux-metadata-stale.log": "b141efcb8d9172b114baa30852d976ce57207c41e6572069ac39e79a60e8a590"
+  },
+  "observed_at_unix_seconds": 1794064076,
+  "snapshot": {
+    "revision": "9ebacabe170eee2cf7009c2d181d3093da73ae6d",
+    "dirty": false,
+    "fingerprint": "fb683509ae60355c9c6e3137ea487ce4d679046cf3d6e2af96790c36da3c7c6d",
+    "content": "9c3435ba717cb1dfc6540a9c1cd6ab23a4582fcbf14128ac8fa1dbfb6dc3e083"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated"
+}

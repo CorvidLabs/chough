@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "correct-prune-capture-authority-and-unsafe-rollback-for-pr-197",
+  "implementation_commit": "9d4dc227ad12cdc0831ef8afe4a14ad6dc28c44d",
+  "implementation_tree": "4db64daf71a75aeff8dfa1670297c3aab3220bf4",
+  "contract_digest": "64514640039ea1f68632b73de7b519a1dde5542fde4dbbf562b2a7c61e3b8150",
+  "workspace_digest": "f8c3ab35ef4e74291e06a76f4c4b4328a226b942147854fe3e01eea4428a3122",
+  "closing_digest": "4a3bb3273edb0bfcb3cac6e8e678e0a62bd22468a516d03ecb040f06b29b8772",
+  "review_digest": "ffc22578a3d23b7bc529ced65f9e103917b8a7f8e11ff7c1ab916606883d1e07",
+  "finalization_digest": "6afe347c3263bb444e80b7911a2c8085d218457310751e561d862bfc4e04b315",
+  "timestamp": 1794072692
+}

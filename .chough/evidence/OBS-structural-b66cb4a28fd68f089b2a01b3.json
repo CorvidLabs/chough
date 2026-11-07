@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-b66cb4a28fd68f089b2a01b3",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "not-run",
+  "environment": "local-macos-arm64",
+  "summary": "fledge trust verify attempted and exited 1 before checks: repository has no .trust.toml. Trust is unconfigured; no Trust pass and no adoption/config change made.",
+  "artifacts": [
+    ".chough/artifacts/issue-65-prune-race/finish/trust-verify-unconfigured.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-65-prune-race/finish/trust-verify-unconfigured.log": "4708362af038451c40609c1e2ee74cfdc4042a35a8e15eb9d6917c7734957630"
+  },
+  "observed_at_unix_seconds": 1794034316,
+  "snapshot": {
+    "revision": "7febd53a86d1a007565ff38638b41abd760c123f",
+    "dirty": true,
+    "fingerprint": "480713e617ace5ff2d6b10f8ae8e8aa84b7172feb0865979c3801d3bc4ae6def",
+    "content": "4eeca7ff6091ae9e15821b3dc13d75fc2ba8476f22a95e27fd9a34d09c04b07b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated"
+}

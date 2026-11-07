@@ -1,0 +1,9 @@
+{
+  "case": "TC-history-prune-restores-partial-removal",
+  "observation": "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d",
+  "outcome": "failed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --test evidence -- --exact evidence_prune_restores_partial_removal for TC-history-prune-restores-partial-removal: failed (exit 101)."
+}
