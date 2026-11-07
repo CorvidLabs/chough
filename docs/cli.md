@@ -37,6 +37,7 @@ their JSON.
 | `history show\|adopt [--apply]\|prune [--apply]` | Bounded transition history. `show` inspects cycles, selected and unselected tips, limits and partial history; `adopt` previews adopting immutable history and `--apply` adopts it, preserving the legacy bytes; `prune` previews whole-cycle retention and `--apply` also needs human retention authorization. See [Transition history](#transition-history). |
 | `session new\|adopt\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions per objective or native change, setting aside an unreadable or oversized one, and the create-only subagent inbox. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--adopt-as KEY]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
+| `gate list\|record` | Numbers the open human gates, each with a one-screen summary and its digest, and records one relayed reply for listed gates only. See [Gate lists](#gate-lists). |
 | `change new\|answer\|check\|status\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ship` checks first, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
 
 ## Backfilled moves
@@ -713,8 +714,47 @@ nothing and writes nothing under `.chough/`.
 The relay goes with the ship because nothing may write `.chough/` between `change
 check --commit` and finalize, so the review gate can only close after the ship.
 
+`--list <list> --gate <n>` may stand in for `--close-gate <gate>`. The gate is then
+number `<n>` of a `chough gate list` list, and its summary must still have its listed
+digest, or the ship refuses before anything runs, naming `chough gate list`. The closed
+gate's relay keeps that digest and the list (REQ-history-014).
+
 Approve and review, and the plain `specsync change check <id>` that materializes a
 delta without committing, are still run with `specsync` directly.
+
+## Gate lists
+
+`chough gate list [--json]` numbers every open human gate of every open session from 1
+(REQ-cli-061, FLOW-19, FLOW-20). Each gate gets a one-screen summary of at most 24 lines
+and 4,096 bytes, with:
+
+- what changed: the files, insertions and deletions since the change's `base_commit`
+  (from its `state.json`), and the five files with the most changed lines;
+- the tests: how many cases passed, failed and were not run, by the latest observation
+  of each case that links a requirement the change's deltas add or modify (or that the
+  session's observations name), with the failing case IDs;
+- the risks: the first 8 lines of the change's `plan.md` section "Risks";
+- a diff link: a GitHub compare URL when `origin` is on GitHub, otherwise
+  `git diff <base>..<HEAD>`.
+
+Each summary's digest is the SHA-256 of its text. The list is saved untracked as
+`.chough/local/gate-lists/<list>.json`, where `<list>` is the first 12 hex digits of its
+SHA-256. Listing makes no native read and writes no tracked file.
+
+`chough gate record <list> --gates <n>[,<n>…] --decided-by <who> --words <words>
+--where <where> --recorded-by <agent>` is one reply for several listed gates. It closes
+each one as `chough checkpoint --close-gate` would, and each relay keeps the same words,
+its own `summary_digest` and the `list`. It closes all of them or none. Before writing
+anything, it refuses and names the recovery for:
+
+- an unknown list, a number not on it, a gate no longer open, or a summary that changed
+  since it was listed: run `chough gate list`;
+- a gate of another open session: `chough session use <key>`;
+- a gate whose change is verifying: `chough change ship <id> --list <list> --gate <n>`
+  with the relay, because nothing may write `.chough/` before the ship.
+
+Older builds refuse a relay holding `summary_digest` and `list`, so the oldest Chough
+that reads such a history is 0.6.0.
 
 ## Direct lifecycle writes
 

@@ -1,0 +1,306 @@
+{
+  "timestamp": 1794017537,
+  "commit": "882e4f6bc0337f3d2a36c20031fdf6b7341d1933",
+  "contract_digest": "38bc6fedc8b61f10df39e8369aef5308d6be0f31b044c0272cf255984565949e",
+  "execution_digest": "d4dbeb21accaceeebd1c8ad6e267e31e325ad442fbf9a776611e0b70cab3b412",
+  "workspace_digest": "bed183f9149f8079b85a188fabfa5fbcb427caafcdc4bca823e17fdd3cfbdca2",
+  "acceptance_input_digest": "e74eaeac88a6c62305effad96ff545c401a7fdd0c9949ffd294e9565584b1910",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".agents/skills/chough-workflow/references/accept.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2099ff858c05fea90e04c0f7a52500cc8fe7d346f27025cd6372ea8fe253efca",
+        "entry_digest": "ceb8229f16915823c8850924f3b52226a1ba9efe888a9437a16eb02a171b1adb",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".agents/skills/chough-workflow/references/lifecycle.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4e37a208605db657cb076a8cee2f45bee5695e9f02536a5900d5be76ba069098",
+        "entry_digest": "70959bf90bb7b9df67873eb0d33f11c41905714ab41924d49356d2899e58cd31",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f55d3540616986401111986c14fc06d8daec5d535e7c47f17fa133e655fb88cb",
+        "entry_digest": "a106f0f46f1efa35f94416b6da81790af38e9afd9b26a742c7e8ddcfde629c0a",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "README.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9645018eef523a20db6b82daf5bba3ed63329aa8d4638887fca66970e8b08f16",
+        "entry_digest": "fc294c16b8929244dd003aced8b0f42b5f13c4a8d72560d77dbe75574a8d331c",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/cli.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6801513c33719fd25dbbd09bed120f91c6f4ae4863ecd184d8dc3734d26dbd0a",
+        "entry_digest": "272d20ed0c45bfed7a2ea7f0c843ce9ce193d23c80eea28888e032dd711c4c6e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/accept.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2099ff858c05fea90e04c0f7a52500cc8fe7d346f27025cd6372ea8fe253efca",
+        "entry_digest": "ccbe12bc2f1c63eef0b8bd2ca7635cecbd0fad25c7af8e86f736e27a01a6c751",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/lifecycle.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4e37a208605db657cb076a8cee2f45bee5695e9f02536a5900d5be76ba069098",
+        "entry_digest": "67d7b322dd1af8b1e9f3bb6f486c011997b620e3f3d9eabd0fc9876feb8c35d4",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "59e424fe0696ac9337086cb0eedca93c3d11cc8ff179f33856681976bf6250bd",
+        "entry_digest": "1a869f90b95292d59d3efc30dcbb8c41dffb9f41fcb696e1ec9d926cb6304873",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c9e0d43856c017c430827e8088398d9ab317bfc9a97f56f5a520de2d3821a0cb",
+        "entry_digest": "8ba665232225c01d70ab67278d94e529782cb8e341520743889bed7568f0589e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b985579a811edb2a6bc0e0c910b3f740ecddbe3c9bbe13889df3189be5cbcf71",
+        "entry_digest": "f443b79834aa52dc9bf3ae6c1b2ab31250d78580365f5f65241823cb752e1d0e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c7dec532257e1119e1f168666a533459c509a352fe0abdfa124393ee489f74b6",
+        "entry_digest": "05a3cf76362dbb2576b1c8086e15092b70e0cdc68f98a9b688804ae6c9714451",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/history/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "375e99dc75d9ba36443b9432b29fd5508944fd9c5e702d2612f3b4da59ecfefe",
+        "entry_digest": "8de920d2cc713c67eb56daaf635e350d7f27eee6d58fb472e5ac017508924f0e",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/history.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6ddbd06cc7d2cc90ae476d91544d155bd9c9e1a0f929fab378b45feeaaa5c5b7",
+        "entry_digest": "1afa7ca112f1afc695b28dc01e774887981492c1eb51aee199c08da256453c41",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "19c3ac115df0bea26051ccf57c96aa029276a3b06d13ef74877ab01c3c20f749",
+        "entry_digest": "26e79711644b41a6cf870d87275ec59b273c841f8aeb952196dc30438c7297b8",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "41aad80a94e9d05a23d84110df7715c8e1c64f6ec7ef2d722ff7fb4f5d313fce",
+        "entry_digest": "87fc1481fa94ca7470b7d65139992638f9b6f6bc84d2173429aee6f3f57a3ee4",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4c87442d2d72cc423b3f6ac645afc5fabafa8e68db1d45cc7a4f3ae5bef779cc",
+        "entry_digest": "8197ec190393f037de9473f6256dfc3d504b88087c53c0734bcd0ef1daea16a3",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "src/change.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "54f3b1225a934a361afb2a73e95526c622daf3e7388ee15a557d8de2ffc2da68",
+        "entry_digest": "dc9947552cbf7d6ce0cd453d3572309a7946f56ee614d229ca55704145f6ee59",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/checkpoint.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "57594af8d4f4e2032da4d08961f04893d64de57ca8227e6e7d95b46d34a3ce32",
+        "entry_digest": "7ba6c7a73638a3bc26ac9f8db8615c952d0cf871de312e89a2dcead1a38f9ac3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/gates.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c6104217e97dc50987b3710ed253519fba5781ac57b905036299ca1ca5d65325",
+        "entry_digest": "2dd2a94f581767adbe0eeede2ffdf60587b2d84c18b6736a1dbbf56e04e257b5",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/history.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0be3e4f00bc831f3584486a5e8d2cf688ccffb595254862c94b3f4da4ea9b531",
+        "entry_digest": "749e123dba69d23ecb0ccc845f0f474195d890f33c062843c57c491ff5ba7edd",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "src/main.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b52053058c03bb17a257463d460c79e30afc107915041998de0488dc140739e8",
+        "entry_digest": "7fb8e25899ef376825c8e1f6cedb514c11328c89b55911c0deb085336a375205",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/skill.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6013c7bf3a0f5eea2cb4d15d6e494135944f4a64b14812fc9af20b08f09e102e",
+        "entry_digest": "8671c9dde64fe922f6043a9f64fe843b8506a4f7af597e54ff847275d2ddbc8b",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/stage.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6b9e9f580ae6b25d46ea7fada3ece132813e5d5f5bfc4618461e3c0181f1cc15",
+        "entry_digest": "1b1c0b4afb2a4c1b4073f160f6c8a05cfaea661bb30c646c3f795761243d6cce",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/change.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f42ac9e527d4cd012ddc16b1d284775eb84351479a8c12eed042f29a632f75eb",
+        "entry_digest": "e68a8384ee230dbf647273fba0860eaacfe23190cca9d0579fc75e46536d4998",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/docs.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "07ea0b7eeecd1ce92de3ea36c9d6af397e2fa094c3c1ee8bb169c6150f56f551",
+        "entry_digest": "53ec4e10c2d122f546bae12a58b598795e8e8bcb760bc0f51e678ebc19efb979",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/gates.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "521435579d16e97baa05a5a4c0ecfc54ac2cfafe90bb6286f9598afdeace6b77",
+        "entry_digest": "1f16b4ea594432e84966127645a68b08d77206ef340920e65770f1fdeca875b4",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/package.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "dca03f46548c773afd06de4e38d5aef9fd2264d219a211c8b1392270d1f99e37",
+        "entry_digest": "34111a143c998e9e09671cc4741dc18c3ad54b385f9aafe190ac06dde906e7e5",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli --spec history",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-059",
+    "REQ-cli-061",
+    "REQ-history-014"
+  ]
+}

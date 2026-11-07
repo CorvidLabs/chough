@@ -15,6 +15,22 @@ All notable changes to Chough are recorded here. The format follows
 - `chough change new` takes `--no-spec-change` and `--rationale` and passes them to
   `specsync change new` (#189, REQ-cli-057). `--no-spec-change` without `--rationale`
   is refused before SpecSync runs.
+- `chough gate list` and `chough gate record` show the human what each gate decides
+  and take one reply for listed gates only (#184, FLOW-19, FLOW-20, REQ-cli-061,
+  REQ-history-014). `gate list` numbers every open human gate, each with a one-screen
+  summary and the SHA-256 digest of that summary. The summary covers what changed since
+  the change's base commit, the tests, the plan's risks and a diff link. The tests are
+  the latest observation of each case that links a requirement the change's deltas add
+  or modify. It reads files and Git only, and saves the list untracked in
+  `.chough/local/gate-lists/`. `gate record <list> --gates 1,3` with the four relay
+  values closes exactly those gates, each relay keeping the same words, its own
+  `summary_digest` and the `list`. It closes all of them or none. It refuses an unknown
+  list, an unlisted number, a gate no longer open, a summary changed since listing, a
+  gate of another open session, or a change that is verifying; each refusal names its
+  recovery. `chough change ship` takes `--list` and `--gate` in place of `--close-gate`.
+  Older builds refuse a relay holding `summary_digest` (unknown field), so
+  the oldest Chough that reads such a history is 0.6.0, the first release with this
+  change. 0.5.0 does not read it.
 ## [0.5.0] - 2026-11-06
 
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,

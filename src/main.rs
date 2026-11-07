@@ -7,6 +7,7 @@ mod context;
 mod direct_writes;
 mod doctor;
 mod evidence;
+mod gates;
 mod history;
 mod identity;
 mod library;
@@ -159,6 +160,12 @@ enum Commands {
         #[command(subcommand)]
         command: change::ChangeCommand,
     },
+    /// Number every open human gate with a one-screen summary and its digest, and record
+    /// one relayed reply for listed gates only (REQ-cli-061).
+    Gate {
+        #[command(subcommand)]
+        command: gates::GateCommand,
+    },
     /// Find the Chough debt that stops a fresh worktree from entering Chough; `--fix`
     /// fixes it, and decision fixes also need `--reason` (DRIVE-17).
     Doctor(Box<doctor::DoctorArgs>),
@@ -255,6 +262,7 @@ fn main() -> Result<()> {
                 std::process::exit(code);
             }
         }
+        Commands::Gate { command } => gates::run(&root, command)?,
         Commands::Doctor(args) => {
             if doctor::run(&root, *args)? {
                 std::process::exit(1);

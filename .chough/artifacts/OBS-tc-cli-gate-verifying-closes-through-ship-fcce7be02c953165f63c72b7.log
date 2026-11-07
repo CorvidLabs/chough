@@ -1,0 +1,29 @@
+--- stdout ---
+
+running 1 test
+test a_verifying_gate_is_refused_and_closes_through_ship_with_the_list ... FAILED
+
+failures:
+
+---- a_verifying_gate_is_refused_and_closes_through_ship_with_the_list stdout ----
+
+thread 'a_verifying_gate_is_refused_and_closes_through_ship_with_the_list' (459251084) panicked at tests/common/mod.rs:91:9:
+["gate", "list", "--json"] failed: error: unrecognized subcommand 'gate'
+
+Usage: chough [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_verifying_gate_is_refused_and_closes_through_ship_with_the_list
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 2.19s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/gates.rs (target/debug/deps/gates-112e6fb6cb66b3ed)
+error: test failed, to rerun pass `--test gates`
