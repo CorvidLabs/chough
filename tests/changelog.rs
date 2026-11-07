@@ -120,3 +120,38 @@ fn cites_matches_whole_numbers_only() {
     assert!(!cites("see #1110", 111));
     assert!(!cites("see #11", 111));
 }
+
+/// Release preparation (docs/releasing.md step 4): the package version has a dated
+/// `## [X.Y.Z] - YYYY-MM-DD` section with at least one entry and a `[X.Y.Z]` link to its
+/// GitHub release, so a tag of this commit ships with its notes.
+#[test]
+fn the_package_version_has_a_dated_section_and_a_release_link() {
+    let text = changelog();
+    let version = env!("CARGO_PKG_VERSION");
+    let heading = format!("\n## [{version}] - ");
+    let start = text
+        .find(&heading)
+        .unwrap_or_else(|| panic!("CHANGELOG.md has no dated [{version}] section"));
+    let date = &text[start + heading.len()..][..10];
+    assert!(
+        date.len() == 10
+            && date.chars().enumerate().all(|(index, character)| {
+                if index == 4 || index == 7 {
+                    character == '-'
+                } else {
+                    character.is_ascii_digit()
+                }
+            }),
+        "the [{version}] section is dated YYYY-MM-DD, not {date:?}"
+    );
+    assert!(
+        !entries(section(&text, version)).is_empty(),
+        "the [{version}] section lists what ships"
+    );
+    let link =
+        format!("\n[{version}]: https://github.com/CorvidLabs/chough/releases/tag/v{version}\n");
+    assert!(
+        text.contains(&link),
+        "CHANGELOG.md links [{version}] to v{version}"
+    );
+}
