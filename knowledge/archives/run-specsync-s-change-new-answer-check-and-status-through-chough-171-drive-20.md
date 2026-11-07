@@ -68,4 +68,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.json](../attachments/run-specsync-s-343c27c8/sessions/run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20.json)
