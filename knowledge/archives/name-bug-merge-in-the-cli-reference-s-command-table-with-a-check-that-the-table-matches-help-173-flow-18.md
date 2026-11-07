@@ -58,4 +58,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.json](../attachments/name-bug-merge-4ef365bc/sessions/name-bug-merge-in-the-cli-reference-s-command-table-with-a-check-that-the-table-matches-help-173-flow-18.json)

@@ -6,6 +6,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-06
+
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,
   REQ-history-013). For the active session's native change, Chough watches the lifecycle
   records SpecSync writes: `state.json`, `approvals.json`, `review.json`,
@@ -733,6 +735,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.5.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.5.0
 [0.4.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.4.0
 [0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0
 [0.2.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.2.0
