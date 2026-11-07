@@ -164,24 +164,134 @@ fn risks(root: &Path, change: &str) -> Option<Vec<String>> {
     (!found.is_empty()).then_some(found)
 }
 
-/// The latest outcome of each case the session's observations name: passed, failed,
-/// not run, and the failing case IDs.
+/// The requirements the change's deltas add or modify: each `### REQUIREMENT <id>`
+/// heading in its workspace's or archive's `deltas/*.md`.
+fn delta_requirements(root: &Path, change: &str) -> std::collections::BTreeSet<String> {
+    let mut dirs = vec![root.join(".specsync/changes").join(change).join("deltas")];
+    if let Ok(entries) = fs::read_dir(root.join(".specsync/archive/changes")) {
+        dirs.extend(
+            entries
+                .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+                .filter(|path| {
+                    path.file_name()
+                        .and_then(|name| name.to_str())
+                        .is_some_and(|name| name.ends_with(&format!("-{change}")))
+                })
+                .map(|path| path.join("deltas")),
+        );
+    }
+    let mut found = std::collections::BTreeSet::new();
+    for dir in dirs {
+        let Ok(entries) = fs::read_dir(dir) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let Ok(text) = fs::read_to_string(entry.path()) else {
+                continue;
+            };
+            for line in text.lines() {
+                if let Some(id) = line.trim().strip_prefix("### REQUIREMENT ") {
+                    found.insert(id.trim().to_string());
+                }
+            }
+        }
+    }
+    found
+}
+
+/// The case IDs in `.chough/cases/*.cases.toml` that link one of `requirements`.
+fn linked_cases(
+    root: &Path,
+    requirements: &std::collections::BTreeSet<String>,
+) -> std::collections::BTreeSet<String> {
+    let mut found = std::collections::BTreeSet::new();
+    if requirements.is_empty() {
+        return found;
+    }
+    let Ok(entries) = fs::read_dir(root.join(".chough/cases")) else {
+        return found;
+    };
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if !path.to_string_lossy().ends_with(".cases.toml") {
+            continue;
+        }
+        let Ok(text) = fs::read_to_string(&path) else {
+            continue;
+        };
+        let Ok(value) = text.parse::<toml::Table>() else {
+            continue;
+        };
+        for case in value
+            .get("case")
+            .and_then(|cases| cases.as_array())
+            .into_iter()
+            .flatten()
+        {
+            let Some(id) = case.get("id").and_then(|id| id.as_str()) else {
+                continue;
+            };
+            let links = case
+                .get("requirements")
+                .and_then(|list| list.as_array())
+                .is_some_and(|list| {
+                    list.iter()
+                        .filter_map(|requirement| requirement.as_str())
+                        .any(|requirement| requirements.contains(requirement))
+                });
+            if links {
+                found.insert(id.to_string());
+            }
+        }
+    }
+    found
+}
+
+/// The latest outcome of each case that links a requirement the change's deltas add
+/// or modify, or that the session's observations name: passed, failed, not run, and
+/// the failing case IDs.
 fn tests(root: &Path, session: &Value) -> (usize, usize, usize, Vec<String>) {
+    let mut wanted = session["native_change"]
+        .as_str()
+        .map(|change| linked_cases(root, &delta_requirements(root, change)))
+        .unwrap_or_default();
+    let named: std::collections::BTreeSet<String> = session["observations"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|id| id.as_str().map(String::from))
+        .collect();
     let mut latest: std::collections::BTreeMap<String, (u64, String)> = Default::default();
-    for id in session["observations"].as_array().into_iter().flatten() {
-        let Some(id) = id.as_str() else { continue };
-        let Ok(bytes) = fs::read(root.join(".chough/evidence").join(format!("{id}.json"))) else {
+    let Ok(entries) = fs::read_dir(root.join(".chough/evidence")) else {
+        return (0, 0, 0, vec![]);
+    };
+    let mut records = vec![];
+    for entry in entries.flatten() {
+        let Ok(bytes) = fs::read(entry.path()) else {
             continue;
         };
         let Ok(record) = serde_json::from_slice::<Value>(&bytes) else {
             continue;
         };
+        if record["id"].as_str().is_some_and(|id| named.contains(id)) {
+            for case in record["cases"].as_array().into_iter().flatten() {
+                if let Some(case) = case["id"].as_str() {
+                    wanted.insert(case.to_string());
+                }
+            }
+        }
+        records.push(record);
+    }
+    for record in records {
         let at = record["observed_at_unix_seconds"].as_u64().unwrap_or(0);
         let outcome = record["outcome"].as_str().unwrap_or_default().to_string();
         for case in record["cases"].as_array().into_iter().flatten() {
             let Some(case) = case["id"].as_str() else {
                 continue;
             };
+            if !wanted.contains(case) {
+                continue;
+            }
             let newer = latest.get(case).is_none_or(|(seen, _)| at >= *seen);
             if newer {
                 latest.insert(case.to_string(), (at, outcome.clone()));
