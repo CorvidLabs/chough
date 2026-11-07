@@ -18,7 +18,3 @@ Return the observation ID from cases record and evidence add (issue 60)
 ## Acceptance Criteria
 
 - On base 5ff54dd7, new focused tests fail because cases record omits case and observation and evidence add omits observation. After the fix, cases record returns case equal to the requested case ID and observation equal to both the recorded file stem and stored record id; evidence add returns observation with the same equality. Existing keys, record bytes apart from ordinary ID allocation, exit codes and stored schemas remain unchanged; docs/cli.md names the returned keys, the focused cases and full Fledge verify lane pass locally.
-
-## No-spec Rationale
-
-REQ-cli-011, REQ-cli-017 and REQ-cli-023 already define honest case recording and stable observation identities. This bug fix only returns the existing case and observation IDs in successful JSON output; it does not change requirements, stored records, existing keys, exit codes or ID allocation.

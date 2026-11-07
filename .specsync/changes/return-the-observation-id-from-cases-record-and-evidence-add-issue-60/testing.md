@@ -8,7 +8,9 @@ artifact: testing
 Add `TC-cli-manual-record-returns-observation-id` and
 `TC-cli-evidence-add-returns-observation-id` in a change-specific cases file.
 Both bind focused `cargo-test` regressions in `tests/cases.rs` and run on local
-macOS arm64 and the hosted Linux and macOS environments.
+macOS arm64 and the hosted Linux and macOS environments. The manual-record case
+links REQ-cli-011, and the direct-evidence case links REQ-cli-017; both trace
+FLOW-7 and LIFE-4 and may use their approved delta links before materialization.
 
 The manual-record regression invokes `cases record` and asserts `case`, the new
 `observation`, the pre-existing `recorded`, `outcome` and `provenance` fields.

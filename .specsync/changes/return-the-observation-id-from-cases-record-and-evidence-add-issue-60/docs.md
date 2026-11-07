@@ -14,5 +14,6 @@ Add one bullet under `CHANGELOG.md`'s Unreleased heading describing the additive
 keys and issue #60. Do not move or rewrite existing union-merged changelog
 entries, and do not add release or deployment claims.
 
-No HI wording, canonical requirement, workflow skill, diagram or visual design
-copy changes.
+No HI wording, workflow skill, diagram or visual design copy changes. Canonical
+edits are limited to the approved REQ-cli-011 and REQ-cli-017 delta and their
+materialized requirement text and cli change-log row.
