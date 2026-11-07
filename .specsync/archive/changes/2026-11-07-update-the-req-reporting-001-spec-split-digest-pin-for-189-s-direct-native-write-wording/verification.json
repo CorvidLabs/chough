@@ -1,0 +1,32 @@
+{
+  "timestamp": 1794031356,
+  "commit": "582ce2ae655e5a6acc9127f1845974d6e854ad64",
+  "contract_digest": "9d89655fcfd636a3ac07639661dc18291407cc5adbb1483596b2b29dc88c739e",
+  "execution_digest": "aa02c6af8df6d904a57bac1b14d2c7211ed3c7dfcc9e08c4f429a29399db475c",
+  "workspace_digest": "d01559bae1c241be09bed29ed2205388d4989af1e0723a458306eab356ee8e28",
+  "acceptance_input_digest": "99ea899d53af5f1de871d531fb8bd66a9e4185340c9d7232d02c6d084adf17c8",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "tests/spec_split.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b3b8ae9147b3dab47a870cbe84367cfbd9820f793b542a430ccc0bf147eccd91",
+        "entry_digest": "1cf745e5be3deb194fa0d8e2c674922cfcdf97506d8b564c104a1dafe2ddb160",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec history",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}
