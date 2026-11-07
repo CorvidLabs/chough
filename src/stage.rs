@@ -185,6 +185,66 @@ pub(super) fn validate_relay(transition: &Transition) -> Result<()> {
     Ok(())
 }
 
+/// A lifecycle record of a native change that changed outside Chough (REQ-history-013):
+/// the change, each watched file added, changed or removed, and the change's state
+/// before and after.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub(super) struct DirectWrite {
+    pub(super) change: String,
+    pub(super) files: Vec<WrittenFile>,
+    pub(super) before_state: Option<String>,
+    pub(super) after_state: Option<String>,
+}
+
+/// One watched file of a direct write and how it changed.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub(super) struct WrittenFile {
+    pub(super) path: String,
+    pub(super) change: String,
+}
+
+/// The kind of a `direct-native-write` event (REQ-history-013).
+pub(super) const DIRECT_WRITE: &str = "direct-native-write";
+
+/// Refuse a transition whose direct write is invalid or on the wrong kind
+/// (REQ-history-013).
+pub(super) fn validate_direct_write(transition: &Transition) -> Result<()> {
+    let Some(write) = &transition.direct_write else {
+        ensure!(
+            transition.kind != DIRECT_WRITE,
+            "invalid transition payload: {DIRECT_WRITE} needs direct_write"
+        );
+        return Ok(());
+    };
+    ensure!(
+        transition.kind == DIRECT_WRITE,
+        "invalid transition payload: direct_write is only allowed on {DIRECT_WRITE}, not {}",
+        transition.kind
+    );
+    ensure!(
+        transition.from == transition.to,
+        "invalid transition payload: a {DIRECT_WRITE} event stays in its stage"
+    );
+    ensure!(
+        !write.change.trim().is_empty()
+            && !write.files.is_empty()
+            && write.files.iter().all(|file| {
+                crate::direct_writes::WATCHED.contains(&file.path.as_str())
+                    && matches!(file.change.as_str(), "added" | "changed" | "removed")
+            }),
+        "invalid transition payload: direct_write needs its change and each watched file with added, changed or removed"
+    );
+    Ok(())
+}
+
+/// Every check of a transition's optional records.
+pub(super) fn validate_records(transition: &Transition) -> Result<()> {
+    validate_relay(transition)?;
+    validate_direct_write(transition)
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Transition {
@@ -207,6 +267,9 @@ pub(super) struct Transition {
     /// Present only on a gate-closed record of a relayed decision (REQ-history-010).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) relayed_by: Option<RelayedBy>,
+    /// Present only on a `direct-native-write` event (REQ-history-013).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) direct_write: Option<DirectWrite>,
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -1392,8 +1455,36 @@ fn log_transition_at(
         refresh,
         backfill,
         relayed_by,
+        direct_write: None,
     };
-    validate_relay(&transition)?;
+    validate_records(&transition)?;
+    // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
+    // found since the baseline, in the stage it leaves.
+    if STAGE_KINDS.contains(&kind) {
+        for write in crate::direct_writes::to_record(root, session.native_change.as_deref()) {
+            let event = Transition {
+                schema_version: 1,
+                at_unix_seconds: transition.at_unix_seconds,
+                kind: DIRECT_WRITE.into(),
+                from: from.into(),
+                to: from.into(),
+                reason: None,
+                gate: None,
+                revision: transition.revision.clone(),
+                refresh: vec![],
+                backfill: None,
+                relayed_by: None,
+                direct_write: Some(write),
+            };
+            validate_records(&event)?;
+            append_transition(root, session, event)?;
+        }
+    }
+    append_transition(root, session, transition)
+}
+
+/// Append one transition to the session's history, or to the legacy log.
+fn append_transition(root: &Path, session: &mut Checkpoint, transition: Transition) -> Result<()> {
     if session.history_cursor.is_some() {
         crate::history::append(root, session, transition)
     } else {
@@ -1453,7 +1544,7 @@ pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value
     for line in lines {
         let transition: Transition = serde_json::from_str(&line)
             .map_err(|error| anyhow::anyhow!("invalid transition record: {error}"))?;
-        validate_relay(&transition)
+        validate_records(&transition)
             .map_err(|error| anyhow::anyhow!("invalid transition record: {error}"))?;
         values.push(serde_json::to_value(transition)?);
     }
@@ -2213,6 +2304,13 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     };
     if applied.is_some() {
         save_checkpoint(root, &session)?;
+        // REQ-cli-060: the findings are recorded, so the baseline is the records now; a
+        // failed baseline write never undoes the move.
+        if let Err(error) = crate::direct_writes::settle(root, session.native_change.as_deref())
+            && let Some(applied) = applied.as_mut()
+        {
+            applied["direct_writes"] = json!({"unknown": error.to_string()});
+        }
     }
     // REQ-cli-041 (KNOW-13): after the move into done is saved, trim old proof; the
     // result is reported and never undoes the move.
