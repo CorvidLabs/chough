@@ -1,6 +1,6 @@
 ---
 id: correct-prune-capture-authority-and-unsafe-rollback-for-pr-197
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 1fc4c67b59f05097cab4cafa446aa58198f8ee56
 ---

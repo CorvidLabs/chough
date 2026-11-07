@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 79
+version: 80
 status: active
 files:
   - src/main.rs
@@ -67,9 +67,11 @@ gates, routes stage transitions within native lifecycle gates, assembles bounded
 focused context, validates test definitions and runs explicitly invoked automated
 cases, keeps a local bug backlog, supports an optional project-local librarian, and
 records observations tied to repository content and environment. Evidence-prune
-apply rechecks protections immediately before removal and restores partial
-removals without weakening retention guarantees. See requirements.md and
-docs/FRD.md.
+apply rechecks protections immediately before removal, accepts captured artifact
+bytes only when they match the eligible digest, and restores partial removals with
+per-file recovery that continues around unsafe restoration destinations without
+weakening retention guarantees.
+See requirements.md and docs/FRD.md.
 
 ## Public API
 
@@ -311,3 +313,4 @@ provider, runtime or hosted service.
 | 77 | 2026-11-07 | after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes: After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) |
 | 78 | 2026-11-07 | chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21: chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) |
 | 79 | 2026-11-07 | make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: Make evidence prune --apply recheck protections and restore partial removals (65) |
+| 80 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |
