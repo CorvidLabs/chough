@@ -7,11 +7,11 @@
   "title": "Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20)",
   "description": "chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "852605831643d975411015c58cc0f9a2919d0568",
   "created_at": 1794007717,
-  "updated_at": 1794009401,
+  "updated_at": 1794010311,
   "affected_specs": [
     "cli"
   ],
