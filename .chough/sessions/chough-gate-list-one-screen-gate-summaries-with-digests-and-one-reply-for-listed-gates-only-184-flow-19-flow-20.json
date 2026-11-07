@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-c1641aee9f4255fab1a58911",
-    "head": "EVT-e1b89bb3037571939cbbc9c3",
+    "head": "EVT-48677264712a9771830531ad",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -37,7 +37,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20"
+  ],
   "run_consents": [],
-  "next_action": "After the re-approval is recorded natively, close the gate, advance to build, implement the delta-linked tests source, merge main (0.5.0), and write the CHANGELOG entry naming 0.6.0"
+  "next_action": "After Leif's implementation review is recorded natively, run chough change ship chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20 with the review relay (no commit between), commit and push the archive tip; merge after t27's 0.5.0 prep"
 }
