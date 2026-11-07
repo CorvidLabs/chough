@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "BUG-specsync-symlink-cache-key-uses-unresolved-path-9205c0afb5fb77ec63d04630",
+  "title": "SpecSync symlink cache key uses unresolved path",
+  "symptom": "The archive cache identity names the PATH symlink instead of the exact resolved SpecSync executable.",
+  "trigger": "Prime and reuse an archive entry through a symlinked SpecSync executable in a fixture.",
+  "expected": "The cache key uses the resolved executable path and bytes supplied by the fixture.",
+  "actual": "The key contains /Users/leif/.cargo/bin/specsync rather than the fixture's real-specsync path.",
+  "criteria": [
+    "DRIVE-15",
+    "DRIVE-2"
+  ],
+  "requirements": [
+    "REQ-cli-053"
+  ],
+  "cases": [
+    "TC-cli-specsync-symlink-reuse"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "cfa2d10422259d677e9e6f28ae49e7380628de78",
+  "steps": [
+    "Run a_resolved_specsync_symlink_can_prime_and_reuse before the resolved-path correction."
+  ],
+  "fixture": ".chough/artifacts/issue-32-next-status-latency/failing-specsync-symlink-before.log",
+  "observations": [
+    "OBS-tc-cli-specsync-symlink-reuse-ff73f0fe4f4b6d80220a43e7",
+    "OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3"
+  ],
+  "impact": "A symlink target change could invalidate or reuse the wrong binary identity unless the resolved path is keyed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "preserved failing-first product test",
+  "notes": [
+    {
+      "at_unix_seconds": 1794007132,
+      "text": "status: open -> verified. The resolved SpecSync executable path and bytes now pass the symlink regression after the preserved failure.",
+      "observations": [
+        "OBS-tc-cli-specsync-symlink-reuse-b5fb5bc36c4a751af0c59fb3"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794007100,
+  "updated_at_unix_seconds": 1794007132
+}

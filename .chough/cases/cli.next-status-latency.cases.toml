@@ -1,0 +1,92 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-archived-report-reuse"
+title = "Warm archived reports reuse SpecSync's verdict while every lifecycle read stays live"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-15", "DRIVE-2", "LIFE-3", "LIFE-7"]
+requirements = ["REQ-cli-053"]
+paths = ["src/native.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the native test warm_reports_reuse_but_every_lifecycle_read_stays_live passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "warm_reports_reuse_but_every_lifecycle_read_stays_live"
+
+[[case]]
+id = "TC-cli-archive-cache-invalidation"
+title = "Every cache identity mismatch or untrusted entry forces a live native read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-15", "DRIVE-2", "LIFE-7"]
+requirements = ["REQ-cli-053"]
+paths = ["src/native.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the native test every_cache_identity_mismatch_or_untrusted_entry_goes_live passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "every_cache_identity_mismatch_or_untrusted_entry_goes_live"
+
+[[case]]
+id = "TC-cli-archive-cache-timeout"
+title = "A timed-out prime writes nothing, kills native children and retries cold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-15", "DRIVE-2", "LIFE-7"]
+requirements = ["REQ-cli-053"]
+paths = ["src/native.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the native test a_timed_out_prime_writes_nothing_kills_children_and_retries_cold passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "a_timed_out_prime_writes_nothing_kills_children_and_retries_cold"
+
+[[case]]
+id = "TC-cli-snapshot-worker-identity"
+title = "Concurrent snapshot workers preserve exact identities and change front-matter rules"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-15", "LIFE-3", "LIFE-6"]
+requirements = ["REQ-cli-053"]
+paths = ["src/evidence.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the native test snapshot_identities_and_change_front_matter_rules_stay_exact passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "snapshot_identities_and_change_front_matter_rules_stay_exact"
+
+[[case]]
+id = "TC-cli-specsync-symlink-reuse"
+title = "A symlinked SpecSync executable is keyed by its exact resolved bytes and path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-15", "DRIVE-2", "LIFE-7"]
+requirements = ["REQ-cli-053"]
+paths = ["src/native.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the native test a_resolved_specsync_symlink_can_prime_and_reuse passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "a_resolved_specsync_symlink_can_prime_and_reuse"

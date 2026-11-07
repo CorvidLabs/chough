@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 72
+version: 73
 status: active
 files:
   - src/main.rs
@@ -13,6 +13,7 @@ files:
   - src/evidence.rs
   - src/identity.rs
   - src/library.rs
+  - src/native.rs
   - src/native_check.rs
   - src/policy.rs
   - src/prefs.rs
@@ -29,6 +30,7 @@ files:
   - tests/package.rs
   - tests/stages.rs
   - tests/common/mod.rs
+  - tests/native.rs
   - tests/workflow_authority.rs
   - tests/linux_image.rs
   - tests/subdirectory.rs
@@ -296,3 +298,4 @@ provider, runtime or hosted service.
 | 70 | 2026-11-06 | a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18: A project in a subdirectory of its Git repository records evidence against its own files (170, DRIVE-18) |
 | 71 | 2026-11-06 | run-specsync-s-change-new-answer-check-and-status-through-chough-171-drive-20: Run SpecSync's change new, answer, check and status through Chough (171, DRIVE-20) |
 | 72 | 2026-11-06 | rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177: Rebuild the Linux test environment from the repository with one command, using the project's pinned tool versions (177, DRIVE-22) |
+| 73 | 2026-11-06 | make-archived-next-and-status-fast-within-explicit-warm-budgets: Make archived next and status fast within explicit warm budgets (32, DRIVE-15) |

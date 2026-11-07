@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "OBS-structural-d609d7d731efad7e2db11df1",
+  "criteria": [
+    "DRIVE-15",
+    "DRIVE-2"
+  ],
+  "requirements": [
+    "REQ-cli-053"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "structural",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Final integrated Fledge verify lane passed all 10 steps in 6m30.451s on cfa2d104, including fmt, lint, all tests, HI, structural specs, native audit, case definitions, knowledge index, exercise and build.",
+  "artifacts": [
+    ".chough/artifacts/issue-32-next-status-latency/verify-final.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/issue-32-next-status-latency/verify-final.log": "69ac265c7c0127ad882bc41d9e1ffc2f6df48d2cb08f10122e23942c420fd01d"
+  },
+  "observed_at_unix_seconds": 1794008068,
+  "snapshot": {
+    "revision": "cfa2d10422259d677e9e6f28ae49e7380628de78",
+    "dirty": true,
+    "fingerprint": "38709bb7fbe69ffc3d99acd342d62a1ade339d30d06db9b39eef398e935c16f1",
+    "content": "f724f0263be16771a88be502ea4c5ed193be5d4fe0a44fa2beb063a4aa70b109"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated",
+  "track": "functional",
+  "limitations": [
+    "Local Fledge 1.7.2; CI names 1.8.0. Structural verification is not product acceptance or hosted CI."
+  ]
+}
