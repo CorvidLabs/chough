@@ -7,10 +7,10 @@
   "title": "Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)",
   "description": "Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "0a20d934a08a5c92a14ca6b0016dfb520daa0815",
   "created_at": 1794011049,
-  "updated_at": 1794011127,
+  "updated_at": 1794011517,
   "affected_specs": [
     "cli",
     "history"
