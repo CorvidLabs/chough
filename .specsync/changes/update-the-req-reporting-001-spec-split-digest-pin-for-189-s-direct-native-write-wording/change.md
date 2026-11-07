@@ -1,6 +1,6 @@
 ---
 id: update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording
-state: draft
+state: implementing
 type: bug_fix
 base_commit: a3c7a590ad6fcbe3c6950fe8eb7297353f821716
 ---

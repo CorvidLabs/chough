@@ -7,10 +7,11 @@
   "title": "Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording",
   "description": "Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "a3c7a590ad6fcbe3c6950fe8eb7297353f821716",
   "created_at": 1794026416,
-  "updated_at": 1794031276,
+  "updated_at": 1794031352,
   "affected_specs": [],
   "affected_paths": [
     "tests/spec_split.rs"
