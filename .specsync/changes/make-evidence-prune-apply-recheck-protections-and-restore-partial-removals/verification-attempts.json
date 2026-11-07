@@ -144,6 +144,24 @@
       "requirement_ids": [
         "REQ-history-004"
       ]
+    },
+    {
+      "timestamp": 1794064519,
+      "commit": "1246852c305c38289775bcf1cbc4187247f5e58b",
+      "contract_digest": "74b4a6eaba4230360b7641a3d9b9b79d9a98cf0bbb3f0544d88556ec408bb170",
+      "execution_digest": "2256d2fb3163d91609d00936913f8cd33408ae4dd2a0bce3435a070f3916ec73",
+      "workspace_digest": "69f75e223e9a9fae343e0487b42d70da3f15add405e05c59bd6827e7259721f1",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-history-004"
+      ]
     }
   ]
 }
