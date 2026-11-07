@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-03b83c36dea2bb2df76ef9b7",
-    "head": "EVT-5da97bd053cd8ef2cdb37192",
+    "head": "EVT-62f244c178139b50d1c2289d",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,16 +11,25 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
   },
   "native_change": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
   "references": {
-    "criteria": [],
-    "requirements": [],
-    "cases": [],
+    "criteria": [
+      "DRIVE-21",
+      "DRIVE-20"
+    ],
+    "requirements": [
+      "REQ-history-013",
+      "REQ-cli-057"
+    ],
+    "cases": [
+      "TC-history-timing-skips-direct-writes",
+      "TC-cli-change-new-no-spec-change"
+    ],
     "design": [],
     "files": []
   },
@@ -30,11 +39,18 @@
     "Leif (0xLeif) decided \"Definition approval of chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21\": \"approved #189\" (orc tab, 2026-11-07, relayed by orc t18; native approval recorded as 0xLeif by the orc at 0635c835 (after the reporting module was added)); recorded by ch-c456 (Claude Opus 5.5); a relayed claim, not authenticated"
   ],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
+  "completed": [
+    "Refreshed both #189 cases on the merged PR head; both passed"
+  ],
+  "observations": [
+    "OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027",
+    "OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817"
+  ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21"
+  ],
   "run_consents": [],
-  "next_action": "After Leif's approval is recorded natively, close the gate, advance to build, skip DIRECT_WRITE in timing's kind filter, record the case"
+  "next_action": "After the orc records Leif's review at the final verified tip, run chough change ship with the recorded pass verdict; no commit between review and ship"
 }
