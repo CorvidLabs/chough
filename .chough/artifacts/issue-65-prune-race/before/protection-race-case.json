@@ -1,0 +1,9 @@
+{
+  "case": "TC-history-prune-protection-race",
+  "observation": "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
+  "outcome": "failed",
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "retention": null,
+  "schema_version": 1,
+  "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_protection_race_restores_removed_bytes for TC-history-prune-protection-race: failed (exit 101)."
+}

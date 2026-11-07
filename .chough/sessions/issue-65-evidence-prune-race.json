@@ -24,7 +24,12 @@
     "requirements": [
       "REQ-history-004"
     ],
-    "cases": [],
+    "cases": [
+      "TC-history-prune-protection-race",
+      "TC-history-prune-restores-partial-removal",
+      "TC-history-prune-restores-earlier-sets",
+      "TC-history-prune-restore-preserves-recreated-file"
+    ],
     "design": [],
     "files": [
       "src/evidence.rs",
@@ -48,14 +53,23 @@
   "completed": [
     "Confirmed on origin/main 455cb643 that evidence prune still deletes directly without rollback, while library archive supplies remove_verified and restored ledger events; existing LIFE-8 covers the requested behavior",
     "Completed the #65 native draft with four deterministic failure-first regressions, byte-checked removal, create-new rollback and uncommitted-byte recovery holds; SpecSync reports artifacts_complete true",
-    "Added cli ownership with a minimal Purpose delta for src/evidence.rs; a disposable worktree probe accepted the cli and history deltas with approval_valid true, and the probe and its non-human approval record were removed"
+    "Added cli ownership with a minimal Purpose delta for src/evidence.rs; a disposable worktree probe accepted the cli and history deltas with approval_valid true, and the probe and its non-human approval record were removed",
+    "Failing tests: 3ad9df48933b880836c812c06369d00b9369e918; all four direct regressions failed for the intended behavior and their failed cases are linked to local bugs"
   ],
-  "observations": [],
-  "bugs": [],
+  "observations": [
+    "OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a",
+    "OBS-tc-history-prune-restores-earlier-sets-bba515e3dbd42cea1399e660",
+    "OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7",
+    "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d"
+  ],
+  "bugs": [
+    "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",
+    "BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07"
+  ],
   "blockers": [],
   "awaiting_human": [
     "Scope decision of make-evidence-prune-apply-recheck-protections-and-restore-partial-removals"
   ],
   "run_consents": [],
-  "next_action": "Wait for the orc to relay scope approval; after approval, add the four failing regressions before changing retention behavior"
+  "next_action": "Implement byte-checked prune removal, rollback and recovery holds without changing the approved scope"
 }

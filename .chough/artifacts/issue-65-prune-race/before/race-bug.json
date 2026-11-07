@@ -1,0 +1,117 @@
+{
+  "id": "BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2",
+  "published": false,
+  "recorded": ".chough/bugs/BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2.json",
+  "schema_version": 1,
+  "similar": [
+    {
+      "id": "BUG-0015",
+      "score": 0.32,
+      "status": "verified",
+      "title": "Committing Chough evidence makes that evidence stale"
+    },
+    {
+      "id": "BUG-0002",
+      "score": 0.31,
+      "status": "open",
+      "title": "SpecSync change status keeps approval_valid true after an approved delta is edited"
+    },
+    {
+      "id": "BUG-0016",
+      "score": 0.31,
+      "status": "verified",
+      "title": "Chough records and SpecSync verification make each other stale"
+    },
+    {
+      "id": "BUG-0003",
+      "score": 0.3,
+      "status": "open",
+      "title": "A failing SpecSync change check may still record passed verification"
+    },
+    {
+      "id": "BUG-history-inspection-claims-completeness-for-a-missing-referenced-pruned-c15bc08868b100926c733b0b",
+      "score": 0.3,
+      "status": "verified",
+      "title": "History inspection claims completeness for a missing referenced pruned event"
+    },
+    {
+      "id": "BUG-0004",
+      "score": 0.3,
+      "status": "verified",
+      "title": "Leaving accept is refused after a real native archive because status JSON is truncated"
+    },
+    {
+      "id": "BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef",
+      "score": 0.3,
+      "status": "open",
+      "title": "Rebuilding the knowledge index after recording an observation makes that observation stale"
+    },
+    {
+      "id": "BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b",
+      "score": 0.29,
+      "status": "verified",
+      "title": "Report case cache flattens existing loader error chains"
+    },
+    {
+      "id": "BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3",
+      "score": 0.27,
+      "status": "verified",
+      "title": "Frozen artifact directory aliases fail to protect history cycles"
+    },
+    {
+      "id": "BUG-0011",
+      "score": 0.27,
+      "status": "verified",
+      "title": "Native reads collect unbounded output and have no deadline"
+    },
+    {
+      "id": "BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1",
+      "score": 0.27,
+      "status": "verified",
+      "title": "Checkpoint capacity refusal publishes orphan gate history"
+    },
+    {
+      "id": "BUG-recently-closed-idle-cycles-are-eligible-for-history-pruning-be8b45601a1249bee88c19a4",
+      "score": 0.27,
+      "status": "verified",
+      "title": "Recently closed idle cycles are eligible for history pruning"
+    },
+    {
+      "id": "BUG-0012",
+      "score": 0.25,
+      "status": "verified",
+      "title": "Routine case and validation runs keep every log and observation with no retention"
+    },
+    {
+      "id": "BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc",
+      "score": 0.25,
+      "status": "verified",
+      "title": "Interrupted history previews count already removed bytes"
+    },
+    {
+      "id": "BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a",
+      "score": 0.25,
+      "status": "verified",
+      "title": "Legacy timing bypasses the 4096-event request bound"
+    },
+    {
+      "id": "BUG-observations-reuse-timestamp-identities-0d697a3ddd838a3b679e4bcc",
+      "score": 0.25,
+      "status": "verified",
+      "title": "Observations reuse timestamp identities"
+    },
+    {
+      "id": "BUG-slug-case-ids-are-rejected-e735f2070856c5421707ae14",
+      "score": 0.25,
+      "status": "verified",
+      "title": "Slug case IDs are rejected"
+    },
+    {
+      "id": "BUG-validation-runs-reuse-timestamp-identities-2070061bfd91bd06bdc0ba00",
+      "score": 0.25,
+      "status": "verified",
+      "title": "Validation runs reuse timestamp identities"
+    }
+  ],
+  "verification": "reproduced"
+}

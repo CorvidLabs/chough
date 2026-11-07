@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "id": "BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07",
+  "title": "Evidence prune does not restore partial removal",
+  "symptom": "A failed observation unlink after artifact removal leaves the artifact missing",
+  "trigger": "chough evidence prune --apply when the evidence directory rejects the observation rename",
+  "expected": "Restore the artifact with original bytes and permissions and append a restored event",
+  "actual": "The artifact stays deleted and only the initial prune ledger line exists",
+  "criteria": [
+    "LIFE-8",
+    "LIFE-2",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-004"
+  ],
+  "cases": [
+    "TC-history-prune-restores-partial-removal"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "3ad9df48933b880836c812c06369d00b9369e918",
+  "steps": [
+    "Make the evidence directory read-only and run evidence prune --apply"
+  ],
+  "fixture": ".chough/artifacts/issue-65-prune-race/before/partial-removal.log",
+  "observations": [
+    "OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d"
+  ],
+  "impact": "A refused apply destroys uncommitted evidence",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Issue #65 failure-first test at 3ad9df48",
+  "notes": [],
+  "created_at_unix_seconds": 1794021913,
+  "updated_at_unix_seconds": 1794021913
+}
