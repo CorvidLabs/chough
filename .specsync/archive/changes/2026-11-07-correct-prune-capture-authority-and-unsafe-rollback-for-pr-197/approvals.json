@@ -78,6 +78,13 @@
         "cli: SPEC SECTION Purpose": "7d81d8e60fe38d526a51bb7fb2ca6d11cb77780633d8202a2640b19841f24e42",
         "history: SPEC SECTION Error Cases": "7b8a68535754c013299aed1ba1e7ee7508a5fc4ed576ff936bdfea5dee337380"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794072692,
+      "digest": "4a3bb3273edb0bfcb3cac6e8e678e0a62bd22468a516d03ecb040f06b29b8772",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
