@@ -45,18 +45,25 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+11 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-installation-observation-48008674b01d6e137c95d956 | passed (by cycle time) | macos-arm64-cargo-1.99.0 |  |
+| OBS-product-test-c727fa6d2f004d10b1d511f8 | passed (by cycle time) | linux-aarch64-docker-chough-linux-1-2-3 |  |
+| OBS-tc-cli-done-fresh-vault-session-links-0af8035af974b33d4913d80d | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
+| OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
+| OBS-tc-cli-done-fresh-vault-session-links-5da6111b58cba9d10d899644 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
+| OBS-tc-cli-done-fresh-vault-session-links-b41c1e34e052180510f040aa | failed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
+| OBS-tc-cli-done-self-archive-vault-current-12d5b0b1d0d6f4333ede75ff | passed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
+| OBS-tc-cli-done-self-archive-vault-current-331d20867fbcf8d90f3a0d36 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
+| OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325 | failed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
 | OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74 | passed (by cycle time) | local-macos-arm64 | TC-cli-prototype-hidden-panels-stay-hidden |
-| OBS-tc-cli-prototype-hidden-panels-stay-hidden-f84e099781900ebb1a85f512 | failed (by cycle time) | local-macos-arm64 | TC-cli-prototype-hidden-panels-stay-hidden |
 | OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384 | passed (by cycle time) | local-macos-arm64 | TC-cli-prototype-styles-0-4-0-known-outdated |
-| OBS-tc-cli-prototype-styles-0-4-0-known-outdated-73623b3db9dfcb5ff747c4b0 | failed (by cycle time) | local-macos-arm64 | TC-cli-prototype-styles-0-4-0-known-outdated |
 
 ## Bugs
 
-- BUG-prototype-template-shows-every-state-panel-when-a-project-sets-display-073394402cc923c41c0b501c verified (references OBS-tc-cli-prototype-hidden-panels-stay-hidden-f84e099781900ebb1a85f512, OBS-tc-cli-prototype-styles-0-4-0-known-outdated-73623b3db9dfcb5ff747c4b0, OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384, OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74)
+- BUG-prototype-template-shows-every-state-panel-when-a-project-sets-display-073394402cc923c41c0b501c verified (references OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384, OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74)
 
 ## Loose artifacts
 
