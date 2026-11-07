@@ -99,19 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-527 recorded; most recent:
-
-- OBS-structural-e0b6507696e1eb822326d465 Structural Passed in local-linux-aarch64 at 2c3cd209c5cd
-- OBS-dry-run-ea811aa23f1848e4afafdbae DryRun Passed in local-linux-aarch64 at 2c3cd209c5cd
-- OBS-tc-cli-change-walkthrough-runs-chough-eeab06073c51349b7b6ecf79 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-outlives-read-bound-63957ecaa5867c7baa0ff452 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-names-remaining-step-4dab9573dc57469f2f0cacfb ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-checks-before-running-b9525101163d73b8ba5a3738 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-refusal-passes-through-b81f1986cced1d35cc1c2489 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-tc-cli-change-ship-closes-gate-and-moves-to-done-b8b96571c25ed80fcdfcd791 ProductTest Passed in local-macos-arm64 at 4dc0697d38b5
-- OBS-product-test-43953badfa0bdb247decd5d4 ProductTest Passed in local-macos-arm64 at da37b4a73515
-- OBS-tc-cli-change-walkthrough-runs-chough-dc9b4b427e025a35a068c618 ProductTest Passed in local-macos-arm64 at da37b4a73515
-515 recorded; most recent:
+517 recorded; most recent:
 
 - OBS-product-test-d15ac3501f3fd5a9d6eb6325 ProductTest Passed in local-macos-arm64 at 317595212a05
 - OBS-tc-cli-change-steps-write-nothing-62fe15cbc95b9f266c0c477d ProductTest Passed in local-macos-arm64 at 317595212a05
