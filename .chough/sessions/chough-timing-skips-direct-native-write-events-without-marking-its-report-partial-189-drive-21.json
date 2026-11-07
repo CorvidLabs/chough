@@ -1,0 +1,40 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-03b83c36dea2bb2df76ef9b7",
+    "head": "EVT-1d2a9260a2d974b3553510c3",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "chough timing skips direct-native-write events without marking its report partial (#189, DRIVE-21)",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "history"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21",
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Regression from #183 (#186): timing counted the valid direct-native-write kind as unrecognised and marked its report partial; fix in DRIVE-21's scope by treating it as a known non-segment kind; REQ-history-013 modified to say so"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Definition approval of chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21"
+  ],
+  "run_consents": [],
+  "next_action": "After Leif's approval is recorded natively, close the gate, advance to build, skip DIRECT_WRITE in timing's kind filter, record the case"
+}

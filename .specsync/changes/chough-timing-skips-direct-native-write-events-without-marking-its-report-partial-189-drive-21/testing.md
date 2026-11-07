@@ -1,0 +1,20 @@
+---
+change: chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21
+artifact: testing
+---
+
+# Testing
+
+- `timing_skips_direct_write_events_without_marking_the_report_partial` (`tests/direct_writes.rs`): with one recorded `direct-native-write` event, `chough timing --json` has no "unrecognised kinds" partial entry, and every `unrecognised_kinds` count is 0. It fails first: the report says "1 records of unrecognised kinds skipped".
+- **Mutation:** counting `direct-native-write` as unrecognised again makes the test fail.
+- **Regression:** an event of a truly unknown kind still marks the report partial. The existing timing tests keep that behavior, and the suite runs them.
+
+## Requirement evidence
+
+| Requirement | Evidence |
+|---|---|
+| REQ-history-013 (modified) | tests/direct_writes.rs |
+
+## Lanes
+
+`fledge run linux-verify` passes; the local spec check runs first with `--require-coverage 100`.

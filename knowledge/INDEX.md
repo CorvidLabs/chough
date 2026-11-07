@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21 (active; `specsync change status chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21`)
 
 Archived changes (newest first; the newest 3 are hot):
 
