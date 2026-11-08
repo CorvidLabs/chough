@@ -85,4 +85,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.json](../attachments/flag-direct-3e88b00e/sessions/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.json)
