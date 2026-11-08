@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18",
+  "slug": "explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18",
+  "title": "Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18)",
+  "description": "Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18)",
+  "kind": "documentation",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "e2d20dad504ee21fd304150632a21aa71d074d37",
+  "created_at": 1794089631,
+  "updated_at": 1794103520,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "README.md",
+    "docs/walkthrough.md",
+    "docs/lifecycle.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "No requirement text changes: the README, walkthrough and lifecycle docs are corrected to describe what the helper and the workflow skill already do (which SpecSync steps chough change wraps, that next is routing guidance, that the agent advances stages, and which human gates remain). No helper behavior, stage semantics, retention or SpecSync changes.",
+  "acceptance_criteria": [
+    "tests/docs.rs and fledge lanes run verify pass with the updated pages; the README states, with the loop shown as goal to agent work to human decision to tested PR, who acts and who decides at each stage, that chough change new/answer/check/status pass SpecSync output through unchanged and only change ship also closes the review gate and moves the session to done, and that chough next is routing guidance rather than an unattended runner; walkthrough and lifecycle match that wording; no helper behavior, requirement text, stage semantics, retention or SpecSync changes, and the archive-stage proposal is not described as current behavior."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Docs only: README.md, docs/walkthrough.md, docs/lifecycle.md; docs/cli.md stays the command catalog and the authoritative skill text is not rewritten; no new HI or REQ IDs (FLOW-18, FLOW-13, LIFE-3 cover this); tests/docs.rs must keep passing; no helper behavior, stage semantics, retention or SpecSync changes; do not describe the unapproved archive-stage proposal as current behavior; specsync change audit --strict before every push.",
+    "public_contract": "no"
+  }
+}

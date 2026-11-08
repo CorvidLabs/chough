@@ -55,7 +55,7 @@ verification records, the retention ledger and Git stay authoritative.
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-product-test-88bbe2aab8066fa7be63937f | passed (pruned) (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-af55b3e0d282e728bde7629e | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-product-test-af55b3e0d282e728bde7629e | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-tc-cli-change-check-outlives-read-bound-75468b34885c4ec6fab83f7a | failed (by cycle time) | local-macos-arm64 | TC-cli-change-check-outlives-read-bound |
 | OBS-tc-cli-change-check-outlives-read-bound-9945f416fe07101b498cccd6 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-check-outlives-read-bound |
 | OBS-tc-cli-change-invalid-bound-recovery-70d66a01bb48f6d3e5686e69 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-invalid-bound-recovery |

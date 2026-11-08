@@ -22,6 +22,32 @@ Chough records what stage work is in, what was decided, what was actually checke
 Chough is a public CorvidLabs repository. Release history is in
 [CHANGELOG.md](CHANGELOG.md). Nothing is hosted or deployed.
 
+## How Chough works
+
+Give your agent a goal; it drives the workflow using Chough. The agent you are
+already talking to runs HI, SpecSync and Fledge itself while following the skill,
+and Chough keeps the checkpoint that lets any agent resume. There is no separate
+auto-driver: nothing runs the pipeline unattended, and no stage advances itself.
+The agent moves stages with `chough stage …`, and native SpecSync status, not a
+saved label, decides what each move is allowed to do. The loop is:
+
+1. You state the goal; the agent captures it in HI. Where intent or authorization
+   already exists, it is used; you are asked only when a real decision is missing.
+2. The agent drafts the native SpecSync change, filling its technical interview
+   fields from your intent and the repository. You approve scope once, where your
+   prior or standing authorization does not already cover it.
+3. The agent builds, tests and advances the stages.
+4. You review the implementation; only then does the agent record the native
+   review and ship, closing the review gate with your words as a relayed claim.
+
+`chough next` tells the agent (or you) the focused next valid action; it is
+routing guidance, not an unattended runner. `chough change new/answer/check/status`
+pass SpecSync's output, refusals and exit code through unchanged and write nothing
+under `.chough/`; only `chough change ship` also closes the review gate and moves
+the session to done. What you always decide yourself: the intent, any visual
+design, scope when authority is missing, implementation acceptance, merge, and any
+release or deploy.
+
 ## Install
 
 Chough needs Rust 1.88 or later. Install a released version from crates.io (the
@@ -101,6 +127,13 @@ that authorization without asking you to repeat permission for each internal too
 step. It asks when a consequential decision or permission is still missing. Native
 checks and your separate implementation acceptance and merge decision remain.
 
+To resume, either run `chough next --environment local` yourself and paste its
+output to the agent, or tell the agent: "Read AGENTS.md, run
+`chough next --environment local` and follow
+[the skill](skills/chough-workflow/SKILL.md)." The agent re-checks native state,
+evidence freshness, open bugs and pending human decisions itself; a saved stage or
+next action is a suggestion it verifies, not a command it obeys blindly.
+
 ## The loop
 
 ![Stages, backtracking and side stages](docs/diagrams/stages.svg)
@@ -146,6 +179,12 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
 | `library init/snapshot/index/archive` | Project librarian, on by default in `knowledge/`; post-archive summary preview and apply; `index --check` fails when the generated notes drift |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
+
+This table documents current main. Three entries were added after the 0.5.0
+release and need a build from main: `gate list/record`, the `change ship
+--list/--gate` options and the `change new --no-spec-change/--rationale` options.
+The released 0.5.0 binary has every other row, including `change
+new/answer/check/status/ship` and `stage …`.
 
 ## Record identities and compatibility
 

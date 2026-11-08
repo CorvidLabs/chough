@@ -6,6 +6,14 @@ with assertions in a disposable directory, use `fledge run exercise` or
 Human gates appear as decisions a person makes; the sample script labels its
 stand-ins as SIMULATED.
 
+Throughout, the division of labor stays the same: the agent runs the tools —
+HI, SpecSync, Fledge and the `chough` helper — captures criteria, fills the native
+change's technical interview fields from your intent and the repository, builds,
+tests and moves the stages. You make the product decisions: the intent as a whole,
+any rendered design, scope where your prior or standing authorization does not
+already cover it, and the implementation review. `chough next` only recommends the
+next action; the agent verifies native state before acting on it.
+
 ## New project
 
 For a Git project that has no HI or SpecSync files yet. These steps were observed on

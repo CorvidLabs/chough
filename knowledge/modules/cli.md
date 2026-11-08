@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 137
+archived_changes: 138
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-137 archived changes, newest first.
+138 archived changes, newest first.
 
+- [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](../archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation
@@ -42,5 +43,4 @@ this note only links them.
 - [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](../archives/prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0.md) Prepare the 0.5.0 release: set the package version to 0.5.0 and date the change log section for 0.5.0
 - [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20)
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)
-- [chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20](../archives/chough-change-ship-ship-after-the-review-close-the-review-gate-with-the-relay-and-move-to-done-179-drive-20.md) Chough change ship: ship after the review, close the review gate with the relay, and move to done (179, DRIVE-20)
-- 127 more on the [timeline](../timeline.md)
+- 128 more on the [timeline](../timeline.md)

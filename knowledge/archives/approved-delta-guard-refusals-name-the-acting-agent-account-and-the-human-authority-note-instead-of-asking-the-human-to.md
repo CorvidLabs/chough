@@ -129,14 +129,14 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/artifacts/pr51-root-qualification/final-verify.log` | edc39bb75f65b4d58e859c6ea0cd08ca301dab4e970197459ff53649f331c259 | Git 5701b277e040a6c29433300e86aa54b037f3f0cf |
 | `.chough/artifacts/pr51-root-qualification/named-bound-after.json` | 5d4680b86c6b03879f3347b98eb43f5c832dfec65a8d650ebbdf693a821b2564 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
 | `.chough/artifacts/pr51-root-qualification/named-bound-after.log` | c97065b518c01aa511f4248613f1917d11e7f9880128764761492891257651a7 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
-| `.chough/artifacts/pr51-root-qualification/named-bound-before.json` | 9a1fe65b798ad74db9e840c7c9edc3671f409c38d27d3e2ee7809baa4276b345 | working tree |
-| `.chough/artifacts/pr51-root-qualification/named-bound-before.log` | b9f2b559adb0d166edcd57187a0a29163c35e587f1c384f2d92034886438ecf3 | working tree |
+| `.chough/artifacts/pr51-root-qualification/named-bound-before.json` | 9a1fe65b798ad74db9e840c7c9edc3671f409c38d27d3e2ee7809baa4276b345 | Git b8dd7f19eef5e0fc0a224506e60595d7f20a2350 |
+| `.chough/artifacts/pr51-root-qualification/named-bound-before.log` | b9f2b559adb0d166edcd57187a0a29163c35e587f1c384f2d92034886438ecf3 | Git b8dd7f19eef5e0fc0a224506e60595d7f20a2350 |
 | `.chough/artifacts/pr51-root-qualification/original-parent-inputs.json` | dfa746acd99bfabeeaea6b4989dd11e87cceae3f4c5a88c189a05a32a1381ef1 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/repair-check.log` | e1d0e9bbba996ad1f5e8bbd4cd42f6436cd19c4f9c0b66cba8808f5747b524d3 | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/repair-fmt.log` | a52677d913bc4941ba8bff7c141323095206f62e51d627e409b5b0cced159a9b | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/repair-lint.log` | 34b36f97e29262999ea987ae07ee7344f593c8aee423352b3ce48024d7765ebd | Git 79a3100cd536c20db22ae085c62888465cd2c2f2 |
 | `.chough/artifacts/pr51-root-qualification/repair-quality.json` | 3614ec1896f6628c5c8a2d3109a3047f49b15322fc8b52ceda37f089d48b2667 | Git b5bf6ef6754daadf7a1c819497ea5bd0079fd148 |
-| `.chough/artifacts/pr51-root-qualification/unfixed-source.diff` | db20804c4acc92b8697f3b9a719fd2b4c2d14f9cc31c0a5756b852ef5f066cb8 | working tree |
+| `.chough/artifacts/pr51-root-qualification/unfixed-source.diff` | db20804c4acc92b8697f3b9a719fd2b4c2d14f9cc31c0a5756b852ef5f066cb8 | Git b8dd7f19eef5e0fc0a224506e60595d7f20a2350 |
 | `.chough/artifacts/pr51-writer-atomicity/before/before.json` | dded784b54b0d2576a1f6a3495af9ab6dfc91b95d7809e0d3161eee71a081e04 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
 | `.chough/artifacts/pr51-writer-atomicity/before/capture.py` | abd117be731485ca650c8fd368c59eaedda14acf9bf883d87b6445fd7ec7ad43 | Git 31119bebbff17573128e4c81920917d74eab4b11 |
 | `.chough/artifacts/pr51-writer-atomicity/before/coverage-note.json` | 9d98027f62ed44ab111816a3571795411c0c476bda55da54b9478a189cb83111 | Git 31119bebbff17573128e4c81920917d74eab4b11 |

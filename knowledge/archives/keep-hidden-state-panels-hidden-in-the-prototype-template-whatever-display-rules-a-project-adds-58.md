@@ -50,16 +50,16 @@ verification records, the retention ledger and Git stay authoritative.
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-installation-observation-48008674b01d6e137c95d956 | passed (by cycle time) | macos-arm64-cargo-1.99.0 |  |
-| OBS-product-test-3df243412063021fb3800669 | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-3df243412063021fb3800669 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-c727fa6d2f004d10b1d511f8 | passed (by cycle time) | linux-aarch64-docker-chough-linux-1-2-3 |  |
 | OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
-| OBS-tc-cli-change-new-no-spec-change-bbd11d05c3e46d1472148d6a | passed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
+| OBS-tc-cli-change-new-no-spec-change-bbd11d05c3e46d1472148d6a | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
 | OBS-tc-cli-change-new-no-spec-change-e1285c99ba1f66e98847fcfb | failed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
 | OBS-tc-cli-done-fresh-vault-session-links-0af8035af974b33d4913d80d | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
-| OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
-| OBS-tc-cli-done-fresh-vault-session-links-5da6111b58cba9d10d899644 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
+| OBS-tc-cli-done-fresh-vault-session-links-14872a3fd9cbe122deedd4f0 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
+| OBS-tc-cli-done-fresh-vault-session-links-5da6111b58cba9d10d899644 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
 | OBS-tc-cli-done-fresh-vault-session-links-b41c1e34e052180510f040aa | failed (by cycle time) | local-macos-arm64 | TC-cli-done-fresh-vault-session-links |
-| OBS-tc-cli-done-self-archive-vault-current-12d5b0b1d0d6f4333ede75ff | passed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
+| OBS-tc-cli-done-self-archive-vault-current-12d5b0b1d0d6f4333ede75ff | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
 | OBS-tc-cli-done-self-archive-vault-current-331d20867fbcf8d90f3a0d36 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
 | OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325 | failed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
 | OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74 | passed (by cycle time) | local-macos-arm64 | TC-cli-prototype-hidden-panels-stay-hidden |
@@ -73,7 +73,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d | failed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
 | OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
 | OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 | passed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
-| OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 | passed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
+| OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 | OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc | failed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 
 ## Bugs
@@ -88,4 +88,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.json](../attachments/keep-hidden-3da8628d/sessions/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.json)

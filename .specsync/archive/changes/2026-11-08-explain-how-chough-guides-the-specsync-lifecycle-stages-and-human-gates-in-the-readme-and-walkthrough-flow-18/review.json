@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "83280926f4b864dd8c02a6c0660a9b8a8d3cfd3b",
+  "contract_digest": "073d2d38ba4668692f3b22d42488ab9aeec4a5a751f875b2d733d5799db35fa7",
+  "execution_digest": "9a300d4f5c57e07c40b460a1706fd3cc8fa8e17188a0ff331a66a12e574ff934",
+  "workspace_digest": "b2fbc9beb578ac199912f5486fedc72b263e727451924ae5ffd8a6716d94aded",
+  "timestamp": 1794103332
+}

@@ -1,0 +1,48 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794092435,
+      "digest": "073d2d38ba4668692f3b22d42488ab9aeec4a5a751f875b2d733d5799db35fa7",
+      "note": "Leif directly replied exactly \"approve\" to orc t19f one-item Chough documentation scope question on 2026-11-07 at full head 7184636180a2b866d8da7329eccd5083a253ef29. THREE FILES ONLY: README.md, docs/walkthrough.md, docs/lifecycle.md. Explain agent-driven HI/SpecSync/Fledge, stage advancement, human gates, start/resume, and released 0.5 versus main. No runtime/auto-driver/requirement/ID/stage/retention/skill/generated/digest-registry changes. Native documentation/no_spec_change/public_contract=no definition approved only; final implementation still needs fresh acceptance. No archive-stage feature, parked scope, tag/release/deploy authorization. Recorded by orc t19f from direct human chat.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18",
+        "title": "Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18)",
+        "description": "Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18)",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "README.md",
+          "docs/lifecycle.md",
+          "docs/walkthrough.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement text changes: the README, walkthrough and lifecycle docs are corrected to describe what the helper and the workflow skill already do (which SpecSync steps chough change wraps, that next is routing guidance, that the agent advances stages, and which human gates remain). No helper behavior, stage semantics, retention or SpecSync changes.",
+        "acceptance_criteria": [
+          "tests/docs.rs and fledge lanes run verify pass with the updated pages; the README states, with the loop shown as goal to agent work to human decision to tested PR, who acts and who decides at each stage, that chough change new/answer/check/status pass SpecSync output through unchanged and only change ship also closes the review gate and moves the session to done, and that chough next is routing guidance rather than an unattended runner; walkthrough and lifecycle match that wording; no helper behavior, requirement text, stage semantics, retention or SpecSync changes, and the archive-stage proposal is not described as current behavior."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Docs only: README.md, docs/walkthrough.md, docs/lifecycle.md; docs/cli.md stays the command catalog and the authoritative skill text is not rewritten; no new HI or REQ IDs (FLOW-18, FLOW-13, LIFE-3 cover this); tests/docs.rs must keep passing; no helper behavior, stage semantics, retention or SpecSync changes; do not describe the unapproved archive-stage proposal as current behavior; specsync change audit --strict before every push.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794103516,
+      "digest": "36cbc2ed57b996d487fa0a4e5ef4a1b531473923d03a28d9bda210ddf2f5bd9d",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

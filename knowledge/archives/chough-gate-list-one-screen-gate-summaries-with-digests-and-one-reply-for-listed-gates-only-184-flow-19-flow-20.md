@@ -57,10 +57,10 @@ verification records, the retention ledger and Git stay authoritative.
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-dry-run-7a3fb4d187037a2efae55ac9 | passed (by cycle time) | local-linux-aarch64 |  |
-| OBS-product-test-1e38299188b5d2c640dd711a | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-1e38299188b5d2c640dd711a | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-structural-00139f76b41cb62e23cf99b8 | passed (by cycle time) | local-linux-aarch64 |  |
 | OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14 | failed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
-| OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1 | failed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
+| OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1 | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
 | OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 | passed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
 | OBS-tc-cli-gate-record-listed-gates-only-0db9e135e9f5b7e58d72eb3e | failed (by cycle time) | local-macos-arm64 | TC-cli-gate-record-listed-gates-only |
 | OBS-tc-cli-gate-record-listed-gates-only-c118c5b8a9d9cc06f799c868 | passed (by cycle time) | local-macos-arm64 | TC-cli-gate-record-listed-gates-only |
@@ -85,4 +85,5 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [artifacts/OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1.log](../attachments/chough-gate-7a10a0f2/artifacts/OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1.log)
+- [sessions/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.json](../attachments/chough-gate-7a10a0f2/sessions/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.json)
