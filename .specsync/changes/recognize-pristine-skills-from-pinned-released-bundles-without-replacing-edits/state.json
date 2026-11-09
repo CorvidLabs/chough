@@ -7,10 +7,10 @@
   "title": "Recognize pristine skills from pinned released bundles without replacing edits",
   "description": "Recognize pristine skills from pinned released bundles without replacing edits",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "4bbd5a6373d26c0ad069878f8f543842a4564a6f",
   "created_at": 1794197093,
-  "updated_at": 1794197217,
+  "updated_at": 1794198010,
   "affected_specs": [
     "cli"
   ],

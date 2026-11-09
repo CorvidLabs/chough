@@ -1,4 +1,105 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "orc-t19f",
+      "timestamp": 1794198010,
+      "digest": "c0ea4a48cdf77cf4ad45a25951968c26c1749dcf8f4de92b2d618d05341674cd",
+      "note": "Agent orc-t19f scope under Leif all-PR/issues implementation and Approve and continue to merge and fix bugs authority: exact63paths/five pinned historical bundles/51offline blobs, six KNOWN_PREVIOUS path+digest pairs only, preserve all existing matching/edit/mode/host/legacy policy. Modified existing REQ-cli-016 retains old wording; no new HI/API/schema or future-release promise. First committed meaningful compiled RED before six-row fix; separate root build lease. Agent bounded scope action only, no human implementation acceptance/review, archive, hosted merge, release or global install.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits",
+        "title": "Recognize pristine skills from pinned released bundles without replacing edits",
+        "description": "Recognize pristine skills from pinned released bundles without replacing edits",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.released-skills-102.cases.toml",
+          ".chough/sessions/issue-102-released-skills.json",
+          "CHANGELOG.md",
+          "knowledge/INDEX.md",
+          "specs/cli/cli.3md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/cli/tasks.md",
+          "specs/cli/testing.md",
+          "src/skill.rs",
+          "tests/fixtures/skill-releases/blobs/00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d.txt",
+          "tests/fixtures/skill-releases/blobs/1022db57d0c114effc8669ede9ebb453f932109f608f883712725e57ba53551d.txt",
+          "tests/fixtures/skill-releases/blobs/10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069.txt",
+          "tests/fixtures/skill-releases/blobs/1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf.txt",
+          "tests/fixtures/skill-releases/blobs/18299d9d1adb30fb87a167a1a59ecd8595d1f53ec73522ccee257ea817641701.txt",
+          "tests/fixtures/skill-releases/blobs/187a887f2999e2d54350a56059a739f8379a7d77305ab53652da3b3eed8caa8d.txt",
+          "tests/fixtures/skill-releases/blobs/1a0a324a83658a1466ee6fe295ccfe9e980275f7abca809ef2927e71fb912663.txt",
+          "tests/fixtures/skill-releases/blobs/1c9ef93185390ee98aa4b4f2f9fbf2c442a003ad22097d0e74e4676b42404909.txt",
+          "tests/fixtures/skill-releases/blobs/23dcd8140f0d5bbbf77ea9a20ce37c43fde91345bf1cddf40b9336797a920a57.txt",
+          "tests/fixtures/skill-releases/blobs/28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf.txt",
+          "tests/fixtures/skill-releases/blobs/2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a.txt",
+          "tests/fixtures/skill-releases/blobs/2e26c47b349c4138d50eb78aa557822909c586802a9dbb12a46a466438d89b3b.txt",
+          "tests/fixtures/skill-releases/blobs/366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3.txt",
+          "tests/fixtures/skill-releases/blobs/367a9873293e79ca40c9634e2b2a12c3223074aaec161c7444690c2d02e12199.txt",
+          "tests/fixtures/skill-releases/blobs/370386488c8e5ff6c974ae9d3bd51998de31183868dfe48af44c0935a3019170.txt",
+          "tests/fixtures/skill-releases/blobs/3da19999ee4830a1fe1e0af63b13efc934f90d05678bbf70c3d79f39103c1150.txt",
+          "tests/fixtures/skill-releases/blobs/4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5.txt",
+          "tests/fixtures/skill-releases/blobs/472396403a4f716f0183ec2c3495ac0ecf0dc412c1b61bb850cee767765e1f6a.txt",
+          "tests/fixtures/skill-releases/blobs/4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d.txt",
+          "tests/fixtures/skill-releases/blobs/4d0bf24ddd5e55493658339c76750a639a15997c4290a492cacda3550874f035.txt",
+          "tests/fixtures/skill-releases/blobs/4e085b88eaa66a59fd6c8ce7d3acb1201b46292603a2cf13ab5333fc5ea85d86.txt",
+          "tests/fixtures/skill-releases/blobs/51281ff6c9af4b939105cdf6ecf80d9dd11080dc8d682ecbba9d5b5c17d75c42.txt",
+          "tests/fixtures/skill-releases/blobs/5d7f85aa72b3bba8e5d83b593556bcdee244939b31038ed3e6000783aac5c4ea.txt",
+          "tests/fixtures/skill-releases/blobs/5f839a81742b9dc3df3b1278e340061a08e95e2a00e203f0f2554eab3aa3fed9.txt",
+          "tests/fixtures/skill-releases/blobs/658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f.txt",
+          "tests/fixtures/skill-releases/blobs/733346e29c7a57461926a6c7d297face74fc291a2e5c7f17d4d57dcf3945ec99.txt",
+          "tests/fixtures/skill-releases/blobs/772b6900528a84ad0c76638ad91536865ab7d62883d05eb49a8f7841896c2740.txt",
+          "tests/fixtures/skill-releases/blobs/816e40ecd47f39ac62e8f0f5e84a9e6277e3470221df1d9c80fff9d6bccb378e.txt",
+          "tests/fixtures/skill-releases/blobs/86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102.txt",
+          "tests/fixtures/skill-releases/blobs/8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4.txt",
+          "tests/fixtures/skill-releases/blobs/8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421.txt",
+          "tests/fixtures/skill-releases/blobs/8ca2b70f36ee162638cafd63bcc97e8c9ed688b59c2b67b98d61ba3be1d28f37.txt",
+          "tests/fixtures/skill-releases/blobs/92a9e61abe6011473f526868e731dc003b81835db720f6f4d61d704d92c22d73.txt",
+          "tests/fixtures/skill-releases/blobs/970d5a96be20ac737f8e1c9650bc327355792b3ee4b2e525acbbd7dc14c7ad30.txt",
+          "tests/fixtures/skill-releases/blobs/a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f.txt",
+          "tests/fixtures/skill-releases/blobs/a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83.txt",
+          "tests/fixtures/skill-releases/blobs/ac787118e30b11a8b5eb1429108bf1ac42911767b1ff33c56d68e925c84f11a3.txt",
+          "tests/fixtures/skill-releases/blobs/b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed.txt",
+          "tests/fixtures/skill-releases/blobs/b7371621899a8926447873b1f80db3f64cc51361544251099793a1e1f79760e3.txt",
+          "tests/fixtures/skill-releases/blobs/ba9e89ee55dd51f7ac477a52c27ce1d641272a1fabc9be3fce150fa6321f47b8.txt",
+          "tests/fixtures/skill-releases/blobs/bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908.txt",
+          "tests/fixtures/skill-releases/blobs/be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711.txt",
+          "tests/fixtures/skill-releases/blobs/ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239.txt",
+          "tests/fixtures/skill-releases/blobs/d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c.txt",
+          "tests/fixtures/skill-releases/blobs/df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17.txt",
+          "tests/fixtures/skill-releases/blobs/df42d472ae25b0ed07ad3beb1257ce77c3fe4e159feefe8e70e7c18ec03a6945.txt",
+          "tests/fixtures/skill-releases/blobs/e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235.txt",
+          "tests/fixtures/skill-releases/blobs/e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0.txt",
+          "tests/fixtures/skill-releases/blobs/e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a.txt",
+          "tests/fixtures/skill-releases/blobs/ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4.txt",
+          "tests/fixtures/skill-releases/blobs/fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8.txt",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "For the exact pinned v0.1.0, v0.2.0, v0.3.0, v0.4.0 and v0.5.0 source bundles, every one of 24 files reads current or known-outdated and skill update refreshes pristine copies; edited bytes and modes remain exact. Match file name plus exact SHA256 only; preserve missing/current handling, all host routing and legacy removal policy. Offline manifest120 mappings/51 exact blobs; no moving-network tests, future-release promise, blanket replacement, normalization or hash ignore. Six KNOWN_PREVIOUS pairs only; meaningful compiled RED then SAME GREEN requires separate lease; no implementation acceptance or delivery implied."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Only module cli/REQ-cli-016. Six exact KNOWN_PREVIOUS rows in src/skill.rs; new tests/skill_releases.rs and manifest+51 SHA-named immutable source-byte fixture blobs; named cli companions, one CHANGELOG row, knowledge/INDEX and own case/session records. Existing bytes/state untouched outside assigned scope. Exact filenames+SHA256 remain authoritative; preserve edited modes/bytes, current/missing, host sharing and explicit legacy handling. Offline tags pinned to commits and content digests, no future-release/general overwrite guarantee; no new HI/requirement IDs, no algorithm/schema/executor/network test or source outside owned paths. Preparation only now; no approval/materialization/code/build/full/Trust/site/hosted. Other writers active; root scope receipt and separate build lease required.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "67d89fd6c183d4fd4a934df8e338ccb57287c55874381b5a9c3d42b28f727f23"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-016": "972622473789d39396e380c8ea8d7bc0c959b77e03361c0e0be131b1402b8278"
+      }
+    }
+  ],
   "reopenings": []
 }
