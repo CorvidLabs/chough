@@ -758,6 +758,10 @@ pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
         );
         let mut paths = BTreeSet::new();
         for entry in &inventory.entries {
+            ensure!(
+                canonical_path(&entry.path).as_deref() == Some(entry.path.as_str()),
+                "invalid input inventory entry: {name}: path must be canonical"
+            );
             let safe = !Path::new(&entry.path).is_absolute()
                 && Path::new(&entry.path)
                     .components()
