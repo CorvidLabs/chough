@@ -217,3 +217,32 @@ fn inventory_legacy_schema_one_and_environment_rules_remain_authoritative() {
     assert_eq!(row(&f,&name,&modern)["freshness"],"current-observation");
     assert_eq!(row(&f,&name,&legacy)["freshness"],"stale-revision-or-inputs");
 }
+
+#[test]
+fn inventory_noncanonical_aliases_cannot_claim_distinct_normal_inputs() {
+    let (f,name,baseline)=fixture();
+    let mut canonical=baseline.clone();
+    canonical["snapshot"]["input_inventory"]=inventory(vec![entry("src/input.txt")],true);
+    let control=row(&f,&name,&canonical);
+    assert_eq!(control["freshness"],"current-observation","valid normal path must load before alias discriminator");
+    assert_eq!(control["record"]["snapshot"]["input_inventory"],canonical["snapshot"]["input_inventory"]);
+    // Path::components normalizes these spellings, but raw strings are not unique
+    // canonical input names. Reject metadata; never rewrite original OBS bytes.
+    for alias in ["src//input.txt","src/./input.txt","src/input.txt/"] {
+        refuse(&f,&name,&baseline,inventory(vec![entry(alias)],true),alias);
+        refuse(&f,&name,&baseline,inventory(vec![entry("src/input.txt"),entry(alias)],true),"two spellings for one input");
+    }
+}
+#[test]
+fn inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification() {
+    let (f,name,baseline)=fixture();
+    let mut canonical=baseline.clone();
+    canonical["snapshot"]["input_inventory"]=inventory(vec![json!({"domain":1,"key":"specsync-change/test-change/design.md","path":".specsync/changes/test-change/design.md","digest":"b".repeat(64)})],false);
+    assert_eq!(row(&f,&name,&canonical)["freshness"],"current-observation","valid change input must load before alias discriminator");
+    refuse(&f,&name,&baseline,inventory(vec![entry(".specsync/changes/test-change/state.json")],true),"canonical bookkeeping excluded");
+    // A repeated separator currently hides the lifecycle path from raw prefix
+    // classification; it must not turn excluded bookkeeping into domain0 input.
+    for alias in [".specsync//changes/test-change/state.json",".specsync/changes//test-change/state.json",".specsync/./changes/test-change/state.json"] {
+        refuse(&f,&name,&baseline,inventory(vec![entry(alias)],true),alias);
+    }
+}
