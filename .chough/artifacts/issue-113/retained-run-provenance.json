@@ -1,0 +1,142 @@
+{
+  "bookkeeping_tool_sha256": "c31ddcf0a70a92fc9e8d3d689062dfe99b8423159011a5c62d20519ceeba2699",
+  "causal_actual": "t2p3 sameoldtest101FAIL->restored0PASS identical argv/env/source/harness/DUT",
+  "corrected_actual": "t2p5 complete sessions39PASS0FAIL0ignored0filtered/all39names/all4holders and postrefusal assertions",
+  "first_fixed_attempt": "t2nh sessions38PASS1oldFAIL, history25PASS,fmt0/lint0; preserved",
+  "fixed_compiled_head": "950e5c6c778733edf82367b21f398d6e58b46e3f",
+  "no_count_inflation": "39sessions+25retainedhistory=64 distinct methods, not all freshly rerun under restored signals; differential repeats excluded",
+  "profile": "chough113-retained-HC-evidence/1",
+  "recording_phase": "Bookkeeping after actual executions; not a new adapter run",
+  "red_actual": "t2mv missinglog1FAIL/neverhadlog1PASS; later three holder assertions not reached in RED",
+  "red_head": "04f2d9dfa1a276a084d3e6994ec856c78e97aec2",
+  "runtime_limits": "No fullproject/Trust/site/Linux/hosted run, no human acceptance/review/delivery; no new compile/adapter run during bookkeeping",
+  "source_artifact_map": {
+    "actual-corrected-sessions39-names.json": {
+      "entry": {
+        "mode": 420,
+        "sha256": "5741cb0df886ae4671cae78751b85a3aa715f1f7c34cfc871c3cebc0fed4f7ad",
+        "size": 3018,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-signal-counterfactual-run-950e/corrected-full-sessions/corrected-full-sessions-proof.json"
+    },
+    "actual-corrected-sessions39.stderr": {
+      "entry": {
+        "mode": 420,
+        "sha256": "0ea1dcfcd5b7fbe574300dc3ce7d95c4cbefced09980005ee871c7055f4009aa",
+        "size": 185,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-signal-counterfactual-run-950e/corrected-full-sessions/corrected-full-sessions.stderr"
+    },
+    "actual-corrected-sessions39.stdout": {
+      "entry": {
+        "mode": 420,
+        "sha256": "0344ea0976fc0268e4e7d11c14fc45910f439e98d21d255ca7373fae6bf90d87",
+        "size": 2781,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-signal-counterfactual-run-950e/corrected-full-sessions/corrected-full-sessions.stdout"
+    },
+    "actual-ends-and-fences.json": {
+      "entry": {
+        "mode": 420,
+        "sha256": "605f3b7c8cb0ae9a88d85cbca290676549b7b039a9bdb99b789c1733c4c57426",
+        "size": 4282,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-signal-counterfactual-run-950e/final-causal-and-fence-proof.json"
+    },
+    "actual-signal-causal-proof.json": {
+      "entry": {
+        "mode": 420,
+        "sha256": "b5d7701e996b40aa8afeff183fb7e910f34b7d3acd9e0dbbeb34612c8feb455f",
+        "size": 627,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-signal-counterfactual-run-950e/differential/causal-proof.json"
+    },
+    "fmt.stdout": {
+      "entry": {
+        "mode": 420,
+        "sha256": "6b90175025d8aef9add20d7a2069cc882ce8ee05e520e179afc60f673cc73fba",
+        "size": 106,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-green/actual-fmt.stdout"
+    },
+    "history25.stdout": {
+      "entry": {
+        "mode": 420,
+        "sha256": "544ba49c50465e378c081a8ac243cd92bbccd11820f63117abf90a0bfe5d0ef8",
+        "size": 2175,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-green/actual-history.stdout"
+    },
+    "lint.stderr": {
+      "entry": {
+        "mode": 420,
+        "sha256": "8d694f0b27308f79cb584e17c7e50625a8d5e325ff2db26c351103d2c35345da",
+        "size": 1450,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-green/actual-lint.stderr"
+    },
+    "lint.stdout": {
+      "entry": {
+        "mode": 420,
+        "sha256": "9d1989d1dc5f73288d37e75a62ba28197baa7690abd0e9fecf874a060af3166b",
+        "size": 110,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-green/actual-lint.stdout"
+    },
+    "original-partial-sessions.stderr": {
+      "entry": {
+        "mode": 420,
+        "sha256": "bfebe0614a3df16d54576e26cbe40b4ec79ecd985d400431e9d071b208b69603",
+        "size": 820,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-green/actual-sessions.stderr"
+    },
+    "original-partial-sessions.stdout": {
+      "entry": {
+        "mode": 420,
+        "sha256": "89b0bdfa4ef2c945645fdae9a6a85cde588ee331e6e85e146f2fa6e154bc5464",
+        "size": 2985,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-green/actual-sessions.stdout"
+    },
+    "red-missing-log.stderr": {
+      "entry": {
+        "mode": 420,
+        "sha256": "491cdb3fdfc1c4a585640dfc69baa493b17a0f9f1a94929e14580fab24c09063",
+        "size": 4019,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-red/retry-missing-log-current-RED.stderr"
+    },
+    "red-missing-log.stdout": {
+      "entry": {
+        "mode": 420,
+        "sha256": "b1fe1495c38ea4f6b635b6a9d9f45dbf969dafd02b4f9d16ca999ed5c34d8b50",
+        "size": 533,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-red/retry-missing-log-current-RED.stdout"
+    },
+    "red-never-adopted.stdout": {
+      "entry": {
+        "mode": 420,
+        "sha256": "46f6f0bfa807543724e7cb49f2600cb9a44fde89939acead4655095a5ab364fc",
+        "size": 421,
+        "type": "file"
+      },
+      "source": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-red/retry-never-had-log-current-positive.stdout"
+    }
+  },
+  "tool_binary_used_for_bookkeeping": "/Users/leif/Development/_CorvidLabs/_audits/specsync-evaluation-follow-up-20261108/evidence/chough113-current-source-green/controls/chough-950e-first-attempt"
+}

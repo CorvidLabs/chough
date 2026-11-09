@@ -1,18 +1,18 @@
 {
   "history_cursor": {
     "cycle": "CYC-9b5095352ed99d70ff1d2f0b",
-    "head": "EVT-e7a5da26da3c4e0392253bc0",
+    "head": "EVT-0abaf045305de66a7af813f6",
     "legacy": null
   },
   "schema_version": 2,
-  "objective": "Prepare Chough #113 missing adopted legacy log guard scope; no production implementation before root receipt",
+  "objective": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
   "intent_scope": "DRIVE",
   "modules": [
     "cli",
     "history"
   ],
   "stage": {
-    "current": "plan",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -24,7 +24,11 @@
       "LIFE-7"
     ],
     "requirements": [],
-    "cases": [],
+    "cases": [
+      "TC-history-missing-adopted-log-refuses",
+      "TC-history-never-adopted-log-remains-writable",
+      "TC-history-earlier-null-anchor-does-not-hide-adopter"
+    ],
     "design": [],
     "files": []
   },
@@ -32,19 +36,29 @@
     "Actor t221. Source t19f explicit queued113 preparation allocation under Leif allqueue instruction. Prepare concrete scope and private reproduction only; root retains scope receipt and implementation scheduling, actual human acceptance/review and delivery. No self-approval or production source edits.",
     "Current main4bbd exact source is inspected. Existing INT01 executable ef328 is not main-equivalent; private8-case results apply to that artifact only. No exact-main runtime result or compiled regression is claimed.",
     "One new isolated tree. Preserve frozen196/eval/de31/153/147d and inherited records/gates. No Rust/full/site until root lease; no hosted mutations.",
-    "Actor t221 applies explicit t19f root113 disposition: withdraw only author-created premature future acceptance gate as sequencing correction. This records no human decision, approval or acceptance; all actual future implementation acceptance/review remains pending and must be reinstated at accept. No genuine current gate was present or cleared."
+    "Actor t221 applies explicit t19f root113 disposition: withdraw only author-created premature future acceptance gate as sequencing correction. This records no human decision, approval or acceptance; all actual future implementation acceptance/review remains pending and must be reinstated at accept. No genuine current gate was present or cleared.",
+    "Actor t221 under root113 bookkeeping allocation: remove only this own optional next_owner compatibility hint via supported command so exact950e/main helper can read the checkpoint. No human gate is withdrawn/closed and no source/schema or inherited record is changed. Ownership continues explicitly in next_action/report.",
+    "Actor t221; actual scope approval by coordinator orc-t19f under relayed Leif all-issues instruction, digestdbedb3a7413a743367f14f91ad92d023adf2c86da93a7fee0e3cce266a2ce8ed. Subsequent root source/compiled/bookkeeping allocations are separate from human implementation acceptance/review and delivery. No new approval/review is recorded here.",
+    "Failing tests04f2 precede source fix950e. Actual t2mv current-source missing-log RED failed because stageadvance unexpectedly succeeded; never-had-log passed. Original38/1 and all recorder failures remain retained; old inbox failure causally isolated to Pythonexecv signalhandling by actual sameoldtest101->0 profiles."
   ],
   "open_questions": [],
   "completed": [
-    "Prepared113 live/source discovery, qualified older-runtime8 controls and external uncompiled main-source regression, plus complete unapproved native scope."
+    "Prepared113 live/source discovery, qualified older-runtime8 controls and external uncompiled main-source regression, plus complete unapproved native scope.",
+    "Failing tests: 04f2d9dfa1a276a084d3e6994ec856c78e97aec2; actual RED t2mv0 recorder, product missinglog1FAIL and neverhadlog1PASS; source unchanged4bbd.",
+    "Fixed source950e5c6c778733edf82367b21f398d6e58b46e3f: actual corrected sessions t2p5 all39PASS including SAME2/all4holders and ordercontrol; retained history25PASS/fmt0/lint0 at same source, no duplicate counts.",
+    "Actual retained HC artifact copies/case definitions and agent-assisted log-review observations recorded; no adapter execution or historical RED/currentness relabelled.",
+    "Own three case definitions, byte-exact priorHC logs, agent-assisted retained-run observations, testing/changelog and supported onlyINDEX generation/check completed. No new Cargo/adapter execution or old-record refresh."
   ],
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-missing-adopted-log-refuses-5513dedfa823a21f9e83f12b",
+    "OBS-tc-history-never-adopted-log-remains-writable-7d1600adb2b9429ecbba9d0b",
+    "OBS-tc-history-earlier-null-anchor-does-not-hide-adopter-60def86f5391f035239dbf7a"
+  ],
   "bugs": [],
-  "blockers": [
-    "Actual root scope receipt and separate implementation/heavy scheduling are required before production; eventual acceptance/review remains pending and must be reinstated at implementation accept."
+  "blockers": [],
+  "awaiting_human": [
+    "Human implementation acceptance/review of Chough113 after exact-SHA different-author technical review; no delivery authorization."
   ],
-  "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Root inspect exact scope/digest and schedule implementation/lease separately. Author does not edit production or record approval/review.",
-  "next_owner": "Root t19f for actual scope receipt and implementation/heavy scheduling; t221 source writer released on freeze"
+  "next_action": "Root assigns different-author review of this exact committed native-current freeze; compiled950e source inputs are identical. Human implementation acceptance/review remains an open gate. No ship/delivery."
 }

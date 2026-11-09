@@ -7,10 +7,10 @@
   "title": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
   "description": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "implementing",
   "base_commit": "4bbd5a6373d26c0ad069878f8f543842a4564a6f",
   "created_at": 1794194767,
-  "updated_at": 1794195620,
+  "updated_at": 1794200990,
   "affected_specs": [
     "history"
   ],

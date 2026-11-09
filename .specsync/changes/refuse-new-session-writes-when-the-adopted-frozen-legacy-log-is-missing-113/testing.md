@@ -5,12 +5,18 @@ artifact: testing
 
 # Testing
 
-## Completed private evidence
+## Actual committed RED and SAME GREEN
 
-Eight cases on exact older INT01 artifact, source association limits in external runtime-source-identity.json. Open-holder missing log raw0 and archived-holder missing log raw0 each visibly changed checkpoint and added an event; unchanged contract oracle raw1 for each. Original adopter missing log and changed log open/archived raw1, unchanged checkpoint/history files and anchor diagnostic; their oracle raw0. Intact/restored/never-had-log positives raw0 and new event/checkpoint, oracle0. These are separate bounded older-runtime findings, NOT current-main test passes or failures.
+Tests-only04f2 was committed before production. Actual HCt2mv compiled unchanged main4bbd production: missing-log test0pass1fail because stageadvance unexpectedly succeeded after deleting the log; never-had-log1pass. The failure is meaningful behavior, not setup. Its later three holder/postrefusal checks were not reached. Initialt2ms pre-Cargo PATH reset failure remains separate.
 
-## Proposed current-source regression (not executed)
+Fixed950e preserves both original assertions/full old prefix; adds real earlier-null session ordering control. Firstt2nh run sessions38pass1oldfail (signal-sensitive inbox test), history25pass, declaredfmt0/lint0. Actualt2p3 same old test with identical argv/env/source/harness/DUT fails101 under Pythonexecv ignored signals and passes0 under restored defaults. Actualt2p5 corrected complete sessionsONCE39pass0fail0ignored0filtered/all39names including SAME2 allfourholders/postrefusal and ordering. The original38/1 is preserved, not relabelled.
 
-External proposed-sessions-regression.rs contains a test that creates real fixture adoption, then a new session with legacy:null, arranges the holder open/archive/shelved/vault, asserts holder bytes retained, deletes only the disposable frozen log, and asserts stage advance refuses with an anchor reason. A file snapshot compares all session and history bytes plus active pointer, catching both selected and orphan event changes. A positive new-session fixture that never had a legacy log must actually write one event and keep legacy:null. Existing intact/changed-log and vaulted/shelved tests remain byte-exact. This proposed file has not been inserted, formatted with Rust, compiled or executed; its syntax and behavior require the scheduled lease.
+## Retained receipts and limits
 
-Future smallest Fledge test invocation is discovered task test with --locked --test sessions and focused test filter, then complete sessions/history targets as allocated; fmt/lint afterward. Assert actual Fledge/Cargo/rustc paths, versions/hashes and bounded jobs/threads/own target inside the named executing HC helper, retain HEAD/input identity and raw results. First commit tests-only, observe same assertions fail for real missing-log behavior, then patch and observe GREEN. Never count unrelated compile/setup failure as RED. Main-source execution, Rust bindings, full/site/Trust/hosted CI remain NOT RUN in this preparation. Native structural completeness/currentness is not runtime proof, and independent review/human acceptance are separate.
+.chough/artifacts/issue-113/ contains byte-exact prior HC logs, named result proof, causal/fence proof and retained-run-provenance.json. New case definitions bind the exact three tests. Current evidence add records agent-assisted review/import of these automated logs; no new cargo-test adapter invocation or argv/exit/tests_run is fabricated. Historical RED remains04f2 rather than a synthetic failed current observation.
+
+Distinct actual coverage: corrected sessions39 plus retained same-source history25, no differential/count inflation. History/fmt/lint retain their original execution profile; no unnecessary repeat lint because all source/tool inputs remain exact and only launcher signals changed. Full project/Trust/site/Linux/CI/hosted qualification and genuine human implementation acceptance/review/delivery remain NOT RUN/pending. Bookkeeping/native structural checks cannot substitute for product or human proof.
+
+## Definition and source preservation
+
+Only src/history.rs and tests/sessions.rs compiled inputs changed in source950e; bookkeeping preserves their full bytes and every other compiled input. Existing scope approvaldbed and deltas are preserved. No permanent HI/REQ allocation or canonical policy/schema change. Knowledge generation may retain only the approved INDEX projection; any additional path is returned to root, not silently kept.

@@ -44,6 +44,8 @@ Canonical prototypes:
 Active:
 
 - none
+- recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits (active; `specsync change status recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits`)
+- refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113 (active; `specsync change status refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -112,6 +114,22 @@ Archived lesson bundles:
 - OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e ProductTest Failed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b ProductTest Failed in local-macos-arm64 at d9a9d92459a6
+- OBS-structural-287ec6778c96c03267901f6b Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
+581 recorded; most recent:
+
+- OBS-tc-history-earlier-null-anchor-does-not-hide-adopter-60def86f5391f035239dbf7a ProductTest Passed in local-macos-arm64 at 950e5c6c7787
+- OBS-tc-history-never-adopted-log-remains-writable-7d1600adb2b9429ecbba9d0b ProductTest Passed in local-macos-arm64 at 950e5c6c7787
+- OBS-tc-history-missing-adopted-log-refuses-5513dedfa823a21f9e83f12b ProductTest Passed in local-macos-arm64 at 950e5c6c7787
+- OBS-structural-287ec6778c96c03267901f6b Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
+- OBS-structural-f27415f1661a1ab46cd0e673 Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
+- OBS-structural-03cfcec131ca2438dd4735a5 Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
+- OBS-product-test-c667d4756cf1c183202f8b02 ProductTest Passed in local-linux-aarch64 at 3b9d008d6c48
+- OBS-product-test-4f7d63e468288e44cfd85c88 ProductTest Passed in local-macos-arm64 at 3b9d008d6c48
+- OBS-product-test-80b95a49cc2ba0705ed1b2fb ProductTest Failed in local-macos-arm64 at 3b9d008d6c48
+- OBS-product-test-97bec39c043841e26288e181 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 
 ## Briefs
 
