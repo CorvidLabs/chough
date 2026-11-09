@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits (active; `specsync change status recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -65,7 +65,7 @@ Pointers only; the lessons stay in their sources.
 
 Module lesson sources:
 
-- cli: [specs/cli/context.md](../specs/cli/context.md) (## Lessons at line 59)
+- cli: [specs/cli/cli.3md](../specs/cli/cli.3md)
 - history: [specs/history/context.md](../specs/history/context.md) (## Lessons at line 30)
 - reporting: [specs/reporting/context.md](../specs/reporting/context.md) (## Lessons at line 39)
 
@@ -100,18 +100,18 @@ Archived lesson bundles:
 
 ## Observations
 
-578 recorded; most recent:
+587 recorded; most recent:
 
+- OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e ProductTest Failed in local-macos-arm64 at d9a9d92459a6
+- OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b ProductTest Failed in local-macos-arm64 at d9a9d92459a6
 - OBS-structural-287ec6778c96c03267901f6b Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
-- OBS-structural-f27415f1661a1ab46cd0e673 Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
-- OBS-structural-03cfcec131ca2438dd4735a5 Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
-- OBS-product-test-c667d4756cf1c183202f8b02 ProductTest Passed in local-linux-aarch64 at 3b9d008d6c48
-- OBS-product-test-4f7d63e468288e44cfd85c88 ProductTest Passed in local-macos-arm64 at 3b9d008d6c48
-- OBS-product-test-80b95a49cc2ba0705ed1b2fb ProductTest Failed in local-macos-arm64 at 3b9d008d6c48
-- OBS-product-test-97bec39c043841e26288e181 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
-- OBS-tc-history-prune-restore-preserves-recreated-file-a80c69539246aec8eff0d977 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
-- OBS-tc-history-prune-restores-earlier-sets-99ad7a5b8a6b46bcb2a6031a ProductTest Passed in local-macos-arm64 at 6748c3d30a00
-- OBS-tc-history-prune-restores-partial-removal-09fafb2ff58f01d7100b5ae4 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 
 ## Briefs
 

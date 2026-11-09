@@ -281,3 +281,9 @@ The immutable failure-first inputs and logs are under
 .chough/artifacts/pr51-writer-atomicity/before/. Later executions and their actual
 source identities are separate observations in that followup's qualification
 package; they never restamp the original failure or historical archive.
+
+## Pinned released skill coverage (#102, REQ-cli-016)
+
+`tests/skill_releases.rs` validates the exact offline manifest digest, tag commits/archive identities,120 mappings/51 blobs and24 current bundle identities before invoking the binary. All5released versions and6host routes are covered; source files and tests keep filename plus exact byte matching, edited byte/mode preservation, no newline normalization, current/missing/shared-host and legacy rules.
+
+Retained runtime receipts: source6bb513b t2ns ran7,5passed/2failed at recognition/update (54 expected-known-outdated rows each were edited/preserved-edit); sourced9a9d924 t2p7 passed SAME7/7, existing optional4/4, cli3/3 and package16/16. Declared fmt/lint passed last. Product source/test/corpus inputs are unchanged by subsequent documentation/native bookkeeping; no fresh case run is claimed by recording those receipts. Full/site/Trust/hosted/human acceptance are not established.

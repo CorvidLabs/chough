@@ -18,3 +18,7 @@ Load only the pinned120-mapping manifest and51 exact byte blobs, verify SHA/leng
 ## Commands and limits
 
 Future leased Fledge run test -- --locked --test skill_releases, followed by existing focused skill tests and declared fmt/lint. Not run during preparation. Fledge/native structural checks are not product assertions. No moving-network test, script execution, global install, fresh host discovery, Windows, full/Trust/site/hosted acceptance claim. All failures/raw identities retained.
+
+## Retained actual execution results
+
+t2ns at6bb513b: seven ran,5pass/2fail,54 pristine failures in each intended recognition/update test. t2p7 atd9a9d924: SAME7/7, existing optional4/4, cli3/3, package16/16, then fmt0/lint0. Actual final compiler end2026-11-09T05:05:12.506196Z; lease released before bookkeeping. Complete source/input equality established. No new test or case run occurs while recording these retained receipts. Original setup probe failure remains separate from product RED; normal subprocess restore_signals controls verified. Full/Trust/site/hosted/human gates remain unrun.
