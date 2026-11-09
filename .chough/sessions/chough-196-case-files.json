@@ -1,0 +1,49 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-00f626375dc00fca193eb5c5",
+    "head": "EVT-87a5210f073d50b7028a7d0a",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Resolve Chough #196 by moving two #192 cases to dedicated files with unchanged IDs, definitions, bindings and evidence",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence",
+  "references": {
+    "criteria": [
+      "DRIVE-12"
+    ],
+    "requirements": [],
+    "cases": [
+      "TC-cli-change-new-no-spec-change",
+      "TC-history-timing-skips-direct-writes"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Actor E/t221; source coordinator t19f NEW AUTHORIZED ASSIGNMENT relaying Leif request to work through all Chough PRs/issues. Own only #196 preparation/implementation after root scope receipt; no genuine human implementation acceptance/review or delivery. Root retains approval/review/finalize/merge.",
+    "Preserve all case IDs, semantic definitions, bindings and evidence links; relocate data only into per-change files under main AGENTS.md/DRIVE-12. No runtime, HI, policy or canonical contract change.",
+    "No compile/full/site until explicit root heavy lease. Existing local de31/153/147d and inherited archived/source records remain untouched."
+  ],
+  "open_questions": [],
+  "completed": [
+    "Prepared complete196 no-spec-change definition and baseline case checks; implementation awaits root receipt, no human acceptance/review recorded."
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Root inspect exact committed definition and record approval under the existing Leif authority, then return receipt; author edits no case until receipt.",
+  "next_owner": "Root t19f for exact scope receipt; E/t221 source paused"
+}
