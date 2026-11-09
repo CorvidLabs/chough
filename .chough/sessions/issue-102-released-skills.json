@@ -1,0 +1,44 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-43c30f46eb478046aa4710b3",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Recognize every pristine skill file from pinned released bundles while preserving all user edits",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits",
+  "references": {
+    "criteria": [
+      "FLOW-1",
+      "LIFE-4"
+    ],
+    "requirements": [
+      "REQ-cli-016"
+    ],
+    "cases": [],
+    "design": [],
+    "files": [
+      "src/skill.rs"
+    ]
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Root review complete draft/REQ-cli-016 parser proof and record actual bounded scope; implementation/build remain unauthorized",
+  "next_owner": "orc-t19f"
+}
