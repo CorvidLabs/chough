@@ -122,7 +122,17 @@ fn inventory_absent_null_and_advisory_data_never_change_authoritative_freshness(
         assert_eq!(r["freshness"],"current-observation","diagnostic digest intentionally differs from actual bytes");
         assert_eq!(r["record"]["snapshot"]["input_inventory"],v["snapshot"]["input_inventory"]);
     }
+    // Corrected oracle: the existing SHA validator accepts either ASCII hex case.
+    // This token is retained exactly and remains diagnostic, not input authority.
+    v["snapshot"]["input_inventory"]=inventory(vec![entry("src/input.txt")],true);
+    v["snapshot"]["input_inventory"]["entries"][0]["digest"]=json!("A".repeat(64));
+    let uppercase=row(&f,&name,&v);
+    assert_eq!(uppercase["freshness"],"current-observation");
+    assert_eq!(uppercase["record"]["snapshot"]["input_inventory"]["entries"][0]["digest"],"A".repeat(64));
     f.write("src/input.txt","changed authoritative input\n");
+    let uppercase_stale=row(&f,&name,&v);
+    assert_eq!(uppercase_stale["freshness"],"stale-revision-or-inputs");
+    assert_eq!(uppercase_stale["label"],"historical","uppercase metadata cannot promote stale content");
     for inv in [Value::Null,inventory(vec![],false),inventory(vec![entry("src/input.txt")],true)] {
         v["snapshot"]["input_inventory"]=inv;
         let r=row(&f,&name,&v);
@@ -145,7 +155,7 @@ fn inventory_strict_schema_versions_and_unsafe_semantics_refuse() {
     for path in ["","../escape","/absolute","src/../escape",".chough/session.json","target/out"] {
         bads.push(("unsafe-or-excluded-path",inventory(vec![entry(path)],false)));
     }
-    for (field,value) in [("digest",json!("bad")),("digest",json!("A".repeat(64))),("key",json!("different")),("domain",json!(1)),("domain",json!(256)),("path",Value::Null)] {
+    for (field,value) in [("digest",json!("bad")),("key",json!("different")),("domain",json!(1)),("domain",json!(256)),("path",Value::Null)] {
         let mut v=good.clone();v["entries"][0][field]=value;bads.push(("entry-field",v));
     }
     for (label,inv) in bads {refuse(&f,&name,&baseline,inv,label);}
