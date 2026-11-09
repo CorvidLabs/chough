@@ -44,6 +44,8 @@ Canonical prototypes:
 Active:
 
 - none
+- recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits (active; `specsync change status recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits`)
+- move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence (active; `specsync change status move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence`)
 
 Archived changes (newest first; the newest 3 are hot):
 
