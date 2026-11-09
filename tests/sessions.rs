@@ -1611,3 +1611,33 @@ fn a_new_session_that_never_had_a_legacy_log_still_writes() {
     assert!(json(&fixture, ".chough/sessions/other.json")["history_cursor"]["legacy"].is_null());
     assert!(!fixture.exists(".chough/transitions.jsonl"));
 }
+
+#[test]
+fn a_missing_adopted_log_is_not_hidden_by_an_earlier_session_without_an_anchor() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    fixture.ok(&[
+        "session",
+        "new",
+        "aaa-no-anchor",
+        "--objective",
+        "Earlier independent session",
+    ]);
+    fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+    assert!(
+        json(&fixture, ".chough/sessions/aaa-no-anchor.json")["history_cursor"]["legacy"].is_null()
+    );
+    assert!(json(&fixture, ".chough/sessions/other.json")["history_cursor"]["legacy"].is_null());
+    let holder = fixture.read(".chough/sessions/legacy.json");
+    assert!(json(&fixture, ".chough/sessions/legacy.json")["history_cursor"]["legacy"].is_object());
+    fs::remove_file(fixture.root().join(".chough/transitions.jsonl")).unwrap();
+    let before = missing_log_proof_files(fixture.root());
+    let error = fixture.fails(&["stage", "advance"]);
+    assert!(error.contains("legacy history anchor"), "{error}");
+    assert_eq!(missing_log_proof_files(fixture.root()), before);
+    assert_eq!(fixture.read(".chough/sessions/legacy.json"), holder);
+    assert!(!fixture.exists(".chough/transitions.jsonl"));
+}
