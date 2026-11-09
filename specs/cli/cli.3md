@@ -540,3 +540,8 @@ branch locally before asking for review or a merge, then rebuild the vault. Limi
 Verified product behavior (#102, REQ-cli-016): an update catalog must retain exact filename/SHA256 pairs for every file in the explicitly pinned released source bundles. Checking just files named in a report misses other stale pristine copies. The offline corpus covers v0.1.0–v0.5.0 only; it makes no future-release promise. All existing edit preservation, current/missing, host sharing and explicit legacy handling remain intact.
 
 Evidence: retained t2ns7run/5pass2intendedfail, followed by t2p7 SAME7/7 plus23 existing controls and fmt/lint0; no algorithm change and full product input equality. Structural/native status is not execution proof, host routing fixtures do not prove actual host discovery, and the observations are unauthenticated receipt records rather than human acceptance. Original RED/setup failure and exact immutable source/corpus receipts stay retained externally.
+
+
+## Diagnostic inventory reader lesson (2026-11-09)
+
+Optional per-input metadata must stay diagnostic: preserve original historical bytes/outcomes/completeness and aggregate freshness authority. Strict DTO and128/32768 bounds alone do not make a path canonical; require unchanged canonical_path spelling before raw uniqueness/classification, never normalize retained observations. Unknown versions refuse, absent/null retains legacy, existing ASCII-hex case policy stays unchanged. Preserve decoderRED, independent source/model finding, actual aliasRED and corrected oracle separately; exact formatter projection qualifies earlier runtime without pretending a fresh final-SHA run. Human/native/delivery gates remain independent.

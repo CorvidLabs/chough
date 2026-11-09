@@ -43,6 +43,7 @@ Canonical prototypes:
 
 Active:
 
+- read-bounded-diagnostic-input-inventories-without-changing-freshness-authority (active; `specsync change status read-bounded-diagnostic-input-inventories-without-changing-freshness-authority`)
 - recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits (active; `specsync change status recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits`)
 
 Archived changes (newest first; the newest 3 are hot):
@@ -100,18 +101,18 @@ Archived lesson bundles:
 
 ## Observations
 
-587 recorded; most recent:
+591 recorded; most recent:
 
+- OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
+- OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0
+- OBS-tc-cli-inventory-aliases-af56a469e54a2db6ce7b3a29 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
+- OBS-tc-cli-inventory-historical-58c5786905be80e97b73ffe0 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e ProductTest Failed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b ProductTest Failed in local-macos-arm64 at d9a9d92459a6
-- OBS-structural-287ec6778c96c03267901f6b Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
 
 ## Briefs
 

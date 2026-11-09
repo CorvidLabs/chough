@@ -63,3 +63,11 @@ Open follow-ups, not part of the approved change:
 - [x] Reproduce pristine recognition/update failures on the original68-pair production table, then add only six exact filename/SHA256 pairs and pass SAME7 plus23 unchanged skill controls, fmt and lint.
 
 Native materialization/currentness, independent review, human acceptance and delivery remain separate gates. The completed boxes describe retained observed product work, not a new case run or human review.
+
+## Diagnostic inventory reader compatibility (acceptance pending)
+
+- [x] Add immutable nine-record fixtures/standalone regressions; retain actual decoder and alias runtime REDs separately.
+- [x] Read strict bounded optional v1 inventory and refuse noncanonical paths without changing writer/schema/hash/freshness authority; pass8+14+30 focused tests.
+- [x] Preserve one documented uppercase oracle correction and exact canonical formatting equivalence; final declared fmt/alltargetlint passed.
+
+Native materialization/currentness, independent final review, human implementation acceptance and delivery remain separate pending gates, not completed product execution boxes. No fresh case run is implied by retained receipt recording.

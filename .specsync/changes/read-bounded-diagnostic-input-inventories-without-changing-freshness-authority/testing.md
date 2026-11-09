@@ -19,3 +19,11 @@ Before any product invocation hash all nine fixture bytes against exact map. Run
 ## Planned commands and limits
 
 Fledge run test -- --locked --test evidence_inventory_compatibility under future separate focused lease; old relevant evidence controls, fmt/lint only as allocated. No compilation during preparation, no full/Trust/site/hosted or platform claims. Tests must execute nonzero meaningful assertions; compile errors are not RED. Nine recorded runs remain historical, never re-recorded as fresh.
+
+## Diagnostic inventory reader compatibility (acceptance pending)
+
+Retained actual t2sm atbe17 compiled the original6:1PASS/5unknown-input_inventory FAIL after valid baselines; t2vg ata7b2543 executed only2alias tests:0PASS/2intended invalid-alias-accepted FAIL,6filtered. Source fix rejects noncanonical spelling via unchanged canonical_path before raw classification, without rewriting records. One independently confirmed uppercase digest oracle was corrected to preserve existing is_digest compatibility.
+
+Actual t2vj atd0125 passed8compatibility (original6 with ONE uppercase oracle correction +SAME2aliases),14 existing evidence module and30 evidence integration tests=52PASS. All9 original records remain historical/partial with2failed7passed/exact values and bytes; legacy/null/strictcaps/advisory/no-promotion and every alias-loop assertion executed. Declaredfmt failed only test formatting; lint thenNOTRUN. Pinned standalone canonical formatting at4b35 is byte-equal to rustfmt(before), with no assertion edit. Actual t2vn at4b35 declaredfmt0/alltargetlint0; NO behavioral rerun. Prior52PASS is source-equivalent, not fresh4b35execution.
+
+Source/test/corpus/DUT/tool/argv/fences and raw failures are retained in the external program evidence/chough-inventory-compat-* packets. These are agent-assisted retained receipts, not authenticated test execution or human acceptance. Full/Trust/site/hosted/platform/humanreview are not established. Inventory is diagnostic only, never aggregate freshness/path attribution/authority. Known inherited issue102 next_owner is preserved and separate; tested own next read0 here.
