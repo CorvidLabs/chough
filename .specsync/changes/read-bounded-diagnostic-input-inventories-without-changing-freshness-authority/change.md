@@ -1,6 +1,6 @@
 ---
 id: read-bounded-diagnostic-input-inventories-without-changing-freshness-authority
-state: draft
+state: approved
 type: bug_fix
 base_commit: ada04832ac7e82bc2f52ba9011db0a7e03ad7382
 ---
