@@ -13,7 +13,7 @@ Refuse new-session writes when the adopted frozen legacy log is missing (113)
 
 ## Affected Canonical Specs
 
-- None
+- `history`
 
 ## Acceptance Criteria
 

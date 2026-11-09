@@ -10,8 +10,10 @@
   "state": "draft",
   "base_commit": "4bbd5a6373d26c0ad069878f8f543842a4564a6f",
   "created_at": 1794194767,
-  "updated_at": 1794194769,
-  "affected_specs": [],
+  "updated_at": 1794195384,
+  "affected_specs": [
+    "history"
+  ],
   "affected_paths": [
     "src/history.rs",
     "tests/sessions.rs",
