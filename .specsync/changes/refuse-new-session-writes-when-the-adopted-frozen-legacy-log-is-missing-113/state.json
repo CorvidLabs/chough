@@ -7,10 +7,10 @@
   "title": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
   "description": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "4bbd5a6373d26c0ad069878f8f543842a4564a6f",
   "created_at": 1794194767,
-  "updated_at": 1794195384,
+  "updated_at": 1794195620,
   "affected_specs": [
     "history"
   ],
@@ -40,6 +40,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "yes",
+    "constraints": "Existing REQ-history-002 and REQ-history-006; preserve independent legacy-null new sessions, bounded existing open/archive/shelved/vault holder lookup and existing unreadable/invalid-holder policy. Refuse missing/changed adopted log before event/checkpoint/cursor/active-pointer writes; preserve intact/restored/never-adopted positives. Exact eight affected paths only; no canonical HI/spec wording, schema/CLI/policy or immutable archive/history rewrite. Fledge-first, isolated source, committed meaningful current-source RED before minimal patch and same GREEN; separate exclusive build lease; preserve old assertions, failures and exact tool/source identities. Root coordinator scope authority under Leif all-issues request; no agent human acceptance/review or public delivery. These constraints restate reviewed plan/design; no new product decision.",
     "public_contract": "no"
   }
 }
