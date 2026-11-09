@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113",
+  "slug": "refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113",
+  "title": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
+  "description": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "4bbd5a6373d26c0ad069878f8f543842a4564a6f",
+  "created_at": 1794194767,
+  "updated_at": 1794194769,
+  "affected_specs": [],
+  "affected_paths": [
+    "src/history.rs",
+    "tests/sessions.rs",
+    ".chough/cases/history.missing-log-113.cases.toml",
+    "CHANGELOG.md",
+    "knowledge/INDEX.md",
+    ".chough/sessions/chough-113-missing-log.json",
+    ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/",
+    ".chough/artifacts/issue-113/"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Repair existing REQ-history-002 acceptance: unexpected anchor changes refuse new writes, together with independent session history REQ-history-006. The missing frozen log is a mismatch with remembered adoption proof. No canonical wording, HI, CLI/schema, retention authorization or new lifecycle policy is introduced; source/test repair implements the existing contract.",
+  "acceptance_criteria": [
+    "Find a remembered legacy adoption anchor independently of whether transitions.jsonl currently exists. With a valid adoption holder open, archived, shelved or in its existing supported vault location, deleting that frozen log must refuse a new session append before checkpoint/cursor/active-pointer or event bytes change. Preserve original adopting-session refusal and changed-byte mismatch refusal. Intact/restored logs permit new-session writes, and genuinely new projects with no adoption anchor/log still work with legacy:null. Preserve each session own independent lineage; no anchor copying, immutable record rewrite, new schema, broad archive scan or weakened bounds/path protections. Add meaningful committed regression before the production patch and prove same assertions RED then GREEN on an actually built exact-source artifact only under a separate root lease. Keep old tests/assertions and failed receipts. Current older-runtime private8 controls are qualified evidence only, not current-main execution. Update only the allocated per-change cases/changelog/INDEX and own records, freeze clean exact SHA, and return for different-author review; human acceptance/delivery remain separate."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "public_contract": "no"
+  }
+}

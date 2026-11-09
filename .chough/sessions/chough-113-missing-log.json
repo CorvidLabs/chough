@@ -1,0 +1,50 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-9b5095352ed99d70ff1d2f0b",
+    "head": "EVT-e7a5da26da3c4e0392253bc0",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Prepare Chough #113 missing adopted legacy log guard scope; no production implementation before root receipt",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli",
+    "history"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113",
+  "references": {
+    "criteria": [
+      "DRIVE-3",
+      "LIFE-7"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Actor t221. Source t19f explicit queued113 preparation allocation under Leif allqueue instruction. Prepare concrete scope and private reproduction only; root retains scope receipt and implementation scheduling, actual human acceptance/review and delivery. No self-approval or production source edits.",
+    "Current main4bbd exact source is inspected. Existing INT01 executable ef328 is not main-equivalent; private8-case results apply to that artifact only. No exact-main runtime result or compiled regression is claimed.",
+    "One new isolated tree. Preserve frozen196/eval/de31/153/147d and inherited records/gates. No Rust/full/site until root lease; no hosted mutations.",
+    "Actor t221 applies explicit t19f root113 disposition: withdraw only author-created premature future acceptance gate as sequencing correction. This records no human decision, approval or acceptance; all actual future implementation acceptance/review remains pending and must be reinstated at accept. No genuine current gate was present or cleared."
+  ],
+  "open_questions": [],
+  "completed": [
+    "Prepared113 live/source discovery, qualified older-runtime8 controls and external uncompiled main-source regression, plus complete unapproved native scope."
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [
+    "Actual root scope receipt and separate implementation/heavy scheduling are required before production; eventual acceptance/review remains pending and must be reinstated at implementation accept."
+  ],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Root inspect exact scope/digest and schedule implementation/lease separately. Author does not edit production or record approval/review.",
+  "next_owner": "Root t19f for actual scope receipt and implementation/heavy scheduling; t221 source writer released on freeze"
+}
