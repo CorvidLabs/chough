@@ -1,0 +1,44 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-2fd70e90b6171c6876ba95e5",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Read bounded diagnostic input inventories without changing observation freshness authority",
+  "intent_scope": "LIFE",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "read-bounded-diagnostic-input-inventories-without-changing-freshness-authority",
+  "references": {
+    "criteria": [
+      "LIFE-2",
+      "LIFE-4"
+    ],
+    "requirements": [
+      "REQ-cli-004",
+      "REQ-cli-006"
+    ],
+    "cases": [],
+    "design": [],
+    "files": [
+      "src/evidence.rs"
+    ]
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Await root actual bounded reader scope receipt and separate focused build lease; no implementation yet"
+}
