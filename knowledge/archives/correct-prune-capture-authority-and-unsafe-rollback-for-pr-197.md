@@ -54,8 +54,8 @@ verification records, the retention ledger and Git stay authoritative.
 |---|---|---|---|
 | OBS-product-test-4f7d63e468288e44cfd85c88 | passed (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-80b95a49cc2ba0705ed1b2fb | failed (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-97bec39c043841e26288e181 | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-c667d4756cf1c183202f8b02 | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-product-test-97bec39c043841e26288e181 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-c667d4756cf1c183202f8b02 | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-product-test-e1797a0960e7bd92560cca96 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a | passed (by cycle time) | local-macos-arm64 | TC-history-prune-capture-byte-authority |
 | OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac | failed (by cycle time) | local-macos-arm64 | TC-history-prune-capture-byte-authority |
@@ -78,4 +78,9 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
+- [artifacts/sol-ch65-corrective-focused-summary.json](../attachments/correct-prune-d25a28f5/artifacts/sol-ch65-corrective-focused-summary.json)
+- [artifacts/sol-ch65-corrective-mutation-abort-unsafe-restore.log](../attachments/correct-prune-d25a28f5/artifacts/sol-ch65-corrective-mutation-abort-unsafe-restore.log)
+- [artifacts/sol-ch65-corrective-mutation-skip-capture-authority.log](../attachments/correct-prune-d25a28f5/artifacts/sol-ch65-corrective-mutation-skip-capture-authority.log)
+- [evidence/OBS-product-test-97bec39c043841e26288e181.json](../attachments/correct-prune-d25a28f5/evidence/OBS-product-test-97bec39c043841e26288e181.json)
+- [evidence/OBS-product-test-c667d4756cf1c183202f8b02.json](../attachments/correct-prune-d25a28f5/evidence/OBS-product-test-c667d4756cf1c183202f8b02.json)
 - [evidence/OBS-product-test-e1797a0960e7bd92560cca96.json](../attachments/correct-prune-d25a28f5/evidence/OBS-product-test-e1797a0960e7bd92560cca96.json)

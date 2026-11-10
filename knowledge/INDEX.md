@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 167
+archived_changes: 168
 tags:
   - chough/index
 ---
@@ -43,21 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181 (active; `specsync change status keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181](archives/keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181.md) Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181) (hot)
 - [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136) (hot)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit (hot)
-- [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (hot)
+- [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (cold)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (cold)
 - [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113) (cold)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (cold)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18) (cold)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (cold)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals (cold)
-- [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](archives/update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording.md) Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording (cold)
-- All 167 archived changes, by month: [timeline.md](timeline.md)
+- All 168 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181](../.specsync/archive/changes/2026-11-10-keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181/lesson-bundle.md)
 - [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](../.specsync/archive/changes/2026-11-10-keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136/lesson-bundle.md)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../.specsync/archive/changes/2026-11-10-make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit/lesson-bundle.md)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](../.specsync/archive/changes/2026-11-10-read-bounded-diagnostic-input-inventories-without-changing-freshness-authority/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](../.specsync/archive/changes/2026-11-08-explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18/lesson-bundle.md)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../.specsync/archive/changes/2026-11-07-make-evidence-prune-apply-recheck-protections-and-restore-partial-removals/lesson-bundle.md)
-- [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](../.specsync/archive/changes/2026-11-07-update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-597 recorded; most recent:
+576 recorded; most recent:
 
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-513e970c867a3b306088d874 ProductTest Passed in local-macos-arm64 at 26f1a0bfe079
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-e3ceaa42d7d2ca9f573093c0 ProductTest Passed in local-macos-arm64 at 26f1a0bfe079

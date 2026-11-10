@@ -69,13 +69,13 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-sigterm-stops-native-process-71d69f74f25a3aade7f0057f | passed (by cycle time) | local-macos-arm64 | TC-cli-sigterm-stops-native-process |
 | OBS-tc-cli-timed-out-prime-kills-native-process-f812f5bccc709170ad193979 | passed (by cycle time) | local-macos-arm64 | TC-cli-timed-out-prime-kills-native-process |
 | OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a | failed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
-| OBS-tc-history-prune-protection-race-831610f271a785164c912a6e | passed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
-| OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
+| OBS-tc-history-prune-protection-race-831610f271a785164c912a6e | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
+| OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
 | OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7 | failed (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
-| OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
+| OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
 | OBS-tc-history-prune-restores-earlier-sets-bba515e3dbd42cea1399e660 | failed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
 | OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d | failed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
-| OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
+| OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
 | OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 | passed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 | OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 | OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc | failed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
