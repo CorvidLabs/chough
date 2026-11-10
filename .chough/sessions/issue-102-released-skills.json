@@ -63,6 +63,5 @@
     "Independent scoped review and human implementation acceptance remain pending; no review/ship authorization is recorded."
   ],
   "run_consents": [],
-  "next_action": "Finish allocated INDEX-only generation/native-current freeze then different-author scoped review; human implementation acceptance pending",
-  "next_owner": "orc-t19f"
+  "next_action": "Finish allocated INDEX-only generation/native-current freeze then different-author scoped review; human implementation acceptance pending"
 }
