@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "append-only-corrections-for-recorded-transition-reasons-and-archived-session-next-action-167",
+  "slug": "append-only-corrections-for-recorded-transition-reasons-and-archived-session-next-action-167",
+  "title": "Append-only corrections for recorded transition reasons and archived session next_action (#167)",
+  "description": "Append-only corrections for recorded transition reasons and archived session next_action (#167)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "4e7bd5cbba1175f17e69752f317def5a49ac001f",
+  "created_at": 1794328367,
+  "updated_at": 1794328432,
+  "affected_specs": [
+    "history"
+  ],
+  "affected_paths": [
+    "src/history.rs",
+    "src/sessions.rs"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "An agent can append a correction that names a recorded history event or an archived session's next_action, carrying who recorded it, why, and the corrected statement, without rewriting the original event; history show, next, status and the archived session's readers surface the correction beside what it corrects; the original bytes and event digests are unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "research",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "none",
+    "public_contract": "yes"
+  }
+}
