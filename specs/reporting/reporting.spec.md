@@ -1,6 +1,6 @@
 ---
 module: reporting
-version: 5
+version: 6
 status: active
 files:
   - src/timing.rs
@@ -83,3 +83,4 @@ transition events. Git and SpecSync supply revisions and native lifecycle times.
 | 3 | 2026-11-04 | read-hi-exports-and-native-specsync-files-at-full-size-for-every-gate-and-validation-so-chough-bounds-never-push-an: Read HI exports and native SpecSync files at full size for every gate and validation so Chough bounds never push an agent to edit human intent or specs (issue 100) |
 | 4 | 2026-11-06 | make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive: Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19) |
 | 5 | 2026-11-07 | chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21: chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) |
+| 6 | 2026-11-10 | append-only-event-corrections-with-chough-correct-never-rewriting-history-167: Append-only event corrections with chough correct, never rewriting history (#167) |

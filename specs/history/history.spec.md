@@ -1,6 +1,6 @@
 ---
 module: history
-version: 19
+version: 20
 status: active
 files:
   - src/history.rs
@@ -102,3 +102,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 17 | 2026-11-07 | chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21: chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) |
 | 18 | 2026-11-07 | make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: Make evidence prune --apply recheck protections and restore partial removals (65) |
 | 19 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |
+| 20 | 2026-11-10 | append-only-event-corrections-with-chough-correct-never-rewriting-history-167: Append-only event corrections with chough correct, never rewriting history (#167) |
