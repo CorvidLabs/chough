@@ -643,6 +643,12 @@ pub(super) fn artifact_fingerprints(
 ) -> Result<BTreeMap<String, String>> {
     let mut fingerprints = BTreeMap::new();
     for artifact in artifacts {
+        if Path::new(artifact).is_absolute() {
+            // An external artifact (#14, REQ-cli-006): fingerprinted in place within
+            // the bound, never copied into the project.
+            fingerprints.insert(artifact.clone(), external_digest(Path::new(artifact))?);
+            continue;
+        }
         ensure!(
             local_path(root, artifact)?.is_file(),
             "missing artifact: {artifact}"
@@ -656,6 +662,38 @@ pub(super) fn artifact_fingerprints(
     Ok(fingerprints)
 }
 
+/// External artifacts are fingerprinted, not copied, so they stay outside the
+/// repository within this bound (#14).
+const EXTERNAL_ARTIFACT_LIMIT: u64 = 64 * 1_048_576;
+
+/// SHA-256 of an external artifact's bytes. Symlinks, directories, missing and
+/// oversized files are refused.
+fn external_digest(path: &Path) -> Result<String> {
+    let metadata = fs::symlink_metadata(path)
+        .with_context(|| format!("missing artifact: {}", path.display()))?;
+    ensure!(
+        metadata.file_type().is_file(),
+        "external artifact is not a plain file: {}",
+        path.display()
+    );
+    ensure!(
+        metadata.len() <= EXTERNAL_ARTIFACT_LIMIT,
+        "external artifact exceeds the 64 MiB bound: {}",
+        path.display()
+    );
+    let mut file = File::open(path)?;
+    let mut hash = Sha256::new();
+    let mut buffer = [0_u8; 8192];
+    loop {
+        let size = file.read(&mut buffer)?;
+        if size == 0 {
+            break;
+        }
+        hash.update(&buffer[..size]);
+    }
+    Ok(format!("{:x}", hash.finalize()))
+}
+
 pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     read_session(root)?;
     if let Some(id) = &args.id {
@@ -667,9 +705,12 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         "environment and summary must not be blank"
     );
     for artifact in &args.artifacts {
+        // An absolute path names an external artifact, fingerprinted in place and
+        // never copied in (#14, REQ-cli-006); a project artifact stays canonical.
         ensure!(
-            canonical_path(artifact).as_deref() == Some(artifact.as_str()),
-            "artifact path must be spelled canonically (relative, `/`-separated, no empty, `.` or `..` parts, no trailing `/`): {artifact}"
+            Path::new(artifact).is_absolute()
+                || canonical_path(artifact).as_deref() == Some(artifact.as_str()),
+            "artifact path must be absolute (an external artifact, fingerprinted in place) or spelled canonically (relative, `/`-separated, no empty, `.` or `..` parts, no trailing `/`): {artifact}"
         );
     }
     validate_criteria(root, &args.criteria)?;
@@ -871,13 +912,20 @@ impl<'a> Reads<'a> {
         let result = (|| {
             let mut current = true;
             for artifact in &evidence.artifacts {
-                local_path(self.root, artifact)?;
                 let expected = evidence
                     .artifact_fingerprints
                     .get(artifact)
                     .context("missing artifact binding")?;
                 ensure!(is_digest(expected), "invalid artifact digest");
-                if file_digest(self.root, artifact).as_ref().ok() != Some(expected) {
+                let path = Path::new(artifact);
+                let digest = if path.is_absolute() {
+                    // An external artifact (#14, REQ-cli-006) is re-read in place.
+                    external_digest(path).ok()
+                } else {
+                    local_path(self.root, artifact)?;
+                    file_digest(self.root, artifact).ok()
+                };
+                if digest.as_ref() != Some(expected) {
                     current = false;
                 }
             }

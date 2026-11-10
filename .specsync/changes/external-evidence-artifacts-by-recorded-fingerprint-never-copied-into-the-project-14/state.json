@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14",
+  "slug": "external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14",
+  "title": "External evidence artifacts by recorded fingerprint, never copied into the project (#14)",
+  "description": "External evidence artifacts by recorded fingerprint, never copied into the project (#14)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "9f0a2df721821504c0fdae3d43c911c70a63e661",
+  "created_at": 1794333646,
+  "updated_at": 1794333675,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/evidence.rs",
+    "docs/cli.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "evidence add and cases record accept an absolute artifact path: the file is fingerprinted (SHA-256) in place within a 64 MiB bound and never copied into the project; missing, symlinked, directory and oversized external paths are refused by name. Project-relative canonical artifact behavior, freshness re-reads, digests and record shape are unchanged; a later change to the external file flips the observation's artifact freshness."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "yes"
+  }
+}

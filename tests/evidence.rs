@@ -2031,3 +2031,70 @@ fn evidence_prune_restores_partial_removal() {
     assert!(ledger.contains("partial"), "{ledger}");
     assert!(!fixture.exists(".chough/removing"));
 }
+
+/// #14 item 3: an absolute artifact path is fingerprinted in place within the
+/// bound and never copied into the project; missing and symlinked external
+/// paths are refused.
+#[test]
+fn an_external_artifact_is_fingerprinted_in_place() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let external = std::env::temp_dir().join(format!("chough-14-external-{}.png", std::process::id()));
+    std::fs::write(&external, b"png-bytes").unwrap();
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "test-local",
+        "--summary",
+        "screenshot checked",
+        "--artifact",
+        external.to_str().unwrap(),
+    ]);
+    let record = added["recorded"].as_str().unwrap().to_string();
+    let observation: Value =
+        serde_json::from_str(&fixture.read(&record)).unwrap();
+    let key = external.to_str().unwrap();
+    assert_eq!(observation["artifacts"], serde_json::json!([key]));
+    let digest = observation["artifact_fingerprints"][key].as_str().unwrap();
+    assert_eq!(digest.len(), 64, "{observation:#}");
+    // Nothing was copied into the project.
+    assert!(!fixture.exists(".chough/artifacts"));
+
+    // A missing external path is refused with its name.
+    let missing = external.with_file_name("chough-14-missing.png");
+    let refused = fixture.fails(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "test-local",
+        "--summary",
+        "screenshot checked",
+        "--artifact",
+        missing.to_str().unwrap(),
+    ]);
+    assert!(refused.contains("missing artifact"), "{refused}");
+    std::fs::remove_file(&external).unwrap();
+}
