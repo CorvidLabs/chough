@@ -2031,3 +2031,112 @@ fn evidence_prune_restores_partial_removal() {
     assert!(ledger.contains("partial"), "{ledger}");
     assert!(!fixture.exists(".chough/removing"));
 }
+
+/// #201 (LIFE-17): a transition, an evidence entry and a bug record the acting agent,
+/// model and hc terminal from the environment, `next` names who made the last move and
+/// who recorded the evidence, and with nothing known no record carries an actor.
+#[test]
+fn transitions_evidence_and_bugs_record_the_acting_agent() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let as_kimi = [
+        ("CHOUGH_ACTOR", "kimi-code"),
+        ("CHOUGH_ACTOR_MODEL", "kimi-k3"),
+        ("CHOUGH_HC_TERMINAL", "t42"),
+    ];
+    let expected = serde_json::json!({"agent": "kimi-code", "model": "kimi-k3", "terminal": "t42"});
+    let ok = |args: &[&str], environment: &[(&str, &str)]| -> Value {
+        let output = fixture.run_with_env(args, environment);
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        serde_json::from_slice(&output.stdout).unwrap()
+    };
+
+    ok(&["stage", "pause", "--reason", "waiting on CI"], &as_kimi);
+    // This fixture keeps the single legacy log: its last line is the pause.
+    let log = fixture.read(".chough/transitions.jsonl");
+    let transition: Value = serde_json::from_str(log.lines().last().unwrap()).unwrap();
+    assert_eq!(transition["kind"], "pause", "{transition:#}");
+    assert_eq!(transition["actor"], expected, "{transition:#}");
+
+    let evidence = [
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "passed",
+        "--environment",
+        "test-local",
+        "--summary",
+        "checked",
+    ];
+    let added = ok(&evidence, &as_kimi);
+    let recorded = added["recorded"].as_str().unwrap().to_string();
+    let record: Value = serde_json::from_str(&fixture.read(&recorded)).unwrap();
+    assert_eq!(record["actor"], expected, "{record:#}");
+
+    let bug = ok(
+        &[
+            "bug",
+            "add",
+            "--title",
+            "Probe fails",
+            "--symptom",
+            "It fails",
+            "--trigger",
+            "Run it",
+            "--expected",
+            "Pass",
+            "--actual",
+            "Fail",
+            "--environment",
+            "test-local",
+            "--scope",
+            "out-of-scope",
+            "--classification",
+            "product-defect",
+        ],
+        &[("CLAUDECODE", "1"), ("HC_TERMINAL_ID", "t7")],
+    );
+    let bug_id = bug["id"].as_str().unwrap();
+    let stored: Value =
+        serde_json::from_str(&fixture.read(&format!(".chough/bugs/{bug_id}.json"))).unwrap();
+    assert_eq!(
+        stored["actor"],
+        serde_json::json!({"agent": "claude-code", "terminal": "t7"}),
+        "{stored:#}"
+    );
+
+    let id = record["id"].as_str().unwrap().to_string();
+    ok(&["checkpoint", "--observation", &id], &[]);
+    // The checkpoint write is not a transition, so the last move is still Kimi's.
+    let next = ok(&["next", "--json"], &[]);
+    assert_eq!(
+        next["last_actor"], "kimi-code (kimi-k3) on hc t42",
+        "{next:#}"
+    );
+    let status = ok(&["status"], &[]);
+    assert_eq!(
+        status["checkpoint"]["last_actor"], "kimi-code (kimi-k3) on hc t42",
+        "{status:#}"
+    );
+
+    // With nothing known, commands succeed and records carry no actor.
+    let plain = ok(&evidence, &[]);
+    let plain_record = fixture.read(plain["recorded"].as_str().unwrap());
+    assert!(!plain_record.contains("\"actor\""), "{plain_record}");
+    ok(&["stage", "resume"], &[]);
+    assert!(ok(&["next", "--json"], &[])["last_actor"].is_null());
+}

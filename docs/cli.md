@@ -303,6 +303,22 @@ preference, consent, stop-marker and pruning-ledger entry shapes gain no IDs, an
 requirement and SpecSync identities stay with their native owners. No runtime,
 service, central allocator or persistent random state is added.
 
+### Acting agent
+
+Each stage transition, evidence entry and bug records an optional `actor`: `agent`,
+`model` and `terminal`, each only when known (#201, REQ-cli-063). `CHOUGH_ACTOR`,
+`CHOUGH_ACTOR_MODEL` and `CHOUGH_HC_TERMINAL` set them; otherwise the agent is
+`claude-code` when `CLAUDECODE` is set (Claude Code exports it) and the terminal is
+`HC_TERMINAL_ID` (hc exports it). Other hosts name themselves with `CHOUGH_ACTOR`, for
+example in their hc templates. Values are trimmed, single-line and at most 128 bytes.
+With nothing known the record has no `actor` and its bytes are as before; no command
+fails for an unknown identity, and the actor never changes a bug's ID. The actor is a
+claim by the recording process, not an authenticated identity, and never stands in for
+a human decision. `next` and `status` show `last_actor`, who made the latest transition;
+`next` shows `recorded_by` on each observation it lists. Chough releases before the
+first one with this change refuse a record holding `actor`, so upgrade every agent's
+Chough before one records it.
+
 ### Bug identities
 
 Every new bug uses `BUG-<lowercase-title-slug>-<24-lowercase-hex>`. Manual `bug add`
@@ -906,6 +922,7 @@ stage on that response, and shows:
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest checkpoint decisions, newest first; see [Decision prefixes](#decision-prefixes) |
 | `last_failure` | `{"id", "observed_at_unix_seconds", "summary", "bugs": {"total", "items": [{"id", "status"}]}}` for the failed observation with the greatest recorded `observed_at_unix_seconds` (ties to the greater ID), with at most 3 bugs that link it by their observations, note observations or regression baseline, by bug ID; `null` when no observation failed. No freshness label is computed; run `chough status` or the case for that |
 | `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>], "note"?}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing` or `cannot be read: <error>`, for example for a symlinked module directory); and, for the archives the librarian counts (not hidden, a UTF-8 name, and a readable `finalization.json` whose `change_id` the directory name ends with), each one's `lesson-bundle.md` path, newest first by recorded finalization timestamp then directory name, at most 3, the same three the librarian marks hot in `knowledge/INDEX.md`; a hot archive without a bundle is shown as `<path> (missing)`, `total` counts those archives, and an unreadable timestamp sorts oldest; when the archives cannot be read, for example because an archive directory is a symlink, no bundle is listed, `total` is 0 and `note` is `cannot be read: <error>`, the same error `chough library index` refuses with (`note` is absent otherwise) |
+| `last_actor` | Who made the latest recorded transition (agent, model, hc terminal), or `null` when unknown; each `observations` item also carries `recorded_by` (REQ-cli-063) |
 | `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
 
 The text form (the default) carries the same fields as short lines. Each form is at

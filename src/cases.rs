@@ -1197,6 +1197,7 @@ pub(super) fn run_case(
         tests_run,
         limitations,
         duration_seconds: Some(duration_seconds),
+        actor: crate::actor::current(),
     };
     evidence::record(root, &record)?;
     Ok(RunResult {
@@ -1295,6 +1296,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         tests_run: None,
         limitations,
         duration_seconds: None,
+        actor: crate::actor::current(),
     };
     let name = evidence::record(root, &record)?;
     Ok(json!({"schema_version": 1, "recorded": name, "outcome": outcome, "provenance": PROVENANCE}))

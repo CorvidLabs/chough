@@ -88,6 +88,10 @@ pub(super) struct Bug {
     notes: Vec<Note>,
     created_at_unix_seconds: u64,
     updated_at_unix_seconds: u64,
+    /// Who recorded it, when known: agent, model and hc terminal (#201, LIFE-17). A
+    /// claim by the recording process, not authenticated; absent when unknown.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    actor: Option<crate::actor::Actor>,
 }
 
 impl Bug {
@@ -757,6 +761,7 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
         notes: vec![],
         created_at_unix_seconds: at,
         updated_at_unix_seconds: at,
+        actor: crate::actor::current(),
     };
     let bug = create(root, bug)?;
     Ok(bug.id)
@@ -822,6 +827,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         notes,
         created_at_unix_seconds: at,
         updated_at_unix_seconds: at,
+        actor: crate::actor::current(),
     };
     check_regression(root, &bug)?;
     let bug = create(root, bug)?;
@@ -1203,6 +1209,7 @@ mod tests {
             notes: vec![],
             created_at_unix_seconds: 1_793_000_000,
             updated_at_unix_seconds: 1_793_000_001,
+            actor: None,
         }
     }
 

@@ -294,6 +294,10 @@ pub(super) struct Transition {
     /// Present only on a `direct-native-write` event (REQ-history-013).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) direct_write: Option<DirectWrite>,
+    /// Who recorded it, when known: agent, model and hc terminal (#201, LIFE-17). A
+    /// claim by the recording process, not authenticated; absent when unknown.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) actor: Option<crate::actor::Actor>,
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -1480,6 +1484,7 @@ fn log_transition_at(
         backfill,
         relayed_by,
         direct_write: None,
+        actor: crate::actor::current(),
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
@@ -1499,6 +1504,7 @@ fn log_transition_at(
                 backfill: None,
                 relayed_by: None,
                 direct_write: Some(write),
+                actor: transition.actor.clone(),
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;

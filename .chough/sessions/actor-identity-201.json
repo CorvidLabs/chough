@@ -1,0 +1,41 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-c6cde69f888d91f8ba4e8b44",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Record the acting agent, model and hc terminal on each transition, evidence entry and bug (#201)",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "record-the-acting-agent-model-and-hc-terminal-on-each-transition-evidence-entry-and-bug-201",
+  "references": {
+    "criteria": [
+      "LIFE-2",
+      "FLOW-16"
+    ],
+    "requirements": [
+      "REQ-cli-063"
+    ],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Scope source: Leif's #201 decision (2026-11-10, recorded on the issue by the coordinator, 'Scope approved; implementation PR goes to Leif for acceptance'). The HI criterion is LIFE-17 in PR #212, not on main. This is a feature: it stops at a ready PR; no native approval is recorded by the agent."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Leif: native scope approval of the #201 definition (and #212 for LIFE-17); then add case TC-cli-actor-identity-recorded, specsync change check, run it, check --commit, and present for acceptance."
+}

@@ -107,6 +107,17 @@ impl Fixture {
             &std::env::var_os("PATH").unwrap_or_default(),
         ));
         command.env("PATH", std::env::join_paths(paths).unwrap());
+        // The acting agent is detected from these (#201); fixtures record none unless a
+        // test sets them, so records stay byte-identical wherever the suite runs.
+        for name in [
+            "CLAUDECODE",
+            "HC_TERMINAL_ID",
+            "CHOUGH_ACTOR",
+            "CHOUGH_ACTOR_MODEL",
+            "CHOUGH_HC_TERMINAL",
+        ] {
+            command.env_remove(name);
+        }
         command.envs(environment.iter().copied());
         command.output().unwrap()
     }

@@ -4,6 +4,7 @@ version: 82
 status: active
 files:
   - src/main.rs
+  - src/actor.rs
   - src/bugs.rs
   - src/cases.rs
   - src/checkpoint.rs

@@ -131,6 +131,10 @@ pub(super) struct Evidence {
     /// records written before it was kept, whose run time stays unknown.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) duration_seconds: Option<u64>,
+    /// Who recorded it, when known: agent, model and hc terminal (#201, LIFE-17). A
+    /// claim by the recording process, not authenticated; absent when unknown.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) actor: Option<crate::actor::Actor>,
 }
 
 #[derive(clap::Args)]
@@ -721,6 +725,7 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         tests_run: None,
         limitations: args.limitations,
         duration_seconds: None,
+        actor: crate::actor::current(),
     };
     let name = record(root, &evidence)?;
     print_json(&json!({"schema_version": 1, "recorded": name, "provenance": evidence.provenance}))
@@ -3743,6 +3748,7 @@ mod tests {
             tests_run: None,
             limitations: vec![],
             duration_seconds: None,
+            actor: None,
         }
     }
 

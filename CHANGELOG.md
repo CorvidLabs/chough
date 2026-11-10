@@ -6,6 +6,14 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Each stage transition, evidence entry and bug records the acting agent, model and hc
+  terminal when known (`actor`), from `CHOUGH_ACTOR`, `CHOUGH_ACTOR_MODEL` and
+  `CHOUGH_HC_TERMINAL`, or Claude Code's `CLAUDECODE` and hc's `HC_TERMINAL_ID`; `next`
+  and `status` show `last_actor` (#201, REQ-cli-063). A record without a known actor
+  keeps its bytes. Older builds refuse a record holding `actor` (unknown field), so
+  the oldest Chough that reads such a record is 0.6.0, the first release with this
+  change. 0.5.0 does not read it.
+
 - Read strict bounded optional v1 diagnostic input inventories while preserving
   aggregate freshness and original observations; reject noncanonical inventory paths.
 

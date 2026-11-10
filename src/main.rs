@@ -1,3 +1,4 @@
+mod actor;
 mod attachments;
 mod bugs;
 mod cases;
@@ -458,6 +459,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         Session::V2(checkpoint) => json!({
             "schema": 2,
             "stage": checkpoint.stage,
+            "last_actor": last_actor(root),
             "native_change": checkpoint.native_change,
             "gate": assessment.gate.as_ref().map(|(target, gate)| json!({"to": target, "allowed": gate.allowed, "label": gate.label, "detail": gate.detail})),
             "valid_transitions": stage::valid_transitions(checkpoint),
@@ -570,6 +572,14 @@ fn cut(text: &str) -> String {
         end = index + character.len_utf8();
     }
     format!("{}{CUT}", &text[..end])
+}
+
+/// Who made the latest recorded transition (#201, LIFE-17): its actor's display line,
+/// or null when that transition carries none or history cannot be read.
+fn last_actor(root: &Path) -> Option<String> {
+    let (latest, _) = stage::recent_transitions(root, 1).ok()?;
+    let actor: actor::Actor = serde_json::from_value(latest.last()?.get("actor")?.clone()).ok()?;
+    Some(cut(&actor.display()))
 }
 
 fn listed<'a>(items: impl ExactSizeIterator<Item = &'a String>) -> Value {
@@ -795,6 +805,11 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
                 "label": entry["label"],
                 "referenced_by": by.iter().take(3).map(|source| cut(source.as_str().unwrap_or_default())).collect::<Vec<_>>(),
                 "referenced_by_total": by.len(),
+                "recorded_by": entry["id"]
+                    .as_str()
+                    .and_then(|id| evidence::load(root, id).ok())
+                    .and_then(|record| record.actor)
+                    .map(|actor| cut(&actor.display())),
             })
         })
         .collect();
@@ -807,6 +822,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     let view = json!({
         "schema_version": 1,
         "view": "next",
+        "last_actor": last_actor(root),
         "objective": cut(session.objective()),
         "stage": checkpoint.map(|checkpoint| json!({
             "current": checkpoint.stage.current,
@@ -886,6 +902,9 @@ fn next_text(view: &Value) -> String {
         other => other.to_string(),
     };
     let mut lines = vec![format!("Objective: {}", text(&view["objective"]))];
+    if let Some(actor) = view["last_actor"].as_str() {
+        lines.push(format!("Last move by: {actor}"));
+    }
     let stage = &view["stage"];
     if stage.is_null() {
         lines.push("Stage: none (schema 1 session)".into());
@@ -1024,8 +1043,12 @@ fn next_text(view: &Value) -> String {
             .flatten()
             .map(text)
             .collect();
+        let recorder = item["recorded_by"]
+            .as_str()
+            .map(|actor| format!(", recorded by {actor}"))
+            .unwrap_or_default();
         lines.push(format!(
-            "  {} {} ({})",
+            "  {} {} ({}{recorder})",
             text(&item["id"]),
             text(&item["label"]),
             by.join(", ")

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "record-the-acting-agent-model-and-hc-terminal-on-each-transition-evidence-entry-and-bug-201",
+  "slug": "record-the-acting-agent-model-and-hc-terminal-on-each-transition-evidence-entry-and-bug-201",
+  "title": "Record the acting agent, model and hc terminal on each transition, evidence entry and bug (201)",
+  "description": "Record the acting agent, model and hc terminal on each transition, evidence entry and bug (201)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "d613b415e0660869e82f25a669fc1bc4c8fd82be",
+  "created_at": 1794347792,
+  "updated_at": 1794348050,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/actor.rs",
+    "src/main.rs",
+    "src/stage.rs",
+    "src/evidence.rs",
+    "src/cases.rs",
+    "src/bugs.rs",
+    "src/checkpoint.rs",
+    "src/history.rs",
+    "tests/evidence.rs",
+    "tests/common/mod.rs",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    "specs/cli/cli.spec.md",
+    ".chough/cases/cli.actor-identity-201.cases.toml",
+    "knowledge/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With CHOUGH_ACTOR, CHOUGH_ACTOR_MODEL and CHOUGH_HC_TERMINAL set, a stage transition, an evidence add and a bug add each record actor {agent, model, terminal}; with CLAUDECODE and HC_TERMINAL_ID set they record agent claude-code and the hc terminal; with nothing known every command succeeds and no record carries an actor, so existing record bytes are unchanged. chough next (text and JSON) and chough status name who made the latest transition (last_actor), and next names who recorded each listed observation (recorded_by); status shows each observation record with its actor. Bug IDs do not depend on the actor. Test fixtures clear the detection variables so the suite is environment-independent."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Leif's #201 decision (2026-11-10, recorded by the coordinator on the issue): current-agent-first; automatic where the environment exposes it, with an env override; never fail a command when the identity is unknown; no handoff, stage ownership or dispatch. The HI criterion is LIFE-17 in PR #212 (not on main yet). The actor is an unauthenticated claim. Records keep their bytes when no actor is known; older Chough builds (deny_unknown_fields) refuse a record that carries an actor, so the change log names the first reader. Only observed markers are detected automatically (CLAUDECODE, HC_TERMINAL_ID); other hosts use CHOUGH_ACTOR.",
+    "public_contract": "yes"
+  }
+}

@@ -1771,6 +1771,7 @@ mod tests {
             backfill: None,
             relayed_by: None,
             direct_write: None,
+            actor: None,
         }
     }
 
