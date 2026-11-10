@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14 (active; `specsync change status external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14`)
 
 Archived changes (newest first; the newest 3 are hot):
 
