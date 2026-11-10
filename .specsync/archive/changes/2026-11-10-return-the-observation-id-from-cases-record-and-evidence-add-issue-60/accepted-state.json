@@ -7,11 +7,11 @@
   "title": "Return the observation ID from cases record and evidence add (issue 60)",
   "description": "Return the observation ID from cases record and evidence add (issue 60)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "5ff54dd726367321b4e7ede3f931d38657b9b81e",
   "created_at": 1794064630,
-  "updated_at": 1794352436,
+  "updated_at": 1794352544,
   "affected_specs": [
     "cli"
   ],
