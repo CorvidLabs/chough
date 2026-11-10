@@ -44,8 +44,6 @@ Canonical prototypes:
 Active:
 
 - none
-- recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits (active; `specsync change status recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits`)
-- refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113 (active; `specsync change status refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -53,6 +51,8 @@ Archived changes (newest first; the newest 3 are hot):
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (hot)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (hot)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (cold)
+- [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113) (hot)
+- [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (hot)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18) (cold)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (cold)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals (cold)
@@ -76,6 +76,7 @@ Archived lesson bundles:
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../.specsync/archive/changes/2026-11-10-make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit/lesson-bundle.md)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](../.specsync/archive/changes/2026-11-10-read-bounded-diagnostic-input-inventories-without-changing-freshness-authority/lesson-bundle.md)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](../.specsync/archive/changes/2026-11-10-move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence/lesson-bundle.md)
+- [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](../.specsync/archive/changes/2026-11-10-refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113/lesson-bundle.md)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](../.specsync/archive/changes/2026-11-10-recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits/lesson-bundle.md)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](../.specsync/archive/changes/2026-11-08-explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18/lesson-bundle.md)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
@@ -103,7 +104,10 @@ Archived lesson bundles:
 ## Observations
 
 585 recorded; most recent:
+580 recorded; most recent:
+595 recorded; most recent:
 
+- OBS-structural-28551a0cdbe9c0ab26005f41 Structural Passed in local-macos-arm64 at 7cf73cbe8018
 - OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-aliases-af56a469e54a2db6ce7b3a29 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
@@ -113,23 +117,6 @@ Archived lesson bundles:
 - OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e ProductTest Failed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b ProductTest Failed in local-macos-arm64 at d9a9d92459a6
-- OBS-structural-287ec6778c96c03267901f6b Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
-581 recorded; most recent:
-
-- OBS-tc-history-earlier-null-anchor-does-not-hide-adopter-60def86f5391f035239dbf7a ProductTest Passed in local-macos-arm64 at 950e5c6c7787
-- OBS-tc-history-never-adopted-log-remains-writable-7d1600adb2b9429ecbba9d0b ProductTest Passed in local-macos-arm64 at 950e5c6c7787
-- OBS-tc-history-missing-adopted-log-refuses-5513dedfa823a21f9e83f12b ProductTest Passed in local-macos-arm64 at 950e5c6c7787
-- OBS-structural-287ec6778c96c03267901f6b Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
-- OBS-structural-f27415f1661a1ab46cd0e673 Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
-- OBS-structural-03cfcec131ca2438dd4735a5 Structural Passed in local-macos-arm64 at 3f6bd0d51fa7
-- OBS-product-test-c667d4756cf1c183202f8b02 ProductTest Passed in local-linux-aarch64 at 3b9d008d6c48
-- OBS-product-test-4f7d63e468288e44cfd85c88 ProductTest Passed in local-macos-arm64 at 3b9d008d6c48
-- OBS-product-test-80b95a49cc2ba0705ed1b2fb ProductTest Failed in local-macos-arm64 at 3b9d008d6c48
-- OBS-product-test-97bec39c043841e26288e181 ProductTest Passed in local-macos-arm64 at 6748c3d30a00
 
 ## Briefs
 
