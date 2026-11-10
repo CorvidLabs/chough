@@ -1,6 +1,6 @@
 ---
 id: external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14
-state: draft
+state: implementing
 type: feature
 base_commit: 9f0a2df721821504c0fdae3d43c911c70a63e661
 ---

@@ -1,4 +1,45 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794333769,
+      "digest": "814a8c5b960f88ae24eed7f02f1f7f935dae3576e109e85249487fa51f572dce",
+      "note": "Scope approved by Leif 2026-11-10 on issue #14 (fix all four; this change is item 3, external artifacts by fingerprint), recorded by the coordinator in the issue comment; relayed here by kimi (hc worker under t370)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14",
+        "title": "External evidence artifacts by recorded fingerprint, never copied into the project (#14)",
+        "description": "External evidence artifacts by recorded fingerprint, never copied into the project (#14)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/cli.md",
+          "src/evidence.rs",
+          "tests/evidence.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "evidence add and cases record accept an absolute artifact path: the file is fingerprinted (SHA-256) in place within a 64 MiB bound and never copied into the project; missing, symlinked, directory and oversized external paths are refused by name. Project-relative canonical artifact behavior, freshness re-reads, digests and record shape are unchanged; a later change to the external file flips the observation's artifact freshness."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "69a18506f9cfa6c726b5940084d259a2d884c4b9d25a3f8f63f2638ded6af26b"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-006": "592eacb8eb89ef0c4c1b2628d42e57fdca3602aa46f30bf96cf8b6f5db25d703"
+      }
+    }
+  ],
   "reopenings": []
 }
