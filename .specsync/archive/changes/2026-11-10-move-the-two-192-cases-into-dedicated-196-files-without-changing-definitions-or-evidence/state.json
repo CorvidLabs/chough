@@ -7,11 +7,11 @@
   "title": "Move the two #192 cases into dedicated #196 files without changing definitions or evidence",
   "description": "Move the two #192 cases into dedicated #196 files without changing definitions or evidence",
   "kind": "refactor",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "4bbd5a6373d26c0ad069878f8f543842a4564a6f",
   "created_at": 1794191973,
-  "updated_at": 1794323706,
+  "updated_at": 1794323867,
   "affected_specs": [],
   "affected_paths": [
     ".chough/cases/cli.change-steps.cases.toml",

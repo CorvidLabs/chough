@@ -1,6 +1,6 @@
 ---
 id: move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence
-state: implementing
+state: archived
 type: refactor
 base_commit: 4bbd5a6373d26c0ad069878f8f543842a4564a6f
 ---
