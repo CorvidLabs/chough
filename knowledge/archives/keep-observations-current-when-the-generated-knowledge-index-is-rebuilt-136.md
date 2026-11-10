@@ -50,7 +50,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+7 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -58,10 +58,14 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287 | failed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
+| OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992 | failed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
+| OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774 | passed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
+| OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e | passed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
 
 ## Bugs
 
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef verified (references OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287, OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc)
+- BUG-session-use-new-archive-finished-sessions-that-still-hold-an-open-human-7f275557438d8b4e21bf17d5 verified (references OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992, OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e)
 
 ## Loose artifacts
 

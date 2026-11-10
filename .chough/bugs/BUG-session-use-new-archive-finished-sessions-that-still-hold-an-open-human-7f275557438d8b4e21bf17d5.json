@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "BUG-session-use-new-archive-finished-sessions-that-still-hold-an-open-human-7f275557438d8b4e21bf17d5",
+  "title": "session use/new archive finished sessions that still hold an open human gate",
+  "symptom": "A finished session with a non-empty awaiting_human list is moved to .chough/sessions/archive/ by another session's session new or session use, dropping the open gate without a recorded decision",
+  "trigger": "chough session new <key> or chough session use <key> while another open session is finished (stage done or native change archived on HEAD) and has an open awaiting-human gate",
+  "expected": "Switches archive only sessions doctor would close mechanically (finished_session, no open gate); a gated finished session stays open and is named with a recovery (REQ-history-006, REQ-history-012)",
+  "actual": "Both gated sessions are archived alongside the ungated one; kept_open is empty",
+  "criteria": [],
+  "requirements": [
+    "REQ-history-006",
+    "REQ-history-012"
+  ],
+  "cases": [
+    "TC-history-switch-keeps-gated-finished-sessions-open"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "be1dc60a654a7392c74b6626a288ba91feae8864",
+  "steps": [
+    "Open two finished sessions, one with an open awaiting-human gate",
+    "Run chough session new gamma",
+    "Both are archived; the gate is dropped"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992",
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1794345275,
+      "text": "status: open -> verified. Passes after the fix through the same case: gated sessions stay open with their recoveries.",
+      "observations": [
+        "OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794345258,
+  "updated_at_unix_seconds": 1794345275
+}
