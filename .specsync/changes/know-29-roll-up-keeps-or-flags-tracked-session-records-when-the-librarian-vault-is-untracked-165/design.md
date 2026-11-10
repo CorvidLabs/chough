@@ -5,4 +5,4 @@ artifact: design
 
 # Design
 
-<!-- TODO: complete this artifact or remove it from selected_artifacts before approval. -->
+No visual or interaction surface changes: the roll-up report's `moved` key becomes `copied`, and archived session records stay in `.chough/sessions/archive/`. No prototype.

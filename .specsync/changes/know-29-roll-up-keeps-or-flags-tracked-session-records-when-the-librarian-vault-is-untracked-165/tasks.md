@@ -5,4 +5,6 @@ artifact: tasks
 
 # Tasks
 
-No worker tasks yet: scope draft awaiting human approval.
+- [x] Copy semantics in roll_up with updated regressions (tests/reduce.rs, sessions, evidence suites green).
+
+Remaining as plain text, not checkboxes: verification, then Leif's implementation acceptance, archive and merge.

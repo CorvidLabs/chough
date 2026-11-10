@@ -778,10 +778,12 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
 /// Archived sessions kept in `.chough/sessions/archive/` (KNOW-29).
 const KEEP_ARCHIVED: usize = 5;
 
-/// REQ-history-011 (KNOW-29): at done, keep the five most recent archived sessions, by
-/// their native change's finalization and then key, and move older ones byte for byte
-/// into `<library-dir>/attachments/<folder>/sessions/<key>.json`. Never fails: the result
-/// is `rolled`, `unchanged`, `skipped` or `refused`.
+/// REQ-history-011 (KNOW-29): at done, the five most recent archived sessions, by
+/// their native change's finalization and then key, stay as they are, and older ones
+/// are copied byte for byte into `<library-dir>/attachments/<folder>/sessions/<key>.json`.
+/// The copy never moves: the archived session record stays in the tree whether or not
+/// the vault is committed (#165). Never fails: the result is `rolled`, `unchanged`,
+/// `skipped` or `refused`.
 /// At a successful move into done, the active session archives itself in its own
 /// change and the active pointer is cleared, so a later `session new` elsewhere has
 /// nothing of this change to move (REQ-history-006, DRIVE-13, #155). It runs last among
@@ -866,7 +868,7 @@ fn roll_up(root: &Path) -> Result<serde_json::Value> {
     }
     // Newest first: a later finalization, then a later key; none counts as oldest.
     archived.sort_by(|left, right| right.cmp(left));
-    let mut moved = vec![];
+    let mut copied = vec![];
     let mut kept_back = vec![];
     for (_, key) in archived.into_iter().skip(KEEP_ARCHIVED) {
         let source = local_path(root, &archive_file(&key))?;
@@ -876,26 +878,23 @@ fn roll_up(root: &Path) -> Result<serde_json::Value> {
         );
         let target = local_path(root, &target_relative)?;
         if target.exists() {
-            if fs::read(&target)? == fs::read(&source)? {
-                fs::remove_file(&source)?;
-                moved.push(key);
-            } else {
-                kept_back.push(json!({"key": key, "reason": format!("{target_relative} already holds different bytes; a move never overwrites")}));
+            if fs::read(&target)? != fs::read(&source)? {
+                kept_back.push(json!({"key": key, "reason": format!("{target_relative} already holds different bytes; a copy never overwrites")}));
             }
             continue;
         }
         if let Some(parent) = target.parent() {
             fs::create_dir_all(parent)?;
         }
-        fs::hard_link(&source, &target).with_context(|| format!("moving {key} into the vault"))?;
-        fs::remove_file(&source).with_context(|| format!("moving {key} into the vault"))?;
-        moved.push(key);
+        // A hard link shares the bytes; the source stays in the tree (#165).
+        fs::hard_link(&source, &target).with_context(|| format!("copying {key} into the vault"))?;
+        copied.push(key);
     }
-    moved.sort();
-    Ok(if moved.is_empty() && kept_back.is_empty() {
+    copied.sort();
+    Ok(if copied.is_empty() && kept_back.is_empty() {
         json!({"status": "unchanged"})
     } else {
-        json!({"status": "rolled", "moved": moved, "kept": kept_back})
+        json!({"status": "rolled", "copied": copied, "kept": kept_back})
     })
 }
 

@@ -1564,9 +1564,10 @@ fn seven_archived_sessions(fixture: &Fixture) -> Vec<(String, String)> {
     written
 }
 
-/// KNOW-29: at done only the five most recent archived sessions stay in
-/// `.chough/sessions/archive/`, newest by their native change's finalization; older ones
-/// move byte for byte into the vault with a summary note, and nothing else changes.
+/// KNOW-29: at done the five most recent archived sessions stay in
+/// `.chough/sessions/archive/` as they are, newest by their native change's
+/// finalization; older ones are copied byte for byte into the vault with a summary
+/// note, and the archived records stay in the tree (#165: copy, never move).
 #[test]
 fn done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault() {
     let fixture = project("0");
@@ -1574,7 +1575,7 @@ fn done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vaul
     let moved = fixture.ok(&["stage", "advance"]);
     let rollup = &moved["applied"]["session_rollup"];
     assert_eq!(rollup["status"], "rolled", "{moved:#}");
-    assert_eq!(rollup["moved"], json!(["s0", "s6"]), "{rollup:#}");
+    assert_eq!(rollup["copied"], json!(["s0", "s6"]), "{rollup:#}");
     for key in ["s1", "s2", "s3", "s4", "s5"] {
         assert!(
             fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
@@ -1582,8 +1583,10 @@ fn done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vaul
         );
     }
     for (key, text) in written.iter().filter(|(key, _)| key == "s0" || key == "s6") {
-        assert!(
-            !fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
+        // The tracked record stays put; the vault holds a byte-identical copy (#165).
+        assert_eq!(
+            &fixture.read(&format!(".chough/sessions/archive/{key}.json")),
+            text,
             "{key}"
         );
         let attachment = format!("knowledge/attachments/{key}/sessions/{key}.json");
@@ -1628,7 +1631,7 @@ fn a_session_rolled_into_a_fresh_vault_links_its_archive_note_and_the_check_pass
         "{applied:#}"
     );
     assert_eq!(
-        applied["session_rollup"]["moved"],
+        applied["session_rollup"]["copied"],
         json!(["s0", "s6"]),
         "{applied:#}"
     );
@@ -2021,7 +2024,7 @@ fn the_roll_up_keeps_the_session_that_holds_the_legacy_anchor() {
     let moved = fixture.ok(&["stage", "advance"]);
     let rollup = &moved["applied"]["session_rollup"];
     assert_eq!(rollup["status"], "rolled", "{moved:#}");
-    assert_eq!(rollup["moved"], json!(["s6"]), "{rollup:#}");
+    assert_eq!(rollup["copied"], json!(["s6"]), "{rollup:#}");
     for key in ["s0", "s1", "s2", "s3", "s4", "s5"] {
         assert!(
             fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
