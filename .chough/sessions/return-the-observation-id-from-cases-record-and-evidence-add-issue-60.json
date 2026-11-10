@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-90341f9a961c8442e66835c2",
-    "head": "EVT-5a0b007892964fe2d7789617",
+    "head": "EVT-10edc4a337b9cc3120f81933",
     "legacy": null
   },
   "schema_version": 2,
@@ -49,13 +49,17 @@
     "OBS-tc-cli-manual-record-returns-observation-id-fa94fc389aac2ff426d36b44",
     "OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75",
     "OBS-tc-cli-manual-record-returns-observation-id-d15d102dd6ec256479b40abd",
-    "OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d"
+    "OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d",
+    "OBS-tc-cli-manual-record-returns-observation-id-45871c5f24362ef0ce17138b",
+    "OBS-tc-cli-evidence-add-returns-observation-id-55ed9087aa0df5d8693a5ef7"
   ],
   "bugs": [
     "BUG-cases-record-and-evidence-add-do-not-return-the-observation-id-they-rec-78216c78f69992204ef6d8da"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of return-the-observation-id-from-cases-record-and-evidence-add-issue-60"
+  ],
   "run_consents": [],
-  "next_action": "Native definition approval (blocked: this agent's permission classifier refuses approve as 0xLeif), then specsync change check, rerun both cases after materialization, commit, check --commit, review, ship, push, merge on green CI."
+  "next_action": "Review and ship return-the-observation-id-from-cases-record-and-evidence-add-issue-60 under the merge rule, push the archive, merge on green CI."
 }

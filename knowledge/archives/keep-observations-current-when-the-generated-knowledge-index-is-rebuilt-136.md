@@ -50,20 +50,25 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-7 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+11 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75 | failed (by cycle time) | local-macos-arm64 | TC-cli-evidence-add-returns-observation-id |
+| OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d | passed (by cycle time) | local-macos-arm64 | TC-cli-evidence-add-returns-observation-id |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287 | failed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
+| OBS-tc-cli-manual-record-returns-observation-id-d15d102dd6ec256479b40abd | passed (by cycle time) | local-macos-arm64 | TC-cli-manual-record-returns-observation-id |
+| OBS-tc-cli-manual-record-returns-observation-id-fa94fc389aac2ff426d36b44 | failed (by cycle time) | local-macos-arm64 | TC-cli-manual-record-returns-observation-id |
 | OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992 | failed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
 | OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774 | passed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
 | OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e | passed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
 
 ## Bugs
 
+- BUG-cases-record-and-evidence-add-do-not-return-the-observation-id-they-rec-78216c78f69992204ef6d8da verified (references OBS-tc-cli-manual-record-returns-observation-id-fa94fc389aac2ff426d36b44, OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75, OBS-tc-cli-manual-record-returns-observation-id-d15d102dd6ec256479b40abd, OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d)
 - BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef verified (references OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287, OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc)
 - BUG-session-use-new-archive-finished-sessions-that-still-hold-an-open-human-7f275557438d8b4e21bf17d5 verified (references OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992, OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e)
 
