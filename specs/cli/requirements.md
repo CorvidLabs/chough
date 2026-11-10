@@ -50,7 +50,7 @@ Acceptance Criteria
 - Observations are unauthenticated claims, including those labelled human or delivery observations.
 - A requirement of another module is refused with that module and the fix named; a typo and an unmaterialized delta ID are refused with the check-first hint.
 
-### REQ-cli-006 — Bound local input
+### REQ-cli-006
 
 The helper SHALL bound assembled context and reject unsupported records or paths
 escaping the project. Trace: LIFE-3, LIFE-4.

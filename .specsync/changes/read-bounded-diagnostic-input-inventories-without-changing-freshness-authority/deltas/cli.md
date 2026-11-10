@@ -16,11 +16,9 @@ Acceptance Criteria
 
 ### REQUIREMENT REQ-cli-006
 
-The helper SHALL bound assembled context and reject unsupported records or paths
-escaping the project. Trace: LIFE-3, LIFE-4.
+The helper SHALL bound assembled context and reject unsupported records or paths escaping the project. Trace: LIFE-3, LIFE-4.
 
-Acceptance: traversal, invalid module/record IDs and symlink escape attempts fail;
-large context is visibly bounded. Local artifacts remain reviewable plain files.
+Acceptance: traversal, invalid module/record IDs and symlink escape attempts fail; large context is visibly bounded. Local artifacts remain reviewable plain files.
 
 Acceptance Criteria
 - The reader SHALL accept optional diagnostic inventory v1 with strict inventory fields version:u32, complete:bool, entries and strict entry fields domain:u8, key, path, digest. Inventory SHALL contain at most128 entries and at most32768 compact serialized JSON bytes. v1 entries SHALL have unique safe nonempty relative normal paths, valid SHA256 digests and domain/key matching the existing canonical fingerprint_key classification. Unknown fields/types, invalid semantic entries, exceeded limits and unsupported versions SHALL refuse explicitly without mutating observations. Absent/null inventory SHALL preserve existing legacy reading behavior and existing whole-record bounds.
