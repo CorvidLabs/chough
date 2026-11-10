@@ -1,6 +1,6 @@
 ---
 id: recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 4bbd5a6373d26c0ad069878f8f543842a4564a6f
 ---

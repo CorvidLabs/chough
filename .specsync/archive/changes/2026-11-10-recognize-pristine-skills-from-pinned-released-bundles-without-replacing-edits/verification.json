@@ -1,0 +1,664 @@
+{
+  "timestamp": 1794320654,
+  "commit": "02a0a7052220c8afa21b72e0bc0c951938fd6f90",
+  "contract_digest": "c0ea4a48cdf77cf4ad45a25951968c26c1749dcf8f4de92b2d618d05341674cd",
+  "execution_digest": "2af28428c49fe799cdce027d46318e73be2b572024b66164a4df7e9a25ab7f20",
+  "workspace_digest": "64a75ab8d8b16f2189e96d167fdbb4eaa3aa7ac2ad7b3a3b9f42a22d17870ef2",
+  "acceptance_input_digest": "76ac8d113d58d576c3da56c19637d507ccacc890e530391b63d28bdf4f747da6",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".chough/cases/cli.released-skills-102.cases.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d105ecb3e6d8d2b8c1a506ee79b127ed837b3666f18ae83e1a282fbe36ef9863",
+        "entry_digest": "a550f7ec10ad31539a67e086f512200a8153f476eee841ad283d5e5affda0375",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/sessions/issue-102-released-skills.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "daf6451973b95772139e01dac6b7968f239a6306310868232f4004a4756a3669",
+        "entry_digest": "1d745f2d874a5c2ec819d9a70cf055206d4948ee6b3b9937a6ecbca59737391f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "666b42e60608bd7526cec2f059e49d7bb695eb74a91bf6b915a160ea15b7020d",
+        "entry_digest": "a9bdad574981efc351fd5e374dc27ed92680ca246e17411c3130a1259ce780ab",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "knowledge/INDEX.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "77ccf74e8f02ddd9a89383070d2684f60cb00aaca856964ab2f2145a6aef97a9",
+        "entry_digest": "57ea14e97dc517e8d1a8a87d772cacf537b9bd06b6eeee0af948591e0747cc33",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.3md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ac33048f39aa00b96308d198db0884ea16270581fe971f64b100608abe27c9eb",
+        "entry_digest": "9556e51435789e708224e10366366cbc0f04f735bb7952ff13492012bfcc77c2",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5e20fbde5fa10e61e8802fde88acdf52df618b65e29f04cab0ba9563cddd28fb",
+        "entry_digest": "d5c1502213bfddde57343fa2f0c935ff8631110588712dd594c7898d585113d1",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7599d4acba0e6c9d8ba211e7c00a2874f249b6ad809abbeead8f50ee2473c7e7",
+        "entry_digest": "7be74363877a179dc178c3f4d14b3384f8abdf4a3fa2bbee5b4afc46613f1a2b",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5c7e13fa6d285f97c21acdc3976c6eaf71161bb896eb30123435cfe1b3c715da",
+        "entry_digest": "64fbfd652aa22251b6e15427edab47c976d75857805bc3a5cbb53ff329960b4b",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3053ae3377cd49cc7594551203e889851f5bc8bacc53df64968d415794e8936c",
+        "entry_digest": "8d2838fddb9e4a7f4d122058f9ca3223a57902473fb1f9140c91f17ec16ffdb9",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/skill.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "342fc07de7f738a96a8cdef2fab699a8dcd8d724c828d9f6ceaf861846b48e06",
+        "entry_digest": "c11a650d4ab6b37504501dabacf05a3d136ef70bb4ce3f0aa598aa835c82c034",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "00b3c3f4ffaaeeaaca6d829ff0277c9eb354ce0911f66f41a55639d27fc7d35d",
+        "entry_digest": "b14df04eaf84ed5e014bc9c8be5983cb6df1d5395783766765105bcdd268d9b4",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/1022db57d0c114effc8669ede9ebb453f932109f608f883712725e57ba53551d.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1022db57d0c114effc8669ede9ebb453f932109f608f883712725e57ba53551d",
+        "entry_digest": "bfcae9ebc729e326a3178f543bc6114158a4df5a311b1b0bbc2f4e3abcabc805",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069",
+        "entry_digest": "db91b4de095baa932c83f8eb60dbdefcf87041cd393f1bc690c4fdd5c64a813c",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf",
+        "entry_digest": "d8a1cd9a874bf9af6dc9d9deb74e1e6d0eaf4c08dfd25f5a5aeadbf31d28498e",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/18299d9d1adb30fb87a167a1a59ecd8595d1f53ec73522ccee257ea817641701.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "18299d9d1adb30fb87a167a1a59ecd8595d1f53ec73522ccee257ea817641701",
+        "entry_digest": "0a9da57aca347c1e31de0b1be43bc7f5603f25f9ac29c3354b96ba66c4da2026",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/187a887f2999e2d54350a56059a739f8379a7d77305ab53652da3b3eed8caa8d.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "187a887f2999e2d54350a56059a739f8379a7d77305ab53652da3b3eed8caa8d",
+        "entry_digest": "b1678c68e2dddfaa08b24f8576cd35782a12a40de10452c1544323b0c95dd551",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/1a0a324a83658a1466ee6fe295ccfe9e980275f7abca809ef2927e71fb912663.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1a0a324a83658a1466ee6fe295ccfe9e980275f7abca809ef2927e71fb912663",
+        "entry_digest": "e582123f165957ba4ad60cab53ed538e3a2cfd10c7408296149b3587786edc52",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/1c9ef93185390ee98aa4b4f2f9fbf2c442a003ad22097d0e74e4676b42404909.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1c9ef93185390ee98aa4b4f2f9fbf2c442a003ad22097d0e74e4676b42404909",
+        "entry_digest": "132562f1e4e583bf3e34000e00c4ab40ab7640020ac83567793ad2bdcf6c7b22",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/23dcd8140f0d5bbbf77ea9a20ce37c43fde91345bf1cddf40b9336797a920a57.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "23dcd8140f0d5bbbf77ea9a20ce37c43fde91345bf1cddf40b9336797a920a57",
+        "entry_digest": "0bc3673d5f7bce19484ef49a4a03ab6be5a547497d7912c7cb6c09a7f4e5024b",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "28eccd903a89ff815e71e0cc3f81250e6c63bb986d93b0ee76b323180c4d92bf",
+        "entry_digest": "305853c3d9b72853d95477948b58e43937bc03645d407e88266086e9e89d4934",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a",
+        "entry_digest": "3e1a753505f3f230a1453cfec77c5b908fa11623c54c3c34598eb284919ec4ec",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/2e26c47b349c4138d50eb78aa557822909c586802a9dbb12a46a466438d89b3b.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2e26c47b349c4138d50eb78aa557822909c586802a9dbb12a46a466438d89b3b",
+        "entry_digest": "f555f020f815ec319db4a9362667a14e931211e99ecaa3753782ea0dfc2e52ce",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3",
+        "entry_digest": "8a6a1cfc580afe63da2d887be6db7d1af7ab961aa1bf9295a29acde75d699d68",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/367a9873293e79ca40c9634e2b2a12c3223074aaec161c7444690c2d02e12199.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "367a9873293e79ca40c9634e2b2a12c3223074aaec161c7444690c2d02e12199",
+        "entry_digest": "44c141a87bdfff5dc77eb13db89a27beaf06615fdc9beee44da17be7ec533146",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/370386488c8e5ff6c974ae9d3bd51998de31183868dfe48af44c0935a3019170.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "370386488c8e5ff6c974ae9d3bd51998de31183868dfe48af44c0935a3019170",
+        "entry_digest": "d0ba6fc4f2eda4efaf4bab54817bfc52ff51064212d29eaecb515902c4bc8e38",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/3da19999ee4830a1fe1e0af63b13efc934f90d05678bbf70c3d79f39103c1150.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3da19999ee4830a1fe1e0af63b13efc934f90d05678bbf70c3d79f39103c1150",
+        "entry_digest": "29856b82f4922149d149a045d7b977eb8e1fe33a35a8d53755b6867f8e9788e6",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5",
+        "entry_digest": "156422b698b2b087e29b87e1a6e5850ae8839e5b41d3c70e028a16e51beb16a1",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/472396403a4f716f0183ec2c3495ac0ecf0dc412c1b61bb850cee767765e1f6a.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "472396403a4f716f0183ec2c3495ac0ecf0dc412c1b61bb850cee767765e1f6a",
+        "entry_digest": "20c4a7a879d2b50f7d4c62f57e5c3b1c660d2455abfb9c938353b88d33e3fd9c",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d",
+        "entry_digest": "3bc00c94958c64211fd451058cd7259343df625adaa6e1698991a0026cc64549",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/4d0bf24ddd5e55493658339c76750a639a15997c4290a492cacda3550874f035.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4d0bf24ddd5e55493658339c76750a639a15997c4290a492cacda3550874f035",
+        "entry_digest": "e1d6b4c9f94a4592cb4e3adc7cd6e8f9262ca671b2f03cd9169f899d8d8c1824",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/4e085b88eaa66a59fd6c8ce7d3acb1201b46292603a2cf13ab5333fc5ea85d86.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4e085b88eaa66a59fd6c8ce7d3acb1201b46292603a2cf13ab5333fc5ea85d86",
+        "entry_digest": "32c4b181815eb8b7f6257894df2f37a9b47fa10695d5ddff0b8c84a1264966c5",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/51281ff6c9af4b939105cdf6ecf80d9dd11080dc8d682ecbba9d5b5c17d75c42.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "51281ff6c9af4b939105cdf6ecf80d9dd11080dc8d682ecbba9d5b5c17d75c42",
+        "entry_digest": "9090b07440406ba262f4a1c324c06a408f00e032595ac27204763fe83b3589a7",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/5d7f85aa72b3bba8e5d83b593556bcdee244939b31038ed3e6000783aac5c4ea.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5d7f85aa72b3bba8e5d83b593556bcdee244939b31038ed3e6000783aac5c4ea",
+        "entry_digest": "7ff9f8bf83c6d5b7b73eb2bf5a5e07cfdfe97bbca99383fd9b3b227b7e89b2e6",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/5f839a81742b9dc3df3b1278e340061a08e95e2a00e203f0f2554eab3aa3fed9.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5f839a81742b9dc3df3b1278e340061a08e95e2a00e203f0f2554eab3aa3fed9",
+        "entry_digest": "123aeb6c77f0e2115ccf6f6203de6e5e20fd16d4128648bdf259b8f45c45f493",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "658ce798826c4d685753af0735e5fc6a53685f1205b9b9902d625c63c71d277f",
+        "entry_digest": "2b2c0888da786586566a4bfe5b678899e4ad77b5e482f36d6165ea7bb716b1a4",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/733346e29c7a57461926a6c7d297face74fc291a2e5c7f17d4d57dcf3945ec99.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "733346e29c7a57461926a6c7d297face74fc291a2e5c7f17d4d57dcf3945ec99",
+        "entry_digest": "ccccefa0b84f6e5e0946d528fc4a5fa76f042f7ec908031917edc3640c30592a",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/772b6900528a84ad0c76638ad91536865ab7d62883d05eb49a8f7841896c2740.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "772b6900528a84ad0c76638ad91536865ab7d62883d05eb49a8f7841896c2740",
+        "entry_digest": "586a2d840380a6825150adeab165828a9026d0a3c364e3553cac6488788baca3",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/816e40ecd47f39ac62e8f0f5e84a9e6277e3470221df1d9c80fff9d6bccb378e.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "816e40ecd47f39ac62e8f0f5e84a9e6277e3470221df1d9c80fff9d6bccb378e",
+        "entry_digest": "7be1715a5bf65ce8d69b49033f161accf635b3753bb05c6b32d0d28675e0f1bf",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102",
+        "entry_digest": "e36ed110a0bf0c92263498b78ad2da96f1d474bc891f7ce3fbffefdf67fc1819",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4",
+        "entry_digest": "bda9cc6a3909bf543726cb49a251a637ffa535ae36ae75c3d17cc40e7e33adf7",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421",
+        "entry_digest": "467f00857a7764e4b5ff41185ea3c3785e02fd268edc74aa54ee07304a09dd86",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/8ca2b70f36ee162638cafd63bcc97e8c9ed688b59c2b67b98d61ba3be1d28f37.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8ca2b70f36ee162638cafd63bcc97e8c9ed688b59c2b67b98d61ba3be1d28f37",
+        "entry_digest": "44a07f9020e988b74d7946d537032ce8e68fefdc76329ddec2a4c2aaa7aeb9a5",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/92a9e61abe6011473f526868e731dc003b81835db720f6f4d61d704d92c22d73.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "92a9e61abe6011473f526868e731dc003b81835db720f6f4d61d704d92c22d73",
+        "entry_digest": "14310b2376059a2fa12052ac8844d65989b63838f8ed6b9c67455c6fa4a97d94",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/970d5a96be20ac737f8e1c9650bc327355792b3ee4b2e525acbbd7dc14c7ad30.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "970d5a96be20ac737f8e1c9650bc327355792b3ee4b2e525acbbd7dc14c7ad30",
+        "entry_digest": "c1a206863d63fcd51ddea590b6c8553f8f748b08c181815df984c150dcea3eb0",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f",
+        "entry_digest": "f39ccea443f378b169cd885d4017261553c6781ca563a3a560172824aade8460",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83",
+        "entry_digest": "7c5587fe452b08c3a780bbd62c429cce168589f16119a28bf17949d7bcc57427",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/ac787118e30b11a8b5eb1429108bf1ac42911767b1ff33c56d68e925c84f11a3.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ac787118e30b11a8b5eb1429108bf1ac42911767b1ff33c56d68e925c84f11a3",
+        "entry_digest": "2f20d14743672c13d70b4bdc3c54291a54c64140d622cca924114fa0e1365d4e",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed",
+        "entry_digest": "46d5c5fed352a03a01d719eca4415c0f46326ceab2bcd6539fc9b5a98eb2824c",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/b7371621899a8926447873b1f80db3f64cc51361544251099793a1e1f79760e3.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b7371621899a8926447873b1f80db3f64cc51361544251099793a1e1f79760e3",
+        "entry_digest": "034fd41a4a70c675810f5b0c9fa75cdbde9da6346a9ba8ff32a2a438d69c263c",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/ba9e89ee55dd51f7ac477a52c27ce1d641272a1fabc9be3fce150fa6321f47b8.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ba9e89ee55dd51f7ac477a52c27ce1d641272a1fabc9be3fce150fa6321f47b8",
+        "entry_digest": "860a3c9ed74a372205c433d6a76ccf4069338cfa7e2edd58d8591d0046f891a3",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908",
+        "entry_digest": "d57a1d9239fc2c6375edbcf3c84bc325ddb35e466fc66295a2e72990dab42e0f",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "be351d5c3a8c65bd46f4784875b0118f82e5ba4a5b97a7d364d9856636d3b711",
+        "entry_digest": "338e8b876e5a36f815472f7ae52cccdb4b8a1680348968df7da90860acee9f6c",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239",
+        "entry_digest": "87e0d7c5a5b84b03660d72bd7b0b8dcf4f9ef4af9d284ca956401300190d8974",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c",
+        "entry_digest": "e825fe2ea9dd588c16989a18871911b740d4bf6b58e9d004ee6b6b146bfd9e8e",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "df33dfa9aa3db1355b47ef47a653e75ff4ae42a8c1de096bcd1718f6a4287c17",
+        "entry_digest": "b90cf0336ba5f2a4b468399dc498484a053d00627120555172f678af222a1bd9",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/df42d472ae25b0ed07ad3beb1257ce77c3fe4e159feefe8e70e7c18ec03a6945.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "df42d472ae25b0ed07ad3beb1257ce77c3fe4e159feefe8e70e7c18ec03a6945",
+        "entry_digest": "2a712f495497b16c2e23e40ff279d135db381768011f9175490c82c06da80bf6",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235",
+        "entry_digest": "b5639c4fcf5de27e656584496dd95737d0fc849fe8dfe64124b7ac1cf2fbff89",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0",
+        "entry_digest": "6001364e8bb20008a8741212e58587bda24f043156f0d3a081cbde267290c0b7",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a",
+        "entry_digest": "bb48a53fbbedd77886f42ce7f0dd7969357fd27008b7d455f66c406db4983646",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4",
+        "entry_digest": "9f2e3b5d2b7b6e8867369ba1789fdf0e3cce9acf28484d2c51594ea93b2c129c",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/blobs/fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8.txt",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8",
+        "entry_digest": "c8b0054fe238bc4e2d82ae7ee328a320a84e89c98e225418de2786ab3f34c332",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/manifest.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ab83698381cfd7b42d82e281bd57a9d0f1a61ef00b3e97ff73753e5a56987db8",
+        "entry_digest": "915065487c90d502a038bfbd8686c22448237f22cc1c1934832838fcf240e245",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/skill_releases.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "98613ab6501bba9e03096d1b63f10a004edc8379a0cb3ae90a5b849d87c78ea6",
+        "entry_digest": "46c500a13f5736558743dc7e82fa6281f9a29d44386cc7202722236d77cd827c",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-016"
+  ]
+}
