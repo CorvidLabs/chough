@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- record-the-acting-agent-model-and-hc-terminal-on-each-transition-evidence-entry-and-bug-201 (active; `specsync change status record-the-acting-agent-model-and-hc-terminal-on-each-transition-evidence-entry-and-bug-201`)
 
 Archived changes (newest first; the newest 3 are hot):
 
