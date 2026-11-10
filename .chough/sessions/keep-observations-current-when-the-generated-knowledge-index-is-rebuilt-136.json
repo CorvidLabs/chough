@@ -1,0 +1,42 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-d5d17fdf121feedf83242044",
+    "head": null,
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Keep observations current across knowledge index rebuilds (#136)",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136",
+  "references": {
+    "criteria": [
+      "LIFE-7"
+    ],
+    "requirements": [
+      "REQ-cli-004"
+    ],
+    "cases": [
+      "TC-cli-knowledge-rebuild-keeps-observation-current"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [
+    "BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef"
+  ],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+}
