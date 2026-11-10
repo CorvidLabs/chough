@@ -349,15 +349,7 @@ fn sigterm_to_change_check_stops_specsync() {
         std::thread::sleep(Duration::from_millis(20));
     }
     let pid = fixture.read(".stub-pid").trim().to_string();
-    let alive = |pid: &str| {
-        Command::new("kill")
-            .args(["-0", pid])
-            .stderr(Stdio::null())
-            .status()
-            .unwrap()
-            .success()
-    };
-    assert!(alive(&pid));
+    assert!(common::alive(&pid));
     let sent = Command::new("kill")
         .args(["-s", "TERM", &child.id().to_string()])
         .status()
@@ -366,7 +358,7 @@ fn sigterm_to_change_check_stops_specsync() {
     let status = child.wait().unwrap();
     assert!(!status.success(), "chough ended normally after SIGTERM");
     let started = Instant::now();
-    while alive(&pid) {
+    while common::alive(&pid) {
         if started.elapsed() > Duration::from_secs(10) {
             let _ = Command::new("kill").args(["-9", &pid]).status();
             panic!("specsync {pid} kept running after chough was stopped");

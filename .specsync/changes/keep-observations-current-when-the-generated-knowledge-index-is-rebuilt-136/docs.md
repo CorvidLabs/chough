@@ -5,4 +5,4 @@ artifact: docs
 
 # Docs
 
-No user-facing doc change beyond the REQ-cli-004 wording: `chough library index` already documents that it rebuilds knowledge/; the freshness rule now names the exclusion.
+The freshness exclusion list now names the generated knowledge directory wherever it is described: docs/cli.md, docs/architecture.md, docs/FRD.md, the cli companion spec and the workflow skill's lifecycle reference (bundle and installed copy, with the current-bundle digest pinned by tests/skill_releases.rs and its manifest updated to match). One Unreleased CHANGELOG bullet.

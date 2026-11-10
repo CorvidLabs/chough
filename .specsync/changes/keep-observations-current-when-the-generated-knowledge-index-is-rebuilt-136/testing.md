@@ -7,6 +7,6 @@ artifact: testing
 
 | Requirement | Coverage |
 |---|---|
-| REQ-cli-004 | New regression in tests/evidence.rs: record passed case observation, confirm current, rebuild knowledge/INDEX.md listing it, confirm still current; existing freshness and retention suites unchanged |
+| REQ-cli-004 | `TC-cli-knowledge-rebuild-keeps-observation-current` binds the regression `rebuilding_the_knowledge_index_keeps_the_observation_current` in tests/evidence.rs: record a passed case observation, confirm it reads current, rebuild knowledge/INDEX.md listing it, confirm it still reads current |
 
-RED observed with the src fix stashed: the observation reads non-current after the index rebuild. GREEN with the fix.
+Failing-first: the regression is committed before the fix and run there through the case (failed observation linked to the #136 bug); the same case passes after the fix. The full `fledge run test` suite and the existing freshness and retention suites run unchanged.

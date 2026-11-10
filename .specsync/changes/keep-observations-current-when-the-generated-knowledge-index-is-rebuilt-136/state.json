@@ -10,13 +10,24 @@
   "state": "draft",
   "base_commit": "996dadc2d26b200a7f745215ef9c151304107e05",
   "created_at": 1794327470,
-  "updated_at": 1794327532,
+  "updated_at": 1794345424,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
     "src/evidence.rs",
-    "tests/evidence.rs"
+    "tests/evidence.rs",
+    ".chough/cases/cli.knowledge-rebuild-136.cases.toml",
+    "docs/cli.md",
+    "docs/architecture.md",
+    "docs/FRD.md",
+    "specs/cli/cli.spec.md",
+    "skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/skill_releases.rs",
+    "CHANGELOG.md",
+    "knowledge/"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence",
+  "implementation_commit": "aac844ae4e40780dcb93973a4077acaaed6cda07",
+  "implementation_tree": "26784be59866440a5024f77c67442e0faa96c09d",
+  "contract_digest": "c5647f0bbe410b5784a50cf5110c75706ba139055508bdd8699e8771034b544a",
+  "workspace_digest": "c9d241cc04dc78e7d0059d732cad396c5bf375a4b7efbe47501eebb605204001",
+  "closing_digest": "9f673ed31b9f1db8b6349c45d29d5f6081730e4f7f687cd3d84ffe2bf729bea0",
+  "review_digest": "d9db71120b37c5722613f3002940ef1389cefc11321e8e246b0517c682730f88",
+  "finalization_digest": "b3074bcfa4bde4551d9cea6f046d7ca973a2d6dd4b2f3bcde0ba51b5c33eb457",
+  "timestamp": 1794323860
+}

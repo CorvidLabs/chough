@@ -1,0 +1,56 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-missing-adopted-log-refuses"
+title = "A new session refuses a missing adopted log with open archived shelved or vaulted holder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-7"]
+requirements = ["REQ-history-002", "REQ-history-006"]
+paths = ["src/history.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["all four holder arrangements refuse with an anchor reason before any captured session history or active-pointer bytes change; holder stays exact and deleted log is not recreated"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_new_session_refuses_a_missing_adopted_legacy_log_without_mutation"
+
+[[case]]
+id = "TC-history-never-adopted-log-remains-writable"
+title = "A session in a project that never adopted a legacy log still writes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-7"]
+requirements = ["REQ-history-002", "REQ-history-006"]
+paths = ["src/history.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the new session successfully publishes one event, keeps legacy:null and creates no legacy log"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_new_session_that_never_had_a_legacy_log_still_writes"
+
+[[case]]
+id = "TC-history-earlier-null-anchor-does-not-hide-adopter"
+title = "An earlier independent null-anchor session cannot hide a later adopter"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "LIFE-7"]
+requirements = ["REQ-history-002", "REQ-history-006"]
+paths = ["src/history.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["a real aaa-no-anchor session is skipped and the later valid adopter still makes the missing-log append refuse without captured mutation"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_missing_adopted_log_is_not_hidden_by_an_earlier_session_without_an_anchor"

@@ -14,21 +14,35 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": null,
+  "native_change": "keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136",
   "references": {
-    "criteria": [],
-    "requirements": [],
-    "cases": [],
+    "criteria": [
+      "LIFE-7"
+    ],
+    "requirements": [
+      "REQ-cli-004"
+    ],
+    "cases": [
+      "TC-cli-knowledge-rebuild-keeps-observation-current"
+    ],
     "design": [],
     "files": []
   },
   "decisions": [],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
-  "bugs": [],
+  "completed": [
+    "Failing tests: e659153c"
+  ],
+  "observations": [
+    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287",
+    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc",
+    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f"
+  ],
+  "bugs": [
+    "BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef"
+  ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+  "next_action": "Native definition approval (blocked: this agent's permission classifier refuses approve as 0xLeif), then specsync change check, rerun TC-cli-knowledge-rebuild-keeps-observation-current after materialization, commit, check --commit, review, ship, push, merge on green CI."
 }
