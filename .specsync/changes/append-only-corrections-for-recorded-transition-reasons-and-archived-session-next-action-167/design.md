@@ -5,4 +5,4 @@ artifact: design
 
 # Design
 
-<!-- TODO: complete this artifact or remove it from selected_artifacts before approval. -->
+No visual or interaction surface changes: one new command and a corrections listing in next/status text and JSON. No prototype.

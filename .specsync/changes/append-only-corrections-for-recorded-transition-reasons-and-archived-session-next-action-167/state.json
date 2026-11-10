@@ -8,20 +8,26 @@
   "description": "Append-only corrections for recorded transition reasons and archived session next_action (#167)",
   "kind": "feature",
   "state": "draft",
-  "base_commit": "4e7bd5cbba1175f17e69752f317def5a49ac001f",
-  "created_at": 1794328367,
-  "updated_at": 1794328432,
+  "base_commit": "2d69a5397014204af4c933f5d639b87ce800a800",
+  "created_at": 1794331830,
+  "updated_at": 1794331869,
   "affected_specs": [
     "history"
   ],
   "affected_paths": [
+    "src/main.rs",
+    "src/stage.rs",
     "src/history.rs",
-    "src/sessions.rs"
+    "src/checkpoint.rs",
+    "src/timing.rs",
+    "tests/history.rs",
+    "docs/cli.md",
+    "README.md"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
   "acceptance_criteria": [
-    "An agent can append a correction that names a recorded history event or an archived session's next_action, carrying who recorded it, why, and the corrected statement, without rewriting the original event; history show, next, status and the archived session's readers surface the correction beside what it corrects; the original bytes and event digests are unchanged."
+    "chough correct <event> --reason appends a correction event naming its EVT- target with the corrected statement in the active session's current cycle; the target's bytes are unchanged; unknown ids, blank or oversized statements and correcting a correction are refused with nothing written; next and status show the correction with its target."
   ],
   "selected_artifacts": [
     "context",
@@ -30,12 +36,11 @@
     "tasks",
     "testing",
     "docs",
-    "research",
     "design"
   ],
   "dependencies": [],
   "answers": {
-    "architecture_risk": "yes",
+    "architecture_risk": "no",
     "constraints": "none",
     "public_contract": "yes"
   }
