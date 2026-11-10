@@ -14,21 +14,32 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": null,
+  "native_change": "append-only-event-corrections-with-chough-correct-never-rewriting-history-167",
   "references": {
     "criteria": [],
-    "requirements": [],
-    "cases": [],
+    "requirements": [
+      "REQ-history-015",
+      "REQ-cli-021"
+    ],
+    "cases": [
+      "TC-history-correction-appends-without-rewriting",
+      "TC-cli-next-corrections-list-is-bounded"
+    ],
     "design": [],
     "files": []
   },
   "decisions": [],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
+  "completed": [
+    "Addressed corvid-agent review of #210: cargo fmt, CHANGELOG names 0.6.0 as the oldest reader of correction events, corrections bounded as {total, items} in next (10, statements cut, in LISTS) and status, tests for the bound, the oversized-statement refusal and timing's skip of the correction kind; main merged"
+  ],
+  "observations": [
+    "OBS-tc-history-correction-appends-without-rewriting-0e50bd47aff0d50f990ea05a",
+    "OBS-tc-cli-next-corrections-list-is-bounded-04768f2641f038c45fe059c8"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+  "next_action": "Leif: scope approval of #210 (approved affected_paths omit CHANGELOG.md, tests/timing coverage is in tests/history.rs), then implementation acceptance; then review, ship, push the archive and merge."
 }

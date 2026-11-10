@@ -1739,7 +1739,10 @@ pub(super) fn adopt(root: &Path, apply: bool) -> Result<Value> {
 /// session's current cycle and names its target; readers show it beside what it
 /// corrects.
 pub(super) fn correct(root: &Path, target: &str, statement: &str) -> Result<Value> {
-    ensure!(is_event_id(target), "no event {target}: corrections name an EVT- id");
+    ensure!(
+        is_event_id(target),
+        "no event {target}: corrections name an EVT- id"
+    );
     ensure!(
         !statement.trim().is_empty(),
         "a correction statement must not be blank"
@@ -1791,15 +1794,15 @@ pub(super) fn correct(root: &Path, target: &str, statement: &str) -> Result<Valu
     }))
 }
 
-/// The corrections recorded in `cycle`, oldest first, as
+/// The corrections recorded in `cycle`, newest first, as
 /// `{event, target, statement}` entries for `next` and `status` (#167).
 pub(super) fn corrections_in_cycle(root: &Path, cycle: &str) -> Vec<Value> {
     let mut corrections = vec![];
     let Ok(directory) = local_path(root, &format!("{ROOT}/cycles/{cycle}")) else {
-        return corrections;
+        return vec![];
     };
     let Ok(entries) = fs::read_dir(directory) else {
-        return corrections;
+        return vec![];
     };
     for entry in entries.flatten() {
         let Ok(name) = entry.file_name().into_string() else {
@@ -1817,15 +1820,21 @@ pub(super) fn corrections_in_cycle(root: &Path, cycle: &str) -> Vec<Value> {
         if event.transition.kind == stage::CORRECTION
             && let Some(correction) = event.transition.correction
         {
-            corrections.push(json!({
-                "event": event.id,
-                "target": correction.target,
-                "statement": correction.statement,
-            }));
+            corrections.push((
+                event.transition.at_unix_seconds,
+                event.id.clone(),
+                json!({
+                    "event": event.id,
+                    "target": correction.target,
+                    "statement": correction.statement,
+                }),
+            ));
         }
     }
-    corrections.sort_by_key(|correction| correction["event"].as_str().unwrap_or_default().to_string());
-    corrections
+    // Newest first by recorded time, then by the later event ID: recorded fields
+    // only, never file times (REQ-cli-021).
+    corrections.sort_by(|left, right| (right.0, &right.1).cmp(&(left.0, &left.1)));
+    corrections.into_iter().map(|(_, _, value)| value).collect()
 }
 
 pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {

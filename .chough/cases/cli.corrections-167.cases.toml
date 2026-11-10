@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-next-corrections-list-is-bounded"
+title = "Many long corrections keep next within its bounds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2"]
+requirements = ["REQ-cli-021"]
+paths = ["src/history.rs", "src/main.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["with 12 corrections of about 4 KiB each, next lists at most 10 with total 12, each statement cut to 512 bytes, both forms stay within 16384 bytes and status lists all 12"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "many_long_corrections_keep_next_within_its_bounds"

@@ -1331,8 +1331,14 @@ fn a_correction_appends_and_is_shown_without_rewriting_history() {
     init(&f);
     f.ok(&["stage", "pause", "--reason", "advance refuses build->next"]);
     let session = f.session();
-    let cycle = session["history_cursor"]["cycle"].as_str().unwrap().to_string();
-    let head = session["history_cursor"]["head"].as_str().unwrap().to_string();
+    let cycle = session["history_cursor"]["cycle"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let head = session["history_cursor"]["head"]
+        .as_str()
+        .unwrap()
+        .to_string();
     let event_path = format!(".chough/history/cycles/{cycle}/{head}.json");
     let original = f.read(&event_path);
 
@@ -1347,9 +1353,9 @@ fn a_correction_appends_and_is_shown_without_rewriting_history() {
     assert_ne!(correction_id, head);
     // The original event keeps its bytes.
     assert_eq!(f.read(&event_path), original);
-    let correction: Value = serde_json::from_str(
-        &f.read(&format!(".chough/history/cycles/{cycle}/{correction_id}.json")),
-    )
+    let correction: Value = serde_json::from_str(&f.read(&format!(
+        ".chough/history/cycles/{cycle}/{correction_id}.json"
+    )))
     .unwrap();
     assert_eq!(correction["transition"]["kind"], "correction");
     assert_eq!(correction["transition"]["correction"]["target"], head);
@@ -1367,14 +1373,22 @@ fn a_correction_appends_and_is_shown_without_rewriting_history() {
     let next_json = f.ok(&["next", "--json"]);
     assert_eq!(
         next_json["corrections"],
-        serde_json::json!([{"event": correction_id, "target": head, "statement": "the advance had passed; the pause was for CI"}]),
+        serde_json::json!({"total": 1, "items": [{"event": correction_id, "target": head, "statement": "the advance had passed; the pause was for CI"}]}),
         "{next_json:#}"
     );
     let status = f.ok(&["status"]);
     assert_eq!(
-        status["checkpoint"]["corrections"][0]["target"],
+        status["checkpoint"]["corrections"]["items"][0]["target"],
         serde_json::json!(head),
         "{status:#}"
+    );
+    // Timing skips the correction: it starts or ends no segment and is not counted as
+    // an unrecognised kind (REQ-reporting-001).
+    let timing = f.ok(&["timing", "--json"]);
+    assert_eq!(timing["transitions"]["unrecognised_kinds"], 0, "{timing:#}");
+    assert!(
+        !timing["partial"].to_string().contains("unrecognised kinds"),
+        "{timing:#}"
     );
 
     // Unknown events, blank statements and correcting a correction are refused.
@@ -1382,6 +1396,56 @@ fn a_correction_appends_and_is_shown_without_rewriting_history() {
     assert!(refused.contains("no recorded event"), "{refused}");
     let refused = f.fails(&["correct", &head, "--reason", "  "]);
     assert!(refused.contains("blank"), "{refused}");
+    let refused = f.fails(&["correct", &head, "--reason", &"x".repeat(4097)]);
+    assert!(refused.contains("exceeds 4096 bytes"), "{refused}");
     let refused = f.fails(&["correct", &correction_id, "--reason", "meta"]);
     assert!(refused.contains("not the correction"), "{refused}");
+    // Every refusal wrote nothing: still exactly one correction.
+    assert_eq!(f.ok(&["next", "--json"])["corrections"]["total"], 1);
+}
+
+/// #167, REQ-cli-021: corrections in `next` are a bounded list, at most 10 newest first
+/// with their total, each statement cut, and both forms stay within 16384 bytes;
+/// `status` states the same total and lists every correction.
+#[test]
+fn many_long_corrections_keep_next_within_its_bounds() {
+    let f = Fixture::new();
+    init(&f);
+    f.ok(&["stage", "pause", "--reason", "corrections target this"]);
+    let head = f.session()["history_cursor"]["head"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    for index in 0..12 {
+        let statement = format!("{index:02} {}", "y".repeat(4090));
+        f.ok(&["correct", &head, "--reason", &statement]);
+    }
+    let next = f.ok(&["next", "--json"]);
+    let corrections = &next["corrections"];
+    assert_eq!(corrections["total"], 12, "{corrections:#}");
+    let items = corrections["items"].as_array().unwrap();
+    assert!(!items.is_empty() && items.len() <= 10, "{corrections:#}");
+    for item in items {
+        let statement = item["statement"].as_str().unwrap();
+        assert!(statement.len() <= 512, "{}", statement.len());
+        assert!(statement.ends_with(" [cut]"), "{statement}");
+        assert_eq!(item["target"], serde_json::json!(head));
+    }
+    let next_json = String::from_utf8(f.run(&["next", "--json"]).stdout).unwrap();
+    assert!(next_json.len() <= 16_384, "{}", next_json.len());
+    let next_text = String::from_utf8(f.run(&["next"]).stdout).unwrap();
+    assert!(next_text.len() <= 16_384, "{}", next_text.len());
+    assert!(
+        next_text.contains("more corrections; chough status"),
+        "{next_text}"
+    );
+    let status = f.ok(&["status"]);
+    assert_eq!(status["checkpoint"]["corrections"]["total"], 12);
+    assert_eq!(
+        status["checkpoint"]["corrections"]["items"]
+            .as_array()
+            .unwrap()
+            .len(),
+        12
+    );
 }

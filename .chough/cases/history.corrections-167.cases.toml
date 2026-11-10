@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-correction-appends-without-rewriting"
+title = "chough correct appends a correction and next, status and timing handle it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "FLOW-13"]
+requirements = ["REQ-history-015"]
+paths = ["src/history.rs", "src/stage.rs", "src/main.rs", "src/timing.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the correction event names its target and statement, the target keeps its bytes, next and status show it, timing counts no unrecognised kind, and an unknown event, a blank or oversized statement and a correction of a correction are refused with nothing written"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "a_correction_appends_and_is_shown_without_rewriting_history"
+

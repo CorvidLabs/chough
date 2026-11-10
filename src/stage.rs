@@ -271,7 +271,10 @@ pub(super) fn validate_records(transition: &Transition) -> Result<()> {
 }
 
 fn validate_correction(transition: &Transition) -> Result<()> {
-    match (transition.kind.as_str() == CORRECTION, &transition.correction) {
+    match (
+        transition.kind.as_str() == CORRECTION,
+        &transition.correction,
+    ) {
         (true, Some(correction)) => {
             ensure!(
                 crate::history::is_event_id(&correction.target),
@@ -1520,7 +1523,7 @@ fn log_transition_at(
         backfill,
         relayed_by,
         direct_write: None,
-            correction: None,
+        correction: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes

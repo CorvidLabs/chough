@@ -470,11 +470,14 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         Session::V2(checkpoint) => json!({
             "schema": 2,
             "stage": checkpoint.stage,
-            "corrections": checkpoint
-                .history_cursor
-                .as_ref()
-                .map(|cursor| history::corrections_in_cycle(root, &cursor.cycle))
-                .unwrap_or_default(),
+            "corrections": corrections_listed(
+                checkpoint
+                    .history_cursor
+                    .as_ref()
+                    .map(|cursor| history::corrections_in_cycle(root, &cursor.cycle))
+                    .unwrap_or_default(),
+                usize::MAX,
+            ),
             "native_change": checkpoint.native_change,
             "gate": assessment.gate.as_ref().map(|(target, gate)| json!({"to": target, "allowed": gate.allowed, "label": gate.label, "detail": gate.detail})),
             "valid_transitions": stage::valid_transitions(checkpoint),
@@ -549,8 +552,9 @@ const BUNDLE_LIMIT: usize = library::HOT_ARCHIVES;
 const DECISION_KINDS: [&str; 3] = ["decided", "rejected", "failed"];
 const ARCHIVED_CHANGES: &str = ".specsync/archive/changes";
 /// The lists the next view may shorten, each with its total kept, as JSON pointers.
-const LISTS: [&str; 9] = [
+const LISTS: [&str; 10] = [
     "/awaiting_human/items",
+    "/corrections/items",
     "/blockers/items",
     "/open_questions/items",
     "/blocking_bugs/items",
@@ -592,6 +596,23 @@ fn cut(text: &str) -> String {
 fn listed<'a>(items: impl ExactSizeIterator<Item = &'a String>) -> Value {
     let total = items.len();
     json!({"total": total, "items": items.take(LIST_LIMIT).map(|item| cut(item)).collect::<Vec<_>>()})
+}
+
+/// Corrections as a bounded list (REQ-cli-021, REQ-history-015): their total and at
+/// most `limit` entries, newest first, each statement cut like any recorded string.
+fn corrections_listed(corrections: Vec<Value>, limit: usize) -> Value {
+    let total = corrections.len();
+    let items: Vec<Value> = corrections
+        .into_iter()
+        .take(limit)
+        .map(|mut correction| {
+            if let Some(statement) = correction["statement"].as_str() {
+                correction["statement"] = Value::String(cut(statement));
+            }
+            correction
+        })
+        .collect();
+    json!({"total": total, "items": items})
 }
 
 /// One checkpoint decision split by the `decided:`, `rejected:` or `failed:` convention:
@@ -828,7 +849,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     let view = json!({
         "schema_version": 1,
         "view": "next",
-        "corrections": corrections,
+        "corrections": corrections_listed(corrections, LIST_LIMIT),
         "objective": cut(session.objective()),
         "stage": checkpoint.map(|checkpoint| json!({
             "current": checkpoint.stage.current,
@@ -964,11 +985,22 @@ fn next_text(view: &Value) -> String {
     }
     lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
-    for correction in view["corrections"].as_array().into_iter().flatten() {
+    let corrections = view["corrections"]["items"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    for correction in &corrections {
         lines.push(format!(
             "Correction: {} (corrects {})",
             text(&correction["statement"]),
             text(&correction["target"])
+        ));
+    }
+    let total = view["corrections"]["total"].as_u64().unwrap_or(0);
+    if total > corrections.len() as u64 {
+        lines.push(format!(
+            "  {} more corrections; chough status",
+            total - corrections.len() as u64
         ));
     }
     lines.push(format!("Next: {}", text(&action["action"])));

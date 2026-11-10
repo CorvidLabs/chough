@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough correct <EVT-...> --reason "<text>"` appends a `correction` event naming the
+  transition event it corrects; history is never rewritten (#167, REQ-history-015).
+  `next` and `status` show the current cycle's corrections as a bounded
+  `{total, items}` list, newest first. Older builds refuse a history holding a
+  `correction` event ("unknown transition kind"), so the oldest Chough that reads
+  such a history is 0.6.0, the first release with this change. 0.5.0 does not read it.
+
 - Read strict bounded optional v1 diagnostic input inventories while preserving
   aggregate freshness and original observations; reject noncanonical inventory paths.
 
