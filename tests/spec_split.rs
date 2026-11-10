@@ -41,7 +41,11 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         // Modified by native change chough-timing-skips-direct-native-write-events-without-
         // marking-its-report-partial-189-drive-21 (#189): direct-native-write events
         // (REQ-history-013) start or end no segment and are not an unrecognised kind.
-        "f10aaac5200dc31c8f976df83b11486f2a19a632c7737a9ad0b78352eebd0c3b",
+        // Modified again by native change
+        // append-only-event-corrections-with-chough-correct-never-rewriting-history-167
+        // (#167): correction events (REQ-history-015) start or end no segment and are
+        // not an unrecognised kind.
+        "d79146846ee94083b3b09238549667e2a7b62b5051e6e56d58a0fd47106f0d8a",
     ),
     (
         "REQ-cli-024",

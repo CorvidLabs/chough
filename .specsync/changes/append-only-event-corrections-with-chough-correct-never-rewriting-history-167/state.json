@@ -7,11 +7,10 @@
   "title": "Append-only event corrections with chough correct, never rewriting history (#167)",
   "description": "Append-only event corrections with chough correct, never rewriting history (#167)",
   "kind": "feature",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "draft",
   "base_commit": "00c34d65d3eb9c56b8f24ed471fcc4e71ebbd90f",
   "created_at": 1794332397,
-  "updated_at": 1794332522,
+  "updated_at": 1794332926,
   "affected_specs": [
     "history",
     "reporting",
@@ -25,7 +24,8 @@
     "src/timing.rs",
     "tests/history.rs",
     "docs/cli.md",
-    "README.md"
+    "README.md",
+    "tests/spec_split.rs"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
