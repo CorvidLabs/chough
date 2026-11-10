@@ -38,6 +38,45 @@
       "approved_delta_bases": {
         "history: REQUIREMENT REQ-history-011": "50d7dff57425148ab55e9da5dac097fc37dba46b273d9647ec828f8dc8717aa0"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794330581,
+      "digest": "1d89d5d4ad2f73776115c6edbf2f6277b4f0cc70992b3bcf8e11c1138784d54c",
+      "note": "Re-approved after correcting the delta capture to REQ-history-011's own block; scope decision unchanged (Leif 2026-11-10 on #165, relayed by coordinator t370)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "know-29-roll-up-copies-never-moves-tracked-session-records-165",
+        "title": "KNOW-29 roll-up copies never moves tracked session records (#165)",
+        "description": "KNOW-29 roll-up copies never moves tracked session records (#165)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          "src/sessions.rs",
+          "tests/reduce.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "At the move into done with the librarian on, archived sessions beyond the five newest are copied byte for byte into the vault (hard link sharing bytes) and remain in .chough/sessions/archive/ unchanged; the report names them under copied. A vault attachment with identical bytes means nothing to do; different bytes leave both sides untouched and are reported. The legacy-anchor holder never rolls. Tracked session records never leave the tree, whether or not knowledge/ is committed."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "0258f85c203967555c947f8dc7ff567468f0fcd2b1c9503c9d8734b32feb7703"
+      },
+      "approved_delta_bases": {
+        "history: REQUIREMENT REQ-history-011": "fd90c9004038cede9b1dac40b8e6f9f6946e027dfe7b146476f44422c52ce2db"
+      }
     }
   ],
   "reopenings": []

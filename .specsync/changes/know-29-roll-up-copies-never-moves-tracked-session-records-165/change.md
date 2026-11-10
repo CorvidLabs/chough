@@ -1,6 +1,6 @@
 ---
 id: know-29-roll-up-copies-never-moves-tracked-session-records-165
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 5359f42550362eebac3eef28d4df34639ffeb9c2
 ---
