@@ -1,6 +1,6 @@
 ---
 id: keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181
-state: draft
+state: implementing
 type: bug_fix
 base_commit: 2981a59cd4a545c7ce38421c72e53469993194cd
 ---

@@ -7,10 +7,11 @@
   "title": "Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181)",
   "description": "Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "2981a59cd4a545c7ce38421c72e53469993194cd",
   "created_at": 1794325175,
-  "updated_at": 1794345193,
+  "updated_at": 1794351494,
   "affected_specs": [
     "history"
   ],
