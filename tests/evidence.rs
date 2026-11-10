@@ -756,6 +756,37 @@ fn native_manifests_protect_their_sets_and_a_failed_read_protects_everything() {
 }
 
 #[cfg(unix)]
+/// #136: rebuilding the knowledge index lists the observation in INDEX.md, and
+/// that generated write must not make the observation stale (REQ-cli-004 AC2).
+#[test]
+fn rebuilding_the_knowledge_index_keeps_the_observation_current() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Probe\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"Probe reports healthy\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo healthy: yes\"]\nexpect_output = [\"healthy: yes\"]\n",
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "test-local"]);
+    let observation = run["observation"].as_str().unwrap().to_string();
+    fixture.ok(&["checkpoint", "--observation", &observation]);
+    let label = |fixture: &Fixture| {
+        fixture.ok(&["status", "--environment", "test-local"])["observations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["record"]["id"] == observation)
+            .map(|entry| entry["label"].as_str().unwrap().to_string())
+    };
+    assert_eq!(label(&fixture).as_deref(), Some("current"));
+
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/INDEX.md");
+    assert!(index.contains(&observation), "{index}");
+    assert_eq!(label(&fixture).as_deref(), Some("current"));
+}
+
 #[test]
 fn automatic_pruning_follows_case_runs_only_when_retention_is_auto() {
     let fixture = Fixture::new();

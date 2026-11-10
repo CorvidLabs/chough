@@ -1299,7 +1299,15 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         actor: crate::actor::current(),
     };
     let name = evidence::record(root, &record)?;
-    Ok(json!({"schema_version": 1, "recorded": name, "outcome": outcome, "provenance": PROVENANCE}))
+    // The same IDs `cases run` returns, so automation never parses a path (#60).
+    Ok(json!({
+        "schema_version": 1,
+        "case": id,
+        "observation": observation,
+        "recorded": name,
+        "outcome": outcome,
+        "provenance": PROVENANCE,
+    }))
 }
 
 /// Exit code for a recorded run whose outcome is not passed.

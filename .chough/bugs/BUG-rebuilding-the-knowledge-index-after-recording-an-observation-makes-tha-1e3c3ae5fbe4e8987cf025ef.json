@@ -21,11 +21,14 @@
     "Run chough status: the observation reads historical, freshness stale-revision-or-inputs; restoring INDEX.md makes it current again"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287",
+    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc"
+  ],
   "impact": "Branch observations read historical at the reviewed head (seen on C4, #126, at 01aebd6c); reviewers must rerun or discount them",
   "classification": "product-defect",
   "scope": "out-of-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -40,8 +43,22 @@
       "at_unix_seconds": 1793940690,
       "text": "Filed as GitHub issue CorvidLabs/chough#136 at Leif's request (2026-11-05 20:58 MST, through the orc).",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1794345023,
+      "text": "status: open -> investigating. Reproduced on failing-tests commit e659153c through TC-cli-knowledge-rebuild-keeps-observation-current: the observation reads historical after chough library index lists it.",
+      "observations": [
+        "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794345049,
+      "text": "status: investigating -> verified. Passes after the fix (knowledge directory left out of the content identity) through the same case.",
+      "observations": [
+        "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793936459,
-  "updated_at_unix_seconds": 1793940690
+  "updated_at_unix_seconds": 1794345049
 }

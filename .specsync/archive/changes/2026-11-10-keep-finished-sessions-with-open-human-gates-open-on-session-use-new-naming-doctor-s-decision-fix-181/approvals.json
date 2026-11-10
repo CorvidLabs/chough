@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794350988,
+      "digest": "fd9c406cdfb89f072fec112fd2c6de956c3669a9e989b6f3482967d9c75aac2e",
+      "note": "Leif's 2026-11-10 merge rule, relayed by coordinator Claude Code (hc t370): bug fixes that make behaviour match existing specs/requirements/hi may run the full SpecSync lifecycle with 0xLeif as approve/review actor and squash-merge once CI is green and every review thread is resolved. Covers #181 only: session new/use keep every finished session with an open human gate open (REQ-history-012 archives mechanically only a finished session with no open gate). Recorded by the Claude Code worker (hc t37j); a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181",
+        "title": "Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181)",
+        "description": "Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.gated-switch-181.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "knowledge/",
+          "src/sessions.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A finished session (stage done, or native change finalized on HEAD) with a non-empty awaiting_human list stays open on session new and session use and is reported in kept_open with its open-gate count and a recovery: 'chough doctor --fix --reason <text>' when its native change is finalized, otherwise the checkpoint --close-gate command; a finished session without open gates is archived unchanged as before; the existing inbox-unfolded kept-open behavior is unchanged. Regression: a switch with one gated finalized session, one gated done session without a finalized change and one ungated finalized session archives only the ungated one, leaving the two gated sessions byte-identical."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "bc834a4a8b2cc366649b5776e1297dd43bd796cb62c7b795b88f778c0b57f930"
+      },
+      "approved_delta_bases": {
+        "history: REQUIREMENT REQ-history-006": "f22dbecba1469dfcdaf5a2c7efcd037ae4a8134820118670da10eec39f84d77b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794351933,
+      "digest": "e43d5c6df1d90b60a71cf2035a0aff9f726156a1b7f331c26411ab50b4c00b7d",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

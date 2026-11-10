@@ -13,6 +13,16 @@ All notable changes to Chough are recorded here. The format follows
   keeps its bytes. Older builds refuse a record holding `actor` (unknown field), so
   the oldest Chough that reads such a record is 0.6.0, the first release with this
   change. 0.5.0 does not read it.
+- `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
+  `observation`, beside their existing keys, so automation no longer parses the ID out
+  of `recorded` (#60, REQ-cli-011, REQ-cli-017).
+
+- `chough session new` and `session use` keep a finished session that still holds an open
+  human gate open, reporting it under `kept_open` with its gate count and recovery,
+  instead of archiving the gate silently (#181, REQ-history-006).
+
+- Rebuilding the knowledge index no longer makes the observations it lists stale: the
+  working content identity leaves out the generated knowledge directory (#136, REQ-cli-004).
 
 - Read strict bounded optional v1 diagnostic input inventories while preserving
   aggregate freshness and original observations; reject noncanonical inventory paths.
