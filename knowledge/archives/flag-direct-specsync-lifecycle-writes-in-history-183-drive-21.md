@@ -55,9 +55,9 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-dry-run-ea811aa23f1848e4afafdbae | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-dry-run-ea811aa23f1848e4afafdbae | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-product-test-d15ac3501f3fd5a9d6eb6325 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
-| OBS-structural-e0b6507696e1eb822326d465 | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-structural-e0b6507696e1eb822326d465 | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-tc-cli-change-steps-write-nothing-62fe15cbc95b9f266c0c477d | passed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-write-nothing |
 | OBS-tc-cli-change-steps-write-nothing-f37dc2ff0a53fdcca9e37c99 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-steps-write-nothing |
 | OBS-tc-cli-chough-steps-not-flagged-967d02b7e7a10c43108cb481 | failed (by cycle time) | local-macos-arm64 | TC-cli-chough-steps-not-flagged |
@@ -85,4 +85,6 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
+- [evidence/OBS-dry-run-ea811aa23f1848e4afafdbae.json](../attachments/flag-direct-3e88b00e/evidence/OBS-dry-run-ea811aa23f1848e4afafdbae.json)
+- [evidence/OBS-structural-e0b6507696e1eb822326d465.json](../attachments/flag-direct-3e88b00e/evidence/OBS-structural-e0b6507696e1eb822326d465.json)
 - [sessions/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.json](../attachments/flag-direct-3e88b00e/sessions/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.json)
