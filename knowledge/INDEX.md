@@ -100,7 +100,7 @@ Archived lesson bundles:
 
 ## Observations
 
-591 recorded; most recent:
+580 recorded; most recent:
 
 - OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0

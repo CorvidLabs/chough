@@ -50,7 +50,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/history/cycles/CYC-00f626375dc00fca193eb5c5/EVT-87a5210f073d50b7028a7d0a.json` | 22ae0d8b17d32003a5afc216bbbfc1bee47f4ca422ca0db66ab768194c6f22e2 | working tree |
 | `.chough/history/cycles/CYC-00f626375dc00fca193eb5c5/EVT-ad78b18580e652c7eba92027.json` | dd651d6b10a10bb2a7bc243ca923c99c9b05eaee050920b314d8b6be96398210 | working tree |
 | `.chough/history/cycles/CYC-00f626375dc00fca193eb5c5/EVT-d2217be8d3439289ac0e94f1.json` | 1bda9da0cd60c1ced12d3904054533723715dc439de74c322cf85a54f3e4645c | working tree |
-| `.chough/sessions/chough-196-case-files.json` | d56259c71e972180a5b1acb729352756abc7141d6fee12faf50a8c08c31079a0 | working tree |
+| `.chough/sessions/chough-196-case-files.json` | d56259c71e972180a5b1acb729352756abc7141d6fee12faf50a8c08c31079a0 | Git aac844ae4e40780dcb93973a4077acaaed6cda07 |
 
 ## Observations
 

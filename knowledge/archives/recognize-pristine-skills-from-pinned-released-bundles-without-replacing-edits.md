@@ -49,7 +49,7 @@ verification records, the retention ledger and Git stay authoritative.
 | Path | Digest | Location |
 |---|---|---|
 | `.chough/cases/cli.released-skills-102.cases.toml` | d105ecb3e6d8d2b8c1a506ee79b127ed837b3666f18ae83e1a282fbe36ef9863 | working tree |
-| `.chough/sessions/issue-102-released-skills.json` | daf6451973b95772139e01dac6b7968f239a6306310868232f4004a4756a3669 | working tree |
+| `.chough/sessions/issue-102-released-skills.json` | daf6451973b95772139e01dac6b7968f239a6306310868232f4004a4756a3669 | Git 02a0a7052220c8afa21b72e0bc0c951938fd6f90 |
 
 ## Observations
 

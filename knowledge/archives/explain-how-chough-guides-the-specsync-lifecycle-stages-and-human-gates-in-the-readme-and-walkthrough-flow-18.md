@@ -45,13 +45,14 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-3 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+4 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-structural-03cfcec131ca2438dd4735a5 | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-structural-287ec6778c96c03267901f6b | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-structural-03cfcec131ca2438dd4735a5 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-structural-287ec6778c96c03267901f6b | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-structural-f27415f1661a1ab46cd0e673 | passed (by cycle time) | local-macos-arm64 |  |
+| artifact:issue-65-prune-race | unknown (pruned) (by cycle time) | ? |  |
 
 ## Bugs
 
@@ -59,7 +60,37 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- none
+- `.chough/artifacts/issue-65-prune-race/after/earlier-sets-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/earlier-sets-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/earlier-sets.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/integration-evidence.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/integration-history.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/partial-removal-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/partial-removal-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/partial-removal.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/protection-race-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/protection-race-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/protection-race.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/recreated-file-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/recreated-file-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/recreated-file.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/after/unit-evidence.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/earlier-sets-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/earlier-sets-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/earlier-sets.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/partial-bug.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/partial-removal-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/partial-removal-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/partial-removal.log`: moved to [knowledge/attachments/BUG-evidence-af26306e/artifacts/issue-65-prune-race/before/partial-removal.log](../attachments/explain-how-e36bc5a5/knowledge/attachments/BUG-evidence-af26306e/artifacts/issue-65-prune-race/before/partial-removal.log)
+- `.chough/artifacts/issue-65-prune-race/before/protection-race-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/protection-race-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/protection-race.log`: moved to [knowledge/attachments/BUG-evidence-2f665685/artifacts/issue-65-prune-race/before/protection-race.log](../attachments/explain-how-e36bc5a5/knowledge/attachments/BUG-evidence-2f665685/artifacts/issue-65-prune-race/before/protection-race.log)
+- `.chough/artifacts/issue-65-prune-race/before/race-bug.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/recreated-file-case.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/recreated-file-case.stderr`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/before/recreated-file.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/finish/pinned/case-results.json`: Git 63460b5c84061b7899c2c821784f402b18920ab3
+- `.chough/artifacts/issue-65-prune-race/finish/pinned/frozen-native-check.log`: Git 63460b5c84061b7899c2c821784f402b18920ab3
 
 ## Attachments
 

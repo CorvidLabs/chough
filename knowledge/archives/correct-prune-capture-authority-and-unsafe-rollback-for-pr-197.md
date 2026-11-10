@@ -56,7 +56,7 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-product-test-80b95a49cc2ba0705ed1b2fb | failed (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-97bec39c043841e26288e181 | passed (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-c667d4756cf1c183202f8b02 | passed (by cycle time) | local-linux-aarch64 |  |
-| OBS-product-test-e1797a0960e7bd92560cca96 | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-e1797a0960e7bd92560cca96 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-tc-history-prune-capture-byte-authority-0d8f9c5f414d1458c254a22a | passed (by cycle time) | local-macos-arm64 | TC-history-prune-capture-byte-authority |
 | OBS-tc-history-prune-capture-byte-authority-21c076beb9fc717b19bb1aac | failed (by cycle time) | local-macos-arm64 | TC-history-prune-capture-byte-authority |
 | OBS-tc-history-prune-protection-race-0477fdc57b6276c5aaaf94ca | passed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
@@ -78,4 +78,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [evidence/OBS-product-test-e1797a0960e7bd92560cca96.json](../attachments/correct-prune-d25a28f5/evidence/OBS-product-test-e1797a0960e7bd92560cca96.json)

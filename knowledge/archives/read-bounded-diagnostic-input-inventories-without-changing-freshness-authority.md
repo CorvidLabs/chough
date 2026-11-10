@@ -50,7 +50,7 @@ verification records, the retention ledger and Git stay authoritative.
 | Path | Digest | Location |
 |---|---|---|
 | `.chough/cases/cli.inventory-compat.cases.toml` | 5545e51a16465810413a907510c1aac67ff06b790188ad805ca31badd94fcba8 | working tree |
-| `.chough/sessions/evidence-inventory-compat.json` | dac555c154414d200bb2b25ad555af6d678a4cc82b887f6a8e774039aa94a820 | working tree |
+| `.chough/sessions/evidence-inventory-compat.json` | dac555c154414d200bb2b25ad555af6d678a4cc82b887f6a8e774039aa94a820 | Git 2f120a671ed4a3f06a75cb5dc1fe9bcf6b728384 |
 
 ## Observations
 
