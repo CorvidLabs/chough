@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 161
+archived_changes: 163
 tags:
   - chough/index
 ---
@@ -43,22 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- read-bounded-diagnostic-input-inventories-without-changing-freshness-authority (active; `specsync change status read-bounded-diagnostic-input-inventories-without-changing-freshness-authority`)
-- recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits (active; `specsync change status recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (hot)
+- [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (hot)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18) (hot)
-- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (hot)
-- [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals (hot)
+- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (cold)
+- [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals (cold)
 - [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](archives/update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording.md) Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording (cold)
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation (cold)
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) (cold)
 - [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) (cold)
 - [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](archives/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.md) Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58) (cold)
-- [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](archives/prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0.md) Prepare the 0.5.0 release: set the package version to 0.5.0 and date the change log section for 0.5.0 (cold)
-- [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md) Chough gate list: one-screen gate summaries with digests, and one reply for listed gates only (184, FLOW-19, FLOW-20) (cold)
-- All 161 archived changes, by month: [timeline.md](timeline.md)
+- All 163 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -72,6 +71,8 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](../.specsync/archive/changes/2026-11-10-read-bounded-diagnostic-input-inventories-without-changing-freshness-authority/lesson-bundle.md)
+- [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](../.specsync/archive/changes/2026-11-10-recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits/lesson-bundle.md)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](../.specsync/archive/changes/2026-11-08-explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18/lesson-bundle.md)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../.specsync/archive/changes/2026-11-07-make-evidence-prune-apply-recheck-protections-and-restore-partial-removals/lesson-bundle.md)
@@ -80,8 +81,6 @@ Archived lesson bundles:
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../.specsync/archive/changes/2026-11-07-chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21/lesson-bundle.md)
 - [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../.specsync/archive/changes/2026-11-07-after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes/lesson-bundle.md)
 - [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](../.specsync/archive/changes/2026-11-07-keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58/lesson-bundle.md)
-- [prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0](../.specsync/archive/changes/2026-11-07-prepare-the-0-5-0-release-set-the-package-version-to-0-5-0-and-date-the-change-log-section-for-0-5-0/lesson-bundle.md)
-- [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../.specsync/archive/changes/2026-11-07-chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
