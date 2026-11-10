@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-2a24ae32010db7e92e9a70fb",
-    "head": "EVT-bc6f0ea348b412e7ad771f73",
+    "head": "EVT-45f351658331962fbf700317",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "reporting"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -41,10 +41,15 @@
   ],
   "open_questions": [],
   "completed": [
-    "Failing tests: 599ff184c3a42d94ce6728eaa0f9bb17cd5b19ea"
+    "Failing tests: 599ff184c3a42d94ce6728eaa0f9bb17cd5b19ea",
+    "Zombie-aware helper and all three migrated probes pass focused Chough cases on macOS arm64."
   ],
   "observations": [
-    "OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7"
+    "OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7",
+    "OBS-tc-cli-killed-unreaped-child-not-alive-ab310389bde5c4d51a54535d",
+    "OBS-tc-cli-timed-out-prime-kills-native-process-f812f5bccc709170ad193979",
+    "OBS-tc-cli-sigterm-stops-native-process-71d69f74f25a3aade7f0057f",
+    "OBS-tc-reporting-timed-out-native-read-kills-descendants-591504a42688993cdb69e6ee"
   ],
   "bugs": [
     "BUG-kill-zero-reports-a-killed-unreaped-zombie-alive-187-fd5176ab33fee38ff313ffc8"
@@ -52,5 +57,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Implement the bounded zombie-aware common::alive helper."
+  "next_action": "Run loaded macOS and Linux repetitions and the full Linux verify lane."
 }

@@ -329,11 +329,11 @@ fn a_timed_out_prime_writes_nothing_kills_children_and_retries_cold() {
     assert_eq!(fixture.native_calls(), 1);
     assert_eq!(cache_entries(&fixture), 0);
     let pid = fixture.read(".stub-native-pid");
-    let alive = std::process::Command::new("kill")
-        .args(["-0", pid.trim()])
-        .status()
-        .unwrap();
-    assert!(!alive.success(), "native process {} survived", pid.trim());
+    assert!(
+        !common::alive(pid.trim()),
+        "native process {} survived",
+        pid.trim()
+    );
 
     remove(&fixture, ".stub-sleep");
     prime(&fixture);
