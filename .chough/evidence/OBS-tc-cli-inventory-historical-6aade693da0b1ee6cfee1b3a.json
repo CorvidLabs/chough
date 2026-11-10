@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-004",
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Actual retained HCt2vj atd0125eacfafcb16b6dd9eefb065667246471d625 (2026-11-09T07:32Z):8/8 compatibility (original6 with ONE documented uppercase oracle correction plus SAME2aliases),14/14 evidence module,30/30 existing evidence integration=52PASS exact names. All9 original historical/partial/outcomes/bytes and complete boundary/alias loops executed. Source-equivalent formatted tests at4b35 proved exact rustfmt projection; NOT fresh52execution there. Initial fmt1/lintNOTRUN retained separately.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1794210281,
+  "snapshot": {
+    "revision": "4b35b15064a0d5d7172163a5501ffc95c3bc018d",
+    "dirty": true,
+    "fingerprint": "195a84c8a69813c47eff2f0647c854e6c044b93ddecda0a301d5a26e81e43523",
+    "content": "3cdf63286b570568c89a615b60e171598e6d30bce8c184c3d4ebd71a328d3a30"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-inventory-historical",
+      "digest": "558662abf69282b368c9e36a626b767bcb23cbe2d65dff8924a0aee3387d2de0"
+    },
+    {
+      "id": "TC-cli-inventory-advisory",
+      "digest": "9db69c0d99aa5aa8e7b66dca7f3176da6213422d108597a754d6979e4433c0c2"
+    },
+    {
+      "id": "TC-cli-inventory-strict",
+      "digest": "f51e04d6fdaa631bdf6bc15376414020ab533fcc3ba8a0826026915667a7d89e"
+    },
+    {
+      "id": "TC-cli-inventory-caps",
+      "digest": "d9e734b148aab2b42dad6337a90224c0f048470010c55e712c4cbcd66c4ad9b8"
+    },
+    {
+      "id": "TC-cli-inventory-change-key",
+      "digest": "2230288de9a19182d6b740c2df96c84af1d81660f2d986677b01dbbc54cc86da"
+    },
+    {
+      "id": "TC-cli-inventory-legacy",
+      "digest": "c4c0127523653f7b1b3068c17320b9fab895afaf85edc1e634087b530d271b43"
+    },
+    {
+      "id": "TC-cli-inventory-aliases",
+      "digest": "d50014639b54b107b2bc9715648e3e78dea98e9fab4a428c62e3706ff45463cb"
+    },
+    {
+      "id": "TC-cli-inventory-bookkeeping-alias",
+      "digest": "3d397049a1609775b9ca5a31743e0e857cc26fbc23356feafbe26c90b0881baf"
+    }
+  ],
+  "method": "agent-assisted",
+  "limitations": [
+    "Retained execution receipt recorded now; not a fresh adapter/case run or authenticated proof. Snapshot/case digest is capture context, not the historical execution inputs.",
+    "No full/Trust/site/hosted/platform qualification or human acceptance."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-sigterm-stops-native-process-71d69f74f25a3aade7f0057f",
+  "criteria": [
+    "DRIVE-19"
+  ],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact sigterm_to_change_check_stops_specsync for TC-cli-sigterm-stops-native-process: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-sigterm-stops-native-process-71d69f74f25a3aade7f0057f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-sigterm-stops-native-process-71d69f74f25a3aade7f0057f.log": "4bbd0f95eee2f04bd8146ce4e689b41cdfa4745711edbe7875011ff40feb05d0"
+  },
+  "observed_at_unix_seconds": 1794022897,
+  "snapshot": {
+    "revision": "76ba44981ed1b94b5a2101a52e86ebf1fa9ab3e4",
+    "dirty": true,
+    "fingerprint": "0b8ff03dd0b1234a71d4f9f897fffcf393b0a49722ae4fb4b0661606ed55554c",
+    "content": "551ed13cd453415239abaf7abdcdac9af4eedc5cf060d4705e78736f69e0fb75"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-sigterm-stops-native-process",
+      "digest": "0caa4107fd0142b4c4a6356f209a46a82307efb6da8a1dea1e91dd46ac90c9d3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "sigterm_to_change_check_stops_specsync"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 3
+}

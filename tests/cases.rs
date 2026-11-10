@@ -2242,3 +2242,71 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         .collect();
     assert_eq!(dry_runs, ["dry-run"], "a dry run read as a delivery kind");
 }
+
+/// #60: `cases record` returns the case and observation IDs that `cases run` returns,
+/// beside every key it already returned; the observation equals the recorded file's
+/// stem and the stored record's `id` (REQ-cli-011).
+#[test]
+fn manual_case_record_returns_its_case_and_observation_ids() {
+    let fixture = bounded_fixture(&case("TC-cli-0002", "functional", "REQ-cli-001", ""));
+    let report = fixture.ok(&[
+        "cases",
+        "record",
+        "TC-cli-0002",
+        "--environment",
+        "local",
+        "--method",
+        "manual",
+        "--verdict",
+        "1=pass",
+        "--verdict",
+        "2=pass",
+        "--summary",
+        "Reviewed",
+    ]);
+    for key in ["schema_version", "recorded", "outcome", "provenance"] {
+        assert!(report.get(key).is_some(), "missing {key}: {report}");
+    }
+    assert_eq!(report["outcome"], "passed", "{report}");
+    assert_eq!(report["case"], "TC-cli-0002", "{report}");
+    let observation = report["observation"]
+        .as_str()
+        .unwrap_or_else(|| panic!("no observation: {report}"));
+    assert_observation_form(observation, "tc-cli-0002");
+    let recorded = report["recorded"].as_str().unwrap();
+    assert_eq!(recorded, format!(".chough/evidence/{observation}.json"));
+    let stored: Value = serde_json::from_str(&fixture.read(recorded)).unwrap();
+    assert_eq!(stored["id"], observation);
+}
+
+/// #60: `evidence add` returns the observation ID it stored, beside every key it
+/// already returned; it equals the recorded file's stem and the stored record's `id`
+/// (REQ-cli-017).
+#[test]
+fn evidence_add_returns_its_observation_id() {
+    let fixture = bounded_fixture(&case("TC-cli-0001", "functional", "REQ-cli-001", ""));
+    let output = add_evidence(
+        &fixture,
+        None,
+        "product-test",
+        Some("TC-cli-0001"),
+        "Returned",
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    for key in ["schema_version", "recorded", "provenance"] {
+        assert!(report.get(key).is_some(), "missing {key}: {report}");
+    }
+    let observation = report["observation"]
+        .as_str()
+        .unwrap_or_else(|| panic!("no observation: {report}"));
+    assert_observation_form(observation, "tc-cli-0001");
+    let recorded = report["recorded"].as_str().unwrap();
+    assert_eq!(recorded, format!(".chough/evidence/{observation}.json"));
+    let stored: Value = serde_json::from_str(&fixture.read(recorded)).unwrap();
+    assert_eq!(stored["id"], observation);
+}

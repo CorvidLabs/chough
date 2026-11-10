@@ -1,0 +1,128 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "orc-t19f",
+      "timestamp": 1794204571,
+      "digest": "0266672cc2ade33263812d9ab616048dbd17d1c66d32c626694d2befebbf702f",
+      "note": "Agent orc-t19f bounded scope under direct Leif all PR/issues and approve/continue fixing authority. Exact frozen b9fc184 reader-only src/evidence.rs scope and listed standalone tests/nine unchanged fixtures/cli004+006 companions. Optional strict diagnostic inventory v1 caps128/32768, safe paths/digests/classification; absent/null legacy, unsupported/malformed/capped explicit refusal. Preserve original OBS bytes and historical/partial outcomes, aggregate/hash/freshness/authority policies; no inventory writer/path attribution, no next_owner schema change. Committed runtime RED before implementation, separate exact build lease, other-author review and human gates remain open. No human acceptance/review or archive/merge/release/install authorized by this agent scope receipt.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "read-bounded-diagnostic-input-inventories-without-changing-freshness-authority",
+        "title": "Read bounded diagnostic input inventories without changing freshness authority",
+        "description": "Read bounded diagnostic input inventories without changing freshness authority",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.inventory-compat.cases.toml",
+          ".chough/sessions/evidence-inventory-compat.json",
+          "CHANGELOG.md",
+          "knowledge/INDEX.md",
+          "specs/cli/cli.3md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/cli/tasks.md",
+          "specs/cli/testing.md",
+          "src/evidence.rs",
+          "tests/evidence_inventory_compatibility.rs",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e.json"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Read all nine exact retained schema2 observations with optional snapshot.input_inventory v1 while preserving their bytes, outcomes, provenance, historical aggregate freshness and incomplete inventory flags. Absent inventory preserves legacy behavior. Strict typed v1 fields, <=128 entries and <=32768 compact serialized bytes; invalid paths/digests/domain-key relations/duplicates/types/unknown fields and unsupported versions refuse explicitly. No inventory-based promotion or path attribution; no aggregate hash/freshness/writer/schema/policy change. Actual old candidate refusal followed by meaningful process RED and SAME GREEN is required under separate lease. Independent review/human acceptance remain pending."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Reader-only src/evidence.rs optional strict types/validation and None at two existing Snapshot construction literals; existing fingerprint_key reused only to validate retained domain/key. No inventory generation, no hash_input/snapshot traversal/same_inputs/freshness predicates changes; no global unknown-field relaxation. Canonical cli REQ004/006 only, exact named standalone test and nine immutable fixture copies, named companions/own records. Preserve inherited records including original next_owner incompatibility; use only new own session without next_owner. Future build needs separate lease; no actual scope approval/human review/archive/delivery by worker.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "c09916a235334249d02d8d9ee42469d73411347627be418632ddedaf259fd311"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-004": "0183bc6f23c09fe33f4d653165e832eb38e59625109015bf7e492b833c035874",
+        "cli: REQUIREMENT REQ-cli-006": "27d457b9cc2aeb8bee5c326ff38ef3640fbbfe4c69cd9611a47a3e519aa5ad8e"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794323556,
+      "digest": "0266672cc2ade33263812d9ab616048dbd17d1c66d32c626694d2befebbf702f",
+      "note": "Rebase onto main 2981a59c: REQ-cli-004/006 bodies word-identical; REQ-cli-006 requirements.md header normalized to the bare form the 6.2.0 materializer matches (decorative title only); delta body rewrapped onto current canonical text",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "read-bounded-diagnostic-input-inventories-without-changing-freshness-authority",
+        "title": "Read bounded diagnostic input inventories without changing freshness authority",
+        "description": "Read bounded diagnostic input inventories without changing freshness authority",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.inventory-compat.cases.toml",
+          ".chough/sessions/evidence-inventory-compat.json",
+          "CHANGELOG.md",
+          "knowledge/INDEX.md",
+          "specs/cli/cli.3md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/cli/tasks.md",
+          "specs/cli/testing.md",
+          "src/evidence.rs",
+          "tests/evidence_inventory_compatibility.rs",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619.json",
+          "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e.json"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Read all nine exact retained schema2 observations with optional snapshot.input_inventory v1 while preserving their bytes, outcomes, provenance, historical aggregate freshness and incomplete inventory flags. Absent inventory preserves legacy behavior. Strict typed v1 fields, <=128 entries and <=32768 compact serialized bytes; invalid paths/digests/domain-key relations/duplicates/types/unknown fields and unsupported versions refuse explicitly. No inventory-based promotion or path attribution; no aggregate hash/freshness/writer/schema/policy change. Actual old candidate refusal followed by meaningful process RED and SAME GREEN is required under separate lease. Independent review/human acceptance remain pending."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Reader-only src/evidence.rs optional strict types/validation and None at two existing Snapshot construction literals; existing fingerprint_key reused only to validate retained domain/key. No inventory generation, no hash_input/snapshot traversal/same_inputs/freshness predicates changes; no global unknown-field relaxation. Canonical cli REQ004/006 only, exact named standalone test and nine immutable fixture copies, named companions/own records. Preserve inherited records including original next_owner incompatibility; use only new own session without next_owner. Future build needs separate lease; no actual scope approval/human review/archive/delivery by worker.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "c27ed9878ac8583a41b7c44a60f4d1893b90dac77b0c0c3eda92716d2776b25d"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-004": "0183bc6f23c09fe33f4d653165e832eb38e59625109015bf7e492b833c035874",
+        "cli: REQUIREMENT REQ-cli-006": "f2eb1d04b83b4d952002d7751e14a56bc3d4a8f2d6c82677797427a16101b3b9"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794324021,
+      "digest": "d3e36683de4a8cddbd9d1eeadc9da2482df414572631dc044d1e046c8695d610",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

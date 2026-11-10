@@ -1,0 +1,372 @@
+{
+  "timestamp": 1794321260,
+  "commit": "9b081b8742ae7af03d0b097522f1e8ecd9905de4",
+  "contract_digest": "dbedb3a7413a743367f14f91ad92d023adf2c86da93a7fee0e3cce266a2ce8ed",
+  "execution_digest": "e223eb0486fe91f0a09f51d5b7226c23db715b2a8e0897b0ea1f75f8ee2e728c",
+  "workspace_digest": "159294b72b6fd78eeba5565bd2350c087768567c10d269ec47b4db23b26b9f18",
+  "acceptance_input_digest": "7d9aa04de83c39170ce1dd7f568a6766f394ebbabe0751618f7bed48ef027b7d",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".chough/artifacts/issue-113/README.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6327578442fb49039d47a4de9cf0a1a848748450127223d95a524a10ff850506",
+        "entry_digest": "1f91dadcd585e197e91046529207ab9153d3660d7b543eff64448a1bcb84f68f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/actual-corrected-sessions39-names.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5741cb0df886ae4671cae78751b85a3aa715f1f7c34cfc871c3cebc0fed4f7ad",
+        "entry_digest": "e92c6111480f136d69b49353a703713a1ed156bb78aba47cc29a76efd7332b7e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/actual-corrected-sessions39.stderr",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0ea1dcfcd5b7fbe574300dc3ce7d95c4cbefced09980005ee871c7055f4009aa",
+        "entry_digest": "82494353824962b1258024b938625985565212b28e7651943bd3819738ac4fef",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/actual-corrected-sessions39.stdout",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0344ea0976fc0268e4e7d11c14fc45910f439e98d21d255ca7373fae6bf90d87",
+        "entry_digest": "6ff5e6b3481711c4f5fea365a866eb1410d8edcaabee3e5ee24435134b329360",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/actual-ends-and-fences.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "605f3b7c8cb0ae9a88d85cbca290676549b7b039a9bdb99b789c1733c4c57426",
+        "entry_digest": "b0b278b97f0e06737ed68d19c11f45529176ee698af5e31e0bb6b4acd18e85ce",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/actual-signal-causal-proof.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b5d7701e996b40aa8afeff183fb7e910f34b7d3acd9e0dbbeb34612c8feb455f",
+        "entry_digest": "52b05616ebce88e3fde9fe73e0f5118bc84d90b26eb2092d712a513fadacf74f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/fmt.stdout",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6b90175025d8aef9add20d7a2069cc882ce8ee05e520e179afc60f673cc73fba",
+        "entry_digest": "c3632effe71df91e09aef4c3877a72c4049634bcc9787669a0421ea9b0789cab",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/history25.stdout",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "544ba49c50465e378c081a8ac243cd92bbccd11820f63117abf90a0bfe5d0ef8",
+        "entry_digest": "b14fbe8b3dc2d760f00ced0fd0fd7335971b925f88ac553e8542ae9cdf92e748",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/lint.stderr",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8d694f0b27308f79cb584e17c7e50625a8d5e325ff2db26c351103d2c35345da",
+        "entry_digest": "a5b9a39efb5df44446baf802f5b58f2e7ad2aae6c1846ef56e6871df134723a1",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/lint.stdout",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9d1989d1dc5f73288d37e75a62ba28197baa7690abd0e9fecf874a060af3166b",
+        "entry_digest": "a70e773c71a341c1cd1265f0a37e04cb4df50a1f403290f2a40d678dbe137fc5",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/original-partial-sessions.stderr",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "bfebe0614a3df16d54576e26cbe40b4ec79ecd985d400431e9d071b208b69603",
+        "entry_digest": "69f04d2e72142c5a22a978503bfc216276518ba50eed6642938149a05e847db3",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/original-partial-sessions.stdout",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "89b0bdfa4ef2c945645fdae9a6a85cde588ee331e6e85e146f2fa6e154bc5464",
+        "entry_digest": "58aeb27ddf0083d0c85c5a8d37def8db5248362eb20bb2475aa546f2341ed3a7",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/red-missing-log.stderr",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "491cdb3fdfc1c4a585640dfc69baa493b17a0f9f1a94929e14580fab24c09063",
+        "entry_digest": "ac4ae11a16c82de876e77e82abacd97369dc1e5c4db5108ac9e269fc294a9213",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/red-missing-log.stdout",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b1fe1495c38ea4f6b635b6a9d9f45dbf969dafd02b4f9d16ca999ed5c34d8b50",
+        "entry_digest": "be091dbd8bd6863434c4bd72834a9f056bd5e4c6a6fa1bf30fa228d8b0c54cb8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/red-never-adopted.stdout",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "46f6f0bfa807543724e7cb49f2600cb9a44fde89939acead4655095a5ab364fc",
+        "entry_digest": "b42b873fd2679cbb03d7f715a750267a5bdf088047ef10e9d80c212e69d9e762",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/artifacts/issue-113/retained-run-provenance.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "aa5eeb0393d208c4ad4a852f36026f2f316f924d4f70637ead0049e5d6b2b65d",
+        "entry_digest": "999dd3238c1bbc7be646b57e7a11ee1948bb4bfebbd31dbabb620b79196280bd",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/cases/history.missing-log-113.cases.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "606413fccbfe939b83a694b8d11ffaef419a1451a63f34d499053e7ce1c10288",
+        "entry_digest": "c357452ef383c94c731afe9fb2705bae75e874ab937991607e7248655ac2a76f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-0abaf045305de66a7af813f6.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "bed739e7f4f22a69079bba249180fe3f262151c0af3fe72e7827ff738a853437",
+        "entry_digest": "349d699493bb9e56eefde570453a2978cdc0f019f515116147ef9d7c318cf785",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-0ca5998b15cc7191d83ee5ae.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "489efeaf6800cf04d16ce0eea5d5f4735e434f9da50b3a975fb6e4df8c907524",
+        "entry_digest": "07d11d7edd47a53c9fb3277cedd92215fd34f7bbecbd2416f9db23eb56b5152c",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-0d02825f840f17802406111c.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6c4d5035fce5baddaee5966025717b32072caa61c8c4da82f13b5a832462c1bf",
+        "entry_digest": "4f6ab0ee9b76b8b95f8e5d7cf3c122126a7b5bc973bf6c794a2d256da299788b",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-4de0df384a20af2ec5b4a19b.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8923f3e05f0385c9f2bf27261ff12a27ad92363088ac542caec9c9865128e3ab",
+        "entry_digest": "5ee49d129f5b4aff402647fecd38cfc759f9867acf8e56b1edc70456c698fa40",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-8a54e4627bdf6e3feb3cd2e8.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "65075525fa95307d7dc0cfc1f7834dc03a2da3bad2649077ef89e3a156577c51",
+        "entry_digest": "5e1cd5b99cad21977df95839cfc71115fb3106056a0ee7da4daf3fb6a17a86ce",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-c37fc67c6a58b193c6b63a5a.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "205a37f46308db39991421a727f2842cb079cbb9919955014cbd081c95100e71",
+        "entry_digest": "b3e7f2459b69c0abe7c102f918f6ae0dc106d74121ad67ed9d29cef09b2a0430",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-d74fb343ef83944b03298d26.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2191c0b23fe9620b4b65f7305c8085d9a3dee3973760075bd39a11b7f41811ef",
+        "entry_digest": "a822035b2733076683fa6e1c0889196fa1cbd45e14621bce475f1ee37c347f1d",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-e7a5da26da3c4e0392253bc0.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "997f2e8a2efa3f8ac0e1b0d1a1b0be6e1bd3528cb03ff1152bf0bccd7d67be15",
+        "entry_digest": "2673ca13d6424fec6a85c128a36ec9d4d1536319592a72300d8a0f483e68460e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".chough/sessions/chough-113-missing-log.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "eb59fc8621e928f71d66badfc25f50044a558ac4ab4eae48919fa468efcc30c7",
+        "entry_digest": "8cc1cbfcb2dffcb0c908a179b4cd28f1377fbb2250134f5ab128fe697d7a77ea",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "76ec2a3ce0cb6a9f3be1e9a113590102a77dc557388f63f123ceb90dea33d670",
+        "entry_digest": "e472ea7d3a5ad7be582976c261379164c564d77f7397ddd0d7e92ec5fea59399",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "knowledge/INDEX.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9fc857452ebc23fc43c7b177f8e34a6f0e84a68baf98126a66e54cb8eb9f537b",
+        "entry_digest": "4ee809ff9afe76a3009995697488f87c09e19a603b83c546b3b3ced6d6a7d4d6",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/history/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c7be0cc159d8fdada8b3809c60f684f35fc5b02f3f981e48ec8f19129267269a",
+        "entry_digest": "6bbb61dd11242efaedd04fb704cfc25fc4e4ae8e407f76a756753e21b8748519",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/history.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c9e03868d1ca0c88944dc886e0c9150c1e87def6ce2839012900f1b92705acfc",
+        "entry_digest": "6174378e524a3a50f9dd07db4aafacbf0f34fbfddcc836c20687fdc63cfb5b33",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "857c5b71291bcdd909a0a6f1943a6479c5ff71968e3f41876c4b0c3d8d8e34d3",
+        "entry_digest": "2300457bd6158383472c719262f3251ec7a24d54d955a93facd35e61f47a0884",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "41aad80a94e9d05a23d84110df7715c8e1c64f6ec7ef2d722ff7fb4f5d313fce",
+        "entry_digest": "87fc1481fa94ca7470b7d65139992638f9b6f6bc84d2173429aee6f3f57a3ee4",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "specs/history/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "74de30567f1314c8cbc76d737d358d2d8868e120277c783c92c4415e8c986d25",
+        "entry_digest": "f16ed18f718ccef0ad477842feea6fdaef0a63a067eb4b174a727c8109133df0",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "src/history.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "595254a0b9269b74a1ed1a81cca9969a3fd8c0153dd21bbece5e36120a695bb2",
+        "entry_digest": "1abbc799b23cf0a59d6808676fb01dd87300914ccf0296e751fd7ea0da37c166",
+        "owners": [
+          "history"
+        ]
+      },
+      {
+        "path": "tests/sessions.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "bbf4596a05f09db96e0bec322d661a25375389a33f824161c18de2d8bb9a37e8",
+        "entry_digest": "fe50f729d722b3976b5f8bf8b62a12cde27d53b351f6284c11ee587d1b167fde",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec history",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

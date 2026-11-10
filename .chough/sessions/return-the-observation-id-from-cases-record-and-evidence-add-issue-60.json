@@ -28,7 +28,10 @@
       "REQ-cli-017",
       "REQ-cli-023"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-manual-record-returns-observation-id",
+      "TC-cli-evidence-add-returns-observation-id"
+    ],
     "design": [],
     "files": []
   },
@@ -37,13 +40,22 @@
     "decided: after native refusal of the no-spec scope and no approval, preserve Leif's accepted #60 behavior and AC and amend existing REQ-cli-011 and REQ-cli-017 in one cli delta; no new HI or REQ IDs, no implementation or test assertions in the amendment"
   ],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
-  "bugs": [],
+  "completed": [
+    "Failing tests: 906717d6"
+  ],
+  "observations": [
+    "OBS-tc-cli-manual-record-returns-observation-id-fa94fc389aac2ff426d36b44",
+    "OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75",
+    "OBS-tc-cli-manual-record-returns-observation-id-d15d102dd6ec256479b40abd",
+    "OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d"
+  ],
+  "bugs": [
+    "BUG-cases-record-and-evidence-add-do-not-return-the-observation-id-they-rec-78216c78f69992204ef6d8da"
+  ],
   "blockers": [],
   "awaiting_human": [
     "Scope approval of return-the-observation-id-from-cases-record-and-evidence-add-issue-60"
   ],
   "run_consents": [],
-  "next_action": "Human re-approval of amended return-the-observation-id-from-cases-record-and-evidence-add-issue-60; no implementation before orc-codex records approval"
+  "next_action": "Native definition approval (blocked: this agent's permission classifier refuses approve as 0xLeif), then specsync change check, rerun both cases after materialization, commit, check --commit, review, ship, push, merge on green CI."
 }
