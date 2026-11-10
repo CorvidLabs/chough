@@ -28,7 +28,10 @@
       "REQ-cli-017",
       "REQ-cli-023"
     ],
-    "cases": [],
+    "cases": [
+      "TC-cli-manual-record-returns-observation-id",
+      "TC-cli-evidence-add-returns-observation-id"
+    ],
     "design": [],
     "files": []
   },

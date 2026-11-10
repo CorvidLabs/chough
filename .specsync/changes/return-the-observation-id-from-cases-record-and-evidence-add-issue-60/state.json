@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "5ff54dd726367321b4e7ede3f931d38657b9b81e",
   "created_at": 1794064630,
-  "updated_at": 1794064688,
+  "updated_at": 1794345535,
   "affected_specs": [
     "cli"
   ],
@@ -18,10 +18,13 @@
     "src/cases.rs",
     "src/evidence.rs",
     "tests/cases.rs",
+    ".chough/cases/cli.observation-ids-60.cases.toml",
     "docs/cli.md",
     "CHANGELOG.md",
     "knowledge/"
   ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
   "acceptance_criteria": [
     "On base 5ff54dd7, new focused tests fail because cases record omits case and observation and evidence add omits observation. After the fix, cases record returns case equal to the requested case ID and observation equal to both the recorded file stem and stored record id; evidence add returns observation with the same equality. Existing keys, record bytes apart from ordinary ID allocation, exit codes and stored schemas remain unchanged; docs/cli.md names the returned keys, the focused cases and full Fledge verify lane pass locally."
   ],
@@ -34,7 +37,6 @@
     "docs"
   ],
   "dependencies": [],
-  "no_spec_change": false,
   "answers": {
     "architecture_risk": "no",
     "constraints": "FLOW-7 keeps case definitions separate from observations; FLOW-18 requires docs/cli.md to match current behavior; LIFE-4 covers the small CLI workflow. Issue 60 bounds this to additive case/observation keys only: preserve existing keys, exit codes, stored records and schemas; exclude bug-output and stage-refusal envelope changes. Write failing regressions first, use a change-specific cases file, run strict audit before every push, and do not tag, release, publish or deploy.",
