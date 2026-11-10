@@ -1,6 +1,6 @@
 ---
 id: return-the-observation-id-from-cases-record-and-evidence-add-issue-60
-state: draft
+state: implementing
 type: bug_fix
 base_commit: 5ff54dd726367321b4e7ede3f931d38657b9b81e
 ---

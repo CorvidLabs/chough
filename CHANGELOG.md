@@ -9,6 +9,7 @@ All notable changes to Chough are recorded here. The format follows
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).
+
 - Rebuilding the knowledge index no longer makes the observations it lists stale: the
   working content identity leaves out the generated knowledge directory (#136, REQ-cli-004).
 

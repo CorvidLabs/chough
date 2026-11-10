@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-90341f9a961c8442e66835c2",
-    "head": "EVT-1d59f666d568f8bc3c290a3f",
+    "head": "EVT-5a0b007892964fe2d7789617",
     "legacy": null
   },
   "schema_version": 2,
@@ -11,7 +11,7 @@
     "cli"
   ],
   "stage": {
-    "current": "plan",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -37,7 +37,9 @@
   },
   "decisions": [
     "decided: reuse existing FLOW-7, FLOW-18 and LIFE-4 with REQ-cli-011, REQ-cli-017 and REQ-cli-023; no new HI or REQ ID is needed because issue 60 only exposes existing observation and case IDs, and broader envelope changes are rejected as out of scope",
-    "decided: after native refusal of the no-spec scope and no approval, preserve Leif's accepted #60 behavior and AC and amend existing REQ-cli-011 and REQ-cli-017 in one cli delta; no new HI or REQ IDs, no implementation or test assertions in the amendment"
+    "decided: after native refusal of the no-spec scope and no approval, preserve Leif's accepted #60 behavior and AC and amend existing REQ-cli-011 and REQ-cli-017 in one cli delta; no new HI or REQ IDs, no implementation or test assertions in the amendment",
+    "Scope approval recorded natively as 0xLeif under Leif's 2026-11-10 merge rule (relayed by coordinator hc t370, which also relayed that Leif allowed specsync approve/review for this worker): bug fixes matching existing specs/requirements/hi run the full lifecycle with 0xLeif as approve/review actor and squash-merge on green CI with every review thread resolved. Recorded by Claude Code worker hc t37j; a relayed claim, not authenticated.",
+    "0xLeif decided \"Scope approval of return-the-observation-id-from-cases-record-and-evidence-add-issue-60\": \"bug fixes, meaning work that makes behaviour match the existing specs/requirements/hi, may run the full SpecSync lifecycle with 0xLeif as approve/review actor and squash-merge once CI is green and every review thread is resolved\" (Leif's merge rule, 2026-11-10, relayed by coordinator Claude Code (hc t370) to worker hc t37j, which listed #60 (PR #204) under it; earlier 'yes to all' on this scope (context.md)); recorded by claude-code (claude-opus-5-5) on hc t37j; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -53,9 +55,7 @@
     "BUG-cases-record-and-evidence-add-do-not-return-the-observation-id-they-rec-78216c78f69992204ef6d8da"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Scope approval of return-the-observation-id-from-cases-record-and-evidence-add-issue-60"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Native definition approval (blocked: this agent's permission classifier refuses approve as 0xLeif), then specsync change check, rerun both cases after materialization, commit, check --commit, review, ship, push, merge on green CI."
 }
