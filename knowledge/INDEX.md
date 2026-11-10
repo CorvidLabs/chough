@@ -99,8 +99,9 @@ Archived lesson bundles:
 
 ## Observations
 
-592 recorded; most recent:
+593 recorded; most recent:
 
+- OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c ProductTest Passed in local-macos-arm64 at 0b06b173afa3
 - OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f ProductTest Passed in local-macos-arm64 at e659153cdb87
 - OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc ProductTest Passed in local-macos-arm64 at e659153cdb87
 - OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287 ProductTest Failed in local-macos-arm64 at e659153cdb87
@@ -110,7 +111,6 @@ Archived lesson bundles:
 - OBS-tc-cli-inventory-aliases-af56a469e54a2db6ce7b3a29 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-58c5786905be80e97b73ffe0 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 
 ## Briefs
 

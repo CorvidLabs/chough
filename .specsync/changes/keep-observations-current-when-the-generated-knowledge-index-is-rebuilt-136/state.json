@@ -7,10 +7,11 @@
   "title": "Keep observations current when the generated knowledge index is rebuilt (#136)",
   "description": "Keep observations current when the generated knowledge index is rebuilt (#136)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "996dadc2d26b200a7f745215ef9c151304107e05",
   "created_at": 1794327470,
-  "updated_at": 1794345424,
+  "updated_at": 1794350693,
   "affected_specs": [
     "cli"
   ],

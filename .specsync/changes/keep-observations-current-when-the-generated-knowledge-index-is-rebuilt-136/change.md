@@ -1,6 +1,6 @@
 ---
 id: keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136
-state: draft
+state: implementing
 type: bug_fix
 base_commit: 996dadc2d26b200a7f745215ef9c151304107e05
 ---

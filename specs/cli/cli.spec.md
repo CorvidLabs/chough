@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 82
+version: 83
 status: active
 files:
   - src/main.rs
@@ -380,3 +380,4 @@ provider, runtime or hosted service.
 | 80 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |
 | 81 | 2026-11-09 | recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits: Recognize pristine skills from pinned released bundles without replacing edits |
 | 82 | 2026-11-10 | read-bounded-diagnostic-input-inventories-without-changing-freshness-authority: Read bounded diagnostic input inventories without changing freshness authority |
+| 83 | 2026-11-10 | keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136: Keep observations current when the generated knowledge index is rebuilt (#136) |

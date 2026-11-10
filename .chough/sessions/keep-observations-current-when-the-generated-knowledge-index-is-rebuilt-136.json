@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d5d17fdf121feedf83242044",
-    "head": null,
+    "head": "EVT-e0ae4e3aeada4124f1df7575",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "intent",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -28,7 +28,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "Scope approval recorded natively as 0xLeif under Leif's 2026-11-10 merge rule (relayed by coordinator hc t370, which also relayed that Leif allowed specsync approve/review for this worker): bug fixes matching existing specs/requirements/hi run the full lifecycle with 0xLeif as approve/review actor and squash-merge on green CI with every review thread resolved. Covers #136 only. Recorded by Claude Code worker hc t37j; a relayed claim, not authenticated."
+  ],
   "open_questions": [],
   "completed": [
     "Failing tests: e659153c"
@@ -36,13 +38,16 @@
   "observations": [
     "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287",
     "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc",
-    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f"
+    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f",
+    "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c"
   ],
   "bugs": [
     "BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef"
   ],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136"
+  ],
   "run_consents": [],
-  "next_action": "Native definition approval (blocked: this agent's permission classifier refuses approve as 0xLeif), then specsync change check, rerun TC-cli-knowledge-rebuild-keeps-observation-current after materialization, commit, check --commit, review, ship, push, merge on green CI."
+  "next_action": "Review and ship keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136 under the merge rule, push the archive, merge on green CI."
 }
