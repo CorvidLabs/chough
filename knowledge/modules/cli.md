@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 141
+archived_changes: 142
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-141 archived changes, newest first.
+142 archived changes, newest first.
 
+- [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](../archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](../archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](../archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits
@@ -42,5 +43,4 @@ this note only links them.
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
 - [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4)
-- [keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58](../archives/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.md) Keep hidden state panels hidden in the prototype template whatever display rules a project adds (#58)
-- 131 more on the [timeline](../timeline.md)
+- 132 more on the [timeline](../timeline.md)

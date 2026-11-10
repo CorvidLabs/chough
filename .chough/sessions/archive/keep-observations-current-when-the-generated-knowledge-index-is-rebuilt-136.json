@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d5d17fdf121feedf83242044",
-    "head": "EVT-e0ae4e3aeada4124f1df7575",
+    "head": "EVT-3bca1b27630918a7c93783b5",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -29,7 +29,8 @@
     "files": []
   },
   "decisions": [
-    "Scope approval recorded natively as 0xLeif under Leif's 2026-11-10 merge rule (relayed by coordinator hc t370, which also relayed that Leif allowed specsync approve/review for this worker): bug fixes matching existing specs/requirements/hi run the full lifecycle with 0xLeif as approve/review actor and squash-merge on green CI with every review thread resolved. Covers #136 only. Recorded by Claude Code worker hc t37j; a relayed claim, not authenticated."
+    "Scope approval recorded natively as 0xLeif under Leif's 2026-11-10 merge rule (relayed by coordinator hc t370, which also relayed that Leif allowed specsync approve/review for this worker): bug fixes matching existing specs/requirements/hi run the full lifecycle with 0xLeif as approve/review actor and squash-merge on green CI with every review thread resolved. Covers #136 only. Recorded by Claude Code worker hc t37j; a relayed claim, not authenticated.",
+    "0xLeif decided \"Implementation review of keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136\": \"bug fixes, meaning work that makes behaviour match the existing specs/requirements/hi, may run the full SpecSync lifecycle with 0xLeif as approve/review actor and squash-merge once CI is green and every review thread is resolved\" (Leif's merge rule, 2026-11-10, relayed by coordinator Claude Code (hc t370) to worker hc t37j; Leif also approved allowing specsync approve/review for this worker); recorded by claude-code (claude-opus-5-5) on hc t37j; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -45,9 +46,7 @@
     "BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef"
   ],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Review and ship keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136 under the merge rule, push the archive, merge on green CI."
 }
