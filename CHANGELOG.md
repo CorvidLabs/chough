@@ -13,6 +13,7 @@ All notable changes to Chough are recorded here. The format follows
   keeps its bytes. Older builds refuse a record holding `actor` (unknown field), so
   the oldest Chough that reads such a record is 0.6.0, the first release with this
   change. 0.5.0 does not read it.
+
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).
