@@ -49,7 +49,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-installation-observation-48008674b01d6e137c95d956 | passed (by cycle time) | macos-arm64-cargo-1.99.0 |  |
+| OBS-installation-observation-48008674b01d6e137c95d956 | passed (pruned) (by cycle time) | macos-arm64-cargo-1.99.0 |  |
 | OBS-product-test-3df243412063021fb3800669 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-c727fa6d2f004d10b1d511f8 | passed (by cycle time) | linux-aarch64-docker-chough-linux-1-2-3 |  |
 | OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
@@ -94,4 +94,6 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
+- [artifacts/release-0.5.0/clean-install-macos-arm64.log](../attachments/keep-hidden-3da8628d/artifacts/release-0.5.0/clean-install-macos-arm64.log)
+- [evidence/OBS-installation-observation-48008674b01d6e137c95d956.json](../attachments/keep-hidden-3da8628d/evidence/OBS-installation-observation-48008674b01d6e137c95d956.json)
 - [sessions/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.json](../attachments/keep-hidden-3da8628d/sessions/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.json)

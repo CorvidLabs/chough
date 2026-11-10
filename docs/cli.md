@@ -1038,7 +1038,8 @@ The label keeps its name for JSON compatibility, but the revision alone no longe
 stales an observation. Each record still stores the HEAD revision, shown in status,
 next and the library index and used for regression-baseline ancestry; freshness
 compares a working content identity (`snapshot.content`, a SHA-256 digest). It covers
-every tracked or untracked non-ignored file except `.chough/`, `target/` and SpecSync
+every tracked or untracked non-ignored file except `.chough/`, `target/`, the generated
+knowledge directory (the configured `library-dir`, `knowledge/` by default) and SpecSync
 lifecycle bookkeeping: the top-level `state.json`, `approvals.json`,
 `verification.json`, `verification-attempts.json`, `review.json`,
 `review-attempts.json`, `finalization.json`, `accepted-state.json` and

@@ -118,8 +118,9 @@ observations; see [release.md](release.md).
 `chough cases run` and `chough evidence add` record with an observation the Git
 revision, a working content identity, the environment, artifacts and, for cases, the
 definition digest. Freshness compares the content identity, not the revision: it
-covers every tracked or untracked non-ignored file except `.chough/`, `target/` and
-SpecSync lifecycle bookkeeping (a change's `state.json`, `approvals.json`,
+covers every tracked or untracked non-ignored file except `.chough/`, `target/`, the
+generated knowledge directory (`knowledge/` by default) and SpecSync lifecycle
+bookkeeping (a change's `state.json`, `approvals.json`,
 `verification.json`, `verification-attempts.json`, `review.json`,
 `review-attempts.json`, `finalization.json`, `accepted-state.json`,
 `lesson-bundle.md` and the front-matter `state:` value of `change.md`). So committing
