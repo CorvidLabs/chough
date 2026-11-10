@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping (active; `specsync change status capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping`)
 
 Archived changes (newest first; the newest 3 are hot):
 

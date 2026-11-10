@@ -1,0 +1,55 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-cb50b361cc5e91b8c111702c",
+    "head": "EVT-0adae55c2cb8c27aaa63eee4",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Turn the 2026-11-10 MVP interview into hi capture, a 1.0 roadmap, a test plan and a draft issue list",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping",
+  "references": {
+    "criteria": [
+      "FLOW-21",
+      "FLOW-22",
+      "DRIVE-24",
+      "KNOW-30",
+      "LIFE-17",
+      "LIFE-18",
+      "LIFE-19",
+      "LIFE-20",
+      "LIFE-21",
+      "LIFE-22",
+      "LIFE-23",
+      "LIFE-24",
+      "LIFE-25"
+    ],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Criteria drafted from the 2026-11-10 MVP interview and the same-day issue decisions on #14, #165, #167 and #201"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Wrote docs/roadmap-1.0.md (milestones M1-M7 tied to the four bar items, session slug-folder migration design) and docs/test-plan-1.0.md (dogfood checklist, flake tracker and clean window, migration fixtures, host-matrix harness); linked both from README and docs/ROADMAP.md",
+    "Completed the native change artifacts (context, docs, design, tasks) after the verify lane's audit step refused the TODO placeholders"
+  ],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [
+    "Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping"
+  ],
+  "run_consents": [],
+  "next_action": "When the verify lane is green: commit hi, docs, session and change files; push; open the PR with the draft issue list; report to hc t370"
+}
