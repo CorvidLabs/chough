@@ -7,10 +7,11 @@
   "title": "KNOW-29 roll-up copies never moves tracked session records (#165)",
   "description": "KNOW-29 roll-up copies never moves tracked session records (#165)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "5359f42550362eebac3eef28d4df34639ffeb9c2",
   "created_at": 1794330144,
-  "updated_at": 1794330175,
+  "updated_at": 1794330301,
   "affected_specs": [
     "history"
   ],
