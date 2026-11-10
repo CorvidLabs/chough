@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-knowledge-rebuild-keeps-observation-current"
+title = "Rebuilding the knowledge index keeps a listed observation current"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-004"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["a passed case observation reads current, chough library index lists it in knowledge/INDEX.md, and it still reads current afterwards"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "rebuilding_the_knowledge_index_keeps_the_observation_current"

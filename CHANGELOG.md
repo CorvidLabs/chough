@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Rebuilding the knowledge index no longer makes the observations it lists stale: the
+  working content identity leaves out the generated knowledge directory (#136, REQ-cli-004).
+
 - Read strict bounded optional v1 diagnostic input inventories while preserving
   aggregate freshness and original observations; reject noncanonical inventory paths.
 

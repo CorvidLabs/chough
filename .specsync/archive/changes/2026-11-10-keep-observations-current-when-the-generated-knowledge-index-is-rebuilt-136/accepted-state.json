@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136",
+  "slug": "keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136",
+  "title": "Keep observations current when the generated knowledge index is rebuilt (#136)",
+  "description": "Keep observations current when the generated knowledge index is rebuilt (#136)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "996dadc2d26b200a7f745215ef9c151304107e05",
+  "created_at": 1794327470,
+  "updated_at": 1794350879,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/evidence.rs",
+    ".chough/cases/cli.knowledge-rebuild-136.cases.toml",
+    "docs/cli.md",
+    "docs/architecture.md",
+    "docs/FRD.md",
+    "specs/cli/cli.spec.md",
+    "skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/skill_releases.rs",
+    "CHANGELOG.md",
+    "knowledge/"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Rebuilding the knowledge index (chough library index) after recording an observation leaves that observation current: the regression records a passed case observation, confirms current, rebuilds knowledge/INDEX.md (which lists the observation) and confirms it is still current. The configured library-dir name is honored; the legacy fingerprint byte stream is unchanged for older records; .chough/, target/ and SpecSync bookkeeping exclusions behave as before."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "yes"
+  }
+}

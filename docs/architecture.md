@@ -194,7 +194,8 @@ A criterion such as LIFE-2 stays durable. An observation says a particular check
 reported as passed, failed or not run, for specific inputs and an environment. Each
 observation records the Git revision, which is shown and used for regression
 ancestry but not compared. Freshness compares a working content identity that covers
-every tracked or untracked non-ignored file except `.chough/`, `target/` and SpecSync
+every tracked or untracked non-ignored file except `.chough/`, `target/`, the generated
+knowledge directory (the configured `library-dir`, `knowledge/` by default) and SpecSync
 lifecycle bookkeeping (a change's state, approval, verification, review,
 finalization, accepted-state and lesson-bundle records and the front-matter `state:`
 of `change.md`); a change's deltas and other artifacts stay covered wherever the

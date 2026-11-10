@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 166
+archived_changes: 167
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136) (hot)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit (hot)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (hot)
-- [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (hot)
+- [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (cold)
 - [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113) (cold)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (cold)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18) (cold)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (cold)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals (cold)
 - [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](archives/update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording.md) Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording (cold)
-- [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation (cold)
-- All 166 archived changes, by month: [timeline.md](timeline.md)
+- All 167 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](../.specsync/archive/changes/2026-11-10-keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136/lesson-bundle.md)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../.specsync/archive/changes/2026-11-10-make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit/lesson-bundle.md)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](../.specsync/archive/changes/2026-11-10-read-bounded-diagnostic-input-inventories-without-changing-freshness-authority/lesson-bundle.md)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](../.specsync/archive/changes/2026-11-10-move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../.specsync/archive/changes/2026-11-07-make-evidence-prune-apply-recheck-protections-and-restore-partial-removals/lesson-bundle.md)
 - [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](../.specsync/archive/changes/2026-11-07-update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording/lesson-bundle.md)
-- [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-07-mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -94,24 +94,23 @@ Archived lesson bundles:
 - BUG-an-empty-change-directory-left-by-a-branch-switch-counts-as-an-open-nat-505311f29b37d46cccc197e6 An empty change directory left by a branch switch counts as an open native change (open, out-of-scope, unverified)
 - BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79 Full macOS lane checkpoint writer lock timeout (open, out-of-scope, reproduced-and-later-passed)
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
-- BUG-rebuilding-the-knowledge-index-after-recording-an-observation-makes-tha-1e3c3ae5fbe4e8987cf025ef Rebuilding the knowledge index after recording an observation makes that observation stale (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 - BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
 
 ## Observations
 
-589 recorded; most recent:
+592 recorded; most recent:
 
+- OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c ProductTest Passed in local-macos-arm64 at 0b06b173afa3
+- OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f ProductTest Passed in local-macos-arm64 at e659153cdb87
+- OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc ProductTest Passed in local-macos-arm64 at e659153cdb87
+- OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287 ProductTest Failed in local-macos-arm64 at e659153cdb87
 - OBS-structural-28551a0cdbe9c0ab26005f41 Structural Passed in local-macos-arm64 at 7cf73cbe8018
 - OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-aliases-af56a469e54a2db6ce7b3a29 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-58c5786905be80e97b73ffe0 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 
 ## Briefs
 
