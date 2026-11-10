@@ -735,7 +735,13 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         duration_seconds: None,
     };
     let name = record(root, &evidence)?;
-    print_json(&json!({"schema_version": 1, "recorded": name, "provenance": evidence.provenance}))
+    // The stored ID, so automation never parses it out of `recorded` (#60).
+    print_json(&json!({
+        "schema_version": 1,
+        "observation": evidence.id,
+        "recorded": name,
+        "provenance": evidence.provenance,
+    }))
 }
 
 pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {

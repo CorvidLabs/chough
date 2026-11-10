@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 83
+version: 84
 status: active
 files:
   - src/main.rs
@@ -381,3 +381,4 @@ provider, runtime or hosted service.
 | 81 | 2026-11-09 | recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits: Recognize pristine skills from pinned released bundles without replacing edits |
 | 82 | 2026-11-10 | read-bounded-diagnostic-input-inventories-without-changing-freshness-authority: Read bounded diagnostic input inventories without changing freshness authority |
 | 83 | 2026-11-10 | keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136: Keep observations current when the generated knowledge index is rebuilt (#136) |
+| 84 | 2026-11-10 | return-the-observation-id-from-cases-record-and-evidence-add-issue-60: Return the observation ID from cases record and evidence add (issue 60) |

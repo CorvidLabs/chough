@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
+  `observation`, beside their existing keys, so automation no longer parses the ID out
+  of `recorded` (#60, REQ-cli-011, REQ-cli-017).
+
 - `chough session new` and `session use` keep a finished session that still holds an open
   human gate open, reporting it under `kept_open` with its gate count and recovery,
   instead of archiving the gate silently (#181, REQ-history-006).
