@@ -356,6 +356,15 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     )?;
     crate::records::trace_phase("snapshot.git-enumeration", phase);
     let phase = Instant::now();
+    // The generated knowledge directory (the librarian's index, notes and vault
+    // attachments) is Chough's own generated output: rebuilding it must not make
+    // the observations it lists stale (#136, REQ-cli-004). The legacy fingerprint
+    // keeps its exact byte stream for older records, so the exclusion applies only
+    // to the content identity and the dirty flag.
+    let library_dir = crate::prefs::effective(root, "library-dir")
+        .map_or_else(|_| "knowledge".to_string(), |(value, _)| value);
+    let in_library =
+        |name: &str| name == library_dir || name.starts_with(&format!("{library_dir}/"));
     let mut files = BTreeSet::new();
     for bytes in list
         .stdout
@@ -372,6 +381,9 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     // ordinary path can collide with one.
     let mut entries = vec![];
     for name in &files {
+        if in_library(name) {
+            continue;
+        }
         match fingerprint_key(name) {
             Key::Skip => {}
             Key::Path(key) => entries.push((0_u8, key, name.to_string(), false)),
@@ -431,7 +443,7 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     let dirty = String::from_utf8(dirty_output.stdout)?.lines().any(|line| {
         line.get(3..)
             .and_then(|name| name.strip_prefix(prefix.as_str()))
-            .is_some_and(|name| fingerprint_key(name) != Key::Skip)
+            .is_some_and(|name| !in_library(name) && fingerprint_key(name) != Key::Skip)
     });
     crate::records::trace_phase("snapshot.git-status", phase);
     Ok(Snapshot {

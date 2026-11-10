@@ -1,9 +1,0 @@
-   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-queue-113-missing-log)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.95s
-     Running tests/sessions.rs (/private/tmp/chough113-missing-log/target/debug/deps/sessions-79ce5b9ccf473113)
-
-thread 'an_inbox_add_killed_while_writing_leaves_no_partial_entry' (588057633) panicked at tests/sessions.rs:961:5:
-the add was not stopped while writing: Output { status: ExitStatus(unix_wait_status(256)), stdout: "", stderr: "Error: writing .chough/sessions/beta.inbox/INB-3aa44e6bdbd047ab5602afd5.json\n\nCaused by:\n    File too large (os error 27)\n" }
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-error: test failed, to rerun pass `--test sessions`
-error: Task 'test' failed with exit code 101
