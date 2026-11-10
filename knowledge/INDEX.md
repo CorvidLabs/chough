@@ -47,6 +47,7 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit (hot)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (hot)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (hot)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (hot)
@@ -71,6 +72,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../.specsync/archive/changes/2026-11-10-make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit/lesson-bundle.md)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](../.specsync/archive/changes/2026-11-10-read-bounded-diagnostic-input-inventories-without-changing-freshness-authority/lesson-bundle.md)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](../.specsync/archive/changes/2026-11-10-move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence/lesson-bundle.md)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](../.specsync/archive/changes/2026-11-10-recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits/lesson-bundle.md)
@@ -101,6 +103,7 @@ Archived lesson bundles:
 ## Observations
 
 580 recorded; most recent:
+596 recorded; most recent:
 
 - OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0
