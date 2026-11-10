@@ -147,13 +147,7 @@ fn surviving_children(fixture: &Fixture) -> Vec<String> {
     fs::read_to_string(fixture.root().join(".stub-children"))
         .unwrap_or_default()
         .lines()
-        .filter(|pid| {
-            std::process::Command::new("kill")
-                .args(["-0", pid])
-                .stderr(std::process::Stdio::null())
-                .status()
-                .is_ok_and(|status| status.success())
-        })
+        .filter(|pid| common::alive(pid))
         .map(str::to_string)
         .collect()
 }

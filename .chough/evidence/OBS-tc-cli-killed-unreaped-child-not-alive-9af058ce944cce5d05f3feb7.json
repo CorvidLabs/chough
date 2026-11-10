@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7",
+  "criteria": [
+    "DRIVE-19"
+  ],
+  "requirements": [
+    "REQ-cli-053"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test native -- --exact a_killed_unreaped_child_is_not_alive_but_a_running_child_is for TC-cli-killed-unreaped-child-not-alive: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7.log": "864b1bfa5a10720a6936231679c2da4a1d24d0c05702a684759003af81bd063b"
+  },
+  "observed_at_unix_seconds": 1794022677,
+  "snapshot": {
+    "revision": "599ff184c3a42d94ce6728eaa0f9bb17cd5b19ea",
+    "dirty": false,
+    "fingerprint": "96ccc115b5faac79584a7df3cce20732185b07dc332b84c7ff25b7a8cee887c0",
+    "content": "f8d14e8410f7a3406713757322acc71fee5f59b73698155987b4fff52cb58d41"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-killed-unreaped-child-not-alive",
+      "digest": "396594f0e7fc724973b186bd3d95a7b0bc1ec07c31e7fecc9b3546c1ee069836"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "native",
+    "--",
+    "--exact",
+    "a_killed_unreaped_child_is_not_alive_but_a_running_child_is"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

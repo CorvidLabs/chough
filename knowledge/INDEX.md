@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 164
+archived_changes: 166
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit (hot)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (hot)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (hot)
-- [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (hot)
+- [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113) (cold)
+- [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (cold)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18) (cold)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (cold)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals (cold)
 - [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](archives/update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording.md) Update the REQ-reporting-001 spec-split digest pin for 189's direct-native-write wording (cold)
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation (cold)
-- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) (cold)
-- [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md) After the move into done, chough library index --check passes with no command in between: session notes link archive notes from their sources, and the knowledge directory is regenerated after the session archives itself (#191, KNOW-4) (cold)
-- All 164 archived changes, by month: [timeline.md](timeline.md)
+- All 166 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,16 +71,16 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../.specsync/archive/changes/2026-11-10-make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit/lesson-bundle.md)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](../.specsync/archive/changes/2026-11-10-read-bounded-diagnostic-input-inventories-without-changing-freshness-authority/lesson-bundle.md)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](../.specsync/archive/changes/2026-11-10-move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence/lesson-bundle.md)
+- [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](../.specsync/archive/changes/2026-11-10-refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113/lesson-bundle.md)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](../.specsync/archive/changes/2026-11-10-recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits/lesson-bundle.md)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](../.specsync/archive/changes/2026-11-08-explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18/lesson-bundle.md)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../.specsync/archive/changes/2026-11-07-make-evidence-prune-apply-recheck-protections-and-restore-partial-removals/lesson-bundle.md)
 - [update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording](../.specsync/archive/changes/2026-11-07-update-the-req-reporting-001-spec-split-digest-pin-for-189-s-direct-native-write-wording/lesson-bundle.md)
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-07-mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md)
-- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../.specsync/archive/changes/2026-11-07-chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21/lesson-bundle.md)
-- [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../.specsync/archive/changes/2026-11-07-after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -100,8 +100,9 @@ Archived lesson bundles:
 
 ## Observations
 
-580 recorded; most recent:
+589 recorded; most recent:
 
+- OBS-structural-28551a0cdbe9c0ab26005f41 Structural Passed in local-macos-arm64 at 7cf73cbe8018
 - OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-aliases-af56a469e54a2db6ce7b3a29 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
@@ -111,7 +112,6 @@ Archived lesson bundles:
 - OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 
 ## Briefs
 

@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 6
-archived_changes: 27
+archived_changes: 28
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched history
 
-27 archived changes, newest first.
+28 archived changes, newest first.
 
+- [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](../archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
@@ -42,5 +43,4 @@ this note only links them.
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)
 - [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
 - [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md) Keep the archived session that holds the legacy history anchor out of the roll-up (143)
-- [pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19](../archives/pin-every-history-and-inbox-bound-at-exactly-its-value-154-ch-19.md) Pin every history and inbox bound at exactly its value (154, CH-19)
-- 17 more on the [timeline](../timeline.md)
+- 18 more on the [timeline](../timeline.md)
