@@ -49,6 +49,57 @@
         "cli: REQUIREMENT REQ-cli-021": "50ee47dbbf5089f5f6a8a58379658e2c497a77785007b58aae7a8d2aaf47160f",
         "reporting: REQUIREMENT REQ-reporting-001": "00cd7cd611c3323a841114b01d22be4a3a165dbab07da6236ea8967cbe9b2a69"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794332931,
+      "digest": "117a456030b12767cd1e97ae6c9aaee91dfd3502aff948d34e58d7b1d8f19fe2",
+      "note": "Re-approved after send-back for path coverage only; scope unchanged (Leif 2026-11-10 on #167, relayed by coordinator t370)",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "append-only-event-corrections-with-chough-correct-never-rewriting-history-167",
+        "title": "Append-only event corrections with chough correct, never rewriting history (#167)",
+        "description": "Append-only event corrections with chough correct, never rewriting history (#167)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history",
+          "reporting"
+        ],
+        "affected_paths": [
+          "README.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/history.rs",
+          "src/main.rs",
+          "src/stage.rs",
+          "src/timing.rs",
+          "tests/history.rs",
+          "tests/spec_split.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough correct <event> --reason appends a correction event naming its EVT- target with the corrected statement in the active session's current cycle; the target's bytes are unchanged; unknown ids, blank or oversized statements and correcting a correction are refused with nothing written; next and status show the correction with its target; timing treats the kind as known with no stage segment."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "5a6355f3cb6aaed4c80ba534445709ec4db93b0ee2442a8131a484157ec8119d",
+        "history": "2c809798826645d29f3ce45f9a89d74caa5d01536332cdf15a2bd221758ad7d4",
+        "reporting": "b7692c19ad0e806d008eae3bee9754f13b703e7c4dce9cab24495802a2d1306c"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-021": "50ee47dbbf5089f5f6a8a58379658e2c497a77785007b58aae7a8d2aaf47160f",
+        "reporting: REQUIREMENT REQ-reporting-001": "00cd7cd611c3323a841114b01d22be4a3a165dbab07da6236ea8967cbe9b2a69"
+      }
     }
   ],
   "reopenings": [],

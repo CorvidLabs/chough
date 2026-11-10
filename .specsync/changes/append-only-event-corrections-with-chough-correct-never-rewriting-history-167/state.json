@@ -7,10 +7,11 @@
   "title": "Append-only event corrections with chough correct, never rewriting history (#167)",
   "description": "Append-only event corrections with chough correct, never rewriting history (#167)",
   "kind": "feature",
-  "state": "draft",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "00c34d65d3eb9c56b8f24ed471fcc4e71ebbd90f",
   "created_at": 1794332397,
-  "updated_at": 1794332926,
+  "updated_at": 1794332947,
   "affected_specs": [
     "history",
     "reporting",
