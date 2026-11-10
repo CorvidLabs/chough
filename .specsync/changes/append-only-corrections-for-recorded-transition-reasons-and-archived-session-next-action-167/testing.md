@@ -5,4 +5,4 @@ artifact: testing
 
 # Testing
 
-Planned, after approval: RED regressions for appending a correction to a recorded event, surfacing it in history show/next/status and for an archived session's next_action, and proof that the original event bytes and digests are unchanged.
+Done: RED regressions for appending a correction to a recorded event, surfacing it in history show/next/status and for an archived session's next_action, and proof that the original event bytes and digests are unchanged.

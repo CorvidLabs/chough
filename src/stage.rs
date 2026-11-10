@@ -266,7 +266,35 @@ pub(super) fn validate_direct_write(transition: &Transition) -> Result<()> {
 /// Every check of a transition's optional records.
 pub(super) fn validate_records(transition: &Transition) -> Result<()> {
     validate_relay(transition)?;
-    validate_direct_write(transition)
+    validate_direct_write(transition)?;
+    validate_correction(transition)
+}
+
+fn validate_correction(transition: &Transition) -> Result<()> {
+    match (transition.kind.as_str() == CORRECTION, &transition.correction) {
+        (true, Some(correction)) => {
+            ensure!(
+                crate::history::is_event_id(&correction.target),
+                "a correction names an EVT- event id"
+            );
+            ensure!(
+                !correction.statement.trim().is_empty(),
+                "a correction statement must not be blank"
+            );
+            ensure!(
+                correction.statement.len() <= 4096,
+                "a correction statement exceeds 4096 bytes"
+            );
+            ensure!(
+                transition.reason.is_none() && transition.gate.is_none(),
+                "a correction carries its statement, not a reason or gate"
+            );
+            Ok(())
+        }
+        (true, None) => bail!("a correction event names its target"),
+        (false, Some(_)) => bail!("correction payload on kind {}", transition.kind),
+        (false, None) => Ok(()),
+    }
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -294,6 +322,18 @@ pub(super) struct Transition {
     /// Present only on a `direct-native-write` event (REQ-history-013).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) direct_write: Option<DirectWrite>,
+    /// Present only on a `correction` event (#167).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) correction: Option<Correction>,
+}
+
+/// An append-only correction of the event `target`, with the corrected statement
+/// (#167). The original event keeps its bytes.
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct Correction {
+    pub(super) target: String,
+    pub(super) statement: String,
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -1480,6 +1520,7 @@ fn log_transition_at(
         backfill,
         relayed_by,
         direct_write: None,
+            correction: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
@@ -1499,6 +1540,7 @@ fn log_transition_at(
                 backfill: None,
                 relayed_by: None,
                 direct_write: Some(write),
+                correction: None,
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;
@@ -1524,6 +1566,9 @@ pub(super) const STAGE_KINDS: [&str; 9] = [
 pub(super) const GATE_OPENED: &str = "gate-opened";
 /// A human gate was cleared from `awaiting_human`.
 pub(super) const GATE_CLOSED: &str = "gate-closed";
+/// An append-only correction of an earlier event; it starts or ends no stage segment
+/// and never rewrites the event it names (#167).
+pub(super) const CORRECTION: &str = "correction";
 
 /// Append a gate record: when a gate opened or was cleared, in the current stage, with
 /// the gate text as its reason. It never records who decided or what was decided.
@@ -1550,6 +1595,38 @@ pub(super) fn log_gate(
         None,
         relayed_by,
     )
+}
+
+/// Append an append-only correction of `target` with the corrected statement, in the
+/// current stage. It starts or ends no stage segment and never rewrites the event it
+/// names (#167).
+pub(super) fn log_correction(
+    root: &Path,
+    session: &mut Checkpoint,
+    target: &str,
+    statement: &str,
+    stage: &str,
+) -> Result<()> {
+    let transition = Transition {
+        schema_version: 1,
+        at_unix_seconds: now()?,
+        kind: CORRECTION.into(),
+        from: stage.into(),
+        to: stage.into(),
+        reason: None,
+        gate: None,
+        revision: head_revision(root),
+        refresh: vec![],
+        backfill: None,
+        relayed_by: None,
+        direct_write: None,
+        correction: Some(Correction {
+            target: target.into(),
+            statement: statement.into(),
+        }),
+    };
+    validate_records(&transition)?;
+    crate::history::append(root, session, transition)
 }
 
 pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value>, bool)> {

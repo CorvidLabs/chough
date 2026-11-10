@@ -4,7 +4,7 @@
 use crate::checkpoint::{Checkpoint, read_checkpoint, save_checkpoint};
 use crate::records::{local_path, now, print_json};
 use crate::{evidence, prefs, stage};
-use anyhow::{Context, Result, ensure};
+use anyhow::{Context, Result, bail, ensure};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -114,6 +114,11 @@ pub(super) enum HistoryCommand {
 
 fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
+}
+
+/// Whether `id` is a well-formed event id.
+pub(super) fn is_event_id(id: &str) -> bool {
+    valid_id(id, "EVT-")
 }
 
 fn valid_id(id: &str, prefix: &str) -> bool {
@@ -314,7 +319,7 @@ fn validate_payload(transition: &stage::Transition) -> Result<()> {
         stage::STAGE_KINDS.contains(&transition.kind.as_str())
             || matches!(
                 transition.kind.as_str(),
-                stage::GATE_OPENED | stage::GATE_CLOSED | stage::DIRECT_WRITE
+                stage::GATE_OPENED | stage::GATE_CLOSED | stage::DIRECT_WRITE | stage::CORRECTION
             ),
         "unknown transition kind"
     );
@@ -452,7 +457,7 @@ fn parse_event(bytes: &[u8], cycle: &str, id: &str) -> Result<Event> {
         stage::STAGE_KINDS.contains(&event.transition.kind.as_str())
             || matches!(
                 event.transition.kind.as_str(),
-                stage::GATE_OPENED | stage::GATE_CLOSED | stage::DIRECT_WRITE
+                stage::GATE_OPENED | stage::GATE_CLOSED | stage::DIRECT_WRITE | stage::CORRECTION
             ),
         "unknown transition kind at {path}"
     );
@@ -1715,6 +1720,100 @@ pub(super) fn adopt(root: &Path, apply: bool) -> Result<Value> {
     )
 }
 
+/// `chough correct <event> --reason <text>`: append a correction event linked to the
+/// named event, never rewriting it (#167). The correction lands in the active
+/// session's current cycle and names its target; readers show it beside what it
+/// corrects.
+pub(super) fn correct(root: &Path, target: &str, statement: &str) -> Result<Value> {
+    ensure!(is_event_id(target), "no event {target}: corrections name an EVT- id");
+    ensure!(
+        !statement.trim().is_empty(),
+        "a correction statement must not be blank"
+    );
+    ensure!(
+        statement.len() <= 4096,
+        "a correction statement exceeds 4096 bytes"
+    );
+    let cycles = local_path(root, &format!("{ROOT}/cycles"))?;
+    let mut found = None;
+    if cycles.is_dir() {
+        for entry in fs::read_dir(&cycles)? {
+            let entry = entry?;
+            let Some(cycle) = entry.file_name().to_str().map(str::to_string) else {
+                continue;
+            };
+            let relative = event_path(&cycle, target)?;
+            if local_path(root, &relative)?.is_file() {
+                let bytes = bounded_bytes(root, &relative, EVENT_BYTES)?;
+                let event: Event = serde_json::from_slice(&bytes)
+                    .with_context(|| format!("invalid history event {relative}"))?;
+                found = Some(event);
+                break;
+            }
+        }
+    }
+    let Some(target_event) = found else {
+        bail!("no recorded event {target}")
+    };
+    ensure!(
+        target_event.transition.kind != stage::CORRECTION,
+        "correct the event a correction names, not the correction itself"
+    );
+    let mut session = crate::checkpoint::read_checkpoint(root)?;
+    let current = session.stage.current.clone();
+    stage::log_correction(root, &mut session, target, statement, &current)?;
+    crate::checkpoint::save_checkpoint(root, &session)?;
+    let id = session
+        .history_cursor
+        .as_ref()
+        .and_then(|cursor| cursor.head.clone())
+        .unwrap_or_default();
+    Ok(json!({
+        "schema_version": 1,
+        "corrected": target,
+        "event": id,
+        "statement": statement,
+        "provenance": "append-only correction; the original event keeps its bytes",
+    }))
+}
+
+/// The corrections recorded in `cycle`, oldest first, as
+/// `{event, target, statement}` entries for `next` and `status` (#167).
+pub(super) fn corrections_in_cycle(root: &Path, cycle: &str) -> Vec<Value> {
+    let mut corrections = vec![];
+    let Ok(directory) = local_path(root, &format!("{ROOT}/cycles/{cycle}")) else {
+        return corrections;
+    };
+    let Ok(entries) = fs::read_dir(directory) else {
+        return corrections;
+    };
+    for entry in entries.flatten() {
+        let Ok(name) = entry.file_name().into_string() else {
+            continue;
+        };
+        let Ok(relative) = event_path(cycle, name.trim_end_matches(".json")) else {
+            continue;
+        };
+        let Ok(bytes) = bounded_bytes(root, &relative, EVENT_BYTES) else {
+            continue;
+        };
+        let Ok(event) = serde_json::from_slice::<Event>(&bytes) else {
+            continue;
+        };
+        if event.transition.kind == stage::CORRECTION
+            && let Some(correction) = event.transition.correction
+        {
+            corrections.push(json!({
+                "event": event.id,
+                "target": correction.target,
+                "statement": correction.statement,
+            }));
+        }
+    }
+    corrections.sort_by_key(|correction| correction["event"].as_str().unwrap_or_default().to_string());
+    corrections
+}
+
 pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {
     let _budget = matches!(command, HistoryCommand::Show | HistoryCommand::Prune { .. })
         .then(maintenance_budget);
@@ -1757,6 +1856,7 @@ mod tests {
             backfill: None,
             relayed_by: None,
             direct_write: None,
+            correction: None,
         }
     }
 

@@ -5,4 +5,4 @@ artifact: requirements
 
 # Requirements
 
-Would add a new history requirement for append-only corrections (new REQ-history ID) and touch REQ-history-002's immutability wording to name the correction record explicitly. No delta is drafted: the requirement IDs and wording are the human's at scope approval.
+Adds REQ-history-015 (delta drafted in deltas/history.md) per Leif's 2026-11-10 decision on #167: append-only `chough correct <event> --reason`, history never rewritten, next and status show the correction. REQ-history-002's immutability is untouched: corrections are new events. No existing criterion reworded.

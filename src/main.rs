@@ -84,6 +84,15 @@ enum Commands {
         #[arg(long)]
         json: bool,
     },
+    /// Append an append-only correction linked to a recorded transition event, never
+    /// rewriting it; next and status show the correction beside what it corrects (#167).
+    Correct {
+        /// The EVT- event id the correction names.
+        event: String,
+        /// The corrected statement.
+        #[arg(long)]
+        reason: String,
+    },
     /// Explicitly migrate a schema 1 session, keeping its original bytes.
     Migrate {
         #[arg(long, default_value = "intent")]
@@ -234,6 +243,9 @@ fn main() -> Result<()> {
             environment,
             json: as_json,
         } => print!("{}", next(&root, environment.as_deref(), as_json)?),
+        Commands::Correct { event, reason } => {
+            print_json(&history::correct(&root, &event, &reason)?)?
+        }
         Commands::Migrate { stage } => checkpoint::migrate(&root, &stage)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
@@ -458,6 +470,11 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         Session::V2(checkpoint) => json!({
             "schema": 2,
             "stage": checkpoint.stage,
+            "corrections": checkpoint
+                .history_cursor
+                .as_ref()
+                .map(|cursor| history::corrections_in_cycle(root, &cursor.cycle))
+                .unwrap_or_default(),
             "native_change": checkpoint.native_change,
             "gate": assessment.gate.as_ref().map(|(target, gate)| json!({"to": target, "allowed": gate.allowed, "label": gate.label, "detail": gate.detail})),
             "valid_transitions": stage::valid_transitions(checkpoint),
@@ -804,9 +821,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         Session::V2(checkpoint) => &checkpoint.modules,
         Session::V1(session) => &session.modules,
     };
+    let corrections = checkpoint
+        .and_then(|checkpoint| checkpoint.history_cursor.as_ref())
+        .map(|cursor| history::corrections_in_cycle(root, &cursor.cycle))
+        .unwrap_or_default();
     let view = json!({
         "schema_version": 1,
         "view": "next",
+        "corrections": corrections,
         "objective": cut(session.objective()),
         "stage": checkpoint.map(|checkpoint| json!({
             "current": checkpoint.stage.current,
@@ -942,6 +964,13 @@ fn next_text(view: &Value) -> String {
     }
     lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
+    for correction in view["corrections"].as_array().into_iter().flatten() {
+        lines.push(format!(
+            "Correction: {} (corrects {})",
+            text(&correction["statement"]),
+            text(&correction["target"])
+        ));
+    }
     lines.push(format!("Next: {}", text(&action["action"])));
     lines.push(format!("  Why: {}", text(&action["reason"])));
     if action["command"].is_string() {

@@ -265,6 +265,10 @@ fn read_transitions(root: &Path, session: &Session, all: bool) -> Result<Transit
         if kind == stage::DIRECT_WRITE {
             continue;
         }
+        // A correction (#167) is a known kind that starts or ends no segment either.
+        if kind == stage::CORRECTION {
+            continue;
+        }
         if !stage::STAGE_KINDS.contains(&kind.as_str())
             && kind != stage::GATE_OPENED
             && kind != stage::GATE_CLOSED

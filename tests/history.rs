@@ -1322,3 +1322,66 @@ fn a_receipt_of_exactly_1_mib_is_read_and_one_byte_more_is_refused() {
         }
     }
 }
+
+/// #167: `chough correct` appends a correction event linked to its target, never
+/// rewriting it, and next and status show the correction.
+#[test]
+fn a_correction_appends_and_is_shown_without_rewriting_history() {
+    let f = Fixture::new();
+    init(&f);
+    f.ok(&["stage", "pause", "--reason", "advance refuses build->next"]);
+    let session = f.session();
+    let cycle = session["history_cursor"]["cycle"].as_str().unwrap().to_string();
+    let head = session["history_cursor"]["head"].as_str().unwrap().to_string();
+    let event_path = format!(".chough/history/cycles/{cycle}/{head}.json");
+    let original = f.read(&event_path);
+
+    let corrected = f.ok(&[
+        "correct",
+        &head,
+        "--reason",
+        "the advance had passed; the pause was for CI",
+    ]);
+    assert_eq!(corrected["corrected"], head, "{corrected:#}");
+    let correction_id = corrected["event"].as_str().unwrap().to_string();
+    assert_ne!(correction_id, head);
+    // The original event keeps its bytes.
+    assert_eq!(f.read(&event_path), original);
+    let correction: Value = serde_json::from_str(
+        &f.read(&format!(".chough/history/cycles/{cycle}/{correction_id}.json")),
+    )
+    .unwrap();
+    assert_eq!(correction["transition"]["kind"], "correction");
+    assert_eq!(correction["transition"]["correction"]["target"], head);
+    assert_eq!(
+        correction["transition"]["correction"]["statement"],
+        "the advance had passed; the pause was for CI"
+    );
+
+    // next and status show the correction.
+    let next_out = f.run(&["next"]);
+    assert!(next_out.status.success(), "{next_out:?}");
+    let next = String::from_utf8_lossy(&next_out.stdout).to_string();
+    assert!(next.contains("Correction:"), "{next}");
+    assert!(next.contains("the pause was for CI"), "{next}");
+    let next_json = f.ok(&["next", "--json"]);
+    assert_eq!(
+        next_json["corrections"],
+        serde_json::json!([{"event": correction_id, "target": head, "statement": "the advance had passed; the pause was for CI"}]),
+        "{next_json:#}"
+    );
+    let status = f.ok(&["status"]);
+    assert_eq!(
+        status["checkpoint"]["corrections"][0]["target"],
+        serde_json::json!(head),
+        "{status:#}"
+    );
+
+    // Unknown events, blank statements and correcting a correction are refused.
+    let refused = f.fails(&["correct", "EVT-000000000000000000000000", "--reason", "x"]);
+    assert!(refused.contains("no recorded event"), "{refused}");
+    let refused = f.fails(&["correct", &head, "--reason", "  "]);
+    assert!(refused.contains("blank"), "{refused}");
+    let refused = f.fails(&["correct", &correction_id, "--reason", "meta"]);
+    assert!(refused.contains("not the correction"), "{refused}");
+}
