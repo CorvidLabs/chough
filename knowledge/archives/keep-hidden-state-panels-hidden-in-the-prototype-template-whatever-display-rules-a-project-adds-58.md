@@ -45,7 +45,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-26 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+31 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -62,8 +62,12 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-done-self-archive-vault-current-12d5b0b1d0d6f4333ede75ff | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
 | OBS-tc-cli-done-self-archive-vault-current-331d20867fbcf8d90f3a0d36 | passed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
 | OBS-tc-cli-done-self-archive-vault-current-b2cc2036e5b054e1705bf325 | failed (by cycle time) | local-macos-arm64 | TC-cli-done-self-archive-vault-current |
+| OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7 | failed (by cycle time) | local-macos-arm64 | TC-cli-killed-unreaped-child-not-alive |
+| OBS-tc-cli-killed-unreaped-child-not-alive-ab310389bde5c4d51a54535d | passed (by cycle time) | local-macos-arm64 | TC-cli-killed-unreaped-child-not-alive |
 | OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74 | passed (by cycle time) | local-macos-arm64 | TC-cli-prototype-hidden-panels-stay-hidden |
 | OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384 | passed (by cycle time) | local-macos-arm64 | TC-cli-prototype-styles-0-4-0-known-outdated |
+| OBS-tc-cli-sigterm-stops-native-process-71d69f74f25a3aade7f0057f | passed (by cycle time) | local-macos-arm64 | TC-cli-sigterm-stops-native-process |
+| OBS-tc-cli-timed-out-prime-kills-native-process-f812f5bccc709170ad193979 | passed (by cycle time) | local-macos-arm64 | TC-cli-timed-out-prime-kills-native-process |
 | OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a | failed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
 | OBS-tc-history-prune-protection-race-831610f271a785164c912a6e | passed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
 | OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
@@ -75,11 +79,13 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 | passed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 | OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 | OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc | failed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
+| OBS-tc-reporting-timed-out-native-read-kills-descendants-591504a42688993cdb69e6ee | passed (by cycle time) | local-macos-arm64 | TC-reporting-timed-out-native-read-kills-descendants |
 
 ## Bugs
 
 - BUG-evidence-prune-does-not-restore-partial-removal-14338a2c0a36ae54472c1b07 verified (references OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d, OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078)
 - BUG-evidence-prune-loses-removals-when-protections-change-f0aabb199383ff63877394c2 verified (references OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a, OBS-tc-history-prune-restores-earlier-sets-bba515e3dbd42cea1399e660, OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7, OBS-tc-history-prune-protection-race-831610f271a785164c912a6e, OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f, OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05)
+- BUG-kill-zero-reports-a-killed-unreaped-zombie-alive-187-fd5176ab33fee38ff313ffc8 verified (references OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7, OBS-tc-cli-killed-unreaped-child-not-alive-ab310389bde5c4d51a54535d)
 - BUG-prototype-template-shows-every-state-panel-when-a-project-sets-display-073394402cc923c41c0b501c verified (references OBS-tc-cli-prototype-styles-0-4-0-known-outdated-264ebbad7b6036387c10a384, OBS-tc-cli-prototype-hidden-panels-stay-hidden-1ca60531271f1a597817af74)
 
 ## Loose artifacts

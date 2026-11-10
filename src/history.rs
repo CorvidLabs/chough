@@ -355,7 +355,7 @@ fn verify_anchor(root: &Path, cursor: &Cursor) -> Result<()> {
         // A session started after the project adopted a legacy log records no anchor of
         // its own: the log is the project's past, not this session's. Its writes are
         // guarded by the anchor an adopting session recorded (REQ-history-006).
-        (None, Some(current)) => adopted_anchor(root, current)?,
+        (None, current) => adopted_anchor(root, current.as_ref())?,
         (recorded, _) => recorded.clone(),
     };
     ensure!(
@@ -365,9 +365,9 @@ fn verify_anchor(root: &Path, cursor: &Cursor) -> Result<()> {
     Ok(())
 }
 
-/// `current` when an open or archived session's cursor recorded it as its legacy anchor,
-/// else None. Only a checkpoint within the session size bound is read.
-fn adopted_anchor(root: &Path, current: &Anchor) -> Result<Option<Anchor>> {
+/// A remembered anchor matching `current`, or any valid remembered anchor when it is absent.
+/// Null, invalid and unreadable holders do not stop the search. Only bounded checkpoints are read.
+fn adopted_anchor(root: &Path, current: Option<&Anchor>) -> Result<Option<Anchor>> {
     // The session that adopted the legacy history may be open, archived, shelved
     // (REQ-history-006) or rolled into the vault (KNOW-29); #141.
     let mut dirs = vec![
@@ -410,8 +410,22 @@ fn adopted_anchor(root: &Path, current: &Anchor) -> Result<Option<Anchor>> {
                     serde_json::from_value::<Anchor>(session["history_cursor"]["legacy"].clone())
                         .ok()
                 });
-            if recorded.as_ref() == Some(current) {
-                return Ok(recorded);
+            let Some(recorded) = recorded else {
+                continue;
+            };
+            let matches = current.map_or_else(
+                || {
+                    recorded.bytes <= CYCLE_BYTES
+                        && recorded.digest.len() == 64
+                        && recorded
+                            .digest
+                            .bytes()
+                            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+                },
+                |current| &recorded == current,
+            );
+            if matches {
+                return Ok(Some(recorded));
             }
         }
     }

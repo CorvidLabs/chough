@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit",
+  "slug": "make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit",
+  "title": "Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit",
+  "description": "Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "86ae8dda94aba981094e92d5395dc085ebe65dbd",
+  "created_at": 1794021418,
+  "updated_at": 1794326011,
+  "affected_specs": [
+    "cli",
+    "reporting"
+  ],
+  "affected_paths": [
+    "tests/common/mod.rs",
+    "tests/native.rs",
+    "tests/change.rs",
+    "tests/timing.rs",
+    ".chough/cases/cli.native-process-liveness.cases.toml",
+    ".chough/cases/reporting.native-process-liveness.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Test-only correction of process liveness probes under existing DRIVE-19 and native timeout requirements; no product behavior or requirement text changes.",
+  "acceptance_criteria": [
+    "A new regression first fails when the shared probe uses only kill -0 on a killed, unreaped child. After the fix, the bounded common::alive probe reports that zombie as not alive, still reports a live sleep 60 child as alive, and is used by tests/timing.rs, tests/native.rs and tests/change.rs. Focused regressions and stressed repetitions pass on macOS and Linux, and fledge run linux-verify passes. src/checkpoint.rs and its lock test stay unchanged: #132 remains open with the handoff's 0/40 Linux rounds and 0/30 loaded rounds, with no speculative diagnostics or fix. No product behavior, HI wording or requirement text changes."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "DRIVE-19 requires a cause rather than a retry. Handoff evidence for #187 identifies a killed, not-yet-reaped zombie, not a surviving process; the rejected approach is changing product stop_tree behavior or weakening assertions. For #132, no reproduction means no speculative lock change. Preserve each PR's own session, run archive-first CI, and keep this to one test-reliability theme.",
+    "public_contract": "no"
+  }
+}

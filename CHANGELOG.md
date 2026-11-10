@@ -12,6 +12,10 @@ All notable changes to Chough are recorded here. The format follows
 - `chough skill update` recognizes the exact pinned 0.1.0 through 0.5.0 released
   bundle files (#102, REQ-cli-016). Six missing filename/SHA256 pairs restore pristine
   updates while keeping edited bytes/modes and host/legacy rules unchanged.
+- A new session refuses to write events when its adopted frozen legacy log is missing
+  (#113, REQ-history-002/006), including when an earlier independent session has no
+  anchor. Existing open/archive/shelved/vault holders remain supported; a project
+  that never adopted a legacy log still writes with an independent cursor.
 
 - `chough evidence prune --apply` now rechecks protections immediately before each
   byte-checked removal and restores earlier removals when a later check or removal
